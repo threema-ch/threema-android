@@ -25,7 +25,6 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingMessageTaskQueue")
@@ -33,7 +32,6 @@ private val logger = LoggingUtil.getThreemaLogger("IncomingMessageTaskQueue")
 internal class IncomingMessageTaskQueue(
     private val incomingMessageProcessor: IncomingMessageProcessor,
 ) {
-
     /**
      * True if an incoming message task is currently being executed.
      */
@@ -78,13 +76,13 @@ internal class IncomingMessageTaskQueue(
     internal fun hasPendingTasks() = hasRunningTask
 
     /**
-     *
+     * Read a message from the task queue. If a message is read that can be bypassed, it is executed
+     * directly.
      */
     internal suspend fun readMessage(
         preProcess: (InboundMessage) -> MessageFilterInstruction,
-    ): ReadMessageResult {
-        val bypassMessages = mutableListOf<IncomingMessageTaskQueueElement>()
-
+        bypassTaskCodec: BypassTaskCodec,
+    ): InboundMessage {
         // First check backlog queue for the matching message
         val backlogIterator = backlogQueue.iterator()
         while (backlogIterator.hasNext()) {
@@ -92,11 +90,16 @@ internal class IncomingMessageTaskQueue(
             when (preProcess(backlogMessage.inboundMessage)) {
                 MessageFilterInstruction.ACCEPT -> {
                     backlogIterator.remove()
-                    return ReadMessageResult(bypassMessages, backlogMessage.inboundMessage)
+                    return backlogMessage.inboundMessage
                 }
 
-                // TODO(ANDR-2707): once we bypass messages, no bypassed message should be added to the backlog queue
-                MessageFilterInstruction.BYPASS_OR_BACKLOG -> continue
+                MessageFilterInstruction.BYPASS_OR_BACKLOG -> {
+                    // Assert that messages were only backlogged if they needed to.
+                    check(
+                        backlogMessage.inboundMessage.getUnsoughtMessageResolution(silent = true)
+                            == UnsoughtMessageResolution.BACKLOG,
+                    )
+                }
 
                 MessageFilterInstruction.REJECT -> TODO("Implement") // TODO(ANDR-2868)
             }
@@ -106,14 +109,13 @@ internal class IncomingMessageTaskQueue(
         while (true) {
             val message = incomingMessageQueue.receive()
             when (preProcess(message.inboundMessage)) {
-                MessageFilterInstruction.ACCEPT -> return ReadMessageResult(
-                    bypassMessages,
-                    message.inboundMessage
-                )
+                MessageFilterInstruction.ACCEPT -> return message.inboundMessage
 
                 MessageFilterInstruction.BYPASS_OR_BACKLOG -> {
-                    // TODO(ANDR-2707): bypass d2d messages
-                    backlogQueue.add(message)
+                    when (message.inboundMessage.getUnsoughtMessageResolution(silent = false)) {
+                        UnsoughtMessageResolution.BYPASS -> message.run(bypassTaskCodec)
+                        UnsoughtMessageResolution.BACKLOG -> backlogQueue.add(message)
+                    }
                 }
 
                 MessageFilterInstruction.REJECT -> TODO("Implement") // TODO(ANDR-2868)
@@ -142,29 +144,173 @@ internal class IncomingMessageTaskQueue(
                 is CspMessage -> IncomingCspMessageTask(inboundMessage, incomingMessageProcessor)
                 is InboundD2mMessage -> IncomingD2mMessageTask(
                     inboundMessage,
-                    incomingMessageProcessor
+                    incomingMessageProcessor,
                 )
             }
         }
-        private val done: CompletableDeferred<Unit> = CompletableDeferred()
-
         override val maximumNumberOfExecutions: Int = 1
+        private var isCompleted = false
 
         override suspend fun run(handle: TaskCodec) {
             logger.info("Running task {}", task.getDebugString())
-            done.complete(task.invoke(handle))
+            task.invoke(handle)
+            isCompleted = true
             logger.info("Completed task {}", task.getDebugString())
             // Note that we do not need to set 'hasRunningTask' to false here. It suffices to set it
             // to false if 'getNextOrNull' returns null.
         }
 
-        override fun isCompleted() = done.isCompleted
+        override fun isCompleted() = isCompleted
 
         override suspend fun completeExceptionally(exception: Throwable) {
             logger.warn("Completing task {} exceptionally", task.getDebugString(), exception)
-            done.completeExceptionally(exception)
+            isCompleted = true
             // Note that we do not need to set 'hasRunningTask' to false here. It suffices to set it
             // to false if 'getNextOrNull' returns null.
         }
+    }
+
+    /**
+     * Get the result of a message. If [silent] is true, then nothing is logged. Otherwise, the type
+     * of the message is logged.
+     */
+    private fun InboundMessage.getUnsoughtMessageResolution(silent: Boolean) = when (this) {
+        /*
+         * Reflected messages must be bypassed. This ensures that the state is consistent. When
+         * creating a transaction, it is important to apply all reflected messages to ensure the
+         * transaction can start safely.
+         */
+        is InboundD2mMessage.Reflected -> logInfoAndBypass("reflected", silent)
+
+        /*
+         * We must not bypass csp messages as they may conflict with the current state that we
+         * might be trying to modify.
+         */
+        is CspMessage -> logInfoAndBacklog("csp", silent)
+
+        /*
+         * Receiving a begin transaction ack in a situation where another message is expected cannot
+         * happen. Note that we bypass it as processing it at a later moment could lead to a
+         * misinterpretation as there is no transaction id that can be used to link the message to
+         * a specific transaction.
+         */
+        is InboundD2mMessage.BeginTransactionAck -> logWarningAndBypass(
+            "begin transaction ack",
+            silent,
+        )
+
+        /*
+         * Receiving a commit transaction ack in a situation where another message is expected
+         * cannot happen. Note that we bypass it as processing it at a later moment could lead to a
+         * misinterpretation as there is no transaction id that can be used to link the message to
+         * a specific transaction.
+         */
+        is InboundD2mMessage.CommitTransactionAck -> logWarningAndBypass(
+            "commit transaction ack",
+            silent,
+        )
+
+        /*
+         * Devices info should be backlogged. However, it is unexpected when such a message is being
+         * received without expecting it.
+         */
+        is InboundD2mMessage.DevicesInfo -> logWarningAndBacklog("devices info", silent)
+
+        /*
+         * Receiving a drop device ack is unexpected. However, it should be backlogged as it may be
+         * needed later on.
+         */
+        is InboundD2mMessage.DropDeviceAck -> logWarningAndBacklog("drop device ack", silent)
+
+        /*
+         * This may happen if several messages were reflected and their acknowledgments are awaited
+         * in a different order. We must not bypass this.
+         */
+        is InboundD2mMessage.ReflectAck -> logInfoAndBacklog("reflect ack", silent)
+
+        /*
+         * This can safely be bypassed.
+         */
+        is InboundD2mMessage.ReflectionQueueDry -> logInfoAndBypass("reflection queue dry", silent)
+
+        /*
+         * This can safely be bypassed.
+         */
+        is InboundD2mMessage.RolePromotedToLeader -> logInfoAndBypass(
+            "role promoted to leader",
+            silent,
+        )
+
+        /*
+         * A server hello in the context where another message is received cannot happen.
+         */
+        is InboundD2mMessage.ServerHello -> logWarningAndBacklog("server hello", silent)
+
+        /*
+         * A server info in the context where another message is received cannot happen.
+         */
+        is InboundD2mMessage.ServerInfo -> logWarningAndBacklog("server info", silent)
+
+        /*
+         * A transaction ended message in the context where another message is received should be
+         * bypassed as processing it later could lead to a misinterpretation as there is no
+         * transaction id that can be used to link the message to a specific transaction.
+         */
+        is InboundD2mMessage.TransactionEnded -> logInfoAndBypass("transaction ended", silent)
+
+        /*
+         * A transaction rejected message in the context where another message is received cannot
+         * happen. Note that we bypass it as processing it at a later moment could lead to a
+         * misinterpretation as there is no transaction id that can be used to link the message to
+         * a specific transaction.
+         */
+        is InboundD2mMessage.TransactionRejected -> logWarningAndBypass(
+            "transaction rejected",
+            silent,
+        )
+    }
+
+    private fun logInfoAndBypass(type: String, silent: Boolean): UnsoughtMessageResolution {
+        if (!silent) {
+            logger.info("Bypassing a {} message while waiting for another message", type)
+        }
+        return UnsoughtMessageResolution.BYPASS
+    }
+
+    private fun logInfoAndBacklog(type: String, silent: Boolean): UnsoughtMessageResolution {
+        if (!silent) {
+            logger.info("Backlogging a {} message while waiting for another message", type)
+        }
+        return UnsoughtMessageResolution.BACKLOG
+    }
+
+    private fun logWarningAndBypass(type: String, silent: Boolean): UnsoughtMessageResolution {
+        if (!silent) {
+            logger.warn("Bypassing a {} message while expecting another message", type)
+        }
+        return UnsoughtMessageResolution.BYPASS
+    }
+
+    private fun logWarningAndBacklog(type: String, silent: Boolean): UnsoughtMessageResolution {
+        if (!silent) {
+            logger.warn("Backlogging a {} message while expecting another message", type)
+        }
+        return UnsoughtMessageResolution.BACKLOG
+    }
+
+    /**
+     * This defines what should happen with messages that are read but not expected.
+     */
+    private enum class UnsoughtMessageResolution {
+        /**
+         * The message should be bypassed, so it is run immediately before continuing to wait for
+         * the expected message.
+         */
+        BYPASS,
+
+        /**
+         * The message should be backlogged. This means it is kept and applied later on.
+         */
+        BACKLOG,
     }
 }

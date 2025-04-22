@@ -33,9 +33,8 @@ internal class CspController(configuration: CspConnectionConfiguration) :
     Layer3Controller,
     Layer4Controller,
     MainConnectionController {
-
     override val dispatcher = SingleThreadedServerConnectionDispatcher(
-        configuration.assertDispatcherContext
+        configuration.assertDispatcherContext,
     )
 
     override val cspSession: CspSession = CspSession(configuration, dispatcher)

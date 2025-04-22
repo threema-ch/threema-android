@@ -37,6 +37,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 
 public class SMSVerificationLinkActivity extends AppCompatActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SMSVerificationLinkActivity");
@@ -66,7 +67,7 @@ public class SMSVerificationLinkActivity extends AppCompatActivity {
                                 @Override
                                 protected Boolean doInBackground(Void... params) {
                                     try {
-                                        userService.verifyMobileNumber(code);
+                                        userService.verifyMobileNumber(code, TriggerSource.LOCAL);
                                         return true;
                                     } catch (Exception x) {
                                         logger.error("Exception", x);

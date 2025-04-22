@@ -33,7 +33,6 @@ private val logger = LoggingUtil.getThreemaLogger("ServerMessageModelFactory")
 
 class ServerMessageModelFactory(databaseService: DatabaseServiceNew) :
     ModelFactory(databaseService, ServerMessageModel.TABLE) {
-
     fun storeServerMessageModel(serverMessageModel: ServerMessageModel) {
         val contentValues = ContentValues()
         contentValues.put(ServerMessageModel.COLUMN_MESSAGE, serverMessageModel.message)
@@ -54,7 +53,7 @@ class ServerMessageModelFactory(databaseService: DatabaseServiceNew) :
             null,
             null,
             null,
-            "1"
+            "1",
         )
         if (cursor != null && cursor.moveToFirst()) {
             val cursorHelper = CursorHelper(cursor, columnIndexCache)
@@ -67,7 +66,7 @@ class ServerMessageModelFactory(databaseService: DatabaseServiceNew) :
         databaseService.writableDatabase.delete(
             ServerMessageModel.TABLE,
             "${ServerMessageModel.COLUMN_MESSAGE}=?",
-            arrayOf(message)
+            arrayOf(message),
         )
     }
 
@@ -93,6 +92,6 @@ class ServerMessageModelFactory(databaseService: DatabaseServiceNew) :
         "CREATE TABLE `${ServerMessageModel.TABLE}` (" +
             "`${ServerMessageModel.COLUMN_MESSAGE}` VARCHAR PRIMARY KEY ON CONFLICT REPLACE," +
             "`${ServerMessageModel.COLUMN_TYPE}` INTEGER" +
-            ")"
+            ")",
     )
 }

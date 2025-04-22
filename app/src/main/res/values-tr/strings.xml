@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kişiler</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">Sohbetler</string>
     <string name="title_compose_message">Sohbet başlat</string>
     <string name="title_choose_recipient">Alıcı Seçin</string>
     <string name="title_keyfingerprint">Anahtar Parmak İzi</string>
-    <string name="title_mythreemaid">Threema Kimliğim</string>
-    <string name="title_threemaid">Threema Kimliği</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">${app_name_short} Kimliğin</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short} Kimliği</string>
     <string name="title_adduser">Yeni kişi ekle</string>
     <string name="title_enter_id">Kimlik gir</string>
     <string name="title_invite_friend">Arkadaşını davet et</string>
-    <string name="invite_via">... üzerinden bir arkadaşınızı davet edin</string>
-    <string name="invite_email_body">Merhaba,\n\nI kullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma programı olan %1$s kullanın.\n\nThreema kimliğim: https://threema.id/%2$s\n\n%1$s üzerinden haberleşelim!\n\nGörüşmek üzere,\n</string>
-    <string name="invite_sms_body">Merhaba! Güvenli ve gizlilikle uyumlu bir şekilde iletişim kurmak için %1$s kullanalım! Threema Kimliğim: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema. Gizliliğimizi koruyan güvenli mesajlaşma aracı</string>
-    <string name="enter_id_hint">Threema Kimliğinizi girin</string>
+    <string name="invite_via">… üzerinden bir arkadaşınızı davet edin</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">Merhaba,\n\nI kullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma programı olan %1$s kullanın.\n\n${app_name_short} kimliğim: https://threema.id/%2$s\n\n%1$s üzerinden haberleşelim!\n\nGörüşmek üzere,\n</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">Merhaba! Güvenli ve gizlilikle uyumlu bir şekilde iletişim kurmak için %1$s kullanalım! ${app_name_short} Kimliğim: https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}. Gizliliğimizi koruyan güvenli mesajlaşma aracı</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">${app_name_short} Kimliğinizi girin</string>
     <string name="account_links">Bağlı hesaplar</string>
     <string name="menu_settings">Ayarlar</string>
-    <string name="menu_about">Threema Hakkında</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">${app_name} Hakkında</string>
     <string name="menu_add_contact">Yeni kişi</string>
     <string name="menu_done">Tamam</string>
     <string name="compose_message_and_enter">Yazmak için buraya dokunun</string>
@@ -51,6 +59,10 @@
     <string name="prefs_sum_notification_sound">Sistem varsayılanı</string>
     <string name="prefs_vibrate">Titreşim</string>
     <string name="prefs_sum_vibrate">Mesaj geldiğinde titret</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_notification_light">Bildirim ışığı</string>
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_sum_notification_light">Gelen mesajlar için renkli LED kullanın (eğer varsa)</string>
     <string name="prefs_sum_light">Beyaz</string>
     <string name="prefs_title_wallpaper">Duvar kağıdı seç</string>
     <string name="prefs_sum_wallpaper">Arka plan için resim seç</string>
@@ -67,8 +79,10 @@
     <string name="prefs_inapp_vibrate_on">Mesaj alırken titret</string>
     <string name="prefs_inapp_vibrate_off">Mesaj alırken titretme</string>
     <string name="workarounds">Geçici Çözümler</string>
-    <string name="prefs_title_threema_push_switch">Threema Dürtme kullan</string>
-    <string name="prefs_sum_threema_push_on">Yeni mesajlardan haberdar olmak için Threema Dürtme kullan</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_threema_push_switch">${app_name_short} Dürtme kullan</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_threema_push_on">Yeni mesajlardan haberdar olmak için ${app_name_short} Dürtme kullan</string>
     <string name="prefs_sum_threema_push_off">Sistem Dürtme hizmetini kullanarak yeni mesajları kontrol et</string>
     <string name="prefs_logging">Günlük tutma</string>
     <string name="prefs_title_message_log_switch">Hata ayıklama günlüğü</string>
@@ -84,19 +98,11 @@
     <string name="image_size_large">Büyük (1600x1600)</string>
     <string name="image_size_xlarge">Çok büyük (2592x2592)</string>
     <string name="image_size_original">Orijinal boyut</string>
-    <string name="color_none">Hiçbiri</string>
-    <string name="color_orange">Turuncu</string>
-    <string name="color_red">Kırmızı</string>
-    <string name="color_green">Yeşil</string>
-    <string name="color_blue">Mavi</string>
-    <string name="color_cyan">Açık mavi</string>
-    <string name="color_magenta">Kızılımsı mor</string>
-    <string name="color_yellow">Sarı</string>
-    <string name="color_white">Beyaz</string>
     <string name="next">Sonraki</string>
     <string name="finish">Tamam</string>
     <string name="please_wait">Lütfen bekleyin…</string>
-    <string name="wizard_first_create_id">Threema kimliğiniz oluşturuluyor…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_first_create_id">${app_name_short} kimliğiniz oluşturuluyor…</string>
     <string name="wizard1_sync_contacts">Kişiler Eşitleniyor…</string>
     <string name="wizard2_email_hint">Elektronik posta adresinizi girin</string>
     <string name="wizard2_email_linking">Elektronik posta, kimliğinize bağlanıyor</string>
@@ -122,21 +128,25 @@
     <string name="share_via">Paylaş…</string>
     <string name="share_subject">%s görüşmesi</string>
     <string name="message_delete_undo">Geri al</string>
-    <string name="mobile_already_linked">Threema kimliğiniz zaten bu cep telefonu numarasına bağlı</string>
-    <string name="email_already_linked">Threema kimliğiniz zaten bu elektronik posta adresine bağlı</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">${app_name_short} kimliğiniz zaten bu cep telefonu numarasına bağlı</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">${app_name_short} kimliğiniz zaten bu elektronik posta adresine bağlı</string>
     <string name="whoaaa">Bildiri</string>
     <string name="really_delete_message_title">Mesajı sil</string>
     <string name="really_delete_thread">Sohbeti sil</string>
     <string name="really_delete_multiple_threads">Sohbetleri sil</string>
     <string name="really_delete_contact">Bu kişiyi ve ilişkili tüm mesajları gerçekten silmek istiyor musunuz?</string>
     <string name="image_placeholder">Resim</string>
-    <string name="invalid_threema_id">Geçersiz Threema kimliği</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">Geçersiz ${app_name_short} kimliği</string>
     <string name="contact_already_exists">Kişi zaten mevcut</string>
     <string name="close">Kapat</string>
     <string name="creating_contact">Yeni kişi ekleniyor</string>
     <string name="creating_contact_successful">Kişi başarıyla eklendi</string>
     <string name="invalid_threema_qr_code">Geçersiz kare kodu</string>
-    <string name="threema_contact">Threema kişisi</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short} kişisi</string>
     <string name="first_name">İsim</string>
     <string name="last_name">Soy isim</string>
     <string name="os_licenses">Lisanslar</string>
@@ -148,12 +158,13 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="verify_failed_not_linked">Cep telefonu numaranız doğrulanamadı. Doğrulama işlemi iptal edildi.</string>
     <string name="check_incoming_sms">Gelen kısa mesajlar kontrol ediliyor</string>
     <string name="backup_title">Kimliği dışa aktar</string>
-    <string name="backup_sum">Threema kimliğini dışa aktar</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">${app_name_short} kimliğini dışa aktar</string>
     <string name="backup_and_delete">Yedekleme ve silme</string>
-    <string name="delete_id_title">Threema kimliğini sil</string>
+    <string name="delete_id_title">kimliğini sil</string>
     <string name="delete_id_message">Bir yedek oluşturmadığınız veya bu kimliğin bir kopyasını dışa aktarıp kayıt edilmediği sürece, tekrar bu kimliğe sahip mesajlar asla gönderemez veya alamazsınız.\n\nBu kimliği artık kullanmak istemiyorsanız, silmeden önce bir iptal parolası ayarlamanız ve myid.threema.ch/revoke adresinden iptal etmeniz önerilir.</string>
     <string name="delete_id_message2">Son uyarı: Bu cihazdaki kimliğinizi gerçekten silmek istiyor musunuz?</string>
-    <string name="delete_id_sum">Threema kimliğini ve bu cihazdaki tüm verileri kalıcı olarak sil</string>
+    <string name="delete_id_sum">${app_name_short} kimliğini ve bu cihazdaki tüm verileri kalıcı olarak sil</string>
     <string name="backup_password_summary">Kimlik dışa aktarma işleminiz bir parola ile şifrelenir. Harfler, sayılar ve simgelerden oluşan bir kombinasyon kullanın. Buraya ne girdiğinizi unutmayın!</string>
     <string name="backup_password_again_summary">Şifreyi tekrar girin</string>
     <string name="password_hint">Şifre</string>
@@ -162,8 +173,10 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="backup_id_summary">Yukarıda görüntülenen metin dizesi veya kare kodu, seçtiğiniz şifre ile birlikte kimliğinizi başka bir cihaza geri yüklemek için kullanılabilir. Uygun bir yere kopyalamanız, elektronik posta ile paylaşmanız veya başka bir cihaz kullanarak kare kodunu taramanız gerekir.</string>
     <string name="support">Yardım</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Aşağıdaki metin dizisi, Threema kimliğinizi geri yüklemek için seçilen parola ile birlikte kullanılabilir.</string>
-    <string name="backup_share_subject">Dışa aktarılan Threema kimliği</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_content">Aşağıdaki metin dizisi, ${app_name_short} kimliğinizi geri yüklemek için seçilen parola ile birlikte kullanılabilir.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">Dışa aktarılan ${app_name_short} kimliği</string>
     <string name="add_attachment">Yeni ek</string>
     <string name="invalid_passphrase">Geçersiz parola</string>
     <string name="master_key_locked">Ana anahtar kilitli</string>
@@ -184,9 +197,14 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Ses</string>
     <string name="restoring_backup">Yedek geri yükleniyor</string>
-    <string name="server_message_title">Threema sunucusundan mesaj</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">${company_name} sunucusundan mesaj</string>
     <string name="error">Hata</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
     <string name="no_contacts"><![CDATA[Henüz hiç kişiniz yok. Eşitlemeyi açın (Ayarlar > Gizlilik) veya kişileri elle ekleyin.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_contacts_sync_on"><![CDATA[Henüz hiçbir kişiniz yok. Senkronizasyon açık, ancak adres defterinizdeki kişilerden hiçbiri ${app_name_short} uygulamasında görünmüyor (onları davet edin!).]]></string>
     <string name="masterkey_title">Parola girin</string>
     <string name="masterkey_body">Ana anahtarınız parola ile korunmaktadır. Kilidi açmak için parolanızı girin.</string>
     <string name="masterkey_unlocking">Ana anahtar kilidi açılıyor</string>
@@ -205,6 +223,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="unlink">Bağlantıyı kaldır</string>
     <string name="threema_version">Sürüm</string>
     <string name="threema_version_code">Sürüm Kodu</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
+    <string name="about_server_config_title">Sunucu Yapılandırması</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">İnternet bağlantısı yok, geçersiz dışa aktarılan kimlik verileri veya yanlış şifre</string>
     <string name="prefs_header_other">Diğer</string>
     <string name="an_error_occurred">Hata oluştu</string>
@@ -225,10 +245,21 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="file_too_large">Dosya maksimum %1$d MB daha büyük</string>
     <string name="deleting_thread">Sohbet siliniyor</string>
     <string name="enter_serial_body"><![CDATA[Lütfen mağaza lisans anahtarınızı girin. Bir lisans <a href="https://shop.threema.ch/">satın alabilir</a> veya daha önce bir lisans satın almış olmanız durumunda anahtarlarınızı buradan <a href="https://shop.threema.ch/retrieve_keys">alabilirsiniz</a>.]]></string>
-    <string name="enter_serial_title">Threema kilidini aç</string>
-    <string name="serial_required_want_exit">Lisans anahtarı geçersiz. Tekrar denemek veya Threema uygulamasından çıkmak ister misiniz?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_enter_serial_body">Lütfen şirketiniz tarafından sağlanan ${app_name_short} kimlik bilgilerini girin.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">${app_name} kilidini aç</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">Lisans anahtarı geçersiz. Tekrar denemek veya ${app_name} uygulamasından çıkmak ister misiniz?</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_serial_required_want_exit">Lisans geçersiz. Tekrar denemek mi yoksa ${app_name} uygulamasından çıkmak mı istiyorsunuz?</string>
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Lisans kontrol ediliyor</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
+    <string name="work_checking_credentials">Kimlik bilgileri kontrol ediliyor</string>
     <string name="update_available">Güncelleme mevcut</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
+    <string name="update_available_message">Yeni bir sürüm mevcut. Şimdi indirmek ister misiniz?</string>
     <string name="no_update_available">Güncelleme mevcut değil</string>
     <string name="download">İndir</string>
     <string name="not_now">Bana daha sonra hatırlat</string>
@@ -338,6 +369,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_title_blocked_contacts">Engellenmiş kişi</string>
     <string name="prefs_sum_blocked_contacts">Burada listelenen kimliklerden gelen mesajlar yok sayılacak.</string>
     <string name="verified">Doğrulandı</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="want_to_add_to_exclude_list">Bu kişi, telefonunuzun adres defterindeki bir kayda bağlıdır. Eğer  uygulamadan silerseniz, eşitlemeden sonra yeniden görünüyor olacaktır. Eşitlemeden hariç tutmak ister misiniz?</string>
     <string name="no">Hayır</string>
     <string name="yes">Evet</string>
@@ -351,8 +383,10 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_show_inactive_contacts">Etkin olmayan kimlikleri göster</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Kişi resmi eksikse çok renkli yer tutucuları göster</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Kişi resmi eksikse, gri yer tutucular kullan</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Kişi listenizdeki tüm Threema kimliklerini göster</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Etkin olmayan / iptal edilen Threema kimliklerini gizle</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">Kişi listenizdeki tüm ${app_name_short} kimliklerini göster</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">Etkin olmayan / iptal edilen ${app_name_short} kimliklerini gizle</string>
     <string name="contact_sorting_first_name">İsim - Soyisim</string>
     <string name="contact_sorting_last_name">Soyisim - İsim</string>
     <string name="contact_format_first_name_last_name">İsim Soyisim</string>
@@ -370,7 +404,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_title_fullscreen_ime">Tam ekran klavye</string>
     <string name="prefs_sum_fullscreen_ime_on">Cihazınız yatay durumda ise klavye uygulamayı kapsar</string>
     <string name="prefs_sum_fullscreen_ime_off">Yer varsa, klavyenin üzerinde sohbetin bir ön izlemesini görüntüle</string>
-    <string name="add_acount_from_within_threema">Threema kimliğinizi uygulama içinden yönetin</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">${app_name_short} kimliğinizi uygulama içinden yönetin</string>
     <string name="save_image">Resmi kaydet</string>
     <string name="share_image">Resmi paylaş</string>
     <string name="view_in_gallery">Galeride görüntüle</string>
@@ -392,7 +427,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="push_not_available_text2">%s sunucuya kalıcı bir arka plan bağlantısı açmaya çalışacak. Cihazınızın pil optimizasyon mekanizmaları arka plan bağlantısını engelliyorsa, bu güvenilir şekilde çalışmayabilir.</string>
     <string name="backup_in_progress">Yedekleme devam ediyor</string>
     <string name="backup_or_restore_success_body">Veri yedekleme başarıyla tamamlandı</string>
-    <string name="backup_or_restore_error">Threema yedekleme</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short} yedekleme</string>
     <string name="backup_or_restore_error_body">Yedekleme başarıyla tamamlanmadı</string>
     <string name="could_not_download_message">Mesaj indirilemedi</string>
     <string name="info">Bilgi</string>
@@ -424,7 +460,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="num_items_sected">%s seçildi</string>
     <string name="really_delete_media">%d medya iletisini gerçekten silmek istiyor musunuz?</string>
     <string name="check_updates">Güncellemeleri kontrol et</string>
-    <string name="masterkey_lock_explain">Threema, parolayı hafızada tutar. Parolayı sık sık yeniden girmeniz gerekiyorsa, Threema uygulamasını erken sona erdirebilecek görev sonlandırıcı ve pil tasarrufu uygulamalarının devre dışı bırakıldığından emin olun.</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name}, parolayı hafızada tutar. Parolayı sık sık yeniden girmeniz gerekiyorsa, ${app_name_short} uygulamasını erken sona erdirebilecek görev sonlandırıcı ve pil tasarrufu uygulamalarının devre dışı bırakıldığından emin olun.</string>
     <string name="identity_already_exists">Bu kimlik zaten kişi listenizde</string>
     <string name="share_contact">Kişiyi paylaş</string>
     <string name="add_shortcut">Kısayol ekle</string>
@@ -458,7 +495,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="ballot_subject_hint">Bu anketin başlığını girin</string>
     <string name="ballot_no_ballots_yet">Henüz anket yok.</string>
     <string name="print">Yazdır</string>
-    <string name="ballot_wizard0_explain">Doğrudan Threema ile hızlı bir şekilde çevrim içi bir anket oluşturun. Bir etkinlik planlayın, anket oluşturun veya arkadaşlarınıza istediğiniz her şeyi sorun.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">Doğrudan ${app_name_short} ile hızlı bir şekilde çevrim içi bir anket oluşturun. Bir etkinlik planlayın, anket oluşturun veya arkadaşlarınıza istediğiniz her şeyi sorun.</string>
     <string name="ballot_add_choices">Yanıt ekle</string>
     <string name="blocked_cannot_send">Engellenmiş bir kişiye mesaj gönderemezsiniz</string>
     <string name="invalid_some_cannot_send">Alıcılardan bazıları seçilemiyor.</string>
@@ -474,7 +512,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="back">Geri</string>
     <string name="wearable_reply">Cevap</string>
     <string name="wearable_reply_label">%s adlı kişiye yanıt gönder</string>
-    <string name="push_disable_text">Devam ederseniz, sistemin push servisi yerine “Threema Push” kullanılacaktır. Bu, dijital ayak izinizi azaltmaya yardımcı olur ancak telefonunuzun, uygulamanın arka planda çalışmasına izin verecek şekilde yapılandırılmasını gerektirir. Cihaz ayarlarında ilgili seçenekler bulunamıyorsa, yapılandırma konusunda yardım için cihaz üreticinizin desteğiyle iletişime geçmek isteyebilirsiniz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">Devam ederseniz, sistemin push servisi yerine “${app_name_short} Push” kullanılacaktır. Bu, dijital ayak izinizi azaltmaya yardımcı olur ancak telefonunuzun, uygulamanın arka planda çalışmasına izin verecek şekilde yapılandırılmasını gerektirir. Cihaz ayarlarında ilgili seçenekler bulunamıyorsa, yapılandırma konusunda yardım için cihaz üreticinizin desteğiyle iletişime geçmek isteyebilirsiniz.</string>
     <string name="ballot_intermediate_results_show">Ara sonuçları göster</string>
     <string name="converting_video">Video işleniyor</string>
     <string name="video_size_small">Yüksek (daha az veri)</string>
@@ -489,7 +528,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="kick_user_from_group">%1$s kişisini gruptan çıkar</string>
     <string name="show_as_qrcode">Kare kod olarak göster</string>
     <string name="qr_code">Kare kod</string>
-    <string name="really_leave_id_export">Henüz yapmadıysanız, dışa aktarılan kimliğinize ait metin dizesini veya ilgili kare kodunuzu güvenli bir yere kaydedin veya yazdırın. Threema kimliğiniz, yedek olmadan geri yüklenemez.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="really_leave_id_export">Henüz yapmadıysanız, dışa aktarılan kimliğinize ait metin dizesini veya ilgili kare kodunuzu güvenli bir yere kaydedin veya yazdırın. ${app_name_short} kimliğiniz, yedek olmadan geri yüklenemez.</string>
     <string name="revocation_key_title">Kimlik iptali</string>
     <string name="revocation_key_not_set">İptal şifresi ayarlanmadı</string>
     <string name="revocation_key_set_at">%1$s tarihinde parola ayarlandı</string>
@@ -566,8 +606,10 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="invalid_data">Geçersiz veri. Gönderilemiyor.</string>
     <string name="prefs_emoji_style">Emoji stili</string>
     <string name="prefs_android_emojis">Sistem emojileri</string>
-    <string name="prefs_default_emojis">Threema emojileri (varsayılan)</string>
-    <string name="android_emojis_warning">Not: Sistemin karakter seti Threema tarafından desteklenen tüm emojileri görüntüleyemeyebilir.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short} emojileri (varsayılan)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="android_emojis_warning">Not: Sistemin karakter seti ${app_name_short} tarafından desteklenen tüm emojileri görüntüleyemeyebilir.</string>
     <string name="crop">Bitti</string>
     <string name="scan_id_mismatch_title">Kimlik uyuşmazlığı</string>
     <string name="scan_id_mismatch_message">Taradığınız kimlik, kaydettiğiniz kişiyle eşleşmiyor.</string>
@@ -584,12 +626,16 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="fontsize_xlarge">Ekstra büyük</string>
     <string name="no_app_for_location">Bu cihazda harita uygulaması bulunamadı</string>
     <string name="prefs_sendlog">Günlüğü gönder</string>
-    <string name="prefs_sendlog_summary">Sorun olması durumunda daha ayrıntılı analiz için günlük dosyasını Threema\'ya gönder</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">Sorun olması durumunda daha ayrıntılı analiz için günlük dosyasını ${company_name}\'ya gönder</string>
     <string name="prefs_exportlog">Günlüğü dışa aktar</string>
     <string name="prefs_exportlog_summary">Günlük dosyasını başka bir uygulamayla paylaş</string>
-    <string name="permission_storage_required">Medyayı kaydetmek veya göndermek için, Threema\'nın depolama alanına erişmesine izin verin.</string>
-    <string name="permission_location_required">Lokasyon gönderebilmek için, Threema\'nın konumunuza erişmesine izin verin.</string>
-    <string name="permission_contacts_required">Kontaklarınızı gönderebilmek için, Threema\'nın kişilerinizi okumasına izin verin.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_storage_required">Medyayı kaydetmek veya göndermek için, ${app_name}\'nın depolama alanına erişmesine izin verin.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_location_required">Lokasyon gönderebilmek için, ${app_name}\'nın konumunuza erişmesine izin verin.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_contacts_required">Kontaklarınızı gönderebilmek için, ${app_name}\'nın kişilerinizi okumasına izin verin.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <string name="message_acknowledged">\"Beğendi\" gönderildi</string>
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
@@ -608,39 +654,52 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="new_wizard_select_country">Ülkenizi seçin</string>
     <string name="new_wizard_lets_get_started">Başlayalım!</string>
     <string name="new_wizard_setup_threema">Kurulumu başlat</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_new_wizard_setup_threema">Şimdi ${app_name} uygulamasını kurun</string>
     <string name="new_wizard_restore_id_backup">Dışa aktarılan kimliği geri yükle</string>
-    <string name="new_wizard_welcome">Threema\'ya hoşgeldiniz!</string>
-    <string name="new_wizard_move_finger">Yeni bir Threema kimliği oluşturmak için parmağınızı ekranda hareket ettirin.</string>
-    <string name="new_wizard_this_is_your_id">Bu sizin Threema kimliğiniz:</string>
-    <string name="new_wizard_works_like_phone_number">Threema kimliğiniz tıpkı bir telefon numarası gibi çalışır.  Arkadaşlarınız size bu kimlik üzerinden ulaşabilirler.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">${app_name}\'ya hoşgeldiniz!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">Yeni bir ${app_name_short} kimliği oluşturmak için parmağınızı ekranda hareket ettirin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">Bu sizin ${app_name_short} kimliğiniz:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">${app_name_short} kimliğiniz tıpkı bir telefon numarası gibi çalışır.  Arkadaşlarınız size bu kimlik üzerinden ulaşabilirler.</string>
     <string name="new_wizard_choose_nickname">Bir takma isim belirleyin</string>
     <string name="new_wizard_nickname_explain">Arkadaşlarınız bildirimlerinde takma isminizi görecek</string>
     <string name="new_wizard_hint_enter_nickname">Takma isim girin</string>
     <string name="new_wizard_help_your_friends_find_you">Arkadaşlarınızın sizi bulmasına yardım edin!</string>
-    <string name="new_wizard_link_mobile">Cep telefonu numaranızı ve / veya e-postanızı Threema kimliğine bağlayın.</string>
-    <string name="new_wizard_link_mobile_only">Cep telefonu numaran\u0131z\u0131 Threema kimli\u011fine ba\u011flay\u0131n.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">Cep telefonu numaranızı ve / veya e-postanızı ${app_name_short} kimliğine bağlayın.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">Cep telefonu numaran\u0131z\u0131 ${app_name_short} kimli\u011fine ba\u011flay\u0131n.</string>
     <string name="new_wizard_hint_mobile_number">Cep telefonu numarası (isteğe bağlı)</string>
     <string name="new_wizard_hint_email">E-posta (isteğe bağlı)</string>
-    <string name="new_wizard_find_friends">Threema\'da arkadaşlarınızı bulun</string>
-    <string name="new_wizard_sync_contacts_explain">Threema\'yı hangi arkadaşlarınızın kullandığını görmek için geçiş yapın.</string>
     <string name="new_wizard_done_title">Tamam!\nHer şey doğru mu?</string>
     <string name="new_wizard_linked_to">ile bağlı</string>
-    <string name="new_wizard_need_internet">Benzersiz Threema kimliğinizi oluşturmak için sabit bir internet bağlantısı gereklidir. Lütfen tekrar deneyin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">Benzersiz ${app_name_short} kimliğinizi oluşturmak için sabit bir internet bağlantısı gereklidir. Lütfen tekrar deneyin.</string>
     <string name="new_wizard_more_information">Daha fazla bilgi</string>
     <string name="message_details_message_id_copied">Mesaj kimliği panoya kopyalandı</string>
     <string name="contact_details_id_copied">Kimlik panoya kopyalandı</string>
     <string name="contact_details_nickname_copied">Takma isim panoya kopyalandı</string>
-    <string name="new_wizard_use_id_as_nickname">Takma isim olarak Threema kimliğinizi kullanmak ister misiniz?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">Takma isim olarak ${app_name_short} kimliğinizi kullanmak ister misiniz?</string>
     <string name="new_wizard_phone_email_invalid">Girdiğiniz telefon numarası veya e-posta adresi geçerli değil. Lütfen devam etmeden önce düzeltin.</string>
     <string name="new_wizard_phone_invalid">Girdiğiniz telefon numarası geçerli değil.\nLütfen devam etmeden önce düzeltin.</string>
-    <string name="new_wizard_info_fingerprint">Parmağınızı hareket ettirerek, yeni benzersiz Threema kimliğinizle ilişkili anahtar çiftini oluşturmak için kullanılan rasgele veriler (entropi adı verilir) oluşturursunuz. Anahtar çifti, arkadaşlarınıza dağıtılan bir <b>genel anahtardan</b> ve telefonunuzda güvenli bir şekilde saklanan bir <b>kişisel anahtardan</b> oluşur. Arkadaşlarınız size gönderilen mesajları genel anahtarla şifreleyecek. Sadece kişisel anahtarın sahibi bu mesajların şifresini çözebilir.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_fingerprint">Parmağınızı hareket ettirerek, yeni benzersiz ${app_name_short} kimliğinizle ilişkili anahtar çiftini oluşturmak için kullanılan rasgele veriler (entropi adı verilir) oluşturursunuz. Anahtar çifti, arkadaşlarınıza dağıtılan bir <b>genel anahtardan</b> ve telefonunuzda güvenli bir şekilde saklanan bir <b>kişisel anahtardan</b> oluşur. Arkadaşlarınız size gönderilen mesajları genel anahtarla şifreleyecek. Sadece kişisel anahtarın sahibi bu mesajların şifresini çözebilir.</string>
     <string name="new_wizard_info_id">Ayrıca bir anahtar çifti oluşturdunuz. Genel anahtar
 sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman cihazınızdan ayrılmaz. Böylece sizden başka hiç kimse mesajlarınızı okuyamaz.</string>
-    <string name="new_wizard_info_sync_contacts">Bu seçeneği etkinleştirirseniz, Threema eşleşen kişileri aramak için sunucuya göndermeden önce e-posta adreslerini ve telefon numaralarını şifreler (karma veri). Adres defteri verilerini depolamayız.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_sync_contacts">Bu seçeneği etkinleştirirseniz, ${app_name_short} eşleşen kişileri aramak için sunucuya göndermeden önce e-posta adreslerini ve telefon numaralarını şifreler (karma veri). Adres defteri verilerini depolamayız.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Kişi senkronizasyonu, arkadaşlarınızı otomatik olarak bulmanıza yardımcı olabilir. Kabul ederseniz, telefon rehberinizdeki telefon numaraları ve e-posta adresleri, eşleşen kişileri aramak için sunucumuza gönderilmeden önce şifrelenecektir.  Kesinlikle hiçbir veri saklanmayacak veya paylaşılmayacaktır.\nKişi senkronizasyonunu etkinleştirmek ister misiniz?</string>
-    <string name="new_wizard_info_link">Threema, telefon numaranızı ve e-posta adresinizi vererek, eğer telefonlarının adres defterinde mevcutsanız, arkadaşlarınızın sizi otomatik olarak bulmasına yardımcı olabilir. Veriler, sunucumuzda tek yönlü şifreli (karma veri) bir biçimde saklanacaktır. Threema\'yı tamamen anonim olarak kullanmak istiyorsanız bu adımı atlayabilirsiniz.</string>
-    <string name="new_wizard_info_link_phone_only">Threema, telefon numaranızı vererek, eğer telefonlarının adres defterinde mevcutsanız, arkadaşlarınızın sizi otomatik olarak bulmasına yardımcı olabilir. Numara, sunucumuzda tek yönlü şifreli (karma veri) bir biçimde saklanacaktır. Threema\'yı tamamen anonim olarak kullanmak istiyorsanız bu adımı atlayabilirsiniz.</string>
-    <string name="new_wizard_info_nickname">Takma isim bazı cihazlarda anında iletme bildirimlerinde veya sizi henüz adres defterlerinde olmayan kullanıcılara tanıtmanın ek bir yolu olarak kullanılır. Yalnızca adınızı veya takma isminizi sağlamanızı öneririz. Takma isim belirlemezseniz varsayılan olarak Threema kimliğinizi kullanırız.</string>
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">${app_name_short}, telefon numaranızı ve e-posta adresinizi vererek, eğer telefonlarının adres defterinde mevcutsanız, arkadaşlarınızın sizi otomatik olarak bulmasına yardımcı olabilir. Veriler, sunucumuzda tek yönlü şifreli (karma veri) bir biçimde saklanacaktır. ${app_name}\'yı tamamen anonim olarak kullanmak istiyorsanız bu adımı atlayabilirsiniz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">${app_name_short}, telefon numaranızı vererek, eğer telefonlarının adres defterinde mevcutsanız, arkadaşlarınızın sizi otomatik olarak bulmasına yardımcı olabilir. Numara, sunucumuzda tek yönlü şifreli (karma veri) bir biçimde saklanacaktır. ${app_name_short}\'yı tamamen anonim olarak kullanmak istiyorsanız bu adımı atlayabilirsiniz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_nickname">Takma isim bazı cihazlarda anında iletme bildirimlerinde veya sizi henüz adres defterlerinde olmayan kullanıcılara tanıtmanın ek bir yolu olarak kullanılır. Yalnızca adınızı veya takma isminizi sağlamanızı öneririz. Takma isim belirlemezseniz varsayılan olarak ${app_name_short} kimliğinizi kullanırız.</string>
     <string name="not_linked">bağlı değil</string>
     <string name="linked">bağlı</string>
     <string name="pending_sms_verification_notice">Cep telefonu numaranız henüz doğrulanmadı.</string>
@@ -652,8 +711,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="status_ballot_user_modified_vote">\"%1$s\", \"%2$s\" için oyunu değiştirdi</string>
     <string name="status_ballot_all_votes">\"%1$s\" için oylar tamamlandı</string>
     <string name="restore">Geri yükle</string>
-    <string name="new_wizard_anonymous_confirm">Threema kimliğinize bağlamak için telefon numarası veya e-posta adresi girmediniz. Arkadaşlarınızın kişi listelerinde görünmezsiniz. %@\'ı tamamen anonim şekilde kullanmak istiyor musunuz?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Threema kimliğinize bağlamak için telefon numarası girmediniz. Arkadaşlarınızın kişi listelerinde görünmezsiniz. %@\'ı tamamen anonim şekilde kullanmak istiyor musunuz?</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">${app_name_short} kimliğinize bağlamak için telefon numarası veya e-posta adresi girmediniz. Arkadaşlarınızın kişi listelerinde görünmezsiniz. ${app_name}\'ı tamamen anonim şekilde kullanmak istiyor musunuz?</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">${app_name_short} kimliğinize bağlamak için telefon numarası girmediniz. Arkadaşlarınızın kişi listelerinde görünmezsiniz. ${app_name}\'ı tamamen anonim şekilde kullanmak istiyor musunuz?</string>
     <string name="new_wizard_scan_id_backup">ya da dışa aktarılan kimliğin kare kodunu tarayın</string>
     <string name="error_saving_file">Dosya kaydedilirken hata oluştu. İzinleri kontrol edin.</string>
     <string name="wait_one_minute">Lütfen arama talebinde bulunmadan önce kısa mesajın gelmesi için en az 10 dakika bekleyin.</string>
@@ -696,7 +757,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="lock_option_none">Hiçbiri</string>
     <string name="lock_option_pin">PIN kodu</string>
     <string name="lock_option_screenlock">Sistem ekran kilidi</string>
-    <string name="hide_chat_message_explain">Threema, belirli sohbetleri bir PIN kodu ile korumanıza ve bunları geçici olarak mesaj listenizde gizlemenize imkan tanır. Özel sohbetleri etkinleştirmek için lütfen bir PIN kodu ayarlayın veya ayarlarda sistem ekran kilidini (Android 6.0+) etkinleştirin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="hide_chat_message_explain">${app_name_short}, belirli sohbetleri bir PIN kodu ile korumanıza ve bunları geçici olarak mesaj listenizde gizlemenize imkan tanır. Özel sohbetleri etkinleştirmek için lütfen bir PIN kodu ayarlayın veya ayarlarda sistem ekran kilidini (Android 6.0+) etkinleştirin.</string>
     <string name="set_lock">Kurulumu başlat</string>
     <string name="prefs_title_access_protection">Erişim koruması</string>
     <string name="private_chat_subject">Özel</string>
@@ -708,7 +770,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="grace_thirty_minutes">30 dakika</string>
     <string name="grace_never">Asla (manuel)</string>
     <string name="never">Asla</string>
-    <string name="unhide_chats_confirm">Erişim korumasını şimdi kaldırırsanız, özel sohbetleriniz tekrar görünür hale gelir.</string>
+    <string name="access_protection_cannot_be_removed">En az bir özel sohbet olduğundan erişim koruması kaldırılamıyor.</string>
     <string name="verification_started">Doğrulama başladı</string>
     <string name="cannot_open_file">Dosya açılamadı</string>
     <string name="prefs_title_image_attach_previews">Hızlı medya seçimi</string>
@@ -718,7 +780,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="restore_disable_energy_saving">Cihazınızın yedekleme veya geri yükleme işlemini kesintiye uğratmaması için lütfen cihazınızı şarj cihazına bağlayın ve tüm enerji tasarrufu seçeneklerini devre dışı bırakın.</string>
     <string name="draft">Taslak</string>
     <string name="prefs_bigger_single_emojis">Daha büyük tek emojiler</string>
-    <string name="wizard1_sync_work">Threema Work verileri eşitleniyor…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard1_sync_work">${app_name} verileri eşitleniyor…</string>
     <string name="notification_hidden_text">İçerik gizlendi</string>
     <string name="really_reset_ringtones">Bildirim tonunu gerçekten varsayılan ayarlara sıfırlamak istiyor musunuz?</string>
     <string name="reset_ringtones_confirm">Bildirim tonu ayarları sıfırlandı.</string>
@@ -742,7 +805,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="battery_optimizations_disable_guide_ctd">Listede %s arayın ve optimizasyonu devre dışı bırakın</string>
     <string name="battery_optimizations_disable_confirm">%1$s için pil optimizasyonunun açık kalmasını gerçekten istiyor musunuz? %2$s düzgün çalışmayacak.</string>
     <string name="enter_text_hint">Metin girin</string>
-    <string name="backup_explain_text">Cihazınızı değiştirir veya kaybederseniz, yedeklemeniz yoksa hiç kimse Threema kimliğinizi veya sohbetlerinizi geri yükleyemez. Lütfen verilerinizi uygun yedekleme seçeneklerinden birini kullanarak kaydedin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">Cihazınızı değiştirir veya kaybederseniz, yedeklemeniz yoksa hiç kimse ${app_name_short} kimliğinizi veya sohbetlerinizi geri yükleyemez. Lütfen verilerinizi uygun yedekleme seçeneklerinden birini kullanarak kaydedin.</string>
     <string name="data_backup_explain">Veri yedeği şunları içerir:\n\n&#9679; Kimliğiniz ve anahtar çiftiniz \n&#9679; Kişiler ve güven düzeyleri\n&#9679; Grup üyelikleri\n&#9679; Sohbetler\n&#9679; Medya ve dosyalar (isteğe bağlı)\n\nVeriler şifreli bir ZIP dosyasına kaydedilecektir. Yedekleme başarıyla tamamlandıktan sonra dosyayı mevcut cihazdan başka bir depolama birimine taşımanız önerilir.</string>
     <string name="draw">Çiz</string>
     <string name="edit">Düzenle</string>
@@ -756,8 +820,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_ipv6_preferred_off">Yalnızca IPv4 bağlantılarını kullan</string>
     <string name="prefs_ipv6_preferred_on">IPv4 yerine IPv6 bağlantılarını tercih et</string>
     <string name="prefs_title_ipv6_webrtc_allowed">Aramalar ve web için IPv6</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Threema çağrıları ve masaüstü uygulaması/web istemcisi için IPv6\'ya izin verin.</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Threema çağrıları ve masaüstü uygulaması/web istemcisi için IPv6\'ya izin vermeyin</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_on">${app_name_short} çağrıları ve masaüstü uygulaması/web istemcisi için IPv6\'ya izin verin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_off">${app_name_short} çağrıları ve masaüstü uygulaması/web istemcisi için IPv6\'ya izin vermeyin</string>
     <string name="ipv6_requires_restart">Bu ayarı uygulamak için uygulamanın yeniden başlatılması gerekir.</string>
     <string name="ipv6_restart_now">Şimdi yeniden başlat</string>
     <string name="on_cap">Açık</string>
@@ -784,37 +850,50 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="menu_send_profilpic_now">Profil resmimi gönder</string>
     <string name="profile_picture_sent">Profil resmi gönderildi</string>
     <string name="sending_messages">Gönderiliyor</string>
-    <string name="backup_data_media_confirm">Büyük medya dosyalarını yerel bir ZIP yedeklemesine kaydetmek, cihazınızın işlemci ve bellek kapasitesini aşabilir ve çok uzun sürebilir.  Threema, yedekleme çalışırken mesaj göndermeyecek veya almayacak. Devam edilsin mi?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">Büyük medya dosyalarını yerel bir ZIP yedeklemesine kaydetmek, cihazınızın işlemci ve bellek kapasitesini aşabilir ve çok uzun sürebilir.  ${app_name}, yedekleme çalışırken mesaj göndermeyecek veya almayacak. Devam edilsin mi?</string>
     <string name="backup_data_cancelled">Yedekleme iptal edildi</string>
-    <string name="service_manager_not_available">Threema başlatılamıyor. Lütfen cihazınızı kapatıp tekrar açın.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="service_manager_not_available">${app_name} başlatılamıyor. Lütfen cihazınızı kapatıp tekrar açın.</string>
     <string name="message_sent">Mesaj gönderildi</string>
-    <string name="threema_call">Threema araması</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">${app_name_short} araması</string>
     <string name="threema_message_to">%s mesaj gönder</string>
     <string name="threema_call_with">%s ara</string>
-    <string name="prefs_title_voip">Threema Aramaları</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">${app_name_short} Aramaları</string>
     <string name="prefs_title_force_turn">Aramaları her zaman aktar</string>
-    <string name="prefs_summary_force_turn_off">Mümkünse doğrudan bir bağlantı kurar ve aramaları yalnızca doğrulanmamış kişiler için Threema sunucuları üzerinden aktarır. IP adresinizi açığa çıkarabilir.</string>
-    <string name="prefs_summary_force_turn_on">IP adresini gizlemek için tüm aramaları Threema sunucuları üzerinden aktarır. Arama kalitesini etkileyebilir.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">Mümkünse doğrudan bir bağlantı kurar ve aramaları yalnızca doğrulanmamış kişiler için ${company_name} sunucuları üzerinden aktarır. IP adresinizi açığa çıkarabilir.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">IP adresini gizlemek için tüm aramaları ${company_name} sunucuları üzerinden aktarır. Arama kalitesini etkileyebilir.</string>
     <string name="permission_record_audio_required">Şifreli arama yapmak ve sesli mesaj göndermek için, lütfen mikrofona erişim izni verin.</string>
-    <string name="prefs_voice_call_notifications">Threema Aramaları</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_voice_call_notifications">${app_name_short} Aramaları</string>
     <string name="prefs_voice_call_sound">Zil sesi</string>
-    <string name="prefs_sum_voice_call_sound">Gelen Threema Aramaları için zil sesi seç</string>
-    <string name="prefs_sum_voice_call_vibrate">Gelen Threema Aramalarında titret</string>
-    <string name="prefs_title_voip_enable">Threema Aramalarını etkinleştir</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">Gelen ${app_name_short} Aramaları için zil sesi seç</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">Gelen ${app_name_short} Aramalarında titret</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">${app_name_short} Aramalarını etkinleştir</string>
     <string name="webclient_invalid_push_token_message">Manuel başlatma gerekli</string>
     <string name="threema_work_contact">Threema Work kişisi</string>
-    <string name="permission_phone_required">Threema Aramasını kullanırken telefon aramalarını yönetmeye izin ver</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">${app_name} Aramasını kullanırken telefon aramalarını yönetmeye izin ver</string>
     <string name="strikethrough">Üstü çizgili</string>
     <string name="italic">İtalik</string>
     <string name="bold">Kalın</string>
-    <string name="shortcut_choice_title">... için kısayol oluştur</string>
+    <string name="shortcut_choice_title">… için kısayol oluştur</string>
     <string name="prefs_title_device_info">Cihaz bilgisi</string>
     <string name="notifications_disabled_title">Bildirimler devre dışı bırakıldı</string>
-    <string name="notifications_disabled_text">Threema için bildirimler sistem ayarlarında devre dışı bırakıldı. Yeni mesajlar konusunda bilgilendirilmeyeceksiniz.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">${app_name} için bildirimler sistem ayarlarında devre dışı bırakıldı. Yeni mesajlar konusunda bilgilendirilmeyeceksiniz.</string>
     <string name="notifications_disabled_settings">Sistem ayarlarını düzenle</string>
     <string name="error_attaching_files">Ekler eklenirken hata oluştu.</string>
     <string name="prefs_fix_powermanager_problems">Güç kısıtlamalarını devre dışı bırak</string>
-    <string name="prefs_fix_powermanager_problems_desc">Threema\'nın aktif olmadığında bile mesaj alabilmesi için, arka planda çalışmasına izin verin.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">${app_name}\'nın aktif olmadığında bile mesaj alabilmesi için, arka planda çalışmasına izin verin.</string>
     <string name="disable_powermanager_explain">Aşağıdaki ekranda, \"%s\" öğesinin telefonunuzun güç yönetimi kısıtlamalarından korunduğundan veya hariç tutulduğundan emin olun. İşiniz bittiğinde \"geri\" düğmesine dokunun.</string>
     <string name="disable_autostart_explain">Aşağıdaki ekranda, otomatik olarak başlayabilecek uygulamalar listesinde \"%s\" öğesinin bulunduğundan emin olun. İşiniz bittiğinde \"geri\" düğmesine dokunun.</string>
     <string name="notification_priority_default">Düşük</string>
@@ -835,10 +914,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_auto_download_title">Medyayı otomatik olarak indir</string>
     <string name="prefs_auto_download_wifi">Kablosuz ağda</string>
     <string name="prefs_auto_download_mobile">Mobil veri planında</string>
-    <string name="rate_intro">Threema\'yı nasıl buldunuz?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">${app_name}\'yı nasıl buldunuz?</string>
     <string name="rate_feedback_intro">Geliştirilmeye açık noktaları bizimle paylaşabilirsiniz (isteğe bağlı).</string>
     <string name="rate_positive">Gönder</string>
-    <string name="rate_title">Threema\'yı değerlendir</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">${app_name}\'yı değerlendir</string>
     <string name="rate_thank_you">Değerlendirmeniz için teşekkür ederiz!</string>
     <string name="disabled_by_policy_short">Özellik yönetici tarafından devre dışı bırakıldı</string>
     <string name="rate_forward_to_play_store">Bizi Google Play\'de de derecelendirmek ister misiniz?</string>
@@ -849,15 +930,18 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="plus">Artı</string>
     <string name="switched_off">Kapalı</string>
     <string name="switched_on">Açık</string>
-    <string name="title_tab_work_users">Threema Work kullanıcıları</string>
-    <string name="no_matching_work_contacts">Yönetici tarafından doğrulanmış Threema Work kontağı bulunamadı</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">${app_name} kullanıcıları</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">Yönetici tarafından doğrulanmış ${app_name} kontağı bulunamadı</string>
     <string name="all">Hepsi</string>
     <string name="webclient_session_stop_all">Hepsini kapat</string>
     <string name="passphrase_service_name">Parola hizmeti</string>
     <string name="passphrase_service_description">Parola kilidi açıldığında bildirim</string>
     <string name="webclient_service_description">Web / Masaüstü oturumu etkin olduğunda bildirim</string>
     <string name="prefs_title_accept_privacy_policy">Gizlilik Politikasını Kabul Et</string>
-    <string name="privacy_policy_explain">%1$s, gizliliğinizi diğer tüm mesajlaşma programlarından daha sıkı bir şekilde korur. %2$s sayfamızda daha fazlasını öğrenebilirsiniz.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name}, gizliliğinizi diğer tüm mesajlaşma programlarından daha sıkı bir şekilde korur. %1$s sayfamızda daha fazlasını öğrenebilirsiniz.</string>
     <string name="privacy_policy_check_confirm">%s kullanmak için lütfen Gizlilik Politikası\'nı kabul edin.\n\n(AB yönetmeliği 2016/679 uyarınca gereklidir.)</string>
     <string name="prefs_title_incognito_keyboard">Gizli klavye iste</string>
     <string name="prefs_sum_incognito_keyboard">Kişiselleştirilmiş öneriler için veri toplamayı devre dışı bırak (klavye tarafından destekleniyorsa)</string>
@@ -870,41 +954,59 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="password_too_short_generic">Şifre çok kısa</string>
     <string name="passwords_dont_match">Şifreler uyuşmuyor</string>
     <string name="test_unsuccessful">Test başarısız</string>
-    <string name="preparing_threema_safe">Threema Safe hazırlanıyor</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">${app_name_short} Safe hazırlanıyor</string>
     <string name="disable_powermanager_title">Güç kısıtlamaları</string>
     <string name="disable_autostart_title">Otomatik başlat</string>
     <string name="unchanged">Değişmedi</string>
     <string name="safe_learn_more_button">Daha fazla bilgi edinin</string>
-    <string name="safe_enable_explain">Sohbet etmek için ihtiyacınız olan her şey yalnızca cihazınızda saklanır.  Bizde bir hesabınız yok ve telefonunuzu kaybederseniz veya yanlışlıkla verilerinizi silerseniz size yardımcı olamayız.\n\nThreema Safe, anahtarlarınız, kişi listeniz ve grup üyelikleriniz (mesaj içeriği yok) dahil olmak üzere tüm önemli verilerin, seçtiğiniz güvenli bir sunucuda anonim olarak otomatik yedeklerini oluşturur.</string>
-    <string name="safe_disable_confirm">Threema Safe\'i etkinleştirmeden devam etmek istiyor musunuz? Threema Safe\'i kullanırken, cihazınıza erişiminizi kaybetmeniz durumunda Threema kimliğinizi, kişilerinizi ve gruplarınızı geri yükleyebilirsiniz.</string>
-    <string name="safe_configure_choose_password">Lütfen güçlü bir şifre belirleyin. Threema Safe yedeğinizi geri yüklemek için bu parolaya ihtiyacınız olacak.</string>
-    <string name="safe_configure_choose_server">Threema Safe sunucusu seçin</string>
-    <string name="safe_configure_server_explain">Threema\'nın sunucusunu kullanabilir veya bunun yerine kullanmak üzere üçüncü parti bir yedekleme sunucusu belirleyebilirsiniz.</string>
+    <string name="safe_enable_explain">Sohbet etmek için ihtiyacınız olan her şey yalnızca cihazınızda saklanır.  Bizde bir hesabınız yok ve telefonunuzu kaybederseniz veya yanlışlıkla verilerinizi silerseniz size yardımcı olamayız.\n\n${app_name_short} Safe, anahtarlarınız, kişi listeniz ve grup üyelikleriniz (mesaj içeriği yok) dahil olmak üzere tüm önemli verilerin, seçtiğiniz güvenli bir sunucuda anonim olarak otomatik yedeklerini oluşturur.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">${app_name_short} Safe\'i etkinleştirmeden devam etmek istiyor musunuz? ${app_name_short} Safe\'i kullanırken, cihazınıza erişiminizi kaybetmeniz durumunda ${app_name_short} kimliğinizi, kişilerinizi ve gruplarınızı geri yükleyebilirsiniz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">Lütfen güçlü bir şifre belirleyin. ${app_name_short} Safe yedeğinizi geri yüklemek için bu parolaya ihtiyacınız olacak.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_server">${app_name_short} Safe sunucusu seçin</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">${company_name}\'nın sunucusunu kullanabilir veya bunun yerine kullanmak üzere üçüncü parti bir yedekleme sunucusu belirleyebilirsiniz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="onprem_safe_configure_server_explain">${app_name_short} Güvenli yedeklemeyi kuruluşunuzun sunucusuna kaydedin veya farklı bir yedekleme sunucusu belirtin.</string>
     <string name="safe_use_default_server">Varsayılan sunucuyu kullan</string>
     <string name="safe_test_server">Test sunucusu</string>
     <string name="safe_advanced_options">Uzman ayarları</string>
-    <string name="safe_enter_password">Lütfen Threema Safe şifrenizi girin</string>
-    <string name="safe_threema_id">Threema kimliğiniz</string>
-    <string name="safe_restore_enter_id">Lütfen kurtarmak istediğiniz Threema kimliğini girin</string>
-    <string name="safe_search_id_title">Lütfen Threema kimliğinize bağlı cep telefonu numarasını veya e-posta adresini girin</string>
-    <string name="safe_id_lookup">Threema kimliği aranıyor</string>
-    <string name="safe_no_id_found">Threema kimliği bulunamadı</string>
-    <string name="safe_no_backup_found">Sunucuda yedek bulunamadı. Lütfen Threema kimliğini ve şifreyi kontrol edin.</string>
-    <string name="safe_select_id">Birden fazla Threema kimliği bulundu. Lütfen kullanılacak kimliği seçin:</string>
+    <string name="safe_enter_password">Lütfen ${app_name_short} Safe şifrenizi girin</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">${app_name_short} kimliğiniz</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">Lütfen kurtarmak istediğiniz ${app_name_short} kimliğini girin</string>
+    <string name="safe_search_id_title">Lütfen ${app_name_short} kimliğinize bağlı cep telefonu numarasını veya e-posta adresini girin</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">${app_name_short} kimliği aranıyor</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">${app_name_short} kimliği bulunamadı</string>
+    <string name="safe_no_backup_found">Sunucuda yedek bulunamadı. Lütfen ${app_name_short} kimliğini ve şifreyi kontrol edin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">Birden fazla ${app_name_short} kimliği bulundu. Lütfen kullanılacak kimliği seçin:</string>
     <string name="safe_backup_now">Şimdi yedekle</string>
-    <string name="safe_enable_explain_short">Tüm önemli verilerinizin otomatik, güvenli ve anonim yedeklerini oluşturmak için Threema Safe\'i etkinleştirin.</string>
-    <string name="safe_deleting">Threema Safe yedeği siliniyor</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">Tüm önemli verilerinizin otomatik, güvenli ve anonim yedeklerini oluşturmak için ${app_name_short} Safe\'i etkinleştirin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">${app_name_short} Safe yedeği siliniyor</string>
     <string name="safe_delete_error">Yedekleme silinirken hata oluştu: %s</string>
     <string name="safe_delete_success">Yedekleme sunucudan başarıyla silindi</string>
-    <string name="safe_error_preparing">Threema Safe yedeği hazırlanırken hata oluştu</string>
-    <string name="safe_configure_choose_password_force">Lütfen Threema kimliğinizi Threema Safe ile güvenceye almak için güçlü bir parola belirleyin. Buraya ne girdiğinizi unutmayın!</string>
-    <string name="safe_deactivate">Threema Safe\'i kapat</string>
-    <string name="safe_deactivate_explain">Threema Safe\'i devre dışı bırakırsanız, sunucudaki tüm mevcut yedeklemeler silinecektir. Devam edilsin mi?</string>
+    <string name="safe_error_preparing">${app_name_short} Safe yedeği hazırlanırken hata oluştu</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">Lütfen ${app_name_short} kimliğinizi ${app_name_short} Safe ile güvenceye almak için güçlü bir parola belirleyin. Buraya ne girdiğinizi unutmayın!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">${app_name_short} Safe\'i kapat</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">${app_name_short} Safe\'i devre dışı bırakırsanız, sunucudaki tüm mevcut yedeklemeler silinecektir. Devam edilsin mi?</string>
     <string name="add_group_members">Daha fazla üye ekle</string>
     <string name="contact_add_confirm">“%1$s” adlı yeni kişiyi, kişi listenize eklemek ister misiniz?</string>
     <string name="password_bad">Zayıf şifre</string>
     <string name="prefs_fix_background_data">Arka plan verilerini etkinleştir</string>
-    <string name="prefs_fix_background_data_desc">Threema arka plandayken mesaj almak için arka plan ve sınırsız veri kullanımını etkinleştir</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">${app_name} arka plandayken mesaj almak için arka plan ve sınırsız veri kullanımını etkinleştir</string>
     <string name="prefs_fix_device">Cihaz yapılandırma sorunlarını düzelt</string>
     <string name="safe_successful">Başarılı</string>
     <string name="safe_unsuccessful">Başarısız</string>
@@ -920,21 +1022,25 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="safe_size">Yedek boyutu</string>
     <string name="backup_version_mismatch">Bu yedeklemenin sürümü, desteklenen sürümden daha yüksek. Lütfen uygulamayı en son sürüme güncelleyin.</string>
     <string name="safe_restore_failed">Geri yükleme başarısız</string>
-    <string name="safe_failed_notification">Threema Safe yedeği arka arkaya %d gün boyunca başarısız oldu. Kontrol etmek için buraya dokunun.</string>
-    <string name="safe_restore">Threema Safe\'i geri yükle</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">${app_name_short} Safe yedeği arka arkaya %d gün boyunca başarısız oldu. Kontrol etmek için buraya dokunun.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">${app_name_short} Safe\'i geri yükle</string>
     <string name="backup_restore_in_progress">Yedekleme veya geri yükleme devam ediyor. Son durum için bildirimleri kontrol edin</string>
     <string name="restore_error_body">Geri yükleme başarıyla tamamlanmadı</string>
-    <string name="forgot_your_id">Threema kimliğinizi mi unuttunuz?</string>
+    <string name="forgot_your_id">${app_name_short} kimliğinizi mi unuttunuz?</string>
     <string name="restore_success_body">Geri yükleme başarıyla tamamlandı</string>
     <string name="work_data_sync">Veri eşitlemesi</string>
     <string name="private_contact">Özel kişi</string>
     <string name="ringtone_selection_default">Varsayılan (%s)</string>
-    <string name="work_data_sync_desc">Threema Work eşitlemesi</string>
-    <string name="ballot_not_connected">Bir anketi kapatmadan önce lütfen Threema\'nın çevrimiçi olduğundan emin olun.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">${app_name} eşitlemesi</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">Bir anketi kapatmadan önce lütfen ${app_name}\'nın çevrimiçi olduğundan emin olun.</string>
     <string name="empty_chat_title">Sohbeti temizle</string>
     <string name="empty_chat_confirm">Bu sohbetteki tüm mesajlar silinecektir. Devam edilsin mi?</string>
     <string name="emptying_chat">Sohbet temizleniyor</string>
-    <string name="emptying_chat_deleting_messages">Mesajlar siliniyor...</string>
+    <string name="emptying_chat_deleting_messages">Mesajlar siliniyor…</string>
     <string name="delete_chat_title">Sohbeti sil</string>
     <string name="delete_chat_confirm">Bu sohbetteki tüm mesajlar silinecek ve sohbet kaldırılacaktır. Devam edilsin mi?</string>
     <string name="deleting_chat">Sohbeti sil</string>
@@ -948,21 +1054,26 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="notification_channel_notices">Uyarılar</string>
     <string name="chat_updates">Sohbet güncellemeleri</string>
     <string name="backup_or_restore_progress">Yedekleme ve geri yükleme durumu</string>
-    <string name="tooltip_export_id">Şifrelenmiş Threema kimliğinizi paylaşmak veya yazdırmak için şimdi buraya dokunun</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">Şifrelenmiş ${app_name_short} kimliğinizi paylaşmak veya yazdırmak için şimdi buraya dokunun</string>
     <string name="downloading">İndiriliyor</string>
     <string name="today">Bugün</string>
     <string name="restore_data_cancelled">Geri yükleme iptal edildi</string>
     <string name="safe_change_password">Şifreyi değiştir</string>
     <string name="safe_configure_choose_password_title">Bir şifre belirle</string>
-    <string name="password_bad_explain">Threema Safe için seçilen şifre güvenli değil ve saldırganlar tarafından kolaylıkla tahmin edilebilir. Lütfen başka bir şifre belirleyiniz. İpucu: Birden çok kelimeden oluşan bir parola kullanın.</string>
-    <string name="safe_password_updated">Threema Safe şifresi güncellendi.</string>
-    <string name="safe_activated">Threema Safe şimdi etkinleştirildi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">${app_name_short} Safe için seçilen şifre güvenli değil ve saldırganlar tarafından kolaylıkla tahmin edilebilir. Lütfen başka bir şifre belirleyiniz. İpucu: Birden çok kelimeden oluşan bir parola kullanın.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">${app_name_short} Safe şifresi güncellendi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">${app_name_short} Safe şimdi etkinleştirildi.</string>
     <string name="restore_zip_invalid_file">Yedek dosyası geçersiz.</string>
     <string name="push_token_cleared">Push token temizlendi</string>
     <string name="insert_date">Tarih gir</string>
     <string name="add_answer">Cevap ekle</string>
     <string name="title_cannot_be_empty">Anket başlığı boş bırakılamaz</string>
-    <string name="voip_disabled">Threema aramaları devre dışı bırakıldı</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short} aramaları devre dışı bırakıldı</string>
     <string name="hide_chat_enter_message_explain">Bu sohbet özel sohbet olarak işaretlendi. Giriş yapmak için öncelikle lüfen erişim korumasını kurun.</string>
     <string name="unknown">Bilinmeyen</string>
     <string name="miui_notification_title">MIUI\'deki bildirimler hakkında önemli uyarı</string>
@@ -970,7 +1081,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="miui12_notification_body">MIUI, varsayılan olarak tüm uygulamalar için sesi, ışıkları ve kayan bildirimleri devre dışı bırakır (Xiaomi tarafından \"önemli\" kabul edilen bazı çok popüler uygulamalar hariç). Telefonunuzun uygulamaya özel bildirim ayarları ekranında bu ayarları manuel olarak etkinleştirmeniz ve her uygulama güncellemesinden sonra bu prosedürü tekrarlamanız gerekecektir. Daha fazla bilgi için Xiaomi ile iletişime geçin.</string>
     <string name="dont_show_again">Bir daha gösterme</string>
     <string name="miui_notification_prefs">MIUI ayarları</string>
-    <string name="threema_safe_upload_successful">Threema Safe yedeklemesi başarıyla yüklendi</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">${app_name_short} Safe yedeklemesi başarıyla yüklendi</string>
     <string name="time_remaining">%s kalan</string>
     <string name="safe_configure_server_credentials_title">Kimlik doğrulama (isteğe bağlı)</string>
     <string name="username_hint">Kullanıcı adı</string>
@@ -979,7 +1091,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="biometric_enter_authentication">Kilidi açmak için lütfen kimliğinizi doğrulayın</string>
     <string name="biometric_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="biometric_authentication_successful">Kimlik başarıyla doğrulandı</string>
-    <string name="work_safe_forced_explain">Yöneticiniz cihazınız için Threema Safe\'i etkinleştirdi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">Yöneticiniz cihazınız için ${app_name_short} Safe\'i etkinleştirdi.</string>
     <string name="pin_locked_cannot_send">Uygulama kilitli. Gönderilemiyor.</string>
     <string name="prefs_summary_hide_screenshots_notice">Güvenlik ayarlarından \"Uygulama kilidi\" etkinleştirildiğinde, gizlilik nedeniyle küçük resimler ve ekran görüntüleri her zaman engellenir.</string>
     <string name="work_select_categories">Kategori seçin</string>
@@ -989,11 +1102,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="advanced_options">Gelişmiş seçenekler</string>
     <string name="url_warning_body">Açmak üzere olduğunuz bağlantının ana bilgisayar adı şüpheli:\n\nGörüntülenen ana bilgisayar adı: <b>%s</b>\nGerçek ana bilgisayar adı: <b>%s</b>\n\nBu, başka bir şeymiş gibi davranan bir siteyi açmanız için sizi kandırma girişimi olabilir.\n\nYine de devam etmek ister misiniz?</string>
     <string name="url_warning_title">Kimlik avı uyarısı</string>
-    <string name="permission_camera_qr_required">Kare kodlarını taramak için Threema\'nın kameraya erişmesi gerekiyor</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">Kare kodlarını taramak için ${app_name}\'nın kameraya erişmesi gerekiyor</string>
     <string name="voice_action_title">Sesli işlemler</string>
     <string name="voice_action_body">Sesli işlem işleniyor</string>
     <string name="permission_camera_photo_required">Fotoğraf çekmek için, lütfen kameraya erişim izni verin.</string>
-    <string name="global_search">Ara...</string>
+    <string name="global_search">Ara…</string>
     <string name="global_search_empty_view_text">Aramaya başlamak için en az iki karakter girin</string>
     <string name="my_id">Kimliğim</string>
     <string name="profile_picture_and_nickname">Profil resmi ve takma isim</string>
@@ -1010,13 +1124,18 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="archived">Arşivlenmiş</string>
     <string name="to_archive">Arşivle</string>
     <string name="archived_chats">Arşivlenmiş sohbetler</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
+    <string name="archive_chat">Sohbeti arşivle</string>
     <string name="unarchive">Arşivden çıkar</string>
     <string name="no_archived_chats">Arşivlenmiş sohbet yok.\nBir sohbeti arşivlemek için mesajlar listesinde sola kaydırın</string>
-    <string name="add_contact_enter_id_hint">Lütfen eklemek istediğiniz kişinin Threema kimliğini girin</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">Lütfen eklemek istediğiniz kişinin ${app_name_short} kimliğini girin</string>
     <string name="notification_channel_new_contact">Yeni kişiler</string>
     <string name="notification_channel_new_contact_desc">Yeni kişiler hakkında bildirim</string>
-    <string name="notification_contact_has_joined">%1$s %2$s katıldı. Mesaj göndermek için buraya dokunun.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d kişi %2$s: %3$s katıldı. Mesaj göndermek için buraya dokunun.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s ${app_name_short} katıldı. Mesaj göndermek için buraya dokunun.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d kişi ${app_name_short}: %2$s katıldı. Mesaj göndermek için buraya dokunun.</string>
     <string name="system_default">Sistem varsayılanı</string>
     <string name="open_in_maps_app">Haritalar uygulamasında aç</string>
     <string name="delete">Sil</string>
@@ -1024,8 +1143,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="delete_for_all">Herkesten sil</string>
     <string name="message_was_deleted">Bu mesaj silindi</string>
     <string name="continue_recording">Kayda devam et</string>
-    <string name="whatsnew_title">%1$s 5.2\'deki yenilikler nelerdir?</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Bildirimlerin görüntülenmesini iyileştirmek için arka planda işlenmesi elden geçirildi. Bazı sohbetler için bireysel bildirim ayarları etkinleştirildiyse bunların yeniden ayarlanması gerekir.</p>]]></string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
+    <string name="whatsnew_title">${app_name} %1$s\'deki yenilikler nelerdir?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Artık Android cihazınızı yeni masaüstü uygulamasına (beta) bağlayabilir ve çoklu cihaz özelliğini test edebilirsiniz.        </p>
+        <p>Daha fazla ayrıntı için “Menü > Masaüstü için Threema 2.0 (Beta)” bölümüne gidin.</p>]]></string>
     <string name="tap_to_start">%s şimdi başlatmak için buraya dokunun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme dizini</string>
@@ -1033,7 +1154,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_sum_show_unread_badge">Alt gezinme sekmelerinde rozetleri göster</string>
     <string name="prefs_title_show_unread_badge">Rozetler</string>
     <string name="pinning_not_trusted">Sertifika Sabitleme Hatası. Lütfen cihazınızın kimlik bilgileri deposunda “Entrust Root Certification Authority - G2” kurulu ve etkinleştirilmiş olup olmadığını kontrol edin.</string>
-    <string name="pinning_failed">Sertifika sabitleme hatası. Olası ortadaki adam saldırısı. \"AdGuard\" gibi bir reklam engelleyici, içerik filtresi veya güvenlik duvarı uygulamanız varsa, lütfen Threema için devre dışı bırakın.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">Sertifika sabitleme hatası. Olası ortadaki adam saldırısı. \"AdGuard\" gibi bir reklam engelleyici, içerik filtresi veya güvenlik duvarı uygulamanız varsa, lütfen ${app_name} için devre dışı bırakın.</string>
     <string name="open_myid_popup">Hızlı erişim penceresini aç</string>
     <string name="logo">Logo / Yukarı kaydır</string>
     <string name="quote_subj_end">Alıntıyı bitir</string>
@@ -1056,7 +1178,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="mime_type">MIME türü</string>
     <string name="password_does_not_comply">Parola yönetici tarafından belirlenen yönergelere uymuyor.</string>
     <string name="audio_mute_due_to_focus_loss">Odak kaybı nedeniyle ses geçici olarak kapatıldı</string>
-    <string name="restore_data_backup_explain">Bir veri yedeğini geri yüklemek için önce Threema kimliğinizi \"Profilim\" ekranından silin.\n\nUygulama yeniden başladığında, \"Yedekten geri yükle\", \"Diğer geri yükleme seçenekleri\", \"Veri Yedeği\" ni seçin ve ardından geri yüklemek istediğiniz veri yedeği dosyasını seçin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">Bir veri yedeğini geri yüklemek için önce ${app_name_short} kimliğinizi \"Profilim\" ekranından silin.\n\nUygulama yeniden başladığında, \"Yedekten geri yükle\", \"Diğer geri yükleme seçenekleri\", \"Veri Yedeği\" ni seçin ve ardından geri yüklemek istediğiniz veri yedeği dosyasını seçin.</string>
     <string name="audio_focus_loss_complete">Ses odağının tamamen kaybolması nedeniyle arama sonlandı.</string>
     <string name="tap_for_picture_hold_for_video">Resim için dokunun, video için basılı tutun</string>
     <string name="sending_media">Medya gönderiliyor</string>
@@ -1078,7 +1201,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="warning">Uyarı</string>
     <string name="password_remember_warning">Buraya ne yazdığınızı unutmayın! %s sunucularda herhangi bir parola kaydetmediğinden, PIN kodunuzu veya parolanızı unutursanız size yardımcı olamayız.</string>
     <string name="safe_backup_tap_to_restart">Uygulamayı şimdi yeniden başlatmak için gösterilen sistem bildirimine dokunun. Bildirimi göremiyorsanız, lütfen telefonunuzun bildirim çubuğunu aşağı kaydırın.</string>
-    <string name="send_to_support">Threema desteğine gönder</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">${company_name} desteğine gönder</string>
     <string name="menu_legal">Yasal</string>
     <string name="tooltip_work_hint">Bu kişi Threema Work\'ü kullanıyor.</string>
     <string name="video_camera_on">Video kamera etkin</string>
@@ -1202,7 +1326,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="group_response_full">%s için grup isteğiniz, grup dolu olduğu için reddedildi</string>
     <string name="group_response_rejected">%s için grup isteğiniz reddedildi</string>
     <string name="group_link_expiration_none">Sınırsız</string>
-    <string name="group_request_hint">Merhaba! Benim...</string>
+    <string name="group_request_hint">Merhaba! Benim…</string>
     <string name="group_request_send_title">Gruba Katılma İsteği Gönder</string>
     <string name="group_request_message_empty">Grup istek mesajı boş olamaz</string>
     <string name="group_requests_all_title">Tüm grup istekleri</string>
@@ -1229,7 +1353,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="open_group_requests_show">Katılma isteklerini göster</string>
     <string name="open_group_requests_hide">Katılma isteklerini gizle</string>
     <string name="group_request_link_already_deleted">Grup bağlantısı bu arada silindi</string>
-    <string name="incoming_group_request_no_message">Açık bağlantı yoluyla gönderildi... mesaj yok</string>
+    <string name="incoming_group_request_no_message">Açık bağlantı yoluyla gönderildi… mesaj yok</string>
     <string name="group_request_received_through">Bağlantı yoluyla: %s</string>
     <string name="reaccept">Yeniden kabul et</string>
     <string name="group_link_edit_expiration_date">Son kullanma tarihini düzenle</string>
@@ -1237,22 +1361,26 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="group_link_rename">Yeniden isimlendir</string>
     <string name="group_link_rename_tag">Yeni isim</string>
     <string name="tap_here_for_more">Daha fazla bilgi için buraya dokunun</string>
-    <string name="another_connection_instructions"><![CDATA[Sunucu, aynı Threema kimliğine sahip farklı cihazlardan iki veya daha fazla bağlantı algıladı. Mevcut Threema kimliğini aynı anda birkaç cihazda kullanmak mümkün değildir. Yeni mesajlar yalnızca sunucuda en son oturum açan cihaza iletilir.<br><br>Yeni bir cihaza geçiyorsanız, lütfen eski cihazda %s uygulamasını kaldırın veya devre dışı bırakın ve ardından yenisini yeniden başlatın.]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[Sunucu, aynı ${app_name_short} kimliğine sahip farklı cihazlardan iki veya daha fazla bağlantı algıladı. Mevcut ${app_name_short} kimliğini aynı anda birkaç cihazda kullanmak mümkün değildir. Yeni mesajlar yalnızca sunucuda en son oturum açan cihaza iletilir.<br><br>Yeni bir cihaza geçiyorsanız, lütfen eski cihazda %s uygulamasını kaldırın veya devre dışı bırakın ve ardından yenisini yeniden başlatın.]]></string>
     <string name="app_store_error_code">Uygulama mağazası hata kodu: %d</string>
-    <string name="backup_restore_type"><![CDATA[Ne tür bir yedeklemeyi geri yüklemek istiyorsunuz? <br/><br/> <a href= %s>Threema\'daki yedeklemeler hakkında daha fazla bilgi edinin</a>]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[Ne tür bir yedeklemeyi geri yüklemek istiyorsunuz? <br/><br/> <a href= %s>${app_name_short}\'daki yedeklemeler hakkında daha fazla bilgi edinin</a>]]></string>
     <string name="data_backup_info">Sohbetler dahil her şeyi geri yükleyin.</string>
     <string name="new_to_threema">%s için yeni misiniz ?</string>
     <string name="back_to_threema">%s\'e dönülsün mü?</string>
     <string name="id_backup_info">Yalnızca kimliğinizi geri yükleyin</string>
     <string name="restore_your_id_contacts_and_groups">Kimliğinizi, kişilerinizi ve gruplarınızı geri yükleyin</string>
-    <string name="threema_safe_backup">Threema Safe yedekleme</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">${app_name_short} Safe yedekleme</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Yardım</a>]]></string>
     <string name="download_failed">İndirme başarısız. Hata kodu: %d</string>
     <string name="edit_answer">Cevabı düzenle</string>
     <string name="share_media">Başka bir uygulamayla paylaş…</string>
     <string name="group_link_administered">Yönetilen</string>
     <string name="group_link_open">Açık</string>
-    <string name="group_link_share_message">Aşağıdaki bağlantı aracılığıyla Threema grubuma katılın!: %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">Aşağıdaki bağlantı aracılığıyla ${app_name_short} grubuma katılın!: %s</string>
     <string name="group_link_bottom_sheet_title">Grup bağlantısı</string>
     <string name="group_link_bottom_sheet_desc">Bu bağlantıyı gruba katılmak istediğiniz kişilerle paylaşın. Aşağıdaki seçenekleri göz önünde bulundurun.</string>
     <string name="group_link_bottom_sheet_link_title">Bağlantı</string>
@@ -1287,16 +1415,18 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="really_delete_multiple_group_links_title">Grup Bağlantılarını Sil</string>
     <string name="qr_scan_result_dialog_title">Kare kodu tarama sonucu</string>
     <string name="scan_failure_dialog_title">Tarama başarısız</string>
-    <string name="no_threema_qr_info">Bu, Threema\'ya özgü bir kare kodu değildir. Kodu çözülen içerik:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">Bu, ${app_name_short}\'ya özgü bir kare kodu değildir. Kodu çözülen içerik:</string>
     <string name="default_group_link">Varsayılan grup bağlantısı</string>
     <string name="default_link_name">Varsayılan bağlantı</string>
     <string name="reset_default_group_link">Varsayılan grup bağlantısını sıfırla</string>
     <string name="resend">Yeniden gönder</string>
     <string name="group_request_already_sent_title">Talep zaten gönderildi</string>
-    <string name="qr_scanner_id_hint">Doğrulamak istediğiniz kişinin kare kodunu tarayın. Kodu görüntülemek için, karşı taraftan Threema ana ekranının sol üst köşesindeki profil resmine dokunmasını isteyin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">Doğrulamak istediğiniz kişinin kare kodunu tarayın. Kodu görüntülemek için, karşı taraftan ${app_name_short} ana ekranının sol üst köşesindeki profil resmine dokunmasını isteyin.</string>
     <string name="enable_storage_access_for_media">Cihazınızdaki resimleri ve videoları görmek için depolama erişimini etkinleştirin</string>
     <string name="select_storage_access_for_media_is_granted">Belirli sayıda fotoğraf ve videoya erişim izni verdiniz.</string>
-    <string name="take_me_there">Beni oraya götür...</string>
+    <string name="take_me_there">Beni oraya götür…</string>
     <string name="manage">Yönet</string>
     <string name="notification_channel_group_join_request">Alınan grup istekleri için bildirim kanalı</string>
     <string name="reset_default_group_link_title">Varsayılan bağlantı bilgilerini sıfırla</string>
@@ -1311,13 +1441,17 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="contact_update">Kişi durumları güncelleniyor</string>
     <string name="invalid_onprem_id">Bu kimlik (artık) mevcut değil veya kimliğiniz ile uyumlu değil.</string>
     <string name="enable_unknown_sources">Yüklenemiyor. Lütfen %s için \"Bilinmeyen uygulamaları yükle\" seçeneğinin etkinleştirildiğinden emin olun.</string>
-    <string name="threema_push">Threema Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push">${app_name_short} Push</string>
     <string name="threema_push_notification_text">Daha fazlasını öğrenmek için dokunun.</string>
-    <string name="threema_push_notification_info_text_1">Threema Push, gelen mesajlar ve aramalar hakkında sizi bilgilendirmek için arka planda çalışıyor.</string>
-    <string name="threema_push_notification_info_text_2">Uygulamalar, kalıcı bir bildirim göstermeden arka planda çalışamaz. Bu bildirimi göstererek, uygulamayı aktif olarak kullanmadığınızda bile Threema Push\'un aktif kalmasını sağlayabiliriz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_notification_info_text_1">${app_name_short} Push, gelen mesajlar ve aramalar hakkında sizi bilgilendirmek için arka planda çalışıyor.</string>
+    <string name="threema_push_notification_info_text_2">Uygulamalar, kalıcı bir bildirim göstermeden arka planda çalışamaz. Bu bildirimi göstererek, uygulamayı aktif olarak kullanmadığınızda bile ${app_name_short} Push\'un aktif kalmasını sağlayabiliriz.</string>
     <string name="threema_push_notification_info_text_3">Gecikmeli veya eksik bildirimlerle ilgili sorun yaşamaya devam ederseniz, uygulamanın arka planda herhangi bir kısıtlama olmaksızın etkin olabilmesini ve tüm pil tasarruflarının devre dışı bırakılmasını sağlamak için lütfen sistem ayarlarınızı yapın.</string>
-    <string name="threema_push_service_description">Threema Push aktifken gösterilen kalıcı bildirim</string>
-    <string name="threema_push_activated">Threema Push etkinleştirildi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_service_description">${app_name_short} Push aktifken gösterilen kalıcı bildirim</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_activated">${app_name_short} Push etkinleştirildi.</string>
     <string name="add_shortcut_success">Kısayol başarıyla oluşturuldu</string>
     <string name="add_shortcut_error">Başlatıcı ekranına kısayol eklenirken hata oluştu</string>
     <string name="web_link">Bağlantı</string>
@@ -1364,12 +1498,13 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="permission_bluetooth_connect_required">Bağlı Bluetooth kulaklıkları bulmak için \"Yakındaki cihazlar\" iznini etkinleştir</string>
     <string name="tooltip_multiple_recipients_title">Birden çok alıcı</string>
     <string name="tooltip_multiple_recipients_text">Aynı mesajı göndermek üzere birden fazla alıcı seçmek için uzun dokunun.</string>
-    <string name="synchronizing">Eşitleniyor...</string>
+    <string name="synchronizing">Eşitleniyor…</string>
     <string name="forward_security">Mükemmel İletme Gizliliği ile mesaj gönder</string>
     <string name="forward_security_mode">Mükemmel İletme Gizliliği</string>
     <string name="forward_security_mode_none">Hiçbiri</string>
     <string name="clear_forward_security">Bu kişi için Mükemmel İletme Gizliliğini Sıfırla</string>
-    <string name="clear_forward_security_warning">Bu işlemi yalnızca Threema\'nın destek ekibi tarafından talimat verildiğinde gerçekleştirin.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="clear_forward_security_warning">Bu işlemi yalnızca ${company_name}\'nın destek ekibi tarafından talimat verildiğinde gerçekleştirin.</string>
     <string name="forward_security_cleared">Bu kişiyle Mükemmel İletme Gizliliği oturumları temizlendi</string>
     <string name="message_without_forward_security">Mükemmel İletme Gizliliği olmayan bir mesaj alındı. Gönderenin Mükemmel İletme Gizliliğini kasıtlı olarak devre dışı bıraktığını doğrulayın.</string>
     <string name="forward_security_disabled">Mükemmel İletme Gizliliği bu sohbet için devre dışı bırakılmıştır.</string>
@@ -1386,13 +1521,15 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="self_updater_installation_failed">Güncellemenin indirilmesi başarısız oldu. Lütfen güncellemeyi <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> adresinden manuel olarak indirip yükleyin.</string>
     <string name="spam_first_contact">Bu sohbet bilinmeyen bir kişiden</string>
     <string name="spam_report">Şikayet et</string>
-    <string name="spam_report_dialog_explain">Devam ederseniz, bu kişinin kimliği ve takma ismi, kimliğiniz ile birlikte Threema\'ya iletilecektir. Hiçbir içerik veya kişisel veri gönderilmeyecek ve karşı taraf bu konuda bilgilendirilmeyecektir.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="spam_report_dialog_explain">Devam ederseniz, bu kişinin kimliği ve takma ismi, kimliğiniz ile birlikte ${company_name}\'ya iletilecektir. Hiçbir içerik veya kişisel veri gönderilmeyecek ve karşı taraf bu konuda bilgilendirilmeyecektir.</string>
     <string name="spam_report_dialog_block_checkbox">Ayrıca bu kişiyi engelle ve sohbeti sil</string>
     <string name="spam_report_dialog_title">%s bildir</string>
     <string name="spam_successfully_reported">Kimliğin istenmeyen mesaj gönderdiği bildirildi.</string>
     <string name="spam_error_reporting">Şikayet edilirken hata oluştu: %s</string>
     <string name="spam_report_short">Bildir</string>
-    <string name="wizard_incompatible_contact_sync_params">Uyumsuz MDM parametreleri seti var. Kullanıcı kısıtlaması DISALLOW_MODIFY_ACCOUNTS ayarlanmışsa, Threema MDM parametresi th_contact_sync true olarak ayarlanamaz. Lütfen cihaz yöneticinize başvurun.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_incompatible_contact_sync_params">Uyumsuz MDM parametreleri seti var. Kullanıcı kısıtlaması DISALLOW_MODIFY_ACCOUNTS ayarlanmışsa, ${app_name_short} MDM parametresi th_contact_sync true olarak ayarlanamaz. Lütfen cihaz yöneticinize başvurun.</string>
     <string name="messages_cannot_be_recovered">Mesajları kurtaramazsınız.</string>
     <string name="groups_left_or_dissolved">Gruplar bırakılacak veya feshedilecek ve ardından silinecektir.</string>
     <string name="contact_deleted">Kişi silindi</string>
@@ -1406,19 +1543,25 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="send_without_audio">Sesi kaldır</string>
     <string name="edit_filename">Dosya adını düzenle</string>
     <string name="unable_to_restore_identity_because">Kimlik geri yüklenemiyor. Sebep: %s</string>
-    <string name="share_with_app">Threema ile paylaş</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="share_with_app">${app_name} ile paylaş</string>
     <string name="read_phone_state_dialog_allow">İzin ver</string>
     <string name="read_phone_state_dialog_disallow">Yine de devam et</string>
     <string name="read_phone_state_dialog_never_ask_again">Bir daha sorma</string>
     <string name="read_phone_state_dialog_title">İzin gerekli</string>
-    <string name="read_phone_state_dialog_message">Threema aramalarının normal aramaları kesmesini önlemek için Telefon izni gereklidir. Bu izin verilmezse, devam eden normal bir arama olsa bile gelen bir Threema araması çalar.</string>
-    <string name="read_phone_state_short_message">Devam eden aramaları kontrol etmek için Threema\'ya Telefon izni verin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_dialog_message">${app_name_short} aramalarının normal aramaları kesmesini önlemek için Telefon izni gereklidir. Bu izin verilmezse, devam eden normal bir arama olsa bile gelen bir ${app_name_short} araması çalar.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_short_message">Devam eden aramaları kontrol etmek için ${app_name}\'ya Telefon izni verin.</string>
     <string name="prefs_title_read_phone_state">Telefon izni ver</string>
     <string name="prefs_title_hibernation">Kullanılmayan uygulama ayarları</string>
-    <string name="prefs_summary_hibernation_api_32">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"İzinleri kaldır ve yer aç\" sistem ayarını devre dışı bırakın.</string>
-    <string name="prefs_summary_hibernation_api">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"Kullanılmıyorsa uygulama etkinliğini duraklat\" sistem ayarını devre dışı bırakın.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api_32">${app_name}\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"İzinleri kaldır ve yer aç\" sistem ayarını devre dışı bırakın.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api">${app_name}\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"Kullanılmıyorsa uygulama etkinliğini duraklat\" sistem ayarını devre dışı bırakın.</string>
     <string name="unable_to_fetch_configuration">Yapılandırma sunucusundan veri alınamıyor. Daha sonra tekrar deneyin</string>
-    <string name="rogue_device_warning"><![CDATA[Aynı Threema kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda Threema kimliğinizi başka bir cihazda kullandınız mı? &lt;br&gt;&lt;br&gt; Evet ise, bu mesajı yok sayabilirsiniz. &lt;br&gt;&lt;br&gt; Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.ch/en/faq/another_connection">önerilerimizi uygulayın</a>.]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rogue_device_warning"><![CDATA[Aynı ${app_name_short} kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda ${app_name_short} kimliğinizi başka bir cihazda kullandınız mı? &lt;br&gt;&lt;br&gt; Evet ise, bu mesajı yok sayabilirsiniz. &lt;br&gt;&lt;br&gt; Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.ch/en/faq/another_connection">önerilerimizi uygulayın</a>.]]></string>
     <string name="fetch2_failure">Konfigurasyon sunucusuyla eşitleme başarısız oldu.</string>
     <string name="no_members_support_group_calls">Bu grupta grup aramalarına cevap verebilecek başka üye yok</string>
     <string name="group_calls">Grup aramaları</string>
@@ -1431,9 +1574,11 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="call_mic_permission_description">Arama yapmak için, mikrofon izni vermelisiniz böylece diğerleri sizi duyabilir.</string>
     <string name="group_call_camera_permission_rationale">Diğer katılımcıların resminizi görmesi için, \"izinler\" altında %s için kamera erişimine izin vermelisiniz.</string>
     <string name="group_call_phone_permission_description">Grup aramaları gerçekleştirmek için, başka bir aramanın grup aramasını ne zaman kesintiye uğrattığını algılamak için telefon izni gerekmektedir.</string>
-    <string name="call_phone_permission_description">Threema aramalarını gerçekleştirmek için, başka bir aramanın Threema aramasını ne zaman kesintiye uğrattığını algılamak için telefon izni gerekmektedir.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_phone_permission_description">${app_name_short} aramalarını gerçekleştirmek için, başka bir aramanın ${app_name_short} aramasını ne zaman kesintiye uğrattığını algılamak için telefon izni gerekmektedir.</string>
     <string name="group_call_nearby_devices_permission_description">Bluetooth kulaklıkla grup araması yapmak için, \"yakındaki cihazlar\"ın bluetooth kulaklıkları algılamasına izin vermeniz gerekmektedir.</string>
-    <string name="call_nearby_devices_permission_description">Bluetooth kulaklıkla Threema aramaları gerçekleştirmek için, \"yakındaki cihazlar\"ın bluetooth kulaklıkları algılamasına izin vermeniz gerekmektedir.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_nearby_devices_permission_description">Bluetooth kulaklıkla ${app_name} aramaları gerçekleştirmek için, \"yakındaki cihazlar\"ın bluetooth kulaklıkları algılamasına izin vermeniz gerekmektedir.</string>
     <string name="settings">Ayarlar</string>
     <string name="leave">Ayrıl</string>
     <string name="fs_key_mismatch">anahtar uyuşmazlığı</string>
@@ -1456,7 +1601,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="scroll_to_top">Yukarı kaydır</string>
     <string name="contact_sync_mdm_rationale">Yöneticiniz, cihazınız için kişi senkronizasyonunu etkinleştirdi.  Bu nedenle, kişilere erişim izni gereklidir.</string>
     <string name="welcome_back">Tekrar hoşgeldiniz!</string>
-    <string name="id_restored_successfully">Threema Kimliğiniz başarıyla geri yüklendi</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="id_restored_successfully">${app_name_short} Kimliğiniz başarıyla geri yüklendi</string>
     <string name="prefs_dynamic_colors">Dinamik renk</string>
     <string name="prefs_dynamic_colors_sum">Sistem renklerini kullan</string>
     <string name="apply_changes">Değişiklikleri uygula</string>
@@ -1481,19 +1627,22 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="starred">Yıldızlı</string>
     <string name="starred_messages">Yıldızlı mesajlar</string>
     <string name="sorting">Sıralama</string>
-    <string name="sort_by">Sırala...</string>
+    <string name="sort_by">Sırala…</string>
     <string name="newest_first">en yeni ilk</string>
     <string name="oldest_first">en eski̇ i̇lk</string>
     <string name="no_starred_messages">Yıldızlı mesaj bulunamadı. Bir mesajı yıldızlamak için üzerine uzun dokunun ve yıldız düğmesini seçin.</string>
     <string name="remove_all_stars">Tüm yıldızları kaldır</string>
     <string name="remove_star">Yıldızı kaldır</string>
-    <string name="samsung_permission_problem_explain">%1$s, bir sistem uygulamasındaki eksik izin nedeniyle medya dosyalarına erişemiyor. Düzeltmek için, takip eden ekranda \"Harici Depolama\"nın yanındaki anahtarın etkinleştirildiğinden emin olun ve %1$s\'yi yeniden başlatın.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="samsung_permission_problem_explain">${app_name}, bir sistem uygulamasındaki eksik izin nedeniyle medya dosyalarına erişemiyor. Düzeltmek için, takip eden ekranda \"Harici Depolama\"nın yanındaki anahtarın etkinleştirildiğinden emin olun ve %1$s\'yi yeniden başlatın.</string>
     <string name="min_n_chars">min. %d karakter</string>
     <string name="prefs_title_grant_bluetooth_permission">Bluetooth izni ver</string>
-    <string name="safe_managed_password_confirm">Threema Safe yedeklemeniz için yönetilen bir parola tanımlanmıştır.\n\nBu şifreyi kullanmak ister misiniz? Şüpheye düştüğünüz durumlarda lütfen yöneticinize başvurun.</string>
-    <string name="safe_managed_new_password_confirm">Threema Safe yedeklemeniz için yeni bir yönetilen parola tanımlandı.\n\nMevcut parolayı bu yeni, yönetilen parola ile değiştirmek ister misiniz? Şüphe duyduğunuzda lütfen yöneticinize başvurun.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_password_confirm">${app_name_short} Safe yedeklemeniz için yönetilen bir parola tanımlanmıştır.\n\nBu şifreyi kullanmak ister misiniz? Şüpheye düştüğünüz durumlarda lütfen yöneticinize başvurun.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_new_password_confirm">${app_name_short} Safe yedeklemeniz için yeni bir yönetilen parola tanımlandı.\n\nMevcut parolayı bu yeni, yönetilen parola ile değiştirmek ister misiniz? Şüphe duyduğunuzda lütfen yöneticinize başvurun.</string>
     <string name="real_not_now">Şimdi değil</string>
-    <string name="add_contact_in">Kişi ekle...</string>
+    <string name="add_contact_in">Kişi ekle…</string>
     <string name="really_remove_all_stars">Gerçekten tüm mesajların yıldızını kaldırmak istiyor musunuz?</string>
     <string name="prefs_sum_storage_management">Belleği yönet ve mesajları veya medyayı sil</string>
     <string name="delete_automatically">Otomatik olarak sil</string>
@@ -1513,12 +1662,15 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="group_dissolved_notice">Bu grup dağıtılmıştır ve artık kullanılamaz.</string>
     <string name="md_linked_devices">Bağlantılı cihazlar</string>
     <string name="md_link_device">Yeni cihaz bağla</string>
-    <string name="md_enable">Bağlı cihazları etkinleştir</string>
-    <string name="md_linked_devices_empty">Süslü masaüstü istemcisini bir yerden indirin ve yola çıkın 🚀</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <string name="md_linked_devices_empty">Yeni bir cihazı bağlamadan önce lütfen [${app_name_desktop} for Desktop] uygulamasının en son beta sürümünü indirip açın.</string>
     <string name="md_link_device_qr_scan_message">Lütfen qr kodunu tarayın</string>
     <string name="directory_request_failed">Dizin isteği başarısız oldu. Tekrar deneyin.</string>
     <string name="add_shortcut_exists">Bu hedef için bir kısayol zaten mevcut.</string>
     <string name="scan_qr_code">Kare kodu tara</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="scan_qr_code_explain">Bağlamak istediğiniz cihazda %s beta sürümünde görüntülenen QR kodunu tarayın.</string>
     <string name="connecting">Bağlanıyor…</string>
     <string name="trust_new_device">Yeni Cihaza Güven</string>
@@ -1528,10 +1680,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="sending_data">Veri gönderiliyor…</string>
     <string name="continue_on_new_device">Lütfen yeni cihazda devam edin</string>
     <string name="device_linked_successfully">Cihaz Başarıyla Bağlandı</string>
-    <string name="device_linked_successfully_explain">%s artık az önce bağladığınız cihazda kullanılabilir (bu cihaz kapalı olsa veya İnternet\'e bağlı olmasa bile).</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linked_successfully_explain">${app_name} artık az önce bağladığınız cihazda kullanılabilir (bu cihaz kapalı olsa veya İnternet\'e bağlı olmasa bile).</string>
     <string name="resend_message_dialog_title">Grup mesajı yeniden gönderilsin mi?</string>
     <string name="resend_message_dialog_message">Bu mesaj tüm üyelere gönderilemedi. Mesaj %1$s yeniden gönderilsin mi?</string>
-    <string name="work_lost_credentials_help">Kimlik bilgilerinizi mi unuttunuz? Lütfen %1$s yöneticinizle iletişime geçin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_lost_credentials_help">Kimlik bilgilerinizi mi unuttunuz? Lütfen ${app_name_short} yöneticinizle iletişime geçin.</string>
     <string name="problemsolver_intro">Bazı sistem yapılandırma sorunları %s\'nin düzgün çalışmasını engelleyebilir. Lütfen aşağıdaki talimatları izleyerek bu sorunları giderin.</string>
     <string name="problemsolver_title">Yapılandırma sorunlarını düzelt</string>
     <string name="problemsolver_title_background">Arka plan kullanımı kısıtlandı</string>
@@ -1544,7 +1698,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="problemsolver_explain_background">Uygulamanın arka plan kullanımı kısıtlanmıştır. Herhangi bir bildirim almazsınız ve birçok özellik beklendiği gibi çalışmaz. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
     <string name="problemsolver_info_text">Yukarıda belirtilen bazı sistem ayarı seçeneklerinin adlandırılması Android sürümüne ve cihaz üreticisine bağlı olarak değişebilir.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Uygulama pil kullanımı \"optimize\" olarak ayarlandı</string>
-    <string name="problemsolver_explain_app_battery_usgae_optimized">Uygulamanın, Threema Push\'un çalışması için gerekli olan sunucularla kalıcı bir bağlantı kurmasına izin verilmez. Uygulama arka plandayken yeni mesajlardan haberdar olmazsınız. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Uygulamanın, ${app_name_short} Push\'un çalışması için gerekli olan sunucularla kalıcı bir bağlantı kurmasına izin verilmez. Uygulama arka plandayken yeni mesajlardan haberdar olmazsınız. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
     <string name="problemsolver_to_settings">Ayarlara</string>
     <string name="prefs_advanced_options">Gelişmiş seçenekler</string>
     <string name="push_service">Push hizmeti</string>
@@ -1564,7 +1719,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="delete_message_not_supported_for_all_group_members">Bu mesaj aşağıdaki grup üyeleri için silinmeyecektir: %1$s</string>
     <string name="work_intro_more_link_text">Threema Work hakkında daha fazla bilgi edinin</string>
     <string name="work_intro_subtitle">Şirketler için güvenli mesajlaşma aracı.</string>
-    <string name="work_intro_login">Giriş %1$s</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_login">Giriş ${app_name}</string>
     <string name="consumer_notice_description">Özel bir kullanıcıysanız lütfen normal Threema uygulamasını indirin.</string>
     <string name="consumer_notice_playstore_link_description">Play Store\'da Threema</string>
     <string name="consumer_notice_appgallery_link_description">AppGallery\'de Threema</string>
@@ -1577,6 +1733,23 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="device_linking_failed_explain">Cihaz bağlanamadı. Lütfen tekrar deneyin.\nNedeni: %s.</string>
     <string name="qr_code_scan_error">QR kodu taranırken bir hata oluştu</string>
     <string name="verification_failed">Doğrulama başarısız oldu</string>
+    <string name="md_device_currently_active">Şu anda aktif</string>
+    <string name="md_device_last_active_at">Son etkinlik: %s</string>
+    <plurals name="md_max_device_slots_reached_info">
+        <item quantity="one">Aynı anda yalnızca bir cihaz bağlanabilir.</item>
+        <item quantity="other">Maksimum %d bağlı cihaz sayısına ulaşıldı. Yeni bir cihaz eklemek için bağlı bir cihazı kaldırın.</item>
+    </plurals>
+    <string name="md_device_invalid_label">Cihaz</string>
+    <string name="md_device_invalid_hint">Bilgi alınamadı</string>
+    <string name="device_linking_cancel_dialog_title">Bağlantıyı iptal et</string>
+    <string name="device_linking_cancel_dialog_message">Bağlantı henüz tamamlanmadı. İptal etmek ister misiniz?</string>
+    <string name="device_linking_cancel_dialog_cancel">Bağlantıyı iptal et</string>
+    <string name="device_linking_cancel_dialog_continue">Devam etmek</string>
+    <string name="md_drop_device_dialog_drop_button">Cihazı kaldır</string>
+    <string name="md_drop_device_dialog_close_button">Kapalı</string>
+    <string name="md_drop_device_failed_dialog_title">Bağlı Cihazın Kaldırılması Başarısız Oldu</string>
+    <string name="md_drop_device_failed_dialog_message">Lütfen İnternet bağlantısını kontrol edin ve tekrar deneyin.</string>
+    <string name="md_drop_device_failed_dialog_button_close">Kapat</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">\"kabul\" gönderildi</string>
     <string name="cd_dec_icon">\"katılmıyorum\" gönderildi</string>
@@ -1608,6 +1781,38 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="emoji_reactions_popup_hint_title">Simge Tepkisi</string>
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <string name="emoji_reactions_popup_hint_text">Bu mesajda simge tepkileri var. Sohbette, tümünü görüntülemek için herhangi bir simge balonuna dokunup basılı tutun.</string>
+    <string name="accessibility_device_linking_pfs_warning_icon">Bilgi</string>
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_pfs_warning_body">Bir cihazı bağladığınızda Mükemmel İletme Gizliliği tüm kişiler için devre dışı bırakılır.\n\nBu işlem mevcut beta versiyonunun bir sınırlamasıdır. Daha fazla sınırlama için lütfen [SSS] girişine bakın.</string>
+    <string name="device_linking_pfs_warning_button_continue">Yeni cihaz bağla</string>
+    <string name="device_linking_pfs_warning_button_cancel">İptal</string>
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_web_link_to_multi_device_feature_banner_title">Yeni: Masaüstü için ${app_name_desktop} 2.0 (Beta)</string>
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <string name="threema_web_link_to_multi_device_feature_banner_body">Çoklu cihaz desteğine sahip yeni nesil masaüstü uygulamasını denemek için buraya dokunun.</string>
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <string name="accessibility_dismiss_hint">İpucunu kapat</string>
+    <string name="device_linking_error_generic_title">Veri Gönderme Başarısız</string>
+    <string name="device_linking_error_generic_body">Lütfen cihazı bağlamayı yeniden deneyin. Bu sorun devam ederse lütfen destekle iletişime geçin (“Ayarlar &gt; Destek”).</string>
+    <string name="device_linking_error_generic_network_title">İnternet Bağlantısı Yok</string>
+    <string name="device_linking_error_generic_network_body">Lütfen cihazı bağlamayı yeniden deneyin. Bu sorun devam ederse lütfen destekle iletişime geçin (“Ayarlar &gt; Destek”).</string>
+    <string name="device_linking_error_unknown_qr_code_title">Bilinmeyen QR Kodu</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_old_rendezvous_version_title">Uyumsuz Sürüm</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linking_error_old_rendezvous_version_body">Lütfen her iki cihazınıza da ${app_name} uygulamasının en son sürümünü yükleyin.</string>
+    <string name="device_linking_error_emoji_mismatch_title">Görüntüler eşleşmiyor mu?</string>
+    <string name="device_linking_error_emoji_mismatch_body">Görünüşe göre cihaza bağlanmayla ilgili sorunlar var. Lütfen uygulamayı yeni cihazda yeniden başlatın ve tekrar deneyin.</string>
+    <string name="device_linking_error_unexpected_title">Beklenmedik Hata</string>
+    <string name="device_linking_error_unexpected_body">Lütfen cihazı bağlamayı yeniden deneyin. Bu sorun devam ederse lütfen destekle iletişime geçin (“Ayarlar &gt; Destek”).</string>
+    <string name="device_linking_error_screen_close">Kapat</string>
+    <string name="work_directory_title">Şirket rehberi</string>
+    <!-- Instruction text for the user directory search -->
+    <string name="work_directory_search">Dizinde ara</string>
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_directory_empty_view_text">Şirketinizin ${app_name_short} kullanıcıları dizininde arama yapmaya başlamak için lütfen en az 3 karakterlik bir ad girin.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

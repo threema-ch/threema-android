@@ -27,7 +27,6 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class GeoLocationUtilTest {
-
     private fun expectLocationData(expected: LocationDataModel?, uriStr: String) {
         val uri = Uri.parse(uriStr)
         val actual = GeoLocationUtil.getLocationDataFromGeoUri(uri)
@@ -48,7 +47,7 @@ class GeoLocationUtilTest {
             latitude = 12.0,
             longitude = 34.0,
             accuracy = 0.0,
-            poi = null
+            poi = null,
         )
         expectLocationData(latLong1234, "geo:12,34;abcd=efg")
         expectLocationData(latLong1234, "geo:12.0,34.00;a=b;c=d")
@@ -58,5 +57,4 @@ class GeoLocationUtilTest {
         expectLocationData(latLong1234, "geo:12,34,56")
         expectLocationData(latLong1234, "geo:12,34,56?z=12")
     }
-
 }

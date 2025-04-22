@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2019-2024 Threema GmbH
+  ~ Copyright (c) 2019-2025 Threema GmbH
   ~ All rights reserved.
   -->
-<!-- TODO: move to build.gradle -->
 <resources>
     <string name="google_app_id" translatable="false">1:510718414732:android:eaed0f724bbfcf09b6d0a9</string>
     <string name="gcm_defaultSenderId" translatable="false">510718414732</string>

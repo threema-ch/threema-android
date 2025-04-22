@@ -28,7 +28,7 @@ typealias PeekResponse = SfuResponse<PeekResponseBody>
 data class PeekResponseBody(
     val startedAt: ULong,
     val maxParticipants: UInt,
-    val encryptedCallState: ByteArray?
+    val encryptedCallState: ByteArray?,
 ) {
     companion object {
         fun fromSfuResponseBytes(bytes: ByteArray): PeekResponseBody {
@@ -37,7 +37,7 @@ data class PeekResponseBody(
                     PeekResponseBody(
                         it.startedAt.toULong(),
                         it.maxParticipants.toUInt(),
-                        it.encryptedCallState?.toByteArray()
+                        it.encryptedCallState?.toByteArray(),
                     )
                 }
         }
@@ -52,7 +52,9 @@ data class PeekResponseBody(
         if (encryptedCallState != null) {
             if (other.encryptedCallState == null) return false
             if (!encryptedCallState.contentEquals(other.encryptedCallState)) return false
-        } else if (other.encryptedCallState != null) return false
+        } else if (other.encryptedCallState != null) {
+            return false
+        }
 
         return true
     }
@@ -64,7 +66,6 @@ data class PeekResponseBody(
         return result
     }
 
-    override fun toString(): String {
-        return "PeekResponseBody(startedAt=$startedAt, maxParticipants=$maxParticipants, encryptedCallState=${encryptedCallState?.let { "*********" }})"
-    }
+    override fun toString() =
+        "PeekResponseBody(startedAt=$startedAt, maxParticipants=$maxParticipants, encryptedCallState=${encryptedCallState?.let { "*********" }})"
 }

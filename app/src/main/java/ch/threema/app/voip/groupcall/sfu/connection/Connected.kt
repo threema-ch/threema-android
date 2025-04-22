@@ -46,7 +46,7 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Conn
 
 class Connected internal constructor(
     call: GroupCall,
-    private val participant: LocalParticipant
+    private val participant: LocalParticipant,
 ) : GroupCallConnectionState(StateName.CONNECTED, call) {
     private val stopCallSignal: CompletableDeferred<GroupCallConnectionState> =
         CompletableDeferred()
@@ -62,7 +62,7 @@ class Connected internal constructor(
     @WorkerThread
     override fun getStateProviders() = listOf(
         this::observeCallEnd,
-        this::getNextState
+        this::getNextState,
     )
 
     @WorkerThread
@@ -83,7 +83,7 @@ class Connected internal constructor(
             PeerConnectionObserver(
                 addTransceiver = ctx.pc::addTransceiverFromEvent,
                 failedSignal = stopCallSignal,
-            )
+            ),
         )
 
         logger.trace("Set data channel observer")
@@ -132,7 +132,8 @@ class Connected internal constructor(
             override fun onMessage(buffer: DataChannel.Buffer) {
                 logger.trace(
                     "P2S data channel incoming message (length={}, binary={})",
-                    buffer.data.remaining(), buffer.binary
+                    buffer.data.remaining(),
+                    buffer.binary,
                 )
 
                 if (call.callLeftSignal.isCompleted) {
@@ -149,7 +150,7 @@ class Connected internal constructor(
 
                 // Note: Dispatching here is required to keep the decryption sequence numbers
                 //       guarded by the dispatcher thread.
-                CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+                CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                     when (message) {
                         is P2POuterEnvelope -> handleP2PMessage(message)
                         is S2PMessage.SfuParticipantJoined -> handleJoinMessage(message)
@@ -168,7 +169,7 @@ class Connected internal constructor(
                 call.dislodgedParticipants
                     .cancellable()
                     .collect {
-                        withContext(GroupCallThreadUtil.DISPATCHER) {
+                        withContext(GroupCallThreadUtil.dispatcher) {
                             removeDislodgedParticipant(it)
                         }
                     }
@@ -210,7 +211,7 @@ class Connected internal constructor(
     @WorkerThread
     private fun createHandshake(
         remoteParticipantId: ParticipantId,
-        supplier: Function<ParticipantId, P2PHandshake>
+        supplier: Function<ParticipantId, P2PHandshake>,
     ): P2PHandshake {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -233,7 +234,7 @@ class Connected internal constructor(
                 logger.info(
                     "P2P non handshake message from {} to {}",
                     message.senderId,
-                    message.receiverId
+                    message.receiverId,
                 )
                 val contexts = handshake.p2pContexts
                 val decryptedMessage = contexts.decryptMessage(message.encryptedData)
@@ -252,7 +253,7 @@ class Connected internal constructor(
     @WorkerThread
     private fun handleP2PMessageContent(
         sender: NormalRemoteParticipant,
-        message: P2PMessageContent
+        message: P2PMessageContent,
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -266,15 +267,14 @@ class Connected internal constructor(
     @WorkerThread
     private fun handleCaptureState(
         sender: NormalRemoteParticipant,
-        captureState: P2PMessageContent.CaptureState
+        captureState: P2PMessageContent.CaptureState,
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         logger.debug("Received capture state from {}: {}", sender.id, captureState)
         when (captureState) {
             is P2PMessageContent.CaptureState.Camera -> sender.cameraActive = captureState.active
-            is P2PMessageContent.CaptureState.Microphone -> sender.microphoneActive =
-                captureState.active
+            is P2PMessageContent.CaptureState.Microphone -> sender.microphoneActive = captureState.active
         }
         call.updateCaptureStates()
     }
@@ -330,7 +330,7 @@ class Connected internal constructor(
     private fun runPostHandshakeStepsOnHandshakeComplete(
         handshake: P2PHandshake,
     ) {
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             waitForHandshakeComplete(handshake)?.also { (contexts, mediaKeys) ->
                 performPostHandshakeSteps(contexts, mediaKeys)
             }
@@ -352,7 +352,7 @@ class Connected internal constructor(
     @WorkerThread
     private fun performPostHandshakeSteps(
         contexts: P2PContexts,
-        mediaKeys: List<P2PMessageContent.MediaKey>
+        mediaKeys: List<P2PMessageContent.MediaKey>,
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -401,7 +401,7 @@ class Connected internal constructor(
     @WorkerThread
     private fun addDecryptorPcmks(
         participantId: ParticipantId,
-        mediaKeys: List<P2PMessageContent.MediaKey>
+        mediaKeys: List<P2PMessageContent.MediaKey>,
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -416,7 +416,7 @@ class Connected internal constructor(
     @WorkerThread
     private suspend fun addParticipantToCall(
         participantId: ParticipantId,
-        handshake: P2PHandshake
+        handshake: P2PHandshake,
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -473,7 +473,7 @@ class Connected internal constructor(
             job?.cancel("Another PCMK replacement was still pending")
 
             // Replace in 2s
-            CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+            CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                 delay(2_000)
                 pendingPcmkJob = null
 
@@ -482,7 +482,7 @@ class Connected internal constructor(
                     ctx.frameCrypto.encryptor.setPcmk(
                         it.pcmk,
                         it.epoch.toShort(),
-                        it.ratchetCounter.toShort()
+                        it.ratchetCounter.toShort(),
                     )
                 }
                 pending.applied()
@@ -513,7 +513,7 @@ class Connected internal constructor(
         ctx.frameCrypto.encryptor.setPcmk(
             state.pcmk,
             state.epoch.toShort(),
-            state.ratchetCounter.toShort()
+            state.ratchetCounter.toShort(),
         )
     }
 
@@ -559,7 +559,7 @@ class Connected internal constructor(
 
         stopCallStateUpdateInterval()
         logger.info("Start call state update interval")
-        callStateUpdateJob = CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        callStateUpdateJob = CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             while (true) {
                 sendCallStateUpdate()
                 delay(ProtocolDefines.GC_GROUP_CALL_UPDATE_PERIOD_SECONDS * 1_000)

@@ -85,7 +85,7 @@ import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
@@ -96,7 +96,7 @@ import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.utils.AndroidContactUtil;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.LazyProperty;
@@ -113,6 +113,7 @@ import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModelData;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.domain.models.VerificationLevel;
@@ -146,7 +147,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     private GroupService groupService;
     private BlockedIdentitiesService blockedIdentitiesService;
     private IdListService profilePicRecipientsService;
-    private DeadlineListService hiddenChatsListService;
+    private ConversationCategoryService conversationCategoryService;
     private VoipStateService voipStateService;
     private DeleteContactServices deleteContactServices;
 
@@ -248,53 +249,53 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
     private final GroupListener groupListener = new GroupListener() {
         @Override
-        public void onCreate(GroupModel newGroupModel) {
+        public void onCreate(@NonNull GroupIdentity groupIdentity) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
         }
 
         @Override
-        public void onRename(GroupModel groupModel) {
+        public void onRename(@NonNull GroupIdentity groupIdentity) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
         }
 
         @Override
-        public void onUpdatePhoto(GroupModel groupModel) {
+        public void onUpdatePhoto(@NonNull GroupIdentity groupIdentity) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
         }
 
         @Override
-        public void onRemove(GroupModel groupModel) {
+        public void onRemove(long groupDbId) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
         }
 
         @Override
-        public void onNewMember(GroupModel group, String newIdentity) {
-            if (newIdentity.equals(identity)) {
+        public void onNewMember(@NonNull GroupIdentity groupIdentity, String identityNew) {
+            if (identityNew.equals(identity)) {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
             }
         }
 
         @Override
-        public void onMemberLeave(GroupModel group, String leftIdentity) {
-            if (leftIdentity.equals(identity)) {
+        public void onMemberLeave(@NonNull GroupIdentity groupIdentity, @NonNull String identityLeft) {
+            if (identityLeft.equals(identity)) {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
             }
         }
 
         @Override
-        public void onMemberKicked(GroupModel group, String kickedIdentity) {
-            if (kickedIdentity.equals(identity)) {
+        public void onMemberKicked(@NonNull GroupIdentity groupIdentity, String identityKicked) {
+            if (identityKicked.equals(identity)) {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
             }
         }
 
         @Override
-        public void onUpdate(GroupModel groupModel) {
+        public void onUpdate(@NonNull GroupIdentity groupIdentity) {
             //ignore
         }
 
         @Override
-        public void onLeave(GroupModel groupModel) {
+        public void onLeave(@NonNull GroupIdentity groupIdentity) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
         }
     };
@@ -337,15 +338,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             this.blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
             this.profilePicRecipientsService = serviceManager.getProfilePicRecipientsService();
             this.groupService = serviceManager.getGroupService();
-            this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
+            this.conversationCategoryService = serviceManager.getConversationCategoryService();
             this.voipStateService = serviceManager.getVoipStateService();
             this.deleteContactServices = new DeleteContactServices(
                 serviceManager.getUserService(),
                 contactService,
                 serviceManager.getConversationService(),
                 serviceManager.getRingtoneService(),
-                serviceManager.getMutedChatsListService(),
-                hiddenChatsListService,
+                conversationCategoryService,
                 profilePicRecipientsService,
                 serviceManager.getWallpaperService(),
                 serviceManager.getFileService(),
@@ -552,7 +552,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             public void onItemClick(View v, GroupModel groupModel) {
 
                 Intent intent = new Intent(ContactDetailActivity.this, GroupDetailActivity.class);
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
+                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
 
                 startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_GROUP_DETAIL);
             }
@@ -700,9 +700,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         updateVoipCallMenuItem(null);
 
         MenuItem galleryMenuItem = menu.findItem(R.id.menu_gallery);
-        if (hiddenChatsListService.has(ContactUtil.getUniqueIdString(identity))) {
-            galleryMenuItem.setVisible(false);
-        }
+        galleryMenuItem.setVisible(!conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(identity)));
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -751,7 +749,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         } else if (id == R.id.action_share_contact) {
             ShareUtil.shareContact(this, contact);
         } else if (id == R.id.menu_gallery) {
-            if (!hiddenChatsListService.has(ContactUtil.getUniqueIdString(identity))) {
+            if (!conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(identity))) {
                 Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
                 mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
                 startActivity(mediaGalleryIntent);

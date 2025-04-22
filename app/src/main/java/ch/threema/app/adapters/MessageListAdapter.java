@@ -47,8 +47,8 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
@@ -80,11 +80,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
     private final @NonNull GroupCallManager groupCallManager;
     private final @NonNull ConversationService conversationService;
     private final @NonNull ContactService contactService;
-    private final @NonNull GroupService groupService;
-    private final @NonNull DeadlineListService mutedChatsListService;
-    private final @NonNull DeadlineListService mentionOnlyChatsListService;
     private final @NonNull RingtoneService ringtoneService;
-    private final @NonNull DeadlineListService hiddenChatsListService;
+    private final @NonNull ConversationCategoryService conversationCategoryService;
     private final @NonNull MessageListViewHolder.MessageListItemParams messageListItemParams;
     private final @NonNull MessageListViewHolder.MessageListItemStrings messageListItemStrings;
     private final @NonNull LayoutInflater inflater;
@@ -144,10 +141,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
         @NonNull GroupService groupService,
         @NonNull DistributionListService distributionListService,
         @NonNull ConversationService conversationService,
-        @NonNull DeadlineListService mutedChatsListService,
-        @NonNull DeadlineListService mentionOnlyChatsListService,
         @NonNull RingtoneService ringtoneService,
-        @NonNull DeadlineListService hiddenChatsListService,
+        @NonNull ConversationCategoryService conversationCategoryService,
         @NonNull PreferenceService preferenceService,
         @NonNull GroupCallManager groupCallManager,
         @Nullable String highlightUid,
@@ -159,11 +154,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
         this.inflater = LayoutInflater.from(context);
         this.conversationService = conversationService;
         this.contactService = contactService;
-        this.groupService = groupService;
-        this.mutedChatsListService = mutedChatsListService;
-        this.mentionOnlyChatsListService = mentionOnlyChatsListService;
         this.ringtoneService = ringtoneService;
-        this.hiddenChatsListService = hiddenChatsListService;
+        this.conversationCategoryService = conversationCategoryService;
         this.clickListener = clickListener;
         EmojiMarkupUtil emojiMarkupUtil = EmojiMarkupUtil.getInstance();
         StateBitmapUtil stateBitmapUtil = StateBitmapUtil.getInstance();
@@ -277,11 +269,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
                 item = new MessageListAdapterItem(
                     conversationModel,
                     contactService,
-                    groupService,
-                    mutedChatsListService,
-                    mentionOnlyChatsListService,
                     ringtoneService,
-                    hiddenChatsListService
+                    conversationCategoryService
                 );
                 synchronized (messageListAdapterItemsCache) {
                     messageListAdapterItemsCache.put(conversationModel, item);

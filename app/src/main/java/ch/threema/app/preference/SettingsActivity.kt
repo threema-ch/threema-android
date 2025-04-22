@@ -39,12 +39,12 @@ import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
 
-class SettingsActivity : ThreemaToolbarActivity(),
+class SettingsActivity :
+    ThreemaToolbarActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private val settingsSummaryFragment = SettingsSummaryFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -62,15 +62,15 @@ class SettingsActivity : ThreemaToolbarActivity(),
         if (savedInstanceState == null) {
             when {
                 intent.extras?.get(EXTRA_SHOW_NOTIFICATION_FRAGMENT) == true -> showSpecificSettings(
-                    SettingsNotificationsFragment()
+                    SettingsNotificationsFragment(),
                 )
 
                 intent.extras?.get(EXTRA_SHOW_MEDIA_FRAGMENT) == true -> showSpecificSettings(
-                    SettingsMediaFragment()
+                    SettingsMediaFragment(),
                 )
 
                 intent.extras?.get(EXTRA_SHOW_SECURITY_FRAGMENT) == true -> showSpecificSettings(
-                    SettingsSecurityFragment()
+                    SettingsSecurityFragment(),
                 )
 
                 else -> showDefaultSettings()
@@ -131,7 +131,7 @@ class SettingsActivity : ThreemaToolbarActivity(),
 
     override fun onPreferenceStartFragment(
         caller: PreferenceFragmentCompat,
-        pref: Preference
+        pref: Preference,
     ): Boolean {
         val fragmentClassName = pref.fragment
         if (fragmentClassName == null) {
@@ -140,7 +140,7 @@ class SettingsActivity : ThreemaToolbarActivity(),
         }
         val fragment = supportFragmentManager.fragmentFactory.instantiate(
             classLoader,
-            fragmentClassName
+            fragmentClassName,
         )
 
         val layoutID = if (isTabletLayout()) R.id.settings_detailed else R.id.settings
@@ -193,5 +193,4 @@ class SettingsActivity : ThreemaToolbarActivity(),
         const val EXTRA_SHOW_MEDIA_FRAGMENT = "extra_show_media_fragment"
         const val EXTRA_SHOW_SECURITY_FRAGMENT = "extra_show_security_fragment"
     }
-
 }

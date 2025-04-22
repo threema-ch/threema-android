@@ -259,7 +259,6 @@ public class DataChannelContext {
     @NonNull
     static private byte[] bufferToBytes(@NonNull final ByteBuffer buffer) {
         // Strip the buffer's array from unnecessary bytes
-        // TODO: Fix the crypto API to use ByteBuffer - this is terrible.
         byte[] bytes = buffer.array();
         if (buffer.position() != 0 || buffer.remaining() != bytes.length) {
             bytes = Arrays.copyOf(buffer.array(), buffer.remaining());

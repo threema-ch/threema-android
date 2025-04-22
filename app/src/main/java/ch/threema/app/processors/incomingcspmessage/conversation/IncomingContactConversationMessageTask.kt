@@ -41,7 +41,7 @@ class IncomingContactConversationMessageTask(
     override suspend fun executeMessageStepsFromSync() = processIncomingMessage(message)
 
     private fun processIncomingMessage(message: AbstractMessage): ReceiveStepsResult {
-        return if (messageService.processIncomingContactMessage(message)) {
+        return if (messageService.processIncomingContactMessage(message, triggerSource)) {
             ReceiveStepsResult.SUCCESS
         } else {
             ReceiveStepsResult.DISCARD

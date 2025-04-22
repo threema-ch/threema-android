@@ -26,12 +26,11 @@ import android.graphics.Bitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
 import ch.threema.app.services.AvatarCacheServiceImpl
-import ch.threema.app.services.GroupService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ColorUtil
-import ch.threema.storage.models.GroupModel
+import ch.threema.data.models.GroupModel
+import ch.threema.data.repositories.GroupModelRepository
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 
@@ -40,21 +39,21 @@ import com.bumptech.glide.load.data.DataFetcher
  */
 class GroupAvatarFetcher(
     context: Context,
-    private val groupService: GroupService?,
+    private val groupModelRepository: GroupModelRepository?,
     private val config: AvatarCacheServiceImpl.GroupAvatarConfig,
-    private val preferenceService: PreferenceService?
 ) : AvatarFetcher(context) {
-
     private val groupDefaultAvatar: VectorDrawableCompat? by lazy {
         VectorDrawableCompat.create(
             context.resources,
             R.drawable.ic_group,
-            null
+            null,
         )
     }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val groupModel = config.model
+        val groupModel = config.model?.let {
+            groupModelRepository?.getByCreatorIdentityAndId(it.creatorIdentity, it.apiGroupId)
+        }
         val defaultAvatar: Boolean
         val defaultAvatarIfNone: Boolean
         when (config.options.defaultAvatarPolicy) {
@@ -80,8 +79,8 @@ class GroupAvatarFetcher(
                 buildDefaultAvatar(
                     groupModel,
                     config.options.highRes,
-                    backgroundColor
-                )
+                    backgroundColor,
+                ),
             )
         } else {
             callback.onDataReady(
@@ -89,10 +88,9 @@ class GroupAvatarFetcher(
                     groupModel,
                     config.options.highRes,
                     defaultAvatarIfNone,
-                    backgroundColor
-                )
+                    backgroundColor,
+                ),
             )
-
         }
     }
 
@@ -100,11 +98,11 @@ class GroupAvatarFetcher(
         groupModel: GroupModel,
         highRes: Boolean,
         returnDefaultAvatarIfNone: Boolean,
-        backgroundColor: Int
+        backgroundColor: Int,
     ): Bitmap? {
         var groupImage: Bitmap? = fileService?.getGroupAvatar(groupModel)
         if (groupImage != null && !highRes) {
-            //resize image!
+            // resize image!
             val converted = AvatarConverterUtil.convert(context.resources, groupImage)
             if (groupImage != converted) {
                 BitmapUtil.recycle(groupImage)
@@ -120,15 +118,14 @@ class GroupAvatarFetcher(
     private fun buildDefaultAvatar(
         groupModel: GroupModel?,
         highRes: Boolean,
-        backgroundColor: Int
+        backgroundColor: Int,
     ): Bitmap {
-        val color = groupService?.getAvatarColor(groupModel) ?: ColorUtil.getInstance()
-            .getCurrentThemeGray(context)
+        val color = groupModel?.data?.value?.getThemedColor(context)
+            ?: ColorUtil.getInstance().getCurrentThemeGray(context)
         return if (highRes) {
             buildDefaultAvatarHighRes(groupDefaultAvatar, color, backgroundColor)
         } else {
             buildDefaultAvatarLowRes(groupDefaultAvatar, color)
         }
     }
-
 }

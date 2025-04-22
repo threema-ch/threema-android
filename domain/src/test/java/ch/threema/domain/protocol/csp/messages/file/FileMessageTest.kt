@@ -23,13 +23,12 @@ package ch.threema.domain.protocol.csp.messages.file
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.testutils.willThrow
-import org.junit.Test
 import java.io.ByteArrayOutputStream
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 open class FileMessageTest {
-
     private val bytesEncryptionKey: ByteArray = "3415ea32b2ca51e73c670454f9abfbe5".toByteArray()
     private val bytesBlobIdContent: ByteArray = "126e82deb67b783c".toByteArray()
     private val bytesBlobIdThumbnail: ByteArray = "2ea7f8501da14be9".toByteArray()
@@ -51,8 +50,8 @@ open class FileMessageTest {
                     "lat" to "secret",
                     "lng" to "secret",
                     "hour" to 8,
-                    "minute" to 30
-                )
+                    "minute" to 30,
+                ),
             )
         }
 
@@ -64,12 +63,11 @@ open class FileMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthTooShort() {
         // arrange
         val testBlockLazy = {
-
             // act
             FileMessage.fromByteArray(
                 data = bytesFileData,
                 offset = 0,
-                length = 0
+                length = 0,
             )
         }
 
@@ -79,15 +77,13 @@ open class FileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             FileMessage.fromByteArray(
                 data = bytesFileData,
                 offset = -1,
-                length = 64
+                length = 64,
             )
         }
 
@@ -97,15 +93,13 @@ open class FileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLength() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             FileMessage.fromByteArray(
                 data = bytesFileData,
                 offset = 0,
-                length = bytesFileData.size + 1
+                length = bytesFileData.size + 1,
             )
         }
 
@@ -115,15 +109,13 @@ open class FileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLengthWithOffset() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             FileMessage.fromByteArray(
                 data = bytesFileData,
                 offset = 1,
-                length = bytesFileData.size
+                length = bytesFileData.size,
             )
         }
 
@@ -133,12 +125,11 @@ open class FileMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithoutOffset() {
-
         // act
         val resultFileMessage = FileMessage.fromByteArray(
             data = bytesFileData,
             offset = 0,
-            length = bytesFileData.size
+            length = bytesFileData.size,
         )
 
         // assert
@@ -147,7 +138,6 @@ open class FileMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithOffset() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + bytesFileData
 
@@ -155,7 +145,7 @@ open class FileMessageTest {
         val resultFileMessage = FileMessage.fromByteArray(
             data = dataWithOffsetByte,
             offset = 1,
-            length = bytesFileData.size
+            length = bytesFileData.size,
         )
 
         // assert
@@ -164,17 +154,15 @@ open class FileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetNotPassedCorrectly() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + bytesFileData
 
         val testBlockLazy = {
-
             // act
             FileMessage.fromByteArray(
                 data = dataWithOffsetByte,
                 offset = 0,
-                length = bytesFileData.size
+                length = bytesFileData.size,
             )
         }
 

@@ -52,7 +52,6 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.blob.BlobScope;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
@@ -91,6 +90,10 @@ public abstract class MessagePlayer {
 
         @AnyThread
         default void onStatusUpdate(AbstractMessageModel messageModel, int progress) {
+        }
+
+        @AnyThread
+        default void onUnknownProgress(AbstractMessageModel messageModel) {
         }
 
         @AnyThread
@@ -167,8 +170,8 @@ public abstract class MessagePlayer {
 
             state = State_DOWNLOADED;
             synchronized (decryptingListeners) {
-                for (Map.Entry<String, DecryptionListener> l : decryptingListeners.entrySet()) {
-                    l.getValue().onEnd(messageModel, false, null, null);
+                for (DecryptionListener decryptionListener : decryptingListeners.values()) {
+                    decryptionListener.onEnd(messageModel, false, null, null);
                 }
             }
             if (file != null && file.exists()) {
@@ -184,8 +187,8 @@ public abstract class MessagePlayer {
 
             state = State_DECRYPTING;
             synchronized (decryptingListeners) {
-                for (Map.Entry<String, DecryptionListener> l : decryptingListeners.entrySet()) {
-                    l.getValue().onStart(messageModel);
+                for (DecryptionListener decryptionListener : decryptingListeners.values()) {
+                    decryptionListener.onStart(messageModel);
                 }
             }
         }
@@ -220,8 +223,8 @@ public abstract class MessagePlayer {
             }
 
             synchronized (decryptingListeners) {
-                for (Map.Entry<String, DecryptionListener> l : decryptingListeners.entrySet()) {
-                    l.getValue().onEnd(messageModel, state == State_DECRYPTED,
+                for (DecryptionListener decryptionListener : decryptingListeners.values()) {
+                    decryptionListener.onEnd(messageModel, state == State_DECRYPTED,
                         (isCancelled() || autoPlay) ? "" : getContext().getString(R.string.media_file_not_found), decryptedFile);
                 }
             }
@@ -235,8 +238,8 @@ public abstract class MessagePlayer {
                     open(decryptedFile);
 
                     synchronized (playbackListeners) {
-                        for (Map.Entry<String, PlaybackListener> l : playbackListeners.entrySet()) {
-                            l.getValue().onPlay(messageModel, isAutoPlayed);
+                        for (PlaybackListener playbackListener : playbackListeners.values()) {
+                            playbackListener.onPlay(messageModel, isAutoPlayed);
                         }
                     }
                 }
@@ -300,8 +303,8 @@ public abstract class MessagePlayer {
         if (this.state == State_PLAYING) {
             this.state = State_DECRYPTED;
             synchronized (this.playbackListeners) {
-                for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
-                    l.getValue().onStop(messageModel);
+                for (PlaybackListener playbackListener : this.playbackListeners.values()) {
+                    playbackListener.onStop(messageModel);
                 }
             }
         } else if (this.state == State_DECRYPTING) {
@@ -358,10 +361,8 @@ public abstract class MessagePlayer {
             this.state = State_PAUSE;
             this.makePause(source);
             synchronized (this.playbackListeners) {
-                for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
-                    l.getValue().onPause(
-                        this.messageModel
-                    );
+                for (PlaybackListener playbackListener : this.playbackListeners.values()) {
+                    playbackListener.onPause(this.messageModel);
                 }
             }
 
@@ -554,8 +555,8 @@ public abstract class MessagePlayer {
             this.makeResume(SOURCE_UI_TOGGLE);
 
             synchronized (this.playbackListeners) {
-                for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
-                    l.getValue().onPlay(messageModel, autoPlay);
+                for (PlaybackListener playbackListener : this.playbackListeners.values()) {
+                    playbackListener.onPlay(messageModel, autoPlay);
                 }
             }
             return;
@@ -573,7 +574,7 @@ public abstract class MessagePlayer {
         });
     }
 
-    protected void download(final InternalListener internalListener, final boolean autoplay) {
+    protected void download(@NonNull final InternalListener internalListener, final boolean autoplay) {
         //download media first
         if (this.state == State_DOWNLOADING) {
             //do nothing, downloading in progress
@@ -581,8 +582,8 @@ public abstract class MessagePlayer {
         }
         state = State_DOWNLOADING;
         synchronized (this.downloadListeners) {
-            for (Map.Entry<String, DownloadListener> l : this.downloadListeners.entrySet()) {
-                l.getValue().onStart(this.messageModel);
+            for (DownloadListener downloadListener : this.downloadListeners.values()) {
+                downloadListener.onStart(this.messageModel);
             }
         }
         logger.debug("download");
@@ -596,8 +597,17 @@ public abstract class MessagePlayer {
                             downloadProgress = progress;
 
                             synchronized (downloadListeners) {
-                                for (Map.Entry<String, DownloadListener> l : downloadListeners.entrySet()) {
-                                    l.getValue().onStatusUpdate(messageModel, progress);
+                                for (DownloadListener downloadListener : downloadListeners.values()) {
+                                    downloadListener.onStatusUpdate(messageModel, progress);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void noProgressAvailable() {
+                            synchronized (downloadListeners) {
+                                for (DownloadListener downloadListener : downloadListeners.values()) {
+                                    downloadListener.onUnknownProgress(messageModel);
                                 }
                             }
                         }
@@ -607,8 +617,8 @@ public abstract class MessagePlayer {
                             downloadProgress = 100;
 
                             synchronized (downloadListeners) {
-                                for (Map.Entry<String, DownloadListener> l : downloadListeners.entrySet()) {
-                                    l.getValue().onStatusUpdate(messageModel, 100);
+                                for (DownloadListener downloadListener : downloadListeners.values()) {
+                                    downloadListener.onStatusUpdate(messageModel, 100);
                                 }
                             }
                         }
@@ -616,8 +626,8 @@ public abstract class MessagePlayer {
 
                     state = State_DOWNLOADED;
                     synchronized (downloadListeners) {
-                        for (Map.Entry<String, DownloadListener> l : downloadListeners.entrySet()) {
-                            l.getValue().onEnd(messageModel, success, null);
+                        for (DownloadListener downloadListener : downloadListeners.values()) {
+                            downloadListener.onEnd(messageModel, success, null);
                         }
                     }
 
@@ -633,8 +643,8 @@ public abstract class MessagePlayer {
                         errorMessage = autoplay ? null : getContext().getString(R.string.could_not_download_message);
                     }
                     synchronized (downloadListeners) {
-                        for (Map.Entry<String, DownloadListener> l : downloadListeners.entrySet()) {
-                            l.getValue().onEnd(messageModel, false, errorMessage);
+                        for (DownloadListener downloadListener : downloadListeners.values()) {
+                            downloadListener.onEnd(messageModel, false, errorMessage);
                         }
                     }
                     internalListener.onComplete(false);
@@ -645,11 +655,8 @@ public abstract class MessagePlayer {
 
     protected final void updatePlayState() {
         synchronized (this.playbackListeners) {
-            for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
-                l.getValue().onStatusUpdate(
-                    this.messageModel,
-                    (int) getPosition()
-                );
+            for (PlaybackListener playbackListener : this.playbackListeners.values()) {
+                playbackListener.onStatusUpdate(this.messageModel, getPosition());
             }
         }
     }
@@ -657,34 +664,32 @@ public abstract class MessagePlayer {
     public void setTranscodeProgress(int transcodeProgress) {
         synchronized (this.transcodeListeners) {
             this.transcodeProgress = transcodeProgress;
-            for (Map.Entry<String, TranscodeListener> l : this.transcodeListeners.entrySet()) {
-                l.getValue().onStatusUpdate(
-                    transcodeProgress
-                );
+            for (TranscodeListener transcodeListener : this.transcodeListeners.values()) {
+                transcodeListener.onStatusUpdate(transcodeProgress);
             }
         }
     }
 
     public void setTranscodeStart() {
         synchronized (this.transcodeListeners) {
-            for (Map.Entry<String, TranscodeListener> l : this.transcodeListeners.entrySet()) {
-                l.getValue().onStart();
+            for (TranscodeListener transcodeListener : this.transcodeListeners.values()) {
+                transcodeListener.onStart();
             }
         }
     }
 
     public void setTranscodeFinished(boolean success, @Nullable String message) {
         synchronized (this.transcodeListeners) {
-            for (Map.Entry<String, TranscodeListener> l : this.transcodeListeners.entrySet()) {
-                l.getValue().onEnd(success, message);
+            for (TranscodeListener transcodeListener : this.transcodeListeners.values()) {
+                transcodeListener.onEnd(success, message);
             }
         }
     }
 
     protected void showError(final String error) {
         synchronized (this.playbackListeners) {
-            for (Map.Entry<String, PlayerListener> l : this.playerListeners.entrySet()) {
-                l.getValue().onError(error);
+            for (PlayerListener playerListener : this.playerListeners.values()) {
+                playerListener.onError(error);
             }
         }
     }

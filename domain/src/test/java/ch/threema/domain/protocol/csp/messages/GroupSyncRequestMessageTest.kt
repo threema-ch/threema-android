@@ -29,12 +29,11 @@ import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.protobuf.groupIdentity
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
 import kotlin.random.Random.Default.nextBytes
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class GroupSyncRequestMessageTest {
-
     private val creatorIdentity = "12345678"
     private val groupId = GroupId(42)
     private val validMessageBytes = GroupSyncRequestMessage().apply {
@@ -44,10 +43,8 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenLengthIsTooLow() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupSyncRequestMessage.fromByteArray(
                 data = validMessageBytes,
@@ -63,10 +60,8 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenOffsetIsBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupSyncRequestMessage.fromByteArray(
                 data = validMessageBytes,
@@ -82,10 +77,8 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset1() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupSyncRequestMessage.fromByteArray(
                 data = validMessageBytes,
@@ -101,16 +94,14 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset2() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupSyncRequestMessage.fromByteArray(
                 data = validMessageBytes.dropLast(1).toByteArray(),
                 offset = 0,
                 length = validMessageBytes.size,
-                creatorIdentity = creatorIdentity
+                creatorIdentity = creatorIdentity,
             )
         }
 
@@ -120,7 +111,6 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun shouldParseValuesCorrectly() {
-
         // act
         val groupSyncRequestMessage = GroupSyncRequestMessage.fromByteArray(
             data = validMessageBytes,
@@ -136,7 +126,6 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffset() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffset = nextBytes(offset) + validMessageBytes
@@ -156,7 +145,6 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffsetAndTooMuchData() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffsetAndJunk =
@@ -177,7 +165,6 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val incomingMessageId = MessageId(42)
         val incomingMessageCreatedAt: Long = 42424242
@@ -204,7 +191,6 @@ class GroupSyncRequestMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val outgoingMessageId = MessageId(42)
         val outgoingMessageCreatedAt: Long = 424242

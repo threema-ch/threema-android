@@ -30,6 +30,13 @@ public interface ProgressListener {
     void updateProgress(int progress);
 
     /**
+     * Indicate that no progress will be communicated as the overall goal is not known.
+     */
+    default void noProgressAvailable() {
+        // Nothing to do
+    }
+
+    /**
      * Mark upload/download as finished.
      *
      * @param success if upload/download finished successfully

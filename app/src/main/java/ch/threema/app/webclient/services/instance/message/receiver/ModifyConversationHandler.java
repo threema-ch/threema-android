@@ -35,15 +35,15 @@ import java.util.Map;
 
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
-import ch.threema.app.services.ConversationTagServiceImpl;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.TagModel;
+import ch.threema.storage.models.ConversationTag;
 
 /**
  * Process update/conversation requests from the browser.
@@ -120,16 +120,14 @@ public class ModifyConversationHandler extends MessageReceiver {
             final boolean isPinned = value.asBooleanValue().getBoolean();
 
             // Tag model
-            final TagModel pinTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
             if (isPinned) {
-                this.conversationTagService.addTagAndNotify(conversation, pinTagModel);
+                this.conversationTagService.addTagAndNotify(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
                 conversation.setIsPinTagged(true);
             } else {
-                this.conversationTagService.removeTagAndNotify(conversation, pinTagModel);
+                this.conversationTagService.removeTagAndNotify(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
                 conversation.setIsPinTagged(false);
             }
 
-            // TODO: This should be done at a central location whenever the data changes.
             this.conversationService.sort();
         }
 

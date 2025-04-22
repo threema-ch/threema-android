@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import java.util.Date;
 import java.util.HashMap;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.Person;
@@ -38,7 +39,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
@@ -61,16 +62,18 @@ public class ConversationNotificationUtil {
     protected static final HashMap<String, ConversationNotificationGroup> notificationGroupHashMap = new HashMap<>();
     private static final int MAX_NOTIFICATION_THUMBNAIL_SIZE_BYTES = 1024 * 1024;
 
-    public static NotificationService.ConversationNotification convert(Context context,
-                                                                       AbstractMessageModel messageModel,
-                                                                       ContactService contactService,
-                                                                       GroupService groupService,
-                                                                       DeadlineListService hiddenChatsListService) {
+    public static NotificationService.ConversationNotification convert(
+        Context context,
+        AbstractMessageModel messageModel,
+        ContactService contactService,
+        GroupService groupService,
+        @NonNull ConversationCategoryService conversationCategoryService
+        ) {
         NotificationService.ConversationNotification conversationNotification = null;
         if (messageModel instanceof MessageModel) {
-            conversationNotification = create(context, (MessageModel) messageModel, contactService, hiddenChatsListService);
+            conversationNotification = create(context, (MessageModel) messageModel, contactService, conversationCategoryService);
         } else if (messageModel instanceof GroupMessageModel) {
-            conversationNotification = create(context, (GroupMessageModel) messageModel, groupService, hiddenChatsListService);
+            conversationNotification = create(context, (GroupMessageModel) messageModel, groupService, conversationCategoryService);
         }
 
         return conversationNotification;
@@ -128,12 +131,12 @@ public class ConversationNotificationUtil {
     }
 
     private static NotificationService.ConversationNotification create(final Context context, final MessageModel messageModel,
-                                                                       final ContactService contactService, final DeadlineListService hiddenChatsListService) {
+                                                                       final ContactService contactService, final ConversationCategoryService conversationCategoryService) {
         final ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
         String groupUid = "i" + messageModel.getIdentity();
         synchronized (notificationGroupHashMap) {
             ConversationNotificationGroup group = notificationGroupHashMap.get(groupUid);
-            boolean isPrivateChat = hiddenChatsListService.has(
+            boolean isPrivateChat = conversationCategoryService.isPrivateChat(
                 ContactUtil.getUniqueIdString(messageModel.getIdentity())
             );
             String longName, shortName;
@@ -158,7 +161,8 @@ public class ConversationNotificationUtil {
                             );
                         }
                         return null;
-                    });
+                    }
+                );
                 notificationGroupHashMap.put(groupUid, group);
             } else {
                 // contact name may change between notifications - set it again
@@ -197,14 +201,14 @@ public class ConversationNotificationUtil {
         final Context context,
         final GroupMessageModel messageModel,
         final GroupService groupService,
-        final DeadlineListService hiddenChatsListService
+        final ConversationCategoryService conversationCategoryService
     ) {
         final GroupModel groupModel = groupService.getById(messageModel.getGroupId());
 
         String groupUid = "g" + messageModel.getGroupId();
         synchronized (notificationGroupHashMap) {
             @Nullable ConversationNotificationGroup group = notificationGroupHashMap.get(groupUid);
-            String name = hiddenChatsListService.has(groupService.getUniqueIdString(groupModel))
+            String name = conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(groupModel))
                 ? context.getString(R.string.private_chat_subject)
                 : NameUtil.getDisplayName(groupService.getById(messageModel.getGroupId()), groupService);
 
@@ -215,7 +219,7 @@ public class ConversationNotificationUtil {
                     name,
                     groupService.createReceiver(groupModel),
                     () -> groupService.getAvatar(
-                        hiddenChatsListService.has(groupService.getUniqueIdString(groupModel)) ? null : groupModel,
+                        conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(groupModel)) ? null : groupModel,
                         false
                     )
                 );

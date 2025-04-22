@@ -37,30 +37,33 @@ class MoreReactionsButton : MaterialCardView {
     var onMoreReactionsButtonClickListener: OnMoreReactionsButtonClickListener? = null
 
     private val gestureDetector =
-        GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapUp(e: MotionEvent): Boolean {
-                onMoreReactionsButtonClickListener?.onMoreReactionsButtonClick()
-                performClick()
-                return true
-            }
+        GestureDetector(
+            context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    onMoreReactionsButtonClickListener?.onMoreReactionsButtonClick()
+                    performClick()
+                    return true
+                }
 
-            override fun onLongPress(e: MotionEvent) {
-                onMoreReactionsButtonClickListener?.onMoreReactionsButtonLongClick()
-                performLongClick()
-            }
-        })
+                override fun onLongPress(e: MotionEvent) {
+                    onMoreReactionsButtonClickListener?.onMoreReactionsButtonLongClick()
+                    performLongClick()
+                }
+            },
+        )
 
     private lateinit var labelView: TextView
 
     constructor(context: Context) : super(
-        context
+        context,
     ) {
         init()
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(
         context,
-        attrs
+        attrs,
     ) {
         init()
     }
@@ -68,7 +71,7 @@ class MoreReactionsButton : MaterialCardView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init()
     }
@@ -76,7 +79,7 @@ class MoreReactionsButton : MaterialCardView {
     private fun init() {
         layoutParams = LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.MATCH_PARENT,
         )
         isClickable = true
         isFocusable = true

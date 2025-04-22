@@ -45,42 +45,43 @@ import kotlin.coroutines.CoroutineContext
 
 object BaseServerConnectionProvider {
     @JvmStatic
-    fun createConnection(configuration: BaseServerConnectionConfiguration): ServerConnection {
+    fun createConnection(configuration: BaseServerConnectionConfiguration, connectionLockProvider: ConnectionLockProvider): ServerConnection {
         return when (configuration) {
-            is CspConnectionConfiguration -> createCspConnection(configuration)
-            is D2mConnectionConfiguration -> createD2mConnection(configuration)
+            is CspConnectionConfiguration -> createCspConnection(configuration, connectionLockProvider)
+            is D2mConnectionConfiguration -> createD2mConnection(configuration, connectionLockProvider)
             else -> throw ServerConnectionException("Unsupported connection configuration")
         }
     }
 
-    private fun createD2mConnection(configuration: D2mConnectionConfiguration): ServerConnection {
+    private fun createD2mConnection(configuration: D2mConnectionConfiguration, connectionLockProvider: ConnectionLockProvider): ServerConnection {
         val dependencyProvider = ServerConnectionDependencyProvider {
-            createD2mDependencies(it, configuration)
+            createD2mDependencies(it, configuration, connectionLockProvider)
         }
 
         return D2mConnectionImpl(
             dependencyProvider,
-            configuration.closeListener
+            configuration.closeListener,
         )
     }
 
     private fun createD2mDependencies(
         connection: ServerConnection,
-        configuration: D2mConnectionConfiguration
+        configuration: D2mConnectionConfiguration,
+        connectionLockProvider: ConnectionLockProvider,
     ): ServerConnectionDependencies {
         val controllers = D2mControllers(configuration)
 
         val addressProvider = D2mServerAddressProvider(
             configuration.serverAddressProvider,
             configuration.multiDevicePropertyProvider.get().keys.dgid,
-            configuration.identityStore.serverGroup
+            configuration.identityStore.serverGroup,
         )
 
         val socket = D2mSocket(
             configuration.okHttpClient,
             addressProvider,
             controllers.mainController.ioProcessingStoppedSignal,
-            controllers.serverConnectionController.dispatcher.coroutineContext
+            controllers.serverConnectionController.dispatcher.coroutineContext,
         )
 
         val layers = createD2mLayers(
@@ -88,11 +89,11 @@ object BaseServerConnectionProvider {
             controllers,
             controllers.serverConnectionController.dispatcher.coroutineContext,
             configuration.incomingMessageProcessor,
-            configuration.taskManager as InternalTaskManager
+            configuration.taskManager as InternalTaskManager,
+            connectionLockProvider,
         )
 
-        return ServerConnectionDependencies(controllers.mainController, socket, layers)
-
+        return ServerConnectionDependencies(controllers.mainController, socket, layers, connectionLockProvider, configuration.taskManager)
     }
 
     private fun createD2mLayers(
@@ -100,7 +101,8 @@ object BaseServerConnectionProvider {
         controllers: D2mControllers,
         dispatcher: CoroutineContext,
         incomingMessageProcessor: IncomingMessageProcessor,
-        taskManager: InternalTaskManager
+        taskManager: InternalTaskManager,
+        connectionLockProvider: ConnectionLockProvider,
     ): ServerConnectionLayers {
         return ServerConnectionLayers(
             D2mFrameLayer(),
@@ -112,18 +114,20 @@ object BaseServerConnectionProvider {
                 controllers.serverConnectionController,
                 connection,
                 incomingMessageProcessor,
-                taskManager
-            )
+                taskManager,
+                connectionLockProvider,
+            ),
         )
     }
 
     private fun createCspConnection(
-        configuration: CspConnectionConfiguration
+        configuration: CspConnectionConfiguration,
+        connectionLockProvider: ConnectionLockProvider,
     ): ServerConnection {
         val chatServerAddressProvider = ChatServerAddressProviderImpl(configuration)
 
         val dependencyProvider = ServerConnectionDependencyProvider {
-            createCspDependencies(it, configuration, chatServerAddressProvider)
+            createCspDependencies(it, configuration, chatServerAddressProvider, connectionLockProvider)
         }
 
         return CspConnectionImpl(dependencyProvider)
@@ -132,7 +136,8 @@ object BaseServerConnectionProvider {
     private fun createCspDependencies(
         connection: ServerConnection,
         configuration: CspConnectionConfiguration,
-        chatServerAddressProvider: ChatServerAddressProvider
+        chatServerAddressProvider: ChatServerAddressProvider,
+        connectionLockProvider: ConnectionLockProvider,
     ): ServerConnectionDependencies {
         val controllers = CspControllers(configuration)
 
@@ -140,7 +145,7 @@ object BaseServerConnectionProvider {
             configuration.socketFactory,
             chatServerAddressProvider,
             controllers.mainController.ioProcessingStoppedSignal,
-            controllers.serverConnectionController.dispatcher.coroutineContext
+            controllers.serverConnectionController.dispatcher.coroutineContext,
         )
 
         val layers = createCspLayers(
@@ -149,9 +154,10 @@ object BaseServerConnectionProvider {
             controllers.serverConnectionController.dispatcher.coroutineContext,
             configuration.incomingMessageProcessor,
             configuration.taskManager as InternalTaskManager,
+            connectionLockProvider,
         )
 
-        return ServerConnectionDependencies(controllers.mainController, socket, layers)
+        return ServerConnectionDependencies(controllers.mainController, socket, layers, connectionLockProvider, configuration.taskManager)
     }
 
     private fun createCspLayers(
@@ -160,6 +166,7 @@ object BaseServerConnectionProvider {
         dispatcher: CoroutineContext,
         incomingMessageProcessor: IncomingMessageProcessor,
         taskManager: InternalTaskManager,
+        connectionLockProvider: ConnectionLockProvider,
     ): ServerConnectionLayers {
         return ServerConnectionLayers(
             CspFrameLayer(),
@@ -171,7 +178,8 @@ object BaseServerConnectionProvider {
                 controllers.serverConnectionController,
                 connection,
                 incomingMessageProcessor,
-                taskManager
+                taskManager,
+                connectionLockProvider,
             ),
         )
     }

@@ -44,6 +44,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
+import androidx.compose.ui.platform.ComposeView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -64,17 +66,20 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.app.compose.common.interop.ComposeJavaBridge;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.multidevice.LinkedDevicesActivity;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.SilentSwitchCompat;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -102,14 +107,16 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
+import kotlin.Unit;
 
 @UiThread
-public class SessionsActivity extends ThreemaToolbarActivity
-    implements SelectorDialog.SelectorDialogClickListener,
-    GenericAlertDialog.DialogClickListener, TextEntryDialog.TextEntryDialogClickListener {
+public class SessionsActivity extends ThreemaToolbarActivity implements
+    SelectorDialog.SelectorDialogClickListener,
+    GenericAlertDialog.DialogClickListener,
+    TextEntryDialog.TextEntryDialogClickListener {
+
     @NonNull
     private static final Logger logger = LoggingUtil.getThreemaLogger("SessionsActivity");
-
     @NonNull
     private static final String LOG_TAG = "WebClient.SessionFragment";
     @NonNull
@@ -138,8 +145,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
     @NonNull
     private static final String DIALOG_TAG_FAILED_INITIATE_SESSION = "failedInitiateSession";
 
-    @NonNull
-    private static final String DEVICE_JOIN_OFFER_URI_PREFIX = "threema://device-group/join#";
+    private @Nullable SessionsViewModel viewModel = null;
 
     // Threema services
     private WebClientServiceManager webClientServiceManager;
@@ -152,6 +158,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
     private boolean initialized = false;
     private SilentSwitchCompat enableSwitch;
     private ExtendedFloatingActionButton floatingActionButton;
+    private ComposeView multiDeviceBannerComposeView;
 
     /**
      * Called for all WebClientService related events.
@@ -376,7 +383,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
         this.enableSwitch.setCheckedSilent(this.sessionService.isEnabled());
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        this.listView = this.findViewById(R.id.recycler);
+        this.listView = this.findViewById(R.id.sessions_list);
         this.listView.setHasFixedSize(true);
         this.listView.setLayoutManager(linearLayoutManager);
         this.listView.setItemAnimator(new DefaultItemAnimator());
@@ -404,17 +411,16 @@ public class SessionsActivity extends ThreemaToolbarActivity
             }
         });
 
-        View emptyView = this.findViewById(R.id.empty_frame);
-        TextView emptyTextView = emptyView.findViewById(R.id.empty_text);
+        final TextView noSessionsTextView = findViewById(R.id.no_sessions_text);
         String emptyText;
         try {
             emptyText = serviceManager.getServerAddressProviderService().getServerAddressProvider().getWebServerUrl();
         } catch (ThreemaException e) {
             emptyText = BuildConfig.WEB_SERVER_URL;
         }
+        noSessionsTextView.setText(getString(R.string.webclient_no_sessions_found, emptyText));
 
-        emptyTextView.setText(getString(R.string.webclient_no_sessions_found, emptyText));
-        this.listView.setEmptyView(emptyView);
+        this.listView.setEmptyView(noSessionsTextView);
         this.reloadSessionList();
 
         if (savedInstanceState == null) {
@@ -431,6 +437,40 @@ public class SessionsActivity extends ThreemaToolbarActivity
                 }
             }
         }
+
+        viewModel = new ViewModelProvider(this).get(SessionsViewModel.class);
+
+        multiDeviceBannerComposeView = this.findViewById(R.id.multi_device_banner_compose);
+        if (ConfigUtils.isMultiDeviceEnabled(this)) {
+            ComposeJavaBridge.INSTANCE.setMultiDeviceBanner(
+                multiDeviceBannerComposeView,
+                () -> {
+                    startActivity(new Intent(this, LinkedDevicesActivity.class));
+                    finish();
+                    return Unit.INSTANCE;
+                },
+                () -> {
+                    viewModel.dismissMultiDeviceBanner();
+                    return Unit.INSTANCE;
+                }
+            );
+        } else {
+            multiDeviceBannerComposeView.setVisibility(View.GONE);
+        }
+
+        setObservers();
+    }
+
+    private void setObservers() {
+        if (viewModel != null) {
+            viewModel.getShowMultiDeviceBanner().observe(this, this::onShowMultiDeviceBannerChanged);
+        }
+    }
+
+    private void onShowMultiDeviceBannerChanged(final boolean showMultiDeviceBanner) {
+        multiDeviceBannerComposeView.setVisibility(
+            showMultiDeviceBanner ? View.VISIBLE : View.GONE
+        );
     }
 
     /**
@@ -741,10 +781,13 @@ public class SessionsActivity extends ThreemaToolbarActivity
                             this.startByQrResult(qrResult);
                         } catch (QRCodeParser.InvalidQrCodeException | IOException e) {
                             logger.error("Could not initiate new web client session", e);
+                            final boolean isMdJoinOfferQrCode = payload.startsWith(MultiDeviceManager.DEVICE_JOIN_OFFER_URI_PREFIX);
                             GenericAlertDialog.newInstance(
-                                R.string.webclient_init_session,
-                                payload.startsWith(DEVICE_JOIN_OFFER_URI_PREFIX)
-                                    ? R.string.webclient_unsupported_desktop_beta_message
+                                isMdJoinOfferQrCode
+                                    ? R.string.webclient_scanned_md_linking_qr_code_title
+                                    : R.string.webclient_init_session,
+                                isMdJoinOfferQrCode
+                                    ? R.string.webclient_scanned_md_linking_qr_code_message
                                     : R.string.webclient_invalid_qr_code,
                                 R.string.ok,
                                 0

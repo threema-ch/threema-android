@@ -31,15 +31,16 @@ import ezvcard.util.GeoUri
 import ezvcard.util.PartialDate
 import ezvcard.util.TelUri
 import ezvcard.util.UtcOffset
-import org.junit.Assert
-import org.junit.Test
 import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class VCardExtractorTest {
-
     private val extractor: VCardExtractor = VCardExtractor(
         java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT, Locale.US),
-        TestResources()
+        TestResources(),
     )
 
     @Test
@@ -78,17 +79,17 @@ class VCardExtractorTest {
 
         // Check that the first line matches. The other lines must also match, but can appear in any order
         extractor.getText(agents[1]).let {
-            Assert.assertEquals("Agent Vcard", it.lines().first())
+            assertEquals("Agent Vcard", it.lines().first())
             val expected = arrayOf("012345678", "OrgDirectory", "http://www.linkedin.com/BobSmith")
-            Assert.assertArrayEquals(
+            assertContentEquals(
                 expected,
-                it.lines().drop(1).toTypedArray().also(Array<String>::sort)
+                it.lines().drop(1).toTypedArray().also(Array<String>::sort),
             )
         }
 
         // Check that the first line matches. The other lines must also match, but can appear in any order
         extractor.getText(agents[2]).let {
-            Assert.assertEquals("Outer Agent", it.lines().first())
+            assertEquals("Outer Agent", it.lines().first())
             val expected = arrayOf(
                 "012345678",
                 "Inner Agent",
@@ -96,11 +97,11 @@ class VCardExtractorTest {
                 "OrgDirectory",
                 "http://www.inneragent.com",
                 "http://www.linkedin.com/BobSmith",
-                "http://www.middleagent.com"
+                "http://www.middleagent.com",
             )
-            Assert.assertArrayEquals(
+            assertContentEquals(
                 expected,
-                it.lines().drop(1).toTypedArray().also(Array<String>::sort)
+                it.lines().drop(1).toTypedArray().also(Array<String>::sort),
             )
         }
     }
@@ -522,22 +523,22 @@ class VCardExtractorTest {
     private fun assertText(
         expected: String?,
         property: VCardProperty,
-        ignoreName: Boolean = false
+        ignoreName: Boolean = false,
     ) {
         if (expected == null) {
-            Assert.assertThrows(VCardExtractor.VCardExtractionException::class.java) {
+            assertFailsWith<VCardExtractor.VCardExtractionException> {
                 extractor.getText(
                     property,
-                    ignoreName
+                    ignoreName,
                 )
             }
         } else {
-            Assert.assertEquals(expected, extractor.getText(property, ignoreName))
+            assertEquals(expected, extractor.getText(property, ignoreName))
         }
     }
 
     private fun assertDescription(expected: String?, property: VCardProperty) {
-        Assert.assertEquals(expected, extractor.getDescription(property))
+        assertEquals(expected, extractor.getDescription(property))
     }
 
     private fun getAddresses(): List<Address> = listOf(
@@ -620,36 +621,44 @@ class VCardExtractorTest {
             types.add(AddressType.PREF)
             types.add(AddressType.POSTAL)
             types.add(AddressType.POSTAL)
-        }
+        },
     )
 
     private fun getAgents(): List<Agent> = listOf(
         Agent("http://www.linkedin.com/BobSmith"),
-        Agent(VCard().apply {
-            setFormattedName("Agent Vcard")
-            addTelephoneNumber("012345678")
-            addUrl("http://www.linkedin.com/BobSmith")
-            addOrgDirectory("OrgDirectory")
-        }),
-        Agent(VCard().apply {
-            setFormattedName("Outer Agent")
-            addTelephoneNumber("012345678")
-            addUrl("http://www.linkedin.com/BobSmith")
-            addOrgDirectory("OrgDirectory")
-            agent = Agent(VCard().apply {
-                setFormattedName("Middle Agent")
-                addUrl("http://www.middleagent.com")
-                agent = Agent(VCard().apply {
-                    setFormattedName("Inner Agent")
-                    addUrl("http://www.inneragent.com")
-                })
-            })
-        })
+        Agent(
+            VCard().apply {
+                setFormattedName("Agent Vcard")
+                addTelephoneNumber("012345678")
+                addUrl("http://www.linkedin.com/BobSmith")
+                addOrgDirectory("OrgDirectory")
+            },
+        ),
+        Agent(
+            VCard().apply {
+                setFormattedName("Outer Agent")
+                addTelephoneNumber("012345678")
+                addUrl("http://www.linkedin.com/BobSmith")
+                addOrgDirectory("OrgDirectory")
+                agent = Agent(
+                    VCard().apply {
+                        setFormattedName("Middle Agent")
+                        addUrl("http://www.middleagent.com")
+                        agent = Agent(
+                            VCard().apply {
+                                setFormattedName("Inner Agent")
+                                addUrl("http://www.inneragent.com")
+                            },
+                        )
+                    },
+                )
+            },
+        ),
     )
 
     private fun getLogos(): List<Logo> = listOf(
         Logo("http://www.website.com/logo.png", ImageType.PNG),
-        Logo(byteArrayOf(12, 59, 103, 12, 14, 51, 16, 17), ImageType.GIF)
+        Logo(byteArrayOf(12, 59, 103, 12, 14, 51, 16, 17), ImageType.GIF),
     )
 
     private fun getPhotos(): List<Photo> = listOf(
@@ -666,7 +675,7 @@ class VCardExtractorTest {
 
     private fun getSounds(): List<Sound> = listOf(
         Sound("http://www.mywebsite.com/my-name.ogg", SoundType.OGG),
-        Sound(byteArrayOf(12, 59, 103, 12, 14, 51, 16, 17), SoundType.AAC)
+        Sound(byteArrayOf(12, 59, 103, 12, 14, 51, 16, 17), SoundType.AAC),
     )
 
     private fun getClientPidMap(): ClientPidMap = ClientPidMap.random(2)
@@ -678,42 +687,48 @@ class VCardExtractorTest {
         Anniversary(PartialDate.builder().date(4).month(2).year(2000).build()),
         Birthday(PartialDate.builder().date(5).month(2).year(2000).build()),
         Deathdate(PartialDate.builder().date(6).month(2).year(2000).build()),
-        Anniversary(Calendar.getInstance().apply {
-            clear()
-            set(Calendar.YEAR, 2001)
-            set(Calendar.MONTH, 3)
-            set(Calendar.DAY_OF_MONTH, 7)
-            set(Calendar.HOUR, 1)
-        }.time),
-        Birthday(Calendar.getInstance().apply {
-            clear()
-            set(Calendar.YEAR, 2001)
-            set(Calendar.MONTH, 3)
-            set(Calendar.DAY_OF_MONTH, 8)
-            set(Calendar.HOUR, 2)
-        }.time),
-        Deathdate(Calendar.getInstance().apply {
-            clear()
-            set(Calendar.YEAR, 2001)
-            set(Calendar.MONTH, 3)
-            set(Calendar.DAY_OF_MONTH, 9)
-            set(Calendar.HOUR, 3)
-        }.time),
+        Anniversary(
+            Calendar.getInstance().apply {
+                clear()
+                set(Calendar.YEAR, 2001)
+                set(Calendar.MONTH, 3)
+                set(Calendar.DAY_OF_MONTH, 7)
+                set(Calendar.HOUR, 1)
+            }.time,
+        ),
+        Birthday(
+            Calendar.getInstance().apply {
+                clear()
+                set(Calendar.YEAR, 2001)
+                set(Calendar.MONTH, 3)
+                set(Calendar.DAY_OF_MONTH, 8)
+                set(Calendar.HOUR, 2)
+            }.time,
+        ),
+        Deathdate(
+            Calendar.getInstance().apply {
+                clear()
+                set(Calendar.YEAR, 2001)
+                set(Calendar.MONTH, 3)
+                set(Calendar.DAY_OF_MONTH, 9)
+                set(Calendar.HOUR, 3)
+            }.time,
+        ),
         Anniversary("Anniversary long ago"),
         Birthday("Birthday long ago"),
-        Deathdate("Deathdate long ago")
+        Deathdate("Deathdate long ago"),
     )
 
     private fun getGeos(): List<Geo> = listOf(
         Geo(40.7127, -74.0059),
-        Geo(GeoUri.parse("geo:40.1,-70.2"))
+        Geo(GeoUri.parse("geo:40.1,-70.2")),
     )
 
     private fun getImpp(): List<Impp> = listOf(
         Impp("aim:johndoe@ma.il"),
         Impp.skype("skypeHandle"),
         Impp.sip("sipHandle"),
-        Impp("protocol", "handle")
+        Impp("protocol", "handle"),
     )
 
     private fun getListProperties(): List<ListProperty<*>> = listOf(
@@ -743,7 +758,7 @@ class VCardExtractorTest {
         },
         Categories().apply {
             values.add("Category")
-        }
+        },
     )
 
     private fun getPlaceProperties(): List<PlaceProperty> = listOf(
@@ -754,16 +769,25 @@ class VCardExtractorTest {
         Deathplace(20.5274, -5.1899),
         Deathplace().apply { uri = "http://en.wikipedia.org/wiki/Maida" },
         Birthplace(),
-        Birthplace().apply { geoUri = GeoUri.parse("geo:0.1,2.3") }
+        Birthplace().apply { geoUri = GeoUri.parse("geo:0.1,2.3") },
     )
 
     private fun getRelated(): List<Related> = listOf(
         Related.email("bob.smith@example.com"),
         Related().apply { text = "Edna Smith" },
         Related("urn:uuid:03a0e51f-d1aa-4385-8a53-e29025acd8af"),
-        Related().apply { text = "AcquaintanceRelated"; types.add(RelatedType.ACQUAINTANCE) },
-        Related().apply { text = "AgentRelated"; types.add(RelatedType.AGENT) },
-        Related().apply { text = "ChildRelated"; types.add(RelatedType.CHILD) },
+        Related().apply {
+            text = "AcquaintanceRelated"
+            types.add(RelatedType.ACQUAINTANCE)
+        },
+        Related().apply {
+            text = "AgentRelated"
+            types.add(RelatedType.AGENT)
+        },
+        Related().apply {
+            text = "ChildRelated"
+            types.add(RelatedType.CHILD)
+        },
         Related().apply {
             text = "SeveralRelated"
             types.add(RelatedType.CO_WORKER)
@@ -773,7 +797,7 @@ class VCardExtractorTest {
         Related().apply {
             text = "Text"
             uri = "text@ma.il" // sets the text to null
-        }
+        },
     )
 
     private fun getTextProperties(): List<TextProperty> = listOf(
@@ -795,7 +819,7 @@ class VCardExtractorTest {
         SortString("sortStringText"),
         SourceDisplayText("sourceDisplayTextText"),
         Title("titleText"),
-        UriProperty("uriPropertyText")
+        UriProperty("uriPropertyText"),
     )
 
     private fun getStructuredNames(): List<StructuredName> = listOf(
@@ -822,7 +846,8 @@ class VCardExtractorTest {
         },
         StructuredName().apply {
             suffixes.add("MD Suff")
-        }, StructuredName().apply {
+        },
+        StructuredName().apply {
             suffixes.add("MD")
             suffixes.add("Suff")
         },
@@ -831,26 +856,37 @@ class VCardExtractorTest {
         },
         StructuredName().apply {
             additionalNames.add("AdditionalName")
-        }
+        },
     )
 
     private fun getTelephones(): List<Telephone> = listOf(
         Telephone("telephoneText"),
         Telephone(TelUri.Builder("+1-800-555-9876").extension("111").build()),
-        Telephone("carPhone").apply { pref = 1; types.add(TelephoneType.CAR) },
-        Telephone("bbsPhone").apply { pref = 2; types.add(TelephoneType.BBS) },
-        Telephone("FaxPhone").apply { pref = 3; types.add(TelephoneType.FAX) },
-        Telephone("homePhone").apply { types.add(TelephoneType.HOME) },
+        Telephone("carPhone").apply {
+            pref = 1
+            types.add(TelephoneType.CAR)
+        },
+        Telephone("bbsPhone").apply {
+            pref = 2
+            types.add(TelephoneType.BBS)
+        },
+        Telephone("FaxPhone").apply {
+            pref = 3
+            types.add(TelephoneType.FAX)
+        },
+        Telephone("homePhone").apply {
+            types.add(TelephoneType.HOME)
+        },
         Telephone("severalTypesPhone").apply {
             types.add(TelephoneType.MODEM)
             types.add(TelephoneType.CELL)
             types.add(TelephoneType.ISDN)
-        }
+        },
     )
 
     private fun getTimezones(): List<Timezone> = listOf(
         Timezone(UtcOffset(false, 5, 0), "America/New_York"),
-        Timezone(UtcOffset(true, 5, 30))
+        Timezone(UtcOffset(true, 5, 30)),
     )
 
     private fun getXmls(): List<Xml> = listOf(
@@ -983,5 +1019,4 @@ class VCardExtractorTest {
             }
         }
     }
-
 }

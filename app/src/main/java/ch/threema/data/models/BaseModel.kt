@@ -21,12 +21,12 @@
 
 package ch.threema.data.models
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -66,17 +66,14 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
      * NOTE: Access to [mutableData] should always be protected by a synchronized(this) block!
      */
     protected val mutableData: MutableStateFlow<TData?>,
-
     /**
      * The name of this model. Used for debugging purposes.
      */
     protected val modelName: String,
-
     /**
      * The multi device manager is needed to determine whether to reflect a change or not.
      */
     protected val multiDeviceManager: MultiDeviceManager,
-
     /**
      * The task manager is needed to schedule a task that reflects the changes.
      */
@@ -93,15 +90,18 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
     fun liveData(): LiveData<TData?> = data.asLiveData()
 
     /**
+     * This is true if the model has been deleted.
+     */
+    val isDeleted
+        get() = mutableData.value == null
+
+    /**
      * @return the non null [data]
      *
      * @throws ModelDeletedException if data is null
      */
-    protected fun ensureNotDeleted(data: TData?, methodName: String): TData {
-        if (data == null) {
-            throw ModelDeletedException(modelName, methodName)
-        }
-        return data
+    protected fun ensureNotDeleted(methodName: String): TData {
+        return data.value ?: throw ModelDeletedException(modelName, methodName)
     }
 
     /**
@@ -127,7 +127,7 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
         reflectUpdateTask: TReflectionTask? = null,
     ) {
         val updatedData = synchronized(this) {
-            val originalData = ensureNotDeleted(mutableData.value, methodName)
+            val originalData = ensureNotDeleted(methodName)
             val dataChanged = detectChanges(originalData)
             if (dataChanged) {
                 val updatedData = updateData(originalData)

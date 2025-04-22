@@ -74,7 +74,12 @@
     <dimen name="listitem_message_margin_left_right">16dp</dimen>
     <dimen name="listitem_contacts_margin_top_bottom">10dp</dimen>
     <dimen name="listitem_contacts_margin_left_right">16dp</dimen>
-    <dimen name="tablet_standard_padding_left_right">16dp</dimen>
+    <dimen name="spacing_half_grid_unit">4dp</dimen>
+    <dimen name="spacing_one_grid_unit">8dp</dimen>
+    <dimen name="spacing_one_and_a_half_grid_unit">12dp</dimen>
+    <dimen name="spacing_two_grid_unit">16dp</dimen>
+    <dimen name="spacing_three_grid_unit">24dp</dimen>
+    <dimen name="spacing_four_grid_unit">32dp</dimen>
     <dimen name="listitem_contact_height">64dp</dimen>
     <dimen name="listitem_globalsearch_height">80dp</dimen>
     <dimen name="tablet_additional_padding_left_right">0dp</dimen>
@@ -170,7 +175,6 @@
     <dimen name="wizard_summary_body_text_size">15sp</dimen>
 
     <!-- use dp for button fonts to prevent people from using large text destroying the layout -->
-    <dimen name="wizard_button_text_size">14sp</dimen>
     <dimen name="wizard_backup_code_edittext_minheight">60dp</dimen>
     <dimen name="wizard_contents_padding_horizontal">16dp</dimen>
 
@@ -358,5 +362,18 @@
     </dimen> <!-- height of chip minus stroke width times two -->
     <dimen name="emojireactions_width">36dp</dimen>
     <dimen name="emojireactions_width_with_count">50dp</dimen>
+
+    <!-- md device list -->
+    <dimen name="md_device_stroke_width_active">2dp</dimen>
+    <dimen name="md_device_stroke_width_inactive">1dp</dimen>
+
+    <!-- drop linked device dialog -->
+    <dimen name="md_drop_device_dialog_platform_icon_size">54dp</dimen>
+
+    <!-- Device Linking Wizard -->
+    <dimen name="sheet_peek_position_extra_spacing">16dp</dimen>
+    <dimen name="verification_emoji_size">56dp</dimen>
+
+    <dimen name="scroll_spacing_extra_floating_action_button">100dp</dimen>
 
 </resources>

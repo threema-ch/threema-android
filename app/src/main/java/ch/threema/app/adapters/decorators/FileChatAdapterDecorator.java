@@ -50,7 +50,6 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -198,6 +197,11 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
                 }
 
                 @Override
+                public void onUnknownProgress(AbstractMessageModel messageModel) {
+                    RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressing());
+                }
+
+                @Override
                 public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message) {
                     RuntimeUtil.runOnUiThread(() -> {
                         if (success) {
@@ -255,22 +259,20 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
             if (fileData.isDownloaded()) {
                 fileMessagePlayer.open();
             } else {
-                if (!getMessageModel().isOutbox()) {
-                    final PreferenceService preferenceService = getPreferenceService();
+                final PreferenceService preferenceService = getPreferenceService();
 
-                    if (preferenceService != null && !preferenceService.getFileSendInfoShown()) {
-                        new MaterialAlertDialogBuilder(getContext())
-                            .setTitle(R.string.download)
-                            .setMessage(R.string.send_as_files_warning)
-                            .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.ok, (dialog, id) -> {
-                                preferenceService.setFileSendInfoShown(true);
-                                fileMessagePlayer.open();
-                            })
-                            .show();
-                    } else {
-                        fileMessagePlayer.open();
-                    }
+                if (preferenceService != null && !preferenceService.getFileSendInfoShown()) {
+                    new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(R.string.download)
+                        .setMessage(R.string.send_as_files_warning)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.ok, (dialog, id) -> {
+                            preferenceService.setFileSendInfoShown(true);
+                            fileMessagePlayer.open();
+                        })
+                        .show();
+                } else {
+                    fileMessagePlayer.open();
                 }
             }
         }
@@ -325,15 +327,34 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
     }
 
     private void setControllerState(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
-        if (getMessageModel().isOutbox() && !(getMessageModel() instanceof DistributionListMessageModel)) {
-            setControllerStateOutgoing(holder, fileData);
+        if (fileData.isDownloaded()) {
+            if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
+                holder.controller.setHidden();
+            } else {
+                holder.controller.setNeutral();
+            }
         } else {
-            setControllerStateIncoming(holder, fileData);
+            holder.controller.setReadyToDownload();
         }
-    }
 
-    private void setControllerStateOutgoing(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
-        switch (getMessageModel().getState()) {
+        if (holder.messagePlayer != null) {
+            switch (holder.messagePlayer.getState()) {
+                case MessagePlayer.State_DOWNLOADING:
+                    holder.controller.setProgressingDeterminate(100);
+                    holder.controller.setProgress(holder.messagePlayer.getDownloadProgress());
+                    break;
+                case MessagePlayer.State_DECRYPTING:
+                    holder.controller.setProgressing();
+                    break;
+            }
+        }
+
+        MessageState state = getMessageModel().getState();
+        if (state == null) {
+            return;
+        }
+
+        switch (state) {
             case TRANSCODING:
                 holder.controller.setTranscoding();
                 if (holder.transcoderView != null) {
@@ -351,36 +372,6 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
             case FS_KEY_MISMATCH:
                 holder.controller.setRetry();
                 break;
-            case SENT:
-            default:
-                if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
-                    holder.controller.setHidden();
-                } else {
-                    holder.controller.setNeutral();
-                }
-        }
-    }
-
-    private void setControllerStateIncoming(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
-        if (fileData.isDownloaded()) {
-            if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
-                holder.controller.setHidden();
-            } else {
-                holder.controller.setNeutral();
-            }
-        } else {
-            holder.controller.setReadyToDownload();
-        }
-        if (holder.messagePlayer != null) {
-            switch (holder.messagePlayer.getState()) {
-                case MessagePlayer.State_DOWNLOADING:
-                    holder.controller.setProgressingDeterminate(100);
-                    holder.controller.setProgress(holder.messagePlayer.getDownloadProgress());
-                    break;
-                case MessagePlayer.State_DECRYPTING:
-                    holder.controller.setProgressing();
-                    break;
-            }
         }
     }
 }

@@ -176,10 +176,7 @@ public interface NotificationService {
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    void deleteNotificationChannels();
-
-    @TargetApi(Build.VERSION_CODES.O)
-    void createNotificationChannels();
+    void recreateNotificationChannels();
 
     /**
      * Set the identity for which a conversation is currently visible (there can only be
@@ -233,7 +230,7 @@ public interface NotificationService {
 
     void cancel(ConversationModel conversationModel);
 
-    void cancel(MessageReceiver receiver);
+    void cancel(@Nullable MessageReceiver receiver);
 
     void cancel(int notificationId);
 

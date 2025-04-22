@@ -79,15 +79,15 @@ public class BitmapUtil {
     /**
      * Get the inSampleSize that produces an image that has its width *smaller* or equal to maxWidth
      *
-     * @param bitmapBytes bitmap represented by a byte array
+     * @param imageStream Input stream of image data
      * @param maxWidth    maxWidth that results from applying the inSampleSize
      * @return calculated inSampleSize as a power of two
      */
-    static private int getInSampleSizeByWidth(byte[] bitmapBytes, int maxWidth) {
+    private static int getInSampleSizeByWidth(@NonNull InputStream imageStream, int maxWidth) {
         // check dimensions of input bitmap
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length, o);
+        BitmapFactory.decodeStream(imageStream, null, o);
 
         // no scaling necessary if width of bitmap is smaller or equal to maxWidth
         if (o.outWidth > maxWidth) {
@@ -370,29 +370,33 @@ public class BitmapUtil {
      * Resize a bitmap provided as a byte array so that the width of the resulting image is less or equal to maxWidth.
      * For the sake of memory efficiency, we use subsampling which means the scaling is approximate and may only be a power of two.
      *
-     * @param sourceBitmapFileBytes compressed original image data
-     * @param maxWidth              maximum width of the image after scaling is applied
-     * @param pos                   offset withing byte array
-     * @param length                the number of bytes, beginning at offset, to parse
+     * @param imageData stream of original image data. Must be resettable, i.e. imageData.markSupported() must return true.
+     * @param maxWidth maximum width of the image after scaling is applied
      * @return compressed byte array of scaled bitmap in either PNG or JPG format - depending on source bitmap format - or null in case of an error
      */
     @Nullable
-    static public byte[] resizeBitmapByteArrayToMaxWidth(byte[] sourceBitmapFileBytes, int maxWidth, int pos, int length) {
+    static public byte[] resizeImageToMaxWidth(InputStream imageData, int maxWidth) {
         try {
-            boolean isJpeg = ExifInterface.isJpegFormat(sourceBitmapFileBytes);
+            boolean isJpeg = ExifInterface.isJpegFormat(imageData);
+            imageData.reset();
 
             BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize = getInSampleSizeByWidth(sourceBitmapFileBytes, maxWidth);
+            o2.inSampleSize = getInSampleSizeByWidth(imageData, maxWidth);
+            imageData.reset();
             o2.inScaled = true;
             o2.inPreferredConfig = isJpeg ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
 
-            Bitmap newPhoto = BitmapFactory.decodeByteArray(sourceBitmapFileBytes, pos, length, o2);
-            if (newPhoto != null) {
-                if (isJpeg) {
-                    return bitmapToJpegByteArray(newPhoto);
-                } else {
-                    return bitmapToPngByteArray(newPhoto);
+            Bitmap newPhoto = BitmapFactory.decodeStream(imageData, null, o2);
+            try {
+                if (newPhoto != null) {
+                    if (isJpeg) {
+                        return bitmapToJpegByteArray(newPhoto);
+                    } else {
+                        return bitmapToPngByteArray(newPhoto);
+                    }
                 }
+            } finally {
+                recycle(newPhoto);
             }
         } catch (Exception x) {
             logger.error("Exception", x);

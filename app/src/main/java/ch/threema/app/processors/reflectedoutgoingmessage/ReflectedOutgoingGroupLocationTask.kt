@@ -39,14 +39,13 @@ internal class ReflectedOutgoingGroupLocationTask(
 ) : ReflectedOutgoingGroupMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_LOCATION,
-    serviceManager
+    serviceManager,
 ) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     private val groupLocationMessage: GroupLocationMessage by lazy {
         GroupLocationMessage.fromReflected(
-            message
+            message,
         )
     }
 
@@ -63,14 +62,14 @@ internal class ReflectedOutgoingGroupLocationTask(
         val groupMessageModel: GroupMessageModel = messageReceiver.createLocalModel(
             MessageType.LOCATION,
             MessageContentsType.LOCATION,
-            Date(message.createdAt)
+            Date(message.createdAt),
         )
         initializeMessageModelsCommonFields(groupMessageModel)
         groupMessageModel.locationData = LocationDataModel(
             latitude = groupLocationMessage.latitude,
             longitude = groupLocationMessage.longitude,
             accuracy = groupLocationMessage.accuracy,
-            poi = groupLocationMessage.poi
+            poi = groupLocationMessage.poi,
         )
         groupMessageModel.state = MessageState.SENT
         messageService.save(groupMessageModel)

@@ -22,26 +22,23 @@
 package ch.threema.app.activities
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.core.text.HtmlCompat
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
+import ch.threema.app.activities.wizard.components.WizardButtonXml
 import ch.threema.app.utils.LinkifyUtil
 
 class WorkIntroActivity : ThreemaActivity() {
-
     companion object {
         private const val HTML_LINK_FORMAT_TEMPLATE_PREFIX = "<a href='%1\$s'> "
         private const val HTML_LINK_FORMAT_TEMPLATE_POSTFIX = " </a>"
     }
 
-    private val loginButton: Button by lazy { findViewById(R.id.work_intro_login_button) }
-    private val consumerStoreButton: Button by lazy { findViewById(R.id.consumer_notice_app_store_button) }
     private val workInfoLinkTextView: TextView by lazy { findViewById(R.id.work_intro_more_link) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,10 +52,11 @@ class WorkIntroActivity : ThreemaActivity() {
     }
 
     private fun initLoginButton() {
-        loginButton.text = getString(R.string.work_intro_login).format(getString(R.string.app_name))
-        loginButton.setOnClickListener {
-            val intent = Intent(this, EnterSerialActivity::class.java)
-            startActivity(intent)
+        findViewById<WizardButtonXml>(R.id.work_intro_login_button_compose).apply {
+            text = getString(R.string.work_intro_login)
+            setOnClickListener {
+                startActivity(Intent(this@WorkIntroActivity, EnterSerialActivity::class.java))
+            }
         }
     }
 
@@ -71,14 +69,13 @@ class WorkIntroActivity : ThreemaActivity() {
 
         val workInfoHtmlLink = String.format(
             workInfoLinkTemplate,
-            workInfoLink
+            workInfoLink,
         )
 
-        workInfoLinkTextView.text =
-            HtmlCompat.fromHtml(workInfoHtmlLink, HtmlCompat.FROM_HTML_MODE_COMPACT)
+        workInfoLinkTextView.text = HtmlCompat.fromHtml(workInfoHtmlLink, HtmlCompat.FROM_HTML_MODE_COMPACT)
         workInfoLinkTextView.movementMethod = LinkMovementMethod.getInstance()
         workInfoLinkTextView.setOnClickListener {
-            LinkifyUtil.getInstance().openLink(Uri.parse(workInfoLink), null, this)
+            LinkifyUtil.getInstance().openLink(workInfoLink.toUri(), null, this)
         }
     }
 
@@ -94,28 +91,28 @@ class WorkIntroActivity : ThreemaActivity() {
             onButtonClick = { openConsumerAppInPlayStore() }
         }
 
-        consumerStoreButton.text = appStoreText
-        consumerStoreButton.setOnClickListener {
-            try {
-                onButtonClick()
-            } catch (e: Exception) {
-                Toast
-                    .makeText(this, getString(R.string.no_activity_for_intent), Toast.LENGTH_SHORT)
-                    .show()
+        findViewById<WizardButtonXml>(R.id.consumer_notice_app_store_button_compose).apply {
+            text = appStoreText
+            setOnClickListener {
+                try {
+                    onButtonClick()
+                } catch (e: Exception) {
+                    Toast.makeText(this@WorkIntroActivity, getString(R.string.no_activity_for_intent), Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
     private fun openConsumerAppInPlayStore() {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.setData(Uri.parse(getString(R.string.private_download_url)))
+        intent.setData(getString(R.string.private_download_url).toUri())
         intent.setPackage("com.android.vending")
         startActivity(intent)
     }
 
     private fun openConsumerAppInHuaweiAppGallery() {
         val intent = Intent(Intent.ACTION_VIEW)
-        val uri = Uri.parse("market://details?id=" + this.packageName)
+        val uri = ("market://details?id=" + this.packageName).toUri()
         intent.setData(uri)
         intent.setPackage("com.huawei.appmarket")
         startActivity(intent)

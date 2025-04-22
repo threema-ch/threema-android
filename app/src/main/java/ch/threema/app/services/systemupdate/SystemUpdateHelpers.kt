@@ -29,24 +29,26 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 fun fieldExists(
     sqliteDatabase: SQLiteDatabase,
     table: String,
-    fieldName: String
+    fieldName: String,
 ): Boolean {
     // The SQLite table_info pragma returns one row for each normal column in the named table.
     sqliteDatabase.query(
-        "pragma_table_info('$table')", arrayOf("name"),
-        "name = ?", arrayOf(fieldName),
+        "pragma_table_info('$table')",
+        arrayOf("name"),
+        "name = ?",
+        arrayOf(fieldName),
         null,
         null,
-        null
+        null,
     ).use { cursor -> return cursor.count > 0 }
 }
 
 fun tableExists(
     sqliteDatabase: SQLiteDatabase,
-    table: String
+    table: String,
 ): Boolean {
     return sqliteDatabase.rawQuery(
         "SELECT 1 FROM `sqlite_master` WHERE type = 'table' AND name = ?",
-        arrayOf(table)
+        arrayOf(table),
     ).use { cursor -> cursor.count > 0 }
 }

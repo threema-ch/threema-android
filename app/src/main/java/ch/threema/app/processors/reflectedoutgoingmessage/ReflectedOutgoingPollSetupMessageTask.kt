@@ -34,7 +34,6 @@ internal class ReflectedOutgoingPollSetupMessageTask(
     Common.CspE2eMessageType.POLL_SETUP,
     serviceManager,
 ) {
-
     private val myIdentity by lazy { serviceManager.identityStore.identity }
 
     private val pollSetupMessage: PollSetupMessage by lazy {
@@ -54,11 +53,7 @@ internal class ReflectedOutgoingPollSetupMessageTask(
             pollSetupMessage,
             pollSetupMessage.messageId,
             messageReceiver,
-            ballotService
+            ballotService,
         )
     }
-
-
 }
-
-

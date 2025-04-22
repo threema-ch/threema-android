@@ -30,6 +30,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.glide.AvatarOptions;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -148,4 +149,10 @@ public interface AvatarCacheService {
      */
     @AnyThread
     void reset(@NonNull GroupModel groupModel);
+
+    /**
+     * Clears the cache of the given group.
+     */
+    @AnyThread
+    void reset(@NonNull GroupIdentity groupIdentity);
 }

@@ -57,7 +57,7 @@ object WorkManagerUtil {
     fun shouldScheduleNewWorkManagerInstance(
         workManager: WorkManager,
         uniqueWorkName: String,
-        schedulePeriod: Long
+        schedulePeriod: Long,
     ): Boolean {
         return try {
             workManager.getWorkInfosForUniqueWork(uniqueWorkName).get().none {
@@ -93,7 +93,7 @@ object WorkManagerUtil {
             when (e) {
                 is ExecutionException, is InterruptedException -> logger.error(
                     "Could not get work info",
-                    e
+                    e,
                 )
 
                 else -> throw e

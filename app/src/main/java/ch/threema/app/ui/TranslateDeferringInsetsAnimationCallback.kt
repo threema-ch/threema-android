@@ -19,6 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("ktlint:standard:no-consecutive-comments")
 /*
  * Copyright 2020 The Android Open Source Project
  *
@@ -63,7 +64,7 @@ class TranslateDeferringInsetsAnimationCallback(
     private val view: View,
     private val persistentInsetTypes: Int,
     private val deferredInsetTypes: Int,
-    dispatchMode: Int = DISPATCH_MODE_STOP
+    dispatchMode: Int = DISPATCH_MODE_STOP,
 ) : WindowInsetsAnimationCompat.Callback(dispatchMode) {
     private var isPreserveViewBounds: Boolean = false
 
@@ -86,7 +87,7 @@ class TranslateDeferringInsetsAnimationCallback(
 
     override fun onProgress(
         insets: WindowInsetsCompat,
-        runningAnimations: List<WindowInsetsAnimationCompat>
+        runningAnimations: List<WindowInsetsAnimationCompat>,
     ): WindowInsetsCompat {
         // onProgress() is called when any of the running animations progress...
 

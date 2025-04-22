@@ -25,15 +25,19 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
+import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
+import ch.threema.app.tasks.ReflectionFailed
+import ch.threema.app.tasks.ReflectionPreconditionFailed
+import ch.threema.app.tasks.ReflectionSuccess
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.contentEquals
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupModel
 import com.neilalexander.jnacl.NaCl
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSetProfilePictureTask")
@@ -45,53 +49,106 @@ class IncomingGroupSetProfilePictureTask(
 ) : IncomingCspMessageSubTask<GroupSetProfilePictureMessage>(
     message,
     triggerSource,
-    serviceManager
+    serviceManager,
 ) {
     private val fileService by lazy { serviceManager.fileService }
     private val apiService by lazy { serviceManager.apiService }
-    private val avatarCacheService by lazy { serviceManager.avatarCacheService }
+    private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val groupService by lazy { serviceManager.groupService }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
-        // 1. Run the common group receive steps
+        // Run the common group receive steps
         val group = runCommonGroupReceiveSteps(message, handle, serviceManager)
         if (group == null) {
             logger.warn("Discarding group set profile picture message because group could not be found")
             return ReceiveStepsResult.DISCARD
         }
 
-        // 2. Download the picture from the blob server but do not request the blob to be removed
+        // Download the picture from the blob server but do not request the blob to be removed
         val blobLoader = apiService.createLoader(message.blobId)
         // TODO(ANDR-2869): Correctly handle blob server faults
         val blob = blobLoader.load(
-            BlobScope.Public // since its an incoming message, always use the public scope
+            // since its an incoming message, always use the public scope
+            BlobScope.Public,
         ) ?: throw IllegalStateException("Profile picture blob is null")
         NaCl.symmetricDecryptDataInplace(
             blob,
             message.encryptionKey,
-            ProtocolDefines.GROUP_PHOTO_NONCE
+            ProtocolDefines.GROUP_PHOTO_NONCE,
         )
 
-        // 3. Store and apply the profile picture to the group (if it is different than the old one)
-        if (hasDifferentGroupPhoto(group, blob)) {
-            this.fileService.writeGroupAvatar(group, blob)
-
-            this.avatarCacheService.reset(group)
-
-            ListenerManager.groupListeners.handle { it.onUpdatePhoto(group) }
-
-            ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(group))
+        // If the received picture is already the current profile picture, discard the message and
+        // abort these steps.
+        if (isCurrentProfilePicture(group, blob)) {
+            logger.info("Received group picture is already the current picture")
+            return ReceiveStepsResult.DISCARD
         }
+
+        // Reflect the group update if md is active
+        if (multiDeviceManager.isMultiDeviceActive) {
+            val reflectionResult = reflectGroupPicture(
+                groupModel = group,
+                blobId = message.blobId,
+                encryptionKey = message.encryptionKey,
+                blobNonce = ProtocolDefines.GROUP_PHOTO_NONCE,
+                profilePictureBlob = blob,
+                handle = handle,
+            )
+
+            when (reflectionResult) {
+                is ReflectionFailed -> {
+                    logger.error("Could not reflect group picture", reflectionResult.exception)
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionPreconditionFailed -> {
+                    logger.warn("Group sync race occurred: User is no group member anymore")
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionSuccess -> logger.info("Successfully reflected group profile picture")
+            }
+        }
+
+        // Store and apply the profile picture to the group
+        return updateGroupPictureLocally(group, blob)
+    }
+
+    private fun isCurrentProfilePicture(group: GroupModel, newGroupPhoto: ByteArray?): Boolean {
+        return fileService.getGroupAvatarStream(group).contentEquals(newGroupPhoto)
+    }
+
+    private suspend fun reflectGroupPicture(
+        groupModel: GroupModel,
+        blobId: ByteArray,
+        encryptionKey: ByteArray,
+        blobNonce: ByteArray,
+        profilePictureBlob: ByteArray,
+        handle: ActiveTaskCodec,
+    ) = ReflectGroupSyncUpdateImmediateTask.ReflectGroupSetProfilePicture(
+        blobId = blobId,
+        encryptionKey = encryptionKey,
+        blobNonce = blobNonce,
+        groupModel = groupModel,
+        profilePictureBlob = profilePictureBlob,
+        fileService = fileService,
+        nonceFactory = nonceFactory,
+        multiDeviceManager = multiDeviceManager,
+    ).reflect(handle)
+
+    private fun updateGroupPictureLocally(group: GroupModel, blob: ByteArray): ReceiveStepsResult {
+        this.fileService.writeGroupAvatar(group, blob)
+
+        ListenerManager.groupListeners.handle { it.onUpdatePhoto(group.groupIdentity) }
+
+        ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(group))
 
         return ReceiveStepsResult.SUCCESS
     }
 
-    private fun hasDifferentGroupPhoto(group: GroupModel, newGroupPhoto: ByteArray?): Boolean {
-        return !fileService.getGroupAvatarStream(group).contentEquals(newGroupPhoto)
-    }
-
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-        // TODO(ANDR-2741): Support group synchronization
+        logger.info("Discarding group set profile picture from sync")
         return ReceiveStepsResult.DISCARD
     }
 }

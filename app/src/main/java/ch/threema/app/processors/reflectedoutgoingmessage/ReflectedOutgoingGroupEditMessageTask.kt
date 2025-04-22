@@ -34,7 +34,7 @@ internal class ReflectedOutgoingGroupEditMessageTask(
 ) : ReflectedOutgoingGroupMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_EDIT_MESSAGE,
-    serviceManager
+    serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
@@ -51,12 +51,12 @@ internal class ReflectedOutgoingGroupEditMessageTask(
         runCommonEditMessageReceiveSteps(
             editMessage = groupEditMessage,
             receiver = messageReceiver,
-            messageService = messageService
+            messageService = messageService,
         )?.let { validEditMessageModel: AbstractMessageModel ->
             messageService.saveEditedMessageText(
                 validEditMessageModel,
                 groupEditMessage.data.text,
-                groupEditMessage.date
+                groupEditMessage.date,
             )
         }
     }

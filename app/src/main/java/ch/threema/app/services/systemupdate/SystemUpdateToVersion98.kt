@@ -43,7 +43,7 @@ class SystemUpdateToVersion98(
                     PRIMARY KEY(`groupId`, `senderIdentity`),
                     FOREIGN KEY(`groupId`) REFERENCES `m_group`(`id`)
                 )
-            """
+            """,
         )
 
         return true

@@ -28,17 +28,12 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.neilalexander.jnacl.NaCl;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -54,7 +49,6 @@ import java.util.Set;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.net.ssl.HttpsURLConnection;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,7 +57,6 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.SSLSocketFactoryFactory;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.Version;
@@ -73,7 +66,6 @@ import ch.threema.domain.protocol.api.work.WorkDirectory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.stores.TokenStoreInterface;
 import ove.crypto.digest.Blake2b;
@@ -108,48 +100,49 @@ public class APIConnector {
     private static final int DEFAULT_MATCH_CHECK_INTERVAL = 86400;
     private static final int RESPONSE_LEN = 32;
 
-    private final @NonNull
-    SSLSocketFactoryFactory sslSocketFactoryFactory;
-
     private final boolean isWork;
 
     private int matchCheckInterval = DEFAULT_MATCH_CHECK_INTERVAL;
 
+    @NonNull
     private Version version;
-    private String language;
-    protected ServerAddressProvider serverAddressProvider; // needs to be protected for test
+    private final ServerAddressProvider serverAddressProvider;
     private final boolean ipv6;
 
-    private APIAuthenticator authenticator;
+    @NonNull
+    private final HttpRequester httpRequester;
 
     public APIConnector(
         boolean ipv6,
         ServerAddressProvider serverAddressProvider,
         boolean isWork,
-        @NonNull SSLSocketFactoryFactory sslSocketFactoryFactory
+        @NonNull SSLSocketFactoryFactory sslSocketFactoryFactory,
+        @NonNull Version version,
+        @Nullable String language
     ) {
-        this.version = new Version();
+        this(ipv6, serverAddressProvider, isWork, new HttpRequester(sslSocketFactoryFactory, language), version);
+        this.version = version;
+    }
+
+    protected APIConnector(
+        boolean ipv6,
+        ServerAddressProvider serverAddressProvider,
+        boolean isWork,
+        @NonNull HttpRequester httpRequester,
+        @NonNull Version version
+    ) {
+        this.version = version;
         this.ipv6 = ipv6;
         this.serverAddressProvider = serverAddressProvider;
         this.isWork = isWork;
-        this.sslSocketFactoryFactory = sslSocketFactoryFactory;
+        this.httpRequester = httpRequester;
     }
 
     /**
      * Set an optional object that adds authentication information to URLConnections.
      */
     public void setAuthenticator(APIAuthenticator authenticator) {
-        this.authenticator = authenticator;
-    }
-
-    /**
-     * Create a new identity and store it in the given identity store.
-     *
-     * @param identityStore the store for the new identity
-     * @param seed          additional random data to be used for key generation
-     */
-    public void createIdentity(IdentityStoreInterface identityStore, byte[] seed) throws Exception {
-        this.createIdentity(identityStore, seed, JSONObject::new);
+        this.httpRequester.setAuthenticator(authenticator);
     }
 
     /**
@@ -268,10 +261,6 @@ public class APIConnector {
             JSONObject postObject = new JSONObject();
             postObject.put("identities", new JSONArray(identities));
             String postResponse = this.postJson(getServerUrl() + "identity/fetch_bulk", postObject);
-
-            if (postResponse == null) {
-                throw new NetworkException("no valid response or network error");
-            }
 
             JSONObject resultObject = new JSONObject(postResponse);
             JSONArray resultArray = resultObject.getJSONArray("identities");
@@ -466,7 +455,7 @@ public class APIConnector {
         request.put("mobileNo", mobileNo);
         request.put("lang", language);
         request.put("httpsUrl", true);
-        if (urlScheme != null && urlScheme.length() > 0) {
+        if (urlScheme != null && !urlScheme.isEmpty()) {
             request.put("urlScheme", true);
         }
 
@@ -493,7 +482,7 @@ public class APIConnector {
             throw new LinkMobileNoException(p2Result.getString("error"));
         }
 
-        if (mobileNo.length() > 0) {
+        if (!mobileNo.isEmpty()) {
             return p2Result.getString("verificationId");
         } else {
             return null;
@@ -686,11 +675,10 @@ public class APIConnector {
             request.put("includeInactive", Boolean.TRUE);
         }
 
-        logger.debug(String.format("Match identities: sending to server: %s", request.toString()));
+        logger.debug("Match identities: sending to server: {}", request);
 
         JSONObject result = new JSONObject(postJson(url, request));
-        logger.debug(String.format("Match identities: response from server: %s",
-            result.toString()));
+        logger.debug("Match identities: response from server: {}", result);
 
         matchCheckInterval = result.getInt("checkInterval");
         logger.debug("Server requested check interval of {} seconds", matchCheckInterval);
@@ -807,63 +795,6 @@ public class APIConnector {
         }
 
         return token;
-    }
-
-    /**
-     * Obtain a Threema Push token.
-     * <p>
-     * The token will be prefixed with `3ma;`.
-     *
-     * @param identityStore Obtain a Threema Push token for the identity stored in this identity
-     *                      store.
-     * @return The match token as string
-     */
-    public @NonNull String obtainThreemaPushToken(
-        @NonNull IdentityStoreInterface identityStore,
-        @Nullable TokenStoreInterface pushTokenStore,
-        boolean forceRefresh
-    ) throws Exception {
-        if (identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
-            throw new RuntimeException("Identity not defined");
-        }
-
-        // Cached token?
-        String token = null;
-        if (!forceRefresh && pushTokenStore != null) {
-            token = pushTokenStore.getToken();
-        }
-        if (token != null) {
-            return "3ma;" + token;
-        }
-
-        final String url = this.getServerUrl() + "identity/threema_push_token";
-
-        // Phase 1: Send identity
-        final JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
-        logger.debug("Fetch threema push token phase 1: sending to server: {}", request);
-        final JSONObject p1Result = new JSONObject(this.postJson(url, request));
-        logger.debug("Fetch threema push token phase 1: response from server: {}", p1Result);
-        makeTokenResponse(p1Result, request, identityStore);
-
-        // Phase 2: Send token response
-        logger.debug("Fetch threema push token: sending to server: {}", request);
-        final JSONObject p2Result = new JSONObject(this.postJson(url, request));
-        logger.debug("Fetch threema push token: response from server: {}", p2Result);
-        if (!p2Result.getBoolean("success")) {
-            throw new ThreemaException(p2Result.getString("error"));
-        }
-        token = p2Result.getString("threemaPushToken");
-        if (token.length() == 0) {
-            throw new ThreemaException("Received empty Threema Push token");
-        }
-
-        // Store token in token store
-        if (pushTokenStore != null) {
-            pushTokenStore.storeToken(token);
-        }
-
-        return "3ma;" + token;
     }
 
     public @NonNull SfuToken obtainSfuToken(@NonNull IdentityStoreInterface identityStore) throws Exception {
@@ -1272,14 +1203,13 @@ public class APIConnector {
         }
         request.put("contacts", identityArray);
 
-        PostJsonResult postJsonResult = this.postJsonWithResult(getWorkServerUrl() + "fetch2",
-            request);
-        if (postJsonResult.responseCode > 0 || postJsonResult.responseBody == null || postJsonResult.responseBody.length() == 0) {
-            workData.responseCode = postJsonResult.responseCode;
+        HttpRequesterResult httpRequesterResult = this.postJsonWithResult(getWorkServerUrl() + "fetch2", request);
+        if (httpRequesterResult instanceof HttpRequesterResult.Error) {
+            workData.responseCode = ((HttpRequesterResult.Error) httpRequesterResult).responseCode;
             return workData;
         }
-
-        JSONObject jsonResponse = new JSONObject(postJsonResult.responseBody);
+        @NonNull String responseBody = ((HttpRequesterResult.Success) httpRequesterResult).responseBody;
+        JSONObject jsonResponse = new JSONObject(responseBody);
         if (jsonResponse.has("support") && !jsonResponse.isNull("support")) {
             workData.supportUrl = jsonResponse.getString("support");
         }
@@ -1659,54 +1589,9 @@ public class APIConnector {
         return matchCheckInterval;
     }
 
-    public Version getVersion() {
-        return version;
-    }
-
-    public void setVersion(Version version) {
-        this.version = version;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    protected String doGet(String urlString) throws IOException, HttpConnectionException {
-        URL url = new URL(urlString);
-
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        if (urlConnection instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) urlConnection).setSSLSocketFactory(this.sslSocketFactoryFactory.makeFactory(url.getHost()));
-        }
-        urlConnection.setConnectTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
-        urlConnection.setReadTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
-        urlConnection.setRequestMethod("GET");
-        urlConnection.setRequestProperty("User-Agent",
-            ProtocolStrings.USER_AGENT + "/" + version.getVersionString());
-        if (language != null) {
-            urlConnection.setRequestProperty("Accept-Language", language);
-        }
-        if (authenticator != null) {
-            authenticator.addAuthenticationToConnection(urlConnection);
-        }
-        urlConnection.setDoOutput(false);
-        urlConnection.setDoInput(true);
-
-        try {
-            return IOUtils.toString(urlConnection.getInputStream(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            try {
-                throw new HttpConnectionException(urlConnection.getResponseCode(), e);
-            } catch (IOException ignored) {
-                throw e;
-            }
-        } finally {
-            urlConnection.disconnect();
-        }
+    @NonNull
+    private String doGet(@NonNull String urlString) throws IOException, HttpConnectionException {
+        return httpRequester.get(urlString, version);
     }
 
     /**
@@ -1719,13 +1604,13 @@ public class APIConnector {
      * @param body   The request body
      * @return The response body, UTF-8 decoded
      */
-    @Nullable
+    @NonNull
     protected String postJson(@NonNull String urlStr, @NonNull JSONObject body) throws IOException {
-        PostJsonResult postJsonResult = postJsonWithResult(urlStr, body);
-        if (postJsonResult.responseCode > 0) {
-            throw new IOException("HTTP POST failed. Server response code: " + postJsonResult.responseCode);
+        HttpRequesterResult httpRequesterResult = postJsonWithResult(urlStr, body);
+        if (httpRequesterResult instanceof HttpRequesterResult.Error) {
+            throw new IOException("HTTP POST failed. Server response code: " + ((HttpRequesterResult.Error) httpRequesterResult).responseCode);
         }
-        return postJsonResult.responseBody;
+        return ((HttpRequesterResult.Success) httpRequesterResult).responseBody;
     }
 
     /**
@@ -1740,46 +1625,8 @@ public class APIConnector {
      * response code
      */
     @NonNull
-    protected PostJsonResult postJsonWithResult(@NonNull String urlStr, @NonNull JSONObject body) throws IOException {
-        final URL url = new URL(urlStr);
-
-        final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        if (urlConnection instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) urlConnection).setSSLSocketFactory(this.sslSocketFactoryFactory.makeFactory(url.getHost()));
-        }
-        urlConnection.setConnectTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
-        urlConnection.setReadTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
-        urlConnection.setRequestMethod("POST");
-        urlConnection.setRequestProperty("Content-Type", "application/json");
-        urlConnection.setRequestProperty("User-Agent",
-            ProtocolStrings.USER_AGENT + "/" + this.version.getVersionString());
-        if (this.language != null) {
-            urlConnection.setRequestProperty("Accept-Language", this.language);
-        }
-        if (this.authenticator != null) {
-            this.authenticator.addAuthenticationToConnection(urlConnection);
-        }
-        urlConnection.setDoOutput(true);
-        urlConnection.setDoInput(true);
-
-        try {
-            // Send request
-            try (OutputStreamWriter osw = new OutputStreamWriter(urlConnection.getOutputStream(),
-                StandardCharsets.UTF_8)) {
-                osw.write(body.toString());
-            }
-
-            // Read response body
-            PostJsonResult result = new PostJsonResult();
-            try (InputStream inputStream = urlConnection.getInputStream()) {
-                result.responseBody = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                result.responseCode = urlConnection.getResponseCode();
-            }
-            return result;
-        } finally {
-            urlConnection.disconnect();
-        }
+    private HttpRequesterResult postJsonWithResult(@NonNull String urlStr, @NonNull JSONObject body) throws IOException {
+        return httpRequester.post(urlStr, body, version);
     }
 
     /**

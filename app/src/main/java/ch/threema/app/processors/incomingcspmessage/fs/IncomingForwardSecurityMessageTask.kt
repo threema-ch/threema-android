@@ -35,7 +35,10 @@ class IncomingForwardSecurityMessageTask(
     override suspend fun run(handle: ActiveTaskCodec): ForwardSecurityDecryptionResult {
         // TODO(ANDR-2519): Remove when md allows fs
         if (!forwardSecurityMessageProcessor.canForwardSecurityMessageBeProcessed(
-                contact, envelopeMessage.data.sessionId, true, handle
+                sender = contact,
+                sessionId = envelopeMessage.data.sessionId,
+                sendTerminate = true,
+                handle = handle,
             )
         ) {
             return ForwardSecurityDecryptionResult.NONE

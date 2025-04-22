@@ -36,7 +36,7 @@ private val logger = LoggingUtil.getThreemaLogger("DeviceJoin.RendezvousConnecti
 class RendezvousConnection private constructor(
     val rph: ByteArray,
     private val protocol: RendezvousProtocol,
-    private val rendezvousPath: RendezvousPath
+    private val rendezvousPath: RendezvousPath,
 ) {
     val closedSignal: Deferred<Unit> = rendezvousPath.closedSignal
 
@@ -131,7 +131,7 @@ class RendezvousConnection private constructor(
 
             private fun getPaths(
                 okHttpClient: OkHttpClient,
-                rendezvousInit: RendezvousInit
+                rendezvousInit: RendezvousInit,
             ): Map<UInt, RendezvousPath> {
                 if (rendezvousInit.hasDirectTcpServer()) {
                     logger.info("Ignore unsupported direct tcp server")
@@ -145,30 +145,30 @@ class RendezvousConnection private constructor(
                         it.pathId.toUInt() to WebSocketRendezvousPath(
                             it.pathId.toUInt(),
                             okHttpClient,
-                            it.url
+                            it.url,
                         )
-                    }
+                    },
                 )
             }
         }
 
         suspend fun connect(
             okHttpClient: OkHttpClient,
-            rendezvousInit: RendezvousInit
+            rendezvousInit: RendezvousInit,
         ): RendezvousConnection {
             return connect(DefaultRendezvousPathProvider(okHttpClient), rendezvousInit)
         }
 
         private suspend fun connect(
             rendezvousPathProvider: RendezvousPathProvider,
-            rendezvousInit: RendezvousInit
+            rendezvousInit: RendezvousInit,
         ): RendezvousConnection {
             val paths = rendezvousPathProvider.getPaths(rendezvousInit)
 
             val protocol = RendezvousProtocol.newAsRrd(
                 true,
                 rendezvousInit.ak.toByteArray(),
-                paths.keys.toList()
+                paths.keys.toList(),
             )
 
             val multiplexedPath = paths.toMultiplexedPath()
@@ -183,7 +183,6 @@ class RendezvousConnection private constructor(
                         multiplexedPath.write(frame.pid to frame.frame)
                     }
                 }
-
                 runNominationLoop(protocol, multiplexedPath)
             } catch (e: Exception) {
                 logger.warn("Rendezvous connection failed. Close all possible paths.")
@@ -198,7 +197,7 @@ class RendezvousConnection private constructor(
          */
         private suspend fun runNominationLoop(
             protocol: RendezvousProtocol,
-            multiplexedPath: MultiplexedRendezvousPath
+            multiplexedPath: MultiplexedRendezvousPath,
         ): RendezvousConnection {
             logger.info("Entering nomination loop")
             while (true) {
@@ -221,7 +220,7 @@ class RendezvousConnection private constructor(
                             // TODO(ANDR-2691): Choose the _best_ path based on the measured RTT
                             logger.debug(
                                 "Path ready to nominate (measuredRttMs={})",
-                                update.measuredRttMs
+                                update.measuredRttMs,
                             )
                             result = if (protocol.isNominator()) {
                                 try {
@@ -241,7 +240,7 @@ class RendezvousConnection private constructor(
                             return RendezvousConnection(
                                 update.rph,
                                 protocol,
-                                nominated
+                                nominated,
                             )
                         }
 

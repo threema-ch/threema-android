@@ -28,9 +28,9 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import org.slf4j.Logger
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("GroupLocationMessage")
 
@@ -41,7 +41,6 @@ private val logger: Logger = LoggingUtil.getThreemaLogger("GroupLocationMessage"
  */
 class GroupLocationMessage(private val locationMessageData: LocationMessageData) :
     AbstractGroupMessage() {
-
     val latitude: Double
         get() = locationMessageData.latitude
 
@@ -92,7 +91,6 @@ class GroupLocationMessage(private val locationMessageData: LocationMessageData)
     }
 
     companion object {
-
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
          *  So we set the offset in [fromByteArray] to zero.
@@ -118,7 +116,12 @@ class GroupLocationMessage(private val locationMessageData: LocationMessageData)
         }
 
         @JvmStatic
-        fun fromByteArray(data: ByteArray): GroupLocationMessage = fromByteArray(data, 0, data.size)
+        @Throws(BadMessageException::class)
+        fun fromByteArray(data: ByteArray): GroupLocationMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Build an instance of [GroupLocationMessage] from the given [data] bytes. Note that
@@ -145,7 +148,6 @@ class GroupLocationMessage(private val locationMessageData: LocationMessageData)
                 throw BadMessageException("Bad length ($length) for group location message")
             }
 
-
             var positionIndex = offset
             val groupCreator =
                 String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
@@ -157,7 +159,7 @@ class GroupLocationMessage(private val locationMessageData: LocationMessageData)
             val locationMessageData = LocationMessageData.parse(
                 data = data,
                 offset = positionIndex,
-                length = length + offset - positionIndex
+                length = length + offset - positionIndex,
             )
 
             return GroupLocationMessage(locationMessageData).apply {

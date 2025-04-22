@@ -26,10 +26,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+
 public class WorkMDMSettings implements Serializable {
     // if true, parameters set here override those set by an AppConfig-style MDM
     public boolean override = false;
-    public Map<String, Object> parameters = new HashMap<>();
+    @NonNull
+    public final Map<String, Object> parameters = new HashMap<>();
 
     @Override
     public boolean equals(Object o) {

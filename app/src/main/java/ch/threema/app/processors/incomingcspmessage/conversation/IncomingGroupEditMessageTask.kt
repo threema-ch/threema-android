@@ -27,10 +27,10 @@ import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.app.tasks.runCommonEditMessageReceiveSteps
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupModel
 import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingGroupEditMessageTask")
@@ -40,9 +40,9 @@ class IncomingGroupEditMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupEditMessage>(editMessage, triggerSource, serviceManager) {
-
     private val messageService by lazy { serviceManager.messageService }
     private val groupService by lazy { serviceManager.groupService }
+    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         logger.debug("IncomingGroupEditMessageTask id: {}", message.data.messageId)
@@ -56,7 +56,10 @@ class IncomingGroupEditMessageTask(
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
         logger.debug("IncomingGroupEditMessageTask id: {}", message.data.messageId)
 
-        val groupModel = groupService.getByGroupMessage(message)
+        val groupModel = groupModelRepository.getByCreatorIdentityAndId(
+            message.groupCreator,
+            message.apiGroupId,
+        )
 
         if (groupModel == null) {
             logger.error("Received a reflected group edit message in an unknown group")
@@ -67,7 +70,10 @@ class IncomingGroupEditMessageTask(
     }
 
     private fun applyEdit(groupModel: GroupModel): ReceiveStepsResult {
-        val receiver = groupService.createReceiver(groupModel)
+        val receiver = groupService.createReceiver(groupModel) ?: run {
+            logger.error("Could not get message receiver")
+            return ReceiveStepsResult.DISCARD
+        }
         val editedMessage = runCommonEditMessageReceiveSteps(message, receiver, messageService)
             ?: return ReceiveStepsResult.DISCARD
 

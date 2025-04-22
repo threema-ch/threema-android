@@ -42,11 +42,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
-import ch.threema.app.services.IdListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
@@ -61,55 +59,79 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.IdentityState;
+import ch.threema.domain.models.IdentityType;
 import ch.threema.storage.models.ContactModel;
 import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
 
 public class UserListAdapter extends FilterableListAdapter {
-    private final Context context;
-    private List<ContactModel> values;
-    private final List<ContactModel> originalValues;
+    private final @NonNull Context context;
+
+    /**
+     * This list will be mutated by a {@code UserListFilter}.
+     */
+    private @NonNull List<ContactModel> contactModels;
+
+    /**
+     * This list will not be mutated by a filter and stay as created by the constructor.
+     */
+    private final @NonNull List<ContactModel> originalContactModels;
+
     private UserListFilter userListFilter;
     private final ContactService contactService;
     private final BlockedIdentitiesService blockedIdentitiesService;
-    private final DeadlineListService hiddenChatsListService;
-    private final FilterResultsListener filterResultsListener;
+
+    private final @Nullable ConversationCategoryService conversationCategoryService;
+    private final @Nullable FilterResultsListener filterResultsListener;
     private final @NonNull RequestManager requestManager;
 
+    /**
+     * <strong>Warning:</strong> This adapter might display more items than passed in {@code contactModels} list. This is an old workaround
+     * to include inactive contacts from {@code preselectedIdentities} that are not part of the passed {@code contactModels} list.
+     */
     public UserListAdapter(
-        Context context,
-        @NonNull final List<ContactModel> values,
+        @NonNull final Context context,
+        @NonNull final List<ContactModel> contactModels,
         @Nullable final List<String> preselectedIdentities,
-        final List<Integer> checkedItems,
-        ContactService contactService,
-        BlockedIdentitiesService blockedIdentitiesService,
-        DeadlineListService hiddenChatsListService,
-        PreferenceService preferenceService,
-        FilterResultsListener filterResultsListener,
-        @NonNull RequestManager requestManager
+        @Nullable final List<Integer> checkedItemPositions,
+        @NonNull ContactService contactService,
+        @NonNull BlockedIdentitiesService blockedIdentitiesService,
+        @Nullable ConversationCategoryService conversationCategoryService,
+        @NonNull PreferenceService preferenceService,
+        @Nullable FilterResultsListener filterResultsListener,
+        @NonNull RequestManager requestManager,
+        boolean showOnlyWorkVerified
     ) {
-        super(context, R.layout.item_user_list, (List<Object>) (Object) values);
+        super(context, R.layout.item_user_list, contactModels);
 
         this.context = context;
         this.contactService = contactService;
-        this.hiddenChatsListService = hiddenChatsListService;
+        this.conversationCategoryService = conversationCategoryService;
         this.blockedIdentitiesService = blockedIdentitiesService;
         this.filterResultsListener = filterResultsListener;
         this.requestManager = requestManager;
 
-        this.values = new ArrayList<>(values);
-        this.values.addAll(getMissingPreselectedContacts(values, preselectedIdentities));
+        this.contactModels = new ArrayList<>(contactModels);
+        this.contactModels.addAll(
+            getMissingPreselectedContacts(
+                contactModels,
+                preselectedIdentities,
+                showOnlyWorkVerified
+            )
+        );
         Collections.sort(
-            this.values,
+            this.contactModels,
             ContactUtil.getContactComparator(preferenceService.isContactListSortingFirstName())
         );
-        this.originalValues = new ArrayList<>(this.values);
+        this.originalContactModels = new ArrayList<>(this.contactModels);
 
-        setCheckedItems(preselectedIdentities, checkedItems);
+        setCheckedItems(preselectedIdentities, checkedItemPositions);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
 
         UserListHolder holder = new UserListHolder();
@@ -149,8 +171,8 @@ public class UserListAdapter extends FilterableListAdapter {
             holder = (UserListHolder) itemView.getTag();
         }
 
-        final ContactModel contactModel = values.get(position);
-        holder.originalPosition = originalValues.indexOf(contactModel);
+        final ContactModel contactModel = contactModels.get(position);
+        holder.originalPosition = originalContactModels.indexOf(contactModel);
 
         String filterString = null;
         if (userListFilter != null) {
@@ -178,9 +200,9 @@ public class UserListAdapter extends FilterableListAdapter {
         );
 
         String lastMessageDateString = null;
-        MessageReceiver messageReceiver = this.contactService.createReceiver(contactModel);
-        if (messageReceiver != null && !hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
-            lastMessageDateString = MessageUtil.getDisplayDate(this.context, ((ContactMessageReceiver) messageReceiver).getLastMessage(), false);
+        ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contactModel);
+        if (conversationCategoryService != null && !conversationCategoryService.isPrivateChat(messageReceiver.getUniqueIdString())) {
+            lastMessageDateString = MessageUtil.getDisplayDate(this.context, messageReceiver.getLastMessage(), false);
         }
 
         ViewUtil.showAndSet(
@@ -227,14 +249,14 @@ public class UserListAdapter extends FilterableListAdapter {
             if (constraint == null || constraint.length() == 0) {
                 // no filtering
                 filterString = null;
-                results.values = originalValues;
-                results.count = originalValues.size();
+                results.values = originalContactModels;
+                results.count = originalContactModels.size();
             } else {
                 // perform filtering
                 List<ContactModel> nContactList = new ArrayList<>();
                 filterString = constraint.toString();
 
-                for (ContactModel contactModel : originalValues) {
+                for (ContactModel contactModel : originalContactModels) {
                     if ((NameUtil.getDisplayNameOrNickname(contactModel, false).toUpperCase().contains(filterString.toUpperCase())) ||
                         (contactModel.getIdentity().toUpperCase().contains(filterString.toUpperCase()))) {
                         nContactList.add(contactModel);
@@ -247,8 +269,9 @@ public class UserListAdapter extends FilterableListAdapter {
         }
 
         @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            values = (List<ContactModel>) results.values;
+        protected void publishResults(CharSequence constraint, @NonNull FilterResults results) {
+            // noinspection unchecked
+            contactModels = (List<ContactModel>) results.values;
             if (filterResultsListener != null) {
                 filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
             }
@@ -260,17 +283,18 @@ public class UserListAdapter extends FilterableListAdapter {
         }
     }
 
+    @NonNull
     @Override
     public Filter getFilter() {
-        if (userListFilter == null)
+        if (userListFilter == null) {
             userListFilter = new UserListFilter();
-
+        }
         return userListFilter;
     }
 
     @Override
     public int getCount() {
-        return values != null ? values.size() : 0;
+        return contactModels != null ? contactModels.size() : 0;
     }
 
     @Override
@@ -279,7 +303,7 @@ public class UserListAdapter extends FilterableListAdapter {
         ContactModel contactModel;
 
         for (int position : checkedItems) {
-            contactModel = originalValues.get(position);
+            contactModel = originalContactModels.get(position);
             if (contactModel != null) {
                 contacts.add(contactModel);
             }
@@ -288,34 +312,51 @@ public class UserListAdapter extends FilterableListAdapter {
     }
 
     @Override
-    public ContactModel getClickedItem(View v) {
-        return originalValues.get(((UserListHolder) v.getTag()).originalPosition);
-    }
-
-    private List<ContactModel> getMissingPreselectedContacts(@NonNull List<ContactModel> contacts, @Nullable List<String> preselectedIdentities) {
-        if (preselectedIdentities != null) {
-            Set<String> includedIds = StreamSupport.stream(contacts)
-                .map(Contact::getIdentity)
-                .collect(Collectors.toSet());
-            return StreamSupport.stream(preselectedIdentities)
-                .filter(identity -> !includedIds.contains(identity))
-                .map(contactService::getByIdentity)
-                .filter(contact -> contact != null)
-                .collect(Collectors.toList());
+    @Nullable
+    public ContactModel getClickedItem(@Nullable View view) {
+        if (view != null) {
+            return originalContactModels.get(((UserListHolder) view.getTag()).originalPosition);
         } else {
-            return Collections.emptyList();
+            return null;
         }
     }
 
-    private void setCheckedItems(@Nullable List<String> preselectedIdentities, List<Integer> checkedItems) {
-        if (checkedItems != null && checkedItems.size() > 0) {
+    /**
+     * Old workaround to include inactive contacts in this adapter that are not actually part of the passed {@code contactModels} list.
+     */
+    private List<ContactModel> getMissingPreselectedContacts(
+        @NonNull List<ContactModel> alreadyDisplayedContacts,
+        @Nullable List<String> preselectedIdentities,
+        boolean showOnlyWorkVerified
+    ) {
+        if (preselectedIdentities == null || preselectedIdentities.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final Set<String> alreadyDisplayedIdentities = StreamSupport.stream(alreadyDisplayedContacts)
+            .map(Contact::getIdentity)
+            .collect(Collectors.toSet());
+
+        return StreamSupport.stream(preselectedIdentities)
+            .filter(identity -> !alreadyDisplayedIdentities.contains(identity))
+            .map(contactService::getByIdentity)
+            .filter(contactModel -> {
+                if (contactModel == null) {
+                    return false;
+                }
+                return contactModel.isWorkVerified() == showOnlyWorkVerified;
+            })
+            .collect(Collectors.toList());
+    }
+
+    private void setCheckedItems(@Nullable List<String> preselectedIdentities, @Nullable List<Integer> checkedItems) {
+        if (checkedItems != null && !checkedItems.isEmpty()) {
             // restore checked items
             this.checkedItems.addAll(checkedItems);
         }
         // validate if preselected items are in dataset
-        else if (preselectedIdentities != null && preselectedIdentities.size() > 0) {
-            for (int i = 0; i < values.size(); i++) {
-                ContactModel contactModel = values.get(i);
+        else if (preselectedIdentities != null && !preselectedIdentities.isEmpty()) {
+            for (int i = 0; i < contactModels.size(); i++) {
+                ContactModel contactModel = contactModels.get(i);
                 if (preselectedIdentities.contains(contactModel.getIdentity())) {
                     this.checkedItems.add(i);
                 }

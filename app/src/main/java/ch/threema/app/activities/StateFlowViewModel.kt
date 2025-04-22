@@ -23,16 +23,15 @@ package ch.threema.app.activities
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 abstract class StateFlowViewModel : ViewModel() {
-
     /**
      *  Converts a flow into an immutable state flow of type [T].
      *
@@ -43,12 +42,12 @@ abstract class StateFlowViewModel : ViewModel() {
      */
     fun <T> Flow<T>.stateInViewModel(
         initialValue: T,
-        stopTimeout: Duration = 5.seconds
+        stopTimeout: Duration = 5.seconds,
     ): StateFlow<T> = stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(
-            stopTimeout = stopTimeout
+            stopTimeout = stopTimeout,
         ),
-        initialValue = initialValue
+        initialValue = initialValue,
     )
 }

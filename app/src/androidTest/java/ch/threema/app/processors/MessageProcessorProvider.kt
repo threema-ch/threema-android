@@ -24,7 +24,6 @@ package ch.threema.app.processors
 import android.Manifest
 import android.content.Intent
 import android.os.Build
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.ThreemaApplication
@@ -37,6 +36,7 @@ import ch.threema.app.tasks.TaskArchiverImpl
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
+import ch.threema.app.testutils.clearDatabaseAndCaches
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ForwardSecurityStatusSender
 import ch.threema.base.crypto.HashedNonce
@@ -44,6 +44,7 @@ import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.crypto.NonceStore
+import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.fs.DHSession
 import ch.threema.domain.helpers.DecryptTaskCodec
 import ch.threema.domain.helpers.InMemoryContactStore
@@ -55,8 +56,8 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.protocol.ThreemaFeature
+import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.api.APIConnector
-import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.protocol.csp.coders.MessageCoder
@@ -76,6 +77,8 @@ import ch.threema.domain.taskmanager.toCspMessage
 import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupMemberModel
+import java.util.Queue
+import java.util.concurrent.ConcurrentLinkedQueue
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -84,12 +87,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.rules.Timeout
-import java.io.File
-import java.util.Queue
-import java.util.concurrent.ConcurrentLinkedQueue
 
 open class MessageProcessorProvider {
-
     protected val myContact: TestContact = TestHelpers.TEST_CONTACT
     protected val contactA = TestContact("12345678")
     protected val contactB = TestContact("ABCDEFGH")
@@ -100,7 +99,7 @@ open class MessageProcessorProvider {
         myContact,
         listOf(myContact, contactA, contactB),
         "MyGroup",
-        myContact.identity
+        myContact.identity,
     )
     protected val myGroupWithProfilePicture =
         TestGroup(
@@ -109,7 +108,7 @@ open class MessageProcessorProvider {
             listOf(myContact, contactA),
             "MyGroupWithPicture",
             byteArrayOf(0, 1, 2, 3),
-            myContact.identity
+            myContact.identity,
         )
     protected val groupA =
         TestGroup(GroupId(2), contactA, listOf(myContact, contactA), "GroupA", myContact.identity)
@@ -121,7 +120,7 @@ open class MessageProcessorProvider {
             contactA,
             listOf(myContact, contactA, contactB),
             "GroupAB",
-            myContact.identity
+            myContact.identity,
         )
     protected val groupAUnknown =
         TestGroup(
@@ -129,7 +128,7 @@ open class MessageProcessorProvider {
             contactA,
             listOf(myContact, contactA, contactB),
             "GroupAUnknown",
-            myContact.identity
+            myContact.identity,
         )
     protected val groupALeft =
         TestGroup(
@@ -137,7 +136,7 @@ open class MessageProcessorProvider {
             contactA,
             listOf(contactA, contactB),
             "GroupALeft",
-            myContact.identity
+            myContact.identity,
         )
     protected val myUnknownGroup =
         TestGroup(
@@ -145,7 +144,7 @@ open class MessageProcessorProvider {
             myContact,
             listOf(myContact, contactA),
             "MyUnknownGroup",
-            myContact.identity
+            myContact.identity,
         )
     protected val myLeftGroup =
         TestGroup(GroupId(8), myContact, listOf(contactA), "MyLeftGroup", myContact.identity)
@@ -155,7 +154,15 @@ open class MessageProcessorProvider {
             contactA,
             listOf(myContact, contactA, contactB),
             "NewAGroup",
-            myContact.identity
+            myContact.identity,
+        )
+    protected val newBGroup =
+        TestGroup(
+            GroupId(10),
+            contactB,
+            listOf(myContact, contactB),
+            "NewBGroup",
+            myContact.identity,
         )
 
     protected val serviceManager: ServiceManager = ThreemaApplication.requireServiceManager()
@@ -177,10 +184,19 @@ open class MessageProcessorProvider {
         serviceManager.contactService,
         serviceManager.messageService,
         APIConnector(
+            /* ipv6 = */
             false,
+            /* serverAddressProvider = */
             null,
-            false
-        ) { host -> ConfigUtils.getSSLSocketFactory(host) },
+            /* isWork = */
+            false,
+            /* sslSocketFactoryFactory = */
+            ConfigUtils::getSSLSocketFactory,
+            /* version = */
+            Version(),
+            /* language = */
+            null,
+        ),
         serviceManager.userService,
         serviceManager.modelRepositories.contacts,
     ) {
@@ -200,20 +216,20 @@ open class MessageProcessorProvider {
             contactStore,
             contactA.identityStore,
             NonceFactory(InMemoryNonceStore()),
-            forwardSecurityStatusListener
+            forwardSecurityStatusListener,
         ),
         contactB.identity to ForwardSecurityMessageProcessor(
             InMemoryDHSessionStore(),
             contactStore,
             contactB.identityStore, NonceFactory(InMemoryNonceStore()),
-            forwardSecurityStatusListener
+            forwardSecurityStatusListener,
         ),
         contactC.identity to ForwardSecurityMessageProcessor(
             InMemoryDHSessionStore(),
             contactStore,
             contactC.identityStore,
             NonceFactory(InMemoryNonceStore()),
-            forwardSecurityStatusListener
+            forwardSecurityStatusListener,
         ),
     ).toMap()
 
@@ -263,7 +279,7 @@ open class MessageProcessorProvider {
 
     @Rule
     @JvmField
-    val timeout: Timeout = Timeout.seconds(300)
+    val timeout: Timeout = Timeout.seconds(150)
 
     @JvmField
     @Rule
@@ -279,13 +295,13 @@ open class MessageProcessorProvider {
      */
     @Before
     fun setup() {
-        assert(myContact.identity == TestHelpers.ensureIdentity(ThreemaApplication.requireServiceManager()))
+        TestHelpers.setIdentity(
+            ThreemaApplication.requireServiceManager(),
+            TestHelpers.TEST_CONTACT,
+        )
 
         // Delete persisted tasks as they are not needed for tests
         serviceManager.databaseServiceNew.taskArchiveFactory.deleteAll()
-
-        // Then stop connection
-        serviceManager.connection.stop()
 
         // Replace original task manager (save a copy of it)
         originalTaskManager = serviceManager.taskManager
@@ -350,13 +366,13 @@ open class MessageProcessorProvider {
             val initMessageBox = MessageBox.parseBinary(initCspMessage.toOutgoingMessageData().data)
             val init = MessageCoder(
                 contactStore,
-                it.identityStore
+                it.identityStore,
             ).decode(initMessageBox) as ForwardSecurityEnvelopeMessage
             runBlocking {
                 forwardSecurityMessageProcessorMap[it.identity]!!.processInit(
                     myContact.contact,
                     init.data as ForwardSecurityDataInit,
-                    globalTaskCodec
+                    globalTaskCodec,
                 )
             }
 
@@ -367,61 +383,17 @@ open class MessageProcessorProvider {
     }
 
     /**
-     * Clean the data after the tests. This includes the deletion of the database entries, the
-     * avatar files, and the blocked contacts.
+     * Set the original task manager again and wait until the connection has been started again.
      */
     @After
     fun cleanup() {
-        clearData()
-
         if (this::originalTaskManager.isInitialized) {
             setTaskManager(originalTaskManager)
-        }
-
-        // We need to start the connection again, as some tests require a running connection
-        serviceManager.connection.start()
-
-        // Wait until the connection has been established. If we do not wait for the connection, the
-        // next test may fail due to a race condition that occurs when the connection is started and
-        // almost immediately stopped again.
-        while (serviceManager.connection.connectionState != ConnectionState.LOGGEDIN) {
-            Thread.sleep(50)
         }
     }
 
     private fun clearData() {
-        // Clear conversations
-        serviceManager.conversationService.getAll(true).forEach {
-            serviceManager.conversationService.empty(it, true)
-        }
-
-        // Delete database
-        serviceManager.databaseServiceNew.apply {
-            contactModelFactory.deleteAll()
-            messageModelFactory.deleteAll()
-            groupCallModelFactory.deleteAll()
-            groupInviteModelFactory.deleteAll()
-            groupBallotModelFactory.deleteAll()
-            groupMemberModelFactory.deleteAll()
-            groupMessageModelFactory.deleteAll()
-            // Remove group models from group service to empty the group service cache
-            serviceManager.groupService.removeAll()
-            distributionListModelFactory.deleteAll()
-            distributionListMemberModelFactory.deleteAll()
-            distributionListMessageModelFactory.deleteAll()
-            outgoingGroupSyncRequestLogModelFactory.deleteAll()
-            incomingGroupSyncRequestLogModelFactory.deleteAll()
-            ballotModelFactory.deleteAll()
-            ballotChoiceModelFactory.deleteAll()
-            ballotVoteModelFactory.deleteAll()
-            identityBallotModelFactory.deleteAll()
-            webClientSessionModelFactory.deleteAll()
-            conversationTagFactory.deleteAll()
-            outgoingGroupJoinRequestModelFactory.deleteAll()
-            incomingGroupJoinRequestModelFactory.deleteAll()
-            serverMessageModelFactory.deleteAll()
-            taskArchiveFactory.deleteAll()
-        }
+        clearDatabaseAndCaches(serviceManager)
 
         // Delete dh sessions
         initialContacts.forEach {
@@ -430,12 +402,6 @@ open class MessageProcessorProvider {
 
         // Remove files
         serviceManager.fileService.removeAllAvatars()
-        serviceManager.fileService.remove(
-            File(
-                InstrumentationRegistry.getInstrumentation().context.filesDir,
-                "taskArchive"
-            ), true
-        )
 
         // Unblock contacts
         val blockedIdentitiesService = serviceManager.blockedIdentitiesService
@@ -466,19 +432,22 @@ open class MessageProcessorProvider {
     private fun disableLifetimeService() {
         val field = ServiceManager::class.java.getDeclaredField("lifetimeService")
         field.isAccessible = true
-        field.set(ThreemaApplication.getServiceManager(), object : LifetimeService {
-            override fun acquireConnection(sourceTag: String, unpauseable: Boolean) = Unit
-            override fun acquireConnection(source: String) = Unit
-            override fun acquireUnpauseableConnection(source: String) = Unit
-            override fun releaseConnection(sourceTag: String) = Unit
-            override fun releaseConnectionLinger(sourceTag: String, timeoutMs: Long) = Unit
-            override fun ensureConnection() = Unit
-            override fun alarm(intent: Intent?) = Unit
-            override fun isActive(): Boolean = true
-            override fun pause() = Unit
-            override fun unpause() = Unit
-            override fun addListener(listener: LifetimeService.LifetimeServiceListener?) = Unit
-        })
+        field.set(
+            ThreemaApplication.getServiceManager(),
+            object : LifetimeService {
+                override fun acquireConnection(sourceTag: String, unpauseable: Boolean) = Unit
+                override fun acquireConnection(source: String) = Unit
+                override fun acquireUnpauseableConnection(source: String) = Unit
+                override fun releaseConnection(sourceTag: String) = Unit
+                override fun releaseConnectionLinger(sourceTag: String, timeoutMs: Long) = Unit
+                override fun ensureConnection() = Unit
+                override fun alarm(intent: Intent?) = Unit
+                override fun isActive(): Boolean = true
+                override fun pause() = Unit
+                override fun unpause() = Unit
+                override fun addListener(listener: LifetimeService.LifetimeServiceListener?) = Unit
+            },
+        )
     }
 
     /**
@@ -495,7 +464,7 @@ open class MessageProcessorProvider {
                 it,
                 databaseService,
                 contactStore,
-                AcquaintanceLevel.GROUP
+                AcquaintanceLevel.GROUP,
             )
         }
 
@@ -510,7 +479,7 @@ open class MessageProcessorProvider {
     ) {
         databaseService.contactModelFactory.createOrUpdate(
             testContact.contactModel.setAcquaintanceLevel(acquaintanceLevel)
-                .setFeatureMask(ThreemaFeature.FORWARD_SECURITY)
+                .setFeatureMask(ThreemaFeature.FORWARD_SECURITY),
         )
 
         contactStore.addCachedContact(testContact.toBasicContact())
@@ -536,6 +505,13 @@ open class MessageProcessorProvider {
         if (testGroup.profilePicture != null) {
             fileService.writeGroupAvatar(groupModel, testGroup.profilePicture)
         }
+
+        // We trigger the listeners to invalidate the cache of the new group model.
+        ListenerManager.groupListeners.handle {
+            it.onUpdate(
+                GroupIdentity(testGroup.groupCreator.identity, testGroup.apiGroupId.toLong()),
+            )
+        }
     }
 
     /**
@@ -548,7 +524,7 @@ open class MessageProcessorProvider {
         val messageBox = createMessageBox(
             message,
             identityStore,
-            forwardSecurityMessageProcessorMap[message.fromIdentity]!!
+            forwardSecurityMessageProcessorMap[message.fromIdentity]!!,
         )
 
         // Process the group message
@@ -559,7 +535,7 @@ open class MessageProcessorProvider {
         // Assert that this message has been acked towards the server
         assertEquals(
             message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK),
-            !localTaskCodec.ackedIncomingMessages.contains(message.messageId)
+            !localTaskCodec.ackedIncomingMessages.contains(message.messageId),
         )
 
         while (globalTaskQueue.isNotEmpty()) {
@@ -591,7 +567,7 @@ open class MessageProcessorProvider {
                 scope: NonceScope,
                 chunkSize: Int,
                 offset: Int,
-                nonces: MutableList<HashedNonce>
+                nonces: MutableList<HashedNonce>,
             ) {
             }
 
@@ -600,12 +576,12 @@ open class MessageProcessorProvider {
 
         val encapsulated = forwardSecurityMessageProcessor.runFsEncapsulationSteps(
             contactStore.getContactForIdentityIncludingCache(
-                msg.toIdentity
+                msg.toIdentity,
             )!!.enhanceToBasicContact(),
             msg,
             nonceFactory.next(NonceScope.CSP),
             nonceFactory,
-            globalTaskCodec
+            globalTaskCodec,
         ).outgoingMessages.last().first
 
         val messageCoder = MessageCoder(contactStore, identityStore)
@@ -630,5 +606,4 @@ open class MessageProcessorProvider {
         IdentityState.ACTIVE,
         IdentityType.NORMAL,
     )
-
 }

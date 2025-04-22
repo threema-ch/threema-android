@@ -27,11 +27,11 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
+import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets
 import org.json.JSONArray
 import org.json.JSONException
 import org.slf4j.Logger
-import java.io.ByteArrayOutputStream
-import java.nio.charset.StandardCharsets
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("PollVoteMessage")
 
@@ -39,7 +39,6 @@ private val logger: Logger = LoggingUtil.getThreemaLogger("PollVoteMessage")
  * A poll vote message.
  */
 open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
-
     override var ballotId: BallotId? = null
     override var ballotCreatorIdentity: String? = null
     override val votes: MutableList<BallotVote> = mutableListOf()
@@ -103,30 +102,27 @@ open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_BALLOT_VOTE
 
     companion object {
+        @JvmStatic
+        fun fromReflected(message: MdD2D.IncomingMessage): PollVoteMessage = fromByteArray(
+            data = message.body.toByteArray(),
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): PollVoteMessage =
-            fromByteArray(
-                data = message.body.toByteArray()
-            ).apply {
-                initializeCommonProperties(message)
-            }
+        fun fromReflected(message: MdD2D.OutgoingMessage): PollVoteMessage = fromByteArray(
+            data = message.body.toByteArray(),
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): PollVoteMessage =
-            fromByteArray(
-                data = message.body.toByteArray()
-            ).apply {
-                initializeCommonProperties(message)
-            }
-
-        @JvmStatic
-        fun fromByteArray(data: ByteArray): PollVoteMessage =
-            fromByteArray(
-                data = data,
-                offset = 0,
-                length = data.size
-            )
+        @Throws(BadMessageException::class)
+        fun fromByteArray(data: ByteArray): PollVoteMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Get the poll-vote message from the given array.
@@ -149,14 +145,13 @@ open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
             }
 
             return PollVoteMessage().apply {
-
                 var positionIndex = offset
 
                 ballotCreatorIdentity = String(
                     data,
                     positionIndex,
                     ProtocolDefines.IDENTITY_LEN,
-                    StandardCharsets.US_ASCII
+                    StandardCharsets.US_ASCII,
                 )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
@@ -168,8 +163,8 @@ open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
                         data,
                         positionIndex,
                         length + offset - positionIndex,
-                        StandardCharsets.UTF_8
-                    )
+                        StandardCharsets.UTF_8,
+                    ),
                 )
             }
         }

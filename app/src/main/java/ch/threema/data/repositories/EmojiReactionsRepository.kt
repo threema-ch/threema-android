@@ -28,6 +28,7 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.utils.ThrowingConsumer
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.models.EmojiReactionsModel
@@ -38,7 +39,6 @@ import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
-import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsRepository")
 
@@ -122,7 +122,7 @@ class EmojiReactionsRepository(
      */
     private fun addAckDecReactions(
         targetMessageModel: AbstractMessageModel,
-        mutableEmojiReactions: MutableList<EmojiReactionData>
+        mutableEmojiReactions: MutableList<EmojiReactionData>,
     ): List<EmojiReactionData> {
         if (targetMessageModel is GroupMessageModel) {
             mutableEmojiReactions += targetMessageModel.groupMessageStates?.mapNotNull { (identity, reaction) ->
@@ -130,13 +130,13 @@ class EmojiReactionsRepository(
                     MessageState.USERACK.toString() -> createEmojiReactionData(
                         targetMessageModel,
                         identity,
-                        emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE
+                        emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE,
                     )
 
                     MessageState.USERDEC.toString() -> createEmojiReactionData(
                         targetMessageModel,
                         identity,
-                        emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE
+                        emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE,
                     )
 
                     else -> null
@@ -144,21 +144,20 @@ class EmojiReactionsRepository(
             } ?: emptyList()
         } else {
             // in case of an outgoing message only the other party can react - and vice versa
-            val senderIdentity =
-                if (targetMessageModel.isOutbox) targetMessageModel.identity else myIdentity
+            val senderIdentity = if (targetMessageModel.isOutbox) targetMessageModel.identity!! else myIdentity
             val state = targetMessageModel.state
 
             when (state) {
                 MessageState.USERACK -> mutableEmojiReactions += createEmojiReactionData(
                     messageModel = targetMessageModel,
                     senderIdentity = senderIdentity,
-                    emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE
+                    emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE,
                 )
 
                 MessageState.USERDEC -> mutableEmojiReactions += createEmojiReactionData(
                     messageModel = targetMessageModel,
                     senderIdentity = senderIdentity,
-                    emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE
+                    emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE,
                 )
 
                 else -> {
@@ -172,13 +171,13 @@ class EmojiReactionsRepository(
     private fun createEmojiReactionData(
         messageModel: AbstractMessageModel,
         senderIdentity: String,
-        emojiSequence: String
+        emojiSequence: String,
     ): EmojiReactionData {
         return EmojiReactionData(
             messageModel.id,
             senderIdentity,
             emojiSequence,
-            messageModel.createdAt
+            messageModel.createdAt!!,
         )
     }
 
@@ -197,7 +196,7 @@ class EmojiReactionsRepository(
     fun createEntry(
         targetMessage: AbstractMessageModel,
         senderIdentity: String,
-        emojiSequence: String
+        emojiSequence: String,
     ) {
         synchronized(cache) {
             try {
@@ -205,7 +204,7 @@ class EmojiReactionsRepository(
                     messageId = targetMessage.id,
                     senderIdentity = senderIdentity,
                     emojiSequence = emojiSequence,
-                    reactedAt = Date()
+                    reactedAt = now(),
                 )
                 emojiReactionDao.create(reactionEntry, targetMessage)
                 ReactionMessageIdentifier.fromMessageModel(targetMessage)
@@ -244,7 +243,7 @@ class EmojiReactionsRepository(
     fun removeEntry(
         targetMessage: AbstractMessageModel,
         senderIdentity: String,
-        emojiSequence: String
+        emojiSequence: String,
     ) {
         synchronized(cache) {
             try {
@@ -252,7 +251,7 @@ class EmojiReactionsRepository(
                     messageId = targetMessage.id,
                     senderIdentity = senderIdentity,
                     emojiSequence = emojiSequence,
-                    reactedAt = Date()
+                    reactedAt = now(),
                 )
 
                 emojiReactionDao.remove(reactionEntry, targetMessage)
@@ -269,10 +268,7 @@ class EmojiReactionsRepository(
                     // however, since it is not possible to withdraw ackjis, old clients will not receive a change
                     // which will inadvertently lead to inconsistencies
                     val messageState: MessageState? = targetMessage.state
-                    if (messageState != null
-                        && ((messageState == MessageState.USERACK && isThumbsUp)
-                            || (messageState == MessageState.USERDEC && isThumbsDown))
-                    ) {
+                    if ((messageState == MessageState.USERACK && isThumbsUp) || (messageState == MessageState.USERDEC && isThumbsDown)) {
                         messageService.clearMessageState(targetMessage)
                     }
                 }
@@ -297,11 +293,9 @@ class EmojiReactionsRepository(
      */
     data class ReactionMessageIdentifier(
         val messageId: Int,
-        val messageType: TargetMessageType
+        val messageType: TargetMessageType,
     ) {
-
         companion object {
-
             /**
              *  @return The reaction-message-identifier object or `null` if the concrete
              *  type of [AbstractMessageModel] can not receive emoji reactions.
@@ -314,7 +308,7 @@ class EmojiReactionsRepository(
                 }
                 return ReactionMessageIdentifier(
                     messageId = messageModel.id,
-                    messageType = messageType
+                    messageType = messageType,
                 )
             }
         }

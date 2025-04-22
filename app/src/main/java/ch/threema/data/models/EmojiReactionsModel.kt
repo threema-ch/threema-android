@@ -28,12 +28,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class EmojiReactionsModel(
     data: List<EmojiReactionData>,
-    coreServiceManager: CoreServiceManager
+    coreServiceManager: CoreServiceManager,
 ) : BaseModel<List<EmojiReactionData>, Task<*, TaskCodec>>(
     modelName = "EmojiReactionModel",
     mutableData = MutableStateFlow(data),
     multiDeviceManager = coreServiceManager.multiDeviceManager,
-    taskManager = coreServiceManager.taskManager
+    taskManager = coreServiceManager.taskManager,
 ) {
     fun addEntry(entry: EmojiReactionData) {
         if (mutableData.value?.none { it.emojiSequence == entry.emojiSequence && it.senderIdentity == entry.senderIdentity } == true) {

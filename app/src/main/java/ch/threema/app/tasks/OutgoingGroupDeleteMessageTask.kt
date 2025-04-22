@@ -29,8 +29,8 @@ import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 class OutgoingGroupDeleteMessageTask(
     private val messageModelId: Int,
@@ -39,7 +39,6 @@ class OutgoingGroupDeleteMessageTask(
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingGroupDeleteMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -58,13 +57,13 @@ class OutgoingGroupDeleteMessageTask(
             deletedAt,
             messageId,
             createAbstractMessage = { createDeleteMessage(editedMessageIdLong) },
-            handle
+            handle,
         )
     }
 
     private fun createDeleteMessage(messageId: Long): GroupDeleteMessage {
         val deleteMessage = GroupDeleteMessage(
-            DeleteMessageData(messageId = messageId)
+            DeleteMessageData(messageId = messageId),
         )
         return deleteMessage
     }
@@ -73,7 +72,7 @@ class OutgoingGroupDeleteMessageTask(
         messageModelId,
         messageId.messageId,
         deletedAt.time,
-        recipientIdentities
+        recipientIdentities,
     )
 
     @Serializable
@@ -81,7 +80,7 @@ class OutgoingGroupDeleteMessageTask(
         private val messageModelId: Int,
         private val messageId: ByteArray,
         private val deletedAt: Long,
-        private val recipientIdentities: Set<String>
+        private val recipientIdentities: Set<String>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupDeleteMessageTask(
@@ -89,7 +88,7 @@ class OutgoingGroupDeleteMessageTask(
                 MessageId(messageId),
                 Date(deletedAt),
                 recipientIdentities,
-                serviceManager
+                serviceManager,
             )
     }
 }

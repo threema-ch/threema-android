@@ -32,18 +32,21 @@ import ch.threema.app.R;
 
 public class StringConversionUtil {
 
-    public static byte[] stringToByteArray(String s) {
-        if (s == null) {
+    @NonNull
+    public static byte[] stringToByteArray(String string) {
+        if (string == null) {
             return new byte[0];
         }
-        return s.getBytes();
+        return string.getBytes();
     }
 
+    @NonNull
     public static String byteArrayToString(byte[] bytes) {
         return new String(bytes);
     }
 
-    public static @NonNull String secondsToString(long fullSeconds, boolean longFormat) {
+    @NonNull
+    public static String secondsToString(long fullSeconds, boolean longFormat) {
         String[] pieces = secondsToPieces(fullSeconds);
 
         if (longFormat || !pieces[0].equals("00")) {
@@ -53,7 +56,8 @@ public class StringConversionUtil {
         }
     }
 
-    private static @NonNull String[] secondsToPieces(long fullSeconds) {
+    @NonNull
+    private static String[] secondsToPieces(long fullSeconds) {
         String[] pieces = new String[3];
 
         pieces[0] = xDigit((int) ((float) fullSeconds / 3600), 2);
@@ -63,6 +67,7 @@ public class StringConversionUtil {
         return pieces;
     }
 
+    @NonNull
     public static String getDurationStringHuman(Context context, long fullSeconds) {
         long minutes = TimeUnit.SECONDS.toMinutes(fullSeconds) % TimeUnit.HOURS.toMinutes(1);
         long seconds = TimeUnit.SECONDS.toSeconds(fullSeconds) % TimeUnit.MINUTES.toSeconds(1);
@@ -75,6 +80,7 @@ public class StringConversionUtil {
             context.getString(R.string.and) + " " + seconds + " " + context.getString(R.string.seconds);
     }
 
+    @NonNull
     public static String getDurationString(long milliseconds) {
         if (milliseconds > DateUtils.HOUR_IN_MILLIS) {
             return String.format(Locale.US, "%d:%02d:%02d",
@@ -88,6 +94,7 @@ public class StringConversionUtil {
         }
     }
 
+    @NonNull
     public static String xDigit(int number, int digits) {
         String res = String.valueOf(number);
         while (res.length() < digits) {

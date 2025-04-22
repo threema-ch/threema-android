@@ -24,6 +24,9 @@ package ch.threema.domain.protocol.connection
 import androidx.annotation.WorkerThread
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import java8.util.function.Supplier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("ConvertibleServerConnection")
 
@@ -37,7 +40,6 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("ConvertibleServe
 open class ConvertibleServerConnection(
     private val connectionSupplier: Supplier<ServerConnection>,
 ) : ServerConnection, ConnectionStateListener, ReconnectableServerConnection {
-
     private val connectionStateListeners = mutableSetOf<ConnectionStateListener>()
 
     private var connection: ServerConnection? = null
@@ -56,7 +58,7 @@ open class ConvertibleServerConnection(
     }
 
     override fun start() {
-        logger.debug("Start ConvertibleServerConnection")
+        logger.debug("Start")
 
         if (connection?.isRunning == true) {
             logger.warn("Connection is already running")
@@ -68,12 +70,24 @@ open class ConvertibleServerConnection(
             return
         }
 
-        connectionSupplier.get().also {
-            if (it != connection) {
+        connectionSupplier.get().also { newConnection ->
+            if (newConnection != connection) {
                 logger.debug("Connection has changed")
-                connection?.removeConnectionStateListener(this)
-                it.addConnectionStateListener(this)
-                connection = it
+
+                // Drop and stop old connection
+                connection?.let { oldConnection ->
+                    oldConnection.removeConnectionStateListener(this)
+
+                    logger.debug("Stopping old connection asynchronously")
+                    CoroutineScope(Dispatchers.IO).launch {
+                        oldConnection.stop()
+                        logger.debug("Old connection stopped")
+                    }
+                }
+
+                // Register new connection
+                newConnection.addConnectionStateListener(this)
+                connection = newConnection
             }
         }.start()
     }
@@ -81,6 +95,8 @@ open class ConvertibleServerConnection(
     @WorkerThread
     @Throws(InterruptedException::class)
     override fun stop() {
+        logger.debug("Stop")
+
         synchronized(this) {
             connection?.stop()
         }

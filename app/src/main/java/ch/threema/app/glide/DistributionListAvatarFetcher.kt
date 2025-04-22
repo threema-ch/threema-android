@@ -38,14 +38,13 @@ import com.bumptech.glide.load.data.DataFetcher
 class DistributionListAvatarFetcher(
     context: Context,
     private val distributionListService: DistributionListService?,
-    private val distributionListConfig: AvatarCacheServiceImpl.DistributionListAvatarConfig
+    private val distributionListConfig: AvatarCacheServiceImpl.DistributionListAvatarConfig,
 ) : AvatarFetcher(context) {
-
     private val distributionListDefaultAvatar: VectorDrawableCompat? by lazy {
         VectorDrawableCompat.create(
             context.resources,
             R.drawable.ic_distribution_list,
-            null
+            null,
         )
     }
 
@@ -54,5 +53,4 @@ class DistributionListAvatarFetcher(
             ?: ColorUtil.getInstance().getCurrentThemeGray(context)
         callback.onDataReady(buildDefaultAvatarLowRes(distributionListDefaultAvatar, color))
     }
-
 }

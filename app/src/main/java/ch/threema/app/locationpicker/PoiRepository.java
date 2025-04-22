@@ -22,7 +22,6 @@
 package ch.threema.app.locationpicker;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -39,7 +38,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -47,11 +45,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ProtocolStrings;
 
@@ -76,82 +73,62 @@ class PoiRepository {
             @Override
             protected Void doInBackground(Void... voids) {
                 places.clear();
+                final var query = poiQuery.getQuery();
+                final var center = poiQuery.getCenter();
 
-                if (TestUtil.isEmptyOrNull(poiQuery.getQuery()) || poiQuery.getCenter() == null) {
+                if (query == null || query.length() < QUERY_MIN_LENGTH || center == null) {
                     return null;
                 }
-                if (poiQuery.getCenter().getLatitude() == 0.0d && poiQuery.getCenter().getLongitude() == 0.0d) {
-                    return null;
-                }
-                if (poiQuery.getQuery().length() < QUERY_MIN_LENGTH) {
-                    return null;
-                }
-
-                final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-                if (serviceManager == null) {
-                    logger.error("Could not obtain service manager");
-                    return null;
-                }
-                final PreferenceService preferenceService = serviceManager.getPreferenceService();
-                if (preferenceService == null) {
-                    logger.error("Could not obtain preference service");
+                if (center.getLatitude() == 0.0d && center.getLongitude() == 0.0d) {
                     return null;
                 }
 
                 try {
-                    if (!"".equals(poiQuery.getQuery())) {
-                        final String placesUrl = LocationUtil.getPlacesUrl(preferenceService);
-                        URL serverUrl = new URL(String.format(
-                            Locale.US,
-                            placesUrl,
-                            poiQuery.getCenter().getLatitude(),
-                            poiQuery.getCenter().getLongitude(),
-                            Uri.encode(poiQuery.getQuery())
-                        ));
-                        logger.debug("query: " + serverUrl.toString());
-                        HttpsURLConnection urlConnection = null;
-                        try {
-                            urlConnection = (HttpsURLConnection) serverUrl.openConnection();
-                            urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(serverUrl.getHost()));
-                            urlConnection.setConnectTimeout(15000);
-                            urlConnection.setReadTimeout(30000);
-                            urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT);
-                            urlConnection.setRequestMethod("GET");
-                            urlConnection.setDoOutput(false);
+                    final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+                    if (serviceManager == null) {
+                        logger.error("Could not obtain service manager");
+                        return null;
+                    }
+                    @NonNull
+                    final var addressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
 
-                            int responseCode = urlConnection.getResponseCode();
+                    final String placesUrl = addressProvider.getMapPOINamesUrl().get(center.getLatitude(), center.getLongitude(), query);
+                    URL serverUrl = new URL(placesUrl);
+                    logger.debug("Places URL: {}", placesUrl);
+                    HttpsURLConnection urlConnection = null;
+                    try {
+                        urlConnection = (HttpsURLConnection) serverUrl.openConnection();
+                        urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(serverUrl.getHost()));
+                        urlConnection.setConnectTimeout(15000);
+                        urlConnection.setReadTimeout(30000);
+                        urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT);
+                        urlConnection.setRequestMethod("GET");
+                        urlConnection.setDoOutput(false);
 
-                            if (responseCode == HttpsURLConnection.HTTP_OK) {
-                                StringBuilder sb = new StringBuilder();
-                                try (BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
-                                    String line;
-                                    while ((line = br.readLine()) != null) {
-                                        sb.append(line).append("\n");
-                                    }
+                        int responseCode = urlConnection.getResponseCode();
+
+                        if (responseCode == HttpsURLConnection.HTTP_OK) {
+                            StringBuilder sb = new StringBuilder();
+                            try (BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                    sb.append(line).append("\n");
                                 }
-                                try {
-                                    parseJson(sb.toString());
-                                } catch (JSONException e) {
-                                    logger.error("Exception", e);
-                                }
-                            } else if (responseCode != 400 && responseCode != 504) {
-                                // Server returns a 400 if string is too short
-                                RuntimeUtil.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(ThreemaApplication.getAppContext(), "Server Error: " + responseCode, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            } else {
-                                logger.info("Unable to fetch POI names: " + urlConnection.getResponseMessage());
                             }
-                        } finally {
-                            if (urlConnection != null) {
-                                urlConnection.disconnect();
+                            try {
+                                parseJson(sb.toString());
+                            } catch (JSONException e) {
+                                logger.error("Exception", e);
                             }
+                        } else {
+                            logger.info("Unable to fetch POI names: {}", urlConnection.getResponseMessage());
+                        }
+                    } finally {
+                        if (urlConnection != null) {
+                            urlConnection.disconnect();
                         }
                     }
-                } catch (IOException e) {
+                } catch (IOException | ThreemaException e) {
                     logger.error("Exception", e);
                 }
 

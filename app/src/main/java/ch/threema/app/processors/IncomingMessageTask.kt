@@ -33,10 +33,11 @@ import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.now
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
-import ch.threema.domain.models.ContactSyncState
 import ch.threema.data.models.ModelDeletedException
+import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.models.ReadReceiptPolicy
@@ -83,7 +84,7 @@ class IncomingMessageTask(
     private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
     private val incomingForwardSecurityPreProcessor by lazy {
         IncomingForwardSecurityProcessor(
-            serviceManager
+            serviceManager,
         )
     }
 
@@ -117,7 +118,7 @@ class IncomingMessageTask(
         logger.info(
             "Incoming message from {} with ID {}",
             messageBox.fromIdentity,
-            messageBox.messageId
+            messageBox.messageId,
         )
 
         val (message, peerRatchetIdentifier) = suspend {
@@ -153,11 +154,11 @@ class IncomingMessageTask(
                     logger.info(
                         "Message {} from {} will be discarded: Contact is implicitly or explicitly blocked.",
                         message.messageId,
-                        message.fromIdentity
+                        message.fromIdentity,
                     )
                     throw DiscardMessageException(
                         message,
-                        peerRatchetIdentifier
+                        peerRatchetIdentifier,
                     )
                 }
             }
@@ -175,7 +176,7 @@ class IncomingMessageTask(
                         logger.warn(
                             "Received unexpected message {} from {}",
                             Utils.byteToHex(message.type.toByte(), true, true),
-                            ProtocolDefines.SPECIAL_CONTACT_PUSH
+                            ProtocolDefines.SPECIAL_CONTACT_PUSH,
                         )
                         throw DiscardMessageException(message)
                     }
@@ -187,8 +188,8 @@ class IncomingMessageTask(
                 val nickname = message.nickname?.trim()
 
                 // Create contact if message allows it and contact does not exists yet
-                if (message.createImplicitlyDirectContact()
-                    && contactModelRepository.getByIdentity(message.fromIdentity)
+                if (message.createImplicitlyDirectContact() &&
+                    contactModelRepository.getByIdentity(message.fromIdentity)
                         ?.data?.value?.acquaintanceLevel != AcquaintanceLevel.DIRECT
                 ) {
                     createDirectContactIfNotExists(message.fromIdentity, nickname, handle)
@@ -210,7 +211,7 @@ class IncomingMessageTask(
                 messageBox,
                 message.protectAgainstReplay(),
                 peerRatchetIdentifier,
-                handle
+                handle,
             )
             return
         }
@@ -230,24 +231,25 @@ class IncomingMessageTask(
             messageBox,
             message.protectAgainstReplay(),
             peerRatchetIdentifier,
-            handle
+            handle,
         )
 
         // If the message type requires automatic delivery receipts and the message does not contain
         // the no delivery receipt flag, send a delivery receipt
-        if (message.sendAutomaticDeliveryReceipt()
-            && !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
+        if (message.sendAutomaticDeliveryReceipt() &&
+            !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
         ) {
             OutgoingContactDeliveryReceiptMessageTask(
                 ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED,
                 arrayOf(message.messageId),
                 Date().time,
                 message.fromIdentity,
-                serviceManager
+                serviceManager,
             ).invoke(handle)
             logger.info(
                 "Sent delivery receipt (delivered) message for message ID {} from {}",
-                message.messageId, message.fromIdentity
+                message.messageId,
+                message.fromIdentity,
             )
         }
     }
@@ -260,7 +262,7 @@ class IncomingMessageTask(
         if (nonceFactory.exists(NonceScope.CSP, Nonce(messageBox.nonce))) {
             logger.warn(
                 "Skipped processing message {} as its nonce has already been used",
-                messageBox.messageId
+                messageBox.messageId,
             )
             throw DiscardMessageException()
         }
@@ -283,7 +285,7 @@ class IncomingMessageTask(
             messageBox.messageId,
             messageBox.fromIdentity,
             messageBox.toIdentity,
-            Utils.byteToHex(encapsulatedMessage.type.toByte(), true, true)
+            Utils.byteToHex(encapsulatedMessage.type.toByte(), true, true),
         )
 
         // Decapsulate fs message if it is an fs envelope message
@@ -300,7 +302,7 @@ class IncomingMessageTask(
             message.messageId,
             message.fromIdentity,
             message.toIdentity,
-            Utils.byteToHex(message.type.toByte(), true, true)
+            Utils.byteToHex(message.type.toByte(), true, true),
         )
 
         return Pair(message, peerRatchetIdentifier)
@@ -315,7 +317,7 @@ class IncomingMessageTask(
         if (encapsulated !is ForwardSecurityEnvelopeMessage) {
             forwardSecurityMessageProcessor.warnIfMessageWithoutForwardSecurityReceived(
                 encapsulated,
-                handle
+                handle,
             )
             return Pair(encapsulated, null)
         }
@@ -369,7 +371,7 @@ class IncomingMessageTask(
             message,
             cspNonce,
             multiDeviceProperties.mediatorDeviceId,
-            multiDeviceProperties.keys
+            multiDeviceProperties.keys,
         )
 
         if (encryptedEnvelopeResult == null) {
@@ -380,7 +382,7 @@ class IncomingMessageTask(
         return handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
             storeD2dNonce = message.protectAgainstReplay(),
-            nonceFactory = nonceFactory
+            nonceFactory = nonceFactory,
         )
     }
 
@@ -440,7 +442,7 @@ class IncomingMessageTask(
                 ContactModelData(
                     identity = fetchedContact.identity,
                     publicKey = fetchedContact.publicKey,
-                    createdAt = Date(),
+                    createdAt = now(),
                     firstName = "",
                     lastName = "",
                     nickname = nickname,
@@ -454,12 +456,14 @@ class IncomingMessageTask(
                     featureMask = fetchedContact.featureMask,
                     readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
                     typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                    isArchived = false,
                     androidContactLookupKey = null,
                     localAvatarExpires = null,
                     isRestored = false,
                     profilePictureBlobId = null,
                     jobTitle = null,
                     department = null,
+                    notificationTriggerPolicyOverride = null,
                 ),
                 handle,
             )
@@ -496,7 +500,7 @@ class IncomingMessageTask(
             messageService.getGroupMessageModel(
                 message.messageId,
                 message.groupCreator,
-                message.apiGroupId
+                message.apiGroupId,
             )
         } else {
             messageService.getContactMessageModel(message.messageId, message.fromIdentity)

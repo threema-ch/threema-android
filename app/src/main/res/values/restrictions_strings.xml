@@ -33,6 +33,7 @@
     <string name="restriction__safe_restore_enable">th_safe_restore_enable</string>
     <string name="restriction__safe_restore_id">th_safe_restore_id</string>
     <string name="restriction__disable_web">th_disable_web</string>
+    <string name="restriction__disable_multidevice">th_disable_multidevice</string>
     <string name="restriction__disable_id_export">th_disable_id_export</string>
     <string name="restriction__disable_data_backups">th_disable_data_backups</string>
     <string name="restriction__hide_inactive_ids">th_hide_inactive_ids</string>
@@ -113,6 +114,8 @@
     <string name="restriction_safe_restore_id_desc">Threema ID to restore if th_safe_restore_enable is true</string>
     <string name="restriction_disable_web">Disable Threema Web</string>
     <string name="restriction_disable_web_desc">If set to true, the Threema Web feature is disabled</string>
+    <string name="restriction_disable_multidevice">Disable Multi-Device</string>
+    <string name="restriction_disable_multidevice_desc">If set to true, the Multi-Device feature is disabled</string>
     <string name="restriction_disable_id_export">Disable ID exports/backups</string>
     <string name="restriction_disable_id_export_desc">If set to true, the user cannot create ID exports/backups</string>
     <string name="restriction_disable_data_backups">Disable data backups</string>

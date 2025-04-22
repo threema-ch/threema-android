@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -111,20 +112,6 @@ public interface PreferenceService {
 
     void setTypingIndicator(boolean value, @NonNull TriggerSource triggerSource);
 
-    Uri getVoiceCallSound();
-
-    boolean isVoiceCallVibrate();
-
-    void setNotificationSound(Uri uri);
-
-    void setGroupNotificationSound(Uri uri);
-
-    void setVoiceCallSound(Uri uri);
-
-    HashMap<String, String> getRingtones();
-
-    void setRingtones(HashMap<String, String> ringtones);
-
     boolean isCustomWallpaperEnabled();
 
     void setCustomWallpaperEnabled(boolean enabled);
@@ -144,6 +131,7 @@ public interface PreferenceService {
 
     void setSerialNumber(String serialNumber);
 
+    @Nullable
     String getLicenseUsername();
 
     void setLicenseUsername(String username);
@@ -152,6 +140,7 @@ public interface PreferenceService {
 
     void setLicensePassword(String password);
 
+    @Nullable
     String getOnPremServer();
 
     void setOnPremServer(String server);
@@ -204,6 +193,8 @@ public interface PreferenceService {
 
     /* save list to preferences without triggering a listener */
     void setListQuietly(String listName, String[] elements);
+
+    void setListQuietly(@NonNull String listName, @NonNull String[] elements, boolean encrypted);
 
     HashMap<Integer, String> getHashMap(String listName, boolean encrypted);
 
@@ -577,8 +568,6 @@ public interface PreferenceService {
 
     int getPipPosition();
 
-    boolean isCallsEnabled();
-
     boolean isVideoCallsEnabled();
 
     boolean isGroupCallsEnabled();
@@ -601,9 +590,6 @@ public interface PreferenceService {
     boolean getCameraPermissionRequestShown();
 
     void setCameraPermissionRequestShown(boolean shown);
-
-    @Nullable
-    String getPoiServerHostOverride();
 
     void setVoiceRecorderBluetoothDisabled(boolean isEnabled);
 
@@ -653,8 +639,6 @@ public interface PreferenceService {
 
     long getTimeOfLastContactSync();
 
-    boolean isMdUnlocked();
-
     boolean showConversationLastUpdate();
 
     Date getLastShortcutUpdateDate();
@@ -671,4 +655,12 @@ public interface PreferenceService {
      * notification permission has not yet been requested, 0 is returned.
      */
     long getLastNotificationPermissionRequestTimestamp();
+
+    /**
+     * @return The saved {@code Instant} or {@code null} if not present.
+     */
+    @Nullable
+    Instant getLastMultiDeviceGroupCheckTimestamp();
+
+    void setLastMultiDeviceGroupCheckTimestamp(final @NonNull Instant timestamp);
 }

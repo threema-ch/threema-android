@@ -37,7 +37,7 @@ class SystemUpdateToVersion92(
         for (table in arrayOf(
             "message",
             "m_group_message",
-            "distribution_list_message"
+            "distribution_list_message",
         )) {
             if (fieldExists(db, table, "displayTags")) {
                 db.execSQL("UPDATE $table SET `displayTags` = 0 WHERE `type` = 12 AND `displayTags` = 1")

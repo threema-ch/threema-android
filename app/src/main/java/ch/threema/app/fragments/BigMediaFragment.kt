@@ -67,8 +67,9 @@ class BigMediaFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_big_media, container, false).apply {
             bigFileView = findViewById(R.id.big_file_view)
@@ -127,7 +128,6 @@ class BigMediaFragment : Fragment() {
         }
 
         val item = mediaItem ?: return
-
 
         when (item.type) {
             MediaItem.TYPE_IMAGE, MediaItem.TYPE_IMAGE_CAM, MediaItem.TYPE_IMAGE_ANIMATED -> {
@@ -189,14 +189,11 @@ class BigMediaFragment : Fragment() {
         bigFileView.visibility = View.GONE
         videoEditView?.visibility = View.GONE
         val flipHorizontal =
-            (item.rotation in setOf(90, 270) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
-                || (item.rotation in setOf(
-                0,
-                180
-            ) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
+            (item.rotation in setOf(90, 270) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL) ||
+                (item.rotation in setOf(0, 180) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
         val flipVertical =
-            (item.rotation in setOf(90, 270) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
-                || (item.rotation in setOf(0, 180) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
+            (item.rotation in setOf(90, 270) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL) ||
+                (item.rotation in setOf(0, 180) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
         bigImageView.rotationX = if (flipVertical) 180f else 0f
         bigImageView.rotationY = if (flipHorizontal) 180f else 0f
 

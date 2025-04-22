@@ -60,10 +60,9 @@ import ch.threema.protobuf.csp.e2e.fs.Reject
 import ch.threema.protobuf.csp.e2e.fs.Terminate
 import ch.threema.protobuf.csp.e2e.fs.Terminate.Cause
 import com.neilalexander.jnacl.NaCl
-import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.util.Date
+import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("ForwardSecurityMessageProcessor")
 
@@ -74,7 +73,6 @@ class ForwardSecurityMessageProcessor(
     private val nonceFactory: NonceFactory,
     private val statusListener: ForwardSecurityStatusListener,
 ) {
-
     init {
         dhSessionStoreInterface.setDHSessionStoreErrorHandler { peerIdentity, sessionId, handle ->
             // Try to send a terminate to the peer contact
@@ -161,7 +159,7 @@ class ForwardSecurityMessageProcessor(
         nonceFactory: NonceFactory,
         handle: ActiveTaskCodec,
     ): ForwardSecurityEncryptionResult {
-        //TODO(ANDR-2519): Remove when md allows fs
+        // TODO(ANDR-2519): Remove when md allows fs
         val senderCanForwardSecurity = isForwardSecurityEnabled()
         val recipientCanForwardSecurity =
             ThreemaFeature.canForwardSecurity(recipient.featureMask.toLong())
@@ -222,7 +220,7 @@ class ForwardSecurityMessageProcessor(
         var session = dhSessionStoreInterface.getBestDHSession(
             identityStoreInterface.identity,
             contact.identity,
-            handle
+            handle,
         )
         var isExistingSession = true
         if (session == null) {
@@ -237,7 +235,7 @@ class ForwardSecurityMessageProcessor(
             logger.debug(
                 "Starting new DH session ID {} with {}",
                 session.id,
-                contact.identity
+                contact.identity,
             )
             statusListener.newSessionInitiated(session, contact)
             isExistingSession = false
@@ -246,7 +244,7 @@ class ForwardSecurityMessageProcessor(
             val init = ForwardSecurityDataInit(
                 session.id,
                 DHSession.SUPPORTED_VERSION_RANGE,
-                session.myEphemeralPublicKey
+                session.myEphemeralPublicKey,
             )
             initMessage = ForwardSecurityEnvelopeMessage(init, true)
             initMessage.toIdentity = contact.identity
@@ -255,10 +253,11 @@ class ForwardSecurityMessageProcessor(
             val requiredVersion = innerMessage.minimumRequiredForwardSecurityVersion
             if (requiredVersion == null || requiredVersion.number > DHSession.SUPPORTED_VERSION_MIN.number) {
                 logger.info(
-                    "As the session has just been created (with min version {}), we cannot send the message {} with forward security (required version {})",
+                    "As the session has just been created (with min version {}), we cannot send the message {} " +
+                        "with forward security (required version {})",
                     session.outgoingAppliedVersion,
                     innerMessage.messageId,
-                    requiredVersion
+                    requiredVersion,
                 )
 
                 // If the session has been newly created, add the inner message un-encapsulated
@@ -279,7 +278,7 @@ class ForwardSecurityMessageProcessor(
                 "The session's outgoing applied version ({}) is too low to send the message {} (that requires version {}) with forward security",
                 session.outgoingAppliedVersion,
                 innerMessage.messageId,
-                requiredVersion
+                requiredVersion,
             )
             val dayInMs = 1000L * 60 * 60 * 24
             val now = Date().time
@@ -288,7 +287,7 @@ class ForwardSecurityMessageProcessor(
             if (now - lastOutgoingMessageTimestamp >= dayInMs) {
                 logger.info(
                     "Empty message to enforce fs session freshness required (last outgoing message {})",
-                    lastOutgoingMessageTimestamp
+                    lastOutgoingMessageTimestamp,
                 )
                 val innerEmptyMessage = EmptyMessage()
                 innerEmptyMessage.toIdentity = contact.identity
@@ -331,13 +330,13 @@ class ForwardSecurityMessageProcessor(
      */
     @Throws(
         DHSessionStoreException::class,
-        ForwardSecurityData.InvalidEphemeralPublicKeyException::class
+        ForwardSecurityData.InvalidEphemeralPublicKeyException::class,
     )
     suspend fun runFsRefreshSteps(contact: Contact, handle: ActiveTaskCodec) {
         val session = dhSessionStoreInterface.getBestDHSession(
             identityStoreInterface.identity,
             contact.identity,
-            handle
+            handle,
         )
         if (session == null) {
             createAndSendNewSession(contact, handle)
@@ -361,7 +360,7 @@ class ForwardSecurityMessageProcessor(
             dhSessionStoreInterface.getBestDHSession(
                 identityStoreInterface.identity,
                 message.fromIdentity,
-                handle
+                handle,
             )
         } catch (e: DHSessionStoreException) {
             logger.error("Could not get best session", e)
@@ -370,8 +369,8 @@ class ForwardSecurityMessageProcessor(
 
         if (bestSession != null) {
             val minimumVersion = message.minimumRequiredForwardSecurityVersion
-            if (minimumVersion != null
-                && minimumVersion.number <= bestSession.minimumIncomingAppliedVersion.number
+            if (minimumVersion != null &&
+                minimumVersion.number <= bestSession.minimumIncomingAppliedVersion.number
             ) {
                 // TODO(ANDR-2452): Remove this feature mask update when enough clients have updated
                 // Check whether this contact still supports forward security when receiving a
@@ -405,14 +404,14 @@ class ForwardSecurityMessageProcessor(
             identityStoreInterface.identity,
             peerIdentity,
             sessionId,
-            handle
+            handle,
         )
         if (session == null) {
             logger.warn(
                 "Could not find session {}. Ratchet of type {} can not be turned for the last received message from {}",
                 sessionId,
                 dhType,
-                peerIdentity
+                peerIdentity,
             )
             return
         }
@@ -427,7 +426,7 @@ class ForwardSecurityMessageProcessor(
                 "Ratchet of type {} is null in session {} with contact {}",
                 dhType,
                 sessionId,
-                peerIdentity
+                peerIdentity,
             )
             return
         }
@@ -447,7 +446,7 @@ class ForwardSecurityMessageProcessor(
                 identityStoreInterface.identity,
                 contact.identity,
                 init.sessionId,
-                handle
+                handle,
             ) != null
         ) {
             // Silently discard init message for existing session
@@ -463,7 +462,7 @@ class ForwardSecurityMessageProcessor(
             identityStoreInterface.identity,
             contact.identity,
             init.sessionId,
-            true
+            true,
         ) > 0
 
         // TODO(ANDR-2452): Remove this check when enough clients have updated
@@ -478,7 +477,7 @@ class ForwardSecurityMessageProcessor(
                 init.versionRange,
                 init.ephemeralPublicKey,
                 contact,
-                identityStoreInterface
+                identityStoreInterface,
             )
 
             // Save the current timestamp to the session as we will send an accept in this session
@@ -486,14 +485,14 @@ class ForwardSecurityMessageProcessor(
             logger.debug(
                 "Responding to new DH session ID {} request from {}",
                 session.id,
-                contact.identity
+                contact.identity,
             )
 
             // Send an accept
             val accept = ForwardSecurityDataAccept(
                 init.sessionId,
                 DHSession.SUPPORTED_VERSION_RANGE,
-                session.myEphemeralPublicKey
+                session.myEphemeralPublicKey,
             )
 
             // Send the accept to the contact. Note that if the accept has been sent, but the server
@@ -536,14 +535,14 @@ class ForwardSecurityMessageProcessor(
             identityStoreInterface.identity,
             contact.identity,
             accept.sessionId,
-            handle
+            handle,
         )
         if (session == null) {
             // Session not found, probably lost local data or old accept
             logger.warn(
                 "No DH session found for accepted session ID {} from {}",
                 accept.sessionId,
-                contact.identity
+                contact.identity,
             )
 
             // Send "terminate" message for this session ID
@@ -556,13 +555,13 @@ class ForwardSecurityMessageProcessor(
             accept.versionRange,
             accept.ephemeralPublicKey,
             contact,
-            identityStoreInterface
+            identityStoreInterface,
         )
         dhSessionStoreInterface.storeDHSession(session)
         logger.info(
             "Established 4DH session {} with {}",
             session,
-            contact.identity
+            contact.identity,
         )
         statusListener.initiatorSessionEstablished(session, contact)
     }
@@ -577,27 +576,27 @@ class ForwardSecurityMessageProcessor(
             "Received reject for DH session ID {} from {}, cause: {}",
             reject.sessionId,
             contact.identity,
-            reject.cause
+            reject.cause,
         )
         val session = dhSessionStoreInterface.getDHSession(
             identityStoreInterface.identity,
             contact.identity,
             reject.sessionId,
-            handle
+            handle,
         )
         if (session != null) {
             // Discard session
             dhSessionStoreInterface.deleteDHSession(
                 identityStoreInterface.identity,
                 contact.identity,
-                reject.sessionId
+                reject.sessionId,
             )
         } else {
             // Session not found, probably lost local data or old reject
             logger.info(
                 "No DH session found for rejected session ID {} from {}",
                 reject.sessionId,
-                contact.identity
+                contact.identity,
             )
         }
 
@@ -608,7 +607,7 @@ class ForwardSecurityMessageProcessor(
             reject,
             contact,
             session,
-            statusListener.hasForwardSecuritySupport(contact)
+            statusListener.hasForwardSecuritySupport(contact),
         )
     }
 
@@ -618,12 +617,12 @@ class ForwardSecurityMessageProcessor(
             "Terminating DH session ID {} with {}, cause: {}",
             message.sessionId,
             contact.identity,
-            message.cause
+            message.cause,
         )
         val sessionDeleted = dhSessionStoreInterface.deleteDHSession(
             identityStoreInterface.identity,
             contact.identity,
-            message.sessionId
+            message.sessionId,
         )
 
         // Refresh feature mask now, in case contact downgraded to a build without PFS
@@ -633,7 +632,7 @@ class ForwardSecurityMessageProcessor(
             message.sessionId,
             contact,
             !sessionDeleted,
-            statusListener.hasForwardSecuritySupport(contact)
+            statusListener.hasForwardSecuritySupport(contact),
         )
     }
 
@@ -649,7 +648,7 @@ class ForwardSecurityMessageProcessor(
             identityStoreInterface.identity,
             contact.identity,
             message.sessionId,
-            handle
+            handle,
         )
         if (session == null) {
             // Session not found, probably lost local data or old message
@@ -657,19 +656,19 @@ class ForwardSecurityMessageProcessor(
                 "No DH session found for message {} in session ID {} from {}",
                 envelopeMessage.messageId,
                 message.sessionId,
-                contact.identity
+                contact.identity,
             )
             sendReject(
                 contact,
                 message.sessionId,
                 envelopeMessage,
                 Reject.Cause.UNKNOWN_SESSION,
-                handle
+                handle,
             )
             statusListener.sessionForMessageNotFound(
                 message.sessionId,
                 envelopeMessage.messageId,
-                contact
+                contact,
             )
             return ForwardSecurityDecryptionResult.NONE
         }
@@ -683,13 +682,13 @@ class ForwardSecurityMessageProcessor(
                 "Rejecting message in session {} with {}, cause: {}",
                 session,
                 contact.identity,
-                e.message
+                e.message,
             )
             sendReject(contact, session.id, envelopeMessage, Reject.Cause.STATE_MISMATCH, handle)
             dhSessionStoreInterface.deleteDHSession(
                 identityStoreInterface.identity,
                 contact.identity,
-                session.id
+                session.id,
             )
             // TODO(SE-354): Should we supply an error cause for the UI here? Otherwise this looks as if the remote willingly terminated.
             statusListener.sessionTerminated(message.sessionId, contact, false, true)
@@ -713,19 +712,19 @@ class ForwardSecurityMessageProcessor(
                 "Rejecting message in session {} with {}, cause: DH type mismatch (mode={})",
                 session,
                 contact.identity,
-                mode
+                mode,
             )
             sendReject(
                 contact,
                 message.sessionId,
                 envelopeMessage,
                 Reject.Cause.STATE_MISMATCH,
-                handle
+                handle,
             )
             dhSessionStoreInterface.deleteDHSession(
                 identityStoreInterface.identity,
                 contact.identity,
-                session.id
+                session.id,
             )
             // TODO(SE-354): Should we supply an error cause for the UI here? Otherwise this looks as if the remote willingly terminated.
             statusListener.sessionTerminated(message.sessionId, contact, false, true)
@@ -753,19 +752,19 @@ class ForwardSecurityMessageProcessor(
                 "Rejecting message in session {} with {}, cause: Message decryption failed (message-id={})",
                 session,
                 contact.identity,
-                envelopeMessage.messageId
+                envelopeMessage.messageId,
             )
             sendReject(
                 contact,
                 message.sessionId,
                 envelopeMessage,
                 Reject.Cause.STATE_MISMATCH,
-                handle
+                handle,
             )
             dhSessionStoreInterface.deleteDHSession(
                 identityStoreInterface.identity,
                 contact.identity,
-                session.id
+                session.id,
             )
             // TODO(SE-354): Should we supply an error cause for the UI here? Otherwise this looks as if the remote willingly terminated.
             statusListener.sessionTerminated(message.sessionId, contact, false, true)
@@ -779,7 +778,7 @@ class ForwardSecurityMessageProcessor(
             mode,
             session,
             processedVersions.offeredVersion,
-            processedVersions.appliedVersion
+            processedVersions.appliedVersion,
         )
 
         // Commit the updated version
@@ -801,14 +800,14 @@ class ForwardSecurityMessageProcessor(
             val bestSession = dhSessionStoreInterface.getBestDHSession(
                 identityStoreInterface.identity,
                 contact.identity,
-                handle
+                handle,
             )
             if (bestSession != null && bestSession.id == session.id) {
                 dhSessionStoreInterface.deleteAllSessionsExcept(
                     identityStoreInterface.identity,
                     contact.identity,
                     session.id,
-                    false
+                    false,
                 )
             }
 
@@ -820,8 +819,8 @@ class ForwardSecurityMessageProcessor(
 
             // If the commonly supported (local) version is different, then we should send back an
             // empty message
-            if (updatedVersionsSnapshot != null
-                && updatedVersionsSnapshot.before.local.number < updatedVersionsSnapshot.after.local.number
+            if (updatedVersionsSnapshot != null &&
+                updatedVersionsSnapshot.before.local.number < updatedVersionsSnapshot.after.local.number
             ) {
                 createAndSendEmptyMessage(session, contact, handle)
             }
@@ -857,7 +856,7 @@ class ForwardSecurityMessageProcessor(
         val existingSession = dhSessionStoreInterface.getBestDHSession(
             identityStoreInterface.identity,
             contact.identity,
-            handle
+            handle,
         )
         if (existingSession != null) {
             logger.warn("No session is created as there is already an existing session")
@@ -878,7 +877,7 @@ class ForwardSecurityMessageProcessor(
         val init = ForwardSecurityDataInit(
             session.id,
             DHSession.SUPPORTED_VERSION_RANGE,
-            session.myEphemeralPublicKey
+            session.myEphemeralPublicKey,
         )
         val message = ForwardSecurityEnvelopeMessage(init, true)
         message.toIdentity = contact.identity
@@ -901,7 +900,7 @@ class ForwardSecurityMessageProcessor(
         logger.info(
             "Sending empty message {} to refresh session version to {}",
             emptyMessage.messageId,
-            emptyMessage.toIdentity
+            emptyMessage.toIdentity,
         )
         sendMessageToContact(fsMessage, handle)
     }
@@ -921,7 +920,7 @@ class ForwardSecurityMessageProcessor(
             dhType = DHType.TWODH
             if (ratchet == null) {
                 throw BadDHStateException(
-                    "No DH mode negotiated in session ${session.id} with ${session.peerIdentity}"
+                    "No DH mode negotiated in session ${session.id} with ${session.peerIdentity}",
                 )
             }
         }
@@ -962,7 +961,7 @@ class ForwardSecurityMessageProcessor(
             session.outgoingOfferedVersion.number,
             session.outgoingAppliedVersion.number,
             groupIdentity,
-            ciphertext
+            ciphertext,
         )
         val mode: ForwardSecurityMode = getForwardSecurityMode(dataMessage.type)
         return ForwardSecurityEnvelopeMessage(dataMessage, message, mode)
@@ -978,8 +977,8 @@ class ForwardSecurityMessageProcessor(
                 throw BadDHStateException(
                     String.format(
                         "Invalid forward security type %d",
-                        dhType.number
-                    )
+                        dhType.number,
+                    ),
                 )
             }
         }
@@ -1036,14 +1035,14 @@ class ForwardSecurityMessageProcessor(
             dhSessionStoreInterface.deleteDHSession(
                 identityStoreInterface.identity,
                 contact.identity,
-                sessionId
+                sessionId,
             )
         } catch (e: DHSessionStoreException) {
             logger.error("Unable to delete DH session", e)
         }
 
-        if (options == TerminateOptions.RENEW
-            && cause == Cause.UNKNOWN_SESSION || cause == Cause.RESET
+        if (options == TerminateOptions.RENEW &&
+            cause == Cause.UNKNOWN_SESSION || cause == Cause.RESET
         ) {
             createAndSendNewSession(contact, handle)
         }
@@ -1059,7 +1058,7 @@ class ForwardSecurityMessageProcessor(
         logger.info(
             "Sending fs control message {} to contact {}",
             message.messageId,
-            contact.identity
+            contact.identity,
         )
 
         sendMessageToContact(message, handle)
@@ -1136,7 +1135,7 @@ class ForwardSecurityMessageProcessor(
         val invalidSessions = dhSessionStoreInterface.getAllDHSessions(
             identityStoreInterface.identity,
             contact.identity,
-            handle
+            handle,
         ).mapNotNull {
             val state = try {
                 it.state
@@ -1155,7 +1154,6 @@ class ForwardSecurityMessageProcessor(
             sendTerminateAndDeleteSession(contact, it.id, Cause.RESET, handle)
         }
     }
-
 }
 
 /**
@@ -1224,7 +1222,6 @@ class ForwardSecurityEncryptionResult(
      */
     val forwardSecurityMode: ForwardSecurityMode,
 )
-
 
 class UnknownMessageTypeException(msg: String) : ThreemaException(msg)
 

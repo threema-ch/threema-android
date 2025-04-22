@@ -37,8 +37,8 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LockAppService;
@@ -65,7 +65,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
     private PreferenceService preferenceService;
     private NotificationPreferenceService notificationPreferenceService;
     private MessageService messageService;
-    private DeadlineListService hiddenChatsListService;
+    private ConversationCategoryService conversationCategoryService;
     private List<ConversationModel> conversations;
 
     public WidgetViewsFactory(Context context, Intent intent) {
@@ -84,7 +84,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
                 this.lockAppService = serviceManager.getLockAppService();
                 this.preferenceService = serviceManager.getPreferenceService();
                 this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-                this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
+                this.conversationCategoryService = serviceManager.getConversationCategoryService();
             } catch (ThreemaException e) {
                 logger.debug("no conversationservice");
             }
@@ -191,15 +191,15 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
                         extras.putString(ThreemaApplication.INTENT_DATA_CONTACT, conversationModel.getContact().getIdentity());
                     } else if (conversationModel.isGroupConversation()) {
                         avatar = groupService.getAvatar(conversationModel.getGroup(), false);
-                        extras.putInt(ThreemaApplication.INTENT_DATA_GROUP, conversationModel.getGroup().getId());
+                        extras.putInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
                     } else if (conversationModel.isDistributionListConversation()) {
                         avatar = distributionListService.getAvatar(conversationModel.getDistributionList(), false);
-                        extras.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, conversationModel.getDistributionList().getId());
+                        extras.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, conversationModel.getDistributionList().getId());
                     }
 
                     count = Long.toString(conversationModel.getUnreadCount());
 
-                    if (hiddenChatsListService != null && hiddenChatsListService.has(uniqueId)) {
+                    if (conversationCategoryService != null && conversationCategoryService.isPrivateChat(uniqueId)) {
                         message = context.getString(R.string.private_chat_subject);
                     } else if (conversationModel.getLatestMessage() != null) {
                         AbstractMessageModel messageModel = conversationModel.getLatestMessage();

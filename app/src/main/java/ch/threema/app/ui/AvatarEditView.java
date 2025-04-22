@@ -74,20 +74,24 @@ import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.Set;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.CropImageActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.glide.AvatarOptions;
+import ch.threema.app.groupflows.GroupChanges;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.protocol.ProfilePictureChange;
+import ch.threema.app.protocol.RemoveProfilePicture;
+import ch.threema.app.protocol.SetProfilePicture;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
@@ -102,6 +106,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -115,12 +120,13 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
     private UserService userService;
     private ContactService contactService;
     private GroupService groupService;
+    private GroupModelRepository groupModelRepository;
+    private GroupFlowDispatcher groupFlowDispatcher;
     private FileService fileService;
     private PreferenceService preferenceService;
     private ImageView avatarImage, avatarEditOverlay;
     private WeakReference<AvatarEditListener> listenerRef = new WeakReference<>(null);
     private boolean hires, isEditable, isMyProfilePicture;
-    private final Executor executor = Executors.newSingleThreadExecutor();
 
     // the hosting fragment
     private WeakReference<Fragment> fragmentRef = new WeakReference<>(null);
@@ -160,9 +166,11 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
         try {
             ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
-            userService = serviceManager.getUserService();
             contactService = serviceManager.getContactService();
+            userService = serviceManager.getUserService();
             groupService = serviceManager.getGroupService();
+            groupModelRepository = serviceManager.getModelRepositories().getGroups();
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
             fileService = serviceManager.getFileService();
             preferenceService = serviceManager.getPreferenceService();
         } catch (Exception e) {
@@ -268,7 +276,10 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                 }
             } else {
                 // Display a group avatar
-                Bitmap bitmap = getCustomGroupAvatar(groupModel);
+                Bitmap bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
+                    .setHighRes(true)
+                    .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
+                    .toOptions());
                 if (bitmap != null) {
                     // A custom avatar is set and the bitmap may need to be darkened
                     avatarImage.setImageBitmap(bitmap);
@@ -292,58 +303,6 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
         avatarImage.setClickable(editable);
         avatarImage.setFocusable(editable);
         avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * Get the custom contact avatar. The size is automatically scaled down to the maximum possible
-     * size if it was too large. Due to a bug in compression some avatars may be too large and then
-     * the application crashes when displaying them in full size.
-     * <p>
-     * Updates the group picture so that everyone gets the scaled picture (only group owner).
-     * <p>
-     * If there is no custom avatar set for the group, null is returned.
-     */
-    @Nullable
-    private Bitmap getCustomGroupAvatar(@NonNull GroupModel groupModel) {
-        Bitmap customAvatar = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
-            .setHighRes(true)
-            .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
-            .toOptions());
-
-        Bitmap scaledAvatar = scaleToSize(customAvatar);
-        if (scaledAvatar != customAvatar && groupService.isGroupCreator(groupModel)) {
-            executor.execute(() -> {
-                try {
-                    logger.info("Updating resized group avatar");
-                    groupService.updateGroup(groupModel, null, null, groupService.getGroupIdentities(groupModel), scaledAvatar, false);
-                } catch (Exception e) {
-                    logger.error("Could not update group picture", e);
-                }
-            });
-        }
-
-        return scaledAvatar;
-    }
-
-    /**
-     * Returns an image that is scaled to a width of {@link ch.threema.app.dialogs.ContactEditDialog#CONTACT_AVATAR_WIDTH_PX}
-     * pixels and a height of {@link ch.threema.app.dialogs.ContactEditDialog#CONTACT_AVATAR_HEIGHT_PX}.
-     * If the bitmap is null, null is returned.
-     * If the bitmap is smaller than the maximum allowed size, the same bitmap object is returned.
-     */
-    @Nullable
-    private Bitmap scaleToSize(@Nullable Bitmap bitmap) {
-        if (bitmap == null) {
-            return null;
-        }
-
-        if (bitmap.getWidth() > CONTACT_AVATAR_WIDTH_PX || bitmap.getHeight() > CONTACT_AVATAR_HEIGHT_PX) {
-            logger.warn("Avatar bitmap is too large: {}x{}", bitmap.getWidth(), bitmap.getHeight());
-
-            return Bitmap.createScaledBitmap(bitmap, CONTACT_AVATAR_WIDTH_PX, CONTACT_AVATAR_HEIGHT_PX, true);
-        }
-
-        return bitmap;
     }
 
     @Nullable
@@ -450,7 +409,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                             );
                         }
                     } else if (avatarData.getGroupModel() != null) {
-                        saveGroupAvatar(null, true);
+                        saveGroupAvatar(null);
                     }
                     return null;
                 }
@@ -474,25 +433,35 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
     /**
      * Save avatar bitmap data to group model
      *
-     * @param avatar
-     * @param removeAvatar
+     * @param avatar save and send the updated group avatar. If null, it will be deleted.
      */
     @WorkerThread
-    public void saveGroupAvatar(Bitmap avatar, boolean removeAvatar) {
-        if (avatar != null || removeAvatar) {
-            try {
-                groupService.updateGroup(
-                    avatarData.getGroupModel(),
-                    null,
-                    null,
-                    null,
-                    avatar,
-                    removeAvatar
-                );
-            } catch (Exception x) {
-                logger.error("Exception", x);
-            }
+    public void saveGroupAvatar(@Nullable Bitmap avatar) {
+        ch.threema.data.models.GroupModel newGroupModel =
+            groupModelRepository.getByCreatorIdentityAndId(
+                avatarData.getGroupModel().getCreatorIdentity(),
+                avatarData.getGroupModel().getApiGroupId()
+            );
+
+        if (newGroupModel == null) {
+            logger.error("Group model is null");
+            return;
         }
+
+        ProfilePictureChange profilePictureChange = avatar != null
+            ? new SetProfilePicture(BitmapUtil.bitmapToJpegByteArray(avatar), null)
+            : RemoveProfilePicture.INSTANCE;
+
+        groupFlowDispatcher.runUpdateGroupFlow(
+            null,
+            new GroupChanges(
+                null,
+                profilePictureChange,
+                Set.of(),
+                Set.of()
+            ),
+            newGroupModel
+        );
     }
 
     private void openCamera() {
@@ -603,7 +572,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                                     new AsyncTask<Bitmap, Void, Void>() {
                                         @Override
                                         protected Void doInBackground(Bitmap... bitmaps) {
-                                            saveGroupAvatar(bitmaps[0], false);
+                                            saveGroupAvatar(bitmaps[0]);
                                             return null;
                                         }
 
@@ -655,7 +624,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
             }
             GenericAlertDialog dialog = GenericAlertDialog.newInstance(
                 R.string.workarounds,
-                getContext().getString(R.string.samsung_permission_problem_explain, getContext().getString(R.string.app_name)),
+                getContext().getString(R.string.samsung_permission_problem_explain),
                 R.string.label_continue,
                 0);
             dialog.setCallback((tag, data) -> continueSamsungPermissionFixFlow());

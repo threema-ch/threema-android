@@ -100,7 +100,7 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
             return false;
         }
 
-        int groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
+        int groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
         GroupModel groupModel = this.groupService.getById(groupId);
 
         if (groupModel == null) {

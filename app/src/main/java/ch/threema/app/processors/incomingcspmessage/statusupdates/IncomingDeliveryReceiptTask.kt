@@ -51,7 +51,7 @@ class IncomingDeliveryReceiptTask(
             logger.warn(
                 "Message {} error: unknown delivery receipt type: {}",
                 message.messageId,
-                message.receiptType
+                message.receiptType,
             )
             return ReceiveStepsResult.DISCARD
         }
@@ -61,7 +61,7 @@ class IncomingDeliveryReceiptTask(
                 "Processing message {}: delivery receipt for {} (state = {})",
                 message.messageId,
                 it,
-                state
+                state,
             )
         }
 
@@ -73,13 +73,13 @@ class IncomingDeliveryReceiptTask(
                     messageModel,
                     state,
                     message.fromIdentity,
-                    message.date
+                    message.date,
                 )
             } else {
                 messageService.updateOutgoingMessageState(
                     messageModel,
                     state,
-                    message.date
+                    message.date,
                 )
             }
         }

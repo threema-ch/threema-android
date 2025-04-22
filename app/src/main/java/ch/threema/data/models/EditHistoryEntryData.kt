@@ -32,7 +32,7 @@ data class EditHistoryEntryData(
     /** The former text of the edited message. */
     @JvmField val text: String?,
     /** Timestamp when the message was edited and hence the entry created. */
-    @JvmField val editedAt: Date
+    @JvmField val editedAt: Date,
 ) {
     fun uid() = uid
 
@@ -47,5 +47,5 @@ fun DbEditHistoryEntry.toDataType() = EditHistoryEntryData(
     uid = this.uid,
     messageUid = this.messageUid,
     text = this.text,
-    editedAt = this.editedAt
+    editedAt = this.editedAt,
 )

@@ -17,6 +17,7 @@
             android:layout_height="fill_parent"
             android:adjustViewBounds="true"
             android:clickable="false"
+            android:importantForAccessibility="no"
             android:src="@drawable/background_pic"
             android:scaleType="centerCrop" />
 
@@ -50,7 +51,7 @@
                 android:layout_centerHorizontal="true"
                 android:linksClickable="true"
                 android:autoLink="web"
-                android:text="@string/enter_serial_body"
+                android:text="@string/flavored__enter_serial_body"
                 android:layout_marginBottom="5dp" />
 
             <LinearLayout
@@ -67,6 +68,7 @@
                     android:id="@+id/unlock_logo"
                     android:layout_width="@dimen/wizard_default_view_height"
                     android:layout_height="@dimen/wizard_default_view_height"
+                    android:importantForAccessibility="no"
                     app:srcCompat="@drawable/ic_person_outline" />
 
                 <ch.threema.app.emojis.EmojiEditText
@@ -102,6 +104,7 @@
                     android:layout_gravity="bottom"
                     android:layout_width="@dimen/wizard_default_view_height"
                     android:layout_height="@dimen/wizard_default_view_height"
+                    android:importantForAccessibility="no"
                     app:srcCompat="@drawable/ic_key_outline" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -121,9 +124,8 @@
                         android:layout_height="@dimen/wizard_default_view_height"
                         android:hint="@string/password_hint"
                         android:id="@+id/password"
-                        android:nextFocusRight="@+id/unlock_button"
                         android:inputType="textNoSuggestions|textPassword"
-                        android:imeOptions="actionGo"
+                        android:imeOptions="actionDone"
                         android:singleLine="true" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -141,21 +143,20 @@
                 android:textSize="@dimen/wizard_text_medium"
                 android:textColor="@color/material_red" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                style="@style/WizardButtonRegular"
-                android:id="@+id/unlock_button_work"
-                android:layout_below="@id/unlock_state"
+            <ch.threema.app.activities.wizard.components.WizardButtonXml
+                android:id="@+id/unlock_button_work_compose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="@string/next" />
+                android:layout_below="@id/unlock_state"
+                app:wizardButton_text="@string/next"/>
 
             <TextView
                 style="@style/WizardMediumText"
                 android:id="@+id/work_lost_credential_help"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/unlock_button_work"
+                android:layout_below="@id/unlock_button_work_compose"
                 android:gravity="center_horizontal"
                 android:layout_marginTop="32dp" />
 

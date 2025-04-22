@@ -1,41 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:animateLayoutChanges="true">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:padding="16dp"
+        tools:background="?attr/colorPrimaryContainer"
+        tools:layout_gravity="center">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/emoji1"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
+            android:layout_width="@dimen/verification_emoji_size"
+            android:layout_height="@dimen/verification_emoji_size"
+            android:layout_marginRight="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/emoji2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_emoji_1f3c0" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/emoji2"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
+            android:layout_width="@dimen/verification_emoji_size"
+            android:layout_height="@dimen/verification_emoji_size"
+            android:layout_marginHorizontal="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/emoji1"
             app:layout_constraintRight_toLeftOf="@+id/emoji3"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_emoji_1f3c0" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/emoji3"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
+            android:layout_width="@dimen/verification_emoji_size"
+            android:layout_height="@dimen/verification_emoji_size"
+            android:layout_marginLeft="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/emoji2"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_emoji_1f3c0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

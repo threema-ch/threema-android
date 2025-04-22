@@ -31,12 +31,11 @@ import kotlin.jvm.Throws
 
 // TODO(ANDR-3517): Remove
 object EmojiReactionConverterUtil {
-
     @Throws(ConversionException::class)
     @JvmStatic
     fun getContactAckDecFromReactions(
         message: MessageModel,
-        reactions: List<EmojiReactionData>
+        reactions: List<EmojiReactionData>,
     ): Optional<MessageState> {
         val ackDecReactions = getGroupAckDecFromReactions(reactions)
             .filter {

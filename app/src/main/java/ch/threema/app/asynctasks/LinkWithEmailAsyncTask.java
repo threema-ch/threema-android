@@ -37,6 +37,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 
 public class LinkWithEmailAsyncTask extends AsyncTask<Void, Void, String> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("LinkWithEmailAsyncTask");
@@ -104,7 +105,7 @@ public class LinkWithEmailAsyncTask extends AsyncTask<Void, Void, String> {
         switch (linkingMode) {
             case MODE_UNLINK:
                 try {
-                    userService.unlinkEmail();
+                    userService.unlinkEmail(TriggerSource.LOCAL);
                 } catch (Exception x) {
                     logger.error("exception", x);
                     resultString = String.format(context.getString(R.string.an_error_occurred_more), x.getMessage());
@@ -115,7 +116,7 @@ public class LinkWithEmailAsyncTask extends AsyncTask<Void, Void, String> {
                 break;
             case MODE_LINK:
                 try {
-                    userService.linkWithEmail(emailAddress);
+                    userService.linkWithEmail(emailAddress, TriggerSource.LOCAL);
                 } catch (Exception x) {
                     resultString = String.format(context.getString(R.string.an_error_occurred_more), x.getMessage());
                 }

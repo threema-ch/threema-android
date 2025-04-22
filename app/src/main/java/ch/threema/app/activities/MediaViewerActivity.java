@@ -80,7 +80,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.LockableViewPager;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -521,10 +521,10 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
                     mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, messageModel.getIdentity());
                     break;
                 case MessageReceiver.Type_GROUP:
-                    mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, ((GroupMessageModel) messageModel).getGroupId());
+                    mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageModel) messageModel).getGroupId());
                     break;
                 case MessageReceiver.Type_DISTRIBUTION_LIST:
-                    mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageModel) messageModel).getDistributionListId());
+                    mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageModel) messageModel).getDistributionListId());
                     break;
             }
             IntentDataUtil.append(messageModel, mediaGalleryIntent);

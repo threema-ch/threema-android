@@ -41,13 +41,13 @@ import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStoreInterface
 import com.neilalexander.jnacl.NaCl
-import org.apache.commons.io.EndianUtils
-import ove.crypto.digest.Blake2b
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.security.SecureRandom
+import org.apache.commons.io.EndianUtils
+import ove.crypto.digest.Blake2b
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("CspSession")
 
@@ -57,13 +57,13 @@ interface CspSessionState {
 
 internal class CspSession(
     private val configuration: BaseServerConnectionConfiguration,
-    private val dispatcher: ServerConnectionDispatcher
+    private val dispatcher: ServerConnectionDispatcher,
 ) : CspSessionState {
     private enum class LoginState {
         IDLE,
         AWAIT_HELLO,
         AWAIT_LOGIN_ACK,
-        DONE
+        DONE,
     }
 
     private val timeMeasureUtil = TimeMeasureUtil()
@@ -100,7 +100,7 @@ internal class CspSession(
     override val isLoginDone: Boolean
         get() = loginState == LoginState.DONE
 
-    fun startLogin(outbound: InputPipe<in CspLoginMessage>) {
+    fun startLogin(outbound: InputPipe<in CspLoginMessage, Unit>) {
         dispatcher.assertDispatcherContext()
         logger.debug("Start csp login")
 
@@ -110,7 +110,10 @@ internal class CspSession(
         loginState = LoginState.AWAIT_HELLO
     }
 
-    fun handleLoginMessage(message: CspLoginMessage, outbound: InputPipe<in CspLoginMessage>) {
+    fun handleLoginMessage(
+        message: CspLoginMessage,
+        outbound: InputPipe<in CspLoginMessage, Unit>,
+    ) {
         dispatcher.assertDispatcherContext()
 
         loginState = when (loginState) {
@@ -144,7 +147,7 @@ internal class CspSession(
         logger.trace(
             "Encrypt CspContainer with {} data bytes (payload size: {} bytes)",
             container.data.size,
-            payload.size
+            payload.size,
         )
         return CspFrame(kClientTempServerTemp.encrypt(payload, clientNonce.nextNonce()))
     }
@@ -216,13 +219,13 @@ internal class CspSession(
         // Note that the public key of the server is checked here in our custom chat server
         // protocol. This gives us the same security protections as certificate pinning in the tls
         // context.
-        serverPubKeyPerm = serverAddressProvider.chatServerPublicKey
+        serverPubKeyPerm = serverAddressProvider.getChatServerPublicKey()
         var kClientTempServerPerm = NaCl(clientTempKeySec, serverPubKeyPerm)
         var serverHello = kClientTempServerPerm.decrypt(serverHelloBox, nonce)
 
         if (serverHello == null) {
             /* Try again with alternate key */
-            serverPubKeyPerm = serverAddressProvider.chatServerPublicKeyAlt
+            serverPubKeyPerm = serverAddressProvider.getChatServerPublicKeyAlt()
             kClientTempServerPerm = NaCl(clientTempKeySec, serverPubKeyPerm)
             serverHello = kClientTempServerPerm.decrypt(serverHelloBox, nonce)
             if (serverHello == null) {
@@ -242,7 +245,7 @@ internal class CspSession(
             NaCl.PUBLICKEYBYTES,
             clientCookieFromServer,
             0,
-            ProtocolDefines.COOKIE_LEN
+            ProtocolDefines.COOKIE_LEN,
         )
 
         if (!clientCookieFromServer.contentEquals(clientCookie)) {
@@ -277,11 +280,11 @@ internal class CspSession(
     }
 
     /**
-     * This will create a client cookie and initalize the clientnonce.
+     * This will create a client cookie and initialize the client nonce.
      *
      * The clientCookie is then sent to the server as client-hello
      */
-    private fun sendClientHello(outbound: InputPipe<in CspLoginMessage>) {
+    private fun sendClientHello(outbound: InputPipe<in CspLoginMessage, Unit>) {
         dispatcher.assertDispatcherContext()
 
         clientCookie = ByteArray(ProtocolDefines.COOKIE_LEN)
@@ -297,7 +300,7 @@ internal class CspSession(
 
     private fun sendClientLogin(
         serverTempKeyPub: ByteArray,
-        outbound: InputPipe<in CspLoginMessage>
+        outbound: InputPipe<in CspLoginMessage, Unit>,
     ) {
         dispatcher.assertDispatcherContext()
 
@@ -328,7 +331,7 @@ internal class CspSession(
         /* Client info (0x00) */
         val clientInfo = ProtocolExtension(
             ProtocolExtension.CLIENT_INFO_TYPE,
-            version.fullVersionString.encodeToByteArray()
+            version.fullVersionString.encodeToByteArray(),
         )
 
         /* Csp device id (0x01) if multi device is active, omit if md is not active */
@@ -337,19 +340,21 @@ internal class CspSession(
             ?: ByteArray(0)
         logger.trace("Csp  device id bytes {}", cspDeviceIdBytes.toHexString())
 
-        /* Message payload version (0x02) */
-        val messagePayloadVersion = ProtocolExtension(
-            ProtocolExtension.MESSAGE_PAYLOAD_VERSION_TYPE,
-            byteArrayOf(ProtocolExtension.MESSAGE_PAYLOAD_VERSION.toByte())
+        /* Supported features extension (0x02) */
+        val supportedFeatures =
+            ProtocolExtension.SUPPORTS_MESSAGE_WITH_METADATA_PAYLOAD or ProtocolExtension.SUPPORTS_RECEIVING_ECHO_REQUEST
+        val supportedFeaturesExtension = ProtocolExtension(
+            ProtocolExtension.SUPPORTED_FEATURES_TYPE,
+            byteArrayOf(supportedFeatures.toByte()),
         )
 
         /* Device cookie extension (0x03) */
         val deviceCookie = ProtocolExtension(
             ProtocolExtension.DEVICE_COOKIE_TYPE,
-            deviceCookieManager.obtainDeviceCookie()
+            deviceCookieManager.obtainDeviceCookie(),
         )
 
-        return clientInfo.bytes + cspDeviceIdBytes + messagePayloadVersion.bytes + deviceCookie.bytes
+        return clientInfo.bytes + cspDeviceIdBytes + supportedFeaturesExtension.bytes + deviceCookie.bytes
     }
 
     private fun createExtensionIndicator(extensionsBoxLength: Int): ByteArray {
@@ -366,7 +371,7 @@ internal class CspSession(
         val kdf = ThreemaKDF("3ma-csp")
         val sharedSecrets =
             identityStore.calcSharedSecret(serverPubKeyPerm) + identityStore.calcSharedSecret(
-                serverTempKeyPub
+                serverTempKeyPub,
             )
         val vouchKey = kdf.deriveKey("v2", sharedSecrets)
         val input = serverCookie + clientTempKeyPub

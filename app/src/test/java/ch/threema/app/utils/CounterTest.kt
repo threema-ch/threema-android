@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2024-2025 Threema GmbH
+ * Copyright (c) 2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,9 +21,9 @@
 
 package ch.threema.app.utils
 
-import org.junit.Test
-import org.junit.Assert.assertThrows
+import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class CounterTest {
     @Test
@@ -45,9 +45,9 @@ class CounterTest {
 
     @Test
     fun `step sizes smaller or equal zero must throw an exception`() {
-        assertThrows(IllegalArgumentException::class.java) { Counter(0) }
-        assertThrows(IllegalArgumentException::class.java) { Counter(-1) }
-        assertThrows(IllegalArgumentException::class.java) { Counter(Long.MIN_VALUE) }
+        assertFailsWith<IllegalArgumentException> { Counter(0) }
+        assertFailsWith<IllegalArgumentException> { Counter(-1) }
+        assertFailsWith<IllegalArgumentException> { Counter(Long.MIN_VALUE) }
     }
 
     @Test

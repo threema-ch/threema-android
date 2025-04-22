@@ -33,7 +33,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
@@ -44,7 +43,6 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -53,10 +51,6 @@ import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
-import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
-import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
-import ch.threema.app.asynctasks.ContactResult;
-import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -77,7 +71,7 @@ import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.ParallaxViewPager;
 import ch.threema.app.ui.StepPagerStrip;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -88,9 +82,6 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.data.models.ContactModel;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.LinkEmailException;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.taskmanager.TriggerSource;
@@ -134,7 +125,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     private static int lastPage = 0;
     private ParallaxViewPager viewPager;
     private MaterialButton prevButton, nextButton;
-    private Button finishButton;
     private StepPagerStrip stepPagerStrip;
     private String nickname, email, number, prefix, presetMobile, presetEmail, safePassword;
     private ThreemaSafeServerInfo safeServerInfo = new ThreemaSafeServerInfo();
@@ -146,8 +136,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     private PreferenceService preferenceService;
     private NotificationPreferenceService notificationPreferenceService;
     private ThreemaSafeService threemaSafeService;
-    private APIConnector apiConnector;
-    private ContactModelRepository contactModelRepository;
     private boolean errorRaised = false, isNewIdentity = false;
     private WizardFragment4 fragment4;
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
@@ -226,8 +214,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                 preferenceService = serviceManager.getPreferenceService();
                 notificationPreferenceService = serviceManager.getNotificationPreferenceService();
                 threemaSafeService = serviceManager.getThreemaSafeService();
-                apiConnector = serviceManager.getAPIConnector();
-                contactModelRepository = serviceManager.getModelRepositories().getContacts();
             }
         } catch (Exception e) {
             logger.error("Exception", e);
@@ -496,17 +482,12 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     }
 
     @Override
-    public void onWizardFinished(WizardFragment4 fragment, Button finishButton) {
+    public void onWizardFinished(WizardFragment4 fragment) {
         errorRaised = false;
         fragment4 = fragment;
 
         viewPager.lock(true);
-        this.finishButton = finishButton;
-
         prevButton.setVisibility(View.GONE);
-        if (finishButton != null) {
-            finishButton.setEnabled(false);
-        }
 
         userService.setPublicNickname(this.nickname, TriggerSource.LOCAL);
 
@@ -812,7 +793,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                 @Override
                 protected String doInBackground(Void... params) {
                     try {
-                        userService.linkWithEmail(email);
+                        userService.linkWithEmail(email, TriggerSource.LOCAL);
                     } catch (LinkEmailException e) {
                         logger.error("Exception", e);
                         return e.getMessage();
@@ -860,7 +841,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                 @Override
                 protected String doInBackground(Void... params) {
                     try {
-                        userService.linkWithMobileNumber(phone);
+                        userService.linkWithMobileNumber(phone, TriggerSource.LOCAL);
                     } catch (LinkMobileNoException e) {
                         logger.error("Exception", e);
                         return e.getMessage();
@@ -887,34 +868,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
         }
     }
 
-    @WorkerThread
-    private void addContact(final String identity, final String first, final String last) {
-        new BasicAddOrUpdateContactBackgroundTask(
-            identity,
-            ch.threema.storage.models.ContactModel.AcquaintanceLevel.DIRECT,
-            userService.getIdentity(),
-            apiConnector,
-            contactModelRepository,
-            AddContactRestrictionPolicy.IGNORE,
-            WizardBaseActivity.this,
-            null
-        ) {
-            @Override
-            public void onFinished(ContactResult result) {
-                ContactModel contactModel;
-                if (result instanceof ContactAvailable) {
-                    contactModel = ((ContactAvailable) result).getContactModel();
-                } else {
-                    contactModel = null;
-                }
-
-                if (contactModel != null) {
-                    contactModel.setNameFromLocal(first, last);
-                }
-            }
-        }.runSynchronously();
-    }
-
     private void runApplicationSetupStepsAndRestart() {
         backgroundExecutor.execute(new BackgroundTask<Boolean>() {
             @Override
@@ -924,11 +877,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
             @Override
             public Boolean runInBackground() {
-                Boolean applicationSetupResult = runApplicationSetupSteps(serviceManager);
-
-                addContact(ThreemaApplication.ECHO_USER_IDENTITY, "Echo", "Test");
-
-                return applicationSetupResult;
+                return runApplicationSetupSteps(serviceManager);
             }
 
             @Override
@@ -1075,8 +1024,8 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
         // unlock UI to try again
         viewPager.lock(false);
         prevButton.setVisibility(View.VISIBLE);
-        if (finishButton != null) {
-            finishButton.setEnabled(true);
+        if (fragment4 != null) {
+            fragment4.setFinishButtonEnabled(true);
         }
     }
 

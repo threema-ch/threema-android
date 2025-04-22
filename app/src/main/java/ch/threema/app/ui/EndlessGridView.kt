@@ -25,11 +25,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.GridView
 
-
 /**
  * A GridView that shows all items and doesn't scroll. Ideal for using nested within a ScrollView
  */
-
 class EndlessGridView : GridView {
     constructor(context: Context?) : super(context)
 
@@ -38,7 +36,7 @@ class EndlessGridView : GridView {
     constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
-        defStyle
+        defStyle,
     )
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

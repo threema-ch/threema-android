@@ -24,13 +24,16 @@ package ch.threema.domain.helpers
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.connection.data.CspMessage
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
+import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.taskmanager.MessageFilterInstruction
 import ch.threema.domain.taskmanager.TaskCodec
+import java.util.Date
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -41,6 +44,8 @@ open class ServerAckTaskCodec : TaskCodec {
     val inboundMessages = mutableListOf<InboundMessage>()
     val outboundMessages = mutableListOf<OutboundMessage>()
     val ackedIncomingMessages = mutableListOf<MessageId>()
+
+    private var reflectIdCounter: UInt = 0u
 
     override suspend fun read(preProcess: (InboundMessage) -> MessageFilterInstruction): InboundMessage {
         for (inboundMessage in inboundMessages) {
@@ -85,11 +90,30 @@ open class ServerAckTaskCodec : TaskCodec {
     override suspend fun reflectAndAwaitAck(
         encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult,
         storeD2dNonce: Boolean,
-        nonceFactory: NonceFactory
-    ): ULong = 0U
+        nonceFactory: NonceFactory,
+    ): ULong {
+        outboundMessages.add(
+            OutboundD2mMessage.Reflect(
+                0u,
+                reflectIdCounter++,
+                encryptedEnvelopeResult.encryptedEnvelope,
+            ),
+        )
+        return Date().time.toULong()
+    }
 
-    override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt =
-        0U
+    override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt {
+        val reflectId = reflectIdCounter++
+        outboundMessages.add(
+            OutboundD2mMessage.Reflect(
+                0u,
+                reflectId,
+                encryptedEnvelopeResult.encryptedEnvelope,
+            ),
+        )
+        inboundMessages.add(createReflectAck(reflectId))
+        return reflectId
+    }
 
     /**
      * The server ack task codec creates the server ack here. Other tasks may perform additional
@@ -129,8 +153,14 @@ open class ServerAckTaskCodec : TaskCodec {
             messageBox.toIdentity.encodeToByteArray() + messageBox.messageId.messageId
         return CspMessage(
             ProtocolDefines.PLTYPE_OUTGOING_MESSAGE_ACK.toUByte(),
-            outgoingMessageAckData
+            outgoingMessageAckData,
+        )
+    }
+
+    private fun createReflectAck(reflectId: UInt): InboundD2mMessage {
+        return InboundD2mMessage.ReflectAck(
+            reflectId,
+            Date().time.toULong(),
         )
     }
 }
-

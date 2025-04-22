@@ -53,7 +53,7 @@ import ch.threema.app.activities.SimpleWebViewActivity;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
@@ -130,11 +130,11 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         } else {
             String privacyPolicy = getString(R.string.privacy_policy);
             SpannableStringBuilder builder = new SpannableStringBuilder();
-            builder.append(String.format(getString(R.string.privacy_policy_explain), getString(R.string.app_name), privacyPolicy));
+            builder.append(String.format(getString(R.string.privacy_policy_explain), privacyPolicy));
             int index = TextUtils.indexOf(builder, privacyPolicy);
             builder.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(View widget) {
+                public void onClick(@NonNull View widget) {
                     Intent intent = new Intent(WizardIntroActivity.this, PrivacyPolicyActivity.class);
                     intent.putExtra(SimpleWebViewActivity.FORCE_DARK_THEME, true);
                     startActivityForResult(intent, ACTIVITY_RESULT_PRIVACY_POLICY);
@@ -147,8 +147,8 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         ((TextView) findViewById(R.id.new_to_threema_title)).setText(getString(R.string.new_to_threema, getString(R.string.app_name)));
         ((TextView) findViewById(R.id.back_to_threema_title)).setText(getString(R.string.back_to_threema, getString(R.string.app_name)));
 
-        findViewById(R.id.restore_backup).setOnClickListener(this::restoreBackup);
-        findViewById(R.id.setup_threema).setOnClickListener(this::setupThreema);
+        findViewById(R.id.setup_threema_compose).setOnClickListener(v -> setupThreema());
+        findViewById(R.id.restore_backup_compose).setOnClickListener(v -> restoreBackup());
 
         isContactSyncSettingConflict();
     }
@@ -162,7 +162,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         }
     }
 
-    public void setupThreema(View view) {
+    public void setupThreema() {
         if (isContactSyncSettingConflict()) {
             return;
         }
@@ -175,16 +175,10 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
-    /**
-     * Called from button in XML
-     *
-     * @param view
-     */
-    public void restoreBackup(View view) {
+    public void restoreBackup() {
         if (isContactSyncSettingConflict()) {
             return;
         }
-
         backupResult.launch(null);
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }

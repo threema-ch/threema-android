@@ -78,6 +78,10 @@ public abstract class Tags {
     public static final String TAG_GROUP_CREATED_AT = "created_at";
     public static final String TAG_GROUP_LAST_UPDATE = "last_update";
     public static final String TAG_GROUP_MEMBERS = "members";
+    /**
+     * Legacy field used to mark groups as 'deleted'.
+     * No longer written as of version 27 but still needs to be read, if present.
+     */
     public static final String TAG_GROUP_DELETED = "deleted";
     public static final String TAG_GROUP_ARCHIVED = "archived";
     public static final String TAG_GROUP_DESC = "groupDesc";

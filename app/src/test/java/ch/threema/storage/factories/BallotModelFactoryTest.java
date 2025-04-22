@@ -51,7 +51,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;

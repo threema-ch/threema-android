@@ -29,9 +29,8 @@ import ch.threema.protobuf.d2d.MdD2D
 
 class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<DeleteMessageData>(
     ProtocolDefines.MSGTYPE_DELETE_MESSAGE,
-    payloadData
+    payloadData,
 ) {
-
     override fun getMinimumRequiredForwardSecurityVersion() = Version.V1_1
 
     override fun allowUserProfileDistribution() = false
@@ -55,7 +54,6 @@ class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<De
     override fun flagSendPush() = true
 
     companion object {
-
         const val DELETE_MESSAGES_MAX_AGE: Long = 6L * 60L * 60L * 1000L
 
         /**
@@ -83,8 +81,12 @@ class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<De
         }
 
         @JvmStatic
-        private fun fromByteArray(data: ByteArray): DeleteMessage =
-            fromByteArray(data, 0, data.size)
+        @Throws(BadMessageException::class)
+        private fun fromByteArray(data: ByteArray): DeleteMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Build an instance of [DeleteMessage] from the given [data] bytes. Note that
@@ -106,7 +108,9 @@ class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<De
             when {
                 length < ProtocolDefines.MESSAGE_ID_LEN -> throw BadMessageException("Bad length ($length) for delete message")
                 offset < 0 -> throw BadMessageException("Bad offset ($offset) for delete message")
-                data.size < length + offset -> throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
+                data.size < length + offset -> throw BadMessageException(
+                    "Invalid byte array length (${data.size}) for offset $offset and length $length",
+                )
             }
             val protobufPayload: ByteArray = data.copyOfRange(offset, offset + length)
             val deleteMessageData: DeleteMessageData = fromProtobuf(protobufPayload)

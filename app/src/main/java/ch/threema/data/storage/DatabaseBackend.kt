@@ -22,13 +22,16 @@
 package ch.threema.data.storage
 
 import android.database.sqlite.SQLiteException
-
 import ch.threema.data.models.GroupIdentity
 
 /**
  * This interface fully abstracts the database access.
  */
 interface DatabaseBackend {
+    /**
+     *  Returns all contacts.
+     */
+    fun getAllContacts(): List<DbContact>
 
     /**
      * Insert a new contact.
@@ -74,6 +77,16 @@ interface DatabaseBackend {
     fun createGroup(group: DbGroup)
 
     /**
+     * Remove all associated data in the database of the given group identity.
+     */
+    fun removeGroup(localDbId: Long)
+
+    /**
+     * Get all groups.
+     */
+    fun getAllGroups(): Collection<DbGroup>
+
+    /**
      * Return the group with the specified [localDbId].
      */
     fun getGroupByLocalGroupDbId(localDbId: Long): DbGroup?
@@ -82,6 +95,11 @@ interface DatabaseBackend {
      * Return the group with the specified [groupIdentity].
      */
     fun getGroupByGroupIdentity(groupIdentity: GroupIdentity): DbGroup?
+
+    /**
+     * Return the row id of the group with the specified [groupIdentity].
+     */
+    fun getGroupDatabaseId(groupIdentity: GroupIdentity): Long?
 
     /**
      * Update the specified group (using the creator identity and group id as lookup key).

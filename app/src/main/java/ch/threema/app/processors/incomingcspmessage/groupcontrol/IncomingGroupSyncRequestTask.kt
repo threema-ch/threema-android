@@ -25,12 +25,25 @@ import android.text.format.DateUtils
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
-import ch.threema.app.tasks.OutgoingGroupSyncTask
+import ch.threema.app.protocol.PreGeneratedMessageIds
+import ch.threema.app.protocol.runActiveGroupStateResyncSteps
+import ch.threema.app.utils.OutgoingCspGroupMessageCreator
+import ch.threema.app.utils.OutgoingCspMessageHandle
+import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
+import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupModel
+import ch.threema.domain.models.BasicContact
+import ch.threema.domain.models.MessageId
+import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
+import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupModel
+import ch.threema.domain.taskmanager.createTransaction
+import ch.threema.protobuf.d2d.MdD2D
+import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSyncRequestTask")
 
@@ -39,26 +52,32 @@ class IncomingGroupSyncRequestTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupSyncRequestMessage>(message, triggerSource, serviceManager) {
-    private val groupService by lazy { serviceManager.groupService }
+    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
-        // 1. Look up the group. If the group could not be found, abort these steps
-        val group = groupService.getByGroupMessage(message)
+        // Look up the group. If the group could not be found, abort these steps.
+        val group = groupModelRepository.getByCreatorIdentityAndId(
+            message.groupCreator,
+            message.apiGroupId,
+        )
         if (group == null) {
             logger.warn("Discarding group sync request message because group could not be found")
             return ReceiveStepsResult.DISCARD
         }
 
-        if (!groupService.isGroupCreator(group)) {
-            logger.warn("Discarding group sync request message to non-creator")
+        val senderContact = message.fromIdentity.let {
+            serviceManager.contactStore.getCachedContact(it)
+                ?: serviceManager.modelRepositories.contacts.getByIdentity(it)?.data?.value?.toBasicContact()
+        } ?: run {
+            logger.error("Cannot handle incoming group sync request because sender is unknown")
             return ReceiveStepsResult.DISCARD
         }
 
         return handleIncomingGroupSyncRequest(
             group,
-            message.fromIdentity,
+            senderContact,
             handle,
-            serviceManager
+            serviceManager,
         )
     }
 
@@ -70,51 +89,96 @@ class IncomingGroupSyncRequestTask(
 
 suspend fun handleIncomingGroupSyncRequest(
     group: GroupModel,
-    sender: String,
+    sender: BasicContact,
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): ReceiveStepsResult {
-    val groupService = serviceManager.groupService
     val incomingGroupSyncRequestLogModelFactory =
         serviceManager.databaseServiceNew.incomingGroupSyncRequestLogModelFactory
 
-    // 2. If a group-sync-request from this sender and group has already been handled within the
-    //    last hour, log a notice and abort these steps
+    // Check whether the user is the creator. If not, abort these steps.
+    if (serviceManager.userService.identity != group.groupIdentity.creatorIdentity) {
+        logger.info("Group sync request received for group where the user is not the creator")
+        return ReceiveStepsResult.DISCARD
+    }
+
+    // If a group-sync-request from this sender and group has already been handled within the
+    // last hour, log a notice and abort these steps
     val groupSyncLog = incomingGroupSyncRequestLogModelFactory.getByGroupIdAndSenderIdentity(
-        group.id, sender
+        localDbGroupId = group.getDatabaseId(),
+        senderIdentity = sender.identity,
     )
     val now = System.currentTimeMillis()
     val oneHourAgo = now - DateUtils.HOUR_IN_MILLIS
     if (groupSyncLog.lastHandledRequest > oneHourAgo) {
-        logger.info(
-            "Group sync request already handled {}ms ago",
-            now - groupSyncLog.lastHandledRequest
-        )
-        return ReceiveStepsResult.DISCARD
-    }
-    incomingGroupSyncRequestLogModelFactory.createOrUpdate(
-        groupSyncLog.apply { lastHandledRequest = now }
-    )
-
-    // 3. If the group is marked as left or the sender is not a member of the group, send a
-    //    group-setup with an empty members list back to the sender and abort these steps.
-    if (!groupService.isGroupMember(group) || !groupService.isGroupMember(group, sender)) {
-        sendEmptyGroupSetup(group, sender, handle, serviceManager)
+        logger.info("Group sync request already handled at {}", groupSyncLog.lastHandledRequest)
         return ReceiveStepsResult.DISCARD
     }
 
-    // 4. Send a group-setup message followed by a group-name message, 5. send a
-    //    set-profile-picture (if set), and 6. send a delete-profile-picture (if not set)
-    OutgoingGroupSyncTask(
-        group.apiGroupId,
-        group.creatorIdentity,
-        setOf(sender),
-        serviceManager
-    ).invoke(handle)
+    val multiDeviceManager = serviceManager.multiDeviceManager
+    if (multiDeviceManager.isMultiDeviceActive) {
+        val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
 
-    // 7. If a group call is currently considered running within this group, send a group call
-    //    start message
-    serviceManager.groupCallManager.sendGroupCallStartToNewMembers(group, setOf(sender), handle)
+        try {
+            handle.createTransaction(
+                multiDeviceProperties.keys,
+                MdD2D.TransactionScope.Scope.GROUP_SYNC,
+                TRANSACTION_TTL_MAX,
+                precondition = {
+                    group.data.value != null
+                },
+            ).execute {
+                answerGroupSyncRequest(group, sender, serviceManager, handle)
+            }
+        } catch (e: TransactionScope.TransactionException) {
+            logger.warn("Group sync race: Could not start transaction", e)
+            return ReceiveStepsResult.DISCARD
+        }
+    } else {
+        answerGroupSyncRequest(group, sender, serviceManager, handle)
+    }
 
     return ReceiveStepsResult.SUCCESS
+}
+
+private suspend fun answerGroupSyncRequest(
+    group: GroupModel,
+    sender: BasicContact,
+    serviceManager: ServiceManager,
+    handle: ActiveTaskCodec,
+) {
+    val data = group.data.value ?: run {
+        logger.error("Group model data cannot be null at this point")
+        return
+    }
+    if (!data.isMember || !data.otherMembers.contains(sender.identity)) {
+        handle.runBundledMessagesSendSteps(
+            OutgoingCspMessageHandle(
+                sender,
+                OutgoingCspGroupMessageCreator(
+                    MessageId(),
+                    Date(),
+                    group,
+                ) {
+                    GroupSetupMessage().apply {
+                        members = emptyArray()
+                    }
+                },
+            ),
+            serviceManager.getOutgoingCspMessageServices(),
+        )
+    } else {
+        runActiveGroupStateResyncSteps(
+            group,
+            setOf(sender),
+            PreGeneratedMessageIds(MessageId(), MessageId(), MessageId(), MessageId()),
+            serviceManager.userService,
+            serviceManager.apiService,
+            serviceManager.fileService,
+            serviceManager.groupCallManager,
+            serviceManager.databaseServiceNew,
+            serviceManager.getOutgoingCspMessageServices(),
+            handle,
+        )
+    }
 }

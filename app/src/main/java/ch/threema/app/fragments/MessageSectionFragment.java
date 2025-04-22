@@ -21,13 +21,6 @@
 
 package ch.threema.app.fragments;
 
-import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
-import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
-import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
-import static ch.threema.app.ThreemaApplication.MAX_PW_LENGTH_BACKUP;
-import static ch.threema.app.ThreemaApplication.MIN_PW_LENGTH_BACKUP;
-import static ch.threema.app.managers.ListenerManager.conversationListeners;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -51,18 +44,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.view.MenuItemCompat;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -77,6 +58,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -89,10 +81,7 @@ import ch.threema.app.adapters.MessageListAdapterItem;
 import ch.threema.app.adapters.MessageListViewHolder;
 import ch.threema.app.archive.ArchiveActivity;
 import ch.threema.app.asynctasks.DeleteDistributionListAsyncTask;
-import ch.threema.app.asynctasks.DeleteGroupAsyncTask;
-import ch.threema.app.asynctasks.DeleteMyGroupAsyncTask;
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
-import ch.threema.app.asynctasks.LeaveGroupAsyncTask;
 import ch.threema.app.backuprestore.BackupChatService;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -101,6 +90,8 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.groupflows.GroupDisbandIntent;
+import ch.threema.app.groupflows.GroupLeaveIntent;
 import ch.threema.app.listeners.ChatListener;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
@@ -116,23 +107,22 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
-import ch.threema.app.services.ConversationTagServiceImpl;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
@@ -148,11 +138,23 @@ import ch.threema.app.voip.activities.GroupCallActivity;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupIdentity;
+import ch.threema.data.models.GroupModelData;
+import ch.threema.data.repositories.GroupModelRepository;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.TagModel;
+import kotlinx.coroutines.Deferred;
+
+import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
+import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
+import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
+import static ch.threema.app.ThreemaApplication.MAX_PW_LENGTH_BACKUP;
+import static ch.threema.app.ThreemaApplication.MIN_PW_LENGTH_BACKUP;
+import static ch.threema.app.managers.ListenerManager.conversationListeners;
 
 /**
  * This is one of the tabs in the home screen. It shows the current conversations.
@@ -199,6 +201,7 @@ public class MessageSectionFragment extends MainFragment
     private static final int TAG_MARK_READ = 12;
     private static final int TAG_MARK_UNREAD = 13;
     private static final int TAG_DELETE_CHAT = 14;
+    private static final int TAG_ARCHIVE_CHAT = 15;
 
     private static final String BUNDLE_FILTER_QUERY = "filterQuery";
     private static String highlightUid;
@@ -207,11 +210,14 @@ public class MessageSectionFragment extends MainFragment
     private ConversationService conversationService;
     private ContactService contactService;
     private GroupService groupService;
+    private GroupModelRepository groupModelRepository;
+    private GroupFlowDispatcher groupFlowDispatcher;
     private GroupCallManager groupCallManager;
     private MessageService messageService;
     private DistributionListService distributionListService;
     private BackupChatService backupChatService;
-    private DeadlineListService mutedChatsListService, mentionOnlyChatsListService, hiddenChatsListService;
+    @NonNull
+    private ConversationCategoryService conversationCategoryService;
     private ConversationTagService conversationTagService;
     private RingtoneService ringtoneService;
     private FileService fileService;
@@ -230,7 +236,6 @@ public class MessageSectionFragment extends MainFragment
     private int currentFullSyncs = 0;
     private String filterQuery;
     private int cornerRadius;
-    private TagModel unreadTagModel;
     private final Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemCache = new HashMap<>();
 
     private @Nullable String myIdentity;
@@ -333,10 +338,13 @@ public class MessageSectionFragment extends MainFragment
 
     private final GroupListener groupListener = new GroupListener() {
         @Override
-        public void onNewMember(GroupModel group, String newIdentity) {
+        public void onNewMember(@NonNull GroupIdentity groupIdentity, String identityNew) {
             // If this user is added to an existing group
-            if (groupService != null && myIdentity != null && myIdentity.equals(newIdentity)) {
-                fireReceiverUpdate(groupService.createReceiver(group));
+            if (groupService != null && myIdentity != null && myIdentity.equals(identityNew)) {
+                GroupModel groupModel = groupService.getByGroupIdentity(groupIdentity);
+                if (groupModel != null) {
+                    fireReceiverUpdate(groupService.createReceiver(groupModel));
+                }
             }
         }
     };
@@ -418,11 +426,11 @@ public class MessageSectionFragment extends MainFragment
             this.distributionListService,
             this.fileService,
             this.backupChatService,
-            this.mutedChatsListService,
-            this.hiddenChatsListService,
+            this.conversationCategoryService,
             this.ringtoneService,
             this.preferenceService,
-            this.lockAppService);
+            this.lockAppService
+        );
     }
 
     protected void instantiate() {
@@ -433,22 +441,19 @@ public class MessageSectionFragment extends MainFragment
                 this.contactService = this.serviceManager.getContactService();
                 this.groupService = this.serviceManager.getGroupService();
                 this.groupCallManager = this.serviceManager.getGroupCallManager();
+                this.groupModelRepository = this.serviceManager.getModelRepositories().getGroups();
+                this.groupFlowDispatcher = this.serviceManager.getGroupFlowDispatcher();
                 this.messageService = this.serviceManager.getMessageService();
                 this.conversationService = this.serviceManager.getConversationService();
                 this.distributionListService = this.serviceManager.getDistributionListService();
                 this.fileService = this.serviceManager.getFileService();
                 this.backupChatService = this.serviceManager.getBackupChatService();
-                this.mutedChatsListService = this.serviceManager.getMutedChatsListService();
-                this.mentionOnlyChatsListService = this.serviceManager.getMentionOnlyChatsListService();
-                this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();
+                this.conversationCategoryService = this.serviceManager.getConversationCategoryService();
                 this.ringtoneService = this.serviceManager.getRingtoneService();
                 this.preferenceService = this.serviceManager.getPreferenceService();
                 this.conversationTagService = this.serviceManager.getConversationTagService();
                 this.lockAppService = this.serviceManager.getLockAppService();
-                UserService userService = serviceManager.getUserService();
-                if (userService != null) {
-                    myIdentity = userService.getIdentity();
-                }
+                myIdentity = serviceManager.getUserService().getIdentity();
             } catch (MasterKeyLockedException e) {
                 logger.debug("Master Key locked!");
             } catch (ThreemaException e) {
@@ -571,17 +576,14 @@ public class MessageSectionFragment extends MainFragment
                 toggleHiddenMenuItemRef = new WeakReference<>(menu.findItem(R.id.menu_toggle_private_chats));
                 if (toggleHiddenMenuItemRef.get() != null) {
                     if (isAdded()) {
-                        toggleHiddenMenuItemRef.get().setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (preferenceService.isPrivateChatsHidden()) {
-                                    requestUnhideChats();
-                                } else {
-                                    preferenceService.setPrivateChatsHidden(true);
-                                    updateList(null, null, new Thread(() -> fireSecretReceiverUpdate()));
-                                }
-                                return true;
+                        toggleHiddenMenuItemRef.get().setOnMenuItemClickListener(item -> {
+                            if (preferenceService.isPrivateChatsHidden()) {
+                                requestUnhideChats();
+                            } else {
+                                preferenceService.setPrivateChatsHidden(true);
+                                updateList(null, null, new Thread(this::firePrivateReceiverUpdate));
                             }
+                            return true;
                         });
                         updateHiddenMenuVisibility();
                     }
@@ -613,7 +615,7 @@ public class MessageSectionFragment extends MainFragment
     };
 
     private void showConversation(ConversationModel conversationModel, View v) {
-        conversationTagService.removeTagAndNotify(conversationModel, unreadTagModel);
+        conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
         conversationModel.setUnreadCount(0);
 
         // Close keyboard if search view is expanded
@@ -669,7 +671,7 @@ public class MessageSectionFragment extends MainFragment
                 if (resultCode == Activity.RESULT_OK) {
                     serviceManager.getScreenLockService().setAuthenticated(true);
                     preferenceService.setPrivateChatsHidden(false);
-                    updateList(0, null, new Thread(() -> fireSecretReceiverUpdate()));
+                    updateList(0, null, new Thread(() -> firePrivateReceiverUpdate()));
                 }
                 break;
             case ID_RETURN_FROM_SECURITY_SETTINGS:
@@ -681,7 +683,7 @@ public class MessageSectionFragment extends MainFragment
                 if (resultCode == Activity.RESULT_OK) {
                     ThreemaApplication.getServiceManager().getScreenLockService().setAuthenticated(true);
                     if (selectedConversation != null) {
-                        doUnhideChat(selectedConversation);
+                        removePrivateMark(selectedConversation);
                     }
                 }
                 // fallthrough
@@ -690,32 +692,42 @@ public class MessageSectionFragment extends MainFragment
         }
     }
 
-    private void doUnhideChat(@NonNull ConversationModel conversationModel) {
+    private void removePrivateMark(@NonNull ConversationModel conversationModel) {
         MessageReceiver<?> receiver = conversationModel.getReceiver();
-        if (receiver != null && hiddenChatsListService.has(receiver.getUniqueIdString())) {
-            hiddenChatsListService.remove(receiver.getUniqueIdString());
+        if (receiver == null) {
+            logger.warn("Cannot remove private mark as the receiver is null");
+            return;
+        }
 
-            if (getView() != null) {
-                Snackbar.make(getView(), R.string.chat_visible, Snackbar.LENGTH_SHORT).show();
-            }
+        if (!conversationCategoryService.removePrivateMark(receiver)) {
+            logger.warn("Private mark couldn't be removed from conversation");
+            return;
+        }
 
-            this.fireReceiverUpdate(receiver);
-            if (messageListAdapter != null) {
-                messageListAdapter.clearSelections();
-            }
+        if (getView() != null) {
+            Snackbar.make(getView(), R.string.chat_visible, Snackbar.LENGTH_SHORT).show();
+        }
+
+        this.fireReceiverUpdate(receiver);
+        if (messageListAdapter != null) {
+            messageListAdapter.clearSelections();
         }
     }
 
-    private void hideChat(ConversationModel conversationModel) {
-        MessageReceiver receiver = conversationModel.getReceiver();
+    private void markAsPrivate(ConversationModel conversationModel) {
+        MessageReceiver<?> receiver = conversationModel.getReceiver();
+        if (receiver == null) {
+            logger.warn("Cannot mark chat as private as the receiver is null");
+            return;
+        }
 
-        if (hiddenChatsListService.has(receiver.getUniqueIdString())) {
+        if (conversationCategoryService.isPrivateChat(receiver.getUniqueIdString())) {
             if (ConfigUtils.hasProtection(preferenceService)) {
                 // persist selection
                 selectedConversation = conversationModel;
                 HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, ID_PRIVATE_TO_PUBLIC);
             } else {
-                doUnhideChat(conversationModel);
+                removePrivateMark(conversationModel);
             }
         } else {
             if (ConfigUtils.hasProtection(preferenceService)) {
@@ -752,12 +764,22 @@ public class MessageSectionFragment extends MainFragment
 
             @Override
             protected Boolean doInBackground(Void... params) {
-                if (conversationModel != null && conversationModel.getReceiver() != null) {
-                    hiddenChatsListService.add(conversationModel.getReceiver().getUniqueIdString(), DeadlineListService.DEADLINE_INDEFINITE);
-                    fireReceiverUpdate(conversationModel.getReceiver());
-                    return true;
+                if (conversationModel == null) {
+                    return false;
                 }
-                return false;
+                MessageReceiver<?> messageReceiver = conversationModel.getReceiver();
+                if (messageReceiver == null) {
+                    logger.warn("The chat cannot be marked as private as the receiver is null");
+                    return false;
+                }
+
+                if (!conversationCategoryService.markAsPrivate(messageReceiver)) {
+                    logger.warn("Conversation hasn't been marked as private");
+                    return false;
+                }
+
+                fireReceiverUpdate(conversationModel.getReceiver());
+                return true;
             }
 
             @Override
@@ -775,7 +797,7 @@ public class MessageSectionFragment extends MainFragment
                     }
                     updateHiddenMenuVisibility();
                     if (ConfigUtils.hasProtection(preferenceService) && preferenceService.isPrivateChatsHidden()) {
-                        updateList(null, null, new Thread(() -> fireSecretReceiverUpdate()));
+                        updateList(null, null, new Thread(() -> firePrivateReceiverUpdate()));
                     }
                 } else {
                     Toast.makeText(ThreemaApplication.getAppContext(), R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
@@ -920,9 +942,7 @@ public class MessageSectionFragment extends MainFragment
                     final int oldPosition = conversationModel.getPosition();
 
                     if (direction == ItemTouchHelper.RIGHT) {
-                        TagModel pinTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
-
-                        conversationTagService.toggle(conversationModel, pinTagModel, true);
+                        conversationTagService.toggle(conversationModel, ConversationTag.PINNED, true, TriggerSource.LOCAL);
                         conversationModel.setIsPinTagged(!conversationModel.isPinTagged());
 
                         ArrayList<ConversationModel> conversationModels = new ArrayList<>();
@@ -934,9 +954,7 @@ public class MessageSectionFragment extends MainFragment
                             () -> conversationListeners.handle((ConversationListener listener) -> listener.onModified(conversationModel, oldPosition))
                         );
                     } else if (direction == ItemTouchHelper.LEFT) {
-                        conversationService.archive(conversationModel);
-
-                        archiveSnackbar = new ArchiveSnackbar(archiveSnackbar, conversationModel);
+                        archiveChat(conversationModel);
                     }
                 }
 
@@ -949,15 +967,16 @@ public class MessageSectionFragment extends MainFragment
 
                         if (dX > 0) {
                             MessageListViewHolder holder = (MessageListViewHolder) viewHolder;
-                            TagModel pinTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
 
                             MessageListAdapterItem messageListAdapterItem = holder.getMessageListAdapterItem();
                             ConversationModel conversationModel = messageListAdapterItem != null ? messageListAdapterItem.getConversationModel() : null;
 
-                            VectorDrawableCompat icon = conversationTagService.isTaggedWith(conversationModel, pinTagModel) ? unpinIconDrawable : pinIconDrawable;
+                            VectorDrawableCompat icon = conversationTagService.isTaggedWith(conversationModel, ConversationTag.PINNED)
+                                ? unpinIconDrawable
+                                : pinIconDrawable;
                             icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
 
-                            String label = conversationTagService.isTaggedWith(conversationModel, pinTagModel) ? getString(R.string.unpin) : getString(R.string.pin);
+                            String label = conversationTagService.isTaggedWith(conversationModel, ConversationTag.PINNED) ? getString(R.string.unpin) : getString(R.string.pin);
 
                             paint.setColor(getResources().getColor(R.color.messagelist_pinned_color));
                             canvas.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX + cornerRadius, (float) itemView.getBottom(), paint);
@@ -1088,11 +1107,14 @@ public class MessageSectionFragment extends MainFragment
             //
             if (!this.requiredInstances()) {
                 logger.error("could not instantiate required objects");
-            } else {
-                this.unreadTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
             }
         }
         return fragmentView;
+    }
+
+    private void archiveChat(ConversationModel conversationModel) {
+        conversationService.archive(conversationModel, TriggerSource.LOCAL);
+        archiveSnackbar = new ArchiveSnackbar(archiveSnackbar, conversationModel);
     }
 
     private void onFABClicked(View v) {
@@ -1131,7 +1153,7 @@ public class MessageSectionFragment extends MainFragment
             openGroupDetails(model);
         } else if (model.isDistributionListConversation()) {
             intent = new Intent(getActivity(), DistributionListAddActivity.class);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, model.getDistributionList().getId());
+            intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, model.getDistributionList().getId());
         }
         if (intent != null) {
             activity.startActivity(intent);
@@ -1279,9 +1301,9 @@ public class MessageSectionFragment extends MainFragment
             return;
         }
 
-        boolean isPrivate = hiddenChatsListService.has(receiver.getUniqueIdString());
+        boolean isPrivate = conversationCategoryService.isPrivateChat(receiver.getUniqueIdString());
 
-        if (conversationModel.hasUnreadMessage() || conversationTagService.isTaggedWith(conversationModel, unreadTagModel)) {
+        if (conversationModel.hasUnreadMessage() || conversationTagService.isTaggedWith(conversationModel, ConversationTag.MARKED_AS_UNREAD)) {
             labels.add(new SelectorDialogItem(getString(R.string.mark_read), R.drawable.ic_outline_visibility));
             tags.add(TAG_MARK_READ);
         } else {
@@ -1302,6 +1324,9 @@ public class MessageSectionFragment extends MainFragment
             tags.add(TAG_SHARE);
         }
 
+        labels.add(new SelectorDialogItem(getString(R.string.archive_chat), R.drawable.ic_archive_outline));
+        tags.add(TAG_ARCHIVE_CHAT);
+
         if (conversationModel.getMessageCount() > 0) {
             labels.add(new SelectorDialogItem(getString(R.string.empty_chat_title), R.drawable.ic_outline_delete_sweep));
             tags.add(TAG_EMPTY_CHAT);
@@ -1317,14 +1342,19 @@ public class MessageSectionFragment extends MainFragment
             tags.add(TAG_DELETE_DISTRIBUTION_LIST);
         } else if (conversationModel.isGroupConversation()) {
             // group chats
-            GroupModel group = conversationModel.getGroup();
-            if (group == null) {
+            ch.threema.data.models.GroupModel groupModel = conversationModel.getGroupModel();
+            if (groupModel == null) {
                 logger.error("Cannot access the group from the conversation model");
                 return;
             }
-            boolean isCreator = groupService.isGroupCreator(group);
-            boolean isMember = groupService.isGroupMember(group);
-            boolean hasOtherMembers = groupService.countMembersWithoutUser(group) > 0;
+            GroupModelData data = groupModel.getData().getValue();
+            if (data == null) {
+                logger.warn("Group model data is null");
+                return;
+            }
+            boolean isCreator = data.groupIdentity.getCreatorIdentity().equals(myIdentity);
+            boolean isMember = data.isMember();
+            boolean hasOtherMembers = !data.otherMembers.isEmpty();
             // Check also if the user is a group member, because orphaned groups should not be
             // editable.
             if (isCreator && isMember) {
@@ -1370,6 +1400,9 @@ public class MessageSectionFragment extends MainFragment
         final ConversationModel conversationModel = (ConversationModel) data;
 
         switch (which) {
+            case TAG_ARCHIVE_CHAT:
+                archiveChat(conversationModel);
+                break;
             case TAG_EMPTY_CHAT:
                 dialog = GenericAlertDialog.newInstance(
                     R.string.empty_chat_title,
@@ -1458,7 +1491,7 @@ public class MessageSectionFragment extends MainFragment
                 break;
             case TAG_SET_PRIVATE:
             case TAG_UNSET_PRIVATE:
-                hideChat(conversationModel);
+                markAsPrivate(conversationModel);
                 break;
             case TAG_SHARE:
                 if (ConfigUtils.requestWriteStoragePermissions(activity, this, PERMISSION_REQUEST_SHARE_THREAD)) {
@@ -1466,7 +1499,7 @@ public class MessageSectionFragment extends MainFragment
                 }
                 break;
             case TAG_MARK_READ:
-                conversationTagService.removeTagAndNotify(conversationModel, unreadTagModel);
+                conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
                 conversationModel.setIsUnreadTagged(false);
                 conversationModel.setUnreadCount(0);
                 new Thread(() -> messageService.markConversationAsRead(
@@ -1475,7 +1508,7 @@ public class MessageSectionFragment extends MainFragment
                 ).start();
                 break;
             case TAG_MARK_UNREAD:
-                conversationTagService.addTagAndNotify(conversationModel, unreadTagModel);
+                conversationTagService.addTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
                 conversationModel.setIsUnreadTagged(true);
                 break;
         }
@@ -1508,22 +1541,25 @@ public class MessageSectionFragment extends MainFragment
                 startActivityForResult(intent, ID_RETURN_FROM_SECURITY_SETTINGS);
                 break;
             case DIALOG_TAG_REALLY_LEAVE_GROUP:
-                new LeaveGroupAsyncTask((GroupModel) data, groupService, null, this, null).execute();
+                leaveGroup(GroupLeaveIntent.LEAVE, getNewGroupModel((GroupModel) data));
                 break;
             case DIALOG_TAG_REALLY_DISSOLVE_GROUP:
-                groupService.dissolveGroupFromLocal((GroupModel) data);
+                disbandGroup(GroupDisbandIntent.DISBAND, getNewGroupModel((GroupModel) data));
                 break;
             case DIALOG_TAG_REALLY_DELETE_MY_GROUP:
-                new DeleteMyGroupAsyncTask((GroupModel) data, groupService, null, this, null).execute();
-                break;
             case DIALOG_TAG_REALLY_DELETE_GROUP:
-                new DeleteGroupAsyncTask((GroupModel) data, groupService, null, this, null).execute();
+                removeGroup(getNewGroupModel((GroupModel) data));
                 break;
             case DIALOG_TAG_REALLY_DELETE_DISTRIBUTION_LIST:
                 new DeleteDistributionListAsyncTask((DistributionListModel) data, distributionListService, this, null).execute();
                 break;
             case DIALOG_TAG_REALLY_EMPTY_CHAT:
             case DIALOG_TAG_REALLY_DELETE_CHAT:
+                if (myIdentity == null) {
+                    logger.error("Cannot empty or remove chat when identity is null");
+                    return;
+                }
+
                 final ConversationModel conversationModel = (ConversationModel) data;
 
                 final EmptyOrDeleteConversationsAsyncTask.Mode mode = tag.equals(DIALOG_TAG_REALLY_DELETE_CHAT)
@@ -1539,8 +1575,10 @@ public class MessageSectionFragment extends MainFragment
                     mode,
                     new MessageReceiver[]{receiver},
                     conversationService,
-                    groupService,
                     distributionListService,
+                    groupModelRepository,
+                    groupFlowDispatcher,
+                    myIdentity,
                     getFragmentManager(),
                     null,
                     null
@@ -1549,6 +1587,125 @@ public class MessageSectionFragment extends MainFragment
             default:
                 break;
         }
+    }
+
+    private void leaveGroup(@NonNull GroupLeaveIntent intent, @Nullable ch.threema.data.models.GroupModel groupModel) {
+        if (groupModel == null) {
+            logger.warn("Cannot leave group: group model is null");
+            return;
+        }
+
+        try {
+            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runLeaveGroupFlow(
+                getParentFragmentManager(),
+                intent,
+                groupModel
+            );
+
+            result.invokeOnCompletion(throwable -> {
+                // TODO(ANDR-3631): Do not ignore throwable and refactor result type
+                if (result.getCompleted() != Boolean.TRUE) {
+                    logger.error("Could not leave group with intent {}", intent);
+                }
+
+                return null;
+            });
+        } catch (ThreemaException e) {
+            logger.error("Could not leave group", e);
+        }
+    }
+
+    private void disbandGroup(@NonNull GroupDisbandIntent intent, @Nullable ch.threema.data.models.GroupModel groupModel) {
+        if (groupModel == null) {
+            logger.warn("Cannot disband group: group model is null");
+            return;
+        }
+
+        try {
+            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runDisbandGroupFlow(
+                getParentFragmentManager(),
+                intent,
+                groupModel
+            );
+
+            result.invokeOnCompletion(throwable -> {
+                if (result.getCompleted() != Boolean.TRUE) {
+                    logger.error("Could not disband (or delete) group with intent {}", intent);
+                }
+
+                return null;
+            });
+
+        } catch (ThreemaException e) {
+            logger.error("Could not disband group", e);
+        }
+    }
+
+    private void removeGroup(@Nullable ch.threema.data.models.GroupModel groupModel) {
+        if (groupModel == null) {
+            // Group already removed
+            return;
+        }
+
+        GroupModelData data = groupModel.getData().getValue();
+        if (data == null) {
+            // Group already removed
+            return;
+        }
+
+        if (data.isMember()) {
+            // Disband or leave if the user is still part of the group.
+            if (data.groupIdentity.getCreatorIdentity().equals(myIdentity)) {
+                disbandGroup(GroupDisbandIntent.DISBAND_AND_REMOVE, groupModel);
+            } else {
+                leaveGroup(GroupLeaveIntent.LEAVE_AND_REMOVE, groupModel);
+            }
+        } else {
+            // Just remove the group
+            runGroupRemoveFlow(groupModel);
+        }
+    }
+
+    /**
+     * Note that this must only be run for groups that are already left or disbanded.
+     */
+    private void runGroupRemoveFlow(@NonNull ch.threema.data.models.GroupModel groupModel) {
+        try {
+            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runRemoveGroupFlow(
+                getParentFragmentManager(),
+                groupModel
+            );
+
+            result.invokeOnCompletion(throwable -> {
+                if (result.getCompleted() != Boolean.TRUE) {
+                    logger.error("Could not remove group");
+                }
+
+                return null;
+            });
+
+        } catch (ThreemaException e) {
+            logger.error("Could not remove group", e);
+        }
+    }
+
+    @Nullable
+    private ch.threema.data.models.GroupModel getNewGroupModel(@Nullable GroupModel groupModel) {
+        if (groupModel == null) {
+            logger.error("Provided group model is null");
+            return null;
+        }
+
+        ch.threema.data.models.GroupModel newGroupModel = groupModelRepository.getByCreatorIdentityAndId(
+            groupModel.getCreatorIdentity(),
+            groupModel.getApiGroupId()
+        );
+
+        if (newGroupModel == null) {
+            logger.error("New group model is null");
+        }
+
+        return newGroupModel;
     }
 
     @Override
@@ -1614,102 +1771,94 @@ public class MessageSectionFragment extends MainFragment
         }
         logger.debug("*** update list [" + scrollToPosition + ", " + (changedPositions != null ? changedPositions.size() : "0") + "]");
 
-        Thread updateListThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<ConversationModel> conversationModels;
+        Thread updateListThread = new Thread(() -> {
+            List<ConversationModel> conversationModels;
 
-                conversationModels = conversationService.getAll(false, new ConversationService.Filter() {
-                    @Override
-                    public boolean onlyUnread() {
-                        return false;
+            conversationModels = conversationService.getAll(false, new ConversationService.Filter() {
+                @Override
+                public boolean onlyUnread() {
+                    return false;
+                }
+
+                @Override
+                public boolean noDistributionLists() {
+                    return false;
+                }
+
+                @Override
+                public boolean noHiddenChats() {
+                    return preferenceService.isPrivateChatsHidden();
+                }
+
+                @Override
+                public boolean noInvalid() {
+                    return false;
+                }
+
+                @Override
+                public String filterQuery() {
+                    return filterQuery;
+                }
+            });
+
+            RuntimeUtil.runOnUiThread(() -> {
+                synchronized (messageListAdapterLock) {
+                    if (messageListAdapter == null || recreate) {
+                        messageListAdapter = new MessageListAdapter(
+                            MessageSectionFragment.this.activity,
+                            contactService,
+                            groupService,
+                            distributionListService,
+                            conversationService,
+                            ringtoneService,
+                            conversationCategoryService,
+                            preferenceService,
+                            groupCallManager,
+                            highlightUid,
+                            MessageSectionFragment.this,
+                            messageListAdapterItemCache,
+                            Glide.with(ThreemaApplication.getAppContext())
+                        );
+
+                        recyclerView.setAdapter(messageListAdapter);
                     }
 
-                    @Override
-                    public boolean noDistributionLists() {
-                        return false;
+                    try {
+                        messageListAdapter.setData(conversationModels, changedPositions);
+                    } catch (IndexOutOfBoundsException e) {
+                        logger.debug("Failed to set adapter data", e);
                     }
+                    // make sure footer is refreshed
+                    messageListAdapter.refreshFooter();
 
-                    @Override
-                    public boolean noHiddenChats() {
-                        return preferenceService.isPrivateChatsHidden();
-                    }
+                    if (recyclerView != null && scrollToPosition != null) {
+                        if (changedPositions != null && changedPositions.size() == 1) {
+                            ConversationModel changedModel = changedPositions.get(0);
 
-                    @Override
-                    public boolean noInvalid() {
-                        return false;
-                    }
-
-                    @Override
-                    public String filterQuery() {
-                        return filterQuery;
-                    }
-                });
-
-                RuntimeUtil.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (messageListAdapterLock) {
-                            if (messageListAdapter == null || recreate) {
-                                messageListAdapter = new MessageListAdapter(
-                                    MessageSectionFragment.this.activity,
-                                    contactService,
-                                    groupService,
-                                    distributionListService,
-                                    conversationService,
-                                    mutedChatsListService,
-                                    mentionOnlyChatsListService,
-                                    ringtoneService,
-                                    hiddenChatsListService,
-                                    preferenceService,
-                                    groupCallManager,
-                                    highlightUid,
-                                    MessageSectionFragment.this,
-                                    messageListAdapterItemCache,
-                                    Glide.with(ThreemaApplication.getAppContext())
-                                );
-
-                                recyclerView.setAdapter(messageListAdapter);
-                            }
-
-                            try {
-                                messageListAdapter.setData(conversationModels, changedPositions);
-                            } catch (IndexOutOfBoundsException e) {
-                                logger.debug("Failed to set adapter data", e);
-                            }
-                            // make sure footer is refreshed
-                            messageListAdapter.refreshFooter();
-
-                            if (recyclerView != null && scrollToPosition != null) {
-                                if (changedPositions != null && changedPositions.size() == 1) {
-                                    ConversationModel changedModel = changedPositions.get(0);
-
-                                    if (changedModel != null && scrollToPosition > changedModel.getPosition() && conversationModels.contains(changedModel)) {
-                                        recyclerView.scrollToPosition(changedModel.getPosition());
-                                    }
-                                }
+                            if (changedModel != null && scrollToPosition > changedModel.getPosition() && conversationModels.contains(changedModel)) {
+                                recyclerView.scrollToPosition(changedModel.getPosition());
                             }
                         }
-
-                        if (runAfterSetData != null) {
-                            runAfterSetData.run();
-                        }
                     }
-                });
+                }
 
-                synchronized (messageListAdapterItemCache) {
-                    for (ConversationModel conversationModel : conversationModels) {
-                        if (!messageListAdapterItemCache.containsKey(conversationModel)) {
-                            messageListAdapterItemCache.put(conversationModel, new MessageListAdapterItem(
+                if (runAfterSetData != null) {
+                    runAfterSetData.run();
+                }
+            });
+
+            synchronized (messageListAdapterItemCache) {
+                for (ConversationModel conversationModel : conversationModels) {
+                    if (!messageListAdapterItemCache.containsKey(conversationModel)) {
+                        messageListAdapterItemCache.put(
+                            conversationModel,
+                            new MessageListAdapterItem(
                                 conversationModel,
                                 contactService,
-                                groupService,
-                                mutedChatsListService,
-                                mentionOnlyChatsListService,
                                 ringtoneService,
-                                hiddenChatsListService
-                            ));
-                        }
+                                conversationCategoryService
+                            )
+                        );
                     }
                 }
             }
@@ -1725,12 +1874,10 @@ public class MessageSectionFragment extends MainFragment
 
     private void updateHiddenMenuVisibility() {
         if (isAdded() && toggleHiddenMenuItemRef != null && toggleHiddenMenuItemRef.get() != null) {
-            if (hiddenChatsListService != null) {
-                toggleHiddenMenuItemRef.get().setVisible(hiddenChatsListService.getSize() > 0 &&
-                    ConfigUtils.hasProtection(preferenceService));
-                return;
-            }
-            toggleHiddenMenuItemRef.get().setVisible(false);
+            toggleHiddenMenuItemRef.get().setVisible(
+                conversationCategoryService.hasPrivateChats() &&
+                    ConfigUtils.hasProtection(preferenceService)
+            );
         }
     }
 
@@ -1743,8 +1890,13 @@ public class MessageSectionFragment extends MainFragment
 
     private void fireReceiverUpdate(final MessageReceiver receiver) {
         if (receiver instanceof GroupMessageReceiver) {
+            GroupModel groupModel = ((GroupMessageReceiver) receiver).getGroup();
+            GroupIdentity groupIdentity = new GroupIdentity(
+                groupModel.getCreatorIdentity(),
+                groupModel.getApiGroupId().toLong()
+            );
             ListenerManager.groupListeners.handle(listener ->
-                listener.onUpdate(((GroupMessageReceiver) receiver).getGroup())
+                listener.onUpdate(groupIdentity)
             );
         } else if (receiver instanceof ContactMessageReceiver) {
             ListenerManager.contactListeners.handle(listener ->
@@ -1758,14 +1910,13 @@ public class MessageSectionFragment extends MainFragment
     }
 
     @WorkerThread
-    private void fireSecretReceiverUpdate() {
+    private void firePrivateReceiverUpdate() {
         //fire a update for every secret receiver (to update webclient data)
-        for (ConversationModel c : Functional.filter(this.conversationService.getAll(false, null), new IPredicateNonNull<ConversationModel>() {
-            @Override
-            public boolean apply(ConversationModel conversationModel) {
-                return conversationModel != null && hiddenChatsListService.has(conversationModel.getReceiver().getUniqueIdString());
-            }
-        })) {
+        for (ConversationModel c : Functional.filter(
+            this.conversationService.getAll(false, null),
+            (IPredicateNonNull<ConversationModel>)
+                conversationModel -> conversationCategoryService.isPrivateChat(conversationModel.getReceiver().getUniqueIdString())
+        )) {
             if (c != null) {
                 this.fireReceiverUpdate(c.getReceiver());
             }
@@ -1806,7 +1957,7 @@ public class MessageSectionFragment extends MainFragment
                 int amountArchived = this.conversationModels.size();
                 String snackText = ConfigUtils.getSafeQuantityString(getContext(), R.plurals.message_archived, amountArchived, amountArchived, this.conversationModels.size());
                 this.snackbar = Snackbar.make(getView(), snackText, 7 * (int) DateUtils.SECOND_IN_MILLIS);
-                this.snackbar.setAction(R.string.undo, v -> conversationService.unarchive(conversationModels));
+                this.snackbar.setAction(R.string.undo, v -> conversationService.unarchive(conversationModels, TriggerSource.LOCAL));
                 this.snackbar.addCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {

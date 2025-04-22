@@ -37,7 +37,7 @@ internal class SystemUpdateToVersion86(
         sqLiteDatabase.execSQL(
             "CREATE TABLE `tasks` (" +
                 "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "`task` STRING NOT NULL)"
+                "`task` STRING NOT NULL)",
         )
 
         return true

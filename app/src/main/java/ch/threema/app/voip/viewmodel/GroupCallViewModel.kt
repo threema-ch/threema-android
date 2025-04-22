@@ -47,10 +47,13 @@ import org.webrtc.EglBase
 private val logger = LoggingUtil.getThreemaLogger("GroupCallViewModel")
 
 @UiThread
-class GroupCallViewModel(application: Application) : AndroidViewModel(application),
+class GroupCallViewModel(application: Application) :
+    AndroidViewModel(application),
     GroupCallObserver {
     enum class ConnectingState {
-        IDLE, INITIATED, COMPLETED
+        IDLE,
+        INITIATED,
+        COMPLETED,
     }
 
     data class FinishEvent(val reason: Reason, val call: GroupCallDescription? = null) {
@@ -80,7 +83,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 
     var microphoneActiveDefault: Boolean? = null
 
-    private val audioDevices = MutableLiveData<Set<AudioDevice>>(setOf())
+    private val audioDevices = MutableLiveData<Set<AudioDevice>>(emptySet())
     fun getAudioDevices(): LiveData<Set<AudioDevice>> = audioDevices
     private val selectedAudioDevice = MutableLiveData(AudioDevice.NONE)
     fun getSelectedAudioDevice(): LiveData<AudioDevice> = selectedAudioDevice
@@ -186,7 +189,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
     fun joinCall(intention: GroupCallIntention) {
         groupId.value?.let {
             groupService.getById(it.id)?.let {
-                joinJob = CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+                joinJob = CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                     try {
                         ensureNoCallsInOtherGroup(it)
 
@@ -314,7 +317,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
                 } catch (e: Exception) {
                     logger.error("Call left with exception", e)
                     mapExceptionToFinishEvent(e)
-                }
+                },
             )
             callRunning.value = false
         }
@@ -332,7 +335,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
             HTTP_STATUS_NO_SUCH_CALL -> getFinishEvent(FinishEvent.Reason.NO_SUCH_CALL, e)
             HTTP_STATUS_UNSUPPORTED_PROTOCOL_VERSION -> getFinishEvent(
                 FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION,
-                e
+                e,
             )
 
             HTTP_STATUS_SFU_NOT_AVAILABLE -> getFinishEvent(FinishEvent.Reason.SFU_NOT_AVAILABLE, e)
@@ -343,7 +346,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun getFinishEvent(
         reason: FinishEvent.Reason,
-        exception: Exception? = null
+        exception: Exception? = null,
     ): FinishEvent {
         val description =
             if (exception is GroupCallException && exception.callDescription != null) {
@@ -408,7 +411,6 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
         captureStateUpdates.postValue(Unit)
     }
 
-
     @AnyThread
     private fun getGroupModel(groupId: LocalGroupId?) = groupId?.let {
         groupService.getById(it.id)
@@ -427,7 +429,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
                 ThreemaApplication.getAppContext(),
                 R.plurals.n_participants_in_call,
                 count,
-                count
+                count,
             )
 
             else -> null
@@ -437,7 +439,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
     @UiThread
     private fun mapStatusMessage(): LiveData<String?> {
         val connectingStateText = MutableLiveData(
-            getApplication<ThreemaApplication>().getString(R.string.voip_status_connecting)
+            getApplication<ThreemaApplication>().getString(R.string.voip_status_connecting),
         )
         return connectingState.distinctUntilChanged().switchMap {
             when (it) {

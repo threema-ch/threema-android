@@ -22,7 +22,6 @@
 package ch.threema.domain.protocol.csp.messages.ballot
 
 interface BallotMessageInterface {
-
     var ballotId: BallotId?
 
     var ballotCreatorIdentity: String?

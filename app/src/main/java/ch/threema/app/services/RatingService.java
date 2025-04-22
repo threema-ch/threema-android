@@ -61,7 +61,7 @@ public class RatingService {
     }
 
     private String getRatingUrl(int rating) throws ThreemaException {
-        return serverAddressProvider.getAppRatingUrl().replace("{rating}", Integer.toString(rating));
+        return serverAddressProvider.getAppRatingUrl().get(rating);
     }
 
     @WorkerThread

@@ -27,12 +27,12 @@ import ch.threema.data.storage.DbEditHistoryEntry.Companion.COLUMN_MESSAGE_UID
 import ch.threema.data.storage.DbEditHistoryEntry.Companion.COLUMN_TEXT
 import ch.threema.data.storage.DbEditHistoryEntry.Companion.COLUMN_UID
 import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 
 abstract class EditHistoryEntryModelFactory(dbService: DatabaseServiceNew, tableName: String) :
     ModelFactory(dbService, tableName) {
-
     // This statement represents the first version if this table
     // It has been changed. See SystemUpdateToVersion102
     override fun getStatements(): Array<String> = arrayOf(
@@ -43,7 +43,7 @@ abstract class EditHistoryEntryModelFactory(dbService: DatabaseServiceNew, table
             "`$COLUMN_TEXT` VARCHAR DEFAULT NULL, " +
             "`$COLUMN_EDITED_AT` DATETIME NOT NULL, " +
             getConstraints() +
-            ")"
+            ")",
     )
 
     protected abstract fun getConstraints(): String
@@ -51,7 +51,6 @@ abstract class EditHistoryEntryModelFactory(dbService: DatabaseServiceNew, table
 
 class ContactEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) :
     EditHistoryEntryModelFactory(dbService, TABLE) {
-
     companion object {
         const val TABLE = "contact_edit_history_entries"
     }
@@ -60,13 +59,12 @@ class ContactEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) :
     // It has been changed. See SystemUpdateToVersion102
     override fun getConstraints(): String {
         return "CONSTRAINT fk_contact_message_id_new FOREIGN KEY($COLUMN_MESSAGE_ID) " +
-            "REFERENCES ${MessageModel.TABLE} (${MessageModel.COLUMN_ID}) ON UPDATE CASCADE ON DELETE CASCADE "
+            "REFERENCES ${MessageModel.TABLE} (${AbstractMessageModel.COLUMN_ID}) ON UPDATE CASCADE ON DELETE CASCADE "
     }
 }
 
 class GroupEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) :
     EditHistoryEntryModelFactory(dbService, TABLE) {
-
     companion object {
         const val TABLE = "group_edit_history_entries"
     }
@@ -75,6 +73,6 @@ class GroupEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) :
     // It has been changed. See SystemUpdateToVersion102
     override fun getConstraints(): String {
         return "CONSTRAINT fk_group_message_id_new FOREIGN KEY($COLUMN_MESSAGE_ID) " +
-            "REFERENCES ${GroupMessageModel.TABLE} (${GroupMessageModel.COLUMN_ID}) ON UPDATE CASCADE ON DELETE CASCADE "
+            "REFERENCES ${GroupMessageModel.TABLE} (${AbstractMessageModel.COLUMN_ID}) ON UPDATE CASCADE ON DELETE CASCADE "
     }
 }

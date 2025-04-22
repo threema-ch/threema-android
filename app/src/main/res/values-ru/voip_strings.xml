@@ -20,7 +20,7 @@
     <!-- Shown when a call is being disconnected -->
     <string name="voip_status_disconnecting">Разъединение</string>
     <!-- Shown when the device of the callee is ringing -->
-    <string name="voip_status_ringing">Звонок...</string>
+    <string name="voip_status_ringing">Звонок…</string>
     <string name="voip_mic_enable">Включить микрофон</string>
     <string name="voip_mic_disable">Отключить микрофон</string>
     <string name="voip_checking_compatibility">Проверка возможности приёма звонков Threema контактом…</string>

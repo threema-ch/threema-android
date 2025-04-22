@@ -31,7 +31,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TypingIndicatorMessageTest {
-
     private val isTypingBytes = byteArrayOf(1)
     private val isNotTypingBytes = byteArrayOf(0)
 

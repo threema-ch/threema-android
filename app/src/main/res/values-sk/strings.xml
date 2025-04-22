@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontakty</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">Konverzácie</string>
     <string name="title_compose_message">Zahájiť konverzáciu</string>
     <string name="title_choose_recipient">Vybrať príjemcov</string>
     <string name="title_keyfingerprint">Odtlačok kľúča</string>
-    <string name="title_mythreemaid">Moje Threema ID</string>
-    <string name="title_threemaid">Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">Moje ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short} ID</string>
     <string name="title_adduser">Pridať nový kontakt</string>
     <string name="title_enter_id">Zadajte ID</string>
     <string name="title_invite_friend">Pozvať priateľa</string>
     <string name="invite_via">Pozvať priateľa pomocou…</string>
-    <string name="invite_email_body">Ahoj,\n\n používam aplikáciu %1$s, bezpečný komunikátor, ktorý chráni súkromie užívateľov.\n\nMoje Threema ID: https://threema.id/%2$s\n\nPoďme komunikovať cez aplikáciu %1$s!\n\nS pozdravom,\n</string>
-    <string name="invite_sms_body">Ahoj! Začnime používať aplikáciu %1$s, nech môžme spolu komunikovať bezpečne a v súkromí! Moje Threema ID je: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema. Bezpečný komunikátor, ktorý chráni naše súkromie</string>
-    <string name="enter_id_hint">Zadajte Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">Ahoj,\n\n používam aplikáciu %1$s, bezpečný komunikátor, ktorý chráni súkromie užívateľov.\n\nMoje ${app_name_short} ID: https://threema.id/%2$s\n\nPoďme komunikovať cez aplikáciu %1$s!\n\nS pozdravom,\n</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">Ahoj! Začnime používať aplikáciu %1$s, nech môžme spolu komunikovať bezpečne a v súkromí! Moje ${app_name_short} ID je: https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}. Bezpečný komunikátor, ktorý chráni naše súkromie</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">Zadajte ${app_name_short} ID</string>
     <string name="account_links">Prepojené účty</string>
     <string name="menu_settings">Nastavenia</string>
-    <string name="menu_about">O aplikácii Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">O aplikácii ${app_name}</string>
     <string name="menu_add_contact">Nový kontakt</string>
     <string name="menu_done">Hotovo</string>
     <string name="compose_message_and_enter">Tu začnite písať</string>
@@ -51,6 +59,8 @@
     <string name="prefs_sum_notification_sound">Predvolené systémom</string>
     <string name="prefs_vibrate">Vibrovať</string>
     <string name="prefs_sum_vibrate">Vibrovať po prijatí správy</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
     <string name="prefs_sum_light">Biele</string>
     <string name="prefs_title_wallpaper">Vyberte tapetu</string>
     <string name="prefs_sum_wallpaper">Vyberte obrázok pozadia</string>
@@ -67,8 +77,10 @@
     <string name="prefs_inapp_vibrate_on">Vibrovať pri prijatí správy</string>
     <string name="prefs_inapp_vibrate_off">Nevibrovať pri prijatí správy</string>
     <string name="workarounds">Riešenia</string>
-    <string name="prefs_title_threema_push_switch">Použiť službu Threema Push</string>
-    <string name="prefs_sum_threema_push_on">Ak chcete dostávať upozornenia na nové správy, použite Threema Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_threema_push_switch">Použiť službu ${app_name_short} Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_threema_push_on">Ak chcete dostávať upozornenia na nové správy, použite ${app_name_short} Push</string>
     <string name="prefs_sum_threema_push_off">Skontrolujte nové správy pomocou systémovej služby push</string>
     <string name="prefs_logging">Protokol</string>
     <string name="prefs_title_message_log_switch">Protokolovať do súboru</string>
@@ -84,19 +96,11 @@
     <string name="image_size_large">Veľký (1600x1600)</string>
     <string name="image_size_xlarge">Extra veľký (2592×2592)</string>
     <string name="image_size_original">Povodná veľkosť</string>
-    <string name="color_none">Žiadne</string>
-    <string name="color_orange">Oranžová</string>
-    <string name="color_red">Červená</string>
-    <string name="color_green">Zelená</string>
-    <string name="color_blue">Modrá</string>
-    <string name="color_cyan">Azurová</string>
-    <string name="color_magenta">Purpurová</string>
-    <string name="color_yellow">Žltá</string>
-    <string name="color_white">Biela</string>
     <string name="next">Ďalší</string>
     <string name="finish">Dokončiť</string>
     <string name="please_wait">Prosím čakajte…</string>
-    <string name="wizard_first_create_id">Vytváram Threema ID…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_first_create_id">Vytváram ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">Synchronizujú sa kontakty…</string>
     <string name="wizard2_email_hint">Zadajte vašu emailovú adresu</string>
     <string name="wizard2_email_linking">Prepojenie emailu s vašim ID</string>
@@ -122,21 +126,25 @@
     <string name="share_via">Zdieľať cez…</string>
     <string name="share_subject">%s konverzácia</string>
     <string name="message_delete_undo">Vrátiť späť</string>
-    <string name="mobile_already_linked">Vaše Threema ID je už prepojené s týmto telefónnym číslom</string>
-    <string name="email_already_linked">Vaše Threema ID je už prepojené s touto emailovou adresou</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">Vaše ${app_name_short} ID je už prepojené s týmto telefónnym číslom</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">Vaše ${app_name_short} ID je už prepojené s touto emailovou adresou</string>
     <string name="whoaaa">Oznámenie</string>
     <string name="really_delete_message_title">Odstrániť správu</string>
     <string name="really_delete_thread">Odstrániť konverzáciu</string>
     <string name="really_delete_multiple_threads">Odstrániť konverzácie</string>
     <string name="really_delete_contact">Naozaj chcete odstrániť tento kontakt a všetky s ním súvisiace správy?</string>
     <string name="image_placeholder">Obrázok</string>
-    <string name="invalid_threema_id">Neplaté Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">Neplaté ${app_name_short} ID</string>
     <string name="contact_already_exists">Kontakt už existuje</string>
     <string name="close">Zatvoriť</string>
     <string name="creating_contact">Pridáva sa nový kontakt</string>
     <string name="creating_contact_successful">Kontakt úspešne pridaný</string>
     <string name="invalid_threema_qr_code">Neplatný QR kód</string>
-    <string name="threema_contact">Threema kontakt</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short} kontakt</string>
     <string name="first_name">Meno</string>
     <string name="last_name">Priezvisko</string>
     <string name="os_licenses">Licencie</string>
@@ -147,14 +155,15 @@
         že je uvedené číslo správne a ste pripojený do mobilnej siete.</string>
     <string name="verify_failed_not_linked">Overenie telefónneho čísla zlyhalo. Proces overovania bol prerušený.</string>
     <string name="check_incoming_sms">Čaká sa na prijatie SMS správy</string>
-    <string name="backup_title">Exportovať Threema ID</string>
-    <string name="backup_sum">Exportovať vaše Threema ID</string>
+    <string name="backup_title">Exportovať ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">Exportovať vaše ${app_name_short} ID</string>
     <string name="backup_and_delete">Záloha a odstránenie</string>
-    <string name="delete_id_title">Vymazať Threema ID</string>
-    <string name="delete_id_message">Pokiaľ ste nevytvorili zálohu alebo neexportovali a neuložili kópiu tohto ID, už nikdy nebudete môcť odosielať ani prijímať správy s týmto ID.\n\nAk už toto ID nechcete používať, odporúčame nastaviť heslo na zrušenie Threema ID a pred odstránením tohto ID ho odvolať na stránke myid.threema.ch/revoke.</string>
+    <string name="delete_id_title">Vymazať ID</string>
+    <string name="delete_id_message">Pokiaľ ste nevytvorili zálohu alebo neexportovali a neuložili kópiu tohto ID, už nikdy nebudete môcť odosielať ani prijímať správy s týmto ID.\n\nAk už toto ID nechcete používať, odporúčame nastaviť heslo na zrušenie ${app_name_short} ID a pred odstránením tohto ID ho odvolať na stránke myid.threema.ch/revoke.</string>
     <string name="delete_id_message2">Posledné varovanie: naozaj chcete z tohto zariadenia vymazať vaše ID?</string>
-    <string name="delete_id_sum">Z tohto zariadenia sa natrvalo odstráni vaše ID a všetky údaje aplikácie Threema</string>
-    <string name="backup_password_summary">Export vášho Threema ID bude zašifrovaný heslom. Použite kombináciu písmen, číslic a symbolov. Nezabudnite, čo sem zadáte!</string>
+    <string name="delete_id_sum">Z tohto zariadenia sa natrvalo odstráni vaše ID a všetky údaje aplikácie ${app_name_short}</string>
+    <string name="backup_password_summary">Export vášho ${app_name_short} ID bude zašifrovaný heslom. Použite kombináciu písmen, číslic a symbolov. Nezabudnite, čo sem zadáte!</string>
     <string name="backup_password_again_summary">Vložte heslo znovu</string>
     <string name="password_hint">Heslo</string>
     <string name="generating_backup_data">Generujú sa údaje zálohy</string>
@@ -164,8 +173,10 @@ môže byť použitý k obnoveniu vášho ID na inom zariadení. Mali by ste ho 
 alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="support">Nápoveda</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Nasledujúci textový reťazec je možné použiť spolu so zvoleným heslom na obnovenie vašeho Threema ID.</string>
-    <string name="backup_share_subject">Export Threema ID pre</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_content">Nasledujúci textový reťazec je možné použiť spolu so zvoleným heslom na obnovenie vašeho ${app_name_short} ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">Export ${app_name_short} ID pre</string>
     <string name="add_attachment">Nová príloha</string>
     <string name="invalid_passphrase">Neplatné heslo</string>
     <string name="master_key_locked">Hlavný kľúč je uzamknutý</string>
@@ -174,7 +185,7 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="prefs_title_masterkey_passphrase">Heslo</string>
     <string name="setting_masterkey_passphrase">Zadanie hesla hlavného kľúča</string>
     <string name="masterkey_passphrase_title">Heslo hlavného kľúča</string>
-    <string name="masterkey_passphrase_summary">Zadajte heslo pre ochranu hlavného kľúča. Toto heslo bude nutné zadať po každom reštarte aplikácie Threema.</string>
+    <string name="masterkey_passphrase_summary">Zadajte heslo pre ochranu hlavného kľúča. Toto heslo bude nutné zadať po každom reštarte aplikácie ${app_name_short}.</string>
     <string name="masterkey_passphrase_again_summary">Vložte heslo znovu</string>
     <string name="masterkey_passphrase_hint">Heslo</string>
     <string name="master_key_locked_want_exit">Hlavný kľúč je stále uzamknutý. Chcete to skúsiť znovu?</string>
@@ -186,9 +197,13 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Zvuk</string>
     <string name="restoring_backup">Obnovuje sa záloha</string>
-    <string name="server_message_title">Správa z Threema serveru</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">Správa z ${company_name} serveru</string>
     <string name="error">Chyba</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
     <string name="no_contacts"><![CDATA[Nemáte ešte žiadne kontakty. Zapnite synchronizáciu (Nastavenia > Súkromie), alebo pridajte kontakty ručne.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="masterkey_title">Vložiť heslo</string>
     <string name="masterkey_body">Váš hlavný kľúč je chránený heslom. Ak chcete kľúč odomknúť, zadajte heslo.</string>
     <string name="masterkey_unlocking">Odomykanie hlavného kľúča</string>
@@ -207,6 +222,7 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="unlink">Odpojiť</string>
     <string name="threema_version">Verzia</string>
     <string name="threema_version_code">Kód verzie</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
     <string name="wrong_backupid_or_password_or_no_internet_connection">Nemáte pripojenie k internetu, neplatnú zálohu vašeho ID, alebo nesprávne heslo</string>
     <string name="prefs_header_other">Iné</string>
     <string name="an_error_occurred">Vyskytla sa chyba</string>
@@ -227,10 +243,17 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="file_too_large">Súbor prekročil veľkosť %1$d MB</string>
     <string name="deleting_thread">Konverzácia sa odstraňuje</string>
     <string name="enter_serial_body"><![CDATA[Zadajte prosím zakúpený licenčný kľúč. Môžete <a href="https://shop.threema.ch/">zakúpiť</a> licenciu, alebo <a href="https://shop.threema.ch/retrieve_keys">obnoviť</a> vaše kľúče v prípade, že ste licenciu zakupili skôr.]]></string>
-    <string name="enter_serial_title">Odomknúť Threemu</string>
-    <string name="serial_required_want_exit">Licenčný kľúč je neplatný. Chcete to skúsiť znovu, alebo ukončiť aplikáciu Threema?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">Odomknúť ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">Licenčný kľúč je neplatný. Chcete to skúsiť znovu, alebo ukončiť aplikáciu ${app_name}?</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Kontrola licencie</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
     <string name="update_available">Dostupná aktualizácia</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
     <string name="no_update_available">Žiadna nová aktualizácia</string>
     <string name="download">Stiahnúť</string>
     <string name="not_now">Upozorniť ma neskôr</string>
@@ -339,7 +362,8 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="prefs_title_blocked_contacts">Blokované kontakty</string>
     <string name="prefs_sum_blocked_contacts">Správy od tu uvedených ID budú ignorované.</string>
     <string name="verified">Overené</string>
-    <string name="want_to_add_to_exclude_list">Tento kontakt je prepojený s adresárom telefónu. Ak ho zmažete, v aplikácii Threema sa objaví znovu po synchronizácii kontaktov.\nChcete ho vylúčiť zo synchronizácie?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="want_to_add_to_exclude_list">Tento kontakt je prepojený s adresárom telefónu. Ak ho zmažete, v aplikácii ${app_name_short} sa objaví znovu po synchronizácii kontaktov.\nChcete ho vylúčiť zo synchronizácie?</string>
     <string name="no">Nie</string>
     <string name="yes">Áno</string>
     <string name="deleting_contact">Mažem kontakt</string>
@@ -352,8 +376,10 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="prefs_show_inactive_contacts">Zobraziť neaktívne ID</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Pokiaľ ku kontaktu nie je priradený obrázok, zobraziť viacfarebné zástupné symboly</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Pokiaľ ku kontaktu nie je priradený obrázok, zobraziť šedé zástupné symboly</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Zobraziť všetky Threema ID v zozname kontaktov</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Skryť neaktívne/zrušené Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">Zobraziť všetky ${app_name_short} ID v zozname kontaktov</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">Skryť neaktívne/zrušené ${app_name_short} ID</string>
     <string name="contact_sorting_first_name">Meno - Priezvisko</string>
     <string name="contact_sorting_last_name">Priezvisko - Meno</string>
     <string name="contact_format_first_name_last_name">Meno Priezvisko</string>
@@ -371,7 +397,8 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="prefs_title_fullscreen_ime">Klávesnica na celej obrazovke</string>
     <string name="prefs_sum_fullscreen_ime_on">Zobraziť náhľad konverzácie nad klávesnicou, ak je tam miesto</string>
     <string name="prefs_sum_fullscreen_ime_off">Zobraziť náhľad konverzácie nad klávesnicou, ak je tam miesto</string>
-    <string name="add_acount_from_within_threema">Spravovať vaše Threema ID z aplikácie Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">Spravovať vaše ${app_name_short} ID z aplikácie ${app_name_short}.</string>
     <string name="save_image">Uložiť obrázok</string>
     <string name="share_image">Zdielať obrázok</string>
     <string name="view_in_gallery">Zobraziť v galérii</string>
@@ -393,7 +420,8 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="push_not_available_text2">%s sa pokúsi otvoriť trvalé pripojenie k serveru na pozadí. Toto nemusí fungovať spoľahlivo, ak mechanizmy optimalizácie batérie vášho zariadenia narúšajú pripojenie na pozadí.</string>
     <string name="backup_in_progress">Prebieha zálohovanie</string>
     <string name="backup_or_restore_success_body">Záloha úspešne vytvorená</string>
-    <string name="backup_or_restore_error">Threema záloha</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short} záloha</string>
     <string name="backup_or_restore_error_body">Zálohovanie sa nepodarilo dokončiť</string>
     <string name="could_not_download_message">Správu sa nepodarilo stiahnúť</string>
     <string name="info">Informácie</string>
@@ -425,7 +453,8 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="num_items_sected">Vybraté: %s</string>
     <string name="really_delete_media">Naozaj chcete odstrániť mediálne správy: %d?</string>
     <string name="check_updates">Kontrola aktualizácií</string>
-    <string name="masterkey_lock_explain">Threema uchovává heslo v pamäti. Pokiaľ musíte zadávať heslo príliš často, uistite sa, že sú aplikácie, které šetria batériu alebo ukončujú procesy, které by mohly aplikáciu Threema ukončiť predčasne, zakázané.</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name} uchovává heslo v pamäti. Pokiaľ musíte zadávať heslo príliš často, uistite sa, že sú aplikácie, které šetria batériu alebo ukončujú procesy, které by mohly aplikáciu ${app_name_short} ukončiť predčasne, zakázané.</string>
     <string name="identity_already_exists">Toto ID sa už nachádza na zozname kontaktov</string>
     <string name="share_contact">Zdielať kontakt</string>
     <string name="add_shortcut">Pridať zástupcu</string>
@@ -459,7 +488,8 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="ballot_subject_hint">Zadajte názov tejto ankety</string>
     <string name="ballot_no_ballots_yet">Žiadne ankety k dispozícii</string>
     <string name="print">Tlač</string>
-    <string name="ballot_wizard0_explain">Rýchlo vytvorte online anketu priamo v aplikácii Threema.
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">Rýchlo vytvorte online anketu priamo v aplikácii ${app_name_short}.
 Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priateľov.</string>
     <string name="ballot_add_choices">Pridať odpovede</string>
     <string name="blocked_cannot_send">Blokovanému kontaktu nie je možné poslať správy.</string>
@@ -476,7 +506,8 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="back">Späť</string>
     <string name="wearable_reply">Odpovedať</string>
     <string name="wearable_reply_label">Odpovedať %s</string>
-    <string name="push_disable_text">Ak budete pokračovať, namiesto systémovej služby push sa použije „Threema Push“. Pomáha to znížiť vašu digitálnu stopu, ale vyžaduje, aby bol váš telefón nakonfigurovaný tak, aby umožňoval beh aplikácie na pozadí. Ak v nastaveniach zariadenia nenájdete zodpovedajúce možnosti, možno budete musieť kontaktovať podporu výrobcu zariadenia a požiadať o pomoc s konfiguráciou.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">Ak budete pokračovať, namiesto systémovej služby push sa použije „${app_name_short} Push“. Pomáha to znížiť vašu digitálnu stopu, ale vyžaduje, aby bol váš telefón nakonfigurovaný tak, aby umožňoval beh aplikácie na pozadí. Ak v nastaveniach zariadenia nenájdete zodpovedajúce možnosti, možno budete musieť kontaktovať podporu výrobcu zariadenia a požiadať o pomoc s konfiguráciou.</string>
     <string name="ballot_intermediate_results_show">Zobrazovať priebežné výsledky</string>
     <string name="converting_video">Video sa spracováva</string>
     <string name="video_size_small">Vysoká (menej dát)</string>
@@ -491,9 +522,10 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="kick_user_from_group">Vyhodiť %1$s zo skupiny</string>
     <string name="show_as_qrcode">Zobraziť ako QR kód</string>
     <string name="qr_code">QR kód</string>
-    <string name="really_leave_id_export">Pokiaľ ste tak ešte neurobili, uložte si váš vyexportovaný ID textový reťazec alebo jemu zodpovedajúci QR kód na bezpečné miesto, alebo si ho vytlačte. Bez tejto zálohy nebude možné váš Threema ID obnoviť.</string>
-    <string name="revocation_key_title">Zrušenie Threema ID</string>
-    <string name="revocation_key_not_set">Heslo pre zrušenie Threema ID nenastavené</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="really_leave_id_export">Pokiaľ ste tak ešte neurobili, uložte si váš vyexportovaný ID textový reťazec alebo jemu zodpovedajúci QR kód na bezpečné miesto, alebo si ho vytlačte. Bez tejto zálohy nebude možné váš ${app_name_short} ID obnoviť.</string>
+    <string name="revocation_key_title">Zrušenie ${app_name_short} ID</string>
+    <string name="revocation_key_not_set">Heslo pre zrušenie ${app_name_short} ID nenastavené</string>
     <string name="revocation_key_set_at">Heslo nastavené %1$s</string>
     <string name="prefs_sum_remove_wallpapers">Vymazať všetky individuálne tapety</string>
     <string name="prefs_title_remove_wallpapers">Odstrániť všetky tapety</string>
@@ -570,8 +602,10 @@ Už ich nebude možné obnoviť.</string>
     <string name="invalid_data">Neplatné dáta. Nie je možné odoslať.</string>
     <string name="prefs_emoji_style">Štýl Emoji</string>
     <string name="prefs_android_emojis">Systémové Emoji</string>
-    <string name="prefs_default_emojis">Threema Emoji (predvolené)</string>
-    <string name="android_emojis_warning">Poznámka: Systémova sada znakov nemusí byť schopná zobraziť všetky emoji podporované aplikáciou Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short} Emoji (predvolené)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="android_emojis_warning">Poznámka: Systémova sada znakov nemusí byť schopná zobraziť všetky emoji podporované aplikáciou ${app_name_short}.</string>
     <string name="crop">Vystrihnúť</string>
     <string name="scan_id_mismatch_title">ID nesúhlasí</string>
     <string name="scan_id_mismatch_message">ID, ktoré máte naskenované nesúhlasí s kontaktom, ktorý máte uložený.</string>
@@ -588,12 +622,16 @@ Už ich nebude možné obnoviť.</string>
     <string name="fontsize_xlarge">Extra veľké</string>
     <string name="no_app_for_location">V tomto zariadení nenájdená žiadna mapová aplikácia</string>
     <string name="prefs_sendlog">Odoslať log</string>
-    <string name="prefs_sendlog_summary">V prípade problémov odoslať spoločnosti Threema log súbor pre ďalšiu analýzu</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">V prípade problémov odoslať spoločnosti ${company_name} log súbor pre ďalšiu analýzu</string>
     <string name="prefs_exportlog">Exportovať log</string>
     <string name="prefs_exportlog_summary">Zdieľať log súbor s inou aplikáciou</string>
-    <string name="permission_storage_required">Ak chcete ukladať či odosielať médiá, povolte aplikácii Threema oprávnenie pristupu k úložisku.</string>
-    <string name="permission_location_required">Ak chcete odosielať polohu, povolte aplikácii Threema oprávnenie prístupu k polohe vašeho zariadenia.</string>
-    <string name="permission_contacts_required">Ak chcete odosielať kontakty, povolte aplikácii Threema oprávnenie čítať kontakty.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_storage_required">Ak chcete ukladať či odosielať médiá, povolte aplikácii ${app_name} oprávnenie pristupu k úložisku.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_location_required">Ak chcete odosielať polohu, povolte aplikácii ${app_name} oprávnenie prístupu k polohe vašeho zariadenia.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_contacts_required">Ak chcete odosielať kontakty, povolte aplikácii ${app_name} oprávnenie čítať kontakty.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
     <string name="notifications_settings">Nastavenia upozornení</string>
@@ -610,38 +648,50 @@ Už ich nebude možné obnoviť.</string>
     <string name="new_wizard_select_country">Vyberte vašu krajinu</string>
     <string name="new_wizard_lets_get_started">Začíname!</string>
     <string name="new_wizard_setup_threema">Nastaviť teraz</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_restore_id_backup">Obnoviť exportované ID</string>
-    <string name="new_wizard_welcome">Vitajte v aplikácii Threema!</string>
-    <string name="new_wizard_move_finger">Pre vygenerovanie nového Threema ID posúvajte prstom po obrazovke</string>
-    <string name="new_wizard_this_is_your_id">Toto je vaše Threema ID:</string>
-    <string name="new_wizard_works_like_phone_number">Vaše Threema ID funguje ako telefónne číslo.\nVaši priatelia vás môžu kontaktovať pomocou tohto ID.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">Vitajte v aplikácii ${app_name}!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">Pre vygenerovanie nového ${app_name_short} ID posúvajte prstom po obrazovke</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">Toto je vaše ${app_name_short} ID:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">Vaše ${app_name_short} ID funguje ako telefónne číslo.\nVaši priatelia vás môžu kontaktovať pomocou tohto ID.</string>
     <string name="new_wizard_choose_nickname">Zadajte vašu prezývku</string>
     <string name="new_wizard_nickname_explain">Vaši priatelia uvidia vo svojich oznámeniach vašu prezývku</string>
     <string name="new_wizard_hint_enter_nickname">Zadajte prezývku</string>
     <string name="new_wizard_help_your_friends_find_you">Pomôžte svojim priateľom, aby vás našli!</string>
-    <string name="new_wizard_link_mobile">Prepojte svoje mobilné číslo a/alebo email s vašim Threema ID.</string>
-    <string name="new_wizard_link_mobile_only">Prepojte svoje mobilné číslo s vaším Threema\u00A0ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">Prepojte svoje mobilné číslo a/alebo email s vašim ${app_name_short} ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">Prepojte svoje mobilné číslo s vaším ${app_name_short}\u00A0ID.</string>
     <string name="new_wizard_hint_mobile_number">Mobilné číslo (voliteľné)</string>
     <string name="new_wizard_hint_email">Email (voliteľné)</string>
-    <string name="new_wizard_find_friends">Nájdite svojich priateľov na Threeme</string>
-    <string name="new_wizard_sync_contacts_explain">Zapnite, aby ste videli, ktorí priatelia používajú Threemu.</string>
     <string name="new_wizard_done_title">Hotovo!\nJe všetko správne?</string>
     <string name="new_wizard_linked_to">Prepojené s</string>
-    <string name="new_wizard_need_internet">Na vytvorenie vašeho unikátneho Threema ID je vyžadované stabilné internetové pripojenie. Skúste to prosím znovu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">Na vytvorenie vašeho unikátneho ${app_name_short} ID je vyžadované stabilné internetové pripojenie. Skúste to prosím znovu.</string>
     <string name="new_wizard_more_information">Viac informácií</string>
     <string name="message_details_message_id_copied">ID správy skopírované do schránky</string>
     <string name="contact_details_id_copied">ID bolo skopírované do schránky</string>
     <string name="contact_details_nickname_copied">Prezývka bola skopírovaná do schránky</string>
-    <string name="new_wizard_use_id_as_nickname">Chcete použiť vaše Threema ID ako prezývku?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">Chcete použiť vaše ${app_name_short} ID ako prezývku?</string>
     <string name="new_wizard_phone_email_invalid">Telefónne číslo alebo emailová adresa, ktorú ste zadali, nie sú platné.\nOpravte to a pokračujte.</string>
     <string name="new_wizard_phone_invalid">Telefónne číslo, ktoré ste zadali, nie je platné.\nOpravte ho a pokračujte.</string>
-    <string name="new_wizard_info_fingerprint">Posúvaním prstom po displeji vytvoríte náhodné údaje (tzv. entropia), které sa použijú k vygenerovaniu páru šifrovacích kľúčov zviazaných s vaším Threema ID. Dvojica šifrovacích kľúčov sa skládá z <b>verejného kľúča</b>, ktorý je distribuovaný vaším priateľom a zo <b>súkromého kľúča</b>, ktorý je bezpečne uložený len vo vašom zariadení. Správy, ktoré vám odošlú vaši priatelia budú zašifrované vaším verejným kľúčom. Tieto správy môže dešifrovať iba ten, kto vlastní súkromný kľúč, nikto iný.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_fingerprint">Posúvaním prstom po displeji vytvoríte náhodné údaje (tzv. entropia), které sa použijú k vygenerovaniu páru šifrovacích kľúčov zviazaných s vaším ${app_name_short} ID. Dvojica šifrovacích kľúčov sa skládá z <b>verejného kľúča</b>, ktorý je distribuovaný vaším priateľom a zo <b>súkromého kľúča</b>, ktorý je bezpečne uložený len vo vašom zariadení. Správy, ktoré vám odošlú vaši priatelia budú zašifrované vaším verejným kľúčom. Tieto správy môže dešifrovať iba ten, kto vlastní súkromný kľúč, nikto iný.</string>
     <string name="new_wizard_info_id">Vytvorili jste dvojicu šifrovacích kľúčov. Verejný kľúč bol bezpečne prenesený na naše servery. Súkromný kľúč nikdy neopustí vaše zariadenie. Tým je zaistené, že nikto nepovolaný se nebude môcť dostať k vašim správam.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_sync_contacts">Pokiaľ túto možnosť povolíte, odošlú sa jednosmerne šifrované (hashe) emailové adresy a telefónne čísla na náš server. Tu sa porovnajú s kontaktmi ostatných užívateľov. Neukladáme žiadne údaje z vášho adresára.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Synchronizácia kontaktov vám pomôže automaticky nájsť priateľov. Ak súhlasíte, telefónne čísla a emailové adresy z vášho telefónneho zoznamu budú zašifrované pred tým, než sa odošlu náš server z dôvodu porovnania zodpovedajúcich kontaktov. Absolútne žiadne údaje nebudú uložené ani zdieľané.\n\nChcete povoliť synchronizáciu kontaktov?</string>
-    <string name="new_wizard_info_link">Poskytnutím svojho telefónneho čísla a emailovej adresy môže Threema pomôcť vašim priateľom automaticky vás nájsť, ak vás majú v adresári svojho telefónu. Údaje sa uložia do jednosmerne šifrovanej (hashovanej) forme na našom serveri. Tento krok môžete jednoducho preskočiť, ak chcete používať službu Threema úplne anonymne.</string>
-    <string name="new_wizard_info_link_phone_only">Poskytnutím svojho telefónneho čísla môže Threema pomôcť vašim priateľom automaticky vás nájsť, ak vás majú v adresári svojho telefónu. Údaje sa uložia do jednosmerne šifrovanej (hashovanej) forme na našom serveri. Tento krok môžete jednoducho preskočiť, ak chcete používať službu Threema úplne anonymne.</string>
-    <string name="new_wizard_info_nickname">Prezývka sa používa na niektorých zariadeniach pri push upozorneniach, alebo ako ďalšia možnosť, ako vás identifikovať užívateľom, ktorí vás nemajú vo svojom adresári. Doporučujeme zadať iba vaše krstné meno alebo pseudonym. Ak prezývku nenastavíte, použijeme vo východzom nastavení vaše Threema ID.</string>
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">Poskytnutím svojho telefónneho čísla a emailovej adresy môže ${app_name} pomôcť vašim priateľom automaticky vás nájsť, ak vás majú v adresári svojho telefónu. Údaje sa uložia do jednosmerne šifrovanej (hashovanej) forme na našom serveri. Tento krok môžete jednoducho preskočiť, ak chcete používať službu ${app_name_short} úplne anonymne.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">Poskytnutím svojho telefónneho čísla môže ${app_name_short} pomôcť vašim priateľom automaticky vás nájsť, ak vás majú v adresári svojho telefónu. Údaje sa uložia do jednosmerne šifrovanej (hashovanej) forme na našom serveri. Tento krok môžete jednoducho preskočiť, ak chcete používať službu ${app_name_short} úplne anonymne.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_nickname">Prezývka sa používa na niektorých zariadeniach pri push upozorneniach, alebo ako ďalšia možnosť, ako vás identifikovať užívateľom, ktorí vás nemajú vo svojom adresári. Doporučujeme zadať iba vaše krstné meno alebo pseudonym. Ak prezývku nenastavíte, použijeme vo východzom nastavení vaše ${app_name_short} ID.</string>
     <string name="not_linked">neprepojené</string>
     <string name="linked">prepojené</string>
     <string name="pending_sms_verification_notice">Vaše mobilné číslo ešte nie je overené.</string>
@@ -653,8 +703,10 @@ Už ich nebude možné obnoviť.</string>
     <string name="status_ballot_user_modified_vote">“%1$s” zmenil hlasovanie pre “%2$s”</string>
     <string name="status_ballot_all_votes">Hlasy pre anketu „%1$s“ sú kompletné</string>
     <string name="restore">Obnoviť</string>
-    <string name="new_wizard_anonymous_confirm">Nezadali ste ani číslo mobilného telefónu, ani emailovú adresu, ktoré by boli prepojené s vašim Threema ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu Threema anonymne?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Nezadali ste číslo mobilného telefónu, ktoré by bolo prepojené s vašim Threema ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu Threema anonymne?</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">Nezadali ste ani číslo mobilného telefónu, ani emailovú adresu, ktoré by boli prepojené s vašim ${app_name_short} ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu ${app_name} anonymne?</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">Nezadali ste číslo mobilného telefónu, ktoré by bolo prepojené s vašim ${app_name_short} ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu ${app_name} anonymne?</string>
     <string name="new_wizard_scan_id_backup">Alebo naskenujte QR kód zálohy vášho ID</string>
     <string name="error_saving_file">Niektoré súbory nebolo možné uložiť</string>
     <string name="wait_one_minute">Pred vyžiadaním hovoru počkajte aspoň 10 minút na príchod SMS správy.</string>
@@ -697,7 +749,8 @@ Už ich nebude možné obnoviť.</string>
     <string name="lock_option_none">Žiadny</string>
     <string name="lock_option_pin">PIN</string>
     <string name="lock_option_screenlock">Zámok systému</string>
-    <string name="hide_chat_message_explain">Threema vám umožňure chrániť určité konverzácie PIN kódom a dočasne ich skryť v zozname správ. Ak chcete povoliť súkromné konverzácie, nastavte prosím PIN kód, alebo zapnite uzamykanie obrazovky v nastaveniach vášho systému (Android 6.0+).</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="hide_chat_message_explain">${app_name_short} vám umožňure chrániť určité konverzácie PIN kódom a dočasne ich skryť v zozname správ. Ak chcete povoliť súkromné konverzácie, nastavte prosím PIN kód, alebo zapnite uzamykanie obrazovky v nastaveniach vášho systému (Android 6.0+).</string>
     <string name="set_lock">Nastaviť teraz</string>
     <string name="prefs_title_access_protection">Ochrana prístupu</string>
     <string name="private_chat_subject">Súkromné</string>
@@ -709,7 +762,6 @@ Už ich nebude možné obnoviť.</string>
     <string name="grace_thirty_minutes">30 minút</string>
     <string name="grace_never">Nikdy (ručne)</string>
     <string name="never">Nikdy</string>
-    <string name="unhide_chats_confirm">Ak teraz vypnete ochranu prístupu, vaše súkromné konverzácie budú opäť viditeľné.</string>
     <string name="verification_started">Overovanie spustené</string>
     <string name="cannot_open_file">Súbor sa nedá otvoriť</string>
     <string name="prefs_title_image_attach_previews">Rýchly výber médií</string>
@@ -719,12 +771,13 @@ Už ich nebude možné obnoviť.</string>
     <string name="restore_disable_energy_saving">Pripojte prosím zariadenie na nabíjačku a vypnite všetky možnosti úsporného režimu, aby sa predišlo prerušeniu procesu zálohovania alebo obnovenia.</string>
     <string name="draft">Koncept</string>
     <string name="prefs_bigger_single_emojis">Väčšie samostatné emoji</string>
-    <string name="wizard1_sync_work">Synchronizujú sa údaje Threema Work…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard1_sync_work">Synchronizujú sa údaje ${app_name}…</string>
     <string name="notification_hidden_text">Obsah je skrytý</string>
     <string name="really_reset_ringtones">Obnoviť nastavenia zvukových upozornení na východzie hodnoty?</string>
     <string name="reset_ringtones_confirm">Nastavenia zvukových upozornení boli obnovené.</string>
     <string name="prefs_language_override">Jazyk</string>
-    <string name="threema_channel_intro">Kanál Threema je informačný kanál aplikácie Threema, ktorý vás formou správ informuje o všetkých novinkách. Chcete sa prihlásiť k odberu kanálu a pridať ho medzi kontakty? Je zadarmo a môžete sa z neho kedykoľvek odhlásiť.</string>
+    <string name="threema_channel_intro">Kanál ${app_name_short} je informačný kanál aplikácie ${app_name_short}, ktorý vás formou správ informuje o všetkých novinkách. Chcete sa prihlásiť k odberu kanálu a pridať ho medzi kontakty? Je zadarmo a môžete sa z neho kedykoľvek odhlásiť.</string>
     <string name="quote">Citovať</string>
     <string name="contacts_deleted">Kontakty boli vymazané</string>
     <string name="take_photo">Odfotiť</string>
@@ -743,7 +796,8 @@ Už ich nebude možné obnoviť.</string>
     <string name="battery_optimizations_disable_guide_ctd">V zozname vyhľadajte %s a vypnite optimalizáciu</string>
     <string name="battery_optimizations_disable_confirm">Naozaj chcete ponechať zapnutú optimalizáciu batérie pre %1$s? %2$s nebude pracovať korektne.</string>
     <string name="enter_text_hint">Zadajte text</string>
-    <string name="backup_explain_text">Ak vymeníte, alebo stratíte vaše zariadenie, nikto nebude môcť obnoviť vaše Threema ID alebo vaše konverzácie, pokiaľ nebudete mať zálohu.
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">Ak vymeníte, alebo stratíte vaše zariadenie, nikto nebude môcť obnoviť vaše ${app_name_short} ID alebo vaše konverzácie, pokiaľ nebudete mať zálohu.
 Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="data_backup_explain">Záloha údajov obsahuje:\n\n&#9679; Vaše ID a šifrovacie kľúče\n&#9679; Kontakty a ich úroveň overenia\n&#9679; Členstvo v skupinách\n&#9679; Konverzácie\n&#9679; Média a iné súbory (voliteľné)\n\nÚdaje budú uložené v zašifrovanom ZIP súbore. Po úspešnom vytvorení zálohy doporučujeme presunúť tento súbor z vášho zariadenia.</string>
     <string name="draw">Kresliť</string>
@@ -758,8 +812,10 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="prefs_ipv6_preferred_off">Použite iba IPv4 protokol</string>
     <string name="prefs_ipv6_preferred_on">Uprednostniť IPv6 pred IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 pre hovory a web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Povoliť IPv6 pre Threema hovory a desktopovú aplikáciu / webového klienta.</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Nepovoliť IPv6 pre Threema hovory a desktopovú aplikáciu / webového klienta</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_on">Povoliť IPv6 pre ${app_name_short} hovory a desktopovú aplikáciu / webového klienta.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_off">Nepovoliť IPv6 pre ${app_name_short} hovory a desktopovú aplikáciu / webového klienta</string>
     <string name="ipv6_requires_restart">Pre aplikovanie týchto zmien je potrebné reštartovať aplikáciu</string>
     <string name="ipv6_restart_now">Reštartovať</string>
     <string name="on_cap">Zap</string>
@@ -786,37 +842,50 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="menu_send_profilpic_now">Odoslať profilový obrázok</string>
     <string name="profile_picture_sent">Profilový obrázok odoslaný</string>
     <string name="sending_messages">Odosiela sa…</string>
-    <string name="backup_data_media_confirm">Uloženie veľkých mediálnych súborov do lokálnej zálohy ZIP môže zaťažiť CPU a prekročiť kapacitu úložiska vašeho zariadenia. Proces môže trvať veľmi dlho. Threema nebude počas zálohovania odosielať ani prijímať žiadne správy. Chcete pokračovať?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">Uloženie veľkých mediálnych súborov do lokálnej zálohy ZIP môže zaťažiť CPU a prekročiť kapacitu úložiska vašeho zariadenia. Proces môže trvať veľmi dlho. ${app_name} nebude počas zálohovania odosielať ani prijímať žiadne správy. Chcete pokračovať?</string>
     <string name="backup_data_cancelled">Záloha prerušená</string>
-    <string name="service_manager_not_available">Nepodarilo sa spustiť Threemu. Vypnite prosím zariadenie a znovu ho zapnite.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="service_manager_not_available">Nepodarilo sa spustiť ${app_name}. Vypnite prosím zariadenie a znovu ho zapnite.</string>
     <string name="message_sent">Správa odoslaná</string>
-    <string name="threema_call">Threema hovor</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">${app_name_short} hovor</string>
     <string name="threema_message_to">Správa pre %s</string>
     <string name="threema_call_with">Hovor %s</string>
-    <string name="prefs_title_voip">Threema hovory</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">${app_name_short} hovory</string>
     <string name="prefs_title_force_turn">Vždy maskovať IP počas hovorov</string>
-    <string name="prefs_summary_force_turn_off">Ak je to možné, nadviazať priame spojenie a iba hovory s neoverenými kontaktmi presmerovávať cez Threema servery. Vaša IP adresa môže byť pre volaného zistiteľná.</string>
-    <string name="prefs_summary_force_turn_on">Vynútenie presmerovania všetkých hovorov cez servery Threema, čím sa chráni vaša IP adresa. Môže ovplyvniť kvalitu hovoru.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">Ak je to možné, nadviazať priame spojenie a iba hovory s neoverenými kontaktmi presmerovávať cez ${company_name} servery. Vaša IP adresa môže byť pre volaného zistiteľná.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">Vynútenie presmerovania všetkých hovorov cez servery ${company_name}, čím sa chráni vaša IP adresa. Môže ovplyvniť kvalitu hovoru.</string>
     <string name="permission_record_audio_required">Ak chcete šifrovať hovory a posielať hlasové správy, povolte prístup k mikrofónu.</string>
-    <string name="prefs_voice_call_notifications">Threema hovory</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_voice_call_notifications">${app_name_short} hovory</string>
     <string name="prefs_voice_call_sound">Tón zvonenia</string>
-    <string name="prefs_sum_voice_call_sound">Vyberte tón zvonenia pre prichádzajúce Threema hovory</string>
-    <string name="prefs_sum_voice_call_vibrate">Vibrovať na prichádzajúci Threema hovor</string>
-    <string name="prefs_title_voip_enable">Povoliť Threema hovory</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">Vyberte tón zvonenia pre prichádzajúce ${app_name_short} hovory</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">Vibrovať na prichádzajúci ${app_name_short} hovor</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">Povoliť ${app_name_short} hovory</string>
     <string name="webclient_invalid_push_token_message">Vyžaduje sa manuálne spustenie</string>
     <string name="threema_work_contact">Kontakt Threema Work</string>
-    <string name="permission_phone_required">Povolte oprávnenie na správu telefónnych hovorov počas používania Threema hovorov</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">Povolte oprávnenie na správu telefónnych hovorov počas používania ${app_name} hovorov</string>
     <string name="strikethrough">Preškrtnuté</string>
     <string name="italic">Šikmé</string>
     <string name="bold">Tučné</string>
     <string name="shortcut_choice_title">Vytvoriť zástupcu pre…</string>
     <string name="prefs_title_device_info">Informácie o zariadení</string>
     <string name="notifications_disabled_title">Upozornenia vypnuté</string>
-    <string name="notifications_disabled_text">Upozornenia pre Threemu boli v nastaveniach systému vypnuté. Nebudete dostávať upozornenia na nové správy.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">Upozornenia pre ${app_name} boli v nastaveniach systému vypnuté. Nebudete dostávať upozornenia na nové správy.</string>
     <string name="notifications_disabled_settings">Upraviť systémové nastavenia</string>
     <string name="error_attaching_files">Chyba pri vkladaní príloh</string>
     <string name="prefs_fix_powermanager_problems">Vypnutie úsporného režimu</string>
-    <string name="prefs_fix_powermanager_problems_desc">Povoliť beh aplikácie Threema na pozadí, aby bolo možné príjímať správy, aj keď aplikácia nie je aktívna.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">Povoliť beh aplikácie ${app_name} na pozadí, aby bolo možné príjímať správy, aj keď aplikácia nie je aktívna.</string>
     <string name="disable_powermanager_explain">Na nasledujúcej obrazovke sa uistite, že aplikácia “%s” nie je monitorovaná, alebo je vylúčená z obmedzenia správy napájania vašeho telefónu. Keď budete hotový, kliknite na tlačidlo «späť».</string>
     <string name="disable_autostart_explain">Na nasledujúcej obrazovke sa uistite, že je “%s” zahrnutá v zozname aplikácií, ktoré sa môžu spúšťať pri štarte systému. Keď budete hotový, kliknite na tlačidlo «späť».</string>
     <string name="notification_priority_default">Nízka</string>
@@ -837,10 +906,12 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="prefs_auto_download_title">Automaticky stiahnúť média</string>
     <string name="prefs_auto_download_wifi">Cez WiFi</string>
     <string name="prefs_auto_download_mobile">Cez mobilné dáta</string>
-    <string name="rate_intro">Ako hodnotíte aplikáciu Threema?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">Ako hodnotíte aplikáciu ${app_name}?</string>
     <string name="rate_feedback_intro">Ak chcete, dajte nám vedieť, ako môžme vylepšiť aplikáciu (voliteľné).</string>
     <string name="rate_positive">Odoslať hodnotenie</string>
-    <string name="rate_title">Ohodnotiť Threemu</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">Ohodnotiť ${app_name}</string>
     <string name="rate_thank_you">Ďakujeme za vaše hodnotenie!</string>
     <string name="disabled_by_policy_short">Funkcia je zakázaná správcom</string>
     <string name="rate_forward_to_play_store">Chceli by ste nás ohodnotiť aj v Google Play?</string>
@@ -851,15 +922,18 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="plus">Viac</string>
     <string name="switched_off">Vyp</string>
     <string name="switched_on">Zap</string>
-    <string name="title_tab_work_users">Používatelia Threema Work</string>
-    <string name="no_matching_work_contacts">Nenašli sa žiadne administrátorom overené Threema Work kontakty</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">Používatelia ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">Nenašli sa žiadne administrátorom overené ${app_name} kontakty</string>
     <string name="all">Všetko</string>
     <string name="webclient_session_stop_all">Zavrieť všetko</string>
     <string name="passphrase_service_name">Služba hesiel</string>
     <string name="passphrase_service_description">Oznámenie pri odomknutí hesla</string>
     <string name="webclient_service_description">Oznámenie, ak je relácia Web/Desktop aktívna</string>
     <string name="prefs_title_accept_privacy_policy">Prijať Zásady ochrany osobných údajov</string>
-    <string name="privacy_policy_explain">%1$s chráni vaše súkromie dôslednejšie než ktorýkoľvek iný komunikátor. Zistiť viac na %2$s.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name} chráni vaše súkromie dôslednejšie než ktorýkoľvek iný komunikátor. Zistiť viac na %1$s.</string>
     <string name="privacy_policy_check_confirm">Pred použitím aplikácie %s prosím prijmite Zásady ochrany osobných údajov.\n\n(Vyžadované smernicou EU 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Požiadať o inkognito klávesnicu</string>
     <string name="prefs_sum_incognito_keyboard">Zakázať zber údajov pre personalizované návrhy (ak je funkcia podporována klávesnicou)</string>
@@ -872,41 +946,58 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="password_too_short_generic">Heslo príliš krátke</string>
     <string name="passwords_dont_match">Heslá sa nezhodujú</string>
     <string name="test_unsuccessful">Test neúspešný</string>
-    <string name="preparing_threema_safe">Pripravuje sa Trezor Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">Pripravuje sa Trezor ${app_name_short}</string>
     <string name="disable_powermanager_title">Úsporný režim</string>
     <string name="disable_autostart_title">Autoštart</string>
     <string name="unchanged">bez zmeny</string>
     <string name="safe_learn_more_button">Zistiť viac</string>
-    <string name="safe_enable_explain">Všetko, čo potrebujete ku komunikácii je uložené v tomto zariadení. U nás nemáte žiadny účet a v prípade, že stratíte váš telefón alebo omylom vymažete všetky údaje, nebudeme vám vedieť pomôcť.\n\nTrezor Threema vykonáva automatické zálohovanie všetkých dôležitých údajov vrátane vašich šifrovacích kľúčov, zoznamu kontaktov a členstva v skupinách (bez obsahu správ) a to anonymne na zabezpečom serveri podľa vašeho výberu.</string>
-    <string name="safe_disable_confirm">Naozaj chcete pokračovať bez aktivácie Trezoru Threema? Ak budete používať Trezor Threema, môžete obnoviť vaše Threema ID, kontakty a skupiny v prípade, že stratíte prístup k vášmu zariadeniu.</string>
-    <string name="safe_configure_choose_password">Zadajte prosím silné heslo. Toto heslo budete potrebovať pri obnovení zálohy Trezoru Threema.</string>
-    <string name="safe_configure_choose_server">Vyberte si server pre Trezor Threema</string>
-    <string name="safe_configure_server_explain">Môžete použiť server spoločnosti Threema, alebo zadať pre zálohy server tretej strany.</string>
+    <string name="safe_enable_explain">Všetko, čo potrebujete ku komunikácii je uložené v tomto zariadení. U nás nemáte žiadny účet a v prípade, že stratíte váš telefón alebo omylom vymažete všetky údaje, nebudeme vám vedieť pomôcť.\n\nTrezor ${app_name_short} vykonáva automatické zálohovanie všetkých dôležitých údajov vrátane vašich šifrovacích kľúčov, zoznamu kontaktov a členstva v skupinách (bez obsahu správ) a to anonymne na zabezpečom serveri podľa vašeho výberu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">Naozaj chcete pokračovať bez aktivácie Trezoru ${app_name_short}? Ak budete používať Trezor ${app_name_short}, môžete obnoviť vaše ${app_name_short} ID, kontakty a skupiny v prípade, že stratíte prístup k vášmu zariadeniu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">Zadajte prosím silné heslo. Toto heslo budete potrebovať pri obnovení zálohy Trezoru ${app_name_short}.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_server">Vyberte si server pre Trezor ${app_name_short}</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">Môžete použiť server spoločnosti ${company_name}, alebo zadať pre zálohy server tretej strany.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_use_default_server">Použiť predvolený server</string>
     <string name="safe_test_server">Otestovať server</string>
     <string name="safe_advanced_options">Expertné nastavenia</string>
-    <string name="safe_enter_password">Zadajte vaše heslo pre Trezor Threema</string>
-    <string name="safe_threema_id">Vaše Threema ID</string>
-    <string name="safe_restore_enter_id">Zadajte Threema ID, ktoré chcete obnoviť</string>
+    <string name="safe_enter_password">Zadajte vaše heslo pre Trezor ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">Vaše ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">Zadajte ${app_name_short} ID, ktoré chcete obnoviť</string>
     <string name="safe_search_id_title">Zadajte prosím mobilné číslo, alebo emailovú adresu prepojenú s vašim ID</string>
-    <string name="safe_id_lookup">Vyhľadáva sa Threema ID</string>
-    <string name="safe_no_id_found">Threema ID nenájdené</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">Vyhľadáva sa ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">${app_name_short} ID nenájdené</string>
     <string name="safe_no_backup_found">Na serveri nenájdená žiadna záloha. Skontrolujte ID a heslo.</string>
-    <string name="safe_select_id">Bolo nájdených niekoľko Threema ID. Vyberte ID, ktoré chcete použiť:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">Bolo nájdených niekoľko ${app_name_short} ID. Vyberte ID, ktoré chcete použiť:</string>
     <string name="safe_backup_now">Zálohovať</string>
-    <string name="safe_enable_explain_short">Ak chcete automaticky vytvárať zabezpečené a anonymné zálohy všetkých vašich dôležitých údajov, povolte Trezor Threema.</string>
-    <string name="safe_deleting">Maže sa záloha Trezoru Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">Ak chcete automaticky vytvárať zabezpečené a anonymné zálohy všetkých vašich dôležitých údajov, povolte Trezor ${app_name_short}.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">Maže sa záloha Trezoru ${app_name_short}</string>
     <string name="safe_delete_error">Chyba pri odstraňovaní zálohy: %s</string>
     <string name="safe_delete_success">Záloha bola zo servera úspešne vymazaná</string>
-    <string name="safe_error_preparing">Chyba počas prípravy zálohy Trezoru Threema</string>
-    <string name="safe_configure_choose_password_force">Nastavte si silné heslo na zabezpečenie svojho Threema ID pomocou služby Trezoru Threema. Nezabudnite, čo tu zadávate!</string>
-    <string name="safe_deactivate">Vypnúť Trezor Threema</string>
-    <string name="safe_deactivate_explain">Ak vypnete Trezor Threema, všetky existujúce zálohy budú zo servera odstránené. Pokračovať?</string>
+    <string name="safe_error_preparing">Chyba počas prípravy zálohy Trezoru ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">Nastavte si silné heslo na zabezpečenie svojho ${app_name_short} ID pomocou služby Trezoru ${app_name_short}. Nezabudnite, čo tu zadávate!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">Vypnúť Trezor ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">Ak vypnete Trezor ${app_name_short}, všetky existujúce zálohy budú zo servera odstránené. Pokračovať?</string>
     <string name="add_group_members">Pridať členov</string>
     <string name="contact_add_confirm">Chcete pridať nový kontakt \"%1$s\" do vášho zoznamu kontaktov?</string>
     <string name="password_bad">Slabé heslo</string>
     <string name="prefs_fix_background_data">Povoliť dáta na pozadí</string>
-    <string name="prefs_fix_background_data_desc">Ak chcete prijímať správy v čase, keď beží Threema na pozadí, povolte prosím Prenos dát na pozadí a Neobmedzené využitite dát.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">Ak chcete prijímať správy v čase, keď beží ${app_name} na pozadí, povolte prosím Prenos dát na pozadí a Neobmedzené využitite dát.</string>
     <string name="prefs_fix_device">Odstrániť problémy s konfiguráciou zariadenia</string>
     <string name="safe_successful">Úspešné</string>
     <string name="safe_unsuccessful">Neúspešné</string>
@@ -922,8 +1013,10 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="safe_size">Veľkosť zálohy</string>
     <string name="backup_version_mismatch">Verzia tejto zálohy je vyššia ako podporovaná verzia. Aktualizujte na novšiu verziu aplikácie.</string>
     <string name="safe_restore_failed">Obnovenie zlyhalo</string>
-    <string name="safe_failed_notification">Záloha Trezoru Threema zlyhala už %d dní po sebe. Kliknite sem pre kontrolu nastavenia.</string>
-    <string name="safe_restore">Obnoviť Trezor Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">Záloha Trezoru ${app_name_short} zlyhala už %d dní po sebe. Kliknite sem pre kontrolu nastavenia.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">Obnoviť Trezor ${app_name_short}</string>
     <string name="backup_restore_in_progress">Prebieha zálohovanie alebo obnovenie. Priebeh sledujte v notifikačnej lište.</string>
     <string name="restore_error_body">Údaje sa nepodarilo úspešne obnoviť.</string>
     <string name="forgot_your_id">Zabudli ste vaše ID?</string>
@@ -931,8 +1024,10 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="work_data_sync">Synchronizácia dát</string>
     <string name="private_contact">Súkromný kontakt</string>
     <string name="ringtone_selection_default">Predvolené (%s)</string>
-    <string name="work_data_sync_desc">Synchronizácia Threema Work</string>
-    <string name="ballot_not_connected">Pred uzatvorením ankety sa prosím uistite, že je Threema online.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">Synchronizácia ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">Pred uzatvorením ankety sa prosím uistite, že je ${app_name} online.</string>
     <string name="empty_chat_title">Vyčistiť správy</string>
     <string name="empty_chat_confirm">Všetky správy v tejto konverzácii budú odstránené. Pokračovať?</string>
     <string name="emptying_chat">Odstraňujú sa správy</string>
@@ -950,21 +1045,26 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="notification_channel_notices">Oznámenia</string>
     <string name="chat_updates">Aktualizácie konverzácie</string>
     <string name="backup_or_restore_progress">Prebieha zálohovanie / obnovenie</string>
-    <string name="tooltip_export_id">Klepnutím sem zdieľajte alebo vytlačte zašifrované Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">Klepnutím sem zdieľajte alebo vytlačte zašifrované ${app_name_short} ID</string>
     <string name="downloading">Sťahovanie</string>
     <string name="today">Dnes</string>
     <string name="restore_data_cancelled">Obnova zrušená</string>
     <string name="safe_change_password">Zmena hesla</string>
     <string name="safe_configure_choose_password_title">Zadajte heslo</string>
-    <string name="password_bad_explain">Zadané heslo pre Trezor Threema nie je bezpečné a môže byť ľahko uhádnuté útočníkmi. Zadajte prosím iné. Nápoveda: Použite heslo zložené z niekoľkých samostatných slov.</string>
-    <string name="safe_password_updated">Heslo pre Trezor Threema bolo aktualizované.</string>
-    <string name="safe_activated">Trezor Threema je aktivovaný.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">Zadané heslo pre Trezor ${app_name_short} nie je bezpečné a môže byť ľahko uhádnuté útočníkmi. Zadajte prosím iné. Nápoveda: Použite heslo zložené z niekoľkých samostatných slov.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">Heslo pre Trezor ${app_name_short} bolo aktualizované.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">Trezor ${app_name_short} je aktivovaný.</string>
     <string name="restore_zip_invalid_file">Neplatný súbor zálohy.</string>
     <string name="push_token_cleared">Push token bol vymazaný</string>
     <string name="insert_date">Vložiť dátum</string>
     <string name="add_answer">Pridať odpoveď</string>
     <string name="title_cannot_be_empty">Názov ankety nemôže byť prázdny</string>
-    <string name="voip_disabled">Threema hovory su vypnuté</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short} hovory su vypnuté</string>
     <string name="hide_chat_enter_message_explain">Táto konverzácia je označená ako súkromná. Ak chcete do nej vstúpiť, nastavte najskôr ochranu prístupu.</string>
     <string name="unknown">Neznámy</string>
     <string name="miui_notification_title">Dôležité upozornenie týkajúce sa oznámení v systéme MIUI</string>
@@ -972,7 +1072,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="miui12_notification_body">MIUI štandardne vypína zvuk, svetlá a plávajúce oznámenia pre všetky aplikácie (okrem niektorých veľmi populárnych aplikácií, ktoré Xiaomi považuje za „dôležité“). Tieto nastavenia budete musieť manuálne povoliť na obrazovke nastavení oznámení konkrétnej aplikácie v telefóne a tento postup opakovať po každej aktualizácii aplikácie. Ďalšie informácie vám poskytne spoločnosť Xiaomi.</string>
     <string name="dont_show_again">Viac už nezobrazovať</string>
     <string name="miui_notification_prefs">Nastavenia MIUI</string>
-    <string name="threema_safe_upload_successful">Záloha Trezoru Threema bola úspešne nahratá</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">Záloha Trezoru ${app_name_short} bola úspešne nahratá</string>
     <string name="time_remaining">Zostáva %s</string>
     <string name="safe_configure_server_credentials_title">Overenie (voliteľné)</string>
     <string name="username_hint">Používateľské meno</string>
@@ -981,7 +1082,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="biometric_enter_authentication">Pre odomknutie vykonajte overenie</string>
     <string name="biometric_authentication_failed">Overenie zlyhalo</string>
     <string name="biometric_authentication_successful">Úspešne overené</string>
-    <string name="work_safe_forced_explain">Váš správca povolil Trezor Threema pre vaše zariadenie.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">Váš správca povolil Trezor ${app_name_short} pre vaše zariadenie.</string>
     <string name="pin_locked_cannot_send">Nie je možné odoslať. Aplikácia je uzamknutá.</string>
     <string name="prefs_summary_hide_screenshots_notice">Z dôvodu ochrany súkromia sa nebudú vytvárať náhľady ani snímky obrazovky, ak je v nastaveniach bezpečnosti povolený \"Zámok aplikácie\"</string>
     <string name="work_select_categories">Voľba kategórie</string>
@@ -991,7 +1093,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="advanced_options">Pokročilé možnosti</string>
     <string name="url_warning_body">Odkaz, ktorý sa chystáte otvoriť je podozrivý:\n\nZobrazená adresa: <b>%s</b>\nSkutočná adresa: <b>%s</b>\n\nMôže se jednať o pokus prinútiť vás otvoriť falošnú webovú stránku.\n\nPrajete si napriek tomu pokračovať?</string>
     <string name="url_warning_title">Varovanie pred phishingom</string>
-    <string name="permission_camera_qr_required">Aby bolo možné zoskenovať QR kód, Threema vyžaduje prístup k fotoaparátu</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">Aby bolo možné zoskenovať QR kód, ${app_name} vyžaduje prístup k fotoaparátu</string>
     <string name="voice_action_title">Hlasové povely</string>
     <string name="voice_action_body">Hlasový povel sa spracováva</string>
     <string name="permission_camera_photo_required">Ak chcete fotiť, povolte prístup k fotoaparátu</string>
@@ -1012,13 +1115,17 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="archived">Archivované</string>
     <string name="to_archive">Archivovať</string>
     <string name="archived_chats">Archivované konverzácie</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
     <string name="unarchive">Zrušiť archiváciu</string>
     <string name="no_archived_chats">Nemáte žiadne archivované konverzácie.\n\nAk chcete konverzáciu archivovať, v zozname správ s ňou potiahnite doľava</string>
-    <string name="add_contact_enter_id_hint">Ak chcete pridať kontakt, zadajte jeho Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">Ak chcete pridať kontakt, zadajte jeho ${app_name_short} ID</string>
     <string name="notification_channel_new_contact">Nové kontakty</string>
     <string name="notification_channel_new_contact_desc">Upozornenie na nové kontakty</string>
-    <string name="notification_contact_has_joined">%1$s sa pripojil do aplikácie %2$s. Kliknutím sem mu odošlete správu.</string>
-    <string name="notification_contact_has_joined_multiple">Do aplikácie %2$s sa pripojilo viac kontaktov (%1$d): %3$s. Klepnutím sem im odošlete správu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s sa pripojil do aplikácie ${app_name_short}. Kliknutím sem mu odošlete správu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">Do aplikácie ${app_name_short} sa pripojilo viac kontaktov (%1$d): %2$s. Klepnutím sem im odošlete správu.</string>
     <string name="system_default">Predvolený systémom</string>
     <string name="open_in_maps_app">Otvoriť v aplikácii Mapy</string>
     <string name="delete">Odstrániť</string>
@@ -1026,9 +1133,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="delete_for_all">Vymazať pre všetkých</string>
     <string name="message_was_deleted">Správa bola vymazaná</string>
     <string name="continue_recording">Pokračovať v nahrávaní</string>
-    <string name="whatsnew_title">Čo je nové v %1$s %2$s?</string>
-    <string name="whatsnew_headline"><![CDATA[        <p>V záujme zlepšenia zobrazovania oznámení bolo prepracované ich spracovanie na pozadí. Ak boli pre niektoré konverzácie aktivované individuálne nastavenia oznámení, je potrebné ich nastaviť znova.</p>
-        ]]></string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
+    <string name="whatsnew_title">Čo je nové v ${app_name} %1$s?</string>
     <string name="tap_to_start">Kliknutím sem spustíte aplikáciu %s.</string>
     <string name="two_years">2 roky</string>
     <string name="invalid_backup_path">Neplatná cesta pre zálohu</string>
@@ -1036,7 +1142,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="prefs_sum_show_unread_badge">Zobraziť odznaky na spodnej navigačnej lište</string>
     <string name="prefs_title_show_unread_badge">Odznaky</string>
     <string name="pinning_not_trusted">Zlyhanie pripnutia certifikátu. Skontrolujte, či je v úložisku poverení vášho zariadenia nainštalovaný a aktivovaný certifikát „Entrust Root Certification Authority - G2“.</string>
-    <string name="pinning_failed">Zlyhanie pripnutia certifikátu. Možný útok Man-in-the-middle. Ak máte nainštalovaný blokátor reklám, filter obsahu alebo firewall, napríklad „AdGuard“, vypnite ho pre aplikáciu Threema.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">Zlyhanie pripnutia certifikátu. Možný útok Man-in-the-middle. Ak máte nainštalovaný blokátor reklám, filter obsahu alebo firewall, napríklad „AdGuard“, vypnite ho pre aplikáciu ${app_name}.</string>
     <string name="open_myid_popup">Otvorte panel rýchleho prístupu</string>
     <string name="logo">Logo / Skok na začiatok</string>
     <string name="quote_subj_end">Koniec citácie</string>
@@ -1059,7 +1166,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="mime_type">MIME typ</string>
     <string name="password_does_not_comply">Heslo nezodpovedá zásadám, ktoré určil správca.</string>
     <string name="audio_mute_due_to_focus_loss">Zvuk bol dočasne stlmený kvôli strate kontroly nad zvukom</string>
-    <string name="restore_data_backup_explain">Ak chcete obnoviť zálohu údajov, najprv odstráňte svoje Threema ID z obrazovky „Môj profil“.\n\nKeď sa aplikácia reštartuje, vyberte „Obnoviť zo zálohy“, „Ďalšie možnosti obnovenia“, „Zálohovanie údajov“ a potom vyberte súbor zálohy údajov, ktorý chcete obnoviť.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">Ak chcete obnoviť zálohu údajov, najprv odstráňte svoje ${app_name_short} ID z obrazovky „Môj profil“.\n\nKeď sa aplikácia reštartuje, vyberte „Obnoviť zo zálohy“, „Ďalšie možnosti obnovenia“, „Zálohovanie údajov“ a potom vyberte súbor zálohy údajov, ktorý chcete obnoviť.</string>
     <string name="audio_focus_loss_complete">Hovor presušený z dôvodu straty kontroly nad zvukom.</string>
     <string name="tap_for_picture_hold_for_video">Kliknutím odfotíte, podržaním nahráte video</string>
     <string name="sending_media">Odosielanie médií</string>
@@ -1081,7 +1189,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="warning">Varovanie</string>
     <string name="password_remember_warning">Pamätajte si, čo tu zadávate! Keďže %s neukladá na serveri žiadne heslá, nebudeme vám vedieť pomôcť, ak zabudnete svoj PIN alebo heslo.</string>
     <string name="safe_backup_tap_to_restart">Klepnutím na notifikáciu reštartujte aplikáciu. Ak toto oznámenie nevidíte, odkryte notifikačnú lištu potiahnutím prstom nadol.</string>
-    <string name="send_to_support">Odoslať podpore Threema</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">Odoslať podpore ${company_name}</string>
     <string name="menu_legal">Právne</string>
     <string name="tooltip_work_hint">Tento kontakt používa Threema Work.</string>
     <string name="video_camera_on">Kamera pre video aktivovaná</string>
@@ -1240,22 +1349,26 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_link_rename">Premenovať</string>
     <string name="group_link_rename_tag">Nový názov</string>
     <string name="tap_here_for_more">Pre viac informácií kliknite sem</string>
-    <string name="another_connection_instructions"><![CDATA[Server zistil dve alebo viac pripojení z rôznych zariadení s rovnakým Threema ID.<br><br>Nie je možné použiť rovnaké Threema ID na viacerých zariadeniach súčasne. Nové správy sa prenášajú iba do zariadenia, ktoré sa naposledy prihlásilo na server.<br><br>Ak prechádzate na nové zariadenie, odinštalujte alebo zakážte %s na starom zariadení a potom reštartujte nové.]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[Server zistil dve alebo viac pripojení z rôznych zariadení s rovnakým ${app_name_short} ID.<br><br>Nie je možné použiť rovnaké ${app_name_short} ID na viacerých zariadeniach súčasne. Nové správy sa prenášajú iba do zariadenia, ktoré sa naposledy prihlásilo na server.<br><br>Ak prechádzate na nové zariadenie, odinštalujte alebo zakážte %s na starom zariadení a potom reštartujte nové.]]></string>
     <string name="app_store_error_code">Kód chyby obchodu s aplikáciami: %d</string>
-    <string name="backup_restore_type"><![CDATA[Aký druh zálohy chcete obnoviť? <br/><br/> <a href=%s>Zistiť viac o zálohách Threema</a>]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[Aký druh zálohy chcete obnoviť? <br/><br/> <a href=%s>Zistiť viac o zálohách ${app_name_short}</a>]]></string>
     <string name="data_backup_info">Obnoviť všetko vrátane konverzácií</string>
     <string name="new_to_threema">Začínate s aplikáciou %s?</string>
     <string name="back_to_threema">Späť k %s?</string>
     <string name="id_backup_info">Obnoviť iba vaše ID</string>
     <string name="restore_your_id_contacts_and_groups">Obnoviť vaše ID, kontakty a skupiny</string>
-    <string name="threema_safe_backup">Záloha Trezoru Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">Záloha Trezoru ${app_name_short}</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Pomoc</a>]]></string>
     <string name="download_failed">Stiahnutie neúspešné. Kód chyby: %d</string>
     <string name="edit_answer">Upraviť odpoveď</string>
     <string name="share_media">Zdielať v inej aplikácii…</string>
     <string name="group_link_administered">Spravované</string>
     <string name="group_link_open">Otvoriť</string>
-    <string name="group_link_share_message">Pripojte sa k mojej Threema skupine pomocou tohto odkazu!: %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">Pripojte sa k mojej ${app_name_short} skupine pomocou tohto odkazu!: %s</string>
     <string name="group_link_bottom_sheet_title">Odkaz skupiny</string>
     <string name="group_link_bottom_sheet_desc">Zdielať odkaz tejto skupiny s ľuďmi, ktorí chcete aby sa k nej pridali. Zvážte nižšie uvedené možnosti.</string>
     <string name="group_link_bottom_sheet_link_title">Odkaz</string>
@@ -1290,13 +1403,15 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="really_delete_multiple_group_links_title">Odstrániť odkazy na skupinu</string>
     <string name="qr_scan_result_dialog_title">Výsledok QR skenovania</string>
     <string name="scan_failure_dialog_title">Skenovanie zlyhalo</string>
-    <string name="no_threema_qr_info">Toto nie je specifický QR kód Threema. Dekódovaný obsah je:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">Toto nie je specifický QR kód ${app_name_short}. Dekódovaný obsah je:</string>
     <string name="default_group_link">Predvolený odkaz na skupinu</string>
     <string name="default_link_name">Predvolený odkaz</string>
     <string name="reset_default_group_link">Obnoviť predvolený odkaz na skupinu</string>
     <string name="resend">Znovu odoslať</string>
     <string name="group_request_already_sent_title">Požiadavka už bola odoslaná</string>
-    <string name="qr_scanner_id_hint">Naskenujte QR kód kontaktu a overte jeho identitu. Ak chcete zobraziť kód, požiadajte svoj kontakt, aby klikol na profilový obrázok v ľavom hornom rohu domovskej obrazovky Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">Naskenujte QR kód kontaktu a overte jeho identitu. Ak chcete zobraziť kód, požiadajte svoj kontakt, aby klikol na profilový obrázok v ľavom hornom rohu domovskej obrazovky ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Ak chcete vidieť obrázky a videá uložené na tomto zariadení, povoľte prístup k úložisku</string>
     <string name="select_storage_access_for_media_is_granted">Získali ste prístup k vybranému počtu fotografií a videí.</string>
     <string name="take_me_there">Chcem tam ísť…</string>
@@ -1314,13 +1429,17 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="contact_update">Aktualizujú sa stavy kontaktov</string>
     <string name="invalid_onprem_id">Toto ID buď (už) neexistuje, alebo nie je kompatibilné s vaším ID.</string>
     <string name="enable_unknown_sources">Nedá sa nainštalovať. Skontrolujte, či je pre %s povolená možnosť „Inštalovať neznáme aplikácie“.</string>
-    <string name="threema_push">Threema Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push">${app_name_short} Push</string>
     <string name="threema_push_notification_text">Klepnutím sa dozviete viac.</string>
-    <string name="threema_push_notification_info_text_1">Threema Push je aktívny na pozadí, aby vás upozornil na prichádzajúce správy a hovory.</string>
-    <string name="threema_push_notification_info_text_2">Aplikácie nemôžu bežať na pozadí bez zobrazenia trvalého upozornenia. Zobrazením tohto upozornenia môžeme zabezpečiť, že Threema Push zostane aktívna, aj keď aplikáciu aktívne nepoužívate.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_notification_info_text_1">${app_name_short} Push je aktívny na pozadí, aby vás upozornil na prichádzajúce správy a hovory.</string>
+    <string name="threema_push_notification_info_text_2">Aplikácie nemôžu bežať na pozadí bez zobrazenia trvalého upozornenia. Zobrazením tohto upozornenia môžeme zabezpečiť, že ${app_name_short} Push zostane aktívna, aj keď aplikáciu aktívne nepoužívate.</string>
     <string name="threema_push_notification_info_text_3">Ak máte stále problémy s oneskorenými alebo chýbajúcimi upozorneniami, upravte nastavenia systému tak, aby mohla byť aplikácia aktívna na pozadí bez akýchkoľvek obmedzení a všetky šetriče batérie sú vypnuté.</string>
-    <string name="threema_push_service_description">Trvalé upozornenie je zobrazené, keď je aktívna funkcia Threema Push</string>
-    <string name="threema_push_activated">Threema Push aktivovaný.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_service_description">Trvalé upozornenie je zobrazené, keď je aktívna funkcia ${app_name_short} Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_activated">${app_name_short} Push aktivovaný.</string>
     <string name="add_shortcut_success">Odkaz bol úspešne vytvorený</string>
     <string name="add_shortcut_error">Počas pridávania odkazu na plochu došlo k chybe</string>
     <string name="web_link">Odkaz</string>
@@ -1372,7 +1491,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">Žiadny</string>
     <string name="clear_forward_security">Resetovať Perfect Forward Secrecy pre tento kontakt</string>
-    <string name="clear_forward_security_warning">Túto akciu vykonajte iba vtedy, keď k tomu dostanete pokyn od podporného tímu spoločnosti Threema.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="clear_forward_security_warning">Túto akciu vykonajte iba vtedy, keď k tomu dostanete pokyn od podporného tímu spoločnosti ${company_name}.</string>
     <string name="forward_security_cleared">Relácie Perfect Forward Secrecy s týmto kontaktom boli odstránené</string>
     <string name="message_without_forward_security">Bola prijatá správa bez Perfect Forward Secrecy. Overte, či odosielateľ úmyselne zakázal funkciu Perfect Forward Secrecy.</string>
     <string name="forward_security_disabled">Pre túto konverzáciu je Perfect Forward Secrecy vypnutý.</string>
@@ -1389,13 +1509,15 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="self_updater_installation_failed">Sťahovanie aktualizácie zlyhalo. Stiahnite si a nainštalujte aktualizáciu z <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuálne.</string>
     <string name="spam_first_contact">Táto konverzácia je od neznámeho kontaktu</string>
     <string name="spam_report">Nahlásiť spam</string>
-    <string name="spam_report_dialog_explain">Ak budete pokračovať, ID a prezývka tohto kontaktu budú preposlané spoločnosti Threema spolu s vaším ID. Neposiela sa žiadny obsah ani osobné údaje. Kontakt o tom nebude informovaný.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="spam_report_dialog_explain">Ak budete pokračovať, ID a prezývka tohto kontaktu budú preposlané spoločnosti ${company_name} spolu s vaším ID. Neposiela sa žiadny obsah ani osobné údaje. Kontakt o tom nebude informovaný.</string>
     <string name="spam_report_dialog_block_checkbox">Zablokovať aj tento kontakt a odstrániť konverzáciu</string>
     <string name="spam_report_dialog_title">Nahlásiť %s</string>
     <string name="spam_successfully_reported">ID bolo nahlásené ako odosielateľ spamu.</string>
     <string name="spam_error_reporting">Pri nahlasovaní spamu sa vyskytla chyba: %s</string>
     <string name="spam_report_short">Nahlásiť</string>
-    <string name="wizard_incompatible_contact_sync_params">Sú nastavené nekompatibilné parametre MDM. Threema MDM parameter th_contact_sync nemožno nastaviť na hodnotu \"true\", ak je nastavené obmedzenie používateľa DISALLOW_MODIFY_ACCOUNTS. Kontaktujte správcu svojho zariadenia.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_incompatible_contact_sync_params">Sú nastavené nekompatibilné parametre MDM. ${app_name_short} MDM parameter th_contact_sync nemožno nastaviť na hodnotu \"true\", ak je nastavené obmedzenie používateľa DISALLOW_MODIFY_ACCOUNTS. Kontaktujte správcu svojho zariadenia.</string>
     <string name="messages_cannot_be_recovered">Správy nebude možné obnoviť.</string>
     <string name="groups_left_or_dissolved">Skupiny budú opustené alebo rozpustené a následne zmazané.</string>
     <string name="contact_deleted">Kontakt vymazaný</string>
@@ -1409,19 +1531,25 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="send_without_audio">Odstrániť zvuk</string>
     <string name="edit_filename">Upraviť názov súboru</string>
     <string name="unable_to_restore_identity_because">ID sa nepodarilo obnoviť. Dôvod: %s</string>
-    <string name="share_with_app">Zdieľať v aplikácii Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="share_with_app">Zdieľať v aplikácii ${app_name}</string>
     <string name="read_phone_state_dialog_allow">Udeliť povolenie</string>
     <string name="read_phone_state_dialog_disallow">Napriek tomu pokračovať</string>
     <string name="read_phone_state_dialog_never_ask_again">Viac sa nepýtať</string>
     <string name="read_phone_state_dialog_title">Vyžaduje sa povolenie</string>
-    <string name="read_phone_state_dialog_message">Ak chcete zabrániť tomu, aby Threema hovory prerušili bežné hovory, je potrebné udeliť povolenie pre Telefón. Ak toto povolenie neudelíte, prichádzajúci Threema hovor zazvoní, aj keď prebieha bežný hovor.</string>
-    <string name="read_phone_state_short_message">Pre kontrolu prebiehajúcich hovorov udeľte aplikácii Threema povolenie pre Telefón.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_dialog_message">Ak chcete zabrániť tomu, aby ${app_name_short} hovory prerušili bežné hovory, je potrebné udeliť povolenie pre Telefón. Ak toto povolenie neudelíte, prichádzajúci ${app_name_short} hovor zazvoní, aj keď prebieha bežný hovor.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_short_message">Pre kontrolu prebiehajúcich hovorov udeľte aplikácii ${app_name} povolenie pre Telefón.</string>
     <string name="prefs_title_read_phone_state">Udeliť povolenie Telefón</string>
     <string name="prefs_title_hibernation">Nastavenia nepoužívaných aplikácií</string>
-    <string name="prefs_summary_hibernation_api_32">Ak chcete zabrániť tomu, aby systém po dlhšej nečinnosti pozastavil aplikáciu Threema, vypnite systémové nastavenie „Pozastaviť aktivitu v nepoužívaných aplikáciach“.</string>
-    <string name="prefs_summary_hibernation_api">Ak chcete zabrániť tomu, aby systém po dlhšej nečinnosti pozastavil aplikáciu Threema, vypnite systémové nastavenie „Odstrániť povolenia, ak sa nepoužíva“.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api_32">Ak chcete zabrániť tomu, aby systém po dlhšej nečinnosti pozastavil aplikáciu ${app_name}, vypnite systémové nastavenie „Pozastaviť aktivitu v nepoužívaných aplikáciach“.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api">Ak chcete zabrániť tomu, aby systém po dlhšej nečinnosti pozastavil aplikáciu ${app_name}, vypnite systémové nastavenie „Odstrániť povolenia, ak sa nepoužíva“.</string>
     <string name="unable_to_fetch_configuration">Nie je možné načítať údaje z konfiguračného servera. Skúste to znova neskôr.</string>
-    <string name="rogue_device_warning"><![CDATA[Bolo zistené pripojenie z iného zariadenia s rovnakým Threema ID. Použili ste nedávno svoje Threema ID na inom zariadení? <br><br> Ak áno, môžete túto správu ignorovať. <br><br> Ak ste tak neurobili, váš súkromný kľúč môže byť ohrozený. Pred vytvorením nového identifikátora <a href="https://threema.ch/en/faq/another_connection">postupujte podľa našich návrhov</a> na ochranu svojho zariadenia a údajov.]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rogue_device_warning"><![CDATA[Bolo zistené pripojenie z iného zariadenia s rovnakým ${app_name_short} ID. Použili ste nedávno svoje ${app_name_short} ID na inom zariadení? <br><br> Ak áno, môžete túto správu ignorovať. <br><br> Ak ste tak neurobili, váš súkromný kľúč môže byť ohrozený. Pred vytvorením nového identifikátora <a href="https://threema.ch/en/faq/another_connection">postupujte podľa našich návrhov</a> na ochranu svojho zariadenia a údajov.]]></string>
     <string name="fetch2_failure">Synchronizácia so serverom poskytovania zlyhala.</string>
     <string name="no_members_support_group_calls">V tejto skupine nie sú žiadni ďalší členovia, ktorí by mohli prijímať skupinové hovory</string>
     <string name="group_calls">Skupinové hovory</string>
@@ -1434,9 +1562,11 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="call_mic_permission_description">Ak chcete uskutočňovať hovory, musíte povoliť prístup k mikrofónu, aby vás ostatní počuli.</string>
     <string name="group_call_camera_permission_rationale">Aby ostatní účastníci mohli vidieť váš obraz, musíte v časti „Oprávnenia“ povoliť aplikácii %s prístup k fotoaparátu.</string>
     <string name="group_call_phone_permission_description">Na uskutočnenie skupinových hovorov je potrebné povolenie k telefónu, aby bolo možné zisťovať, či iný hovor neprerušuje skupinový hovor.</string>
-    <string name="call_phone_permission_description">Na uskutočnenie Threema hovorov je potrebné povolenie k telefónu, aby bolo možné zisťovať, či iný hovor neprerušuje Threema hovor.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_phone_permission_description">Na uskutočnenie ${app_name_short} hovorov je potrebné povolenie k telefónu, aby bolo možné zisťovať, či iný hovor neprerušuje ${app_name_short} hovor.</string>
     <string name="group_call_nearby_devices_permission_description">Ak chcete uskutočňovať skupinové hovory s bluetooth slúchadlami, musíte povoliť „zariadeniam v okolí“ zisťovanie bluetooth slúchadiel.</string>
-    <string name="call_nearby_devices_permission_description">Ak chcete uskutočňovať Threema hovory s bluetooth slúchadlami, musíte povoliť oprávnenie „Zariadenia v okolí“, aby bolo možné vyhľadávať bluetooth slúchadlá.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_nearby_devices_permission_description">Ak chcete uskutočňovať ${app_name_short} hovory s bluetooth slúchadlami, musíte povoliť oprávnenie „Zariadenia v okolí“, aby bolo možné vyhľadávať bluetooth slúchadlá.</string>
     <string name="settings">Nastavenia</string>
     <string name="leave">Odísť</string>
     <string name="fs_key_mismatch">nesúlad kľúčov</string>
@@ -1459,7 +1589,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="scroll_to_top">Prejsť na začiatok</string>
     <string name="contact_sync_mdm_rationale">Váš správca povolil synchronizáciu kontaktov pre vaše zariadenie. Preto je potrebné povolenie na prístup ku kontaktom.</string>
     <string name="welcome_back">Vitajte späť!</string>
-    <string name="id_restored_successfully">Vaše Threema ID bolo úspešne obnovené</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="id_restored_successfully">Vaše ${app_name_short} ID bolo úspešne obnovené</string>
     <string name="prefs_dynamic_colors">Dynamická farba</string>
     <string name="prefs_dynamic_colors_sum">Použiť systémové farby</string>
     <string name="apply_changes">Aplikovať zmeny</string>
@@ -1490,11 +1621,14 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="no_starred_messages">Nenašli sa žiadne správy s hviezdičkou. Ak chcete správu označiť hviezdičkou, dlho na ňu ťuknite a vyberte tlačidlo s hviezdičkou.</string>
     <string name="remove_all_stars">Odstrániť všetky hviezdičky</string>
     <string name="remove_star">Odstrániť hviezdičku</string>
-    <string name="samsung_permission_problem_explain">%1$s nemá prístup k súborom médií z dôvodu chýbajúceho povolenia v systémovej aplikácii. Ak to chcete opraviť, skontrolujte, či je na nasledujúcej obrazovke zapnutý prepínač vedľa položky \"Externý ukladací priestor\" a reštartujte %1$s.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="samsung_permission_problem_explain">${app_name} nemá prístup k súborom médií z dôvodu chýbajúceho povolenia v systémovej aplikácii. Ak to chcete opraviť, skontrolujte, či je na nasledujúcej obrazovke zapnutý prepínač vedľa položky \"Externý ukladací priestor\" a reštartujte %1$s.</string>
     <string name="min_n_chars">min. %d znakov</string>
     <string name="prefs_title_grant_bluetooth_permission">Udeliť povolenie Bluetooth</string>
-    <string name="safe_managed_password_confirm">Bolo definované spravované heslo pre zálohu Threema Safe.\n\nChcete toto heslo používať? V prípade pochybností sa obráťte na svojho správcu.</string>
-    <string name="safe_managed_new_password_confirm">Bolo definované nové spravované heslo pre zálohu Threema Safe.\n\nChcete nahradiť súčasné heslo týmto novým, spravovaným heslom? V prípade pochybností sa obráťte na svojho správcu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_password_confirm">Bolo definované spravované heslo pre zálohu ${app_name_short} Safe.\n\nChcete toto heslo používať? V prípade pochybností sa obráťte na svojho správcu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_new_password_confirm">Bolo definované nové spravované heslo pre zálohu ${app_name_short} Safe.\n\nChcete nahradiť súčasné heslo týmto novým, spravovaným heslom? V prípade pochybností sa obráťte na svojho správcu.</string>
     <string name="real_not_now">Teraz nie</string>
     <string name="add_contact_in">Pridať kontakt do…</string>
     <string name="really_remove_all_stars">Naozaj chcete zrušiť hviezdičku u všetkých správ?</string>
@@ -1516,12 +1650,14 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_dissolved_notice">Táto skupina bola rozpustená a už sa nedá používať.</string>
     <string name="md_linked_devices">Prepojené zariadenia</string>
     <string name="md_link_device">Pripojiť nové zariadenie</string>
-    <string name="md_enable">Povoliť pripojené zariadenia</string>
-    <string name="md_linked_devices_empty">Stiahnite si odniekiaľ luxusného desktopového klienta a odštartujte🚀</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
     <string name="md_link_device_qr_scan_message">Naskenujte QR kód, prosím</string>
     <string name="directory_request_failed">Žiadosť na zložku sa nepodarila. Skúste to znova.</string>
     <string name="add_shortcut_exists">Odkaz pre tento cieľ už existuje.</string>
     <string name="scan_qr_code">Skenovať QR kód</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="scan_qr_code_explain">Naskenujte kód QR zobrazený v beta verzii aplikácie %s Desktop na zariadení, ktoré chcete prepojiť.</string>
     <string name="connecting">Pripája sa…</string>
     <string name="trust_new_device">Dôverovať novému zariadeniu</string>
@@ -1531,10 +1667,12 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="sending_data">Odosielajú sa údaje…</string>
     <string name="continue_on_new_device">Pokračujte prosím na novom zariadení…</string>
     <string name="device_linked_successfully">Zariadenie úspešne prepojené</string>
-    <string name="device_linked_successfully_explain">%s možno teraz používať na práve prepojenom zariadení (aj keď je toto zariadenie vypnuté alebo nie je pripojené k internetu)</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linked_successfully_explain">${app_name} možno teraz používať na práve prepojenom zariadení (aj keď je toto zariadenie vypnuté alebo nie je pripojené k internetu)</string>
     <string name="resend_message_dialog_title">Znovu odoslať skupinovú správu?</string>
     <string name="resend_message_dialog_message">Táto správa nemohla byť odoslaná všetkým členom. Opätovne poslať správu na adresu %1$s?</string>
-    <string name="work_lost_credentials_help">Zabudli ste svoje prihlasovacie údaje? Obráťte sa na vášho správcu %1$s.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_lost_credentials_help">Zabudli ste svoje prihlasovacie údaje? Obráťte sa na vášho správcu ${app_name_short}.</string>
     <string name="problemsolver_intro">Niektoré problémy s konfiguráciou systému pravdepodobne bránia správnemu fungovaniu aplikácie %s. Tieto problémy odstráňte podľa nižšie uvedených pokynov.</string>
     <string name="problemsolver_title">Oprava problémov s konfiguráciou</string>
     <string name="problemsolver_title_background">Používanie na pozadí obmedzené</string>
@@ -1547,7 +1685,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="problemsolver_explain_background">Používanie aplikácie na pozadí je obmedzené. Nebudete dostávať žiadne oznámenia a mnohé funkcie nebudú fungovať tak, ako sa očakáva. Ak to chcete napraviť, klepnite v informáciach o aplikácii na položku \"Batéria\" a vyberte možnosť \"Neobmedzené\".</string>
     <string name="problemsolver_info_text">Názvy niektorých vyššie uvedených možností nastavenia systému sa môžu líšiť v závislosti od verzie systému Android a výrobcu zariadenia.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Používanie batérie aplikácie nastavené na \"optimalizované\"</string>
-    <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikácia nemá povolené udržiavať trvalé pripojenie k serverom, ktoré je potrebné na fungovanie služby Threema Push. Keď je aplikácia na pozadí, nebudete informovaní o nových správach. Ak to chcete napraviť, klepnite v informáciach o aplikácii na položku \"Batéria\" a vyberte možnosť \"Neobmedzené\".</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikácia nemá povolené udržiavať trvalé pripojenie k serverom, ktoré je potrebné na fungovanie služby ${app_name_short} Push. Keď je aplikácia na pozadí, nebudete informovaní o nových správach. Ak to chcete napraviť, klepnite v informáciach o aplikácii na položku \"Batéria\" a vyberte možnosť \"Neobmedzené\".</string>
     <string name="problemsolver_to_settings">K nastaveniam</string>
     <string name="prefs_advanced_options">Rozšírené možnosti</string>
     <string name="push_service">Služba Push</string>
@@ -1568,7 +1707,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
 %1$s</string>
     <string name="work_intro_more_link_text">Zistiť viac o Threema Work</string>
     <string name="work_intro_subtitle">Bezpečný messenger\npre firmy.</string>
-    <string name="work_intro_login">Prihlásenie %1$s</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_login">Prihlásenie ${app_name}</string>
     <string name="consumer_notice_description">Ak ste súkromný používateľ, stiahnite si bežnú aplikáciu Threema.</string>
     <string name="consumer_notice_playstore_link_description">Threema v Play Store</string>
     <string name="consumer_notice_appgallery_link_description">Threema v AppGallery</string>
@@ -1595,6 +1735,16 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Instruction text for the user directory search -->
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

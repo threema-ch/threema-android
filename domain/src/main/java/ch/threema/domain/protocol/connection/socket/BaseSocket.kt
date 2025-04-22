@@ -23,9 +23,12 @@ package ch.threema.domain.protocol.connection.socket
 
 import ch.threema.domain.protocol.connection.InputPipe
 import ch.threema.domain.protocol.connection.Pipe
+import ch.threema.domain.protocol.connection.PipeCloseHandler
 import ch.threema.domain.protocol.connection.PipeHandler
 import ch.threema.domain.protocol.connection.QueuedPipeHandler
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
+import java.io.InterruptedIOException
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -36,25 +39,26 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.io.InterruptedIOException
-import kotlin.coroutines.CoroutineContext
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("BaseSocket")
 
 internal abstract class BaseSocket(
     protected val ioProcessingStoppedSignal: CompletableDeferred<Unit>,
-    private val inputDispatcher: CoroutineContext
+    private val inputDispatcher: CoroutineContext,
 ) : ServerSocket {
-
-    private val inbound = InputPipe<ByteArray>()
+    private val inbound = InputPipe<ByteArray, ServerSocketCloseReason>()
     protected val outbound = QueuedPipeHandler<ByteArray>()
 
     override val closedSignal = CompletableDeferred<ServerSocketCloseReason>()
 
-    final override val source: Pipe<ByteArray> = inbound
+    final override val source: Pipe<ByteArray, ServerSocketCloseReason> = inbound
     final override val sink: PipeHandler<ByteArray> = outbound
+    final override val closeHandler: PipeCloseHandler<Unit> = PipeCloseHandler {
+        // Nothing to do as currently the pipes are not closed towards the socket
+    }
 
-    protected var ioJob: Job? = null
+    protected var readJob: Job? = null
+    protected var writeJob: Job? = null
 
     /**
      * False, while the socket is connected and io should be processed. Set to true when no further data
@@ -67,25 +71,25 @@ internal abstract class BaseSocket(
             if (closedSignal.isCompleted) {
                 throw ServerSocketException("The socket is already closed")
             }
-            launchIoJob()
+            launchIoJobs()
         }
         ioProcessingStoppedSignal.await()
     }
 
-    private fun launchIoJob() {
+    private fun launchIoJobs() {
         val errorHandler = CoroutineExceptionHandler { _, e ->
             if (e is CancellationException || e is InterruptedIOException) {
                 logger.info("IO Processing cancelled")
                 ioProcessingStoppedSignal.complete(Unit)
             } else {
                 // do not log the exception as it will be logged elsewhere
-                logger.warn("IO processing stopped exceptionally")
+                logger.warn("IO processing stopped exceptionally", e)
                 ioProcessingStoppedSignal.completeExceptionally(e)
             }
         }
-        ioJob = CoroutineScope(Dispatchers.Default + errorHandler).launch {
-            launch { setupReading() }
-            launch { setupWriting() }
+        CoroutineScope(Dispatchers.Default + errorHandler).launch {
+            readJob = launch { setupReading() }
+            writeJob = launch { setupWriting() }
         }.also {
             it.invokeOnCompletion { throwable ->
                 val alreadyCompleted = !ioProcessingStoppedSignal.complete(Unit)
@@ -93,7 +97,7 @@ internal abstract class BaseSocket(
                 logger.info(
                     "IO job completed (exceptionally={}, alreadyCompleted={})",
                     exceptionally,
-                    alreadyCompleted
+                    alreadyCompleted,
                 )
                 closeSocketAndCompleteClosedSignal(ServerSocketCloseReason("IO processing has stopped (exceptionally=$exceptionally)"))
             }
@@ -109,7 +113,6 @@ internal abstract class BaseSocket(
             }
             // when the socket is closed, io processing is stopped
             ioProcessingStopped = true
-            runBlocking { ioJob?.cancelAndJoin() }
             closeSocketAndCompleteClosedSignal(reason)
         }
     }
@@ -117,13 +120,17 @@ internal abstract class BaseSocket(
     /**
      * Perform the actual closing of the underlying socket and complete the socket closed signal.
      *
-     * This should be called _after_ [ioJob] has completed.
+     * This should be called _before_ [readJob] and [writeJob] have completed.
      */
     private fun closeSocketAndCompleteClosedSignal(reason: ServerSocketCloseReason) {
         logger.info("Close actual socket")
         // set stopped, as depending on the code path it might not be set to stopped yet
         ioProcessingStopped = true
-        closeSocket(reason)
+        runBlocking { closeSocket(reason) }
+
+        runBlocking { readJob?.cancelAndJoin() }
+        runBlocking { writeJob?.cancelAndJoin() }
+
         if (!closedSignal.complete(reason)) {
             logger.info("Close signal already completed")
         }
@@ -131,7 +138,11 @@ internal abstract class BaseSocket(
 
     protected abstract suspend fun setupReading()
     protected abstract suspend fun setupWriting()
-    protected abstract fun closeSocket(reason: ServerSocketCloseReason)
+
+    /**
+     * This implementation should take care of properly closing the socket.
+     */
+    protected abstract suspend fun closeSocket(reason: ServerSocketCloseReason)
 
     /**
      * Send an inbound message. This method only returns after the sending inbound has been completed.
@@ -142,6 +153,12 @@ internal abstract class BaseSocket(
     protected suspend fun sendInbound(data: ByteArray) {
         withContext(inputDispatcher) {
             inbound.send(data)
+        }
+    }
+
+    protected suspend fun closeInbound(serverSocketCloseReason: ServerSocketCloseReason) {
+        withContext(inputDispatcher) {
+            inbound.close(serverSocketCloseReason)
         }
     }
 }

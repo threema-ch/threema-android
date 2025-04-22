@@ -42,7 +42,7 @@ class IncomingContactPollSetupTask(
         processPollSetupMessage()
 
     private fun processPollSetupMessage(): ReceiveStepsResult {
-        val successfullyProcessed = messageService.processIncomingContactMessage(pollSetupMessage)
+        val successfullyProcessed = messageService.processIncomingContactMessage(pollSetupMessage, triggerSource)
         return if (successfullyProcessed) {
             ReceiveStepsResult.SUCCESS
         } else {

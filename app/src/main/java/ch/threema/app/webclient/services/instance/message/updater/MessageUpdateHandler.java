@@ -43,7 +43,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.listeners.MessageListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
@@ -98,14 +98,16 @@ public class MessageUpdateHandler extends MessageUpdater {
     };
 
     @AnyThread
-    public MessageUpdateHandler(@NonNull HandlerExecutor handler,
-                                MessageDispatcher dispatcher,
-                                DeadlineListService hiddenChatService,
-                                FileService fileService) {
+    public MessageUpdateHandler(
+        @NonNull HandlerExecutor handler,
+        MessageDispatcher dispatcher,
+        @NonNull ConversationCategoryService conversationCategoryService,
+        FileService fileService
+    ) {
         super(Protocol.SUB_TYPE_MESSAGES);
         this.handler = handler;
         this.dispatcher = dispatcher;
-        this.listener = new Listener(hiddenChatService);
+        this.listener = new Listener(conversationCategoryService);
         this.fileService = fileService;
     }
 
@@ -186,10 +188,11 @@ public class MessageUpdateHandler extends MessageUpdater {
 
     @AnyThread
     private class Listener implements MessageListener {
-        private DeadlineListService hiddenChatService;
+        @NonNull
+        private ConversationCategoryService conversationCategoryService;
 
-        public Listener(DeadlineListService hiddenChatService) {
-            this.hiddenChatService = hiddenChatService;
+        public Listener(@NonNull ConversationCategoryService conversationCategoryService) {
+            this.conversationCategoryService = conversationCategoryService;
         }
 
         @Override
@@ -203,8 +206,6 @@ public class MessageUpdateHandler extends MessageUpdater {
             Map<String, List<AbstractMessageModel>> modeToModifiedMessages = modifiedMessageModels.stream().collect(
                 Collectors.groupingBy(message -> message.isDeleted() ? Protocol.ARGUMENT_MODE_REMOVED : Protocol.ARGUMENT_MODE_MODIFIED)
             );
-            // TODO: Here we should probably batch update messages for the same receiver.
-            // Also, if the same msg is updated multiple times, only send the last one.
             modeToModifiedMessages.forEach((mode, modifiedMessages) -> this.dispatch(modifiedMessages, mode));
         }
 
@@ -242,8 +243,8 @@ public class MessageUpdateHandler extends MessageUpdater {
                         for (ch.threema.app.messagereceiver.MessageReceiver receiver : MessageUpdateHandler.this.receivers) {
                             // If message belongs to a registered receiver, add it to the outbox.
                             if (receiver.isMessageBelongsToMe(message)) {
-                                // Skip chat messages in hidden chats (#WEBC-75)
-                                if (!Listener.this.hiddenChatService.has(receiver.getUniqueIdString())) {
+                                // Skip chat messages in private chats (#WEBC-75)
+                                if (!Listener.this.conversationCategoryService.isPrivateChat(receiver.getUniqueIdString())) {
                                     if (outbox.containsKey(receiver)) {
                                         outbox.get(receiver).add(message);
                                     } else {

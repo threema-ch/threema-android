@@ -21,10 +21,11 @@
 
 package ch.threema.data.repositories
 
-import ch.threema.data.TestDatabaseService
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.testutils.TestHelpers
+import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelDataFactory
 import ch.threema.data.storage.DatabaseBackend
@@ -33,13 +34,12 @@ import ch.threema.data.storage.SqliteDatabaseBackend
 import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.domain.models.GroupId
 import ch.threema.storage.models.GroupModel
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
 import java.util.Date
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import org.junit.Before
+import org.junit.Test
 
 class GroupModelRepositoryTest {
     private lateinit var databaseService: TestDatabaseService
@@ -49,31 +49,36 @@ class GroupModelRepositoryTest {
 
     private fun createTestDbGroup(groupIdentity: GroupIdentity): DbGroup {
         return DbGroup(
-            groupIdentity.creatorIdentity,
-            groupIdentity.groupIdHexString,
-            "Group",
-            Date(),
-            Date(),
-            null,
-            deleted = false,
+            creatorIdentity = groupIdentity.creatorIdentity,
+            groupId = groupIdentity.groupIdHexString,
+            name = "Group",
+            createdAt = Date(),
+            synchronizedAt = Date(),
+            lastUpdate = null,
             isArchived = false,
-            0.toUByte(),
-            "Description",
-            Date(),
-            setOf("AAAAAAAA", "BBBBBBBB"),
-            GroupModel.UserState.MEMBER,
+            colorIndex = 0.toUByte(),
+            groupDescription = "Description",
+            groupDescriptionChangedAt = Date(),
+            members = setOf("AAAAAAAA", "BBBBBBBB"),
+            userState = GroupModel.UserState.MEMBER,
+            notificationTriggerPolicyOverride = null,
         )
     }
 
     @Before
     fun before() {
+        TestHelpers.setIdentity(
+            ThreemaApplication.requireServiceManager(),
+            TestHelpers.TEST_CONTACT,
+        )
+
         this.databaseService = TestDatabaseService()
         this.databaseBackend = SqliteDatabaseBackend(databaseService)
         this.coreServiceManager = TestCoreServiceManager(
             version = ThreemaApplication.getAppVersion(),
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
-            taskManager = TestTaskManager(UnusedTaskCodec())
+            taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         this.groupModelRepository = ModelRepositories(coreServiceManager).groups
     }
@@ -100,12 +105,12 @@ class GroupModelRepositoryTest {
             GroupModel()
                 .setCreatorIdentity(groupIdentity.creatorIdentity)
                 .setApiGroupId(GroupId(groupIdentity.groupId))
-                .setCreatedAt(Date())
+                .setCreatedAt(Date()),
         )
 
         // Fetch group using the "new" model
         val model = groupModelRepository.getByGroupIdentity(groupIdentity)!!
-        assertTrue { model.groupIdentity == groupIdentity }
+        assertEquals(groupIdentity, model.groupIdentity)
     }
 
     @Test
@@ -118,13 +123,13 @@ class GroupModelRepositoryTest {
             GroupModel()
                 .setCreatorIdentity(creatorIdentity)
                 .setApiGroupId(groupId)
-                .setCreatedAt(Date())
+                .setCreatedAt(Date()),
         )
 
         // Fetch group using the "new" model
         val model = groupModelRepository.getByCreatorIdentityAndId(creatorIdentity, groupId)!!
         val groupIdentity = GroupIdentity(creatorIdentity, groupId.toLong())
-        assertTrue { model.groupIdentity == groupIdentity }
+        assertEquals(groupIdentity, model.groupIdentity)
     }
 
     @Test
@@ -166,7 +171,7 @@ class GroupModelRepositoryTest {
         val datesNullGroup = createTestDbGroup(groupIdentityDatesNull).copy(
             synchronizedAt = null,
             lastUpdate = null,
-            groupDescriptionChangedAt = null
+            groupDescriptionChangedAt = null,
         )
         testInsertAndGet(groupIdentityDatesNull, datesNullGroup)
     }
@@ -178,12 +183,12 @@ class GroupModelRepositoryTest {
         testInsertAndGet(groupIdentity, defaultGroup)
 
         val testData = groupModelRepository.getByGroupIdentity(groupIdentity)!!.data.value!!
-        Assert.assertThrows(UnsupportedOperationException::class.java) {
+        assertFailsWith<UnsupportedOperationException> {
             // Casting the set to a mutable set will work, but adding a new member to the set should
             // result in a runtime exception. Note that this is mainly in java code a problem, as
             // there is no cast needed to add a new member. Of course, it will result in a runtime
             // exception as well.
-            (testData.members as MutableSet).add("01234567")
+            (testData.otherMembers as MutableSet).add("01234567")
         }
     }
 

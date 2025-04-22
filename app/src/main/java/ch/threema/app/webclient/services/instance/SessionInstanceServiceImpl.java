@@ -190,7 +190,8 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
             handler,
             updateDispatcher,
             services.database,
-            services.synchronizeContacts
+            services.synchronizeContacts,
+            services.group
         );
         final ReceiversUpdateHandler receiversUpdateHandler = new ReceiversUpdateHandler(
             handler,
@@ -200,7 +201,8 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
         final AvatarUpdateHandler avatarUpdateHandler = new AvatarUpdateHandler(
             handler,
             updateDispatcher,
-            services.contact
+            services.contact,
+            services.group
         );
         final ConversationUpdateHandler conversationUpdateHandler = new ConversationUpdateHandler(
             handler,
@@ -208,13 +210,13 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
             services.contact,
             services.group,
             services.distributionList,
-            services.hiddenChat,
+            services.conversationCategoryService,
             this.sessionId
         );
         final MessageUpdateHandler messageUpdateHandler = new MessageUpdateHandler(
             handler,
             updateDispatcher,
-            services.hiddenChat,
+            services.conversationCategoryService,
             services.file
         );
         final TypingUpdateHandler typingUpdateHandler = new TypingUpdateHandler(
@@ -281,7 +283,6 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
                         });
                     }
 
-                    // TODO: Below block should happen after the connectionInfo handshake
                     // Register battery status listener
                     batteryStatusUpdateHandler.register();
                     // VoIP status listener
@@ -361,7 +362,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
         requestDispatcher.addReceiver(new MessageRequestHandler(
             responseDispatcher,
             services.message,
-            services.hiddenChat,
+            services.conversationCategoryService,
             new MessageRequestHandler.Listener() {
                 @Override
                 @WorkerThread
@@ -404,7 +405,9 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 
         requestDispatcher.addReceiver(new SyncGroupHandler(
             responseDispatcher,
-            services.group
+            services.group,
+            services.groupModelRepository,
+            services.groupFlowDispatcher
         ));
         requestDispatcher.addReceiver(new ProfileRequestHandler(
             responseDispatcher,
@@ -459,6 +462,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 
         createDispatcher.addReceiver(new CreateGroupHandler(
             createDispatcher,
+            services.groupFlowDispatcher,
             services.group
         ));
 
@@ -473,6 +477,9 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
         ));
         updateDispatcher.addReceiver(new ModifyGroupHandler(
             updateDispatcher,
+            services.user,
+            services.groupFlowDispatcher,
+            services.groupModelRepository,
             services.group
         ));
         updateDispatcher.addReceiver(new ModifyDistributionListHandler(
@@ -505,7 +512,9 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
         ));
         deleteDispatcher.addReceiver(new DeleteGroupHandler(
             responseDispatcher,
-            services.group
+            services.groupFlowDispatcher,
+            services.groupModelRepository,
+            services.contact.getMe().getIdentity()
         ));
         deleteDispatcher.addReceiver(new DeleteDistributionListHandler(
             responseDispatcher,
@@ -789,8 +798,6 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
             logger.error("Protocol error due to invalid message", e);
             this.stop(DisconnectContext.byUs(DisconnectContext.REASON_ERROR));
         } catch (NullPointerException e) {
-            // TODO: If you don't want this, recursively follow this code and all handlers and fix
-            //       the potential NPEs. There are dozens...
             logger.error("Protocol error due to NPE", e);
             this.stop(DisconnectContext.byUs(DisconnectContext.REASON_ERROR));
         } catch (DispatchException e) {

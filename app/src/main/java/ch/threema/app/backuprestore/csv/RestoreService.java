@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -89,6 +90,7 @@ import ch.threema.app.utils.Counter;
 import ch.threema.app.utils.JsonUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.app.utils.ResettableInputStream;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ThrowingConsumer;
@@ -98,6 +100,7 @@ import ch.threema.base.crypto.NonceScope;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.repositories.EmojiReactionsRepository;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.data.storage.DbEmojiReaction;
 import ch.threema.domain.models.GroupId;
@@ -164,6 +167,7 @@ public class RestoreService extends Service {
     private PowerManager.WakeLock wakeLock;
     private NotificationManagerCompat notificationManagerCompat;
     private NonceFactory nonceFactory;
+    private @NonNull GroupModelRepository groupModelRepository;
 
     private NotificationCompat.Builder notificationBuilder;
 
@@ -218,7 +222,8 @@ public class RestoreService extends Service {
             this,
             RESTORE_NOTIFICATION_ID,
             getPersistentNotification(),
-            FG_SERVICE_TYPE);
+            FG_SERVICE_TYPE
+        );
 
         if (intent != null) {
             logger.debug("onStartCommand intent != null");
@@ -318,6 +323,7 @@ public class RestoreService extends Service {
             preferenceService = serviceManager.getPreferenceService();
             notificationPreferenceService = serviceManager.getNotificationPreferenceService();
             nonceFactory = serviceManager.getNonceFactory();
+            groupModelRepository = serviceManager.getModelRepositories().getGroups();
         } catch (Exception e) {
             logger.error("Could not instantiate all required services", e);
             stopSelf();
@@ -436,9 +442,7 @@ public class RestoreService extends Service {
                     databaseServiceNew.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
 
                     modelRepositories.getEmojiReaction().deleteAllReactions();
-                    // TODO(ANDR-3207): delete all edit history entries
-
-                    // Remove all media files (don't remove recursively, tmp folder contain the restoring files
+                    // TODO(ANDR-3207): delete all edit history entries// Remove all media files (don't remove recursively, tmp folder contain the restoring files
                     logger.info("Deleting current media files");
                     fileService.clearDirectory(fileService.getAppDataPath(), false);
                 }
@@ -466,7 +470,7 @@ public class RestoreService extends Service {
                 if (identityHeader != null && this.writeToDb) {
                     String identityContent;
                     try (InputStream inputStream = zipFile.getInputStream(identityHeader)) {
-                        identityContent = IOUtils.toString(inputStream);
+                        identityContent = IOUtils.toString(inputStream, Charset.defaultCharset());
                     }
 
                     try {
@@ -505,7 +509,7 @@ public class RestoreService extends Service {
                 long messageCount = this.restoreMessageFiles(fileHeaders);
                 if (messageCount == 0) {
                     logger.error("restore message files failed");
-                    // continue anyway!
+                    //continue anyway!
                 }
 
                 logger.info("Restoring group avatar files");
@@ -520,7 +524,7 @@ public class RestoreService extends Service {
                 long mediaCount = this.restoreMessageMediaFiles(fileHeaders);
                 if (mediaCount == 0) {
                     logger.warn("No media files restored. Might be a backup without media?");
-                    // continue anyway!
+                    //continue anyway!
                 } else {
                     logger.info("{} media files found", mediaCount);
                 }
@@ -979,12 +983,12 @@ public class RestoreService extends Service {
             if (fileName.startsWith(Tags.CONTACT_AVATAR_FILE_PREFIX)) {
                 if (!this.restoreContactAvatarFile(fileHeader)) {
                     logger.error("restore contact avatar {} file failed or skipped", fileName);
-                    // continue anyway
+                    //continue anyway
                 }
             } else if (fileName.startsWith(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX)) {
                 if (!this.restoreContactPhotoFile(fileHeader)) {
                     logger.error("restore contact profile pic {} file failed or skipped", fileName);
-                    // continue anyway
+                    //continue anyway
                 }
             }
         }
@@ -1046,15 +1050,14 @@ public class RestoreService extends Service {
             if (!TestUtil.isEmptyOrNull(groupUid)) {
                 Integer groupId = groupUidMap.get(groupUid);
                 if (groupId != null) {
-                    GroupModel m = databaseServiceNew.getGroupModelFactory().getById(groupId);
+                    ch.threema.data.models.GroupModel m = groupModelRepository.getByLocalGroupDbId(groupId);
                     if (m != null) {
                         try (InputStream inputStream = zipFile.getInputStream(fileHeader)) {
-                            this.fileService.writeGroupAvatar(m, IOUtils.toByteArray(inputStream));
+                            this.fileService.writeGroupAvatar(m, inputStream);
                         } catch (Exception e) {
-                            // ignore, just the avatar :)
+                            //ignore, just the avatar :)
                             success = false;
                         }
-                        //
                     }
                 }
             }
@@ -1132,39 +1135,40 @@ public class RestoreService extends Service {
 
             if (model != null) {
                 try {
-                    if (fileName.startsWith(thumbnailPrefix)) {
-                        // restore thumbnail
-                        if (this.writeToDb) {
+                    if (this.writeToDb) {
+                        if (fileName.startsWith(thumbnailPrefix)) {
+                            // restore thumbnail
                             FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
                             if (thumbnailFileHeader != null) {
-                                try (ZipInputStream inputStream = zipFile.getInputStream(thumbnailFileHeader)) {
-                                    byte[] thumbnailBytes = IOUtils.toByteArray(inputStream);
-                                    if (thumbnailBytes != null && thumbnailBytes.length < MAX_THUMBNAIL_SIZE_BYTES) {
-                                        this.fileService.saveThumbnail(model, thumbnailBytes);
+                                logger.info("Restoring thumbnail from file");
+                                long fileSize = thumbnailFileHeader.getUncompressedSize();
+                                if (fileSize < MAX_THUMBNAIL_SIZE_BYTES) {
+                                    try (InputStream inputStream = zipFile.getInputStream(thumbnailFileHeader)) {
+                                        this.fileService.saveThumbnail(model, inputStream);
                                     }
-                                } catch (OutOfMemoryError e) {
-                                    logger.error("Not enough memory for thumbnail", e);
                                 }
                             }
-                        }
-                    } else {
-                        if (this.writeToDb) {
-                            byte[] imageData;
+                        } else {
+                            logger.info("Restoring media from file, with message contents type = {}", model.getMessageContentsType());
                             try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-                                imageData = IOUtils.toByteArray(inputStream);
-                                this.fileService.writeConversationMedia(model, imageData);
-                            } catch (OutOfMemoryError e) {
-                                logger.error("Not enough memory for media", e);
-                                imageData = null;
+                                this.fileService.writeConversationMedia(model, inputStream);
                             }
 
+                            // TODO(ANDR-3737): The following check is insufficient and leads to false positives,
+                            //  e.g. regular PDFs or text files are also passed through the thumbnail generation, even though that will
+                            //  always fails. It also does not handle video thumbnails properly.
                             if (MessageUtil.canHaveThumbnailFile(model)) {
                                 // check if a thumbnail file is in backup
                                 FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
 
                                 // if no thumbnail file exist in backup, generate one
-                                if (thumbnailFileHeader == null && imageData != null) {
-                                    this.fileService.writeConversationMediaThumbnail(model, imageData);
+                                if (thumbnailFileHeader == null) {
+                                    logger.info("Generating thumbnail for media file ");
+                                    try (ResettableInputStream inputStream = new ResettableInputStream(() -> zipFile.getInputStream(fileHeader))) {
+                                        fileService.writeConversationMediaThumbnail(model, inputStream);
+                                    } catch (Exception e) {
+                                        logger.warn("Failed to generate thumbnail for media file, skipping", e);
+                                    }
                                 }
                             }
                         }
@@ -1173,8 +1177,8 @@ public class RestoreService extends Service {
                     updateProgress(STEP_SIZE_MEDIA);
                 } catch (RestoreCanceledException e) {
                     throw new RestoreCanceledException();
-                } catch (Exception x) {
-                    logger.error("Exception", x);
+                } catch (Exception e) {
+                    logger.error("Failed to restore media file", e);
                     // ignore and continue
                 }
             } else {
@@ -1189,7 +1193,7 @@ public class RestoreService extends Service {
             try {
                 ContactModel contactModel = createContactModel(row, restoreSettings);
                 if (writeToDb) {
-                    // set the default color
+                    //set the default color
                     ContactModelFactory contactModelFactory = databaseServiceNew.getContactModelFactory();
                     contactModelFactory.createOrUpdate(contactModel);
                 }
@@ -1225,10 +1229,7 @@ public class RestoreService extends Service {
 
         // Set contact avatar
         try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-            return fileService.writeUserDefinedProfilePicture(
-                contactModel.getIdentity(),
-                IOUtils.toByteArray(inputStream)
-            );
+            return fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), inputStream);
         } catch (Exception e) {
             logger.error("Exception while writing contact avatar", e);
             return false;
@@ -1254,9 +1255,7 @@ public class RestoreService extends Service {
 
         // Set contact profile picture
         try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-            return fileService.writeContactDefinedProfilePicture(
-                contactModel.getIdentity(),
-                IOUtils.toByteArray(inputStream));
+            return fileService.writeContactDefinedProfilePicture(contactModel.getIdentity(), inputStream);
         } catch (Exception e) {
             logger.error("Exception while writing contact profile picture", e);
             return false;
@@ -1268,7 +1267,7 @@ public class RestoreService extends Service {
             try {
                 GroupModel groupModel = createGroupModel(row, restoreSettings);
 
-                if (writeToDb) {
+                if (groupModel != null && writeToDb) {
                     databaseServiceNew.getGroupModelFactory().create(
                         groupModel
                     );
@@ -1278,9 +1277,7 @@ public class RestoreService extends Service {
                     } else {
                         groupUidMap.put(BackupUtils.buildGroupUid(groupModel), groupModel.getId());
                     }
-                }
 
-                if (writeToDb) {
                     String myIdentity = userService.getIdentity();
                     boolean isInMemberList = false;
 
@@ -1353,7 +1350,7 @@ public class RestoreService extends Service {
 
                 if (writeToDb) {
                     if (ballotLinkModel == null) {
-                        // link failed
+                        //link failed
                         logger.error("link failed");
                     }
                     if (ballotLinkModel instanceof GroupBallotModel) {
@@ -1383,8 +1380,8 @@ public class RestoreService extends Service {
                     );
                     ballotChoiceIdMap.put(BackupUtils.buildBallotChoiceUid(ballotChoiceModel), ballotChoiceModel.getId());
                 }
-            } catch (Exception x) {
-                logger.error("Exception", x);
+            } catch (Exception e) {
+                logger.error("Failed to restore ballot choice file", e);
                 // continue!
             }
         });
@@ -1398,12 +1395,13 @@ public class RestoreService extends Service {
                     );
                 }
             } catch (Exception x) {
-                logger.error("Exception", x);
+                logger.error("Failed to restore ballot vote file", x);
                 // continue!
             }
         });
     }
 
+    @Nullable
     private GroupModel createGroupModel(CSVRow row, RestoreSettings restoreSettings) throws ThreemaException {
         GroupModel groupModel = new GroupModel();
         groupModel.setApiGroupId(new GroupId(row.getString(Tags.TAG_GROUP_ID)));
@@ -1411,10 +1409,8 @@ public class RestoreService extends Service {
         groupModel.setName(row.getString(Tags.TAG_GROUP_NAME));
         groupModel.setCreatedAt(row.getDate(Tags.TAG_GROUP_CREATED_AT));
 
-        if (restoreSettings.getVersion() >= 4) {
-            groupModel.setDeleted(row.getBoolean(Tags.TAG_GROUP_DELETED));
-        } else {
-            groupModel.setDeleted(false);
+        if (restoreSettings.getVersion() >= 4 && row.hasField(Tags.TAG_GROUP_DELETED) && row.getBoolean(Tags.TAG_GROUP_DELETED)) {
+            return null;
         }
         if (restoreSettings.getVersion() >= 14) {
             groupModel.setArchived(row.getBoolean(Tags.TAG_GROUP_ARCHIVED));
@@ -1489,7 +1485,7 @@ public class RestoreService extends Service {
         } else if (reference.endsWith("IdentityBallotModel")) {
             identity = referenceId;
         } else {
-            // first try to get the reference as group
+            //first try to get the reference as group
             groupId = this.groupUidMap.get(referenceId);
             if (groupId == null) {
                 if (referenceId != null && referenceId.length() == ProtocolDefines.IDENTITY_LEN) {
@@ -1927,7 +1923,7 @@ public class RestoreService extends Service {
         messageModel.setUid(row.getString(Tags.TAG_MESSAGE_UID));
 
         if (restoreSettings.getVersion() >= 2) {
-            messageModel.setIsStatusMessage(row.getBoolean(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE));
+            messageModel.setStatusMessage(row.getBoolean(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE));
         }
 
         if (restoreSettings.getVersion() >= 10) {
@@ -2011,6 +2007,7 @@ public class RestoreService extends Service {
             state = MessageState.CONSUMED;
         } else if (messageState.equals(MessageState.FS_KEY_MISMATCH.name())) {
             state = MessageState.FS_KEY_MISMATCH;
+
         }
         messageModel.setState(state);
     }
@@ -2081,6 +2078,7 @@ public class RestoreService extends Service {
     ) throws ThreemaException {
         MessageModel messageModel = new MessageModel();
         this.fillMessageModel(messageModel, row, restoreSettings);
+
         return messageModel;
     }
 
@@ -2094,9 +2092,7 @@ public class RestoreService extends Service {
     private DistributionListMessageModel createDistributionListMessageModel(CSVRow row, RestoreSettings restoreSettings) throws ThreemaException {
         DistributionListMessageModel messageModel = new DistributionListMessageModel();
         this.fillMessageModel(messageModel, row, restoreSettings);
-
         messageModel.setIdentity(row.getString(Tags.TAG_MESSAGE_IDENTITY));
-
         return messageModel;
     }
 
@@ -2169,7 +2165,7 @@ public class RestoreService extends Service {
                     serviceManager.startConnection();
                 }
             } catch (Exception e) {
-                logger.error("Exception", e);
+                logger.error("Failed to reopen connection after restore", e);
             }
 
             if (wakeLock != null && wakeLock.isHeld()) {

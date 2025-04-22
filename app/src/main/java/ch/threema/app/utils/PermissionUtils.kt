@@ -79,8 +79,8 @@ fun requestCallPermissions(
             activity.getString(R.string.call_phone_permission_description),
             R.drawable.ic_phone_in_talk,
             optional = true,
-            activity.getString(R.string.preferences__ignore_read_phone_state_permission_request)
-        )
+            activity.getString(R.string.preferences__ignore_read_phone_state_permission_request),
+        ),
     )
     launchForRequests(activity, permissionLauncher, runIfGranted, requests)
 }
@@ -126,8 +126,8 @@ fun requestGroupCallPermissions(
             activity.getString(R.string.group_call_phone_permission_description),
             R.drawable.ic_phone_in_talk,
             optional = true,
-            activity.getString(R.string.preferences__ignore_read_phone_state_permission_request)
-        )
+            activity.getString(R.string.preferences__ignore_read_phone_state_permission_request),
+        ),
     )
     requests.removeAll { !it.permission.isRequired() }
 
@@ -166,7 +166,8 @@ enum class Permission {
     PERMISSION_BLUETOOTH,
     PERMISSION_CAMERA,
     PERMISSION_MICROPHONE,
-    PERMISSION_READ_PHONE_STATE;
+    PERMISSION_READ_PHONE_STATE,
+    ;
 
     /**
      * Some permissions are not required on certain API levels.
@@ -216,20 +217,24 @@ enum class Permission {
             PERMISSION_READ_PHONE_STATE -> context.getString(R.string.permission_read_phone_state)
         }
     }
-
 }
 
 /**
  * The PermissionRequest is used to specify the permission that is requested.
+ *
+ * @param permission the permission that is requested
+ * @param description the explanation that is shown
+ * @param icon the icon of the permission
+ * @param optional false if the permission is required
+ * @param permissionIgnorePreference the 'never-ask-again'-preference (if nonnull)
  */
 data class PermissionRequest(
-    val permission: Permission,                 // the permission that is requested
-    val description: String,                    // the explanation that is shown
-    @DrawableRes val icon: Int,                 // the icon of the permission
-    val optional: Boolean,                      // false if the permission is required
-    val permissionIgnorePreference: String?,    // the 'never-ask-again'-preference (if nonnull)
+    val permission: Permission,
+    val description: String,
+    @DrawableRes val icon: Int,
+    val optional: Boolean,
+    val permissionIgnorePreference: String?,
 ) : Parcelable {
-
     constructor(parcel: Parcel) : this(
         Permission.valueOf(parcel.readString()!!),
         parcel.readString()!!,
@@ -273,7 +278,7 @@ data class PermissionRequest(
     fun isGrantedOrIgnored(context: Context, preferences: SharedPreferences): Boolean {
         val granted = ContextCompat.checkSelfPermission(
             context,
-            permission.getPermissionString()
+            permission.getPermissionString(),
         ) == PackageManager.PERMISSION_GRANTED
         return if (granted) {
             true
@@ -293,7 +298,7 @@ data class PermissionRequest(
 
 private fun permissionRequestNeeded(
     context: Context,
-    permissionRequests: List<PermissionRequest>
+    permissionRequests: List<PermissionRequest>,
 ): Boolean {
     val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     return !permissionRequests.all { it.isGrantedOrIgnored(context, preferences) }

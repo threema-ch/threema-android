@@ -34,10 +34,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
 
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.GroupId;
 
 public class GroupModel implements ReceiverModel {
@@ -54,12 +56,12 @@ public class GroupModel implements ReceiverModel {
     public static final String COLUMN_CREATED_AT = "createdAt";
     public static final String COLUMN_SYNCHRONIZED_AT = "synchronizedAt";
     public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
-    public static final String COLUMN_DELETED = "deleted";
     public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this group has been archived by user */
     public static final String COLUMN_GROUP_DESC = "groupDesc";
     public static final String COLUMN_GROUP_DESC_CHANGED_TIMESTAMP = "changedGroupDescTimestamp";
     public static final String COLUMN_COLOR_INDEX = "colorIndex";
     public static final String COLUMN_USER_STATE = "userState";
+    public static final String COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE = "notificationTriggerPolicyOverride";
 
     private String groupDesc;
     private Date changedGroupDescTimestamp;
@@ -71,10 +73,10 @@ public class GroupModel implements ReceiverModel {
     private Date createdAt;
     private Date synchronizedAt;
     private @Nullable Date lastUpdate;
-    private boolean deleted;
     private boolean isArchived;
     private int colorIndex = -1;
     private @Nullable UserState userState;
+    private @Nullable Long notificationTriggerPolicyOverride;
 
     /**
      * The user's state within the group.
@@ -165,15 +167,6 @@ public class GroupModel implements ReceiverModel {
         return this.lastUpdate == null ? new Date(0) : this.lastUpdate;
     }
 
-    public boolean isDeleted() {
-        return this.deleted;
-    }
-
-    public GroupModel setDeleted(boolean deleted) {
-        this.deleted = deleted;
-        return this;
-    }
-
     public Date getSynchronizedAt() {
         return this.synchronizedAt;
     }
@@ -221,16 +214,13 @@ public class GroupModel implements ReceiverModel {
         return this;
     }
 
-
     public String getGroupDesc() {
         return this.groupDesc;
     }
 
-
     public Date getGroupDescTimestamp() {
         return this.changedGroupDescTimestamp;
     }
-
 
     public int getThemedColor(@NonNull Context context) {
         if (ConfigUtils.isTheDarkSide(context)) {
@@ -263,6 +253,29 @@ public class GroupModel implements ReceiverModel {
     @Nullable
     public UserState getUserState() {
         return userState;
+    }
+
+    @NonNull
+    public GroupModel setNotificationTriggerPolicyOverride(@Nullable final Long notificationTriggerPolicyOverride) {
+        this.notificationTriggerPolicyOverride = notificationTriggerPolicyOverride;
+        return this;
+    }
+
+    @Nullable
+    public Long getNotificationTriggerPolicyOverride() {
+        return notificationTriggerPolicyOverride;
+    }
+
+    @NonNull
+    public NotificationTriggerPolicyOverride currentNotificationTriggerPolicyOverride() {
+        return NotificationTriggerPolicyOverride.fromDbValueGroup(notificationTriggerPolicyOverride);
+    }
+
+    public GroupIdentity getGroupIdentity() {
+        return new GroupIdentity(
+            creatorIdentity,
+            apiGroupId.toLong()
+        );
     }
 
     private void computeColorIndex() {

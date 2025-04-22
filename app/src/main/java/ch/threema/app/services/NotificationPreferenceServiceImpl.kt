@@ -24,82 +24,98 @@ package ch.threema.app.services
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import ch.threema.app.R
-import ch.threema.app.notifications.NotificationUtil
 import ch.threema.app.stores.PreferenceStoreInterface
+import java.util.HashMap
 
 class NotificationPreferenceServiceImpl(
     private val context: Context,
     private val preferenceStore: PreferenceStoreInterface,
 ) : NotificationPreferenceService {
+    override fun isMasterKeyNewMessageNotifications(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__masterkey_notification_newmsg))
 
-    override fun isMasterKeyNewMessageNotifications(): Boolean {
-        return preferenceStore.getBoolean(getKeyName(R.string.preferences__masterkey_notification_newmsg))
-    }
-
-    override fun setWizardRunning(running: Boolean) {
+    override fun setWizardRunning(running: Boolean) =
         preferenceStore.save(getKeyName(R.string.preferences__wizard_running), running)
+
+    override fun getWizardRunning(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__wizard_running))
+
+    override fun getLegacyNotificationSound(): Uri? =
+        preferenceStore.getRingtoneUri(R.string.preferences__notification_sound)
+
+    override fun setLegacyNotificationSound(uri: Uri?) {
+        preferenceStore.save(getKeyName(R.string.preferences__notification_sound), uri?.toString())
     }
 
-    override fun getWizardRunning(): Boolean {
-        return preferenceStore.getBoolean(getKeyName(R.string.preferences__wizard_running))
+    override fun getLegacyGroupNotificationSound(): Uri? =
+        preferenceStore.getRingtoneUri(R.string.preferences__group_notification_sound)
+
+    override fun setLegacyGroupNotificationSound(uri: Uri?) {
+        preferenceStore.save(getKeyName(R.string.preferences__group_notification_sound), uri?.toString())
     }
 
-    override fun getNotificationSound(): Uri? {
-        return ringtoneKeyToUri(R.string.preferences__notification_sound)
+    override fun getLegacyVoipCallRingtone(): Uri? =
+        preferenceStore.getRingtoneUri(R.string.preferences__voip_ringtone)
+
+    override fun setLegacyVoipCallRingtone(uri: Uri?) {
+        preferenceStore.save(getKeyName(R.string.preferences__voip_ringtone), uri?.toString())
     }
 
-    override fun getGroupNotificationSound(): Uri? {
-        return ringtoneKeyToUri(R.string.preferences__group_notification_sound)
-    }
+    override fun getLegacyGroupCallRingtone(): Uri? =
+        preferenceStore.getRingtoneUri(R.string.preferences__group_calls_ringtone)
 
-    override fun getGroupCallRingtone(): Uri? {
-        return ringtoneKeyToUri(R.string.preferences__group_calls_ringtone)
-    }
+    override fun isLegacyNotificationVibrate(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__vibrate))
 
-    override fun isVibrate(): Boolean {
-        return preferenceStore.getBoolean(getKeyName(R.string.preferences__vibrate))
-    }
+    override fun isLegacyGroupVibrate(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__group_vibrate))
 
-    override fun isGroupVibrate(): Boolean {
-        return preferenceStore.getBoolean(getKeyName(R.string.preferences__group_vibrate))
-    }
+    override fun isLegacyVoipCallVibrate(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__voip_vibration))
 
-    override fun isGroupCallVibrate(): Boolean {
-        return preferenceStore.getBoolean(getKeyName(R.string.preferences__group_calls_vibration))
-    }
+    override fun isLegacyGroupCallVibrate(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__group_calls_vibration))
 
-    override fun isShowMessagePreview(): Boolean {
-        return preferenceStore.getBoolean(getKeyName(R.string.preferences__notification_preview))
-    }
+    override fun isLegacyNotificationLightEnabled(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__notification_light_single), true)
 
-    override fun setNotificationPriority(value: Int) {
+    override fun isLegacyGroupNotificationLightEnabled(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__notification_light_group), true)
+
+    override fun isShowMessagePreview(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__notification_preview))
+
+    override fun getLegacyNotificationPriority(): Int =
+        preferenceStore.getString(getKeyName(R.string.preferences__notification_priority))
+            ?.toIntOrNull()
+            ?: NotificationCompat.PRIORITY_HIGH
+
+    override fun setLegacyNotificationPriority(value: Int) {
         preferenceStore.save(
             getKeyName(R.string.preferences__notification_priority),
-            value.toString()
+            value.toString(),
         )
     }
 
-    override fun getNotificationPriority(): Int {
-        return NotificationUtil.getNotificationPriority(context)
+    override fun getLegacyRingtones(): Map<String, String?> =
+        preferenceStore.getStringHashMap(getKeyName(R.string.preferences__individual_ringtones), false)
+
+    override fun setLegacyRingtones(ringtones: Map<String, String?>) {
+        preferenceStore.saveStringHashMap(getKeyName(R.string.preferences__individual_ringtones), HashMap(ringtones), false)
     }
 
-    override fun getDisableSmartReplies(): Boolean {
-        return preferenceStore.getBoolean(
-            getKeyName(R.string.preferences__disable_smart_replies),
-            false
-        )
-    }
+    override fun getDisableSmartReplies(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__disable_smart_replies), false)
 
-    private fun ringtoneKeyToUri(@StringRes ringtoneKey: Int): Uri? {
-        val ringtone = preferenceStore.getString(this.getKeyName(ringtoneKey))
-        if (!ringtone.isNullOrBlank() && ringtone != ServicesConstants.PREFERENCES_NULL) {
-            return Uri.parse(ringtone)
-        }
-        return null
-    }
+    private fun getKeyName(@StringRes resourceId: Int): String =
+        context.getString(resourceId)
 
-    private fun getKeyName(@StringRes resourceId: Int): String {
-        return context.getString(resourceId)
-    }
+    private fun PreferenceStoreInterface.getRingtoneUri(@StringRes ringtoneKey: Int): Uri? =
+        getString(getKeyName(ringtoneKey))
+            .takeUnless { it.isNullOrBlank() }
+            ?.takeUnless { it == ServicesConstants.PREFERENCES_NULL }
+            ?.toUri()
 }

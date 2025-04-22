@@ -111,9 +111,10 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
             return false;
         }
 
-        if (Arrays.asList(this.groupService.getGroupIdentities(group)).contains(message.getFromIdentity())) {
+        if (Arrays.asList(this.groupService.getGroupMemberIdentities(group)).contains(message.getFromIdentity())) {
             logger.info("Group Join Request: Requesting identity already part of the group, accept and return a group sync message");
-            groupService.scheduleSync(group, new String[]{message.getFromIdentity()});
+            // TODO(ANDR-3337): Removing this as this method should not be used as it bypasses the group flows.
+            //groupService.scheduleSync(group, new String[]{message.getFromIdentity()});
             return trySendingResponse(message, new GroupJoinResponseData.Accept(groupInvite.getGroupApiId().toLong()));
         }
 
@@ -185,20 +186,22 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
         if (group == null) {
             throw new ThreemaException("Group could not be found");
         }
-        this.groupService.addMemberToGroup(group, model.getRequestingIdentity());
+        // TODO(ANDR-3337): Group invites are not supported
+        //this.groupService.addMemberToGroup(group, model.getRequestingIdentity());
         String groupNameFallback = null;
         if (group.getName() == null) {
             groupNameFallback = groupService.getMembersString(group);
         }
 
-        this.groupService.updateGroup(
-            group,
-            groupNameFallback != null ? groupNameFallback : group.getName(),
-            null,
-            this.groupService.getGroupIdentities(group),
-            null,
-            false
-        );
+        // TODO(ANDR-3337): Group invites are not supported
+//		this.groupService.updateGroup(
+//			group,
+//			groupNameFallback != null ? groupNameFallback : group.getName(),
+//			null,
+//			this.groupService.getGroupIdentities(group),
+//			null,
+//			false
+//		);
 
         this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
             .updateStatus(model, IncomingGroupJoinRequestModel.ResponseStatus.ACCEPTED);

@@ -370,8 +370,6 @@ public class QuoteUtil {
 
     /**
      * Append quoting to text
-     * <p>
-     * TODO: create unit tests!
      *
      * @param text
      * @param quoteIdentity
@@ -387,6 +385,7 @@ public class QuoteUtil {
         return "> quote #" + messageModel.getApiMessageId() + "\n\n" + text;
     }
 
+    @NonNull
     public static String quote(@NonNull String text, @NonNull String messageId) {
         return "> quote #" + messageId + "\n\n" + text;
     }

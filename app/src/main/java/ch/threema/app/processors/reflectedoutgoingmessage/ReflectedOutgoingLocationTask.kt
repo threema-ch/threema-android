@@ -39,9 +39,8 @@ internal class ReflectedOutgoingLocationTask(
 ) : ReflectedOutgoingContactMessageTask(
     message,
     Common.CspE2eMessageType.LOCATION,
-    serviceManager
+    serviceManager,
 ) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     private val locationMessage: LocationMessage by lazy { LocationMessage.fromReflected(message) }
@@ -56,14 +55,14 @@ internal class ReflectedOutgoingLocationTask(
         val messageModel: MessageModel = messageReceiver.createLocalModel(
             MessageType.LOCATION,
             MessageContentsType.LOCATION,
-            Date(message.createdAt)
+            Date(message.createdAt),
         )
         initializeMessageModelsCommonFields(messageModel)
         messageModel.locationData = LocationDataModel(
             latitude = locationMessage.latitude,
             longitude = locationMessage.longitude,
             accuracy = locationMessage.accuracy,
-            poi = locationMessage.poi
+            poi = locationMessage.poi,
         )
         messageModel.state = MessageState.SENT
         messageService.save(messageModel)

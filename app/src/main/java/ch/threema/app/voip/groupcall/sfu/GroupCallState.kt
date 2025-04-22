@@ -28,7 +28,7 @@ import ch.threema.protobuf.groupcall.CallState
 data class GroupCallState(
     val createdBy: ParticipantId,
     val createdAt: ULong,
-    val participants: Set<ParticipantDescription>
+    val participants: Set<ParticipantDescription>,
 ) {
     companion object {
         fun fromProtobufBytes(bytes: ByteArray): GroupCallState {
@@ -37,20 +37,20 @@ data class GroupCallState(
                 .map { (id, participant) ->
                     mapParticipant(
                         ParticipantId(id.toUInt()),
-                        participant
+                        participant,
                     )
                 }
                 .toSet()
             return GroupCallState(
                 ParticipantId(state.stateCreatedBy.toUInt()),
                 state.stateCreatedAt.toULong(),
-                participants
+                participants,
             )
         }
 
         private fun mapParticipant(
             id: ParticipantId,
-            participant: CallState.Participant
+            participant: CallState.Participant,
         ): ParticipantDescription {
             return when {
                 participant.hasThreema() -> mapNormalParticipant(id, participant)
@@ -61,22 +61,22 @@ data class GroupCallState(
 
         private fun mapNormalParticipant(
             id: ParticipantId,
-            participant: CallState.Participant
+            participant: CallState.Participant,
         ): NormalParticipantDescription {
             return SimpleNormalParticipantDescription(
                 id,
                 participant.threema.identity,
-                participant.threema.nickname
+                participant.threema.nickname,
             )
         }
 
         private fun mapGuestParticipant(
             id: ParticipantId,
-            participant: CallState.Participant
+            participant: CallState.Participant,
         ): GuestParticipantDescription {
             return SimpleGuestParticipantDescription(
                 id,
-                participant.guest.name
+                participant.guest.name,
             )
         }
     }

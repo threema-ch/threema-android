@@ -40,11 +40,13 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.tasks.OutboundIncomingGroupMessageUpdateReadTask;
 import ch.threema.app.tasks.OutgoingFileMessageTask;
 import ch.threema.app.tasks.OutgoingGroupDeleteMessageTask;
+import ch.threema.app.tasks.OutgoingGroupDeliveryReceiptMessageTask;
 import ch.threema.app.tasks.OutgoingGroupEditMessageTask;
 import ch.threema.app.tasks.OutgoingGroupReactionMessageTask;
 import ch.threema.app.tasks.OutgoingLocationMessageTask;
@@ -52,12 +54,16 @@ import ch.threema.app.tasks.OutgoingPollSetupMessageTask;
 import ch.threema.app.tasks.OutgoingPollVoteGroupMessageTask;
 import ch.threema.app.tasks.OutgoingTextMessageTask;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.models.GroupModelData;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
@@ -85,8 +91,16 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupMessageReceiver");
 
     private final GroupModel group;
+    @Nullable
+    private final ch.threema.data.models.GroupModel groupModel;
     private final GroupService groupService;
     private final DatabaseServiceNew databaseServiceNew;
+    @NonNull
+    private final ContactService contactService;
+    @NonNull
+    private final ContactModelRepository contactModelRepository;
+    @NonNull
+    private final GroupModelRepository groupModelRepository;
     private final @NonNull ServiceManager serviceManager;
     private final TaskManager taskManager;
     private final MultiDeviceManager multiDeviceManager;
@@ -95,14 +109,24 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         GroupModel group,
         GroupService groupService,
         DatabaseServiceNew databaseServiceNew,
+        @NonNull ContactService contactService,
+        @NonNull ContactModelRepository contactModelRepository,
+        @NonNull GroupModelRepository groupModelRepository,
         @NonNull ServiceManager serviceManager
     ) {
         this.group = group;
         this.groupService = groupService;
         this.databaseServiceNew = databaseServiceNew;
+        this.contactService = contactService;
+        this.contactModelRepository = contactModelRepository;
+        this.groupModelRepository = groupModelRepository;
         this.serviceManager = serviceManager;
         this.taskManager = serviceManager.getTaskManager();
         this.multiDeviceManager = serviceManager.getMultiDeviceManager();
+
+        this.groupModel = group != null
+            ? groupModelRepository.getByCreatorIdentityAndId(group.getCreatorIdentity(), group.getApiGroupId())
+            : null;
     }
 
     @Override
@@ -232,7 +256,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
         // Set file data model again explicitly to enforce that the body of the message is rewritten
         // and therefore updated.
-        messageModel.setFileDataModel(modelFileData);
+        messageModel.setFileData(modelFileData);
 
         // Create a new message id if the given message id is null
         messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
@@ -294,7 +318,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         // Schedule outgoing text message task
         taskManager.schedule(new OutgoingPollVoteGroupMessageTask(
             messageId,
-            Set.of(groupService.getGroupIdentities(group)),
+            Set.of(groupService.getGroupMemberIdentities(group)),
             ballotId,
             ballotModel.getCreatorIdentity(),
             votes,
@@ -331,7 +355,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
                 body,
                 editedAt,
                 GroupUtil.getRecipientIdentitiesByFeatureSupport(
-                    groupService.getFeatureSupport(group, ThreemaFeature.EDIT_MESSAGES)
+                    getFeatureSupport(ThreemaFeature.EDIT_MESSAGES)
                 ),
                 serviceManager
             )
@@ -345,7 +369,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
                 new MessageId(),
                 deletedAt,
                 GroupUtil.getRecipientIdentitiesByFeatureSupport(
-                    groupService.getFeatureSupport(group, ThreemaFeature.DELETE_MESSAGES)
+                    getFeatureSupport(ThreemaFeature.DELETE_MESSAGES)
                 ),
                 serviceManager
             )
@@ -360,48 +384,68 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
      * @param emojiSequence The emoji sequence of the reaction
      * @param reactedAt     The timestamp of the reaction
      */
-    public void sendReactionMessage(AbstractMessageModel messageModel, Reaction.ActionCase actionCase, @NonNull String emojiSequence, @NonNull Date reactedAt) {
+    public void sendReaction(AbstractMessageModel messageModel, Reaction.ActionCase actionCase, @NonNull String emojiSequence, @NonNull Date reactedAt) {
         // identities that support receiving emoji reactions
-        Set<String> emojiReactionsIdentities = GroupUtil.getRecipientIdentitiesByFeatureSupport(groupService.getFeatureSupport(group, ThreemaFeature.EMOJI_REACTIONS));
+        Set<String> emojiReactionsIdentities = GroupUtil.getRecipientIdentitiesByFeatureSupport(getFeatureSupport(ThreemaFeature.EMOJI_REACTIONS));
         // all group identities except sender
-        Set<String> groupIdentities = groupService.getMembersWithoutUser(group);
+        Set<String> identitiesWithoutReactionSupport = groupService.getMembersWithoutUser(group);
+        identitiesWithoutReactionSupport.removeAll(emojiReactionsIdentities);
 
-        if (!emojiReactionsIdentities.isEmpty()) {
-            taskManager.schedule(
-                new OutgoingGroupReactionMessageTask(
-                    messageModel.getId(),
-                    new MessageId(),
-                    actionCase,
-                    emojiSequence,
-                    reactedAt,
-                    emojiReactionsIdentities,
-                    serviceManager
-                )
-            );
-            groupIdentities.removeAll(emojiReactionsIdentities);
-        }
+        // Note that there might be no recipients that support emoji reactions but even then we need
+        // to schedule this task as it is needed for reflection. It may just not send out any csp
+        // messages.
+        taskManager.schedule(
+            new OutgoingGroupReactionMessageTask(
+                messageModel.getId(),
+                new MessageId(),
+                actionCase,
+                emojiSequence,
+                reactedAt,
+                emojiReactionsIdentities,
+                serviceManager
+            )
+        );
 
         // Fall back to acks for users who do not yet support receiving emoji reactions
-        if (actionCase == Reaction.ActionCase.APPLY && !groupIdentities.isEmpty() && canSendUserAcknowledge(messageModel)) {
-            MessageService messageService;
-            try {
-                messageService = ThreemaApplication.getServiceManager().getMessageService();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
+        if (actionCase == Reaction.ActionCase.APPLY && !identitiesWithoutReactionSupport.isEmpty() && canSendUserAcknowledge(messageModel)) {
             if (EmojiUtil.isThumbsUpEmoji(emojiSequence)) {
                 // send ack to these receivers
-                if (!messageService.sendGroupDeliveryReceipt(groupIdentities, (GroupMessageModel) messageModel, DELIVERYRECEIPT_MSGUSERACK)) {
-                    logger.error("Unable to send ack message.");
-                }
+                sendGroupDeliveryReceiptWithoutReflection(
+                    identitiesWithoutReactionSupport,
+                    (GroupMessageModel) messageModel,
+                    DELIVERYRECEIPT_MSGUSERACK
+                );
             } else if (EmojiUtil.isThumbsDownEmoji(emojiSequence)) {
                 // send dec to these receivers
-                if (!messageService.sendGroupDeliveryReceipt(groupIdentities, (GroupMessageModel) messageModel, DELIVERYRECEIPT_MSGUSERDEC)) {
-                    logger.error("Unable to send dec message.");
-                }
+                sendGroupDeliveryReceiptWithoutReflection(
+                    identitiesWithoutReactionSupport,
+                    (GroupMessageModel) messageModel,
+                    DELIVERYRECEIPT_MSGUSERDEC
+                );
             }
         }
+    }
+
+    /**
+     * Send a delivery receipt to the identities specified
+     *
+     * @param identities   Identities to send the receipt to
+     * @param messageModel GroupMessageModel for which a receipt should be sent
+     * @param receiptType  Type of receipt (currently only ACK and DEC are supported for groups)
+     */
+    private void sendGroupDeliveryReceiptWithoutReflection(
+        @NonNull Set<String> identities,
+        GroupMessageModel messageModel,
+        int receiptType
+    ) {
+        serviceManager.getTaskManager().schedule(
+            new OutgoingGroupDeliveryReceiptMessageTask(
+                messageModel.getId(),
+                receiptType,
+                identities,
+                serviceManager
+            )
+        );
     }
 
     @Override
@@ -423,6 +467,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             group.getId());
     }
 
+    @NonNull
     @Override
     public List<GroupMessageModel> getUnreadMessages() {
         return databaseServiceNew.getGroupMessageModelFactory().getUnreadMessages(
@@ -433,6 +478,11 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         return group;
     }
 
+    @Nullable
+    public ch.threema.data.models.GroupModel getGroupModel() {
+        return groupModel;
+    }
+
     @Override
     public boolean isEqual(MessageReceiver o) {
         return o instanceof GroupMessageReceiver && ((GroupMessageReceiver) o).getGroup().getId() == getGroup().getId();
@@ -440,6 +490,19 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
     @Override
     public String getDisplayName() {
+        // Get new group model to ensure the display name is fresh
+        ch.threema.data.models.GroupModel groupModel = groupModelRepository.getByCreatorIdentityAndId(
+            group.getCreatorIdentity(),
+            group.getApiGroupId()
+        );
+        if (groupModel != null) {
+            GroupModelData groupModelData = groupModel.getData().getValue();
+            if (groupModelData != null) {
+                return NameUtil.getDisplayName(groupModelData, contactModelRepository, contactService);
+            }
+        }
+
+        // In case the new group model cannot be found, we fall back to the old group model
         return NameUtil.getDisplayName(group, groupService);
     }
 
@@ -450,7 +513,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
     @Override
     public void prepareIntent(Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, group.getId());
+        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, group.getId());
     }
 
     @Override
@@ -466,18 +529,12 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     @Override
     @Deprecated
     public int getUniqueId() {
-        if (groupService != null && group != null) {
-            return groupService.getUniqueId(group);
-        }
-        return 0;
+        return GroupUtil.getUniqueId(group);
     }
 
     @Override
     public String getUniqueIdString() {
-        if (groupService != null && group != null) {
-            return groupService.getUniqueIdString(group);
-        }
-        return "";
+        return GroupUtil.getUniqueIdString(group);
     }
 
     @Override
@@ -495,7 +552,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         }
 
         // don't really send off group media if user is the only group member left - keep it local
-        String[] groupIdentities = groupService.getGroupIdentities(group);
+        String[] groupIdentities = groupService.getGroupMemberIdentities(group);
         return groupIdentities.length != 1 || !groupService.isGroupMember(group);
     }
 
@@ -507,7 +564,6 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     @NonNull
     @Override
     public SendingPermissionValidationResult validateSendingPermission() {
-        //TODO: cache access? performance
         GroupAccessModel access = groupService.getAccess(getGroup(), true);
 
         if (access == null) {
@@ -531,7 +587,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
     @Override
     public String[] getIdentities() {
-        return groupService.getGroupIdentities(group);
+        return groupService.getGroupMemberIdentities(group);
     }
 
     @Override
@@ -544,19 +600,29 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     @Override
     @EmojiReactionsSupport
     public int getEmojiReactionSupport() {
+        if (groupModel == null) {
+            logger.error("Group model in group message receiver is null");
+            return Reactions_NONE;
+        }
+
         if (!ConfigUtils.canSendEmojiReactions()) {
             return Reactions_NONE;
         }
 
-        GroupModel currentGroup = getGroup();
-        if (!groupService.isGroupMember(currentGroup)) {
+        GroupModelData groupModelData = groupModel.getData().getValue();
+
+        if (groupModelData == null) {
+            logger.warn("Group model data is null");
             return Reactions_NONE;
         }
-        if (groupService.isNotesGroup(currentGroup)) {
+        if (!groupModelData.isMember()) {
+            return Reactions_NONE;
+        }
+        if (Boolean.TRUE.equals(groupModel.isNotesGroup())) {
             return Reactions_FULL;
         }
 
-        switch (groupService.getFeatureSupport(currentGroup, ThreemaFeature.EMOJI_REACTIONS).getAdoptionRate()) {
+        switch (groupService.getFeatureSupport(groupModelData, ThreemaFeature.EMOJI_REACTIONS).getAdoptionRate()) {
             case PARTIAL:
                 return Reactions_PARTIAL;
             case ALL:
@@ -591,7 +657,20 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         if (recipients != null) {
             return new HashSet<>(recipients);
         } else {
-            return Set.of(groupService.getGroupIdentities(group));
+            return Set.of(groupService.getGroupMemberIdentities(group));
         }
+    }
+
+    private GroupFeatureSupport getFeatureSupport(long feature) {
+        if (groupModel == null) {
+            logger.error("Cannot get feature support: Group model is null");
+            return new GroupFeatureSupport(feature, List.of());
+        }
+        GroupModelData groupModelData = groupModel.getData().getValue();
+        if (groupModelData == null) {
+            logger.error("Cannot get feature support: Group model data is null");
+            return new GroupFeatureSupport(feature, List.of());
+        }
+        return groupService.getFeatureSupport(groupModelData, feature);
     }
 }

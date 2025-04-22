@@ -71,6 +71,16 @@ public class Utils extends Converter {
             this.id = String.valueOf(groupModel.getId());
         }
 
+        /**
+         * Use this constructor only when a group has been removed as the group model does not
+         * exist anymore.
+         */
+        public ModelWrapper(long groupDbId) {
+            this.model = null;
+            this.receiverType = MessageReceiver.Type_GROUP;
+            this.id = String.valueOf(groupDbId);
+        }
+
         public ModelWrapper(DistributionListModel distributionListModel) {
             this.model = distributionListModel;
             this.receiverType = MessageReceiver.Type_DISTRIBUTION_LIST;

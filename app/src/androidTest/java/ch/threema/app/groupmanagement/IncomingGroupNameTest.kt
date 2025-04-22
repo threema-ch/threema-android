@@ -28,27 +28,22 @@ import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
+import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
-import ch.threema.storage.models.GroupModel
 import junit.framework.TestCase.*
-import kotlinx.coroutines.*
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
 
 /**
  * Tests that incoming group name messages are handled correctly.
  */
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
 class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
-
     override fun createMessageForGroup(): GroupNameMessage {
         return GroupNameMessage()
             .apply { groupName = "New Group Name" }
@@ -72,7 +67,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
                 groupA.groupCreator,
                 groupA.members,
                 "GroupARenamed",
-                myContact.identity
+                myContact.identity,
             )
 
         val renameTracker = GroupRenameTracker(groupARenamed).apply { start() }
@@ -81,7 +76,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
             groupARenamed.groupName,
             groupARenamed.groupCreator.identity,
             groupARenamed.apiGroupId,
-            groupARenamed.groupCreator
+            groupARenamed.groupCreator,
         )
 
         // Process the group rename message
@@ -114,16 +109,18 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
                 groupA.groupCreator,
                 groupA.members,
                 "GroupARenamed",
-                myContact.identity
+                myContact.identity,
             )
 
         val renameTracker = GroupRenameTracker(null).apply { start() }
 
         val message = createEncryptedRenameMessage(
-            groupARenamed.groupName,
-            groupARenamed.groupCreator.identity, // Note that this will be ignored anyway
-            groupARenamed.apiGroupId,
-            contactB // Not the creator of this group!
+            newGroupName = groupARenamed.groupName,
+            // Note that this will be ignored anyway
+            groupCreatorIdentity = groupARenamed.groupCreator.identity,
+            apiGroupId = groupARenamed.apiGroupId,
+            // Not the creator of this group!
+            fromContact = contactB,
         )
 
         // Process the group rename message
@@ -135,36 +132,36 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
         assertGroupConversations(activityScenario, initialGroups)
     }
 
-    override fun testCommonGroupReceiveStep2_1() {
+    override fun testCommonGroupReceiveStepUnknownGroupUserCreator() {
         // Don't test this as a group name message always comes from the group creator which would
         // be this user in this test
     }
 
-    override fun testCommonGroupReceiveStep2_2() {
-        runWithoutGroupRename { super.testCommonGroupReceiveStep2_2() }
+    override fun testCommonGroupReceiveStepUnknownGroupUserNotCreator() {
+        runWithoutGroupRename { super.testCommonGroupReceiveStepUnknownGroupUserNotCreator() }
     }
 
-    override fun testCommonGroupReceiveStep3_1() {
+    override fun testCommonGroupReceiveStepLeftGroupUserCreator() {
         // Don't test this step. The group rename message is always sent as creator of the group
         // and if the sender of the message is the creator of a group owned by this user, then the
         // message comes from this user itself - which is impossible.
     }
 
-    override fun testCommonGroupReceiveStep3_2() {
-        runWithoutGroupRename { super.testCommonGroupReceiveStep3_2() }
+    override fun testCommonGroupReceiveStepLeftGroupUserNotCreator() {
+        runWithoutGroupRename { super.testCommonGroupReceiveStepLeftGroupUserNotCreator() }
     }
 
-    override fun testCommonGroupReceiveStep4_1() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserCreator() {
         // Don't test this step. The group rename message is always sent as creator of the group
         // and therefore the sender of the message is never missing in the group. However, the group
-        // model is (very likely) not found and therefore handled in step 2.1 of the common group
+        // model is (very likely) not found and therefore handled earlier in the common group
         // receive steps.
     }
 
-    override fun testCommonGroupReceiveStep4_2() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserNotCreator() {
         // Don't test this step. The group rename message is always sent as creator of the group
         // and therefore the sender of the message is never missing in the group. However, the group
-        // model is (very likely) not found and therefore handled in step 2.2 of the common group
+        // model is (very likely) not found and therefore handled earlier in the common group
         // receive steps.
     }
 
@@ -202,61 +199,60 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
         private var hasBeenRenamed = false
 
         private val groupListener = object : GroupListener {
-            override fun onCreate(newGroupModel: GroupModel?) {
+            override fun onCreate(groupIdentity: GroupIdentity) {
                 fail()
             }
 
-            override fun onRename(groupModel: GroupModel?) {
+            override fun onRename(groupIdentity: GroupIdentity) {
                 assertFalse(hasBeenRenamed)
                 group?.let {
-                    assertArrayEquals(it.apiGroupId.groupId, groupModel?.apiGroupId?.groupId)
-                    assertEquals(it.groupCreator.identity, groupModel?.creatorIdentity)
-                    assertEquals(it.groupName, groupModel?.name)
+                    assertEquals(it.apiGroupId.toLong(), groupIdentity.groupId)
+                    assertEquals(it.groupCreator.identity, groupIdentity.creatorIdentity)
                 }
                 hasBeenRenamed = true
             }
 
-            override fun onUpdatePhoto(groupModel: GroupModel?) {
+            override fun onUpdatePhoto(groupIdentity: GroupIdentity) {
                 fail()
             }
 
-            override fun onRemove(groupModel: GroupModel?) {
+            override fun onRemove(groupDbId: Long) {
                 fail()
             }
 
             override fun onNewMember(
-                group: GroupModel?,
-                newIdentity: String?,
+                groupIdentity: GroupIdentity,
+                identityNew: String?,
             ) {
                 fail()
             }
 
             override fun onMemberLeave(
-                group: GroupModel?,
-                identity: String?,
+                groupIdentity: GroupIdentity,
+                identityLeft: String,
             ) {
                 fail()
             }
 
             override fun onMemberKicked(
-                group: GroupModel?,
-                identity: String?,
+                groupIdentity: GroupIdentity,
+                identityKicked: String?,
             ) {
                 fail()
             }
 
-            override fun onUpdate(groupModel: GroupModel?) {
+            override fun onUpdate(groupIdentity: GroupIdentity) {
                 fail()
             }
 
-            override fun onLeave(groupModel: GroupModel?) {
+            override fun onLeave(groupIdentity: GroupIdentity) {
                 fail()
             }
 
             override fun onGroupStateChanged(
-                groupModel: GroupModel?,
+                groupIdentity: GroupIdentity,
                 oldState: Int,
-                newState: Int
+                newState: Int,
             ) {
                 fail()
             }
@@ -291,5 +287,4 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
             groupListeners.remove(groupListener)
         }
     }
-
 }

@@ -85,21 +85,21 @@ public interface UserService {
 
     String getLinkedMobile(boolean returnPendingNumber);
 
-    void linkWithEmail(String email) throws Exception;
+    void linkWithEmail(String email, @NonNull TriggerSource triggerSource) throws Exception;
 
-    void unlinkEmail() throws Exception;
+    void unlinkEmail(@NonNull TriggerSource triggerSource) throws Exception;
 
     int getEmailLinkingState();
 
-    void checkEmailLinkState();
+    void checkEmailLinkState(@NonNull TriggerSource triggerSource);
 
-    Date linkWithMobileNumber(String number) throws Exception;
+    Date linkWithMobileNumber(String number, @NonNull TriggerSource triggerSource) throws Exception;
 
     void makeMobileLinkCall() throws Exception;
 
-    void unlinkMobileNumber() throws Exception;
+    void unlinkMobileNumber(@NonNull TriggerSource triggerSource) throws Exception;
 
-    boolean verifyMobileNumber(String code) throws Exception;
+    boolean verifyMobileNumber(String code, @NonNull TriggerSource triggerSource) throws Exception;
 
     int getMobileLinkingState();
 
@@ -167,6 +167,7 @@ public interface UserService {
      * @return true if the feature mask has been updated (or no update is necessary) and false if
      * an exception has occurred and the feature mask wasn't updated.
      */
+    @WorkerThread
     boolean sendFeatureMask();
 
     /**

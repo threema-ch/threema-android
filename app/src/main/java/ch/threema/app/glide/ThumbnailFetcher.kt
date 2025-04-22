@@ -21,13 +21,9 @@
 
 package ch.threema.app.glide
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
-import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.FileService
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.storage.models.AbstractMessageModel
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -39,7 +35,6 @@ import com.bumptech.glide.load.data.DataFetcher
 class ThumbnailFetcher(
     private val messageModel: AbstractMessageModel,
 ) : DataFetcher<Bitmap> {
-
     private val fileService: FileService? by lazy { ThreemaApplication.getServiceManager()?.fileService }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {

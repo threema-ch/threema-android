@@ -45,7 +45,6 @@ private val logger = LoggingUtil.getThreemaLogger("CallRejectWorker")
  */
 class RejectIntentServiceWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
-
     /**
      * Performs the call reject.
      */
@@ -92,7 +91,7 @@ class RejectIntentServiceWorker(appContext: Context, workerParams: WorkerParamet
         serviceManager: ServiceManager,
         callId: Long,
         contactIdentity: String,
-        rejectReason: Byte
+        rejectReason: Byte,
     ): Result {
         val currentCallState = serviceManager.voipStateService.callState
 
@@ -100,20 +99,20 @@ class RejectIntentServiceWorker(appContext: Context, workerParams: WorkerParamet
             logger.info(
                 "Ignoring ringer timeout for call {} (state is {}, not RINGING)",
                 callId,
-                currentCallState.name
+                currentCallState.name,
             )
             return Result.success()
         } else if (currentCallState.callId != callId) {
             logger.info(
                 "Ignoring ringer timeout for call {} (current: {})",
                 callId,
-                currentCallState.callId
+                currentCallState.callId,
             )
             return Result.success()
         } else if (!serviceManager.voipStateService.isTimeoutReject) {
             logger.info(
                 "Ignoring ringer timeout for call {} (timeout reject is disabled)",
-                callId
+                callId,
             )
             return Result.success()
         }
@@ -131,7 +130,7 @@ fun rejectCall(
     serviceManager: ServiceManager,
     callId: Long,
     contactIdentity: String,
-    rejectReason: Byte
+    rejectReason: Byte,
 ): ListenableWorker.Result {
     val voipStateService = serviceManager.voipStateService
 
@@ -149,7 +148,7 @@ fun rejectCall(
         logger.debug(
             "Rejecting call from {} (reason {})",
             contactIdentity,
-            rejectReason
+            rejectReason,
         )
         voipStateService.sendRejectCallAnswerMessage(contact, callId, rejectReason)
     } catch (e: ThreemaException) {

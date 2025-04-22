@@ -28,9 +28,8 @@ import java.util.Objects
 
 class EditMessageData(
     val messageId: Long,
-    val text: String
+    val text: String,
 ) : ProtobufDataInterface<EditMessage> {
-
     companion object {
         @JvmStatic
         fun fromProtobuf(rawProtobufMessage: ByteArray): EditMessageData {
@@ -38,7 +37,7 @@ class EditMessageData(
                 val protobufMessage = EditMessage.parseFrom(rawProtobufMessage)
                 return EditMessageData(
                     protobufMessage.messageId,
-                    protobufMessage.text
+                    protobufMessage.text,
                 )
             } catch (e: InvalidProtocolBufferException) {
                 throw BadMessageException("Invalid EditMessage protobuf data", e)

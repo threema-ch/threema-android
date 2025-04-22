@@ -24,6 +24,8 @@ package ch.threema.app.services;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 /**
  * The ringtone service provides either default or custom ringtones for contacts and groups. Note
  * that the ringtone manager only manages notification sounds until api 25. From api 26 on, the
@@ -39,34 +41,34 @@ public interface RingtoneService {
      * Get the ringtone uri from the given unique id. Note that this method returns null on api 26
      * and newer.
      */
+    @Nullable
     Uri getRingtoneFromUniqueId(String uniqueId);
 
     /**
      * Get the ringtone uri from the given unique id. Note that this method returns null on api 26
      * and newer.
      */
+    @Nullable
     Uri getContactRingtone(String uniqueId);
 
     /**
      * Get the ringtone uri from the given unique id. Note that this method returns null on api 26
      * and newer.
      */
+    @Nullable
     Uri getGroupRingtone(String uniqueId);
-
-    /**
-     * Get the voice call ringtone. Note that this method returns null on api 26 and newer.
-     */
-    Uri getVoiceCallRingtone(String uniqueId);
 
     /**
      * Get the default ringtone for contacts. Note that this method returns null on api 26 and
      * newer.
      */
+    @Nullable
     Uri getDefaultContactRingtone();
 
     /**
      * Get the default ringtone for groups. Note that this method returns null on api 26 and newer.
      */
+    @Nullable
     Uri getDefaultGroupRingtone();
 
     /**

@@ -21,29 +21,31 @@
 
 package ch.threema.base.crypto
 
-import android.annotation.SuppressLint
 import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
-import org.junit.Assert
-import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.invocation.InvocationOnMock
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import java.util.LinkedList
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class NonceFactoryTest {
     @Test
     fun testNext() {
-        val nonceStoreMock = Mockito.mock(NonceStore::class.java)
+        val nonceStoreMock = mockk<NonceStore>(relaxed = true)
 
         // Store always return true
-        Mockito.`when`(nonceStoreMock.store(anyScope(), anyNonce())).thenReturn(true)
+        every { nonceStoreMock.store(any<NonceScope>(), any<Nonce>()) } returns true
         val factory = NonceFactory(nonceStoreMock)
         val result: Nonce = factory.next(NonceScope.CSP)
 
         // Check if uniqueness is verified
-        Mockito.verify(nonceStoreMock, Mockito.times(1)).exists(anyScope(), anyNonce())
+        verify(exactly = 1) { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) }
 
         // Verify the result
-        Assert.assertEquals(24, result.bytes.size)
+        assertEquals(24, result.bytes.size)
     }
 
     @Test
@@ -52,41 +54,40 @@ class NonceFactoryTest {
         val existingNonce = byteArrayOf(
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-            0x01, 0x01, 0x01, 0x01
+            0x01, 0x01, 0x01, 0x01,
         )
         val newNonce = byteArrayOf(
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-            0x01, 0x01, 0x01, 0x02
+            0x01, 0x01, 0x01, 0x02,
         )
 
         nonceProvider.addNextNonces(listOf(existingNonce, newNonce))
 
-        val nonceStoreMock = Mockito.mock(NonceStore::class.java)
-        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce()))
-            .thenAnswer { invocation: InvocationOnMock ->
-                val nonce = invocation.getArgument(1, ByteArray::class.java)
-                nonce.contentEquals(existingNonce)
-            }
+        val nonceStoreMock = mockk<NonceStore>()
+        every { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) } answers {
+            val nonce = secondArg<ByteArray>()
+            nonce.contentEquals(existingNonce)
+        }
 
         val factory = NonceFactory(nonceStoreMock, nonceProvider)
         val result: Nonce = factory.next(NonceScope.CSP)
 
         // Check if uniqueness is verified twice (because the first nonce already existed)
-        Mockito.verify(nonceStoreMock, Mockito.times(2)).exists(anyScope(), anyNonce())
+        verify(exactly = 2) { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) }
 
         // Verify the result
-        Assert.assertEquals(24, result.bytes.size)
+        assertEquals(24, result.bytes.size)
     }
 
     @Test
     fun testNextDoesNotStoreNonce() {
-        val nonceStoreMock = Mockito.mock(NonceStore::class.java)
+        val nonceStoreMock = mockk<NonceStore>(relaxed = true)
 
         val factory = NonceFactory(nonceStoreMock)
         factory.next(NonceScope.CSP)
 
-        Mockito.verify(nonceStoreMock, Mockito.never()).store(anyScope(), anyNonce())
+        verify(exactly = 0) { nonceStoreMock.store(any<NonceScope>(), any<Nonce>()) }
     }
 
     @Test
@@ -95,41 +96,27 @@ class NonceFactoryTest {
             byteArrayOf(
                 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
                 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x01, 0x01
-            )
+                0x01, 0x01, 0x01, 0x01,
+            ),
         )
 
-        val nonceStoreMock = Mockito.mock(NonceStore::class.java)
+        val nonceStoreMock = mockk<NonceStore>()
 
-        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce()))
-            .thenAnswer { invocation: InvocationOnMock ->
-                val nonce = invocation.getArgument(1, ByteArray::class.java)
-                nonce.contentEquals(existingNonce.bytes)
-            }
+        every { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) } answers {
+            val nonce = secondArg<ByteArray>()
+            nonce.contentEquals(existingNonce.bytes)
+        }
 
         val factory = NonceFactory(nonceStoreMock)
-        Assert.assertTrue(factory.exists(NonceScope.CSP, existingNonce))
+        assertTrue(factory.exists(NonceScope.CSP, existingNonce))
 
-        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce()))
-            .thenAnswer { invocation: InvocationOnMock ->
-                val nonce = invocation.getArgument(1, ByteArray::class.java)
-                !nonce.contentEquals(existingNonce.bytes)
-            }
+        every { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) } answers {
+            val nonce = secondArg<ByteArray>()
+            !nonce.contentEquals(existingNonce.bytes)
+        }
 
-        Assert.assertFalse(factory.exists(NonceScope.CSP, existingNonce))
+        assertFalse(factory.exists(NonceScope.CSP, existingNonce))
     }
-}
-
-@SuppressLint("CheckResult")
-private fun anyScope(): NonceScope {
-    Mockito.any<NonceScope>()
-    return NonceScope.CSP
-}
-
-@SuppressLint("CheckResult")
-private fun anyNonce(): Nonce {
-    Mockito.any<Nonce>()
-    return Nonce(byteArrayOf())
 }
 
 private class TestNonceProvider : NonceFactoryNonceBytesProvider {
@@ -140,12 +127,11 @@ private class TestNonceProvider : NonceFactoryNonceBytesProvider {
 
     override fun next(length: Int): ByteArray {
         // Check length
-        Assert.assertEquals(24, length.toLong())
+        assertEquals(24, length.toLong())
         val nonce: ByteArray? = nextNonces.pollFirst()
         if (nonce != null) {
-            Assert.assertEquals(24, nonce.size.toLong())
+            assertEquals(24, nonce.size.toLong())
         }
         return nonce ?: generateRandomBytes(length)
     }
 }
-

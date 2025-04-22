@@ -64,9 +64,9 @@ fun VerticalTimelineItem(
             brush = Brush.verticalGradient(
                 colorStops = arrayOf(
                     .5f to color,
-                    1f to Color.Transparent
+                    1f to Color.Transparent,
                 ),
-            )
+            ),
         )
     }
 
@@ -75,9 +75,9 @@ fun VerticalTimelineItem(
             brush = Brush.verticalGradient(
                 colorStops = arrayOf(
                     0.2f to Color.Transparent,
-                    1f to color
+                    1f to color,
                 ),
-            )
+            ),
         )
     }
 
@@ -85,7 +85,7 @@ fun VerticalTimelineItem(
         val timelineMargin = 12.dp
         Row(
             modifier = Modifier.height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Box(
@@ -93,16 +93,18 @@ fun VerticalTimelineItem(
                         .fillMaxHeight()
                         .width(lineWidth)
                         .then(
-                            if (shouldFadeOutLineTop) getLineBackgroundWithTopFade() else Modifier.background(
-                                color
-                            )
-                        )
+                            if (shouldFadeOutLineTop) {
+                                getLineBackgroundWithTopFade()
+                            } else {
+                                Modifier.background(color)
+                            },
+                        ),
                 )
                 Box(
                     modifier = Modifier
                         .size(dotSize)
                         .clip(CircleShape)
-                        .background(color)
+                        .background(color),
                 )
             }
             Spacer(modifier = Modifier.width(timelineMargin))
@@ -110,7 +112,7 @@ fun VerticalTimelineItem(
         }
         Row(
             modifier = Modifier.height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(modifier = Modifier.width(dotSize), contentAlignment = Alignment.Center) {
                 Box(
@@ -118,10 +120,12 @@ fun VerticalTimelineItem(
                         .fillMaxHeight()
                         .width(lineWidth)
                         .then(
-                            if (shouldFadeOutLineBottom) getLineBackgroundWithBottomFade() else Modifier.background(
-                                color
-                            )
-                        )
+                            if (shouldFadeOutLineBottom) {
+                                getLineBackgroundWithBottomFade()
+                            } else {
+                                Modifier.background(color)
+                            },
+                        ),
                 )
             }
             Spacer(modifier = Modifier.width(timelineMargin))
@@ -146,9 +150,9 @@ private fun VerticalTimelineItemPreview() {
                 modifier = Modifier.padding(start = 4.dp),
                 text = "Label",
                 style = AppTypography.labelLarge,
-                color = Color.White
+                color = Color.White,
             )
-        }
+        },
     ) {
         Box(
             modifier = Modifier
@@ -156,8 +160,8 @@ private fun VerticalTimelineItemPreview() {
                 .fillMaxWidth()
                 .background(
                     color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = RoundedCornerShape(8.dp)
-                )
+                    shape = RoundedCornerShape(8.dp),
+                ),
         )
     }
 }

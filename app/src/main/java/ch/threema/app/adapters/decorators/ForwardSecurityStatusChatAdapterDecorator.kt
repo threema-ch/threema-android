@@ -32,45 +32,46 @@ import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.Forw
 class ForwardSecurityStatusChatAdapterDecorator(
     context: Context,
     messageModel: AbstractMessageModel?,
-    helper: Helper?
+    helper: Helper?,
 ) : ChatAdapterDecorator(context, messageModel, helper) {
     override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
         val statusDataModel = messageModel.forwardSecurityStatusData ?: return
-        var body: String? = null
-        when (statusDataModel.status) {
-            ForwardSecurityStatusType.STATIC_TEXT -> body = statusDataModel.staticText
-            ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY -> body =
+        val body: String? = when (statusDataModel.status) {
+            ForwardSecurityStatusType.STATIC_TEXT -> statusDataModel.staticText
+            ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY ->
                 context.getString(R.string.message_without_forward_security)
 
-            ForwardSecurityStatusType.FORWARD_SECURITY_RESET -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_RESET ->
                 context.getString(R.string.forward_security_reset)
 
-            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED ->
                 context.getString(R.string.forward_security_established)
 
-            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX ->
                 context.getString(R.string.forward_security_established_rx)
 
-            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER ->
                 context.getString(R.string.forward_security_message_out_of_order)
 
-            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED ->
                 ConfigUtils.getSafeQuantityString(
                     context,
                     R.plurals.forward_security_messages_skipped,
                     statusDataModel.quantity,
-                    statusDataModel.quantity
+                    statusDataModel.quantity,
                 )
 
-            ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE ->
                 context.getString(R.string.forward_security_downgraded_status_message)
 
-            ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE ->
                 context.getString(R.string.forward_security_illegal_session_status_message)
 
             // TODO(ANDR-2519): Can this be removed when md supports fs? Maybe not, because theses statuses won't be rendered correctly if they have already been created
-            ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED -> body =
+            ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED ->
                 context.getString(R.string.forward_security_disabled)
+
+            else -> null
         }
         if (showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(body))) {
             holder.bodyTextView.text = body

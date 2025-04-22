@@ -2,6 +2,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?selectableItemBackground"
     android:layout_width="match_parent"
     android:layout_height="@dimen/messagelist_item_height"
@@ -46,7 +47,7 @@
             android:layout_alignWithParentIfMissing="true"
             android:ellipsize="marquee"
             android:singleLine="true"
-            android:text="Company"
+            tools:text="Company"
             android:textAppearance="@style/Threema.TextAppearance.List.FirstLine.Bold" />
 
         <TextView
@@ -58,7 +59,7 @@
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:singleLine="true"
-            android:text="@string/directory_search"
+            android:text="@string/work_directory_search"
             android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
     </RelativeLayout>

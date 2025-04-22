@@ -21,18 +21,23 @@
 
 package ch.threema.app.multidevice
 
-
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
-import ch.threema.app.multidevice.linking.DeviceLinkingDataCollector
+import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
+import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
+import ch.threema.app.tasks.DeactivateMultiDeviceTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
-import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
+import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
+import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.protobuf.d2d.MdD2D
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 
 interface MultiDeviceManager {
@@ -45,18 +50,6 @@ interface MultiDeviceManager {
 
     val socketCloseListener: D2mSocketCloseListener
 
-    // TODO(ANDR-2604): Remove when a dialog is shown in ui and this is not needed anymore
-    val latestSocketCloseReason: Flow<D2mSocketCloseReason?>
-
-    @WorkerThread
-    suspend fun activate(
-        deviceLabel: String,
-        contactService: ContactService, // TODO(ANDR-2519): remove
-        userService: UserService, // TODO(ANDR-2519): remove
-        fsMessageProcessor: ForwardSecurityMessageProcessor, // TODO(ANDR-2519): remove
-        taskCreator: TaskCreator,
-    )
-
     /**
      * Deactivate multi device:
      * - drop all (including own) devices from device group
@@ -64,15 +57,10 @@ interface MultiDeviceManager {
      * - reconnect to chat server
      * - reactivate fs TODO(ANDR-2519): Remove fs part
      *
-     * NOTE: This method should not be invoked from within a task as the mediator will close the
-     * connection when the own device is dropped. This might lead to unexpected behaviour.
+     * NOTE: This method must be run from within a task, e.g. [DeactivateMultiDeviceTask].
      */
     @WorkerThread
-    suspend fun deactivate(
-        userService: UserService, // TODO(ANDR-2519): remove
-        fsMessageProcessor: ForwardSecurityMessageProcessor, // TODO(ANDR-2519): remove
-        taskCreator: TaskCreator,
-    )
+    suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec)
 
     @WorkerThread
     suspend fun setDeviceLabel(deviceLabel: String)
@@ -82,19 +70,63 @@ interface MultiDeviceManager {
      * The returned flow emits the current status of the linking process.
      * To abort the linking process, the coroutine performing the linking
      * should be cancelled.
+     *
+     * @return A **cold** flow emitting the linking state changes.
      */
     @WorkerThread
     suspend fun linkDevice(
+        serviceManager: ServiceManager,
         deviceJoinOfferUri: String,
         taskCreator: TaskCreator,
     ): Flow<DeviceLinkingStatus>
 
     /**
-     * Remove all _other_ devices from the device group
-     * TODO(ANDR-2717): Remove, as it is only used for development
+     * Drop a single device by their [deviceId] from the current device group.
+     *
+     * @param deviceId It is save to call this with a [DeviceId] that might not actually
+     * be part of the current device group anymore.
+     *
+     * @param timeout Determines how long the task for dropping the devices can
+     * take before it is cancelled. The follow up task of re-loading the remaining
+     * devices can run indefinitely. Use [Duration.INFINITE] to disable any timeout.
+     *
+     * @return [DropDeviceResult.Success] containing all remaining  linked devices
+     * **excluding** our device, [DropDeviceResult.Failure] otherwise.
      */
-    suspend fun purge(taskCreator: TaskCreator)
+    @WorkerThread
+    suspend fun dropDevice(
+        deviceId: DeviceId,
+        taskCreator: TaskCreator,
+        timeout: Duration = 10.seconds,
+    ): DropDeviceResult
+
+    /**
+     *  @return A list of all **other** devices in the current device group.
+     */
+    @AnyThread
+    suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>>
 
     @AnyThread
-    suspend fun loadLinkedDevicesInfo(taskCreator: TaskCreator): List<String>
+    suspend fun setProperties(persistedProperties: PersistedMultiDeviceProperties?)
+
+    fun reconnect()
+
+    // TODO(ANDR-2519): Remove when md allows fs
+    @WorkerThread
+    suspend fun disableForwardSecurity(
+        handle: ActiveTaskCodec,
+        contactService: ContactService,
+        userService: UserService,
+        fsMessageProcessor: ForwardSecurityMessageProcessor,
+        taskCreator: TaskCreator,
+    )
+
+    companion object {
+        /**
+         * This defines the oldest version of the d2d protocol the android client would link to.
+         */
+        val minimumSupportedD2dProtocolVersion = MdD2D.ProtocolVersion.V0_2
+
+        const val DEVICE_JOIN_OFFER_URI_PREFIX: String = "threema://device-group/join"
+    }
 }

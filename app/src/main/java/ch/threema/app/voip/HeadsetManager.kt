@@ -36,12 +36,12 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import ch.threema.base.utils.LoggingUtil
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 private val logger = LoggingUtil.getThreemaLogger("HeadsetManager")
 
@@ -52,7 +52,6 @@ private val logger = LoggingUtil.getThreemaLogger("HeadsetManager")
  * device.
  */
 class HeadsetManager(private val context: Context, private val audioManager: AudioManager) {
-
     enum class BluetoothHeadsetState {
         /** A bluetooth headset is connected and ready to use */
         CONNECTED,
@@ -73,7 +72,7 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
         ERROR,
 
         /** This state must be ignored and should not result in any changes */
-        UNINITIALIZED
+        UNINITIALIZED,
     }
 
     private val wiredHeadsetFlow = MutableStateFlow(false)
@@ -108,7 +107,9 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
 
             logger.debug(
                 "Receive ACTION_HEADSET_PLUG: name={}, plugged={}, hasMicrophone={}",
-                name, plugged, hasMicrophone
+                name,
+                plugged,
+                hasMicrophone,
             )
 
             wiredHeadsetConnected = plugged
@@ -151,15 +152,15 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
         private fun onConnectionStateChange(intent: Intent) {
             val state = intent.getIntExtra(
                 BluetoothHeadset.EXTRA_STATE,
-                BluetoothHeadset.STATE_AUDIO_DISCONNECTED
+                BluetoothHeadset.STATE_AUDIO_DISCONNECTED,
             )
 
             logger.info(
-                "BluetoothHeadsetBroadcastReceiver.onReceive: "
-                    + "a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state: {}",
+                "BluetoothHeadsetBroadcastReceiver.onReceive: " +
+                    "a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state: {}",
                 state.toString(),
                 isInitialStickyBroadcast,
-                bluetoothHeadsetState.name
+                bluetoothHeadsetState.name,
             )
 
             when (state) {
@@ -189,15 +190,16 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
          */
         private fun onAudioStateChange(intent: Intent) {
             val state = intent.getIntExtra(
-                BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_AUDIO_DISCONNECTED
+                BluetoothHeadset.EXTRA_STATE,
+                BluetoothHeadset.STATE_AUDIO_DISCONNECTED,
             )
 
             logger.info(
-                "BluetoothHeadsetBroadcastReceiver.onReceive: "
-                    + "a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state: {}",
+                "BluetoothHeadsetBroadcastReceiver.onReceive: " +
+                    "a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state: {}",
                 state.toString(),
                 isInitialStickyBroadcast,
-                bluetoothHeadsetState.name
+                bluetoothHeadsetState.name,
             )
 
             if (state == BluetoothHeadset.STATE_AUDIO_CONNECTED) {
@@ -251,7 +253,7 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
                         } else {
                             logger.info(
                                 "Bluetooth headset audio disconnected after {} ms. Ending call.",
-                                msElapsed
+                                msElapsed,
                             )
                             BluetoothHeadsetState.DISCONNECTED
                         }
@@ -273,7 +275,7 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
             if (!isBluetoothHeadsetConnected()) {
                 logger.debug(
                     "Did not start bluetooth sco because there is no headset connected {}",
-                    bluetoothHeadsetState
+                    bluetoothHeadsetState,
                 )
                 return
             }
@@ -361,7 +363,7 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
     init {
         context.registerReceiver(
             wiredHeadsetBroadcastReceiver,
-            IntentFilter(AudioManager.ACTION_HEADSET_PLUG)
+            IntentFilter(AudioManager.ACTION_HEADSET_PLUG),
         )
 
         // Register receivers for BluetoothHeadset change notifications
@@ -394,8 +396,8 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
      * Get the current connection state of the bluetooth headset.
      */
     fun isBluetoothHeadsetConnected(): Boolean =
-        bluetoothHeadsetState != BluetoothHeadsetState.UNINITIALIZED
-            && bluetoothHeadsetState != BluetoothHeadsetState.DISCONNECTED
+        bluetoothHeadsetState != BluetoothHeadsetState.UNINITIALIZED &&
+            bluetoothHeadsetState != BluetoothHeadsetState.DISCONNECTED
 
     /**
      * Try playing audio via bluetooth. By observing the bluetooth headset state (with
@@ -448,7 +450,7 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
                 ?: return false
         if (ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.BLUETOOTH_CONNECT
+                Manifest.permission.BLUETOOTH_CONNECT,
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             logger.warn("No bluetooth permission to check initial bluetooth connection")
@@ -460,5 +462,4 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
             false
         }
     }
-
 }

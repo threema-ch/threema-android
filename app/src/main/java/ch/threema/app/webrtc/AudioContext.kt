@@ -23,9 +23,9 @@ package ch.threema.app.webrtc
 
 import androidx.annotation.AnyThread
 import ch.threema.app.voip.groupcall.sfu.webrtc.FactoryCtx
-import org.webrtc.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import org.webrtc.*
 
 abstract class AudioContext(
     track: AudioTrack,
@@ -101,7 +101,7 @@ abstract class LocalAudioContext(
 class LocalMicrophoneAudioContext private constructor(
     track: AudioTrack,
 ) : LocalAudioContext(
-    track = track
+    track = track,
 ) {
     companion object {
         @AnyThread

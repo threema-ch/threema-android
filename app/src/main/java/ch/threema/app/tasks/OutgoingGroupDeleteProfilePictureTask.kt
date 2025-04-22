@@ -43,7 +43,10 @@ class OutgoingGroupDeleteProfilePictureTask(
     override fun createGroupMessage() = GroupDeleteProfilePictureMessage()
 
     override fun serialize(): SerializableTaskData = OutgoingGroupDeleteProfilePictureData(
-        groupId.groupId, creatorIdentity, recipientIdentities, messageId.messageId
+        groupId = groupId.groupId,
+        creatorIdentity = creatorIdentity,
+        receiverIdentities = recipientIdentities,
+        messageId = messageId.messageId,
     )
 
     @Serializable
@@ -62,5 +65,4 @@ class OutgoingGroupDeleteProfilePictureTask(
                 serviceManager,
             )
     }
-
 }

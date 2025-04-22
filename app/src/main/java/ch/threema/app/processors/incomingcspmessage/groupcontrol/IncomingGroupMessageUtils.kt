@@ -21,128 +21,236 @@
 
 package ch.threema.app.processors.incomingcspmessage.groupcontrol
 
+import android.text.format.DateUtils
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.tasks.OutgoingGroupLeaveTask
-import ch.threema.app.tasks.OutgoingGroupSetupTask
-import ch.threema.app.tasks.OutgoingGroupSyncRequestTask
-import ch.threema.app.utils.TestUtil
+import ch.threema.app.utils.OutgoingCspGroupMessageCreator
+import ch.threema.app.utils.OutgoingCspMessageHandle
+import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
+import ch.threema.app.utils.runBundledMessagesSendSteps
+import ch.threema.app.utils.toBasicContact
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModel
+import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.GroupId
+import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
+import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
+import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
+import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel
+import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupUtils")
+private val logger = LoggingUtil.getThreemaLogger("IncomingGroupMessageUtils")
 
+/**
+ * Run the common group receive steps. If the returned group is not null, then the common group receive steps have been run successfully. If null is
+ * returned, this indicates that the message should be discarded.
+ */
+suspend fun runCommonGroupReceiveSteps(
+    groupIdentity: GroupIdentity,
+    fromIdentity: String,
+    handle: ActiveTaskCodec,
+    serviceManager: ServiceManager,
+): GroupModel? = runCommonGroupReceiveSteps(
+    groupIdentity.creatorIdentity,
+    GroupId(groupIdentity.groupId),
+    fromIdentity,
+    handle,
+    serviceManager,
+)
+
+/**
+ * Run the common group receive steps. If the returned group is not null, then the common group receive steps have been run successfully. If null is
+ * returned, this indicates that the message should be discarded.
+ */
 suspend fun runCommonGroupReceiveSteps(
     message: AbstractGroupMessage,
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): GroupModel? = runCommonGroupReceiveSteps(
-    message.apiGroupId,
     message.groupCreator,
+    message.apiGroupId,
     message.fromIdentity,
     handle,
-    serviceManager
+    serviceManager,
 )
 
 /**
- * Run the common group receive steps.
- *
- * @return the group model if the steps completed successfully, null otherwise
+ * Run the common group receive steps. If the returned group is not null, then the common group receive steps have been run successfully. If null is
+ * returned, this indicates that the message should be discarded.
  */
 suspend fun runCommonGroupReceiveSteps(
-    groupId: GroupId,
     creatorIdentity: String,
+    groupId: GroupId,
     fromIdentity: String,
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): GroupModel? {
-    val userService = serviceManager.userService
-    val groupService = serviceManager.groupService
+    val myIdentity = serviceManager.userService.identity
+    val isCreator = myIdentity == creatorIdentity
 
-    // 1. Look up the group
-    val groupModel = groupService.getByApiGroupIdAndCreator(groupId, creatorIdentity)
+    // Look up the group
+    val group = serviceManager.modelRepositories.groups.getByCreatorIdentityAndId(creatorIdentity, groupId)
+    val groupModelData = group?.data?.value
 
-    // 2. Check if the group could be found
-    if (groupModel == null) {
-        if (TestUtil.compare(creatorIdentity, userService.identity)) {
-            // 2.1 If the user is the creator of the group (as alleged by received message),
-            // discard the received message and abort these steps
-            logger.info("Could not find group with me as creator")
-            return null
+    // If the group could not be found
+    if (groupModelData == null) {
+        if (!isCreator) {
+            runGroupSyncRequestSteps(
+                GroupIdentity(creatorIdentity, groupId.toLong()),
+                serviceManager,
+                handle,
+            )
         }
-        // 2.2 Send a group-sync-request to the group creator
-        sendGroupSyncRequest(groupId, creatorIdentity, serviceManager, handle)
         return null
     }
 
-    // 3. Check if the group is left
-    if (!groupService.isGroupMember(groupModel)) {
-        if (groupService.isGroupCreator(groupModel)) {
-            // 3.1 If the user is the creator, send a group-setup with an empty
-            // members list back to the sender and discard the received message.
-            logger.info("Got a message in a left group where I am the creator")
-            sendEmptyGroupSetup(groupModel, fromIdentity, handle, serviceManager)
+    // If the group is marked as left
+    if (!groupModelData.isMember) {
+        val sender = getContactForIdentity(fromIdentity, serviceManager)
+        if (isCreator) {
+            handle.runBundledMessagesSendSteps(
+                OutgoingCspMessageHandle(
+                    sender,
+                    OutgoingCspGroupMessageCreator(
+                        MessageId(),
+                        Date(),
+                        groupModelData.groupIdentity,
+                    ) {
+                        GroupSetupMessage().apply {
+                            members = emptyArray()
+                        }
+                    },
+                ),
+                serviceManager.getOutgoingCspMessageServices(),
+            )
         } else {
-            // 3.2 Send a group leave to the sender and discard the received message
-            logger.info("Got a message in a left group")
-            OutgoingGroupLeaveTask(
-                groupId,
-                creatorIdentity,
-                setOf(fromIdentity),
-                null,
-                serviceManager
-            ).invoke(handle)
+            handle.runBundledMessagesSendSteps(
+                OutgoingCspMessageHandle(
+                    sender,
+                    OutgoingCspGroupMessageCreator(
+                        MessageId(),
+                        Date(),
+                        groupModelData.groupIdentity,
+                    ) {
+                        GroupLeaveMessage()
+                    },
+                ),
+                serviceManager.getOutgoingCspMessageServices(),
+            )
         }
+
         return null
     }
 
-    // 4. If the sender is not a member of the group and the user is the creator of the group,
-    // send a group-setup with an empty members list back to the sender and discard the received
-    // message.
-    if (!groupService.getGroupIdentities(groupModel).contains(fromIdentity)) {
-        logger.info("Got a message in a group from a sender that is not a member")
-        if (groupService.isGroupCreator(groupModel)) {
-            // 4.1 If the user is the creator of the group, send a group-setup with an empty member
-            // list back
-            sendEmptyGroupSetup(groupModel, fromIdentity, handle, serviceManager)
+    if (!groupModelData.otherMembers.contains(fromIdentity)) {
+        val sender = getContactForIdentity(fromIdentity, serviceManager)
+        if (isCreator) {
+            handle.runBundledMessagesSendSteps(
+                OutgoingCspMessageHandle(
+                    sender,
+                    OutgoingCspGroupMessageCreator(
+                        MessageId(),
+                        Date(),
+                        groupModelData.groupIdentity,
+                    ) {
+                        GroupSetupMessage().apply {
+                            members = emptyArray()
+                        }
+                    },
+                ),
+                serviceManager.getOutgoingCspMessageServices(),
+            )
         } else {
-            // 4.2 Send a group-sync-request to the group creator
-            sendGroupSyncRequest(groupId, creatorIdentity, serviceManager, handle)
+            runGroupSyncRequestSteps(
+                groupModelData.groupIdentity,
+                serviceManager,
+                handle,
+            )
         }
-        // Abort these steps
+
         return null
     }
-    return groupModel
+
+    return group
 }
 
-suspend fun sendEmptyGroupSetup(
-    groupModel: GroupModel,
-    receiverIdentity: String,
-    handle: ActiveTaskCodec,
+private fun getContactForIdentity(identity: String, serviceManager: ServiceManager): BasicContact =
+    serviceManager.contactStore.getCachedContact(identity)
+        ?: serviceManager.modelRepositories.contacts.getByIdentity(identity)?.data?.value?.toBasicContact()
+        ?: throw IllegalStateException("Could not get cached contact for identity $identity")
+
+suspend fun runGroupSyncRequestSteps(
+    groupCreator: BasicContact,
+    groupIdentity: GroupIdentity,
     serviceManager: ServiceManager,
+    handle: ActiveTaskCodec,
 ) {
-    OutgoingGroupSetupTask(
-        groupModel.apiGroupId,
-        groupModel.creatorIdentity,
-        emptySet(),
-        setOf(receiverIdentity),
-        null,
-        serviceManager
-    ).invoke(handle)
+    if (groupIdentity.creatorIdentity == serviceManager.userService.identity) {
+        logger.error("Cannot run the group sync request steps for a group where the user is the creator")
+        return
+    }
+
+    if (groupCreator.identity != groupIdentity.creatorIdentity) {
+        logger.error("Cannot run the group sync request with a contact that is not the group creator")
+        return
+    }
+
+    // If the group has been recently resynced (less than one hour ago), abort these steps
+    val syncFactory = serviceManager.databaseServiceNew.outgoingGroupSyncRequestLogModelFactory
+    val syncModel = syncFactory[groupIdentity.groupIdHexString, groupIdentity.creatorIdentity]
+
+    val lastSyncedTimestamp = syncModel?.lastRequest?.time ?: 0
+    val now = Date()
+    val oneHourAgoTimestamp = now.time - DateUtils.HOUR_IN_MILLIS
+
+    if (lastSyncedTimestamp > oneHourAgoTimestamp) {
+        logger.info("Group has already been synced at {}", lastSyncedTimestamp)
+        return
+    }
+
+    // Send a group sync request
+    handle.runBundledMessagesSendSteps(
+        OutgoingCspMessageHandle(
+            groupCreator,
+            OutgoingCspGroupMessageCreator(
+                MessageId(),
+                Date(),
+                groupIdentity,
+            ) {
+                GroupSyncRequestMessage()
+            },
+        ),
+        serviceManager.getOutgoingCspMessageServices(),
+    )
+
+    // Mark the group as recently resynced
+    syncFactory.create(
+        OutgoingGroupSyncRequestLogModel().apply {
+            setAPIGroupId(groupIdentity.groupIdHexString, groupIdentity.creatorIdentity)
+            setLastRequest(now)
+        },
+    )
 }
 
-private suspend fun sendGroupSyncRequest(
-    groupId: GroupId,
-    creatorIdentity: String,
+/**
+ * Fetches the group creator if not locally available and runs the group sync request steps.
+ */
+private suspend fun runGroupSyncRequestSteps(
+    groupIdentity: GroupIdentity,
     serviceManager: ServiceManager,
     handle: ActiveTaskCodec,
 ) {
-    OutgoingGroupSyncRequestTask(
-        groupId,
-        creatorIdentity,
-        null,
-        serviceManager
-    ).invoke(handle)
+    runGroupSyncRequestSteps(
+        groupIdentity.creatorIdentity.toBasicContact(
+            serviceManager.modelRepositories.contacts,
+            serviceManager.contactStore,
+            serviceManager.apiConnector,
+        ),
+        groupIdentity,
+        serviceManager,
+        handle,
+    )
 }

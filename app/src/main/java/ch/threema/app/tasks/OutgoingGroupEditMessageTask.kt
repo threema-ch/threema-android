@@ -29,8 +29,8 @@ import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 class OutgoingGroupEditMessageTask(
     private val messageModelId: Int,
@@ -40,7 +40,6 @@ class OutgoingGroupEditMessageTask(
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingGroupEditMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -54,20 +53,20 @@ class OutgoingGroupEditMessageTask(
 
         sendGroupMessage(
             group,
-            groupService.getGroupIdentities(group).toSet(),
+            groupService.getGroupMemberIdentities(group).toSet(),
             null,
             editedAt,
             messageId,
             createAbstractMessage = { createEditMessage(editedMessageIdLong) },
-            handle
+            handle,
         )
     }
 
     private fun createEditMessage(messageId: Long) = GroupEditMessage(
         EditMessageData(
             messageId = messageId,
-            text = editedText
-        )
+            text = editedText,
+        ),
     )
 
     override fun serialize(): SerializableTaskData = OutgoingGroupEditMessageData(
@@ -75,7 +74,7 @@ class OutgoingGroupEditMessageTask(
         messageId.messageId,
         editedText,
         editedAt.time,
-        recipientIdentities
+        recipientIdentities,
     )
 
     @Serializable
@@ -93,7 +92,7 @@ class OutgoingGroupEditMessageTask(
                 editedText,
                 Date(editedAt),
                 recipientIdentities,
-                serviceManager
+                serviceManager,
             )
     }
 }

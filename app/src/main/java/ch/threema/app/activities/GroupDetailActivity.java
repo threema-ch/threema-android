@@ -21,9 +21,6 @@
 
 package ch.threema.app.activities;
 
-import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
-import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -33,7 +30,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -42,6 +38,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -57,28 +70,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.GroupDetailAdapter;
-import ch.threema.app.asynctasks.DeleteGroupAsyncTask;
-import ch.threema.app.asynctasks.DeleteMyGroupAsyncTask;
-import ch.threema.app.asynctasks.LeaveGroupAsyncTask;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.GroupDescEditDialog;
@@ -88,25 +82,35 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.groupflows.GroupChanges;
+import ch.threema.app.groupflows.GroupCreateProperties;
+import ch.threema.app.groupflows.GroupDisbandIntent;
+import ch.threema.app.groupflows.GroupLeaveIntent;
+import ch.threema.app.groupflows.ProfilePicture;
 import ch.threema.app.grouplinks.GroupLinkOverviewActivity;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.protocol.ProfilePictureChange;
+import ch.threema.app.protocol.RemoveProfilePicture;
+import ch.threema.app.protocol.SetProfilePicture;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.DeviceService;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.GroupCallUtilKt;
+import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -115,10 +119,15 @@ import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
+import kotlinx.coroutines.Deferred;
+
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
 
 public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener,
     GenericAlertDialog.DialogClickListener,
@@ -131,7 +140,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
     private static final String DIALOG_TAG_LEAVE_GROUP = "leaveGroup";
     private static final String DIALOG_TAG_DISSOLVE_GROUP = "dissolveGroup";
-    private static final String DIALOG_TAG_UPDATE_GROUP = "updateGroup";
     private static final String DIALOG_TAG_QUIT = "quit";
     private static final String DIALOG_TAG_CHOOSE_ACTION = "chooseAction";
     private static final String DIALOG_TAG_RESYNC_GROUP = "resyncGroup";
@@ -139,7 +147,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private static final String DIALOG_TAG_CLONE_GROUP = "cg";
     private static final String DIALOG_TAG_CHANGE_GROUP_DESC = "cgDesc";
     private static final String DIALOG_TAG_CLONE_GROUP_CONFIRM = "cgc";
-    private static final String DIALOG_TAG_CLONING_GROUP = "cgi";
     public static final String DIALOG_SHOW_ONCE_RESET_LINK_INFO = "resetGroupLink";
     private static final String RUN_ON_ACTIVE_RELOAD = "reload";
 
@@ -172,7 +179,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         public void runOnUiThread() {
             groupDetailViewModel.setGroupName(groupModel.getName());
 
-            groupDetailViewModel.setGroupIdentities(groupService.getGroupIdentities(groupModel));
+            groupDetailViewModel.setGroupIdentities(groupService.getGroupMemberIdentities(groupModel));
             sortGroupMembers();
         }
     };
@@ -247,33 +254,33 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
     private final GroupListener groupListener = new GroupListener() {
         @Override
-        public void onCreate(GroupModel newGroupModel) {
+        public void onCreate(@NonNull GroupIdentity groupIdentity) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
         }
 
         @Override
-        public void onRename(GroupModel groupModel) {
+        public void onRename(@NonNull GroupIdentity groupIdentity) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
         }
 
         @Override
-        public void onUpdatePhoto(GroupModel groupModel) {
+        public void onUpdatePhoto(@NonNull GroupIdentity groupIdentity) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
         }
 
         @Override
-        public void onRemove(GroupModel groupModel) {
+        public void onRemove(long groupDbId) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
         }
 
         @Override
-        public void onNewMember(GroupModel group, String newIdentity) {
+        public void onNewMember(@NonNull GroupIdentity groupIdentity, String identityNew) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
         }
 
         @Override
-        public void onMemberLeave(GroupModel group, String identity) {
-            if (identity.equals(myIdentity)) {
+        public void onMemberLeave(@NonNull GroupIdentity groupIdentity, @NonNull String identityLeft) {
+            if (identityLeft.equals(myIdentity)) {
                 finish();
             } else {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
@@ -281,8 +288,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         }
 
         @Override
-        public void onMemberKicked(GroupModel group, String identity) {
-            if (identity.equals(myIdentity)) {
+        public void onMemberKicked(@NonNull GroupIdentity groupIdentity, String identityKicked) {
+            if (identityKicked.equals(myIdentity)) {
                 finish();
             } else {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
@@ -290,12 +297,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         }
 
         @Override
-        public void onUpdate(GroupModel groupModel) {
+        public void onUpdate(@NonNull GroupIdentity groupIdentity) {
             //ignore
         }
 
         @Override
-        public void onLeave(GroupModel groupModel) {
+        public void onLeave(@NonNull GroupIdentity groupIdentity) {
             // ignore
         }
     };
@@ -342,7 +349,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             return;
         }
 
-        groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
+        groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
         if (this.groupId == 0) {
             finish();
         }
@@ -352,7 +359,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
         if (savedInstanceState == null) {
             // new instance
-            this.groupDetailViewModel.setGroupContacts(this.contactService.getByIdentities(groupService.getGroupIdentities(this.groupModel)));
+            this.groupDetailViewModel.setGroupContacts(this.contactService.getByIdentities(groupService.getGroupMemberIdentities(this.groupModel)));
             this.groupDetailViewModel.setGroupName(this.groupModel.getName());
             String groupDesc = this.groupModel.getGroupDesc();
             if (groupDesc == null || groupDesc.isEmpty()) {
@@ -622,7 +629,10 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             // The group link menu is only available for the creator and if enabled in configuration
             groupLinkMenu.setVisible(isCreator && isMember && ConfigUtils.supportsGroupLinks());
 
-            mediaGalleryMenu.setVisible(!hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel)));
+            mediaGalleryMenu.setVisible(
+                conversationCategoryService != null &&
+                    !conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(this.groupModel))
+            );
 
             menu.findItem(R.id.action_send_message).setVisible(!hasChanges());
         }
@@ -653,13 +663,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             return true;
         } else if (itemId == R.id.menu_group_links_manage) {
             Intent groupLinkOverviewIntent = new Intent(this, GroupLinkOverviewActivity.class);
-            groupLinkOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+            groupLinkOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
             startActivityForResult(groupLinkOverviewIntent, ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS);
         } else if (itemId == R.id.action_send_message) {
             if (groupModel != null) {
                 Intent intent = new Intent(this, ComposeMessageActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
                 intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
                 startActivity(intent);
                 finish();
@@ -713,9 +723,11 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                     R.string.no)
                 .show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP_CONFIRM);
         } else if (itemId == R.id.menu_gallery) {
-            if (groupId > 0 && !hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel))) {
+            if (groupId > 0 && conversationCategoryService != null &&
+                !conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(this.groupModel))
+            ) {
                 Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
-                mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+                mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
                 startActivity(mediaGalleryIntent);
             }
         } else if (itemId == R.id.menu_group_call) {
@@ -725,66 +737,159 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void leaveGroupAndQuit() {
-        new LeaveGroupAsyncTask(groupModel, groupService, this, null, this::finish).execute();
+        leaveOrDeleteGroupAndQuit(GroupLeaveIntent.LEAVE);
     }
 
     private void dissolveGroupAndQuit() {
-        groupService.dissolveGroupFromLocal(groupModel);
-        finish();
+        disbandOrDeleteGroupAndQuit(GroupDisbandIntent.DISBAND);
     }
 
     private void deleteGroupAndQuit() {
-        if (groupService.isGroupCreator(groupModel)) {
-            new DeleteMyGroupAsyncTask(groupModel, groupService, this, null, this::navigateHome).execute();
+        if (!groupService.isGroupMember(groupModel)) {
+            removeGroupAndQuit();
+        } else if (groupService.isGroupCreator(groupModel)) {
+            disbandOrDeleteGroupAndQuit(GroupDisbandIntent.DISBAND_AND_REMOVE);
         } else {
-            new DeleteGroupAsyncTask(groupModel, groupService, this, null, this::navigateHome).execute();
+            leaveOrDeleteGroupAndQuit(GroupLeaveIntent.LEAVE_AND_REMOVE);
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private void cloneGroup(final String newGroupName) {
-        new AsyncTask<Void, Void, GroupModel>() {
-            @Override
-            protected void onPreExecute() {
-                GenericProgressDialog.newInstance(R.string.action_clone_group, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CLONING_GROUP);
-            }
+    private void leaveOrDeleteGroupAndQuit(GroupLeaveIntent intent) {
+        ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
+        if (newGroupModel == null) {
+            return;
+        }
 
-            @Override
-            protected GroupModel doInBackground(Void... params) {
-                GroupModel model;
+        try {
+            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runLeaveGroupFlow(
+                getSupportFragmentManager(),
+                intent,
+                newGroupModel
+            );
 
-                try {
-                    Bitmap avatar = groupService.getAvatar(groupModel, true, false);
-
-                    model = groupService.createGroupFromLocal(
-                        newGroupName,
-                        Set.of(groupService.getGroupIdentities(groupModel)),
-                        avatar);
-                    model.setGroupDesc(groupModel.getGroupDesc());
-                    model.setGroupDescTimestamp(groupModel.getGroupDescTimestamp());
-                } catch (Exception e) {
-                    logger.error("Exception, cloning group failed", e);
+            result.invokeOnCompletion(throwable -> {
+                if (result.getCompleted() != Boolean.TRUE) {
+                    logger.error("Could not leave group", throwable);
                     return null;
                 }
 
-                return model;
-            }
+                navigateHome();
+                return null;
+            });
+        } catch (ThreemaException e) {
+            logger.error("Could not leave group", e);
+        }
+    }
 
-            @Override
-            protected void onPostExecute(GroupModel newModel) {
-                DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CLONING_GROUP, true);
+    private void disbandOrDeleteGroupAndQuit(GroupDisbandIntent intent) {
+        ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
+        if (newGroupModel == null) {
+            return;
+        }
 
-                if (newModel != null) {
-                    Intent intent = new Intent(GroupDetailActivity.this, ComposeMessageActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, newModel.getId());
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(GroupDetailActivity.this, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
+        try {
+            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runDisbandGroupFlow(
+                getSupportFragmentManager(),
+                intent,
+                newGroupModel
+            );
+
+            result.invokeOnCompletion(throwable -> {
+                if (result.getCompleted() != Boolean.TRUE) {
+                    logger.error("Could not disband or delete group", throwable);
                 }
+
+                finish();
+
+                return null;
+            });
+        } catch (ThreemaException e) {
+            logger.error("Could not leave group", e);
+        }
+    }
+
+    private void removeGroupAndQuit() {
+        ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
+        if (newGroupModel == null) {
+            return;
+        }
+
+        try {
+            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runRemoveGroupFlow(
+                getSupportFragmentManager(),
+                newGroupModel
+            );
+
+            result.invokeOnCompletion(throwable -> {
+                if (throwable != null) {
+                    logger.error("Could not remove group", throwable);
+                } else {
+                    try {
+                        if (result.getCompleted() != Boolean.TRUE) {
+                            logger.error("Failed to remove group");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Could not check group removal result", e);
+                    }
+                }
+
+                finish();
+
+                return null;
+            });
+        } catch (ThreemaException e) {
+            logger.error("Could not remove group", e);
+        }
+    }
+
+    @Nullable
+    private ch.threema.data.models.GroupModel getNewGroupModel() {
+        ch.threema.data.models.GroupModel newGroupModel = groupModelRepository.getByCreatorIdentityAndId(
+            groupModel.getCreatorIdentity(),
+            groupModel.getApiGroupId()
+        );
+
+        if (newGroupModel == null) {
+            logger.error("New group model is null");
+        }
+
+        return newGroupModel;
+    }
+
+    private void cloneGroup(final String newGroupName) {
+        GroupFlowDispatcher groupFlowDispatcher;
+        try {
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException e) {
+            logger.error("Could not get group flow dispatcher", e);
+            return;
+        }
+
+        Deferred<ch.threema.data.models.GroupModel> groupAddResult =
+            groupFlowDispatcher.runCreateGroupFlow(
+                getSupportFragmentManager(),
+                this,
+                new GroupCreateProperties(
+                    newGroupName,
+                    new ProfilePicture(groupService.getAvatar(groupModel, true, false)),
+                    Set.of(groupService.getGroupMemberIdentities(groupModel))
+                )
+            );
+
+        // TODO(ANDR-3631): Improve result type handling including handling of the throwable
+        groupAddResult.invokeOnCompletion(throwable -> {
+            ch.threema.data.models.GroupModel groupModel = groupAddResult.getCompleted();
+            if (groupModel != null) {
+                Intent intent = new Intent(GroupDetailActivity.this, ComposeMessageActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getDatabaseId());
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(GroupDetailActivity.this, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
             }
-        }.execute();
+            return null;
+        });
     }
 
     private void showConversation(String identity) {
@@ -802,89 +907,145 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void syncGroup() {
-        if (this.groupService != null) {
-            GenericProgressDialog.newInstance(R.string.resync_group, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_RESYNC_GROUP);
+        ch.threema.data.models.GroupModel newGroupModel =
+            groupModelRepository.getByCreatorIdentityAndId(groupModel.getCreatorIdentity(),
+                groupModel.getApiGroupId());
+        if (newGroupModel == null) {
+            logger.error("New group model is null");
+            return;
+        }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        groupService.scheduleSync(groupModel);
-                        RuntimeUtil.runOnUiThread(() -> Toast.makeText(GroupDetailActivity.this,
-                            getString(R.string.group_was_synchronized),
-                            Toast.LENGTH_SHORT).show());
+        try {
+            GroupFlowDispatcher groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
 
-                        RuntimeUtil.runOnUiThread(() -> DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_RESYNC_GROUP, true));
-                    } catch (Exception x) {
+            GenericProgressDialog.newInstance(R.string.resync_group, R.string.please_wait)
+                .show(getSupportFragmentManager(), DIALOG_TAG_RESYNC_GROUP);
 
-                        RuntimeUtil.runOnUiThread(() -> DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_RESYNC_GROUP, true));
-                        LogUtil.exception(x, GroupDetailActivity.this);
+            Deferred<Boolean> result = groupFlowDispatcher.runGroupResyncFlow(newGroupModel);
+
+            result.invokeOnCompletion(throwable -> {
+                try {
+                    if (result.getCompleted() == Boolean.TRUE) {
+                        RuntimeUtil.runOnUiThread(() -> Toast.makeText(
+                            GroupDetailActivity.this,
+                            R.string.group_was_synchronized,
+                            Toast.LENGTH_SHORT
+                        ).show());
+                    } else {
+                        logger.error("Could not synchronize group", throwable);
+                        RuntimeUtil.runOnUiThread(() -> Toast.makeText(GroupDetailActivity.this
+                            , R.string.error, Toast.LENGTH_SHORT).show());
                     }
+                } finally {
+                    DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_RESYNC_GROUP, true);
                 }
-            }).start();
+                return null;
+            });
+        } catch (ThreemaException exception) {
+            logger.error("Error while manual group resync", exception);
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
     private void saveGroupSettings() {
+        ch.threema.data.models.GroupModel newGroupModel = groupModelRepository.getByGroupIdentity(
+            new GroupIdentity(
+                groupModel.getCreatorIdentity(),
+                groupModel.getApiGroupId().toLong()
+            )
+        );
+        if (newGroupModel == null) {
+            logger.error("Group model does not exist");
+            return;
+        }
+
+        GroupModelData groupModelData = newGroupModel.getData().getValue();
+        if (groupModelData == null) {
+            logger.warn("Group model data is null");
+            return;
+        }
+
         if (groupNameEditText.getText() != null) {
             this.groupDetailViewModel.setGroupName(groupNameEditText.getText().toString());
         } else {
             this.groupDetailViewModel.setGroupName("");
         }
 
-        groupModel.setGroupDesc(groupDetailViewModel.getGroupDesc());
-        groupModel.setGroupDescTimestamp(groupDetailViewModel.getGroupDescTimestamp());
+        Set<String> updatedIdentities = new HashSet<>();
+        Collections.addAll(updatedIdentities, groupDetailViewModel.getGroupIdentities());
+        updatedIdentities.remove(myIdentity);
 
-        new AsyncTask<Void, Void, GroupModel>() {
-            @Override
-            protected void onPreExecute() {
-                GenericProgressDialog.newInstance(R.string.updating_group, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_UPDATE_GROUP);
+        GroupChanges groupChanges = new GroupChanges(
+            getGroupNameChange(),
+            getProfilePictureChange(newGroupModel),
+            updatedIdentities,
+            groupModelData
+        );
+
+        GroupFlowDispatcher groupFlowDispatcher;
+        try {
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException exception) {
+            logger.error("Could not get group flow dispatcher");
+            return;
+        }
+
+        Deferred<Boolean> updateResult = groupFlowDispatcher.runUpdateGroupFlow(
+            getSupportFragmentManager(),
+            groupChanges,
+            newGroupModel
+        );
+
+        updateResult.invokeOnCompletion(throwable -> {
+            Boolean result = updateResult.getCompleted();
+            if (Boolean.TRUE.equals(result)) {
+                finish();
+            } else {
+                SimpleStringAlertDialog.newInstance(R.string.updating_group, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required)).show(getSupportFragmentManager(), "er");
             }
+            return null;
+        });
+    }
 
-            @Override
-            protected GroupModel doInBackground(Void... params) {
-                GroupModel model;
+    @Nullable
+    private String getGroupNameChange() {
+        @NonNull String newGroupName = groupDetailViewModel.getGroupName();
+        @NonNull String oldGroupName = groupModel.getName() != null ?
+            groupModel.getName() : "";
 
-                if (!deviceService.isOnline()) {
-                    return null;
-                }
+        if (!newGroupName.equals(oldGroupName)) {
+            return newGroupName;
+        } else {
+            return null;
+        }
+    }
 
-                @NonNull String newGroupName = groupDetailViewModel.getGroupName() != null ?
-                    groupDetailViewModel.getGroupName().trim() : "";
-                @NonNull String oldGroupName = groupModel.getName() != null ?
-                    groupModel.getName() : "";
+    @Nullable
+    private ProfilePictureChange getProfilePictureChange(ch.threema.data.models.GroupModel groupModel) {
+        if (!hasAvatarChanges) {
+            return null;
+        }
 
-                try {
-                    Bitmap avatar = groupDetailViewModel.getAvatarFile() != null ? BitmapFactory.decodeFile(groupDetailViewModel.getAvatarFile().getPath()) : null;
+        Bitmap avatar = groupDetailViewModel.getAvatarFile() != null ? BitmapFactory.decodeFile(groupDetailViewModel.getAvatarFile().getPath()) : null;
+        byte[] newAvatarBytes = null;
+        if (avatar != null) {
+            newAvatarBytes = BitmapUtil.bitmapToByteArray(avatar, Bitmap.CompressFormat.PNG, 100);
+        }
 
-                    model = groupService.updateGroup(
-                        groupModel,
-                        oldGroupName.equals(newGroupName) ? null : newGroupName,
-                        groupDetailViewModel.getGroupDesc(),
-                        groupDetailViewModel.getGroupIdentities(),
-                        avatar,
-                        groupDetailViewModel.getIsAvatarRemoved()
-                    );
-                } catch (Exception x) {
-                    logger.error("Exception", x);
-                    return null;
-                }
+        byte[] oldAvatarBytes;
+        try {
+            oldAvatarBytes = fileService.getGroupAvatarBytes(groupModel);
+        } catch (Exception e) {
+            logger.error("Could not get group avatar", e);
+            oldAvatarBytes = null;
+        }
 
-                return model;
-            }
-
-            @Override
-            protected void onPostExecute(GroupModel newModel) {
-                DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_UPDATE_GROUP, true);
-
-                if (newModel != null) {
-                    finish();
-                } else {
-                    SimpleStringAlertDialog.newInstance(R.string.updating_group, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required)).show(getSupportFragmentManager(), "er");
-                }
-            }
-        }.execute();
+        if (Arrays.equals(newAvatarBytes, oldAvatarBytes)) {
+            return null;
+        } else if (newAvatarBytes != null) {
+            return new SetProfilePicture(newAvatarBytes, null);
+        } else {
+            return RemoveProfilePicture.INSTANCE;
+        }
     }
 
     private void showCloneDialog() {

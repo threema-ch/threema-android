@@ -49,18 +49,32 @@ import ch.threema.app.compose.theme.color.LocalCustomColor
 
 val AppTypography = Typography() // system default
 
+/**
+ *  The material theme that respects our self handled setting for use of dynamic colors
+ */
 @Composable
 fun ThreemaTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-
     val shouldUseDynamicColors: Boolean = remember {
-        val sharedPreferences =
-            PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
         sharedPreferences.getBoolean("pref_dynamic_color", false)
     }
 
+    ThreemaThemeBase(
+        isDarkTheme = isDarkTheme,
+        shouldUseDynamicColors = shouldUseDynamicColors,
+        content = content,
+    )
+}
+
+@Composable
+private fun ThreemaThemeBase(
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    shouldUseDynamicColors: Boolean,
+    content: @Composable () -> Unit,
+) {
     val materialColorScheme: ColorScheme = when {
         shouldUseDynamicColors && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -81,12 +95,12 @@ fun ThreemaTheme(
 
     val customColorScheme = if (isDarkTheme) CustomColorDark else CustomColorLight
     CompositionLocalProvider(
-        LocalCustomColor provides customColorScheme
+        LocalCustomColor provides customColorScheme,
     ) {
         MaterialTheme(
             colorScheme = materialColorScheme,
             typography = AppTypography,
-            content = content
+            content = content,
         )
     }
 }
@@ -96,3 +110,19 @@ val MaterialTheme.customColorScheme: CustomColor
     @Composable
     @ReadOnlyComposable
     get() = LocalCustomColor.current
+
+/**
+ * This is just for use in `@Preview`s.
+ */
+@Composable
+fun ThreemaThemePreview(
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    shouldUseDynamicColors: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    ThreemaThemeBase(
+        isDarkTheme = isDarkTheme,
+        shouldUseDynamicColors = shouldUseDynamicColors,
+        content = content,
+    )
+}

@@ -59,7 +59,7 @@ class TypingIndicatorMessage : AbstractMessage() {
             1.toByte()
         } else {
             0.toByte()
-        }
+        },
     )
 
     override fun flagNoServerQueuing() = true
@@ -95,7 +95,9 @@ class TypingIndicatorMessage : AbstractMessage() {
             when {
                 length != 1 -> throw BadMessageException("Bad length ($length) for typing indicator message")
                 offset < 0 -> throw BadMessageException("Bad offset ($offset) for typing indicator message")
-                data.size < length + offset -> throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
+                data.size < length + offset -> throw BadMessageException(
+                    "Invalid byte array length (${data.size}) for offset $offset and length $length",
+                )
             }
 
             return TypingIndicatorMessage().apply {

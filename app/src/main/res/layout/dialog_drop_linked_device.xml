@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurfaceContainer">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/spacing_three_grid_unit"
+        android:paddingBottom="@dimen/spacing_two_grid_unit"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbars="vertical">
+
+        <ImageView
+            android:id="@+id/platform_icon_Iv"
+            android:layout_width="@dimen/md_drop_device_dialog_platform_icon_size"
+            android:layout_height="@dimen/md_drop_device_dialog_platform_icon_size"
+            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_platform_android" />
+
+        <TextView
+            android:id="@+id/device_label_Tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:layout_marginTop="@dimen/spacing_three_grid_unit"
+            android:textAppearance="@style/Threema.TextAppearance.Subtitle"
+            tools:text="Threema Green Beta for Desktop" />
+
+        <TextView
+            android:id="@+id/device_version_Tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/Threema.TextAppearance.BodySmall"
+            tools:text="2.0-beta46-dev-20241220 - Electron 34 on macOS" />
+
+        <TextView
+            android:id="@+id/device_timestamp_Tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/Threema.TextAppearance.BodySmall"
+            tools:text="Last connected: yesterday" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/drop_device_Btn"
+            style="@style/Threema.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_one_grid_unit"
+            android:layout_marginTop="@dimen/spacing_two_grid_unit"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="@string/md_drop_device_dialog_drop_button"
+            android:textColor="?attr/colorError"
+            app:icon="@drawable/ic_delete_outline"
+            app:iconPadding="8dp"
+            app:iconSize="24dp"
+            app:iconTint="?attr/colorError" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/close_dialog_Btn"
+            style="@style/Threema.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:layout_marginTop="@dimen/spacing_one_and_a_half_grid_unit"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/md_drop_device_dialog_close_button" />
+
+    </LinearLayout>
+
+</ScrollView>
+
+

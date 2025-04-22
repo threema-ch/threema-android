@@ -35,7 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.compose.theme.AppTypography
-import ch.threema.app.compose.theme.ThreemaTheme
+import ch.threema.app.compose.theme.ThreemaThemePreview
 
 @Composable
 fun HintText(text: String) {
@@ -64,7 +64,7 @@ fun HintText(text: String) {
 @Preview
 @Composable
 private fun HintText_Preview() {
-    ThreemaTheme {
+    ThreemaThemePreview {
         HintText(
             text = "This is an informative text, it may span multiple lines if it " +
                 "is long enough.",

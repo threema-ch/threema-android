@@ -21,6 +21,7 @@
 
 package ch.threema.domain.fs;
 
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -100,7 +101,7 @@ public class KDFRatchet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         KDFRatchet that = (KDFRatchet) o;
-        return getCounter() == that.getCounter() && Arrays.equals(getCurrentChainKey(), that.getCurrentChainKey());
+        return getCounter() == that.getCounter() && MessageDigest.isEqual(getCurrentChainKey(), that.getCurrentChainKey());
     }
 
     @Override

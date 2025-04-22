@@ -33,16 +33,15 @@ internal class ReflectedOutgoingGroupCallStartTask(
 ) : ReflectedOutgoingGroupMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_CALL_START,
-    serviceManager
+    serviceManager,
 ) {
-
     private val groupCallManager = serviceManager.groupCallManager
 
     private val identityStore = serviceManager.identityStore
 
     private val groupCallStartMessage = GroupCallStartMessage.fromReflected(
         message = message,
-        ownIdentity = identityStore.identity
+        ownIdentity = identityStore.identity,
     )
 
     override val storeNonces: Boolean = groupCallStartMessage.protectAgainstReplay()

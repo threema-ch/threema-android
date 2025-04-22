@@ -31,19 +31,18 @@ import ch.threema.domain.protocol.connection.data.InboundL3Message
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundL3Message
 import ch.threema.domain.protocol.connection.data.OutboundL4Message
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.connection.util.Layer3Controller
 import ch.threema.domain.protocol.connection.util.MdLayer3Controller
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 private val logger = ConnectionLoggingUtil.getConnectionLogger("AuthLayer")
 
 internal class AuthLayer(
-    private val controller: Layer3Controller
+    private val controller: Layer3Controller,
 ) : Layer3Codec {
-
     init {
         CoroutineScope(controller.dispatcher.coroutineContext).launch {
             controller.connected.await()
@@ -59,12 +58,16 @@ internal class AuthLayer(
         }
     }
 
-    private val inbound = ProcessingPipe<InboundL2Message, InboundL3Message> { handleInbound(it) }
+    private val inbound =
+        ProcessingPipe<InboundL2Message, InboundL3Message, ServerSocketCloseReason> {
+            handleInbound(it)
+        }
     private val outbound =
-        ProcessingPipe<OutboundL4Message, OutboundL3Message> { handleOutbound(it) }
+        ProcessingPipe<OutboundL4Message, OutboundL3Message, Unit> { handleOutbound(it) }
 
-    override val encoder: PipeProcessor<OutboundL4Message, OutboundL3Message> = outbound
-    override val decoder: PipeProcessor<InboundL2Message, InboundL3Message> = inbound
+    override val encoder: PipeProcessor<OutboundL4Message, OutboundL3Message, Unit> = outbound
+    override val decoder: PipeProcessor<InboundL2Message, InboundL3Message, ServerSocketCloseReason> =
+        inbound
 
     private fun initiateCspHandshake() {
         controller.dispatcher.assertDispatcherContext()

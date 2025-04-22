@@ -122,6 +122,7 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LazyProperty;
+import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
@@ -281,7 +282,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             return false;
         }
 
-        UserService userService;
         try {
             this.contactService = serviceManager.getContactService();
             this.conversationService = serviceManager.getConversationService();
@@ -422,22 +422,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setTitle(R.string.title_choose_recipient);
                 searchBar = (SearchBar) getToolbar();
-                searchBar.setNavigationOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (searchView.isIconified()) {
-                            finish();
-                        } else {
-                            searchView.setIconified(true);
-                        }
+                searchBar.setNavigationOnClickListener(v -> {
+                    if (searchView.isIconified()) {
+                        finish();
+                    } else {
+                        searchView.setIconified(true);
                     }
                 });
-                searchBar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        searchView.setIconified(false);
-                    }
-                });
+                searchBar.setOnClickListener(v -> searchView.setIconified(false));
 
                 ConfigUtils.adjustSearchBarTextViewMargin(this, searchBar);
             }
@@ -511,10 +503,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                     if (bundle != null) {
                         if (bundle.containsKey(ThreemaApplication.INTENT_DATA_CONTACT)) {
                             identity = bundle.getString(ThreemaApplication.INTENT_DATA_CONTACT);
-                        } else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_GROUP)) {
-                            groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP);
-                        } else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-                            distributionListID = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
+                        } else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID)) {
+                            groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID);
+                        } else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
+                            distributionListID = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID);
                         }
                     }
                 }
@@ -1137,17 +1129,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
             @Override
             protected Void doInBackground(Void... voids) {
-
                 fileService.loadDecryptedMessageFiles(
                     originalMessageModels,
                     new FileService.OnDecryptedFilesComplete() {
                         @Override
                         public void complete(ArrayList<Uri> uris) {
-
                             ArrayList<MediaItem> mappedMediaItems = new ArrayList<>();
 
                             for (int i = 0; i < uris.size(); i++) {
-
                                 final AbstractMessageModel originalMessageModel = originalMessageModels.get(i);
                                 final Uri fileUri = uris.get(i);
 
@@ -1156,7 +1145,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                                 }
 
                                 final String mimeType = MimeUtil.getMimeTypeFromMessageModel(originalMessageModel);
-                                final int mediaType = MimeUtil.getMediaTypeFromMimeType(mimeType, fileUri);
+                                final int mediaType = determineMediaType(mimeType, fileUri, originalMessageModel);
 
                                 final MediaItem mediaItem = new MediaItem(
                                     fileUri,
@@ -1210,6 +1199,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 );
 
                 return null;
+            }
+
+            private int determineMediaType(String mimeType, Uri fileUri, AbstractMessageModel message) {
+                if (MessageUtil.hasFileWithDefaultRendering(message)) {
+                    return MediaItem.TYPE_FILE;
+                } else {
+                    return MimeUtil.getMediaTypeFromMimeType(mimeType, fileUri);
+                }
             }
 
             @Override
@@ -1278,7 +1275,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
             if (!(isSingleSharedTextMessage || isSingleThreemaTextMessage)) {
 
-                if (originalMessageModels.size() > 0) {
+                if (!originalMessageModels.isEmpty()) {
                     // forwarded content of any type
                     String presetCaption = null;
                     boolean expandable = false;
@@ -1373,7 +1370,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     }
 
     private void showMixedMediaForwardDialog(final List<Object> recipients, final String combinedRecipientName) {
-
         ExpandableTextEntryDialog alertDialog;
         if (hideUi) {
             alertDialog = ExpandableTextEntryDialog.newInstance(
@@ -1401,14 +1397,13 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isCalledFromExternalApp()) {
-                    finish();
-                } else {
-                    NavigationUtil.navigateUpToHome(this);
-                }
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            if (isCalledFromExternalApp()) {
+                finish();
+            } else {
+                NavigationUtil.navigateUpToHome(this);
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -1442,16 +1437,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case ACTIVITY_ID_SEND_MEDIA:
-                if (resultCode == RESULT_OK) {
-                    startComposeActivityAsync(IntentDataUtil.getComposeIntentForReceivers(this, (ArrayList<MessageReceiver>) recipientMessageReceivers));
-                } else if (hideUi) {
-                    finish();
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ACTIVITY_ID_SEND_MEDIA) {
+            if (resultCode == RESULT_OK) {
+                startComposeActivityAsync(IntentDataUtil.getComposeIntentForReceivers(this, (ArrayList<MessageReceiver>) recipientMessageReceivers));
+            } else if (hideUi) {
+                finish();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -1616,14 +1609,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 }
 
                 @Override
-                public void onWarning(String warning, boolean continueAction) {
-                }
-
-                @Override
-                public void onProgress(int progress, int total) {
-                }
-
-                @Override
                 public void onCompleted() {
                     startComposeActivityAsync(null);
                 }
@@ -1643,18 +1628,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                     if (hideUi) {
                         finish();
                     }
-                }
-
-                @Override
-                public void onWarning(String warning, boolean continueAction) {
-                }
-
-                @Override
-                public void onProgress(int progress, int total) {
-                }
-
-                @Override
-                public void onCompleted() {
                 }
             });
     }
@@ -1701,23 +1674,18 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            switch (requestCode) {
-                case REQUEST_READ_EXTERNAL_STORAGE:
-                    setupUI();
-                    break;
+            if (requestCode == REQUEST_READ_EXTERNAL_STORAGE) {
+                setupUI();
             }
         } else {
-            switch (requestCode) {
-                case REQUEST_READ_EXTERNAL_STORAGE:
-                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        Toast.makeText(this, R.string.permission_storage_required, Toast.LENGTH_LONG).show();
-                    }
-                    finish();
-                    break;
+            if (requestCode == REQUEST_READ_EXTERNAL_STORAGE) {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    Toast.makeText(this, R.string.permission_storage_required, Toast.LENGTH_LONG).show();
+                }
+                finish();
             }
         }
     }

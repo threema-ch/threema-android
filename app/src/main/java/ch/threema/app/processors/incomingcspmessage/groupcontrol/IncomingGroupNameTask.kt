@@ -21,11 +21,13 @@
 
 package ch.threema.app.processors.incomingcspmessage.groupcontrol
 
-import ch.threema.app.listeners.GroupListener
-import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
+import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
+import ch.threema.app.tasks.ReflectionFailed
+import ch.threema.app.tasks.ReflectionPreconditionFailed
+import ch.threema.app.tasks.ReflectionSuccess
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -41,38 +43,58 @@ class IncomingGroupNameTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupNameMessage>(message, triggerSource, serviceManager) {
-    private val databaseService by lazy { serviceManager.databaseServiceNew }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val nonceFactory by lazy { serviceManager.nonceFactory }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
-        // 1. Run the common group receive steps
+        // Run the common group receive steps
         val groupModel = runCommonGroupReceiveSteps(message, handle, serviceManager)
-        if (groupModel == null) {
+        val data = groupModel?.data?.value
+        if (groupModel == null || data == null) {
             logger.warn("Discarding group name message because group could not be found")
             return ReceiveStepsResult.DISCARD
         }
 
         val newGroupName = message.groupName ?: ""
-        val oldGroupName = groupModel.name ?: ""
 
-        // 2. Update the group with the given name (only if the new name is different)
-        if (oldGroupName != newGroupName) {
-            groupModel.name = newGroupName
-            val success = databaseService.groupModelFactory.createOrUpdate(groupModel)
-            if (!success) {
-                logger.error("Failed to update the group model")
-                return ReceiveStepsResult.DISCARD
-            }
+        if (data.name == newGroupName) {
+            logger.info("Name has not changed")
+            return ReceiveStepsResult.DISCARD
+        }
 
-            ListenerManager.groupListeners.handle { listener: GroupListener ->
-                listener.onRename(groupModel)
+        if (multiDeviceManager.isMultiDeviceActive) {
+            val reflectionResult = ReflectGroupSyncUpdateImmediateTask.ReflectGroupName(
+                newGroupName,
+                groupModel,
+                nonceFactory,
+                multiDeviceManager,
+            ).reflect(handle)
+
+            when (reflectionResult) {
+                is ReflectionPreconditionFailed -> {
+                    logger.warn(
+                        "Group sync race occurred: Could not reflect group name",
+                        reflectionResult.transactionException,
+                    )
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionFailed -> {
+                    logger.error("Could not reflect group name", reflectionResult.exception)
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionSuccess -> Unit
             }
         }
+
+        groupModel.persistName(newGroupName)
 
         return ReceiveStepsResult.SUCCESS
     }
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-        // TODO(ANDR-2741): Support group synchronization
+        logger.info("Discarding group name from sync")
         return ReceiveStepsResult.DISCARD
     }
 }

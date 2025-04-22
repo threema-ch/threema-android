@@ -23,7 +23,6 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.services.MessageServiceImpl
 import ch.threema.app.utils.MimeUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.file.FileData
@@ -42,7 +41,6 @@ internal class ReflectedOutgoingFileTask(
     message: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
 ) : ReflectedOutgoingContactMessageTask(message, Common.CspE2eMessageType.FILE, serviceManager) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     private val fileMessage: FileMessage by lazy { FileMessage.fromByteArray(message.body.toByteArray()) }
@@ -53,12 +51,11 @@ internal class ReflectedOutgoingFileTask(
     override val shouldBumpLastUpdate: Boolean = true
 
     override fun processOutgoingMessage() {
-
         // 1: Check if the message already exists locally (from previous run(s) of this task).
         //    If so, cancel and accept that the download for the content(s) might not be complete.
         messageService.getContactMessageModel(
             fileMessage.messageId,
-            messageReceiver.contact.identity
+            messageReceiver.contact.identity,
         )?.run { return }
 
         val fileData: FileData = fileMessage.fileData ?: run {
@@ -73,14 +70,14 @@ internal class ReflectedOutgoingFileTask(
         val messageModel: MessageModel = createMessageModelFromFileMessage(
             fileMessage = fileMessage,
             fileDataModel = fileDataModel,
-            fileData = fileData
+            fileData = fileData,
         )
 
         // 4. Save group message model and inform listeners about new message
         messageService.save(messageModel)
         ListenerManager.messageListeners.handle { messageListener ->
             messageListener.onNew(
-                messageModel
+                messageModel,
             )
         }
 
@@ -97,19 +94,22 @@ internal class ReflectedOutgoingFileTask(
     private fun createMessageModelFromFileMessage(
         fileMessage: FileMessage,
         fileDataModel: FileDataModel,
-        fileData: FileData
+        fileData: FileData,
     ): MessageModel {
         val messageModel: MessageModel = messageReceiver.createLocalModel(
-            /* type = */ MessageType.FILE,
-            /* contentsType = */ MimeUtil.getContentTypeFromFileData(fileDataModel),
-            /* postedAt = */ Date(message.createdAt)
+            /* type = */
+            MessageType.FILE,
+            /* contentsType = */
+            MimeUtil.getContentTypeFromFileData(fileDataModel),
+            /* postedAt = */
+            Date(message.createdAt),
         )
         initializeMessageModelsCommonFields(messageModel)
         return messageModel.apply {
-            setFileDataModel(fileDataModel)
-            setMessageFlags(fileMessage.messageFlags)
-            setCorrelationId(fileData.correlationId)
-            setForwardSecurityMode(fileMessage.forwardSecurityMode)
+            this.fileData = fileDataModel
+            messageFlags = fileMessage.messageFlags
+            correlationId = fileData.correlationId
+            forwardSecurityMode = fileMessage.forwardSecurityMode
             state = MessageState.SENT
         }
     }

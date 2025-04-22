@@ -43,6 +43,9 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion103;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion104;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion105;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion106;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion107;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion108;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion109;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion11;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion12;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion13;
@@ -169,7 +172,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 
     public static final String DEFAULT_DATABASE_NAME_V4 = "threema4.db";
     public static final String DATABASE_BACKUP_EXT = ".backup";
-    private static final int DATABASE_VERSION = SystemUpdateToVersion106.VERSION;
+    private static final int DATABASE_VERSION = SystemUpdateToVersion109.VERSION;
 
     private final Context context;
     private final UpdateSystemService updateSystemService;
@@ -850,6 +853,15 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
         }
         if (oldVersion < SystemUpdateToVersion106.VERSION) {
             this.updateSystemService.addUpdate(new SystemUpdateToVersion106(sqLiteDatabase));
+        }
+        if (oldVersion < SystemUpdateToVersion107.VERSION) {
+            this.updateSystemService.addUpdate(new SystemUpdateToVersion107(sqLiteDatabase, context));
+        }
+        if (oldVersion < SystemUpdateToVersion108.VERSION) {
+            this.updateSystemService.addUpdate(new SystemUpdateToVersion108(sqLiteDatabase, context));
+        }
+        if (oldVersion < SystemUpdateToVersion109.VERSION) {
+            this.updateSystemService.addUpdate(new SystemUpdateToVersion109(sqLiteDatabase));
         }
     }
 

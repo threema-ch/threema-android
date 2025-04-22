@@ -38,7 +38,7 @@ class IncomingContactRequestProfilePictureTask(
 ) : IncomingCspMessageSubTask<ContactRequestProfilePictureMessage>(
     message,
     triggerSource,
-    serviceManager
+    serviceManager,
 ) {
     private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
 

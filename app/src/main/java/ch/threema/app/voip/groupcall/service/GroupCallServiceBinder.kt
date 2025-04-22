@@ -28,10 +28,9 @@ import kotlinx.coroutines.CompletableDeferred
 
 class GroupCallServiceBinder(
     private val controllerDeferred: CompletableDeferred<GroupCallController>,
-    private val audioManagerDeferred: CompletableDeferred<CallAudioManager>
+    private val audioManagerDeferred: CompletableDeferred<CallAudioManager>,
 ) :
     Binder() {
-
     suspend fun getGroupCallController(): GroupCallController {
         return controllerDeferred.await()
     }

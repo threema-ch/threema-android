@@ -63,7 +63,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.LongToast;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.AutoDeleteUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;

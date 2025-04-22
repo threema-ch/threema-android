@@ -134,7 +134,7 @@ enum class IdentityState(val value: Int) {
     /**
      * Contact does not have a valid Threema-ID, or the ID was revoked.
      */
-    INVALID(2)
+    INVALID(2),
 }
 
 enum class WorkVerificationLevel {

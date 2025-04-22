@@ -32,16 +32,18 @@ import ch.threema.domain.protocol.connection.data.InboundL1Message
 import ch.threema.domain.protocol.connection.data.InboundL2Message
 import ch.threema.domain.protocol.connection.data.OutboundL2Message
 import ch.threema.domain.protocol.connection.data.OutboundL3Message
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.util.ServerConnectionController
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
-import org.mockito.Mockito
+import io.mockk.every
+import io.mockk.mockk
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.math.pow
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class MultiplexLayerTest {
     @Test
@@ -51,7 +53,7 @@ class MultiplexLayerTest {
 
         val layer = MultiplexLayer(controller)
 
-        val source = InputPipe<OutboundL3Message>()
+        val source = InputPipe<OutboundL3Message, Unit>()
         val handler = PipeHandlerHelper<OutboundL2Message>()
 
         source.pipeThrough(layer.encoder).setHandler(handler)
@@ -71,7 +73,7 @@ class MultiplexLayerTest {
 
         val layer = MultiplexLayer(controller)
 
-        val source = InputPipe<OutboundL3Message>()
+        val source = InputPipe<OutboundL3Message, Unit>()
         val handler = PipeHandlerHelper<OutboundL2Message>()
 
         source.pipeThrough(layer.encoder).setHandler(handler)
@@ -97,7 +99,7 @@ class MultiplexLayerTest {
         assertEquals(14, handler.messages.size)
         handler.messages.forEachIndexed { idx, msg ->
             assertTrue(msg is CspData)
-            assertEquals(2.toDouble().pow(idx).toInt(), (msg as CspData).bytes.size)
+            assertEquals(2.toDouble().pow(idx).toInt(), msg.bytes.size)
         }
     }
 
@@ -108,7 +110,7 @@ class MultiplexLayerTest {
 
         val layer = MultiplexLayer(controller)
 
-        val source = InputPipe<OutboundL3Message>()
+        val source = InputPipe<OutboundL3Message, Unit>()
         val handler = PipeHandlerHelper<OutboundL2Message>()
 
         source.pipeThrough(layer.encoder).setHandler(handler)
@@ -140,8 +142,8 @@ class MultiplexLayerTest {
                 .order(ByteOrder.LITTLE_ENDIAN)
                 .putShort(expectedDataLength.toShort())
                 .array()
-            val msgBytes = (msg as CspData).bytes
-            assertArrayEquals(lengthBytes, msgBytes.copyOfRange(0, 2))
+            val msgBytes = msg.bytes
+            assertContentEquals(lengthBytes, msgBytes.copyOfRange(0, 2))
             assertEquals(expectedFrameLength, msgBytes.size)
         }
     }
@@ -150,20 +152,20 @@ class MultiplexLayerTest {
     fun `inbound CspFrames with fewer than 20 bytes must be ignored`() {
         // Arrange
         val controller = mockController()
-        val cspSessionState = Mockito.mock(CspSessionState::class.java)
-        Mockito.`when`(controller.cspSessionState).thenReturn(cspSessionState)
-        Mockito.`when`(cspSessionState.isLoginDone).thenReturn(true)
+        val cspSessionState = mockk<CspSessionState>()
+        every { (controller.cspSessionState) } returns cspSessionState
+        every { cspSessionState.isLoginDone } returns true
 
         val layer = MultiplexLayer(controller)
 
-        val source = InputPipe<InboundL1Message>()
+        val source = InputPipe<InboundL1Message, ServerSocketCloseReason>()
         val handler = PipeHandlerHelper<InboundL2Message>()
 
         source.pipeThrough(layer.decoder).setHandler(handler)
 
-        (0..19).forEach {
+        repeat(20) {
             source.send(CspData(ByteArray(it)))
-            assertEquals("Size: $it", 0, handler.messages.size)
+            assertEquals(0, handler.messages.size)
         }
     }
 
@@ -171,14 +173,14 @@ class MultiplexLayerTest {
     fun `inbound CspFrames with more than 19 bytes must be processed`() {
         // Arrange
         val controller = mockController()
-        val cspSessionState = Mockito.mock(CspSessionState::class.java)
-        Mockito.`when`(controller.cspSessionState).thenReturn(cspSessionState)
+        val cspSessionState = mockk<CspSessionState>()
+        every { controller.cspSessionState } returns cspSessionState
         // login done; map to frames
-        Mockito.`when`(cspSessionState.isLoginDone).thenReturn(true)
+        every { cspSessionState.isLoginDone } returns true
 
         val layer = MultiplexLayer(controller)
 
-        val source = InputPipe<InboundL1Message>()
+        val source = InputPipe<InboundL1Message, ServerSocketCloseReason>()
         val handler = PipeHandlerHelper<InboundL2Message>()
 
         source.pipeThrough(layer.decoder).setHandler(handler)
@@ -190,11 +192,10 @@ class MultiplexLayerTest {
             source.send(CspData(expectedBytes))
         }
         assertEquals(sizes.size, handler.messages.size)
-        handler.messages.forEachIndexed { idx, msg ->
+        handler.messages.forEachIndexed { idx, frame ->
             val expectedSize = sizes[idx]
 
-            assertTrue(msg is CspFrame)
-            val frame = msg as CspFrame
+            assertTrue(frame is CspFrame)
             assertEquals(expectedSize, frame.box.size)
         }
     }
@@ -203,14 +204,14 @@ class MultiplexLayerTest {
     fun `inbound CspLoginMessages must correctly be mapped`() {
         // Arrange
         val controller = mockController()
-        val cspSessionState = Mockito.mock(CspSessionState::class.java)
-        Mockito.`when`(controller.cspSessionState).thenReturn(cspSessionState)
+        val cspSessionState = mockk<CspSessionState>()
+        every { controller.cspSessionState } returns cspSessionState
         // Login is not done, map to login messages
-        Mockito.`when`(cspSessionState.isLoginDone).thenReturn(false)
+        every { cspSessionState.isLoginDone } returns false
 
         val layer = MultiplexLayer(controller)
 
-        val source = InputPipe<InboundL1Message>()
+        val source = InputPipe<InboundL1Message, ServerSocketCloseReason>()
         val handler = PipeHandlerHelper<InboundL2Message>()
 
         source.pipeThrough(layer.decoder).setHandler(handler)
@@ -223,19 +224,18 @@ class MultiplexLayerTest {
             source.send(CspData(expectedBytes))
         }
         assertEquals(sizes.size, handler.messages.size)
-        handler.messages.forEachIndexed { idx, msg ->
+        handler.messages.forEachIndexed { idx, loginMessage ->
             val expectedSize = sizes[idx]
 
-            assertTrue(msg is CspLoginMessage)
-            val loginMessage = msg as CspLoginMessage
+            assertTrue(loginMessage is CspLoginMessage)
             assertEquals(expectedSize, loginMessage.bytes.size)
         }
     }
 
     private fun mockController(): ServerConnectionController {
-        val controller = Mockito.mock(ServerConnectionController::class.java)
-        val dispatcher = Mockito.mock(ServerConnectionDispatcher::class.java)
-        Mockito.`when`(controller.dispatcher).thenReturn(dispatcher)
+        val dispatcher = mockk<ServerConnectionDispatcher>(relaxed = true)
+        val controller = mockk<ServerConnectionController>()
+        every { controller.dispatcher } returns dispatcher
         return controller
     }
 }

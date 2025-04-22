@@ -70,11 +70,17 @@ message GroupInvite {
 // 1. If `version` or `variant` is not supported, abort these steps.
 // 2. Follow the description of `RendezvousInit` to continue.
 message DeviceGroupJoinRequestOrOffer {
+  // Device join protocol version used by the device.
   enum Version {
     // Initial version.
     V1_0 = 0;
   }
   Version version = 1;
+
+  // D2D protocol version (`d2d.ProtocolVersion`) used by the device
+  //
+  // If `0`, assume V0.1 (`0x0001`).
+  uint32 d2d_protocol_version = 4;
 
   // Variant (_offer_ or _request_)
   message Variant {

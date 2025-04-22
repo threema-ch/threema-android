@@ -29,14 +29,13 @@ import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import org.junit.Before
 import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.Before
 
 class BundledMessagesSendStepsTest : MessageProcessorProvider() {
-
     private lateinit var outgoingCspMessageServices: OutgoingCspMessageServices
 
     @Before
@@ -199,13 +198,12 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
 
     private fun assertMessageHandleSent(
         messageHandle: OutgoingCspMessageHandle,
-        assertMessage: (AbstractMessage) -> Unit
+        assertMessage: (AbstractMessage) -> Unit,
     ) {
         val expectedReceivers = messageHandle.receivers
             .map { it.identity }
             .filter { it != myContact.identity }
             .sorted()
-
 
         val actualReceivers = sentMessagesInsideTask
             .asSequence()
@@ -215,7 +213,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
                 assertMessage(it)
                 assertEquals(
                     messageHandle.messageCreator.messageId.messageIdLong,
-                    it.messageId.messageIdLong
+                    it.messageId.messageIdLong,
                 )
                 assertEquals(messageHandle.messageCreator.createdAt.time, it.date.time)
             }
@@ -235,5 +233,4 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
 
             override suspend fun invoke(handle: ActiveTaskCodec) = runnable(handle)
         })
-
 }

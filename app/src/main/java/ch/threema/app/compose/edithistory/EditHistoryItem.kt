@@ -72,7 +72,7 @@ fun EditHistoryTimelineItem(
         shouldFadeOutLineBottom = shouldFadeOutTimeLineBottom,
         labelContent = {
             EditedAtLabel(editHistoryEntry.editedAt)
-        }
+        },
     ) {
         EditHistoryItemBubble(
             bubbleModifier = bubbleModifier,
@@ -81,7 +81,7 @@ fun EditHistoryTimelineItem(
             shouldMarkupText = shouldMarkupText,
             isExpanded = isExpanded,
             textSelectionCallback = textSelectionCallback,
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }
@@ -107,7 +107,7 @@ fun EditHistoryItem(
             shouldMarkupText = shouldMarkupText,
             isExpanded = isExpanded,
             textSelectionCallback = textSelectionCallback,
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }
@@ -123,7 +123,6 @@ private fun EditHistoryItemBubble(
     textSelectionCallback: CustomTextSelectionCallback? = null,
     onClick: (() -> Unit)? = null,
 ) {
-
     /**
      * If we encounter a blank/null value in [EditHistoryEntryData.text] we can
      * be sure it is an EditHistoryEntryData of a file message. Because you cant
@@ -166,10 +165,10 @@ private fun EditHistoryItemBubble(
                         Brush.verticalGradient(
                             colorStops = arrayOf(
                                 0f to Color.Transparent,
-                                .7f to MaterialTheme.colorScheme.background
+                                .7f to MaterialTheme.colorScheme.background,
                             ),
-                        )
-                    )
+                        ),
+                    ),
             )
         }
     }
@@ -179,19 +178,21 @@ private fun EditHistoryItemBubble(
 private fun EditedAtLabel(editedAt: Date) {
     val formattedEditedAtDate = LocaleUtil.formatTimeStampStringAbsolute(
         LocalContext.current,
-        editedAt.time
+        editedAt.time,
     )
     AnimatedVisibilityNow {
         ThemedText(
             modifier = Modifier
                 .padding(start = 4.dp)
-                .then(stringResource(R.string.cd_edited_at).let {
-                    Modifier.semantics {
-                        contentDescription = it.format(formattedEditedAtDate)
-                    }
-                }),
+                .then(
+                    stringResource(R.string.cd_edited_at).let {
+                        Modifier.semantics {
+                            contentDescription = it.format(formattedEditedAtDate)
+                        }
+                    },
+                ),
             text = formattedEditedAtDate,
-            style = AppTypography.labelLarge
+            style = AppTypography.labelLarge,
         )
     }
 }

@@ -94,7 +94,7 @@ public class Contact extends Converter {
             builder.put(VERIFICATION_LEVEL, VerificationLevel.convert(contact.verificationLevel));
             builder.put(STATE, contact.getState().toString());
             builder.put(HIDDEN, contact.isHidden());
-            builder.maybePut(IS_WORK, ConfigUtils.isWorkBuild() && contact.isWork());
+            builder.maybePut(IS_WORK, ConfigUtils.isWorkBuild() && contact.isWorkVerified());
             builder.put(PUBLIC_KEY, contact.getPublicKey());
             builder.put(IDENTITY_TYPE, contact.getIdentityType() == IdentityType.WORK ? 1 : 0);
             builder.put(IS_BLOCKED, getBlockedContactsService().isBlocked(contact.getIdentity()));
@@ -104,9 +104,9 @@ public class Contact extends Converter {
             // TODO(ANDR-2708): Remove
             builder.put(FEATURE_LEVEL, ThreemaFeature.featureMaskToLevel(featureMask));
 
-            boolean isSecretChat = getHiddenChatListService().has(ContactUtil.getUniqueIdString(contact.getIdentity()));
-            builder.put(Receiver.LOCKED, isSecretChat);
-            builder.put(Receiver.VISIBLE, !isSecretChat || !getPreferenceService().isPrivateChatsHidden());
+            boolean isPrivateChat = getConversationCategoryService().isPrivateChat(ContactUtil.getUniqueIdString(contact.getIdentity()));
+            builder.put(Receiver.LOCKED, isPrivateChat);
+            builder.put(Receiver.VISIBLE, !isPrivateChat || !getPreferenceService().isPrivateChatsHidden());
 
             //define access
             builder.put(Receiver.ACCESS, (new MsgpackObjectBuilder())

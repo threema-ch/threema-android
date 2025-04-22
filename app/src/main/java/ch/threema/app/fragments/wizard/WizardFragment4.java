@@ -30,12 +30,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
@@ -45,13 +46,12 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
     private TextView nicknameText, phoneText, emailText, syncContactsText, phoneWarnText, emailWarnText, safeText;
     private ImageView phoneWarn, emailWarn;
     private ProgressBar phoneProgress, emailProgress, syncContactsProgress, safeProgress;
-    private Button finishButton;
+    private WizardButtonXml finishButtonCompose;
     private SettingsInterface callback;
     public static final int PAGE_ID = 4;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_wizard4, container, false);
 
         nicknameText = rootView.findViewById(R.id.wizard_nickname_preset);
@@ -68,17 +68,8 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
         safeText = rootView.findViewById(R.id.threema_safe_preset);
         safeProgress = rootView.findViewById(R.id.threema_safe_progress);
 
-        finishButton = rootView.findViewById(R.id.wizard_finish);
-        finishButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                phoneText.setClickable(false);
-                emailText.setClickable(false);
-                callback.onWizardFinished(WizardFragment4.this, finishButton);
-                phoneText.setClickable(true);
-                emailText.setClickable(true);
-            }
-        });
+        finishButtonCompose = rootView.findViewById(R.id.wizard_finish_compose);
+        finishButtonCompose.setOnClickListener(v -> onClickFinish());
 
         emailText.setOnClickListener(this);
         phoneText.setOnClickListener(this);
@@ -99,7 +90,7 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
         callback = (SettingsInterface) activity;
     }
@@ -129,12 +120,27 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
         initValues();
 
         if (ConfigUtils.isWorkRestricted() && callback.isSkipWizard()) {
-            finishButton.callOnClick();
+            onClickFinish();
         }
     }
 
+    public void setFinishButtonEnabled(final boolean isEnabled) {
+        if (finishButtonCompose != null) {
+            finishButtonCompose.setButtonEnabled(isEnabled);
+        }
+    }
+
+    private void onClickFinish() {
+        phoneText.setClickable(false);
+        emailText.setClickable(false);
+        setFinishButtonEnabled(false);
+        callback.onWizardFinished(WizardFragment4.this);
+        phoneText.setClickable(true);
+        emailText.setClickable(true);
+    }
+
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         int id = v.getId();
         if (id == R.id.wizard_phone_error_text) {
             WizardDialog.newInstance(phoneWarnText.getText().toString(), R.string.ok).show(getFragmentManager(), "ph");
@@ -234,6 +240,6 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
 
         boolean isSkipWizard();
 
-        void onWizardFinished(WizardFragment4 fragment, Button finishButton);
+        void onWizardFinished(WizardFragment4 fragment);
     }
 }

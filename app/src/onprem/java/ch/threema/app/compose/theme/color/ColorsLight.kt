@@ -24,7 +24,6 @@ package ch.threema.app.compose.theme.color
 import androidx.compose.ui.graphics.Color
 
 object ColorsLight : ComposeColorPaletteLight() {
-
     override val primary = Color(0xFFAB251D)
     override val onPrimary = Color(0xFFFFFFFF)
     override val primaryContainer = Color(0xFFF7D1CF)
@@ -47,6 +46,11 @@ object ColorsLight : ComposeColorPaletteLight() {
     override val onSurface = Color(0xFF201A19)
     override val surfaceVariant = Color(0xFFFBE9E7)
     override val onSurfaceVariant = Color(0xFF534341)
+    override val surfaceContainerLowest = Color(0xFFFAF0F3)
+    override val surfaceContainerLow = Color(0xFFfAF0F3)
+    override val surfaceContainer = Color(0xFFF8E9EC)
+    override val surfaceContainerHigh = Color(0xFFF6E4E7)
+    override val surfaceContainerHighest = Color(0xFFF3DDDF)
     override val outline = Color(0xFF857370)
     override val outlineVariant = Color(0xFFf5ddda)
     override val scrim = Color(0xFF000000)

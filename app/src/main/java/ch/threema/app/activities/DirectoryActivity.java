@@ -185,7 +185,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             });
             ConfigUtils.adjustSearchBarTextViewMargin(this, searchBar);
 
-            updateToolbarTitle(getString(R.string.directory_title));
+            updateToolbarTitle(getString(R.string.work_directory_title));
         }
 
         try {
@@ -316,7 +316,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             this.searchView = (ThreemaSearchView) this.searchMenuItem.getActionView();
             if (this.searchView != null) {
                 ConfigUtils.adjustSearchViewPadding(searchView);
-                this.searchView.setQueryHint(getString(R.string.directory_search));
+                this.searchView.setQueryHint(getString(R.string.work_directory_search));
                 this.searchView.setOnQueryTextListener(this);
                 if (this.searchBar != null) {
                     this.searchBar.post(() -> {
@@ -509,7 +509,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
                 progressIndicator.setVisibility(View.VISIBLE);
                 break;
             case EMPTY_STATE_IDLE:
-                emptyTextView.setText(R.string.directory_empty_view_text);
+                emptyTextView.setText(R.string.work_directory_empty_view_text);
                 progressIndicator.setVisibility(View.GONE);
                 break;
             case EMPTY_STATE_RESULTS:

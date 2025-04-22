@@ -33,7 +33,9 @@ import java.util.HashMap;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.DeadlineListServiceImpl;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.stores.PreferenceStore;
@@ -66,14 +68,9 @@ public class SystemUpdateToVersion43 implements UpdateSystemService.SystemUpdate
             return false;
         }
 
-        DeadlineListService mutedChatsService = serviceManager.getMutedChatsListService();
-        DeadlineListService hiddenChatsService = serviceManager.getHiddenChatsListService();
+        DeadlineListService mutedChatsService = new DeadlineListServiceImpl("list_muted_chats", serviceManager.getPreferenceService());
+        ConversationCategoryService conversationCategoryService = serviceManager.getConversationCategoryService();
         RingtoneService ringtoneService = serviceManager.getRingtoneService();
-
-        if (mutedChatsService == null || hiddenChatsService == null || ringtoneService == null) {
-            logger.error("update script 43 failed, PreferenceService not available");
-            return false;
-        }
 
         if (ThreemaApplication.getMasterKey() == null) {
             logger.error("update script 43 failed, No Master key");
@@ -161,7 +158,7 @@ public class SystemUpdateToVersion43 implements UpdateSystemService.SystemUpdate
 
         preferenceStore.remove(hiddenChatsPrefs);
         preferenceStore.saveStringHashMap(hiddenChatsPrefs, newHiddenChatsMap, false);
-        hiddenChatsService.init();
+        conversationCategoryService.invalidateCache();
 
         preferenceStore.remove(ringtonePrefs);
         preferenceStore.saveStringHashMap(ringtonePrefs, newRingtoneMap, false);

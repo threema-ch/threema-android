@@ -74,7 +74,7 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
 
             return PeriodicWorkRequestBuilder<ThreemaSafeUploadWorker>(
                 schedulePeriodMs,
-                TimeUnit.MILLISECONDS
+                TimeUnit.MILLISECONDS,
             )
                 .setInitialDelay(schedulePeriodMs, TimeUnit.MILLISECONDS)
                 .setConstraints(constraints)
@@ -132,7 +132,7 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
             val lastBackupDate = preferenceService.threemaSafeBackupDate
             val notificationService = serviceManager!!.notificationService
             val fullDaysSinceLastBackup =
-                ((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt();
+                ((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt()
             if (fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
                 notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
             } else {

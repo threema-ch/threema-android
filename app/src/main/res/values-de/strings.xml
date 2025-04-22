@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontakte</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">Chats</string>
     <string name="title_compose_message">Chat starten</string>
     <string name="title_choose_recipient">Empfänger auswählen</string>
     <string name="title_keyfingerprint">Schlüssel-Fingerabdruck</string>
-    <string name="title_mythreemaid">Meine Threema-ID</string>
-    <string name="title_threemaid">Threema-ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">Meine ${app_name_short}-ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short}-ID</string>
     <string name="title_adduser">Kontakt hinzufügen</string>
     <string name="title_enter_id">ID eingeben</string>
     <string name="title_invite_friend">Freunde einladen</string>
     <string name="invite_via">Einladen mittels…</string>
-    <string name="invite_email_body">Hallo\n\nIch nutze %1$s, den sicheren Instant Messenger, der die Privatsphäre schützt.\n\nMeine Threema-ID: https://threema.id/%2$s\n\nLass uns über %1$s kommunizieren!\n\nLiebe Grüsse\n</string>
-    <string name="invite_sms_body">Hallo! Lass uns sicher und datenschutzkonform über %1$s kommunizieren! Meine Threema-ID: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema. Der sichere Messenger, der Deine und meine Privatsphäre schützt</string>
-    <string name="enter_id_hint">Threema-ID eingeben</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">Hallo\n\nIch nutze %1$s, den sicheren Instant Messenger, der die Privatsphäre schützt.\n\nMeine ${app_name_short}-ID: https://threema.id/%2$s\n\nLass uns über %1$s kommunizieren!\n\nLiebe Grüsse\n</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">Hallo! Lass uns sicher und datenschutzkonform über %1$s kommunizieren! Meine ${app_name_short}-ID: https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}. Der sichere Messenger, der Deine und meine Privatsphäre schützt</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">${app_name_short}-ID eingeben</string>
     <string name="account_links">Verknüpfungen</string>
     <string name="menu_settings">Einstellungen</string>
-    <string name="menu_about">Über Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">Über ${app_name}</string>
     <string name="menu_add_contact">Neuer Kontakt</string>
     <string name="menu_done">Fertig</string>
     <string name="compose_message_and_enter">Nachricht eingeben</string>
@@ -51,6 +59,10 @@
     <string name="prefs_sum_notification_sound">System-Standard</string>
     <string name="prefs_vibrate">Vibrieren</string>
     <string name="prefs_sum_vibrate">Bei eingehender Nachricht vibrieren</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_notification_light">Benachrichtigungslicht</string>
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_sum_notification_light">Farbige LED für eingehende Nachrichten verwenden (falls vorhanden)</string>
     <string name="prefs_sum_light">Weiss</string>
     <string name="prefs_title_wallpaper">Hintergrundbild auswählen</string>
     <string name="prefs_sum_wallpaper">Bild für Hintergrund wählen</string>
@@ -67,8 +79,10 @@
     <string name="prefs_inapp_vibrate_on">Vibrieren beim Empfang von Nachrichten</string>
     <string name="prefs_inapp_vibrate_off">Keine Vibration beim Empfang von Nachrichten</string>
     <string name="workarounds">Workarounds</string>
-    <string name="prefs_title_threema_push_switch">Threema Push benutzen</string>
-    <string name="prefs_sum_threema_push_on">Threema Push nutzen, um über neue Nachrichten informiert zu werden</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_threema_push_switch">${app_name_short} Push benutzen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_threema_push_on">${app_name_short} Push nutzen, um über neue Nachrichten informiert zu werden</string>
     <string name="prefs_sum_threema_push_off">Mittels System-Push-Dienst auf neue Nachrichten prüfen</string>
     <string name="prefs_logging">Logging</string>
     <string name="prefs_title_message_log_switch">In Datei loggen</string>
@@ -84,18 +98,10 @@
     <string name="image_size_large">Gross (1600x1600)</string>
     <string name="image_size_xlarge">Extragross (2592x2592)</string>
     <string name="image_size_original">Originalgrösse</string>
-    <string name="color_none">Keine</string>
-    <string name="color_orange">Orange</string>
-    <string name="color_red">Rot</string>
-    <string name="color_green">Grün</string>
-    <string name="color_blue">Blau</string>
-    <string name="color_cyan">Cyan</string>
-    <string name="color_magenta">Magenta</string>
-    <string name="color_yellow">Gelb</string>
-    <string name="color_white">Weiss</string>
     <string name="next">Weiter</string>
     <string name="finish">Abschliessen</string>
     <string name="please_wait">Bitte warten…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Schlüsselpaar wird erzeugt…</string>
     <string name="wizard1_sync_contacts">Kontakte werden synchronisiert…</string>
     <string name="wizard2_email_hint">Ihre E-Mail-Adresse</string>
@@ -125,21 +131,25 @@
     <string name="share_via">Teilen mittels…</string>
     <string name="share_subject">%s-Chat</string>
     <string name="message_delete_undo">Rückgängig</string>
-    <string name="mobile_already_linked">Ihre Threema-ID ist bereits mit dieser Handynummer verknüpft</string>
-    <string name="email_already_linked">Ihre Threema-ID ist bereits mit dieser E-Mail-Adresse verknüpft</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">Ihre ${app_name_short}-ID ist bereits mit dieser Handynummer verknüpft</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">Ihre ${app_name_short}-ID ist bereits mit dieser E-Mail-Adresse verknüpft</string>
     <string name="whoaaa">Hinweis</string>
     <string name="really_delete_message_title">Nachricht(en) löschen</string>
     <string name="really_delete_thread">Chat löschen</string>
     <string name="really_delete_multiple_threads">Chats löschen</string>
     <string name="really_delete_contact">Möchten Sie diesen Kontakt und alle dazugehörigen Chats wirklich löschen?</string>
     <string name="image_placeholder">Bild</string>
-    <string name="invalid_threema_id">Ungültige Threema-ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">Ungültige ${app_name_short}-ID</string>
     <string name="contact_already_exists">Kontakt existiert bereits</string>
     <string name="close">Schliessen</string>
     <string name="creating_contact">Neuen Kontakt hinzufügen</string>
     <string name="creating_contact_successful">Kontakt erfolgreich hinzugefügt</string>
     <string name="invalid_threema_qr_code">Ungültiger QR-Code</string>
-    <string name="threema_contact">Threema-Kontakt</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short}-Kontakt</string>
     <string name="first_name">Vorname</string>
     <string name="last_name">Nachname</string>
     <string name="os_licenses">Software-Lizenzen</string>
@@ -151,12 +161,13 @@
     <string name="verify_failed_not_linked">Die Prüfung der Mobilnummer ist nicht möglich, da der Prozess von Ihnen abgeborchen wurde.</string>
     <string name="check_incoming_sms">Warte auf eingehende SMS</string>
     <string name="backup_title">ID exportieren</string>
-    <string name="backup_sum">Exportieren Sie Ihre Threema-ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">Exportieren Sie Ihre ${app_name_short}-ID</string>
     <string name="backup_and_delete">Sichern und Löschen</string>
     <string name="delete_id_title">ID löschen</string>
     <string name="delete_id_message">Sofern Sie die ID nicht gesichert haben und kein Backup erstellt haben, werden Sie nie mehr in der Lage sein, mit dieser ID Nachrichten zu versenden oder zu empfangen.\n\nFalls Sie diese ID nicht mehr verwenden möchten, empfiehlt es sich, vor dem Löschen ein ID-Widerrufspasswort zu setzen und die ID auf myid.threema.ch/revoke zu widerrufen.</string>
     <string name="delete_id_message2">Letzte Warnung: wollen Sie Ihre ID wirklich von diesem Gerät löschen?</string>
-    <string name="delete_id_sum">Threema-ID und Chats auf diesem Gerät löschen</string>
+    <string name="delete_id_sum">${app_name_short}-ID und Chats auf diesem Gerät löschen</string>
     <string name="backup_password_summary">Ihre ID wird mit einem Passwort verschlüsselt. Benutzen Sie eine Kombination aus Buchstaben, Ziffern und Symbolen. Merken Sie sich, was Sie hier eingeben!</string>
     <string name="backup_password_again_summary">Passwortwiederholung</string>
     <string name="password_hint">Passwort</string>
@@ -168,9 +179,10 @@
         QR-Code mit einem anderen Gerät scannen.</string>
     <string name="support">Hilfe</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Die folgende Zeichenfolge kann zusammen mit dem gewählten Passwort zum
-        Wiederherstellen Ihrer Threema-ID verwendet werden.</string>
-    <string name="backup_share_subject">Threema ID-Export für</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_content">Die folgende Zeichenfolge kann zusammen mit dem gewählten Passwort zum Wiederherstellen Ihrer ${app_name_short}-ID verwendet werden.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">${app_name_short}-ID-Export für</string>
     <string name="add_attachment">Einfügen</string>
     <string name="invalid_passphrase">Ungültige Passphrase</string>
     <string name="master_key_locked">Hauptschlüssel ist gesperrt</string>
@@ -191,10 +203,14 @@
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Audio</string>
     <string name="restoring_backup">Backup wiederherstellen</string>
-    <string name="server_message_title">Nachricht vom Threema-Server</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">Nachricht vom ${company_name}-Server</string>
     <string name="error">Fehler</string>
-    <string name="no_contacts"><![CDATA[Sie haben noch keine Kontakte. Schalten Sie die Synchronisierung ein (Einstellungen -
-        Privatsphäre) oder fügen Sie Kontakte manuell hinzu.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
+    <string name="no_contacts"><![CDATA[Sie haben noch keine Kontakte. Schalten Sie die Synchronisierung ein (Einstellungen > Privatsphäre) oder fügen Sie Kontakte manuell hinzu.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_contacts_sync_on"><![CDATA[Sie haben noch keine Kontakte. Die Synchronisierung ist eingeschaltet, aber offenbar haben noch keine Ihrer Kontakte ${app_name_short} installiert (laden Sie sie ein!).]]></string>
     <string name="masterkey_title">Passphrase eingeben</string>
     <string name="masterkey_body">Ihr Hauptschlüssel ist mit einer Passphrase geschützt. Geben Sie zum Entsperren Ihre
         Passphrase ein.</string>
@@ -216,6 +232,8 @@
     <string name="unlink">Entfernen</string>
     <string name="threema_version">Version</string>
     <string name="threema_version_code">Versions-Code</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
+    <string name="about_server_config_title">Server-Konfiguration</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Keine Internetverbindung, ungültige ID-Export-Zeichenfolge
         oder falsches Passwort</string>
     <string name="prefs_header_other">Weitere</string>
@@ -237,11 +255,21 @@
     <string name="file_too_large">Die Datei ist grösser als die erlaubten %1$d MB</string>
     <string name="deleting_thread">Chat wird gelöscht</string>
     <string name="enter_serial_body"><![CDATA[Bitte geben Sie Ihren Shop-Lizenzschlüssel ein. Sie können eine Lizenz <a href="https://shop.threema.ch/">kaufen</a> oder einen Schlüssel für eine bereits gekaufte Lizenz <a href="https://shop.threema.ch/retrieve_keys">wiederherstellen</a>.]]></string>
-    <string name="enter_serial_title">Threema freischalten</string>
-    <string name="serial_required_want_exit">Der Lizenzschlüssel ist ungültig. Möchten Sie es nochmals versuchen oder
-        Threema verlassen?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_enter_serial_body">Geben Sie Ihre ${app_name_short}-Zugangsdaten ein, die Sie von Ihrem Unternehmen erhalten haben.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">${app_name} freischalten</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">Der Lizenzschlüssel ist ungültig. Möchten Sie es nochmals versuchen oder ${app_name} verlassen?</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_serial_required_want_exit">Die Lizenz ist ungültig. Möchten Sie es nochmals versuchen oder ${app_name} verlassen?</string>
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Lizenz wird überprüft</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
+    <string name="work_checking_credentials">Zugangsberechtigung wird überprüft</string>
     <string name="update_available">Update verfügbar</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
+    <string name="update_available_message">Eine neue Version ist verfügbar. Möchten Sie sie jetzt herunterladen?</string>
     <string name="no_update_available">Kein Update verfügbar</string>
     <string name="download">Herunterladen</string>
     <string name="not_now">Später erinnern</string>
@@ -359,9 +387,8 @@
     <string name="prefs_title_blocked_contacts">Blockierte Kontakte</string>
     <string name="prefs_sum_blocked_contacts">Nachrichten von IDs, die hier aufgelistet sind, werden ignoriert.</string>
     <string name="verified">Überprüft</string>
-    <string name="want_to_add_to_exclude_list">Dieser Kontakt ist mit einem Eintrag in Ihrem Telefon-Adressbuch
-        verknüpft. Wenn Sie ihn in Threema löschen, taucht er nach einer Kontaktsynchronisation wieder auf.\nMöchten sie
-        diese ID zukünftig aus der Synchronisation ausschliessen?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="want_to_add_to_exclude_list">Dieser Kontakt ist mit einem Eintrag in Ihrem Telefon-Adressbuch verknüpft. Wenn Sie ihn in ${app_name_short} löschen, taucht er nach einer Kontaktsynchronisation wieder auf.\nMöchten sie diese ID zukünftig aus der Synchronisation ausschliessen?</string>
     <string name="no">Nein</string>
     <string name="yes">Ja</string>
     <string name="deleting_contact">Kontakt wird gelöscht</string>
@@ -376,8 +403,10 @@
         Kontaktbild vorhanden ist.</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Graue Platzhalter anzeigen, wenn kein Kontaktbild
         vorhanden ist.</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Alle Threema-IDs in der Kontaktliste anzeigen</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Inaktive/widerrufene Threema-IDs ausblenden</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">Alle ${app_name_short}-IDs in der Kontaktliste anzeigen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">Inaktive/widerrufene ${app_name_short}-IDs ausblenden</string>
     <string name="contact_sorting_first_name">Vorname - Nachname</string>
     <string name="contact_sorting_last_name">Nachname - Vorname</string>
     <string name="contact_format_first_name_last_name">Vorname Nachname</string>
@@ -395,7 +424,8 @@
     <string name="prefs_title_fullscreen_ime">Bildschirmfüllende Tastatur</string>
     <string name="prefs_sum_fullscreen_ime_on">Die Tastatur füllt im Querformat den ganzen Bildschirm</string>
     <string name="prefs_sum_fullscreen_ime_off">Oberhalb der Tastatur wird ein Ausschnitt des Chats angezeigt</string>
-    <string name="add_acount_from_within_threema">Erstellen Sie eine neue ID von der Threema-App aus.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">Erstellen Sie eine neue ${app_name_short}-ID von der ${app_name_short}-App aus.</string>
     <string name="save_image">Bild speichern</string>
     <string name="share_image">Bild teilen</string>
     <string name="view_in_gallery">In Galerie ansehen</string>
@@ -418,7 +448,8 @@
     <string name="push_not_available_text2">%s wird versuchen, eine dauerhafte Hintergrundverbindung zum Server zu öffnen. Dies funktioniert möglicherweise nicht zuverlässig, wenn die Akkuoptimierungs-Mechanismen Ihres Geräts die Hintergrundverbindung beeinträchtigen.</string>
     <string name="backup_in_progress">Datensicherung wird erstellt</string>
     <string name="backup_or_restore_success_body">Datensicherung erfolgreich erstellt</string>
-    <string name="backup_or_restore_error">Threema-Datensicherung</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short}-Datensicherung</string>
     <string name="backup_or_restore_error_body">Datensicherung fehlgeschlagen</string>
     <string name="could_not_download_message">Nachricht konnte nicht heruntergeladen werden</string>
     <string name="info">Informationen</string>
@@ -451,9 +482,8 @@
     <string name="num_items_sected">%s ausgewählt</string>
     <string name="really_delete_media">Möchten Sie diese %d Medien-Nachricht(en) wirklich löschen?</string>
     <string name="check_updates">Auf Updates prüfen</string>
-    <string name="masterkey_lock_explain">Threema hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der
-        Passphrase gefragt werden, kann dies an einer Taskkiller- oder Akkuspar-App liegen, welche die Passphrase
-        aus dem Speicher entfernt.</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name} hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der Passphrase gefragt werden, kann dies an einer Task-Killer- oder Akku-Spar-App liegen, welche die Passphrase aus dem Speicher entfernt.</string>
     <string name="identity_already_exists">Diese ID ist bereits in Ihrer Kontaktliste</string>
     <string name="share_contact">Kontakt teilen</string>
     <string name="add_shortcut">Desktop-Verkn. erstellen</string>
@@ -489,8 +519,8 @@
     <string name="ballot_subject_hint">Titel der Umfrage eingeben</string>
     <string name="ballot_no_ballots_yet">Noch keine Umfragen vorhanden.</string>
     <string name="print">Drucken</string>
-    <string name="ballot_wizard0_explain">Erstellen Sie schnell und einfach eine Umfrage direkt innerhalb von
-        Threema. Vereinbaren Sie einen Termin oder machen Sie eine Umfrage unter Ihren Freunden.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">Erstellen Sie schnell und einfach eine Umfrage direkt innerhalb von ${app_name_short}. Vereinbaren Sie einen Termin oder machen Sie eine Umfrage unter Ihren Kontakten.</string>
     <string name="ballot_add_choices">Antwortmöglichkeiten eingeben</string>
     <string name="blocked_cannot_send">Sie können keine Nachrichten an blockierte Kontakte senden</string>
     <string name="invalid_some_cannot_send">Einige der Empfänger können nicht ausgewählt werden.</string>
@@ -506,7 +536,8 @@
     <string name="back">Zurück</string>
     <string name="wearable_reply">Antworten</string>
     <string name="wearable_reply_label">Antwort an %s</string>
-    <string name="push_disable_text">Wenn Sie fortfahren, wird «Threema Push» anstelle des Push-Dienstes des Systems verwendet. Dies trägt dazu bei, Ihren digitalen Fussabdruck zu verringern, erfordert jedoch, dass Ihr Gerät so konfiguriert ist, dass die App im Hintergrund ausgeführt werden kann. Kontaktieren Sie ggf. den Support Ihres Geräteherstellers für Unterstützung bei der Konfiguration, falls die entsprechenden Optionen in den Geräte-Einstellungen nicht auffindbar sind.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">Wenn Sie fortfahren, wird «${app_name_short} Push» anstelle des Push-Dienstes des Systems verwendet. Dies trägt dazu bei, Ihren digitalen Fussabdruck zu verringern, erfordert jedoch, dass Ihr Gerät so konfiguriert ist, dass die App im Hintergrund ausgeführt werden kann. Kontaktieren Sie ggf. den Support Ihres Geräteherstellers für Unterstützung bei der Konfiguration, falls die entsprechenden Optionen in den Geräte-Einstellungen nicht auffindbar sind.</string>
     <string name="ballot_intermediate_results_show">Zwischenresultate zeigen</string>
     <string name="converting_video">Video wird bearbeitet</string>
     <string name="video_size_small">Hoch (kleine Datenmenge)</string>
@@ -521,6 +552,7 @@
     <string name="kick_user_from_group">%1$s aus Gruppe entfernen</string>
     <string name="show_as_qrcode">Als QR-Code anzeigen</string>
     <string name="qr_code">QR-Code</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="really_leave_id_export">Vergewissern Sie sich, dass Sie die Zeichenfolge des ID-Exports oder den QR-Code an einen
 sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="revocation_key_title">ID-Widerruf</string>
@@ -605,9 +637,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="invalid_data">Ungültige Daten. Senden nicht möglich.</string>
     <string name="prefs_emoji_style">Emoji-Stil</string>
     <string name="prefs_android_emojis">System-Emojis</string>
-    <string name="prefs_default_emojis">Threema-Emojis (standard)</string>
-    <string name="android_emojis_warning">Hinweis: Der System-Zeichensatz kann unter Umständen nicht alle von Threema
-        unterstützten Emojis darstellen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short}-Emojis (standard)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="android_emojis_warning">Hinweis: Der System-Zeichensatz kann unter Umständen nicht alle von ${app_name_short} unterstützten Emojis darstellen.</string>
     <string name="crop">Zuschneiden</string>
     <string name="scan_id_mismatch_title">ID stimmt nicht überein</string>
     <string name="scan_id_mismatch_message">Die ID, die Sie gescannt haben, stimmt nicht mit dem gespeicherten Kontakt
@@ -625,11 +658,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="fontsize_xlarge">Sehr gross</string>
     <string name="no_app_for_location">Keine Karten-App auf diesem Gerät gefunden.</string>
     <string name="prefs_sendlog">Logdatei versenden</string>
-    <string name="prefs_sendlog_summary">Logdatei für Problemanalyse an Threema senden</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">Logdatei für Problemanalyse an ${company_name} senden</string>
     <string name="prefs_exportlog">Logdatei teilen</string>
     <string name="prefs_exportlog_summary">Logdatei für Problemanalyse teilen</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung, um Medien zu sichern oder zu senden.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung, um Ihre Position zu senden.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_contacts_required">Aktivieren Sie die Kontakte-Berechtigung, um einen Kontakt zu senden.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <string name="message_acknowledged">«Daumen hoch» gesendet</string>
@@ -650,51 +687,52 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="new_wizard_select_country">Land auswählen</string>
     <string name="new_wizard_lets_get_started">Los geht\'s!</string>
     <string name="new_wizard_setup_threema">Jetzt einrichten</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_new_wizard_setup_threema">${app_name} einrichten</string>
     <string name="new_wizard_restore_id_backup">Exportierte ID wiederherstellen</string>
-    <string name="new_wizard_welcome">Willkommen bei Threema</string>
-    <string name="new_wizard_move_finger">Bewegen Sie Ihren Finger im Feld, um eine neue Threema-ID zu generieren.</string>
-    <string name="new_wizard_this_is_your_id">Das ist Ihre Threema-ID:</string>
-    <string name="new_wizard_works_like_phone_number">Ihre Threema-ID funktioniert wie eine Telefonnummer. Ihre Freunde können Sie über diese ID erreichen.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">Willkommen bei ${app_name}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">Bewegen Sie Ihren Finger im Feld, um eine neue ${app_name_short}-ID zu generieren.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">Das ist Ihre ${app_name_short}-ID:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">Ihre ${app_name_short}-ID funktioniert wie eine Telefonnummer. Ihre Kontakte können Sie über diese ID erreichen.</string>
     <string name="new_wizard_choose_nickname">Nickname wählen</string>
-    <string name="new_wizard_nickname_explain">Der Nickname wird bei Ihren Freunden angezeigt, wenn sie eine Nachricht empfangen.</string>
+    <string name="new_wizard_nickname_explain">Der Nickname wird bei Ihren Kontakten angezeigt, wenn sie eine Nachricht empfangen.</string>
     <string name="new_wizard_hint_enter_nickname">Nickname eingeben</string>
-    <string name="new_wizard_help_your_friends_find_you">Damit Sie einfacher gefunden werden</string>
-    <string name="new_wizard_link_mobile">Verknüpfen Sie Ihre Handynummer und/oder E-Mail-Adresse mit Ihrer Threema-ID.</string>
-    <string name="new_wizard_link_mobile_only">Verknüpfen Sie Ihre Handynummer mit Ihrer Threema-ID.</string>
+    <string name="new_wizard_help_your_friends_find_you">Damit Sie einfacher gefunden werden.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">Verknüpfen Sie Ihre Handynummer und/oder E-Mail-Adresse mit Ihrer ${app_name_short}-ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">Verknüpfen Sie Ihre Handynummer mit Ihrer ${app_name_short}-ID.</string>
     <string name="new_wizard_hint_mobile_number">Handynummer (optional)</string>
     <string name="new_wizard_hint_email">E-Mail (optional)</string>
-    <string name="new_wizard_find_friends">Finden Sie Ihre Freunde auf Threema</string>
-    <string name="new_wizard_sync_contacts_explain">Einschalten, um zu sehen, welche Ihrer Freunde Threema nutzen.</string>
     <string name="new_wizard_done_title">Alles korrekt?</string>
     <string name="new_wizard_linked_to">Verknüpft mit</string>
-    <string name="new_wizard_need_internet">Eine stabile Internet-Verbindung wird benötigt, um Ihre eindeutige Threema ID erzeugen zu können.
-        Bitte versuchen Sie es erneut.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">Eine stabile Internet-Verbindung wird benötigt, um Ihre eindeutige ${app_name_short}-ID erzeugen zu können. Bitte versuchen Sie es erneut.</string>
     <string name="new_wizard_more_information">Mehr Informationen</string>
     <string name="message_details_message_id_copied">Nachrichten-ID wurde in die Zwischenablage kopiert.</string>
     <string name="contact_details_id_copied">ID wurde in die Zwischenablage kopiert.</string>
     <string name="contact_details_nickname_copied">Nickname wurde in die Zwischenablage kopiert.</string>
-    <string name="new_wizard_use_id_as_nickname">Möchten Sie Ihre Threema-ID als Nickname verwenden?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">Möchten Sie Ihre ${app_name_short}-ID als Nickname verwenden?</string>
     <string name="new_wizard_phone_email_invalid">Die angegebene Handynummer oder die E-Mail-Adresse sind ungültig\nBitte korrigieren oder löschen Sie die markierten Angaben, bevor Sie fortfahren.</string>
     <string name="new_wizard_phone_invalid">Die angegebene Handynummer ist ungültig\nBitte korrigieren oder löschen Sie die markierten Angaben, bevor Sie fortfahren.</string>
-    <string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie),
-        die für die Erzeugung des Schlüsselpaars genutzt werden. Dieses Schlüsselpaar wird mit Ihrer neuen Threema-ID verbunden. Es besteht aus einem
-        <b>öffentlichen Schlüssel</b>, der an Ihre Freunde verteilt wird und einem <b>privaten Schlüssel</b>, der auf Ihrem Gerät verbleibt. Bei Ihren
-        Freunden wird der öffentliche Schlüssel genutzt, um Nachrichten an Sie zu verschlüsseln. Nur der Inhaber des privaten Schlüssels und niemand
-        anderes kann die Nachrichten wieder entschlüsseln.</string>
-    <string name="new_wizard_info_id">Sie haben mit der Threema-ID ein Schlüsselpaar erzeugt. Der öffentliche Schlüssel wurde an unseren Server gesendet.
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie), die für die Erzeugung des Schlüsselpaars genutzt werden. Dieses Schlüsselpaar wird mit Ihrer neuen ${app_name_short}-ID verbunden. Es besteht aus einem <b>öffentlichen Schlüssel</b>, der an Ihre Kontakte verteilt wird und einem <b>privaten Schlüssel</b>, der auf Ihrem Gerät verbleibt. Bei Ihren Kontakten wird der öffentliche Schlüssel genutzt, um Nachrichten an Sie zu verschlüsseln. Nur der Inhaber des privaten Schlüssels und niemand anderes kann die Nachrichten wieder entschlüsseln.</string>
+    <string name="new_wizard_info_id">Sie haben mit der ${app_name_short}-ID ein Schlüsselpaar erzeugt. Der öffentliche Schlüssel wurde an unseren Server gesendet.
         Der private Schlüssel verlässt Ihr Gerät nie. Dies stellt sicher, dass niemand anderes Ihre Nachrichten lesen kann.</string>
-    <string name="new_wizard_info_sync_contacts">Wenn Sie diese Option aktivieren, werden E-Mail-Adressen und Telefonnummern aus Ihrem Adressbuch einwegverschlüsselt (gehasht), bevor sie zum
-        Kontaktabgleich an der Server geschickt werden. Wir speichern keinerlei Adressbuchdaten.</string>
-    <string name="new_wizard_info_sync_contacts_dialog">Die Kontakt-Synchronisation hilft Ihnen, Ihre Freunde automatisch zu finden. Wenn Sie zustimmen, werden Handynummern und E-Mail-Adressen aus Ihrem Telefonbuch verschlüsselt an unseren Server gesendet und dort verglichen, um passende Kontakte zu finden. Die Daten werden weder gespeichert noch weitergegeben.\n\nMöchten Sie die Kontakt-Synchronisation aktivieren?</string>
-    <string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann Threema Ihren Freunden helfen, Sie
-        automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form
-        auf unserem Server gespeichert. Sie können diesen Schritt auch einfach überspringen, wenn Sie Threema anonym benutzen möchten.</string>
-    <string name="new_wizard_info_link_phone_only">Wenn Sie Ihre eigene Handynummer angeben, kann Threema Ihren Freunden helfen, Sie
-        automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Nummer wird dazu in einwegverschlüsselter (gehashter) Form
-        auf unserem Server gespeichert. Sie können diesen Schritt auch einfach überspringen, wenn Sie Threema anonym benutzen möchten.</string>
-    <string name="new_wizard_info_nickname">Der Nickname wird auf einigen Geräten in Benachrichtigungen angezeigt und dient in der Kontaktliste als zusätzliche
-        Identifikationsmöglichkeit für Chatpartner, die Sie nicht in ihrer Kontaktliste haben. Wir empfehlen, nur einen Vornamen oder ein Pseudonym zu verwenden.
-        Wenn Sie keinen Nickname festlegen, wird Ihre Threema-ID verwendet.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_sync_contacts">Wenn Sie diese Option aktivieren, werden E-Mail-Adressen und Telefonnummern aus Ihrem Adressbuch einwegverschlüsselt (gehasht), bevor sie zum Kontaktabgleich an der Server geschickt werden. Wir speichern keinerlei Adressbuchdaten.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Die Kontakt-Synchronisation hilft Ihnen, Ihre Kontakte automatisch zu finden. Wenn Sie zustimmen, werden Handynummern und E-Mail-Adressen aus Ihrem Telefonbuch verschlüsselt an unseren Server gesendet und dort verglichen, um passende Kontakte zu finden. Die Daten werden weder gespeichert noch weitergegeben.\n\nMöchten Sie die Kontakt-Synchronisation aktivieren?</string>
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann ${app_name_short} Ihren Kontakten helfen, Sie automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie ${app_name} anonym benutzen möchten.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">Wenn Sie Ihre eigene Handynummer angeben, kann ${app_name_short} Ihren Kontakten helfen, Sie automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Nummer wird dazu in einwegverschlüsselter (gehashter) Form auf unserem Server gespeichert. Sie können diesen Schritt auch einfach überspringen, wenn Sie ${app_name_short} anonym benutzen möchten.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_nickname">Der Nickname wird auf einigen Geräten in Benachrichtigungen angezeigt und dient in der Kontaktliste als zusätzliche Identifikationsmöglichkeit für Chatpartner, die Sie nicht in ihrer Kontaktliste haben. Wir empfehlen, nur einen Vornamen oder ein Pseudonym zu verwenden. Wenn Sie keinen Nickname festlegen, wird Ihre ${app_name_short}-ID verwendet.</string>
     <string name="not_linked">nicht verknüpft</string>
     <string name="linked">verknüpft</string>
     <string name="pending_sms_verification_notice">Ihre Handynummer ist noch nicht überprüft.</string>
@@ -706,8 +744,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="status_ballot_user_modified_vote">«%1$s» hat die Stimme für «%2$s» geändert</string>
     <string name="status_ballot_all_votes">Umfrage «%1$s» vollständig</string>
     <string name="restore">Wiederherstellen</string>
-    <string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in der Kontaktliste Ihrer Freunde gelistet. Möchten Sie Threema wirklich komplett anonym nutzen?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Sie haben keine Handynummer zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in der Kontaktliste Ihrer Freunde gelistet. Möchten Sie Threema wirklich komplett anonym nutzen?</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">Sie haben keine Handynummer zur Verknüpfung angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
     <string name="new_wizard_scan_id_backup">Oder scannen Sie den QR-Code Ihres ID-Exports</string>
     <string name="error_saving_file">Einige Dateien konnten nicht gesichert werden</string>
     <string name="wait_one_minute">Bitte warten Sie mindestens 10 Minuten auf die SMS, bevor Sie einen Anruf anfordern.</string>
@@ -750,6 +790,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="lock_option_none">Keiner</string>
     <string name="lock_option_pin">PIN</string>
     <string name="lock_option_screenlock">System-Displaysperre</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="hide_chat_message_explain">Sie können den Zugriff auf bestimmte Chats mittels PIN schützen und die Chats temporär in der Chatliste ausblenden. Um diese Funktion zu nutzen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
     <string name="set_lock">Jetzt aktivieren</string>
     <string name="prefs_title_access_protection">Zugriffsschutz</string>
@@ -762,7 +803,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="grace_thirty_minutes">30 Minuten</string>
     <string name="grace_never">Nie (manuell)</string>
     <string name="never">Nie</string>
-    <string name="unhide_chats_confirm">Wenn Sie den Zugriffsschutz entfernen, werden Ihre privaten Chats wieder sichtbar.</string>
+    <string name="access_protection_cannot_be_removed">Der Zugriffsschutz kann nicht entfernt werden, da noch mindestens ein privater Chat existiert.</string>
     <string name="verification_started">Überprüfung gestartet</string>
     <string name="cannot_open_file">Konnte Datei nicht öffnen</string>
     <string name="prefs_title_image_attach_previews">Medien-Schnellauswahl</string>
@@ -772,6 +813,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="restore_disable_energy_saving">Bitte verbinden Sie Ihr Gerät mit dem Ladegerät, bevor Sie fortfahren. Stellen Sie sicher, dass alle Energiesparmodi Ihres Handys ausgeschaltet sind, damit das Backup bzw. die Wiederherstellung nicht unterbrochen wird.</string>
     <string name="draft">Entwurf</string>
     <string name="prefs_bigger_single_emojis">Einzelne Emojis vergrössern</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard1_sync_work">Synchronisierung läuft…</string>
     <string name="notification_hidden_text">Inhalte ausgeblendet</string>
     <string name="really_reset_ringtones">Benachrichtigungstöne auf Werkseinstellung zurücksetzen?</string>
@@ -796,7 +838,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="battery_optimizations_disable_guide_ctd">Suchen Sie nach %s in der Liste und deaktivieren Sie die Optimierung</string>
     <string name="battery_optimizations_disable_confirm">Möchten Sie die Akku-Leistungsoptimierung für %1$s wirklich aktiviert lassen? Dadurch ist %2$s nicht zuverlässig nutzbar.</string>
     <string name="enter_text_hint">Text eingeben</string>
-    <string name="backup_explain_text">Wenn Sie Ihr Gerät wechseln oder verlieren, kann ohne ein Backup niemand Ihre Threema-ID und Chats wiederherstellen. Sichern Sie deshalb Ihre Daten mit den vorliegenden Backup-Möglichkeiten.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">Wenn Sie Ihr Gerät wechseln oder verlieren, kann ohne ein Backup niemand Ihre ${app_name_short}-ID und Chats wiederherstellen. Sichern Sie deshalb Ihre Daten mit den vorliegenden Backup-Möglichkeiten.</string>
     <string name="data_backup_explain">Ein Daten-Backup sichert:\n\n&#9679; ID und Schlüsselpaar\n&#9679; Kontakte und Vertrauensstatus\n&#9679; Gruppenmitgliedschaften\n&#9679; Chats\n&#9679; Medien und Dateien (optional)\n\nDie Daten werden in ein verschlüsseltes ZIP gesichert. Das Backup sollte anschliessend an einem geeigneten Ort ausserhalb des Geräts gespeichert werden.</string>
     <string name="draw">Zeichnen</string>
     <string name="edit">Bearbeiten</string>
@@ -810,8 +853,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="prefs_ipv6_preferred_off">Nur IPv4-Verbindungen verwenden</string>
     <string name="prefs_ipv6_preferred_on">IPv6 bevorzugen</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 für Anrufe und Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 für Threema-Anrufe und die Desktop-App bzw. den Web-Client zulassen</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Kein IPv6 für Threema-Anrufe und die Desktop-App bzw. den Web-Client verwenden</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 für ${app_name_short}-Anrufe und die Desktop-App bzw. den Web-Client zulassen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_off">Kein IPv6 für ${app_name_short}-Anrufe und die Desktop-App bzw. den Web-Client verwenden</string>
     <string name="ipv6_requires_restart">Diese Änderung benötigt einen Neustart der App.</string>
     <string name="ipv6_restart_now">Jetzt neustarten</string>
     <string name="on_cap">An</string>
@@ -838,37 +883,50 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="menu_send_profilpic_now">Profilbild jetzt senden</string>
     <string name="profile_picture_sent">Profilbild wurde gesendet</string>
     <string name="sending_messages">Wird gesendet…</string>
-    <string name="backup_data_media_confirm">Das Sichern von grossen Mediendateien in ein ZIP-Backup kann sehr lange dauern und die Prozessor- und Speicherkapazität Ihres Geräts überschreiten. Während des Backups können keine Threema-Nachrichten empfangen werden. Wollen Sie wirklich fortfahren?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">Das Sichern von grossen Mediendateien in ein ZIP-Backup kann sehr lange dauern und die Prozessor- und Speicherkapazität Ihres Geräts überschreiten. Während des Backups kann ${app_name} keine Nachrichten senden oder empfangen. Wollen Sie wirklich fortfahren?</string>
     <string name="backup_data_cancelled">Backup angehalten</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="service_manager_not_available">App kann nicht gestartet werden. Bitte schalten Sie Ihr Gerät vollständig aus und wieder ein.</string>
     <string name="message_sent">Nachricht wurde gesendet</string>
-    <string name="threema_call">Threema-Anruf</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">${app_name_short}-Anruf</string>
     <string name="threema_message_to">Nachricht an %s</string>
     <string name="threema_call_with">Anruf an %s</string>
-    <string name="prefs_title_voip">Threema-Anrufe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">${app_name_short}-Anrufe</string>
     <string name="prefs_title_force_turn">Anrufe immer über Server</string>
-    <string name="prefs_summary_force_turn_off">Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über Threema-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
-    <string name="prefs_summary_force_turn_on">Alle Anrufe über Threema-Server leiten. Schützt Ihre IP-Adresse, kann aber zu schlechterer Anrufqualität führen.</string>
-    <string name="permission_record_audio_required">Aktivieren Sie die Mikrofon-Berechtigung, um verschlüsselte Threema-Anrufe zu tätigen und Sprachnachrichten aufzunehmen.</string>
-    <string name="prefs_voice_call_notifications">Threema-Anrufe</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über ${company_name}-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">Alle Anrufe über ${company_name}-Server leiten. Schützt Ihre IP-Adresse, kann aber zu schlechterer Anrufqualität führen.</string>
+    <string name="permission_record_audio_required">Aktivieren Sie die Mikrofon-Berechtigung, um verschlüsselte ${app_name_short}-Anrufe zu tätigen und Sprachnachrichten aufzunehmen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_voice_call_notifications">${app_name_short}-Anrufe</string>
     <string name="prefs_voice_call_sound">Klingelton</string>
-    <string name="prefs_sum_voice_call_sound">Klingelton für Threema-Anrufe auswählen</string>
-    <string name="prefs_sum_voice_call_vibrate">Bei eingehenden Threema-Anrufen vibrieren</string>
-    <string name="prefs_title_voip_enable">Threema-Anrufe aktivieren</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">Klingelton für ${app_name_short}-Anrufe auswählen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">Bei eingehenden ${app_name_short}-Anrufen vibrieren</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">${app_name_short}-Anrufe aktivieren</string>
     <string name="webclient_invalid_push_token_message">Manuelles Starten erforderlich</string>
     <string name="threema_work_contact">Threema Work-Kontakt</string>
-    <string name="permission_phone_required">Um Anrufe zu verwalten, während Sie mit Threema telefonieren, erlauben Sie diese Berechtigung</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">Um Anrufe zu verwalten, während Sie mit ${app_name} telefonieren, erlauben Sie diese Berechtigung</string>
     <string name="strikethrough">Durchgestrichen</string>
     <string name="italic">Kursiv</string>
     <string name="bold">Fett</string>
     <string name="shortcut_choice_title">Verknüpfung erstellen für…</string>
     <string name="prefs_title_device_info">Geräte-Info</string>
     <string name="notifications_disabled_title">Benachrichtigungen deaktiviert</string>
-    <string name="notifications_disabled_text">Benachrichtigungen für Threema wurden im System vollständig deaktiviert. Sie werden nicht über den Eingang neuer Nachrichten informiert.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">Benachrichtigungen für ${app_name} wurden im System vollständig deaktiviert. Sie werden nicht über den Eingang neuer Nachrichten informiert.</string>
     <string name="notifications_disabled_settings">System-Einstellungen bearbeiten</string>
     <string name="error_attaching_files">Fehler beim Hinzufügen von Dateien.</string>
     <string name="prefs_fix_powermanager_problems">Hintergrundausführung ermöglichen</string>
-    <string name="prefs_fix_powermanager_problems_desc">Probleme mit Handys beheben, welche die Ausführung von Threema im Hintergrund unterbinden und den Empfang von Nachrichten verhindern</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">Probleme mit Handys beheben, welche die Ausführung von ${app_name} im Hintergrund unterbinden und den Empfang von Nachrichten verhindern</string>
     <string name="disable_powermanager_explain">Bitte stellen Sie im folgenden Bildschirm sicher, dass «%s» von sämtlichen Einschränkungen geschützt ist und im Hintergrund aktiv sein kann. Tippen Sie auf den Zurück-Knopf, wenn Sie fertig sind.</string>
     <string name="disable_autostart_explain">Im folgenden Bildschirm aktvieren Sie bitte Autostart für «%s». Tippen Sie auf den «Zurück»-Button, wenn Sie fertig sind.</string>
     <string name="notification_priority_default">Niedrig</string>
@@ -889,10 +947,12 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="prefs_auto_download_title">Medien automatisch herunterladen</string>
     <string name="prefs_auto_download_wifi">Im WLAN</string>
     <string name="prefs_auto_download_mobile">In Mobilnetzwerken</string>
-    <string name="rate_intro">Wie gefällt Ihnen Threema?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">Wie gefällt Ihnen ${app_name}?</string>
     <string name="rate_feedback_intro">Bitte sagen Sie uns, was wir besser machen können (optional).</string>
     <string name="rate_positive">Rezension senden</string>
-    <string name="rate_title">Threema bewerten</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">${app_name} bewerten</string>
     <string name="rate_thank_you">Vielen Dank für Ihre Bewertung!</string>
     <string name="disabled_by_policy_short">Funktion wurde durch den Administrator deaktiviert</string>
     <string name="rate_forward_to_play_store">Möchten Sie uns auch auf Google Play bewerten?</string>
@@ -903,15 +963,18 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="plus">Plus</string>
     <string name="switched_off">Aus</string>
     <string name="switched_on">Ein</string>
-    <string name="title_tab_work_users">Threema Work-Nutzer</string>
-    <string name="no_matching_work_contacts">Keine vom Administrator überprüften Threema Work-Kontakte gefunden</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">${app_name}-Nutzer</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">Keine vom Administrator überprüften ${app_name}-Kontakte gefunden</string>
     <string name="all">Alle</string>
     <string name="webclient_session_stop_all">Alle beenden</string>
     <string name="passphrase_service_name">Passphrase-Dienst</string>
     <string name="passphrase_service_description">Benachrichtigung, wenn die Passphrase entsperrt ist</string>
     <string name="webclient_service_description">Benachrichtigung, wenn eine Web-/Desktop-Sitzung aktiv ist</string>
     <string name="prefs_title_accept_privacy_policy">Datenschutzerklärung akzeptieren</string>
-    <string name="privacy_policy_explain">%1$s schützt Ihre Privatsphäre so konsequent wie kein anderer Messenger. In unserer %2$s erfahren Sie mehr.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name} schützt Ihre Privatsphäre so konsequent wie kein anderer Messenger. In unserer %1$s erfahren Sie mehr.</string>
     <string name="privacy_policy_check_confirm">Bitte akzeptieren Sie die Datenschutzerklärung, um %s nutzen zu können.\n\n(Anforderung gemäss EU-Verordnung 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Inkognito-Tastatur anfordern</string>
     <string name="prefs_sum_incognito_keyboard">Sammeln von Daten für personalisierte Vorschläge deaktivieren (falls von der Tastatur unterstützt)</string>
@@ -924,41 +987,59 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="password_too_short_generic">Passwort zu kurz</string>
     <string name="passwords_dont_match">Keine Übereinstimmung</string>
     <string name="test_unsuccessful">Test fehlgeschlagen</string>
-    <string name="preparing_threema_safe">Threema Safe wird vorbereitet</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">${app_name_short} Safe wird vorbereitet</string>
     <string name="disable_powermanager_title">Akku-Einschränkungen</string>
     <string name="disable_autostart_title">Autostart</string>
     <string name="unchanged">unverändert</string>
     <string name="safe_learn_more_button">Mehr erfahren</string>
-    <string name="safe_enable_explain">Bei Threema haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\nThreema Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> (aber keine Nachrichteninhalte) auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
-    <string name="safe_disable_confirm">Wollen Sie fortfahren, ohne Threema Safe zu aktivieren? Threema Safe erlaubt, Ihre Threema-ID, Kontakte und Gruppen wiederherzustellen, falls Sie Ihr Gerät verlieren.</string>
-    <string name="safe_configure_choose_password">Wählen Sie ein sicheres Passwort. Sie benötigen dieses Passwort, um Ihr Threema Safe-Backup wiederherzustellen.</string>
+    <string name="safe_enable_explain">Bei ${app_name_short} haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\n${app_name_short} Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> (aber keine Nachrichteninhalte) auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">Wollen Sie fortfahren, ohne ${app_name_short} Safe zu aktivieren? ${app_name_short} Safe erlaubt, Ihre ${app_name_short}-ID, Kontakte und Gruppen wiederherzustellen, falls Sie Ihr Gerät verlieren.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">Wählen Sie ein sicheres Passwort. Sie benötigen dieses Passwort, um Ihr ${app_name_short} Safe-Backup wiederherzustellen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_choose_server">Server auswählen</string>
-    <string name="safe_configure_server_explain">Speichern Sie Ihr Threema Safe-Backup bei Threema oder auf einem beliebigen Server Ihrer Wahl.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">Speichern Sie Ihr ${app_name_short} Safe-Backup bei ${company_name} oder auf einem beliebigen Server Ihrer Wahl.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="onprem_safe_configure_server_explain">Speichern Sie Ihr ${app_name_short} Safe-Backup auf dem Server Ihrer Organisation, oder legen Sie einen anderen Backup-Server fest.</string>
     <string name="safe_use_default_server">Standardserver</string>
     <string name="safe_test_server">Server testen</string>
     <string name="safe_advanced_options">Experten-Einstellungen</string>
-    <string name="safe_enter_password">Bitte geben Sie Ihr Threema Safe-Passwort ein</string>
-    <string name="safe_threema_id">Ihre Threema-ID</string>
-    <string name="safe_restore_enter_id">Bitte geben Sie die Threema-ID ein, die Sie wiederherstellen möchten</string>
-    <string name="safe_search_id_title">Bitte geben Sie die mit Ihrer Threema-ID verknüpfte Handynummer oder E-Mail-Adresse ein</string>
-    <string name="safe_id_lookup">Threema-ID wird gesucht</string>
-    <string name="safe_no_id_found">Keine Threema-ID gefunden</string>
+    <string name="safe_enter_password">Bitte geben Sie Ihr ${app_name_short} Safe-Passwort ein</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">Ihre ${app_name_short}-ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">Bitte geben Sie die ${app_name_short}-ID ein, die Sie wiederherstellen möchten</string>
+    <string name="safe_search_id_title">Bitte geben Sie die mit Ihrer ${app_name_short}-ID verknüpfte Handynummer oder E-Mail-Adresse ein</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">${app_name_short}-ID wird gesucht</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">Keine ${app_name_short}-ID gefunden</string>
     <string name="safe_no_backup_found">Kein Backup auf dem Server gefunden. Überprüfen Sie ID und Passwort.</string>
-    <string name="safe_select_id">Mehrere Threema IDs gefunden. Wählen Sie die gewünschte ID:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">Mehrere ${app_name_short}-IDs gefunden. Wählen Sie die gewünschte ID:</string>
     <string name="safe_backup_now">Jetzt sichern</string>
-    <string name="safe_enable_explain_short">Aktivieren Sie Threema Safe für automatische, sichere und anonyme Backups Ihrer wichtigsten Daten.</string>
-    <string name="safe_deleting">Threema Safe-Sicherung wird gelöscht</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">Aktivieren Sie ${app_name_short} Safe für automatische, sichere und anonyme Backups Ihrer wichtigsten Daten.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">${app_name_short} Safe-Sicherung wird gelöscht</string>
     <string name="safe_delete_error">Fehler beim Löschen: %s</string>
     <string name="safe_delete_success">Backup wurde erfolgreich vom Server gelöscht</string>
-    <string name="safe_error_preparing">Fehler beim Vorbereiten des Threema Safe-Backups</string>
-    <string name="safe_configure_choose_password_force">Setzen Sie ein starkes Passwort, um Ihre ID mit Threema Safe abzusichern. Vergessen Sie nicht, was Sie hier eingeben!</string>
-    <string name="safe_deactivate">Threema Safe deaktivieren</string>
-    <string name="safe_deactivate_explain">Ihre bestehenden Threema Safe-Backups werden auf dem Server unwiderruflich gelöscht. Möchten Sie fortfahren?</string>
+    <string name="safe_error_preparing">Fehler beim Vorbereiten des ${app_name_short} Safe-Backups</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">Setzen Sie ein starkes Passwort, um Ihre ID mit ${app_name_short} Safe abzusichern. Vergessen Sie nicht, was Sie hier eingeben!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">${app_name_short} Safe deaktivieren</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">Ihre bestehenden ${app_name_short} Safe-Backups werden auf dem Server unwiderruflich gelöscht. Möchten Sie fortfahren?</string>
     <string name="add_group_members">Weitere Mitglieder hinzufügen</string>
     <string name="contact_add_confirm">Möchten Sie den neuen Kontakt «%1$s» zu Ihrer Kontaktliste hinzufügen?</string>
     <string name="password_bad">Unsicheres Passwort</string>
     <string name="prefs_fix_background_data">Hintergrunddaten aktivieren</string>
-    <string name="prefs_fix_background_data_desc">Damit Threema im Hintergrund Nachrichten erhalten kann, aktivieren Sie Hintergrunddaten und Uneingeschränkte Datennutzung</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">Damit ${app_name} im Hintergrund Nachrichten erhalten kann, aktivieren Sie Hintergrunddaten und Uneingeschränkte Datennutzung</string>
     <string name="prefs_fix_device">Probleme der Gerätekonfiguration beheben</string>
     <string name="safe_successful">Erfolgreich</string>
     <string name="safe_unsuccessful">Fehlgeschlagen</string>
@@ -974,8 +1055,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="safe_size">Backup-Grösse</string>
     <string name="backup_version_mismatch">Die Version des Backups ist höher als von der App unterstützt. Bitte aktualisieren Sie die App.</string>
     <string name="safe_restore_failed">Wiederherstellen fehlgeschlagen</string>
-    <string name="safe_failed_notification">Threema Safe konnte seit %d Tagen kein Backup erstellen. Bitte tippen Sie hier zum Überprüfen.</string>
-    <string name="safe_restore">Threema Safe wiederherstellen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">${app_name_short} Safe konnte seit %d Tagen kein Backup erstellen. Bitte tippen Sie hier zum Überprüfen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">${app_name_short} Safe wiederherstellen</string>
     <string name="backup_restore_in_progress">Backup oder Wiederherstellen im Gange. Überprüfen Sie die Benachrichtigung für weitere Informationen.</string>
     <string name="restore_error_body">Wiederherstellung fehlgeschlagen</string>
     <string name="forgot_your_id">ID vergessen?</string>
@@ -983,8 +1066,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="work_data_sync">Datensynchronisation</string>
     <string name="private_contact">Privater Kontakt</string>
     <string name="ringtone_selection_default">Standard (%s)</string>
-    <string name="work_data_sync_desc">Threema Work-Synchronisation</string>
-    <string name="ballot_not_connected">Bitte stellen Sie sicher, dass Threema online ist, bevor Sie eine Umfrage abschliessen.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">${app_name}-Synchronisation</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">Bitte stellen Sie sicher, dass ${app_name} online ist, bevor Sie eine Umfrage abschliessen.</string>
     <string name="empty_chat_title">Chat leeren</string>
     <string name="empty_chat_confirm">Alle Nachrichten in diesem Chat werden gelöscht. Fortfahren?</string>
     <string name="emptying_chat">Chat wird geleert</string>
@@ -1002,38 +1087,45 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="notification_channel_notices">Hinweise</string>
     <string name="chat_updates">Chat-Aktualisierungen</string>
     <string name="backup_or_restore_progress">Backup-/Wiederherst.-Fortschritt</string>
-    <string name="tooltip_export_id">Tippen Sie hier, um Ihre verschlüsselte Threema-ID jetzt zu teilen oder zu drucken</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">Tippen Sie hier, um Ihre verschlüsselte ${app_name_short}-ID jetzt zu teilen oder zu drucken</string>
     <string name="downloading">Wird heruntergeladen</string>
     <string name="today">Heute</string>
     <string name="restore_data_cancelled">Wiederherstellen angehalten</string>
     <string name="safe_change_password">Passwort ändern</string>
     <string name="safe_configure_choose_password_title">Passwort wählen</string>
-    <string name="password_bad_explain">Das gewählte Threema Safe-Passwort ist sehr unsicher und kann deshalb leicht von Angreifern erraten werden. Bitte wählen Sie ein sicheres Passwort. Tipp: Benutzen Sie ein zusammengesetztes Wort aus mehreren Begriffen.</string>
-    <string name="safe_password_updated">Das Threema Safe-Passwort wurde aktualisiert.</string>
-    <string name="safe_activated">Threema Safe wurde aktiviert.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">Das gewählte ${app_name_short} Safe-Passwort ist sehr unsicher und kann deshalb leicht von Angreifern erraten werden. Bitte wählen Sie ein sicheres Passwort. Tipp: Benutzen Sie ein zusammengesetztes Wort aus mehreren Begriffen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">Das ${app_name_short} Safe-Passwort wurde aktualisiert.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">${app_name_short} Safe wurde aktiviert.</string>
     <string name="restore_zip_invalid_file">Backup-Datei ungültig.</string>
     <string name="push_token_cleared">Das Push-Token wurde entfernt</string>
     <string name="insert_date">Datum einfügen</string>
     <string name="add_answer">Antwort hinzufügen</string>
     <string name="title_cannot_be_empty">Der Umfrage-Titel darf nicht leer sein</string>
-    <string name="voip_disabled">Threema-Anrufe sind deaktiviert</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short}-Anrufe sind deaktiviert</string>
     <string name="hide_chat_enter_message_explain">Dieser Chat ist als privat markiert. Um ihn anzuzeigen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
     <string name="unknown">Unbekannt</string>
     <string name="miui_notification_title">Wichtiger Hinweis für MIUI-Nutzer</string>
-    <string name="miui_notification_body">MIUI 10 unterbindet standardmässig Töne, LED und Popups für neu erstellte Benachrichtigungskanäle (ausser für einige Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb diese Parameter in den Threema-spezifischen Benachrichtigungseinstellungen Ihres Handys für jeden Kanal aktivieren. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
-    <string name="miui12_notification_body">MIUI unterbindet standardmässig Töne, LED und Popups (ausser für einige sehr populäre Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb leider diese Optionen in den Threema-spezifischen Benachrichtigungseinstellungen Ihres Handys manuell aktivieren und die Prozedur nach jedem App-Update wiederholen. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
+    <string name="miui_notification_body">MIUI 10 unterbindet standardmässig Töne, LED und Popups für neu erstellte Benachrichtigungskanäle (ausser für einige Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb diese Parameter in den ${app_name_short}-spezifischen Benachrichtigungseinstellungen Ihres Handys für jeden Kanal aktivieren. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
+    <string name="miui12_notification_body">MIUI unterbindet standardmässig Töne, LED und Popups (ausser für einige sehr populäre Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb leider diese Optionen in den ${app_name_short}-spezifischen Benachrichtigungseinstellungen Ihres Handys manuell aktivieren und die Prozedur nach jedem App-Update wiederholen. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
     <string name="dont_show_again">Nicht mehr anzeigen</string>
     <string name="miui_notification_prefs">MIUI-Einstellungen</string>
-    <string name="threema_safe_upload_successful">Threema Safe-Backup erfolgreich hochgeladen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">${app_name_short} Safe-Backup erfolgreich hochgeladen</string>
     <string name="time_remaining">noch %s</string>
     <string name="safe_configure_server_credentials_title">Authentifizierung (optional)</string>
-    <string name="username_hint">Username</string>
+    <string name="username_hint">Benutzername</string>
     <string name="server_hint">Server</string>
     <string name="lock_option_biometric">Biometrisch</string>
     <string name="biometric_enter_authentication">Zum Entsperren bitte authentisieren</string>
     <string name="biometric_authentication_failed">Die Authentisierung ist fehlgeschlagen</string>
     <string name="biometric_authentication_successful">Sie wurden erfolgreich authentisiert</string>
-    <string name="work_safe_forced_explain">Ihr Administrator hat Threema Safe für Ihr Gerät aktiviert.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">Ihr Administrator hat ${app_name_short} Safe für Ihr Gerät aktiviert.</string>
     <string name="pin_locked_cannot_send">App gesperrt. Senden nicht möglich.</string>
     <string name="prefs_summary_hide_screenshots_notice">Aus Privatsphäre-Gründen werden Miniaturansichten und Screenshots bei aktivierter App-Sperre immer verhindert.</string>
     <string name="work_select_categories">Kategorien auswählen</string>
@@ -1043,6 +1135,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="advanced_options">Weitere Optionen</string>
     <string name="url_warning_body">Die Website, die Sie öffnen möchten ist verdächtig:\n\nAngezeigter Hostname: <b>%s</b>\nTatsächlicher Hostname: <b>%s</b>\n\nEs könnte sich um einen Versuch handeln, Sie auf eine gefälschte Website umzuleiten.\n\nMöchten Sie trotzdem fortfahren?</string>
     <string name="url_warning_title">Phishing-Warnung</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_camera_qr_required">Um QR-Codes zu scannen wird Zugriff auf die Kamera benötigt</string>
     <string name="voice_action_title">Sprachbefehle</string>
     <string name="voice_action_body">Sprachbefehl wird verarbeitet</string>
@@ -1064,13 +1157,18 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="archived">Archiviert</string>
     <string name="to_archive">Archivieren</string>
     <string name="archived_chats">Archivierte Chats</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
+    <string name="archive_chat">Chat archivieren</string>
     <string name="unarchive">Unarchivieren</string>
     <string name="no_archived_chats">Keine archivierten Chats.\nUm einen Chat zu archivieren, wischen Sie ihn in der Chat-Liste nach links</string>
-    <string name="add_contact_enter_id_hint">Bitte geben Sie die Threema-ID des Kontakts ein, den Sie hinzufügen möchten</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">Bitte geben Sie die ${app_name_short}-ID des Kontakts ein, den Sie hinzufügen möchten</string>
     <string name="notification_channel_new_contact">Neue Kontakte</string>
     <string name="notification_channel_new_contact_desc">Benachrichtigung über neue Kontakte</string>
-    <string name="notification_contact_has_joined">%1$s ist jetzt bei %2$s. Tippen Sie hier, um eine Nachricht zu senden.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d Ihrer Kontakte sind jetzt bei %2$s: %3$s. Tippen Sie hier, um eine Nachricht zu senden.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s ist jetzt bei ${app_name_short}. Tippen Sie hier, um eine Nachricht zu senden.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d Ihrer Kontakte sind jetzt bei ${app_name_short}: %2$s. Tippen Sie hier, um eine Nachricht zu senden.</string>
     <string name="system_default">Systemstandard</string>
     <string name="open_in_maps_app">In Maps-App öffnen</string>
     <string name="delete">Löschen</string>
@@ -1078,8 +1176,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="delete_for_all">Für alle löschen</string>
     <string name="message_was_deleted">Diese Nachricht wurde gelöscht</string>
     <string name="continue_recording">Weiter aufnehmen</string>
-    <string name="whatsnew_title">Was ist neu in %1$s %2$s</string>
-    <string name="whatsnew_headline"><![CDATA[        <p>Um Benachrichtigungen besser anzeigen zu können, wurde deren Handhabung im Hintergrund überarbeitet. Waren bei Chats individuelle Benachrichtigungseinstellungen aktiviert, müssen diese erneut vorgenommen werden.</p>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
+    <string name="whatsnew_title">Was ist neu in ${app_name} %1$s</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Ab sofort können Sie Ihr Android-Gerät mit der neuen Desktop-App (Beta) verknüpfen und die Multi-Device-Funktion testen.</p>
+        <p>Weitere Details finden Sie unter «Menü > Threema 2.0 für Desktop (Beta)».</p>
         ]]></string>
     <string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
     <string name="two_years">2 Jahre</string>
@@ -1088,7 +1188,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="prefs_sum_show_unread_badge">Plaketten in den Navigations-Tabs anzeigen</string>
     <string name="prefs_title_show_unread_badge">Plaketten</string>
     <string name="pinning_not_trusted">Zertifikat kann nicht überprüft werden. Stellen Sie sicher, dass das «Entrust Root Certification Authority - G2»-Sicherheitszertifikat im Zertifikatsspeicher Ihres Handys installiert und aktiviert ist.</string>
-    <string name="pinning_failed">Zertifikat kann nicht überprüft werden. Möglicher Man-in-the-Middle-Angriff. Wenn Sie eine Werbeblocker-, Inhaltsfilter- oder Firewall-App wie «AdGuard» installiert haben, deaktivieren Sie diese für Threema.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">Zertifikat kann nicht überprüft werden. Möglicher Man-in-the-Middle-Angriff. Wenn Sie eine Werbeblocker-, Inhaltsfilter- oder Firewall-App wie «AdGuard» installiert haben, deaktivieren Sie diese für ${app_name}.</string>
     <string name="open_myid_popup">Popup-Fenster für Schnellzugriff öffnen</string>
     <string name="logo">Logo / Ganz nach oben scrollen</string>
     <string name="quote_subj_end">Zitat Ende</string>
@@ -1111,7 +1212,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="mime_type">MIME-Typ</string>
     <string name="password_does_not_comply">Das eingegebene Passwort entspricht nicht den Richtlinien.</string>
     <string name="audio_mute_due_to_focus_loss">Ton temporär stummgeschaltet wegen Verlust des Audio-Fokus</string>
-    <string name="restore_data_backup_explain">Um ein Datenbackup wiederherzustellen, löschen Sie zuerst Ihre Threema-ID im «Mein Profil»-Bildschirm.\n\nWenn die App neu startet, wählen Sie «Backup wiederherstellen», «Weitere Wiederherst.-Optionen», «Daten-Backup» und tippen Sie in der Dateiauswahl auf das gewünschte Datenbackup, das Sie wiederherstellen möchten.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">Um ein Datenbackup wiederherzustellen, löschen Sie zuerst Ihre ${app_name_short}-ID im «Mein Profil»-Bildschirm.\n\nWenn die App neu startet, wählen Sie «Backup wiederherstellen», «Weitere Wiederherst.-Optionen», «Daten-Backup» und tippen Sie in der Dateiauswahl auf das gewünschte Datenbackup, das Sie wiederherstellen möchten.</string>
     <string name="audio_focus_loss_complete">Anruf beendet aufgrund vollständigen Verlusts des Audio-Fokus.</string>
     <string name="tap_for_picture_hold_for_video">Tippen für Foto, halten für Video</string>
     <string name="sending_media">Medien werden gesendet</string>
@@ -1128,12 +1230,13 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="prefs_work_time_end">Arbeitsende</string>
     <string name="prefs_work_time_end_sum">Legen Sie das Arbeitsende fest</string>
     <string name="prefs_working_days_enable_title">Ruhezeit-Regelung</string>
-    <string name="prefs_working_days_enable_sum">Ausserhalb der Arbeitszeit keine Benachrichtigungen anzeigen und Threema-Anrufe ablehnen</string>
+    <string name="prefs_working_days_enable_sum">Ausserhalb der Arbeitszeit keine Benachrichtigungen anzeigen und ${app_name_short}-Anrufe ablehnen</string>
     <string name="work_life_dnd_active">Ruhezeit aktiv</string>
     <string name="warning">Warnung</string>
     <string name="password_remember_warning">Merken Sie sich, was Sie hier eingeben! Da %s keine Passwörter auf Servern speichert, können wir Ihnen nicht helfen, wenn Sie die PIN oder die Passphrase vergessen haben.</string>
     <string name="safe_backup_tap_to_restart">Tippen Sie auf die angezeigte System-Benachrichtigung, um die App jetzt neu zu starten. Wenn Sie die Benachrichtigung nicht sehen, ziehen Sie bitte die Benachrichtigungsleiste Ihres Handys herunter.</string>
-    <string name="send_to_support">An Threema-Support senden</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">An ${company_name}-Support senden</string>
     <string name="menu_legal">Rechtliches</string>
     <string name="tooltip_work_hint">Dieser Kontakt verwendet Threema Work.</string>
     <string name="video_camera_on">Videokamera ein</string>
@@ -1292,22 +1395,26 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="group_link_rename">Link umbenennen</string>
     <string name="group_link_rename_tag">Neuer Name</string>
     <string name="tap_here_for_more">Hier tippen für mehr Informationen</string>
-    <string name="another_connection_instructions"><![CDATA[Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen Threema-ID erkannt.<br><br>Es ist nicht möglich, eine Threema-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.<br><br>Falls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen ${app_name_short}-ID erkannt.<br><br>Es ist nicht möglich, eine ${app_name_short}-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.<br><br>Falls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.]]></string>
     <string name="app_store_error_code">App Store Fehlercode: %d</string>
-    <string name="backup_restore_type"><![CDATA[Welche Art von Backup möchten Sie wiederherstellen? <br/><br/> <a href=%s>Mehr über Backups in Threema erfahren</a>]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[Welche Art von Backup möchten Sie wiederherstellen? <br/><br/> <a href=%s>Mehr über Backups in ${app_name_short} erfahren</a>]]></string>
     <string name="data_backup_info">Alles wiederherstellen inkl. Chats</string>
     <string name="new_to_threema">Neu bei %s?</string>
     <string name="back_to_threema">Zurück bei %s?</string>
     <string name="id_backup_info">Nur Ihre ID wiederherstellen</string>
     <string name="restore_your_id_contacts_and_groups">Ihre ID, Kontakte und Gruppen wiederherstellen</string>
-    <string name="threema_safe_backup">Threema Safe Backup</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">${app_name_short} Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Hilfe</a>]]></string>
     <string name="download_failed">Download fehlgeschlagen. Fehlercode: %d</string>
     <string name="edit_answer">Antwort bearbeiten</string>
     <string name="share_media">Mit anderer App teilen…</string>
     <string name="group_link_administered">Administriert</string>
     <string name="group_link_open">Offen</string>
-    <string name="group_link_share_message">Trete meiner Threema Gruppe über folgenden Link bei: %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">Trete meiner ${app_name_short} Gruppe über folgenden Link bei: %s</string>
     <string name="group_link_bottom_sheet_title">Gruppen-Link</string>
     <string name="group_link_bottom_sheet_desc">Teilen Sie diesen Link mit Kontakten, welche Sie gerne einladen möchten. Erwägen Sie die untenstehenden Optionen.</string>
     <string name="group_link_bottom_sheet_link_title">Link</string>
@@ -1342,13 +1449,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="really_delete_multiple_group_links_title">Gruppenlinks löschen</string>
     <string name="qr_scan_result_dialog_title">QR Scan Resultat</string>
     <string name="scan_failure_dialog_title">Scan fehlgeschlagen</string>
-    <string name="no_threema_qr_info">Dies ist kein Threema QR-Code, der decodierte Inhalt ist:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">Dies ist kein ${app_name_short} QR-Code, der decodierte Inhalt ist:</string>
     <string name="default_group_link">Default Gruppen-Link</string>
     <string name="default_link_name">Default Link</string>
     <string name="reset_default_group_link">Gruppen-Link zurücksetzen</string>
     <string name="resend">Nochmal senden</string>
     <string name="group_request_already_sent_title">Gruppenanfrage bereits gesendet</string>
-    <string name="qr_scanner_id_hint">Scannen Sie den QR-Code eines anderen Kontakts, um ihn zu verifizieren. Der QR-Code kann durch Tippen auf das Profilbild oben links im Threema-Hauptbildschirm angezeigt werden.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">Scannen Sie den QR-Code eines anderen Kontakts, um ihn zu verifizieren. Der QR-Code kann durch Tippen auf das Profilbild oben links im ${app_name_short}-Hauptbildschirm angezeigt werden.</string>
     <string name="enable_storage_access_for_media">Aktivieren Sie den Speicherzugriff, um Bilder und Videos auf Ihrem Gerät zu sehen</string>
     <string name="select_storage_access_for_media_is_granted">Sie haben den Zugriff auf eine Auswahl an Fotos und Videos gewährt.</string>
     <string name="take_me_there">Jetzt aktivieren…</string>
@@ -1366,13 +1475,17 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="contact_update">Aktualisierung der Kontakte-Informationen</string>
     <string name="invalid_onprem_id">Entweder existiert diese ID nicht (mehr), oder sie ist nicht mit Ihrer ID kompatibel.</string>
     <string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie «Unbekannte Apps installieren» für %s.</string>
-    <string name="threema_push">Threema Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push">${app_name_short} Push</string>
     <string name="threema_push_notification_text">Tippen für mehr Informationen.</string>
-    <string name="threema_push_notification_info_text_1">Threema Push ist im Hintergrund aktiv, um Sie über eingehende Nachrichten und Anrufe zu informieren.</string>
-    <string name="threema_push_notification_info_text_2">Apps können nicht im Hintergrund laufen, ohne eine dauerhafte Benachrichtigung anzuzeigen. Indem wir diese Benachrichtigung anzeigen, können wir sicherstellen, dass Threema Push auch dann aktiv bleibt, wenn Sie die App nicht aktiv nutzen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_notification_info_text_1">${app_name_short} Push ist im Hintergrund aktiv, um Sie über eingehende Nachrichten und Anrufe zu informieren.</string>
+    <string name="threema_push_notification_info_text_2">Apps können nicht im Hintergrund laufen, ohne eine dauerhafte Benachrichtigung anzuzeigen. Indem wir diese Benachrichtigung anzeigen, können wir sicherstellen, dass ${app_name_short} Push auch dann aktiv bleibt, wenn Sie die App nicht aktiv nutzen.</string>
     <string name="threema_push_notification_info_text_3">Wenn Sie immer noch Probleme mit verzögerten oder fehlenden Benachrichtigungen haben, passen Sie bitte Ihre Systemeinstellungen an, um sicherzustellen, dass die App ohne Einschränkungen im Hintergrund aktiv sein kann und alle Batteriesparfunktionen deaktiviert sind.</string>
-    <string name="threema_push_service_description">Dauerhafte Benachrichtigung, wenn Threema Push aktiv ist</string>
-    <string name="threema_push_activated">Threema Push aktiviert.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_service_description">Dauerhafte Benachrichtigung, wenn ${app_name_short} Push aktiv ist</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_activated">${app_name_short} Push aktiviert.</string>
     <string name="add_shortcut_success">Verknüpfung wurde erstellt</string>
     <string name="add_shortcut_error">Fehler beim Erstellen der Desktop-Verknüpfung</string>
     <string name="web_link">Link</string>
@@ -1424,7 +1537,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">keine</string>
     <string name="clear_forward_security">Perfect Forward Secrecy-Sitzungen löschen</string>
-    <string name="clear_forward_security_warning">Führen Sie diese Aktion nur aus, wenn Sie vom Threema-Support explizit dazu aufgefordert wurden.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="clear_forward_security_warning">Führen Sie diese Aktion nur aus, wenn Sie vom ${company_name}-Support explizit dazu aufgefordert wurden.</string>
     <string name="forward_security_cleared">Perfect Forward Secrecy-Sitzungen mit diesem Kontakt wurden gelöscht</string>
     <string name="message_without_forward_security">Eine Nachricht ohne Perfect Forward Secrecy wurde empfangen. Stellen Sie sicher, dass der Absender absichtlich Perfect Forward Secrecy deaktiviert hat.</string>
     <string name="forward_security_disabled">Perfect Forward Secrecy ist für diesen Chat deaktiviert.</string>
@@ -1441,13 +1555,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="self_updater_installation_failed">Der Download des Updates ist fehlgeschlagen. Bitte laden Sie das Update von der Webseite <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> herunter und installieren Sie es manuell.</string>
     <string name="spam_first_contact">Dieser Chat stammt von einem unbekannten Kontakt</string>
     <string name="spam_report">Spam melden</string>
-    <string name="spam_report_dialog_explain">Wenn Sie fortfahren, wird die ID und der Nickname dieses Absenders zusammen mit Ihrer ID an Threema gemeldet. Es werden keine Inhalte oder personenbezogene Angaben übermittelt. Der Kontakt wird darüber nicht informiert.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="spam_report_dialog_explain">Wenn Sie fortfahren, wird die ID und der Nickname dieses Absenders zusammen mit Ihrer ID an ${company_name} gemeldet. Es werden keine Inhalte oder personenbezogene Angaben übermittelt. Der Kontakt wird darüber nicht informiert.</string>
     <string name="spam_report_dialog_block_checkbox">Zusätzlich Kontakt blockieren und Chat löschen</string>
     <string name="spam_report_dialog_title">%s melden</string>
     <string name="spam_successfully_reported">Die ID wurde als Spam-Versender gemeldet.</string>
     <string name="spam_error_reporting">Beim Melden als Spam ist ein Fehler aufgetreten: %s</string>
     <string name="spam_report_short">Melden</string>
-    <string name="wizard_incompatible_contact_sync_params">Es sind inkompatible MDM Parameter gesetzt. Der Threema MDM Parameter th_contact_sync kann nicht auf true gesetzt werden, wenn die Restriction DISALLOW_MODIFY_ACCOUNTS aktiviert ist. Bitte kontaktieren Sie Ihren Systemadministator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_incompatible_contact_sync_params">Es sind inkompatible MDM Parameter gesetzt. Der ${app_name_short} MDM Parameter th_contact_sync kann nicht auf true gesetzt werden, wenn die Restriction DISALLOW_MODIFY_ACCOUNTS aktiviert ist. Bitte kontaktieren Sie Ihren Systemadministator.</string>
     <string name="messages_cannot_be_recovered">Die Nachrichten können nicht wiederhergestellt werden.</string>
     <string name="groups_left_or_dissolved">Gruppen werden verlassen oder aufgelöst und anschliessend gelöscht.</string>
     <string name="contact_deleted">Kontakt wurde gelöscht</string>
@@ -1461,19 +1577,25 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="send_without_audio">Audio entfernen</string>
     <string name="edit_filename">Dateiname bearbeiten</string>
     <string name="unable_to_restore_identity_because">Die ID konnte nicht wiederhergestellt werden. Grund: %s</string>
-    <string name="share_with_app">Mit Threema teilen</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="share_with_app">Mit ${app_name} teilen</string>
     <string name="read_phone_state_dialog_allow">Zulassen</string>
     <string name="read_phone_state_dialog_disallow">Trotzdem fortfahren</string>
     <string name="read_phone_state_dialog_never_ask_again">Nicht mehr fragen</string>
     <string name="read_phone_state_dialog_title">Berechtigung benötigt</string>
-    <string name="read_phone_state_dialog_message">Um zu verhindern, dass Threema Anrufe reguläre Anrufe unterbrechen, wird die Telefon-Berechtigung benötigt. Falls diese Berechtigung nicht gegeben ist, wird ein Threema Anruf einen regulären Anruf unterbrechen und umgekehrt.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_dialog_message">Um zu verhindern, dass ${app_name_short} Anrufe reguläre Anrufe unterbrechen, wird die Telefon-Berechtigung benötigt. Falls diese Berechtigung nicht gegeben ist, wird ein ${app_name_short} Anruf einen regulären Anruf unterbrechen und umgekehrt.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_short_message">Um laufende Anrufe zu berücksichtigen, wird die Telefon-Berechtigung benötigt.</string>
     <string name="prefs_title_read_phone_state">Telefon-Berechtigung erteilen</string>
     <string name="prefs_title_hibernation">Nicht verwendete Apps</string>
-    <string name="prefs_summary_hibernation_api_32">Um zu verhindern, dass Threema bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «Berechtigungen löschen und Speicherplatz freigeben» in den Systemeinstellungen.</string>
-    <string name="prefs_summary_hibernation_api">Um zu verhindern, dass Threema bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «App-Aktivität bei Nichtnutzung stoppen» in den Systemeinstellungen.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api_32">Um zu verhindern, dass ${app_name} bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «Berechtigungen löschen und Speicherplatz freigeben» in den Systemeinstellungen.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api">Um zu verhindern, dass ${app_name} bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «App-Aktivität bei Nichtnutzung stoppen» in den Systemeinstellungen.</string>
     <string name="unable_to_fetch_configuration">Konfiguration kann nicht vom Server geladen werden. Versuchen Sie es später erneut.</string>
-    <string name="rogue_device_warning"><![CDATA[Eine Verbindung von einem anderen Gerät mit dieser Threema-ID wurde erkannt. Haben Sie Ihre Threema-ID kürzlich auf einem anderen Gerät verwendet? <br><br> Wenn ja, können Sie diese Nachricht ignorieren. <br><br> Wenn nein, ist Ihr privater Schlüssel möglicherweise kompromittiert. Bitte <a href="https://threema.ch/de/faq/another_connection">befolgen Sie unsere Empfehlungen</a> zum Schutz Ihres Geräts und Ihrer Daten, bevor Sie eine neue ID erstellen.]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rogue_device_warning"><![CDATA[Eine Verbindung von einem anderen Gerät mit dieser ${app_name_short}-ID wurde erkannt. Haben Sie Ihre ${app_name_short}-ID kürzlich auf einem anderen Gerät verwendet? <br><br> Wenn ja, können Sie diese Nachricht ignorieren. <br><br> Wenn nein, ist Ihr privater Schlüssel möglicherweise kompromittiert. Bitte <a href="https://threema.ch/de/faq/another_connection">befolgen Sie unsere Empfehlungen</a> zum Schutz Ihres Geräts und Ihrer Daten, bevor Sie eine neue ID erstellen.]]></string>
     <string name="fetch2_failure">Der Abgleich mit dem Bereitstellungsserver ist fehlgeschlagen.</string>
     <string name="no_members_support_group_calls">Keines der anderen Gruppenmitglieder kann an Gruppenanrufen teilnehmen</string>
     <string name="group_calls">Gruppenanrufe</string>
@@ -1483,12 +1605,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="checking_compatibility">Die Kompatibilität wird überprüft…</string>
     <string name="group_call_mic_permission_rationale">Um Gruppenanrufe tätigen zu können, müssen Sie unter «Berechtigungen» %s den Zugriff aufs Mikrofon erlauben.</string>
     <string name="group_call_mic_permission_description">Um Gruppenanrufe zu benutzen, wird die Mikrofon-Berechtigung benötigt, damit die anderen Sie hören können.</string>
-    <string name="call_mic_permission_description">Um Threema Anrufe zu benutzen, wird die Mikrofon-Berechtigung benötigt, damit Sie gehört werden können.</string>
+    <string name="call_mic_permission_description">Um ${app_name_short} Anrufe zu benutzen, wird die Mikrofon-Berechtigung benötigt, damit Sie gehört werden können.</string>
     <string name="group_call_camera_permission_rationale">Damit die anderen Teilnehmer Ihr Bild sehen können, müssen Sie unter «Berechtigungen» %s den Zugriff auf die Kamera erlauben.</string>
     <string name="group_call_phone_permission_description">Um Gruppenanrufe zu benutzen, wird die Telefon-Berechtigung benötigt, damit der Gruppenanruf beendet werden kann, wenn Sie einen anderen Anruf annehmen.</string>
-    <string name="call_phone_permission_description">Um Threema Anrufe zu benutzen, wird die Telefon-Berechtigung benötigt, damit der Threema Anruf beendet werden kann, wenn Sie einen anderen Anruf annehmen.</string>
-    <string name="group_call_nearby_devices_permission_description">Um Gruppenanrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit Threema ein Bluetooth-Headset erkennen kann.</string>
-    <string name="call_nearby_devices_permission_description">Um Threema Anrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit Threema ein Bluetooth-Headset erkennen kann.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_phone_permission_description">Um ${app_name_short} Anrufe zu benutzen, wird die Telefon-Berechtigung benötigt, damit der ${app_name_short} Anruf beendet werden kann, wenn Sie einen anderen Anruf annehmen.</string>
+    <string name="group_call_nearby_devices_permission_description">Um Gruppenanrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit ${app_name} ein Bluetooth-Headset erkennen kann.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_nearby_devices_permission_description">Um ${app_name_short} Anrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit ${app_name} ein Bluetooth-Headset erkennen kann.</string>
     <string name="settings">Einstellungen</string>
     <string name="leave">Verlassen</string>
     <string name="fs_key_mismatch">schlüsselfehler</string>
@@ -1511,7 +1635,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="scroll_to_top">Nach oben scrollen</string>
     <string name="contact_sync_mdm_rationale">Ihr Administrator hat die Kontaktsynchronisierung aktiviert. Deshalb wird die Kontakt-Berechtigung benötigt.</string>
     <string name="welcome_back">Willkommen zurück!</string>
-    <string name="id_restored_successfully">Ihre Threema-ID wurde erfolgreich wiederhergestellt</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="id_restored_successfully">Ihre ${app_name_short}-ID wurde erfolgreich wiederhergestellt</string>
     <string name="prefs_dynamic_colors">Dynamische Farben</string>
     <string name="prefs_dynamic_colors_sum">Systemfarben verwenden</string>
     <string name="apply_changes">Änderungen übernehmen</string>
@@ -1542,11 +1667,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="no_starred_messages">Keine mit Stern markierten Nachrichten gefunden. Um eine Nachricht zu markieren, tippen Sie lange darauf und wählen Sie den Stern-Button.</string>
     <string name="remove_all_stars">Alle Sterne entfernen</string>
     <string name="remove_star">Stern entfernen</string>
-    <string name="samsung_permission_problem_explain">%1$s hat keinen Zugriff auf Mediendaten aufgrund der fehlenden Berechtigung einer System-App. Um das Problem zu beheben, stellen Sie sicher, dass der Schalter neben «Externer Speicher» im folgenden Bildschirm aktiviert ist, und starten Sie %1$s neu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="samsung_permission_problem_explain">${app_name} hat keinen Zugriff auf Mediendaten aufgrund der fehlenden Berechtigung einer System-App. Um das Problem zu beheben, stellen Sie sicher, dass der Schalter neben «Externer Speicher» im folgenden Bildschirm aktiviert ist, und starten Sie %1$s neu.</string>
     <string name="min_n_chars">min. %d Zeichen</string>
     <string name="prefs_title_grant_bluetooth_permission">Bluetooth-Berechtigung erteilen</string>
-    <string name="safe_managed_password_confirm">Ein verwaltetes Passwort für Threema Safe wurde festgelegt.\n\nMöchten Sie dieses Passwort benutzen? Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.</string>
-    <string name="safe_managed_new_password_confirm">Ein neues verwaltetes Passwort für Threema Safe wurde festgelegt.\n\nMöchten Sie das gegenwärtige Passwort durch das neue, verwaltete ersetzen? Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_password_confirm">Ein verwaltetes Passwort für ${app_name_short} Safe wurde festgelegt.\n\nMöchten Sie dieses Passwort benutzen? Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_new_password_confirm">Ein neues verwaltetes Passwort für ${app_name_short} Safe wurde festgelegt.\n\nMöchten Sie das gegenwärtige Passwort durch das neue, verwaltete ersetzen? Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.</string>
     <string name="real_not_now">Jetzt nicht</string>
     <string name="add_contact_in">Kontakt hinzufügen in…</string>
     <string name="really_remove_all_stars">Möchten Sie wirklich alle Sterne-Markierungen entfernen?</string>
@@ -1566,15 +1694,18 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="group_orphaned_notice">Diese Gruppe ist verwaist, weil der Gruppen-Ersteller die Gruppe verlassen hat. Bitte klonen Sie die Gruppe, um der neue Administrator zu werden.</string>
     <string name="group_not_a_member_notice">Sie sind nicht mehr Mitglied dieser Gruppe und können sie nicht mehr verwenden.</string>
     <string name="group_dissolved_notice">Diese Gruppe wurde aufgelöst und kann nicht mehr verwendet werden.</string>
-    <string name="md_linked_devices">Verknüpfte Geräte</string>
-    <string name="md_link_device">Neues Gerät verknüpfen</string>
-    <string name="md_enable">Verknüpfte Geräte aktivieren</string>
-    <string name="md_linked_devices_empty">Laden Sie den tollen Desktop-Client von irgendwo herunter und legen Sie los 🚀</string>
+    <string name="md_linked_devices">${app_name_desktop} 2.0 für Desktop (Beta)</string>
+    <string name="md_link_device">Gerät hinzufügen</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <string name="md_linked_devices_empty">Bevor Sie ein neues Gerät verknüpfen, laden Sie bitte die aktuelle Beta-Version von [${app_name_desktop} für Desktop] herunter und öffnen Sie diese.</string>
     <string name="md_link_device_qr_scan_message">Bitte scannen Sie den QR-Code</string>
     <string name="directory_request_failed">Verzeichnis-Abfrage fehlgeschlagen. Versuchen Sie es nochmals.</string>
     <string name="add_shortcut_exists">Eine Verknüpfung für dieses Ziel existiert bereits.</string>
     <string name="scan_qr_code">QR-Code scannen</string>
-    <string name="scan_qr_code_explain">Scannen Sie den QR-Code, der in der Beta-Version von %s Desktop auf dem Gerät angezeigt wird, das Sie verknüpfen möchten.</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="scan_qr_code_explain">Scannen Sie den QR-Code, der in der Beta-Version von ${app_name_desktop} für Desktop auf dem Gerät angezeigt wird, das Sie verknüpfen möchten.</string>
     <string name="connecting">Wird verbunden…</string>
     <string name="trust_new_device">Neuem Gerät vertrauen</string>
     <string name="trust_new_device_explain">Wählen Sie dieselben Bilder aus, die auf dem neuen Gerät angezeigt werden, um zu bestätigen, dass Sie ihm vertrauen.</string>
@@ -1583,10 +1714,12 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="sending_data">Daten werden gesendet…</string>
     <string name="continue_on_new_device">Bitte auf dem neuem Gerät fortfahren</string>
     <string name="device_linked_successfully">Gerät erfolgreich verknüpft</string>
-    <string name="device_linked_successfully_explain">%s kann nun auf dem Gerät verwendet werden, das Sie gerade verknüpft haben (auch wenn dieses Gerät ausgeschaltet oder nicht mit dem Internet verbunden ist).</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linked_successfully_explain">${app_name} kann nun auf dem Gerät verwendet werden, das Sie gerade verknüpft haben (auch wenn dieses Gerät ausgeschaltet oder nicht mit dem Internet verbunden ist).</string>
     <string name="resend_message_dialog_title">Gruppennachricht erneut senden?</string>
     <string name="resend_message_dialog_message">Diese Nachricht konnte nicht an alle Mitglieder versendet werden. Wollen Sie die Nachricht erneut an %1$s senden?</string>
-    <string name="work_lost_credentials_help">Zugangsdaten vergessen? – Melden Sie sich bei Ihrem %1$s-Administrator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_lost_credentials_help">Zugangsdaten vergessen? – Melden Sie sich bei Ihrem ${app_name_short}-Administrator.</string>
     <string name="problemsolver_intro">Konfigurationsprobleme in den System-Einstellungen verhindern möglicherweise, dass %s korrekt funktioniert. Bitte beheben Sie diese Probleme, indem Sie den untenstehenden Anleitungen folgen.</string>
     <string name="problemsolver_title">Konfigurationsprobleme beheben</string>
     <string name="problemsolver_title_background">Hintergrundnutzung eingeschränkt</string>
@@ -1599,7 +1732,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="problemsolver_explain_background">Die Nutzung der App im Hintergrund ist eingeschränkt. Dadurch erhalten Sie keine Benachrichtigungen und die App funktioniert nur teilweise oder nicht wie erwartet. Um dies zu beheben, tippen Sie auf «Akkunutzung der App» und wählen Sie «Uneingeschränkt».</string>
     <string name="problemsolver_info_text">Die Bezeichnungen einiger der genannten Optionen in den Systemeinstellungen können je nach Android-Version und Gerätehersteller variieren.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Akkunutzung der App «optimiert»</string>
-    <string name="problemsolver_explain_app_battery_usgae_optimized">Die App kann keine permanente Verbindung zu den Servern aufrechterhalten, was für die Funktion von Threema Push jedoch erforderlich ist. Befindet sich die App im Hintergrund, werden Sie nicht über neue Nachrichten informiert. Um dies zu beheben, tippen Sie auf «Akkunutzung der App» und wählen Sie «Uneingeschränkt».</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Die App kann keine permanente Verbindung zu den Servern aufrechterhalten, was für die Funktion von ${app_name_short} Push jedoch erforderlich ist. Befindet sich die App im Hintergrund, werden Sie nicht über neue Nachrichten informiert. Um dies zu beheben, tippen Sie auf «Akkunutzung der App» und wählen Sie «Uneingeschränkt».</string>
     <string name="problemsolver_to_settings">Zu den Einstellungen</string>
     <string name="prefs_advanced_options">Erweiterte Optionen</string>
     <string name="push_service">Push-Dienst</string>
@@ -1619,7 +1753,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="delete_message_not_supported_for_all_group_members">Bei folgenden Gruppenmitgliedern wird die Nachricht nicht gelöscht: %1$s</string>
     <string name="work_intro_more_link_text">Mehr über Threema Work erfahren</string>
     <string name="work_intro_subtitle">Der sichere Business-Messenger\nfür Unternehmen.</string>
-    <string name="work_intro_login">Anmeldung %1$s</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_login">Anmeldung ${app_name}</string>
     <string name="consumer_notice_description">Wenn Sie die App privat nutzen möchten, laden Sie bitte die reguläre Threema-App herunter.</string>
     <string name="consumer_notice_playstore_link_description">Threema im Play Store</string>
     <string name="consumer_notice_appgallery_link_description">Threema in AppGallery</string>
@@ -1632,6 +1767,23 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="device_linking_failed_explain">Das Gerät konnte nicht verknüpft werden. Bitte versuchen Sie es erneut.\nGrund: %s.</string>
     <string name="qr_code_scan_error">Beim Scannen des QR-Codes ist ein Fehler aufgetreten</string>
     <string name="verification_failed">Verifizierung fehlgeschlagen</string>
+    <string name="md_device_currently_active">Gerade aktiv</string>
+    <string name="md_device_last_active_at">Zuletzt aktiv: %s</string>
+    <plurals name="md_max_device_slots_reached_info">
+        <item quantity="one">Zurzeit kann nur ein Gerät verbunden werden.</item>
+        <item quantity="other">Die maximale Anzahl von %d verbundenen Geräten wurde erreicht. Entfernen Sie ein Gerät um ein Neues hinzuzufügen.</item>
+    </plurals>
+    <string name="md_device_invalid_label">Gerät</string>
+    <string name="md_device_invalid_hint">Informationen konnten nicht ermittelt werden</string>
+    <string name="device_linking_cancel_dialog_title">Verknüpfung abbrechen</string>
+    <string name="device_linking_cancel_dialog_message">Die Verknüpfung ist noch nicht abgeschlossen. Wollen Sie wirklich abbrechen?</string>
+    <string name="device_linking_cancel_dialog_cancel">Verknüpfung abbrechen</string>
+    <string name="device_linking_cancel_dialog_continue">Weitermachen</string>
+    <string name="md_drop_device_dialog_drop_button">Gerät entfernen</string>
+    <string name="md_drop_device_dialog_close_button">Schliessen</string>
+    <string name="md_drop_device_failed_dialog_title">Entfernen des Geräts fehlgeschlagen</string>
+    <string name="md_drop_device_failed_dialog_message">Bitte überprüfen Sie die Internetverbindung und versuchen Sie es erneut.</string>
+    <string name="md_drop_device_failed_dialog_button_close">Schliessen</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">Nachricht bestätigt</string>
     <string name="cd_dec_icon">Nachricht abgelehnt</string>
@@ -1645,7 +1797,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="cd_message">Nachricht</string>
     <string name="reactions_on_this_message">Alle Reaktionen</string>
     <string name="select_emoji_content_description">Emoji aus dem Emoji-Picker hinzufügen</string>
-    <string name="group_emoji_reactions_partially_supported">Einige sehen deine Reaktionen nicht wegen einer alten Version.</string>
+    <string name="group_emoji_reactions_partially_supported">Einige sehen Ihre Reaktionen nicht wegen einer alten Version.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s Reaktionen mit %2$s</string>
     <string name="emoji_reactions_compatibility_infobox_text">Sie haben Emoji-Reaktionen von einem Kontakt erhalten, der eine neuere App-Version verwendet. Abgesehen von 👍 und 👎 unterstützt Ihre App-Version das Senden von Emoji-Reaktionen noch nicht.</string>
     <string name="reaction_cannot_be_displayed">Diese Reaktion kann nicht angezeigt werden, da das Emoji unbekannt ist.</string>
@@ -1663,6 +1815,39 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="emoji_reactions_popup_hint_title">Emoji-Reaktion</string>
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <string name="emoji_reactions_popup_hint_text">Diese Nachricht hat Emoji-Reaktionen. Tippen Sie die Emojis an und halten Sie sie gedrückt, um alle zu sehen.</string>
+    <string name="accessibility_device_linking_pfs_warning_icon">Hinweis</string>
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_pfs_warning_body">Wenn Sie ein Gerät verknüpfen, wird Perfect Forward Secrecy für alle Kontakte deaktiviert.\n\nDies ist eine Einschränkung der aktuellen Beta-Version. Weitere Einschränkungen sind in [dieser FAQ] aufgelistet.</string>
+    <string name="device_linking_pfs_warning_button_continue">Neues Gerät verknüpfen</string>
+    <string name="device_linking_pfs_warning_button_cancel">Abbrechen</string>
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_web_link_to_multi_device_feature_banner_title">Neu: ${app_name_desktop} 2.0 für Desktop (Beta)</string>
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <string name="threema_web_link_to_multi_device_feature_banner_body">Hier tippen, um die nächste Generation der Desktop-App mit Multi-Device Unterstützung zu nutzen.</string>
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <string name="accessibility_dismiss_hint">Hinweis schliessen</string>
+    <string name="device_linking_error_generic_title">Daten können nicht übertragen werden</string>
+    <string name="device_linking_error_generic_body">Bitte versuchen Sie nochmals, das Gerät zu verknüpfen. Falls das Problem weiterhin besteht, wenden Sie sich bitte an den Support («Hauptmenü &gt; Hilfe»).</string>
+    <string name="device_linking_error_generic_network_title">Keine Internetverbindung</string>
+    <string name="device_linking_error_generic_network_body">Bitte versuchen Sie nochmals, das Gerät zu verknüpfen. Falls das Problem weiterhin besteht, wenden Sie sich bitte an den Support («Hauptmenü &gt; Hilfe»).</string>
+    <string name="device_linking_error_unknown_qr_code_title">Unbekannter QR-Code</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_unknown_qr_code_body">Bitte stellen Sie sicher, dass Sie die entsprechende App von [unserer Website] verwenden.</string>
+    <string name="device_linking_error_old_rendezvous_version_title">Nicht unterstützte Version</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linking_error_old_rendezvous_version_body">Bitte installieren Sie die neueste Version von ${app_name} auf beiden Geräten.</string>
+    <string name="device_linking_error_emoji_mismatch_title">Die Bilder stimmen nicht überein?</string>
+    <string name="device_linking_error_emoji_mismatch_body">Die Verbindung zum neuen Gerät scheint nicht korrekt zu funktionieren. Bitte starten Sie die App auf dem neuen Gerät neu, und versuchen Sie es nochmals.</string>
+    <string name="device_linking_error_unexpected_title">Unvorhergesehener Fehler</string>
+    <string name="device_linking_error_unexpected_body">Bitte versuchen Sie nochmals, das Gerät zu verknüpfen. Falls das Problem weiterhin besteht, wenden Sie sich bitte an den Support («Hauptmenü &gt; Hilfe»).</string>
+    <string name="device_linking_error_screen_close">Schliessen</string>
+    <string name="work_directory_title">Unternehmensverzeichnis</string>
+    <!-- Instruction text for the user directory search -->
+    <string name="work_directory_search">Im Verzeichnis suchen</string>
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Unternehmensverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontakte</item>

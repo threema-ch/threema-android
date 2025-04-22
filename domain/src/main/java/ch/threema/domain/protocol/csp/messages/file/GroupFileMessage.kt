@@ -28,18 +28,13 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import org.slf4j.Logger
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("GroupFileMessage")
 
-/**
- *  This class is not final as a workaround to test it using Mockito.
- *  Another solution would be to use the mock-maker-inline mockito plugin.
- */
-open class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
-
+class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
     override var fileData: FileData? = null
 
     override fun flagSendPush(): Boolean = true
@@ -80,7 +75,6 @@ open class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_GROUP_FILE
 
     companion object {
-
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
          *  So we set the offset in [fromByteArray] to zero.
@@ -99,10 +93,11 @@ open class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
         }
 
         @JvmStatic
+        @Throws(BadMessageException::class)
         fun fromByteArray(data: ByteArray): GroupFileMessage = fromByteArray(
             data = data,
             offset = 0,
-            length = data.size
+            length = data.size,
         )
 
         /**

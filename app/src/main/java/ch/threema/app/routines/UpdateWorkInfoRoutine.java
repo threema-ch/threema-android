@@ -30,12 +30,12 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.AppRestrictionService;
+import ch.threema.app.restrictions.AppRestrictionService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.license.UserCredentials;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -125,8 +125,8 @@ public class UpdateWorkInfoRoutine implements Runnable {
                 } else {
                     logger.error("failed to update work info");
                 }
-            } catch (Exception x) {
-                logger.error("Exception", x);
+            } catch (Exception e) {
+                logger.error("Failed to update work info", e);
             }
         } else {
             logger.error("device is not online");

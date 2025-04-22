@@ -30,14 +30,12 @@ import androidx.room.*
             entity = Emoji::class,
             parentColumns = ["sequence"],
             childColumns = ["emoji_sequence"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class SearchTerm(
     @ColumnInfo(name = "emoji_sequence") val emojiSequence: String,
     val language: String,
-    val term: String
+    val term: String,
 )
-
-

@@ -97,13 +97,12 @@ public class DatabaseUtil {
 
     /**
      * An SQL query that can be used to check whether an identity is part of a group. There is one
-     * placeholder (?) that should be used for the identity that should be checked. Note that only
-     * groups are considered where 'deleted' is 0.
+     * placeholder (?) that should be used for the identity that should be checked.
      */
     @NonNull
     public final static String IS_GROUP_MEMBER_QUERY = "SELECT EXISTS(" +
         "SELECT 1 FROM " + GroupModel.TABLE + " g INNER JOIN " + GroupMemberModel.TABLE + " m" +
         "  ON m." + GroupMemberModel.COLUMN_GROUP_ID + " = g." + GroupModel.COLUMN_ID + " " +
-        "WHERE m." + GroupMemberModel.COLUMN_IDENTITY + " = ? AND " + GroupModel.COLUMN_DELETED + " = 0" +
+        "WHERE m." + GroupMemberModel.COLUMN_IDENTITY + " = ?" +
         ")";
 }

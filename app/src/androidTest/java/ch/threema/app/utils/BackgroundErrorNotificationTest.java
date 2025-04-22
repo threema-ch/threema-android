@@ -24,6 +24,7 @@ package ch.threema.app.utils;
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -129,7 +130,8 @@ public class BackgroundErrorNotificationTest {
     /**
      * Ensure that a notification with "send to support" action works.
      */
-    //@Test TODO danilo: Disabled until we have an empty test database
+    @Ignore("Disabled until we have an empty test database")
+    @Test
     public void testNotificationWithAction() {
         // Go to home screen
         mDevice.pressHome();

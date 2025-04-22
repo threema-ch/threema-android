@@ -182,7 +182,7 @@ public class SelectorDialog extends ThreemaDialogFragment {
         builder.setAdapter(adapter, (dialog, which) -> {
             dialog.dismiss();
 
-            if (tags != null && tags.size() > 0) {
+            if (tags != null && !tags.isEmpty()) {
                 if (inlineCallback != null) {
                     inlineCallback.onClick(fragmentTag, tags.get(which), object);
                 } else {

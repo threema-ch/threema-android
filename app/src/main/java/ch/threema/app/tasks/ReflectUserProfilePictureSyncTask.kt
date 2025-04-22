@@ -56,7 +56,6 @@ class ReflectUserProfilePictureSyncTask(
     private val nonceFactory: NonceFactory,
     private val multiDeviceManager: MultiDeviceManager,
 ) : ActiveTask<Unit>, PersistableTask {
-
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
 
     override val type = "ReflectUserProfilePictureSyncTask"

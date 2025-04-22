@@ -51,7 +51,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
 
 public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
     private ExpandableTextEntryDialogClickListener callback;
@@ -236,40 +236,6 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
         setCancelable(false);
 
         return alertDialog;
-    }
-
-    /**
-     * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
-     *
-     * @param mentionPopupData the required data to enable mentions, if this is null, mentions are not enabled
-     */
-    public void enableMentionPopup(@Nullable ComposeEditText.MentionPopupData mentionPopupData) {
-        this.mentionPopupData = mentionPopupData;
-    }
-
-    /**
-     * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
-     */
-    public void enableMentionPopup(
-        @NonNull Activity activity,
-        @NonNull GroupService groupService,
-        @NonNull ContactService contactService,
-        @NonNull UserService userService,
-        @NonNull PreferenceService preferenceService,
-        @NonNull GroupModel groupModel
-    ) {
-        mentionPopupData = new ComposeEditText.MentionPopupData(
-            activity,
-            groupService,
-            contactService,
-            userService,
-            preferenceService,
-            groupModel
-        );
-    }
-
-    public void dismissMentionPopup() {
-        captionEditText.dismissMentionPopup();
     }
 
     private void toggleLayout(ImageView button, View v) {

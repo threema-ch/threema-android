@@ -21,17 +21,22 @@
 
 package ch.threema.app.contacts
 
+import androidx.annotation.AnyThread
 import ch.threema.app.DangerousTest
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestMultiDevicePropertyProvider
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.asynctasks.AndroidContactLinkPolicy
 import ch.threema.app.asynctasks.ContactSyncPolicy
-import ch.threema.app.asynctasks.MarkContactAsDeletedBackgroundTask
 import ch.threema.app.asynctasks.DeleteContactServices
+import ch.threema.app.asynctasks.MarkContactAsDeletedBackgroundTask
 import ch.threema.app.managers.CoreServiceManager
+import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.LinkedDevice
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.multidevice.PersistedMultiDeviceProperties
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
+import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
@@ -50,8 +55,9 @@ import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
-import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
+import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
+import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -59,22 +65,21 @@ import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 import com.neilalexander.jnacl.NaCl
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
 
 @DangerousTest
 class MarkContactAsDeletedBackgroundTaskTest {
-
     private val backgroundExecutor = BackgroundExecutor()
     private lateinit var testTaskCodec: TransactionAckTaskCodec
     private val testTaskManager = object : TaskManager {
@@ -96,7 +101,6 @@ class MarkContactAsDeletedBackgroundTaskTest {
         override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
             // Nothing to do
         }
-
     }
     private lateinit var databaseService: TestDatabaseService
     private val multiDeviceManager = object : MultiDeviceManager {
@@ -108,23 +112,9 @@ class MarkContactAsDeletedBackgroundTaskTest {
             get() = multiDeviceEnabled
         override val propertiesProvider = TestMultiDevicePropertyProvider
         override val socketCloseListener: D2mSocketCloseListener = D2mSocketCloseListener { }
-        override val latestSocketCloseReason: Flow<D2mSocketCloseReason?> = flowOf()
 
-        override suspend fun activate(
-            deviceLabel: String,
-            contactService: ContactService,
-            userService: UserService,
-            fsMessageProcessor: ForwardSecurityMessageProcessor,
-            taskCreator: TaskCreator,
-        ) {
-            MUST_NOT_BE_CALLED()
-        }
-
-        override suspend fun deactivate(
-            userService: UserService,
-            fsMessageProcessor: ForwardSecurityMessageProcessor,
-            taskCreator: TaskCreator,
-        ) {
+        @AnyThread
+        override suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec) {
             MUST_NOT_BE_CALLED()
         }
 
@@ -133,21 +123,44 @@ class MarkContactAsDeletedBackgroundTaskTest {
         }
 
         override suspend fun linkDevice(
+            serviceManager: ServiceManager,
             deviceJoinOfferUri: String,
             taskCreator: TaskCreator,
         ): Flow<DeviceLinkingStatus> {
             MUST_NOT_BE_CALLED()
         }
 
-        override suspend fun purge(taskCreator: TaskCreator) {
+        override suspend fun dropDevice(
+            deviceId: DeviceId,
+            taskCreator: TaskCreator,
+            timeout: Duration,
+        ): DropDeviceResult {
             MUST_NOT_BE_CALLED()
         }
 
-        override suspend fun loadLinkedDevicesInfo(taskCreator: TaskCreator): List<String> {
+        override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>> {
             MUST_NOT_BE_CALLED()
         }
 
+        override suspend fun setProperties(persistedProperties: PersistedMultiDeviceProperties?) {
+            MUST_NOT_BE_CALLED()
+        }
+
+        override fun reconnect() {
+            MUST_NOT_BE_CALLED()
+        }
+
+        override suspend fun disableForwardSecurity(
+            handle: ActiveTaskCodec,
+            contactService: ContactService,
+            userService: UserService,
+            fsMessageProcessor: ForwardSecurityMessageProcessor,
+            taskCreator: TaskCreator,
+        ) {
+            MUST_NOT_BE_CALLED()
+        }
     }
+
     private lateinit var coreServiceManager: CoreServiceManager
     private lateinit var contactModelRepository: ContactModelRepository
     private lateinit var deleteContactServices: DeleteContactServices
@@ -167,12 +180,14 @@ class MarkContactAsDeletedBackgroundTaskTest {
         featureMask = 0u,
         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+        isArchived = false,
         androidContactLookupKey = null,
         localAvatarExpires = null,
         isRestored = false,
         profilePictureBlobId = null,
         jobTitle = null,
         department = null,
+        notificationTriggerPolicyOverride = null,
     )
 
     @Before
@@ -192,8 +207,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
             serviceManager.contactService,
             serviceManager.conversationService,
             serviceManager.ringtoneService,
-            serviceManager.mutedChatsListService,
-            serviceManager.hiddenChatsListService,
+            serviceManager.conversationCategoryService,
             serviceManager.profilePicRecipientsService,
             serviceManager.wallpaperService,
             serviceManager.fileService,
@@ -223,7 +237,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
                 deleteContactServices,
                 ContactSyncPolicy.INCLUDE,
                 AndroidContactLinkPolicy.REMOVE_LINK,
-            )
+            ),
         ).await()
 
         // Assert that the contact's acquaintance level is "group" now
@@ -248,7 +262,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
                 deleteContactServices,
                 ContactSyncPolicy.INCLUDE,
                 AndroidContactLinkPolicy.REMOVE_LINK,
-            )
+            ),
         ).await()
 
         // Assert that the there was no task scheduled
@@ -273,7 +287,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
                 deleteContactServices,
                 ContactSyncPolicy.INCLUDE,
                 AndroidContactLinkPolicy.REMOVE_LINK,
-            )
+            ),
         ).await()
 
         // Assert that a reflection task has been scheduled

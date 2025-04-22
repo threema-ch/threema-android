@@ -29,10 +29,13 @@ import java.io.IOException;
 public class ProtocolExtension {
     public static final int CLIENT_INFO_TYPE = 0x00;
     public static final int CSP_DEVICE_ID_TYPE = 0x01;
-    public static final int MESSAGE_PAYLOAD_VERSION_TYPE = 0x02;
+    public static final int SUPPORTED_FEATURES_TYPE = 0x02;
     public static final int DEVICE_COOKIE_TYPE = 0x03;
     public static final String VERSION_MAGIC_STRING = "threema-clever-extension-field";
-    public static final int MESSAGE_PAYLOAD_VERSION = 0x01;
+
+    // Set of available feature bits
+    public static final int SUPPORTS_MESSAGE_WITH_METADATA_PAYLOAD = 0x01;
+    public static final int SUPPORTS_RECEIVING_ECHO_REQUEST = 0x02;
 
     private final int type;
     private final byte[] data;

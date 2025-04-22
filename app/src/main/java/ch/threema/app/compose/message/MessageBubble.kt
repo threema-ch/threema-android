@@ -56,6 +56,7 @@ import ch.threema.app.compose.theme.AppTypography
 import ch.threema.app.compose.theme.customColorScheme
 import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.LocaleUtil
+import ch.threema.base.utils.now
 import java.util.Date
 
 @Composable
@@ -69,7 +70,7 @@ fun MessageBubble(
     isTextSelectable: Boolean = false,
     onClick: (() -> Unit)? = null,
     @SuppressLint("ComposableLambdaParameterNaming")
-    footerContent: @Composable ((contentColor: Color) -> Unit)? = null
+    footerContent: @Composable ((contentColor: Color) -> Unit)? = null,
 ) {
     val bubbleColor: Color = if (isOutbox) {
         MaterialTheme.colorScheme.secondaryContainer
@@ -85,11 +86,11 @@ fun MessageBubble(
         modifier = modifier
             .background(
                 color = bubbleColor,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
             )
             .clip(RoundedCornerShape(16.dp))
             .then(onClick?.let { Modifier.clickable { it() } } ?: Modifier)
-            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 4.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 4.dp),
     ) {
         InteropEmojiConversationTextView(
             text = text,
@@ -116,7 +117,6 @@ fun CompleteMessageBubble(
     if (message.isDeleted) {
         DeletedMessageBubble(message.isOutbox, message.createdAt)
     } else {
-
         /**
          * If we encounter a blank/empty value in [MessageUiModel.text] we can
          * be sure it is an MessageUiModel of a file message. Because you cant
@@ -149,9 +149,9 @@ fun CompleteMessageBubble(
                     isOutbox = message.isOutbox,
                     deliveryIconRes = message.deliveryIconRes,
                     deliveryIconContentDescriptionRes = message.deliveryIconContentDescriptionRes,
-                    contentColor = contentColor
+                    contentColor = contentColor,
                 )
-            }
+            },
         )
     }
 }
@@ -172,9 +172,9 @@ fun DeletedMessageBubble(
                 shouldShowEditedLabel = false,
                 isOutbox = isOutbox,
                 date = date,
-                contentColor = contentColor
+                contentColor = contentColor,
             )
-        }
+        },
     )
 }
 
@@ -185,13 +185,13 @@ fun MessageBubbleFooter(
     isOutbox: Boolean,
     @DrawableRes deliveryIconRes: Int? = null,
     @StringRes deliveryIconContentDescriptionRes: Int? = null,
-    contentColor: Color
+    contentColor: Color,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (shouldShowEditedLabel) {
             ThemedText(
@@ -202,7 +202,7 @@ fun MessageBubbleFooter(
                 },
                 text = stringResource(R.string.edited),
                 style = AppTypography.bodySmall,
-                color = contentColor
+                color = contentColor,
             )
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -218,7 +218,7 @@ fun MessageBubbleFooter(
                 },
                 text = formattedDate,
                 style = AppTypography.bodySmall,
-                color = contentColor
+                color = contentColor,
             )
         }
         if (deliveryIconRes != null && isOutbox) {
@@ -226,7 +226,7 @@ fun MessageBubbleFooter(
             MessageStateIndicator(
                 deliveryIconRes = deliveryIconRes,
                 deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
-                deliveryIndicatorTintColor = contentColor
+                deliveryIndicatorTintColor = contentColor,
             )
         }
     }
@@ -242,11 +242,11 @@ private fun MessageBubblePreview() {
         footerContent = { contentColor: Color ->
             MessageBubbleFooter(
                 shouldShowEditedLabel = true,
-                date = Date(),
+                date = now(),
                 isOutbox = true,
                 deliveryIconRes = R.drawable.ic_mark_read,
-                contentColor = contentColor
+                contentColor = contentColor,
             )
-        }
+        },
     )
 }

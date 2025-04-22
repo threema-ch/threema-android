@@ -43,7 +43,6 @@ class OutgoingGroupSyncTask(
     private val receiverIdentities: Set<String>,
     private val serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingGroupSyncTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -58,7 +57,7 @@ class OutgoingGroupSyncTask(
             logger.error(
                 "Could not find group {} with creator {} to send a group sync",
                 groupId,
-                creatorIdentity
+                creatorIdentity,
             )
             return
         }
@@ -67,10 +66,10 @@ class OutgoingGroupSyncTask(
         OutgoingGroupSetupTask(
             groupId,
             creatorIdentity,
-            groupService.getGroupIdentities(group).toSet(),
+            groupService.getGroupMemberIdentities(group).toSet(),
             receiverIdentities,
             null,
-            serviceManager
+            serviceManager,
         ).invoke(handle)
 
         // Send a group name message (run task immediately)
@@ -80,7 +79,7 @@ class OutgoingGroupSyncTask(
             group.name ?: "",
             receiverIdentities,
             null,
-            serviceManager
+            serviceManager,
         ).invoke(handle)
 
         // Send a profile picture (delete) message (run task immediately)
@@ -89,12 +88,14 @@ class OutgoingGroupSyncTask(
             creatorIdentity,
             receiverIdentities,
             null,
-            serviceManager
+            serviceManager,
         ).invoke(handle)
     }
 
     override fun serialize(): SerializableTaskData = OutgoingGroupSyncData(
-        groupId.groupId, creatorIdentity, receiverIdentities
+        groupId = groupId.groupId,
+        creatorIdentity = creatorIdentity,
+        receiverIdentities = receiverIdentities,
     )
 
     @Serializable
@@ -108,8 +109,7 @@ class OutgoingGroupSyncTask(
                 GroupId(groupId),
                 creatorIdentity,
                 receiverIdentities,
-                serviceManager
+                serviceManager,
             )
     }
-
 }

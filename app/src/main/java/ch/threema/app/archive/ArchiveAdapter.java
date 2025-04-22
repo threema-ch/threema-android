@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.AvatarListItemUtil;
@@ -71,7 +72,8 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
     private ContactService contactService;
     private GroupService groupService;
     private DistributionListService distributionListService;
-    private DeadlineListService hiddenChatsListService;
+    @Nullable
+    private ConversationCategoryService conversationCategoryService;
     private SparseBooleanArray checkedItems = new SparseBooleanArray();
     private final @NonNull RequestManager requestManager;
 
@@ -119,7 +121,7 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
             this.distributionListService = serviceManager.getDistributionListService();
             this.groupService = serviceManager.getGroupService();
             this.contactService = serviceManager.getContactService();
-            this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
+            this.conversationCategoryService = serviceManager.getConversationCategoryService();
         } catch (Exception e) {
             logger.debug("Exception", e);
         }
@@ -152,8 +154,8 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
                 holder.dateView.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine);
             }
 
-            if (messageModel != null) {
-                if (hiddenChatsListService.has(conversationModel.getReceiver().getUniqueIdString())) {
+            if (messageModel != null && conversationCategoryService != null) {
+                if (conversationCategoryService.isPrivateChat(conversationModel.getReceiver().getUniqueIdString())) {
                     // give user some privacy even in visible mode
                     holder.subjectView.setText(R.string.private_chat_subject);
                     holder.subjectView.setVisibility(View.VISIBLE);
@@ -228,7 +230,7 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
                 holder.subjectView.setText("");
             }
 
-            AdapterUtil.styleConversation(holder.fromView, groupService, conversationModel);
+            AdapterUtil.styleConversation(holder.fromView, conversationModel);
 
             // load avatars asynchronously
             AvatarListItemUtil.loadAvatar(

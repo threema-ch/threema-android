@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- wizard -->
-    <color name="wizard_color_text_on_primary">@android:color/white</color>
-    <color name="wizard_alpha_background">#33ffffff</color>
-    <color name="wizard_color_accent">#0096ff</color>
-    <color name="wizard_color_accent_dark">#323232</color>
-    <color name="wizard_color_button_disabled">#660096ff</color>
+    <color name="color_wizard_primary">#0096ff</color>
+    <color name="color_wizard_on_primary">#FFFFFF</color>
 
     <!-- chat bubbles -->
     <color name="bubble_receive">#F2F2F2</color>

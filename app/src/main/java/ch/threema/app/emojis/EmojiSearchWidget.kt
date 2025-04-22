@@ -55,7 +55,7 @@ class EmojiSearchWidget : ConstraintLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     )
 
     fun init(listener: EmojiSearchListener, emojiService: EmojiService) {
@@ -83,7 +83,7 @@ class EmojiSearchWidget : ConstraintLayout {
         diverseEmojiPopup.setListener(object : DiverseEmojiPopup.DiverseEmojiPopupListener {
             override fun onDiverseEmojiClick(
                 parentEmojiSequence: String?,
-                emojiSequence: String?
+                emojiSequence: String?,
             ) {
                 onEmojiClick(emojiSequence)
                 if (parentEmojiSequence != null && emojiSequence != null) {
@@ -149,16 +149,20 @@ class EmojiSearchWidget : ConstraintLayout {
     }
 
     private fun configureSearchResults() {
-        resultAdapter = EmojiListAdapter(context, object : EmojiListAdapter.KeyClickListener {
-            override fun onEmojiKeyClicked(emojiCodeString: String?) = onEmojiClick(emojiCodeString)
+        resultAdapter = EmojiListAdapter(
+            context,
+            object : EmojiListAdapter.KeyClickListener {
+                override fun onEmojiKeyClicked(emojiCodeString: String?) = onEmojiClick(emojiCodeString)
 
-            override fun onEmojiKeyLongClicked(view: View?, emojiCodeString: String?) {
-                val emojiInfo = EmojiUtil.getEmojiInfo(emojiCodeString)
-                if (emojiInfo != null && emojiInfo.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT) {
-                    diverseEmojiPopup.show(view, emojiCodeString)
+                override fun onEmojiKeyLongClicked(view: View?, emojiCodeString: String?) {
+                    val emojiInfo = EmojiUtil.getEmojiInfo(emojiCodeString)
+                    if (emojiInfo != null && emojiInfo.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT) {
+                        diverseEmojiPopup.show(view, emojiCodeString)
+                    }
                 }
-            }
-        }, emojiService)
+            },
+            emojiService,
+        )
 
         noResultText = findViewById(R.id.no_search_results)!!
         noResultText.height = resultAdapter.getItemHeight()

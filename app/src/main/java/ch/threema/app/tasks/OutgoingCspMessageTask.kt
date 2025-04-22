@@ -26,11 +26,11 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
+import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.OutgoingCspContactMessageCreator
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
-import ch.threema.app.utils.removeGroupCreatorIfRequired
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
@@ -58,7 +58,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
     protected val userService by lazy { serviceManager.userService }
     private val myIdentity by lazy { userService.identity }
     protected val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
-    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
+    protected val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
     protected val contactService by lazy { serviceManager.contactService }
     protected val groupService by lazy { serviceManager.groupService }
     protected val contactStore by lazy { serviceManager.contactStore }
@@ -131,13 +131,13 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
         if (contactModelData == null) {
             logger.error(
                 "Could not send message to {} as the contact model data is null",
-                toIdentity
+                toIdentity,
             )
             messageModel?.let {
                 messageService.updateOutgoingMessageState(
                     it,
                     MessageState.SENDFAILED,
-                    Date()
+                    Date(),
                 )
             }
             throw IllegalStateException("Could not send message as the receiver model is unknown")
@@ -155,7 +155,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
                 messageService.updateOutgoingMessageState(
                     messageModel,
                     MessageState.SENT,
-                    Date(sentAt.toLong())
+                    Date(sentAt.toLong()),
                 )
             }
         }
@@ -187,7 +187,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
                 messageService.updateOutgoingMessageState(
                     messageModel,
                     MessageState.SENDFAILED,
-                    Date()
+                    Date(),
                 )
             }
             throw e
@@ -229,6 +229,11 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
             return
         }
 
+        val groupModel = groupModelRepository.getByCreatorIdentityAndId(
+            creatorIdentity = group.creatorIdentity,
+            groupId = group.apiGroupId,
+        ) ?: throw IllegalStateException("Could not get new group model")
+
         // Get the known contacts
         val finalRecipients = recipients
             .mapNotNull { contactModelRepository.getByIdentity(it) }
@@ -261,7 +266,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
 
         val updateFsState = { fsStateMap: Map<String, ForwardSecurityMode> ->
             fsStateMap.keys.forEach {
-                rejectedGroupMessageFactory.removeMessageReject(messageId, it, group)
+                rejectedGroupMessageFactory.removeMessageReject(messageId, it, groupModel)
             }
 
             // Update the message state as all messages have been sent now
@@ -273,7 +278,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
                 val state = when {
                     recipients.isEmpty() -> MessageState.READ
 
-                    rejectedGroupMessageFactory.getMessageRejects(messageId, group)
+                    rejectedGroupMessageFactory.getMessageRejects(messageId, groupModel)
                         .isNotEmpty() -> MessageState.FS_KEY_MISMATCH
 
                     else -> MessageState.SENT
@@ -329,13 +334,13 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
                 messageService.updateOutgoingMessageState(
                     messageModel,
                     MessageState.SENDFAILED,
-                    Date()
+                    Date(),
                 )
             }
             throw e
         }
 
-        groupService.setIsArchived(group, false)
+        groupModel.setIsArchivedFromLocalOrRemote(false)
     }
 
     /**
@@ -398,4 +403,20 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
         state = MessageState.SENDFAILED
         messageService.save(this)
     }
+
+    /**
+     * Remove the group creator if no messages should be sent to it according to [GroupUtil.shouldSendMessagesToCreator].
+     */
+    private fun Collection<ch.threema.data.models.ContactModel>.removeGroupCreatorIfRequired(group: GroupModel) =
+        filterIf(!GroupUtil.shouldSendMessagesToCreator(group)) { it.identity != group.creatorIdentity }
+
+    /**
+     * If the [condition] is fulfilled, the [predicate] is used to filter the collection.
+     */
+    private fun <T> Collection<T>.filterIf(condition: Boolean, predicate: (T) -> Boolean): Collection<T> =
+        if (condition) {
+            this.filter(predicate)
+        } else {
+            this
+        }
 }

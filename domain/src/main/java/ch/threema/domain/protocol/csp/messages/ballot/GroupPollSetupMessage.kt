@@ -28,9 +28,9 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import org.slf4j.Logger
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("GroupPollSetupMessage")
 
@@ -38,7 +38,6 @@ private val logger: Logger = LoggingUtil.getThreemaLogger("GroupPollSetupMessage
  * A group poll creation message.
  */
 class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
-
     override var ballotId: BallotId? = null
     override var ballotCreatorIdentity: String? = null
     override var ballotData: BallotData? = null
@@ -89,38 +88,36 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_GROUP_BALLOT_CREATE
 
     companion object {
-
         @JvmStatic
         fun fromReflected(
             message: MdD2D.IncomingMessage,
-            fromIdentity: String
-        ): GroupPollSetupMessage =
-            fromByteArray(
-                data = message.body.toByteArray(),
-                fromIdentity = fromIdentity
-            ).apply {
-                initializeCommonProperties(message)
-            }
+            fromIdentity: String,
+        ): GroupPollSetupMessage = fromByteArray(
+            data = message.body.toByteArray(),
+            fromIdentity = fromIdentity,
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
         fun fromReflected(
             message: MdD2D.OutgoingMessage,
-            fromIdentity: String
-        ): GroupPollSetupMessage =
-            fromByteArray(
-                data = message.body.toByteArray(),
-                fromIdentity = fromIdentity,
-            ).apply {
-                initializeCommonProperties(message)
-            }
+            fromIdentity: String,
+        ): GroupPollSetupMessage = fromByteArray(
+            data = message.body.toByteArray(),
+            fromIdentity = fromIdentity,
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
+        @Throws(BadMessageException::class)
         fun fromByteArray(data: ByteArray, fromIdentity: String): GroupPollSetupMessage =
             fromByteArray(
                 data = data,
                 offset = 0,
                 length = data.size,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
 
         /**
@@ -139,7 +136,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
             data: ByteArray,
             offset: Int,
             length: Int,
-            fromIdentity: String
+            fromIdentity: String,
         ): GroupPollSetupMessage {
             if (length < 1) {
                 throw BadMessageException("Bad length ($length) for poll setup message")
@@ -150,7 +147,6 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
             }
 
             return GroupPollSetupMessage().apply {
-
                 ballotCreatorIdentity = fromIdentity
 
                 var positionIndex = offset
@@ -158,7 +154,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
                     data,
                     positionIndex,
                     ProtocolDefines.IDENTITY_LEN,
-                    StandardCharsets.US_ASCII
+                    StandardCharsets.US_ASCII,
                 )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
@@ -172,7 +168,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
                     data,
                     positionIndex,
                     length + offset - positionIndex,
-                    StandardCharsets.UTF_8
+                    StandardCharsets.UTF_8,
                 )
                 ballotData = BallotData.parse(jsonObjectString)
 

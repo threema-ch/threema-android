@@ -66,7 +66,6 @@ import org.slf4j.Logger
 private val logger: Logger = LoggingUtil.getThreemaLogger("EmojiReactionOverviewActivity")
 
 class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
-
     private lateinit var viewPager: ViewPager2
     private lateinit var parentLayout: CoordinatorLayout
     private lateinit var infoBox: View
@@ -85,7 +84,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     data class EmojiReactionItems(
         val emojiSequence: String,
         val count: Int,
-        val isMyReaction: Boolean
+        val isMyReaction: Boolean,
     )
 
     override fun getLayoutResource(): Int {
@@ -100,7 +99,6 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
         }
@@ -116,7 +114,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                 ReactionMessageIdentifier.fromMessageModel(message) ?: run {
                     logger.error(
                         "Closing emoji overview for unsupported message model type of {}",
-                        message::class.java.simpleName
+                        message::class.java.simpleName,
                     )
                     return false
                 }
@@ -127,7 +125,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                 EmojiReactionsViewModel.provideFactory(
                     emojiReactionsRepository = emojiReactionsRepository,
                     messageService = messageService,
-                    reactionMessageIdentifier = reactionMessageIdentifier
+                    reactionMessageIdentifier = reactionMessageIdentifier,
                 )
             }
 
@@ -149,12 +147,11 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                             onUiStateChanged(
                                 uiState,
                                 emojiReactionsViewModel,
-                                message
+                                message,
                             )
                         }
                 }
             }
-
         } ?: run {
             logger.error("No message model found")
             finish()
@@ -166,7 +163,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     private fun onUiStateChanged(
         uiState: EmojiReactionsViewModel.EmojiReactionsUiState,
         emojiReactionsViewModel: EmojiReactionsViewModel,
-        message: AbstractMessageModel
+        message: AbstractMessageModel,
     ) {
         val oldItems = items.toList()
 
@@ -234,12 +231,12 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
      */
     private fun setupViewPagerAdapter(
         emojiReactionsViewModel: EmojiReactionsViewModel,
-        messageModel: AbstractMessageModel
+        messageModel: AbstractMessageModel,
     ) {
         emojiReactionsOverviewAdapter = EmojiReactionsOverviewAdapter(
             this,
             emojiReactionsViewModel,
-            messageModel
+            messageModel,
         )
         viewPager.adapter = emojiReactionsOverviewAdapter
     }
@@ -254,7 +251,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         parentLayout = findViewById(R.id.parent_layout)
         parentLayout.setOnClickListener { _: View? ->
             bottomSheetBehavior.setState(
-                BottomSheetBehavior.STATE_HIDDEN
+                BottomSheetBehavior.STATE_HIDDEN,
             )
         }
 
@@ -320,7 +317,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                 getString(
                     R.string.tab_emoji_reactions_overview_content_description,
                     emojiCount,
-                    emojiSequence
+                    emojiSequence,
                 )
         }
         tabLayoutMediator?.attach()
@@ -379,7 +376,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
     private fun requiresViewPagerRecreation(
         oldData: List<EmojiReactionItems>,
-        newData: List<EmojiReactionItems>
+        newData: List<EmojiReactionItems>,
     ): Boolean {
         if (oldData.size != newData.size) {
             return true
@@ -395,7 +392,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
     private fun recreateViewPager(
         emojiReactionsViewModel: EmojiReactionsViewModel,
-        messageModel: AbstractMessageModel
+        messageModel: AbstractMessageModel,
     ) {
         // Detach existing TabLayoutMediator (if any)
         tabLayoutMediator?.detach()
@@ -437,7 +434,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         val metrics: WindowMetrics = windowManager.currentWindowMetrics
         val windowInsets: WindowInsets = metrics.getWindowInsets()
         val insetsTop = windowInsets.getInsets(
-            WindowInsets.Type.statusBars() or WindowInsets.Type.displayCutout() or WindowInsets.Type.captionBar()
+            WindowInsets.Type.statusBars() or WindowInsets.Type.displayCutout() or WindowInsets.Type.captionBar(),
         )
         val insetsHeightTop = insetsTop.top + insetsTop.bottom
 
@@ -448,4 +445,3 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         const val EXTRA_INITIAL_EMOJI = "extra_initial_emoji" // emoji to show initially
     }
 }
-

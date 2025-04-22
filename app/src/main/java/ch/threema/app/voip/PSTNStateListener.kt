@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 private val logger = LoggingUtil.getThreemaLogger("PSTNStateListener")
 
 class PSTNStateListener(context: Context) {
-
     private val telephonyManager: TelephonyManager? =
         getSystemService(context, TelephonyManager::class.java)
     private var telephonyCallback: TelephonyCallback? = null
@@ -59,13 +58,16 @@ class PSTNStateListener(context: Context) {
                             telephonyManager?.registerTelephonyCallback(context.mainExecutor, it)
                         }
                 } else {
-                    telephonyManager?.listen(object : PhoneStateListener() {
-                        @Deprecated("Deprecated in Java")
-                        override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                            super.onCallStateChanged(state, phoneNumber)
-                            callStateChanged(state)
-                        }
-                    }, PhoneStateListener.LISTEN_CALL_STATE)
+                    telephonyManager?.listen(
+                        object : PhoneStateListener() {
+                            @Deprecated("Deprecated in Java")
+                            override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                                super.onCallStateChanged(state, phoneNumber)
+                                callStateChanged(state)
+                            }
+                        },
+                        PhoneStateListener.LISTEN_CALL_STATE,
+                    )
                 }
             } catch (exception: SecurityException) {
                 logger.error("Could not register call state listener", exception)
@@ -96,5 +98,4 @@ class PSTNStateListener(context: Context) {
             }
         }
     }
-
 }

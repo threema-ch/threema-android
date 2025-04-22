@@ -224,6 +224,13 @@
 
     <restriction
         android:defaultValue="false"
+        android:description="@string/restriction_disable_multidevice_desc"
+        android:key="th_disable_multidevice"
+        android:restrictionType="bool"
+        android:title="@string/restriction_disable_multidevice" />
+
+    <restriction
+        android:defaultValue="false"
         android:description="@string/restriction_disable_id_export_desc"
         android:key="th_disable_id_export"
         android:restrictionType="bool"

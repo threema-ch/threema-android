@@ -169,7 +169,6 @@ import java8.util.concurrent.CompletableFuture;
 public class CallActivity extends ThreemaActivity implements
     BottomSheetAbstractDialog.BottomSheetDialogCallback,
     SensorListener,
-    GenericAlertDialog.DialogClickListener,
     LifecycleOwner {
     private static final Logger logger = LoggingUtil.getThreemaLogger("CallActivity");
     private static final String LIFETIME_SERVICE_TAG = "CallActivity";
@@ -223,15 +222,10 @@ public class CallActivity extends ThreemaActivity implements
     // Permissions
     private final static int PERMISSION_REQUEST_CAMERA = 9002;
     /**
-     * This future resolves as soon as the microphone permission request has been answered.
-     * It resolves to a boolean that indicates whether the permission was granted or not.
-     */
-    private @Nullable CompletableFuture<PermissionRequestResult> micPermissionResponse;
-    /**
      * This future resolves as soon as the camera permission request has been answered.
      * It resolves to a boolean that indicates whether the permission was granted or not.
      */
-    private @Nullable CompletableFuture<PermissionRequestResult> camPermissionResponse;
+    private @Nullable CompletableFuture<Boolean> camPermissionResponse;
 
     private final ActivityResultLauncher<Intent> permissionLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
@@ -270,7 +264,7 @@ public class CallActivity extends ThreemaActivity implements
      */
     public static final String ACTION_CANCELLED = BuildConfig.APPLICATION_ID + ".CANCELLED";
     /**
-     * Debug information is being broadcasted
+     * Debug information is being broadcast
      */
     public static final String ACTION_DEBUG_INFO = BuildConfig.APPLICATION_ID + ".DEBUG_INFO";
     /**
@@ -329,33 +323,6 @@ public class CallActivity extends ThreemaActivity implements
             keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
         }
     };
-
-    /**
-     * The result of a permission request.
-     */
-    private static class PermissionRequestResult {
-        private final boolean _granted;
-        private final boolean _wasAlreadyGranted;
-
-        public PermissionRequestResult(boolean granted, boolean wasAlreadyGranted) {
-            this._granted = granted;
-            this._wasAlreadyGranted = wasAlreadyGranted;
-        }
-
-        /**
-         * True if the permission was granted.
-         */
-        public boolean isGranted() {
-            return _granted;
-        }
-
-        /**
-         * True if the permission was already granted before, and no permission request was shown.
-         */
-        public boolean wasAlreadyGranted() {
-            return _wasAlreadyGranted;
-        }
-    }
 
     /**
      * Helper: Find a view and ensure it's not null.
@@ -1062,19 +1029,6 @@ public class CallActivity extends ThreemaActivity implements
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            // mute notification
-            if (voipStateService != null) {
-                if (voipStateService.muteRingtone()) {
-                    return true;
-                }
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
     //endregion
 
     //region UI helpers
@@ -1459,12 +1413,12 @@ public class CallActivity extends ThreemaActivity implements
                     this.camPermissionResponse = new CompletableFuture<>();
                     if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
                         // If permission was already granted, complete immediately
-                        this.camPermissionResponse.complete(new PermissionRequestResult(true, true));
+                        this.camPermissionResponse.complete(true);
                     }
                     this.camPermissionResponse
-                        .thenAccept((result) -> {
+                        .thenAccept((granted) -> {
                             synchronized (this.videoToggleLock) {
-                                if (result.isGranted()) {
+                                if (granted) {
                                     // Permission was granted
                                     logger.debug("Permission granted, set up video views");
 
@@ -1979,9 +1933,6 @@ public class CallActivity extends ThreemaActivity implements
                 this.commonViews.callStatus.setVisibility(View.GONE);
             }
         });
-
-        // unlock orientation as soon as we're connected
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_USER);
     }
 
     @TargetApi(Build.VERSION_CODES.S)
@@ -1997,13 +1948,13 @@ public class CallActivity extends ThreemaActivity implements
             // Permission was granted
             if (requestCode == PERMISSION_REQUEST_CAMERA) {
                 if (this.camPermissionResponse != null) {
-                    this.camPermissionResponse.complete(new PermissionRequestResult(true, false));
+                    this.camPermissionResponse.complete(true);
                 }
             }
         } else {
             if (requestCode == PERMISSION_REQUEST_CAMERA) {
                 if (this.camPermissionResponse != null) {
-                    this.camPermissionResponse.complete(new PermissionRequestResult(false, false));
+                    this.camPermissionResponse.complete(false);
                 }
             } else {
                 logger.warn("Invalid permission request code: {}", requestCode);
@@ -2055,14 +2006,6 @@ public class CallActivity extends ThreemaActivity implements
     @Override
     protected boolean isPinLockable() {
         return false;
-    }
-
-    @Override
-    public void onYes(String tag, Object data) {
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
     }
 
     /**
@@ -2199,7 +2142,7 @@ public class CallActivity extends ThreemaActivity implements
 
         hideNavigation(false);
 
-        if (this.commonViews != null) {
+        if (this.commonViews != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
                 enterPictureInPictureMode();
             } catch (IllegalArgumentException e) {

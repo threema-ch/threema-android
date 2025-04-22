@@ -25,14 +25,12 @@ import androidx.annotation.NonNull;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.EndianUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -53,7 +51,6 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.AudioMessage;
 import ch.threema.domain.protocol.csp.messages.DeleteMessage;
-import ch.threema.domain.protocol.csp.messages.DeleteMessageData;
 import ch.threema.domain.protocol.csp.messages.EmptyMessage;
 import ch.threema.domain.protocol.csp.messages.EditMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage;
@@ -62,7 +59,6 @@ import ch.threema.domain.protocol.csp.messages.GroupReactionMessage;
 import ch.threema.domain.protocol.csp.messages.ImageMessage;
 import ch.threema.domain.protocol.csp.messages.location.LocationMessage;
 import ch.threema.domain.protocol.csp.messages.ReactionMessage;
-import ch.threema.domain.protocol.csp.messages.ReactionMessageData;
 import ch.threema.domain.protocol.csp.messages.TextMessage;
 import ch.threema.domain.protocol.csp.messages.VideoMessage;
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage;
@@ -375,96 +371,22 @@ public class MessageCoder {
             }
 
             case ProtocolDefines.MSGTYPE_IMAGE: {
-                if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + NaCl.NONCEBYTES)) {
-                    throw new BadMessageException("Bad length (" + realDataLength + ") for image message");
-                }
-
-                ImageMessage imagemsg = new ImageMessage();
-
-                byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-                System.arraycopy(data, 1, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
-                imagemsg.setBlobId(blobId);
-
-                int size = EndianUtils.readSwappedInteger(data, 1 + ProtocolDefines.BLOB_ID_LEN);
-                imagemsg.setSize(size);
-
-                byte[] nonce = new byte[NaCl.NONCEBYTES];
-                System.arraycopy(data, 1 + 4 + ProtocolDefines.BLOB_ID_LEN, nonce, 0, nonce.length);
-                imagemsg.setNonce(nonce);
-
-                message = imagemsg;
-
+                message = ImageMessage.fromByteArray(data, 1, realDataLength - 1);
                 break;
             }
 
             case ProtocolDefines.MSGTYPE_VIDEO: {
-                if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-                    throw new BadMessageException("Bad length (" + realDataLength + ") for video message");
-                }
+                message = VideoMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-                VideoMessage videomsg = new VideoMessage();
-
-                ByteArrayInputStream bis = new ByteArrayInputStream(data, 1, data.length - 1);
-
-                try {
-                    videomsg.setDuration(EndianUtils.readSwappedShort(bis));
-
-                    byte[] videoBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-                    bis.read(videoBlobId);
-                    videomsg.setVideoBlobId(videoBlobId);
-
-                    videomsg.setVideoSize(EndianUtils.readSwappedInteger(bis));
-
-                    byte[] thumbnailBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-                    bis.read(thumbnailBlobId);
-                    videomsg.setThumbnailBlobId(thumbnailBlobId);
-
-                    videomsg.setThumbnailSize(EndianUtils.readSwappedInteger(bis));
-
-                    byte[] encryptionKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-                    bis.read(encryptionKey);
-                    videomsg.setEncryptionKey(encryptionKey);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                message = videomsg;
-
+            case ProtocolDefines.MSGTYPE_AUDIO: {
+                message = AudioMessage.fromByteArray(data, 1, realDataLength - 1);
                 break;
             }
 
             case ProtocolDefines.MSGTYPE_LOCATION: {
                 message = LocationMessage.fromByteArray(data, 1, realDataLength - 1);
-                break;
-            }
-
-            case ProtocolDefines.MSGTYPE_AUDIO: {
-                if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-                    throw new BadMessageException("Bad length (" + realDataLength + ") for audio message");
-                }
-
-                AudioMessage audiomsg = new AudioMessage();
-
-                ByteArrayInputStream bis = new ByteArrayInputStream(data, 1, data.length - 1);
-
-                try {
-                    audiomsg.setDuration(EndianUtils.readSwappedShort(bis));
-
-                    byte[] audioBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-                    bis.read(audioBlobId);
-                    audiomsg.setAudioBlobId(audioBlobId);
-
-                    audiomsg.setAudioSize(EndianUtils.readSwappedInteger(bis));
-
-                    byte[] encryptionKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-                    bis.read(encryptionKey);
-                    audiomsg.setEncryptionKey(encryptionKey);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                message = audiomsg;
-
                 break;
             }
 
@@ -809,29 +731,12 @@ public class MessageCoder {
             }
 
             case ProtocolDefines.MSGTYPE_REACTION: {
-                final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-                final ReactionMessageData reactionMessageData = ReactionMessageData.fromProtobuf(protobufPayload);
-                message = new ReactionMessage(reactionMessageData);
-
+                message = ReactionMessage.fromByteArray(data, 1, realDataLength - 1);
                 break;
             }
 
             case ProtocolDefines.MSGTYPE_GROUP_REACTION: {
-                int headerLength = 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
-                if (realDataLength < headerLength) {
-                    throw new BadMessageException("Bad length (" + realDataLength + ") for group reaction message");
-                }
-
-                final byte[] protobufPayload = Arrays.copyOfRange(data, headerLength, realDataLength);
-
-                final ReactionMessageData reactionMessageData = ReactionMessageData.fromProtobuf(protobufPayload);
-                final GroupReactionMessage reactionMessage = new GroupReactionMessage(reactionMessageData);
-
-                reactionMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-                reactionMessage.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
-
-                message = reactionMessage;
-
+                message = GroupReactionMessage.fromByteArray(data, 1, realDataLength - 1);
                 break;
             }
 

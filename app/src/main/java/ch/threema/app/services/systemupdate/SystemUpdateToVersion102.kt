@@ -26,7 +26,6 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion102(private val sqLiteDatabase: SQLiteDatabase) :
     UpdateSystemService.SystemUpdate {
-
     companion object {
         const val VERSION = 102
     }
@@ -37,7 +36,6 @@ internal class SystemUpdateToVersion102(private val sqLiteDatabase: SQLiteDataba
     override fun runAsync() = true
 
     override fun runDirectly(): Boolean {
-
         /**
          *  We want to change the data type of column `text` from `VARCHAR NOT NULL` to `VARCHAR DEFAULT NULL`.
          *  Because SqLite does not support this with the `ALTER TABLE` command we have to do these steps:
@@ -67,14 +65,14 @@ internal class SystemUpdateToVersion102(private val sqLiteDatabase: SQLiteDataba
                     `editedAt` DATETIME NOT NULL,
                     CONSTRAINT `fk_contact_message_id_new` FOREIGN KEY(messageId) REFERENCES message (id) ON UPDATE CASCADE ON DELETE CASCADE
                 )
-                """
+                """,
         )
         sqLiteDatabase.execSQL(
             """
                 INSERT INTO `contact_edit_history_entries_new` (`uid`, `messageUid`, `messageId`, `text`, `editedAt`)
                     SELECT `uid`, `messageUid`, `messageId`, `text`, `editedAt`
                     FROM `contact_edit_history_entries`
-                """
+                """,
         )
         sqLiteDatabase.execSQL("DROP TABLE `contact_edit_history_entries`")
         sqLiteDatabase.execSQL("ALTER TABLE `contact_edit_history_entries_new` RENAME TO `contact_edit_history_entries`")
@@ -95,14 +93,14 @@ internal class SystemUpdateToVersion102(private val sqLiteDatabase: SQLiteDataba
                     `editedAt` DATETIME NOT NULL,
                     CONSTRAINT fk_group_message_id_new FOREIGN KEY(messageId) REFERENCES m_group_message (id) ON UPDATE CASCADE ON DELETE CASCADE
                 )
-                """
+                """,
         )
         sqLiteDatabase.execSQL(
             """
                 INSERT INTO `group_edit_history_entries_new` (`uid`, `messageUid`, `messageId`, `text`, `editedAt`)
                     SELECT `uid`, `messageUid`, `messageId`, `text`, `editedAt`
                     FROM `group_edit_history_entries`
-                """
+                """,
         )
         sqLiteDatabase.execSQL("DROP TABLE `group_edit_history_entries`")
         sqLiteDatabase.execSQL("ALTER TABLE `group_edit_history_entries_new` RENAME TO `group_edit_history_entries`")

@@ -113,7 +113,7 @@ import ch.threema.app.mediaattacher.MediaFilterQuery;
 import ch.threema.app.mediaattacher.MediaSelectionActivity;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
@@ -135,6 +135,7 @@ import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
+import ch.threema.data.models.GroupModel;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
@@ -245,19 +246,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         }
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        DeadlineListService hiddenChatsListService;
+        ConversationCategoryService conversationCategoryService;
         try {
             this.fileService = ThreemaApplication.requireServiceManager().getFileService();
             this.messageService = ThreemaApplication.requireServiceManager().getMessageService();
-            hiddenChatsListService = ThreemaApplication.requireServiceManager().getHiddenChatsListService();
+            conversationCategoryService = ThreemaApplication.requireServiceManager().getConversationCategoryService();
         } catch (NullPointerException | ThreemaException e) {
             logger.error("Exception", e);
-            finish();
-            return false;
-        }
-
-        if (hiddenChatsListService == null) {
-            logger.error("HiddenChatsListService not available.");
             finish();
             return false;
         }
@@ -299,12 +294,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                     Toast.makeText(getApplicationContext(), errorStringRes, Toast.LENGTH_LONG).show();
                 }
             }
-            if (allReceiverChatsAreHidden && !hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
+            if (allReceiverChatsAreHidden && !conversationCategoryService.isPrivateChat(messageReceiver.getUniqueIdString())) {
                 allReceiverChatsAreHidden = false;
             }
         }
 
-        if (this.messageReceivers.size() < 1) {
+        if (this.messageReceivers.isEmpty()) {
             finish();
             return false;
         }
@@ -368,15 +363,18 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
         if (messageReceivers != null && messageReceivers.size() == 1 && messageReceivers.get(0) instanceof GroupMessageReceiver) {
             try {
-                captionEditText.enableMentionPopup(
-                    this,
-                    serviceManager.getGroupService(),
-                    serviceManager.getContactService(),
-                    serviceManager.getUserService(),
-                    preferenceService,
-                    ((GroupMessageReceiver) messageReceivers.get(0)).getGroup(),
-                    null
-                );
+                GroupModel groupModel = ((GroupMessageReceiver) messageReceivers.get(0)).getGroupModel();
+                if (groupModel != null) {
+                    captionEditText.enableMentionPopup(
+                        this,
+                        serviceManager.getGroupService(),
+                        serviceManager.getContactService(),
+                        serviceManager.getUserService(),
+                        preferenceService,
+                        groupModel,
+                        null
+                    );
+                }
                 ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.activity_parent), (v, insets) -> {
                     if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
                         captionEditText.dismissMentionPopup();
@@ -405,6 +403,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                 mediaAdapterManager.changePosition(position, NOTIFY_PREVIEW_ADAPTER);
                 recyclerView.scrollToPosition(position);
                 updateMenu();
+                updateCaption();
             }
         });
 
@@ -912,9 +911,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
     @SuppressLint("NewApi")
     @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 final Intent intent) {
-
+    public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
         if (resultCode == Activity.RESULT_OK) {
             hasChanges = true;
             switch (requestCode) {
@@ -972,10 +969,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                     break;
             }
         } else {
-            logger.warn("Received result with resultCode={} for requestCode={}", resultCode, requestCode);
+            if (resultCode != Activity.RESULT_CANCELED) {
+                logger.warn("Received result with resultCode={} for requestCode={}", resultCode, requestCode);
 
-            if (requestCode == ACTIVITY_ID_PICK_CAMERA_INTERNAL || requestCode == ACTIVITY_ID_PICK_CAMERA_EXTERNAL) {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+                if (requestCode == ACTIVITY_ID_PICK_CAMERA_INTERNAL || requestCode == ACTIVITY_ID_PICK_CAMERA_EXTERNAL) {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+                }
             }
 
             if (mediaAdapterManager.size() <= 0) {

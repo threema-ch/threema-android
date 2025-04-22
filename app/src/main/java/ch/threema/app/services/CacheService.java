@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.collection.SparseArrayCompat;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -44,12 +45,12 @@ import ch.threema.storage.models.ballot.LinkBallotModel;
 public class CacheService {
     private final @NonNull Collection<MessageModel> messageModelCache = new HashSet<>();
     private final @NonNull Collection<DistributionListMessageModel> distributionListMessageCache = new HashSet<>();
-    private final @NonNull SparseArray<GroupModel> groupModelCache = new SparseArray<>();
-    private final @NonNull SparseArray<String[]> groupIdentityCache = new SparseArray<>();
+    private final @NonNull SparseArrayCompat<GroupModel> groupModelCache = new SparseArrayCompat<>();
+    private final @NonNull SparseArrayCompat<String[]> groupIdentityCache = new SparseArrayCompat<>();
     private final @NonNull Collection<GroupMessageModel> groupMessageModelCache = new HashSet<>();
     private final @NonNull List<ConversationModel> conversationModelCache = new ArrayList<>();
     private final @NonNull Map<String, int[]> colors = new HashMap<>();
-    private final @NonNull SparseArray<Map<String, Integer>> groupMemberColorCache = new SparseArray<>();
+    private final @NonNull SparseArrayCompat<Map<String, Integer>> groupMemberColorCache = new SparseArrayCompat<>();
     private final @NonNull SparseArray<BallotModel> ballotModelCache = new SparseArray<>();
     private final @NonNull SparseArray<LinkBallotModel> linkBallotModelCache = new SparseArray<>();
     private final @NonNull Map<String, ContactModel> contactModelCache = new HashMap<>();
@@ -66,11 +67,11 @@ public class CacheService {
         return this.messageModelCache;
     }
 
-    public @NonNull SparseArray<String[]> getGroupIdentityCache() {
+    public @NonNull SparseArrayCompat<String[]> getGroupIdentityCache() {
         return this.groupIdentityCache;
     }
 
-    public @NonNull SparseArray<GroupModel> getGroupModelCache() {
+    public @NonNull SparseArrayCompat<GroupModel> getGroupModelCache() {
         return this.groupModelCache;
     }
 
@@ -82,7 +83,7 @@ public class CacheService {
         return this.distributionListMessageCache;
     }
 
-    public @NonNull SparseArray<Map<String, Integer>> getGroupMemberColorCache() {
+    public @NonNull SparseArrayCompat<Map<String, Integer>> getGroupMemberColorCache() {
         return this.groupMemberColorCache;
     }
 

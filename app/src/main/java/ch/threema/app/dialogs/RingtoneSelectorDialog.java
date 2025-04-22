@@ -62,6 +62,8 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
     private RingtoneManager ringtoneManager;
     private Ringtone selectedRingtone;
 
+    private static final Uri SILENT_RINGTONE_URI = Uri.EMPTY;
+
     /**
      * Creates a ringtone selector dialog similar to Android's RingtonePreference
      *
@@ -88,9 +90,10 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
     }
 
     public interface RingtoneSelectorDialogClickListener {
-        void onRingtoneSelected(String tag, Uri ringtone);
+        void onRingtoneSelected(String tag, @NonNull Uri ringtone);
 
-        void onCancel(String tag);
+        default void onCancel(String tag) {
+        }
     }
 
     @Override
@@ -175,7 +178,7 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
                         stopPlaying();
 
                         selectedRingtoneUri = getUriFromPosition(selectedIndex, showSilent, showDefault);
-                        if (selectedRingtoneUri == null) {
+                        if (selectedRingtoneUri == null || selectedRingtoneUri.equals(SILENT_RINGTONE_URI)) {
                             ringtoneManager.stopPreviousRingtone(); // "playing" silence
                         } else {
                             selectedRingtone = RingtoneManager.getRingtone(getContext(), selectedRingtoneUri);
@@ -215,7 +218,9 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     stopPlaying();
-                    callback.onRingtoneSelected(tag, selectedRingtoneUri);
+                    if (selectedRingtoneUri != null) {
+                        callback.onRingtoneSelected(tag, selectedRingtoneUri);
+                    }
                 }
             });
 
@@ -320,8 +325,7 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
 
         if (showSilent) {
             if (index == 0) {
-                // silent
-                return null;
+                return SILENT_RINGTONE_URI;
             }
             positionFix += 1;
         }

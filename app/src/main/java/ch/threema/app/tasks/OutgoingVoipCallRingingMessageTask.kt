@@ -23,8 +23,8 @@ package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import java.util.Date
 
@@ -50,5 +50,4 @@ class OutgoingVoipCallRingingMessageTask(
 
     // We do not need to persist this message
     override fun serialize(): SerializableTaskData? = null
-
 }

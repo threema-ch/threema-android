@@ -31,7 +31,7 @@ private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingContactSetPr
 
 internal class ReflectedOutgoingContactSetProfilePictureTask(
     message: OutgoingMessage,
-    serviceManager: ServiceManager
+    serviceManager: ServiceManager,
 ) : ReflectedOutgoingContactMessageTask(
     message,
     Common.CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE,

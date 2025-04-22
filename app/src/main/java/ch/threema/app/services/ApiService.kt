@@ -29,13 +29,15 @@ import java.io.IOException
 import javax.net.ssl.HttpsURLConnection
 
 interface ApiService {
-
     /**
-     * @param shouldPersist Will have no effect if the loader targets the blob mirror server if multi-device is currently active
      * @param blobScope Will only have an effect if multi-device is currently active
      */
     @Throws(ThreemaException::class)
-    fun createUploader(data: ByteArray, shouldPersist: Boolean, blobScope: BlobScope): BlobUploader
+    fun createUploader(
+        data: ByteArray,
+        shouldPersist: Boolean,
+        blobScope: BlobScope,
+    ): BlobUploader
 
     fun createLoader(blobId: ByteArray): BlobLoader
 

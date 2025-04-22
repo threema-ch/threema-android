@@ -43,11 +43,11 @@ public interface PreferenceStoreInterface {
 
     void remove(String key, boolean crypt);
 
-    void save(String key, String thing);
+    void save(String key, @Nullable String thing);
 
-    void save(String key, String thing, boolean crypt);
+    void save(String key, @Nullable String thing, boolean crypt);
 
-    void save(String key, String[] things);
+    void save(String key, @NonNull String[] things);
 
     void save(String key, HashMap<Integer, String> things);
 
@@ -61,13 +61,9 @@ public interface PreferenceStoreInterface {
 
     void saveQuietly(String key, @NonNull String[] things, boolean crypt);
 
-    void save(String key, long thing);
+    void save(String key, Integer thing);
 
-    void save(String key, long thing, boolean crypt);
-
-    void save(String key, int thing);
-
-    void save(String key, int thing, boolean crypt);
+    void save(String key, Integer thing, boolean crypt);
 
     void save(String key, boolean thing);
 
@@ -85,7 +81,7 @@ public interface PreferenceStoreInterface {
 
     void save(String key, JSONArray thing, boolean crypt);
 
-    void save(String key, float thing);
+    void save(String key, Float thing);
 
     void save(String key, JSONArray array);
 
@@ -102,13 +98,13 @@ public interface PreferenceStoreInterface {
     String getHexString(String key, boolean crypt);
 
     /**
-     * Get the value as long. Note that 0 is returned if no preference with the provided key is
+     * Get the value as Long. Note that 0 is returned if no preference with the provided key is
      * stored.
      *
      * @param key the key of the value
      * @return the value as long or 0 if no value for the provided key exists
      */
-    long getLong(String key);
+    Long getLong(String key);
 
     Long getLong(String key, boolean crypt);
 
@@ -116,13 +112,13 @@ public interface PreferenceStoreInterface {
 
     Date getDate(String key, boolean crypt);
 
-    long getDateAsLong(String key);
+    Long getDateAsLong(String key);
 
     Integer getInt(String key);
 
     Integer getInt(String key, boolean crypt);
 
-    float getFloat(String key, float defValue);
+    Float getFloat(String key, Float defValue);
 
     boolean getBoolean(String key);
 
@@ -162,7 +158,7 @@ public interface PreferenceStoreInterface {
 
     Map<String, ?> getAllNonCrypted();
 
-    Set<String> getStringSet(String key, int defaultRes);
+    Set<String> getStringSet(String key, Integer defaultRes);
 
     /**
      * @return `true` if the unencrypted settings contain a mapping with the provided key

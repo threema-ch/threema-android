@@ -25,6 +25,10 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
+import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
+import ch.threema.app.tasks.ReflectionFailed
+import ch.threema.app.tasks.ReflectionPreconditionFailed
+import ch.threema.app.tasks.ReflectionSuccess
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage
@@ -40,37 +44,66 @@ class IncomingGroupDeleteProfilePictureTask(
 ) : IncomingCspMessageSubTask<GroupDeleteProfilePictureMessage>(
     message,
     triggerSource,
-    serviceManager
+    serviceManager,
 ) {
     private val fileService by lazy { serviceManager.fileService }
-    private val avatarCacheService by lazy { serviceManager.avatarCacheService }
     private val groupService by lazy { serviceManager.groupService }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val nonceFactory by lazy { serviceManager.nonceFactory }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
-        // 1. Run the common group receive steps
-        val groupModel =
-            runCommonGroupReceiveSteps(message, handle, serviceManager)
+        // Run the common group receive steps
+        val groupModel = runCommonGroupReceiveSteps(message, handle, serviceManager)
         if (groupModel == null) {
             logger.warn("Discarding group delete profile picture message because group could not be found")
             return ReceiveStepsResult.DISCARD
         }
 
-        // 2. Remove the profile picture of the group
-        if (fileService.hasGroupAvatarFile(groupModel)) {
-            fileService.removeGroupAvatar(groupModel)
-
-            avatarCacheService.reset(groupModel)
-
-            ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel) }
-
-            ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
+        // If the group does not have a profile picture, discard this message
+        if (!fileService.hasGroupAvatarFile(groupModel)) {
+            logger.info("Discarding this message as group has no profile picture")
+            return ReceiveStepsResult.DISCARD
         }
+
+        if (multiDeviceManager.isMultiDeviceActive) {
+            val reflectionResult =
+                ReflectGroupSyncUpdateImmediateTask.ReflectGroupDeleteProfilePicture(
+                    groupModel,
+                    fileService,
+                    nonceFactory,
+                    multiDeviceManager,
+                ).reflect(handle)
+
+            when (reflectionResult) {
+                is ReflectionSuccess -> logger.info("Reflected removed group profile picture")
+                is ReflectionFailed -> {
+                    logger.error(
+                        "Could not reflect removed group profile picture",
+                        reflectionResult.exception,
+                    )
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionPreconditionFailed -> {
+                    logger.error(
+                        "Group sync race occurred: Profile picture could not be removed",
+                        reflectionResult.transactionException,
+                    )
+                }
+            }
+        }
+
+        fileService.removeGroupAvatar(groupModel)
+
+        ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
+
+        ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
 
         return ReceiveStepsResult.SUCCESS
     }
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-        // TODO(ANDR-2741): Support group synchronization
+        logger.info("Discarding group delete profile picture from sync")
         return ReceiveStepsResult.DISCARD
     }
 }

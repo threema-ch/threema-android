@@ -24,18 +24,18 @@ package ch.threema.app.emojis
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
-import ch.threema.app.emojis.EmojiListAdapter.EmojiItemViewHolder
-import androidx.annotation.ColorInt
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import android.widget.AbsListView
+import androidx.annotation.ColorInt
+import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
+import ch.threema.app.emojis.EmojiListAdapter.EmojiItemViewHolder
 
 class EmojiListAdapter(
     context: Context,
     private val keyClickListener: KeyClickListener,
-    private val emojiService: EmojiService
+    private val emojiService: EmojiService,
 ) : RecyclerView.Adapter<EmojiItemViewHolder>() {
     private var emojiItemSize = 0
     private var emojiItemPaddingSize = 0
@@ -65,14 +65,14 @@ class EmojiListAdapter(
         val background = ResourcesCompat.getDrawable(
             context.resources,
             R.drawable.listitem_background_selector_noripple,
-            context.theme
+            context.theme,
         )
         view.background = background
         view.setPadding(
             emojiItemPaddingSize,
             emojiItemPaddingSize,
             emojiItemPaddingSize,
-            emojiItemPaddingSize
+            emojiItemPaddingSize,
         )
         view.layoutParams = AbsListView.LayoutParams(emojiItemSize, emojiItemSize)
         return EmojiItemViewHolder(view)
@@ -84,7 +84,7 @@ class EmojiListAdapter(
         holder.emojiView.setEmoji(
             emojiSequence,
             emojiInfo.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT,
-            diverseHintColor
+            diverseHintColor,
         )
         holder.emojiView.contentDescription = emojiSequence
         holder.emojiView.setOnClickListener {

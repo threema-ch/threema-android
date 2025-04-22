@@ -47,11 +47,10 @@ import ch.threema.storage.models.data.status.GroupStatusDataModel.GroupStatusTyp
 class GroupStatusAdapterDecorator(
     context: Context,
     messageModel: AbstractMessageModel,
-    helper: Helper?
+    helper: Helper?,
 ) : ChatAdapterDecorator(context, messageModel, helper) {
-
     override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
-        val statusDataModel = messageModel.groupStatusDataModel ?: return
+        val statusDataModel = messageModel.groupStatusData ?: return
         val statusText = getStatusText(statusDataModel, userService, contactService, context)
         if (showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(statusText))) {
             holder.bodyTextView.text = statusText
@@ -85,7 +84,7 @@ class GroupStatusAdapterDecorator(
             statusDataModel: GroupStatusDataModel,
             userService: UserService?,
             contactService: ContactService?,
-            context: Context
+            context: Context,
         ): String {
             val displayName = getDisplayName(statusDataModel, userService, contactService, context)
             val ballotName = statusDataModel.ballotName ?: ""
@@ -102,18 +101,18 @@ class GroupStatusAdapterDecorator(
                 FIRST_VOTE -> context.getString(
                     R.string.status_ballot_user_first_vote,
                     displayName,
-                    ballotName
+                    ballotName,
                 )
 
                 MODIFIED_VOTE -> context.getString(
                     R.string.status_ballot_user_modified_vote,
                     displayName,
-                    ballotName
+                    ballotName,
                 )
 
                 RECEIVED_VOTE -> context.getString(
                     R.string.status_ballot_voting_changed,
-                    ballotName
+                    ballotName,
                 )
 
                 VOTES_COMPLETE -> context.getString(R.string.status_ballot_all_votes, ballotName)

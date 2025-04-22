@@ -40,9 +40,8 @@ class SendMediaAdapter(
     fm: FragmentManager,
     lifecycle: Lifecycle,
     private val mm: MediaAdapterManager,
-    private val viewPager: ViewPager2?
+    private val viewPager: ViewPager2?,
 ) : FragmentStateAdapter(fm, lifecycle), MediaAdapter {
-
     private var fragments: MutableMap<Int, BigMediaFragment> = mutableMapOf()
     private var bottomElemHeight: Int = 0
 
@@ -68,7 +67,7 @@ class SendMediaAdapter(
     override fun onBindViewHolder(
         holder: FragmentViewHolder,
         position: Int,
-        payloads: MutableList<Any>
+        payloads: MutableList<Any>,
     ) {
         super.onBindViewHolder(holder, position, payloads)
 
@@ -90,7 +89,7 @@ class SendMediaAdapter(
             logger.error(
                 "Could not update filename at position {} of {} items",
                 position,
-                itemCount
+                itemCount,
             )
             return
         }

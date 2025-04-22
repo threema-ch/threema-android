@@ -1,2 +1,5 @@
-- Emoji reactions are now included in the data backup
-- Fixed a bug that caused custom ringtones to be reset when starting the app
+- The Android app can now be used with the beta version of Threema 2.0 for desktop (“Main menu > Threema 2.0 for desktop (beta)”)
+- Fixed various bugs that could occur when searching within a chat
+- Display the correct name of a PDF file
+- Improved notification of 1:1 calls
+- Improved memory consumption when restoring large data backups

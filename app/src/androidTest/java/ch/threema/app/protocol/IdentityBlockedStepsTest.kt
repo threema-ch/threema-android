@@ -31,6 +31,7 @@ import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.PreferenceServiceImpl
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
+import ch.threema.app.testutils.clearDatabaseAndCaches
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -49,15 +50,14 @@ import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupMemberModel
 import ch.threema.storage.models.GroupModel
+import java.util.Date
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
-import kotlin.test.assertEquals
 
 @DangerousTest
 class IdentityBlockedStepsTest {
-
     private lateinit var contactModelRepository: ContactModelRepository
     private lateinit var contactStore: ContactStore
     private lateinit var groupService: GroupService
@@ -76,15 +76,18 @@ class IdentityBlockedStepsTest {
 
     @Before
     fun setup() {
-        assert(myContact.identity == TestHelpers.ensureIdentity(ThreemaApplication.requireServiceManager()))
-
         val serviceManager = ThreemaApplication.requireServiceManager()
+
+        clearDatabaseAndCaches(serviceManager)
+
+        assert(myContact.identity == TestHelpers.ensureIdentity(serviceManager))
+
         val databaseService = TestDatabaseService()
         val coreServiceManager = TestCoreServiceManager(
             version = ThreemaApplication.getAppVersion(),
             databaseService = databaseService,
             preferenceStore = serviceManager.preferenceStore,
-            taskManager = TestTaskManager(UnusedTaskCodec())
+            taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         contactModelRepository = ModelRepositories(coreServiceManager).contacts
         contactStore = serviceManager.contactStore
@@ -124,14 +127,14 @@ class IdentityBlockedStepsTest {
     fun testExplicitlyBlockedContact() {
         assertEquals(
             BlockState.EXPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(explicitlyBlockedContact.identity, noBlockPreferenceService)
+            runIdentityBlockedSteps(explicitlyBlockedContact.identity, noBlockPreferenceService),
         )
         assertEquals(
             BlockState.EXPLICITLY_BLOCKED,
             runIdentityBlockedSteps(
                 explicitlyBlockedContact.identity,
-                blockUnknownPreferenceService
-            )
+                blockUnknownPreferenceService,
+            ),
         )
     }
 
@@ -139,7 +142,7 @@ class IdentityBlockedStepsTest {
     fun testImplicitlyBlockedContact() {
         assertEquals(
             BlockState.IMPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(unknownContact.identity, blockUnknownPreferenceService)
+            runIdentityBlockedSteps(unknownContact.identity, blockUnknownPreferenceService),
         )
     }
 
@@ -147,7 +150,7 @@ class IdentityBlockedStepsTest {
     fun testImplicitlyBlockedSpecialContact() {
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(specialContact.identity, blockUnknownPreferenceService)
+            runIdentityBlockedSteps(specialContact.identity, blockUnknownPreferenceService),
         )
     }
 
@@ -155,7 +158,7 @@ class IdentityBlockedStepsTest {
     fun testGroupContactWithGroup() {
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inGroup.identity, blockUnknownPreferenceService)
+            runIdentityBlockedSteps(inGroup.identity, blockUnknownPreferenceService),
         )
     }
 
@@ -163,7 +166,7 @@ class IdentityBlockedStepsTest {
     fun testGroupContactWithoutGroup() {
         assertEquals(
             BlockState.IMPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(inNoGroup.identity, blockUnknownPreferenceService)
+            runIdentityBlockedSteps(inNoGroup.identity, blockUnknownPreferenceService),
         )
     }
 
@@ -171,7 +174,7 @@ class IdentityBlockedStepsTest {
     fun testGroupContactWithLeftGroup() {
         assertEquals(
             BlockState.IMPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(inLeftGroup.identity, blockUnknownPreferenceService)
+            runIdentityBlockedSteps(inLeftGroup.identity, blockUnknownPreferenceService),
         )
     }
 
@@ -199,17 +202,16 @@ class IdentityBlockedStepsTest {
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inGroup.identity, noBlockPreferenceService)
+            runIdentityBlockedSteps(inGroup.identity, noBlockPreferenceService),
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inNoGroup.identity, noBlockPreferenceService)
+            runIdentityBlockedSteps(inNoGroup.identity, noBlockPreferenceService),
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inLeftGroup.identity, noBlockPreferenceService)
+            runIdentityBlockedSteps(inLeftGroup.identity, noBlockPreferenceService),
         )
-
     }
 
     private fun runIdentityBlockedSteps(
@@ -227,107 +229,115 @@ class IdentityBlockedStepsTest {
     private fun addKnownContacts() = runBlocking {
         contactModelRepository.createFromLocal(
             ContactModelData(
-                knownContact.identity,
-                knownContact.publicKey,
-                Date(),
-                "",
-                "",
-                "",
-                0u,
-                VerificationLevel.UNVERIFIED,
-                WorkVerificationLevel.NONE,
-                IdentityType.NORMAL,
-                ContactModel.AcquaintanceLevel.DIRECT,
-                IdentityState.ACTIVE,
-                ContactSyncState.INITIAL,
-                0u,
-                ReadReceiptPolicy.DEFAULT,
-                TypingIndicatorPolicy.DEFAULT,
-                null,
-                null,
-                false,
-                null,
-                null,
-                null,
-            )
+                identity = knownContact.identity,
+                publicKey = knownContact.publicKey,
+                createdAt = Date(),
+                firstName = "",
+                lastName = "",
+                nickname = "",
+                colorIndex = 0u,
+                verificationLevel = VerificationLevel.UNVERIFIED,
+                workVerificationLevel = WorkVerificationLevel.NONE,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
+                activityState = IdentityState.ACTIVE,
+                syncState = ContactSyncState.INITIAL,
+                featureMask = 0u,
+                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                isArchived = false,
+                androidContactLookupKey = null,
+                localAvatarExpires = null,
+                isRestored = false,
+                profilePictureBlobId = null,
+                jobTitle = null,
+                department = null,
+                notificationTriggerPolicyOverride = null,
+            ),
         )
         contactModelRepository.createFromLocal(
             ContactModelData(
-                inGroup.identity,
-                inGroup.publicKey,
-                Date(),
-                "",
-                "",
-                "",
-                0u,
-                VerificationLevel.UNVERIFIED,
-                WorkVerificationLevel.NONE,
-                IdentityType.NORMAL,
-                ContactModel.AcquaintanceLevel.GROUP,
-                IdentityState.ACTIVE,
-                ContactSyncState.INITIAL,
-                0u,
-                ReadReceiptPolicy.DEFAULT,
-                TypingIndicatorPolicy.DEFAULT,
-                null,
-                null,
-                false,
-                null,
-                null,
-                null,
-            )
+                identity = inGroup.identity,
+                publicKey = inGroup.publicKey,
+                createdAt = Date(),
+                firstName = "",
+                lastName = "",
+                nickname = "",
+                colorIndex = 0u,
+                verificationLevel = VerificationLevel.UNVERIFIED,
+                workVerificationLevel = WorkVerificationLevel.NONE,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
+                activityState = IdentityState.ACTIVE,
+                syncState = ContactSyncState.INITIAL,
+                featureMask = 0u,
+                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                isArchived = false,
+                androidContactLookupKey = null,
+                localAvatarExpires = null,
+                isRestored = false,
+                profilePictureBlobId = null,
+                jobTitle = null,
+                department = null,
+                notificationTriggerPolicyOverride = null,
+            ),
         )
         contactModelRepository.createFromLocal(
             ContactModelData(
-                inNoGroup.identity,
-                inNoGroup.publicKey,
-                Date(),
-                "",
-                "",
-                "",
-                0u,
-                VerificationLevel.UNVERIFIED,
-                WorkVerificationLevel.NONE,
-                IdentityType.NORMAL,
-                ContactModel.AcquaintanceLevel.GROUP,
-                IdentityState.ACTIVE,
-                ContactSyncState.INITIAL,
-                0u,
-                ReadReceiptPolicy.DEFAULT,
-                TypingIndicatorPolicy.DEFAULT,
-                null,
-                null,
-                false,
-                null,
-                null,
-                null,
-            )
+                identity = inNoGroup.identity,
+                publicKey = inNoGroup.publicKey,
+                createdAt = Date(),
+                firstName = "",
+                lastName = "",
+                nickname = "",
+                colorIndex = 0u,
+                verificationLevel = VerificationLevel.UNVERIFIED,
+                workVerificationLevel = WorkVerificationLevel.NONE,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
+                activityState = IdentityState.ACTIVE,
+                syncState = ContactSyncState.INITIAL,
+                featureMask = 0u,
+                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                isArchived = false,
+                androidContactLookupKey = null,
+                localAvatarExpires = null,
+                isRestored = false,
+                profilePictureBlobId = null,
+                jobTitle = null,
+                department = null,
+                notificationTriggerPolicyOverride = null,
+            ),
         )
         contactModelRepository.createFromLocal(
             ContactModelData(
-                inLeftGroup.identity,
-                inLeftGroup.publicKey,
-                Date(),
-                "",
-                "",
-                "",
-                0u,
-                VerificationLevel.UNVERIFIED,
-                WorkVerificationLevel.NONE,
-                IdentityType.NORMAL,
-                ContactModel.AcquaintanceLevel.GROUP,
-                IdentityState.ACTIVE,
-                ContactSyncState.INITIAL,
-                0u,
-                ReadReceiptPolicy.DEFAULT,
-                TypingIndicatorPolicy.DEFAULT,
-                null,
-                null,
-                false,
-                null,
-                null,
-                null,
-            )
+                identity = inLeftGroup.identity,
+                publicKey = inLeftGroup.publicKey,
+                createdAt = Date(),
+                firstName = "",
+                lastName = "",
+                nickname = "",
+                colorIndex = 0u,
+                verificationLevel = VerificationLevel.UNVERIFIED,
+                workVerificationLevel = WorkVerificationLevel.NONE,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
+                activityState = IdentityState.ACTIVE,
+                syncState = ContactSyncState.INITIAL,
+                featureMask = 0u,
+                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                isArchived = false,
+                androidContactLookupKey = null,
+                localAvatarExpires = null,
+                isRestored = false,
+                profilePictureBlobId = null,
+                jobTitle = null,
+                department = null,
+                notificationTriggerPolicyOverride = null,
+            ),
         )
     }
 
@@ -338,36 +348,35 @@ class IdentityBlockedStepsTest {
                     .setApiGroupId(GroupId(0))
                     .setCreatorIdentity(myContact.identity)
                     .setUserState(GroupModel.UserState.MEMBER)
-                    .setCreatedAt(Date())
+                    .setCreatedAt(Date()),
             )
             create(
                 GroupModel()
                     .setApiGroupId(GroupId(1))
                     .setCreatorIdentity(myContact.identity)
                     .setUserState(GroupModel.UserState.LEFT)
-                    .setCreatedAt(Date())
+                    .setCreatedAt(Date()),
             )
         }
         val memberGroup = databaseService.groupModelFactory.getByApiGroupIdAndCreator(
             GroupId(0).toString(),
-            myContact.identity
+            myContact.identity,
         )
         val leftGroup = databaseService.groupModelFactory.getByApiGroupIdAndCreator(
             GroupId(1).toString(),
-            myContact.identity
+            myContact.identity,
         )
         databaseService.groupMemberModelFactory.apply {
             create(
                 GroupMemberModel()
                     .setGroupId(memberGroup.id)
-                    .setIdentity(inGroup.identity)
+                    .setIdentity(inGroup.identity),
             )
             create(
                 GroupMemberModel()
                     .setGroupId(leftGroup.id)
-                    .setIdentity(inLeftGroup.identity)
+                    .setIdentity(inLeftGroup.identity),
             )
         }
     }
-
 }

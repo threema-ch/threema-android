@@ -31,7 +31,6 @@ import ch.threema.app.utils.IntentDataUtil
  * canceled.
  */
 class CancelResendMessagesBroadcastReceiver : ActionBroadcastReceiver() {
-
     override fun onReceive(context: Context, intent: Intent) {
         // It is sufficient to trigger the listener. If the home activity (that manages resending
         // the messages) is not available, this event can be dismissed anyway.
@@ -41,5 +40,4 @@ class CancelResendMessagesBroadcastReceiver : ActionBroadcastReceiver() {
             }
         }
     }
-
 }

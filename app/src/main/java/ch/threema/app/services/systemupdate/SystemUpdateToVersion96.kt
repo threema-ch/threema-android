@@ -26,10 +26,10 @@ import ch.threema.app.services.UpdateSystemService
 import ch.threema.app.utils.ColorUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
-import net.zetetic.database.sqlcipher.SQLiteDatabase
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion96")
 
@@ -90,7 +90,7 @@ class SystemUpdateToVersion96(
                 "m_group",
                 contentValues,
                 "`creatorIdentity` = ? AND `apiGroupId` = ?",
-                arrayOf(creatorIdentity, groupIdString)
+                arrayOf(creatorIdentity, groupIdString),
             )
         }
     }

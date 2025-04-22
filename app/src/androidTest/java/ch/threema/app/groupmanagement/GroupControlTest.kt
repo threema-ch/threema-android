@@ -33,25 +33,22 @@ import ch.threema.app.activities.HomeActivity
 import ch.threema.app.processors.MessageProcessorProvider
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
-import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
+import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.stores.IdentityStoreInterface
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
 
 /**
  * A collection of basic data and utility functions to test group control messages. If the common
  * group receive steps should not be executed for a certain message type, the common group step
  * receive methods should be overridden.
  */
-@ExperimentalCoroutinesApi
 abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProvider() {
-
     /**
      * Create a message of the tested group message type. This is used to create a message that will
      * be used to test the common group receive steps.
@@ -79,11 +76,11 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     }
 
     /**
-     * Check step 2.1 of the common group receive steps: The group could not be found and the user
-     * is the creator of the group (as alleged by the message). The message should be discarded.
+     * Check common group receive steps: The group could not be found and the user is the creator of
+     * the group (as alleged by the message). The message should be discarded.
      */
     @Test
-    open fun testCommonGroupReceiveStep2_1() = runTest {
+    open fun testCommonGroupReceiveStepUnknownGroupUserCreator() = runTest {
         val (message, identityStore) = getMyUnknownGroupMessage()
         setupAndProcessMessage(message, identityStore)
 
@@ -93,11 +90,11 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     }
 
     /**
-     * Check step 2.2 of the common group receive steps: The group could not be found and the user
-     * is not the creator. In this case, a group sync request should be sent.
+     * Check common group receive steps: The group could not be found and the user is not the
+     * creator. In this case, a group sync request should be sent.
      */
     @Test
-    open fun testCommonGroupReceiveStep2_2() = runTest {
+    open fun testCommonGroupReceiveStepUnknownGroupUserNotCreator() = runTest {
         val (message, identityStore) = getUnknownGroupMessage()
         setupAndProcessMessage(message, identityStore)
 
@@ -112,12 +109,12 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     }
 
     /**
-     * Check step 3.1 of the common group receive steps: The group is marked as left and the user is
-     * the creator of the group. In this case, a group setup with an empty member list should be
-     * sent back to the sender.
+     * Check common group receive steps: The group is marked as left and the user is the creator of
+     * the group. In this case, a group setup with an empty member list should be sent back to the
+     * sender.
      */
     @Test
-    open fun testCommonGroupReceiveStep3_1() = runTest {
+    open fun testCommonGroupReceiveStepLeftGroupUserCreator() = runTest {
         val (message, identityStore) = getMyLeftGroupMessage()
         setupAndProcessMessage(message, identityStore)
 
@@ -127,18 +124,18 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
         assertEquals(myContact.identity, firstMessage.fromIdentity)
         assertEquals(message.apiGroupId, firstMessage.apiGroupId)
         assertEquals(message.groupCreator, firstMessage.groupCreator)
-        assertArrayEquals(emptyArray<String>(), firstMessage.members)
+        assertContentEquals(emptyArray<String>(), firstMessage.members)
 
         assertTrue(sentMessagesInsideTask.isEmpty())
         assertTrue(sentMessagesNewTask.isEmpty())
     }
 
     /**
-     * Check step 3.2 of the common group receive steps: The group is marked left and the user is
-     * not the creator of the group. In this case, a group leave should be sent back to the sender.
+     * Check common group receive steps: The group is marked left and the user is not the creator of
+     * the group. In this case, a group leave should be sent back to the sender.
      */
     @Test
-    open fun testCommonGroupReceiveStep3_2() = runTest {
+    open fun testCommonGroupReceiveStepLeftGroupUserNotCreator() = runTest {
         // First, test the common group receive steps for a message from the group creator
         val (firstIncomingMessage, firstIdentityStore) = getLeftGroupMessageFromCreator()
         setupAndProcessMessage(firstIncomingMessage, firstIdentityStore)
@@ -168,12 +165,12 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     }
 
     /**
-     * Check step 4.1 of the common group receive steps: The sender is not a member of the group and
-     * the user is the creator of the group. In this case, a group setup with an empty members list
-     * should be sent back to the sender.
+     * Check common group receive steps: The sender is not a member of the group and the user is the
+     * creator of the group. In this case, a group setup with an empty members list should be sent
+     * back to the sender.
      */
     @Test
-    open fun testCommonGroupReceiveStep4_1() = runTest {
+    open fun testCommonGroupReceiveStepSenderNotMemberUserCreator() = runTest {
         val (message, identityStore) = getSenderNotMemberOfMyGroupMessage()
         setupAndProcessMessage(message, identityStore)
 
@@ -183,18 +180,18 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
         assertEquals(myContact.identity, firstMessage.fromIdentity)
         assertEquals(message.apiGroupId, firstMessage.apiGroupId)
         assertEquals(message.groupCreator, firstMessage.groupCreator)
-        assertArrayEquals(emptyArray<String>(), firstMessage.members)
+        assertContentEquals(emptyArray<String>(), firstMessage.members)
 
         assertTrue(sentMessagesInsideTask.isEmpty())
         assertTrue(sentMessagesNewTask.isEmpty())
     }
 
     /**
-     * Check step 4.2 of the common group receive steps: The sender is not a member of the group and
-     * the user is not the creator of the group. The message should be discarded.
+     * Check common group receive steps: The sender is not a member of the group and the user is not
+     * the creator of the group. The message should be discarded.
      */
     @Test
-    open fun testCommonGroupReceiveStep4_2() = runTest {
+    open fun testCommonGroupReceiveStepSenderNotMemberUserNotCreator() = runTest {
         val (message, identityStore) = getSenderNotMemberMessage()
         setupAndProcessMessage(message, identityStore)
 

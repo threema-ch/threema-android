@@ -60,6 +60,8 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
     public static final String EXTRA_VIDEO_RESULT = "videoResult";
     public static final String EXTRA_NO_VIDEO = "noVideo";
 
+    private static final int RESULT_ERROR = 2;
+
     private String cameraFilePath, videoFilePath;
     private boolean noVideo;
 
@@ -96,10 +98,6 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
     @Override
     protected void onDestroy() {
         logger.info("onDestroy");
-
-        if (isFinishing()) {
-            teardownCamera();
-        }
 
         try {
             super.onDestroy();
@@ -146,7 +144,7 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
     @Override
     public void onError(String message) {
         logger.error("Could not take a picture or record a video: {}", message);
-        setResult(RESULT_CANCELED);
+        setResult(RESULT_ERROR);
         this.finish();
     }
 
@@ -166,27 +164,6 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment != null && fragment.isAdded()) {
             fragmentManager.beginTransaction().remove(fragment).commit();
-        }
-    }
-
-    @SuppressLint("RestrictedApi")
-    private void teardownCamera() {
-        // Workaround for framework memory leak https://issuetracker.google.com/issues/141188637
-        try {
-            ListenableFuture<ProcessCameraProvider> processCameraProviderFuture = ProcessCameraProvider.getInstance(ThreemaApplication.getAppContext());
-            processCameraProviderFuture.addListener(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ProcessCameraProvider processCameraProvider = processCameraProviderFuture.get();
-                        processCameraProvider.shutdown();
-                    } catch (Exception e) {
-                        logger.error("Exception", e);
-                    }
-                }
-            }, ContextCompat.getMainExecutor(ThreemaApplication.getAppContext()));
-        } catch (Exception e) {
-            logger.error("Exception", e);
         }
     }
 

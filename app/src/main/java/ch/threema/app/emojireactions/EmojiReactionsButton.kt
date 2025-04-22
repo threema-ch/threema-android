@@ -44,32 +44,35 @@ class EmojiReactionsButton : MaterialCardView {
     var onEmojiReactionButtonClickListener: OnEmojiReactionButtonClickListener? = null
 
     private val gestureDetector =
-        GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapUp(e: MotionEvent): Boolean {
-                onEmojiReactionButtonClickListener?.onClick(emojiSequence)
-                performClick()
-                return true
-            }
+        GestureDetector(
+            context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    onEmojiReactionButtonClickListener?.onClick(emojiSequence)
+                    performClick()
+                    return true
+                }
 
-            override fun onLongPress(e: MotionEvent) {
-                onEmojiReactionButtonClickListener?.onLongClick(emojiSequence)
-                performLongClick()
-            }
-        })
+                override fun onLongPress(e: MotionEvent) {
+                    onEmojiReactionButtonClickListener?.onLongClick(emojiSequence)
+                    performLongClick()
+                }
+            },
+        )
 
     private lateinit var labelView: TextView
     private lateinit var emojiView: EmojiTextView
     private lateinit var spacerView: Space
 
     constructor(context: Context) : super(
-        context
+        context,
     ) {
         init()
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(
         context,
-        attrs
+        attrs,
     ) {
         init()
     }
@@ -77,7 +80,7 @@ class EmojiReactionsButton : MaterialCardView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init()
     }

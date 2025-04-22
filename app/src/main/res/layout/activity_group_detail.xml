@@ -82,7 +82,7 @@
         android:layout_gravity="bottom|right|end"
         app:icon="@drawable/ic_check"
         android:text="@string/apply_changes"
-        android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
+        android:layout_marginRight="@dimen/spacing_two_grid_unit"
         android:layout_marginBottom="16dp"
         android:clickable="true" />
 

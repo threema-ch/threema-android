@@ -27,18 +27,18 @@ import ch.threema.domain.protocol.connection.TestSocket
 import ch.threema.domain.protocol.connection.csp.socket.CspSocket
 import ch.threema.domain.protocol.connection.csp.socket.SocketFactory
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import kotlinx.coroutines.*
-import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.Timeout
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.runTest
+import org.junit.Rule
+import org.junit.rules.Timeout
 
-// `runTest` requires opt-in for experimental api
-@OptIn(ExperimentalCoroutinesApi::class)
 class CspSocketTest {
     private lateinit var testSocket: TestSocket
 
@@ -48,7 +48,7 @@ class CspSocketTest {
     val timeout: Timeout = Timeout.seconds(5)
     // */
 
-    @Before
+    @BeforeTest
     fun setUp() {
         testSocket = TestSocket()
     }
@@ -106,7 +106,7 @@ class CspSocketTest {
         testSocket.write(createFrame(length))
 
         val expected = ByteArray(length.toInt()) { length.toByte() }
-        assertArrayEquals("Length: $length", expected, msg.await())
+        assertContentEquals(expected, msg.await())
     }
 
     private suspend fun assertServerHello(socket: CspSocket) {
@@ -114,14 +114,14 @@ class CspSocketTest {
         val msg = receiveMessageAsync(socket)
         testSocket.write(serverHello)
         val bytes = msg.await()
-        assertArrayEquals(serverHello, bytes)
+        assertContentEquals(serverHello, bytes)
     }
 
     private suspend fun assertServerLoginAck(socket: CspSocket) {
         val serverLoginAck = ByteArray(ProtocolDefines.SERVER_LOGIN_ACK_LEN) { 0x1F }
         val msg = receiveMessageAsync(socket)
         testSocket.write(serverLoginAck)
-        assertArrayEquals(serverLoginAck, msg.await())
+        assertContentEquals(serverLoginAck, msg.await())
     }
 
     private fun receiveMessageAsync(socket: CspSocket): Deferred<ByteArray?> {
@@ -162,7 +162,7 @@ class CspSocketTest {
             socketFactory,
             addressProvider,
             CompletableDeferred(),
-            dispatcher.coroutineContext
+            dispatcher.coroutineContext,
         )
     }
 }

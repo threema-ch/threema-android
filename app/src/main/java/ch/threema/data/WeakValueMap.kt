@@ -45,7 +45,7 @@ class WeakValueMap<K, V> {
     fun getOrCreate(key: K, miss: () -> V?): V? {
         var value = this.get(key)
         if (value != null) {
-            return value;
+            return value
         }
         value = miss()
         if (value != null) {

@@ -45,30 +45,30 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.protocol.SSLSocketFactoryFactory
+import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.APIConnector.FetchIdentityResult
 import ch.threema.domain.protocol.api.APIConnector.HttpConnectionException
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.neilalexander.jnacl.NaCl
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertArrayEquals
-import org.junit.Before
 import java.net.HttpURLConnection
+import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import kotlinx.coroutines.runBlocking
 
 class AddOrUpdateContactBackgroundTaskTest {
-
     private val backgroundExecutor = BackgroundExecutor()
     private lateinit var databaseService: TestDatabaseService
     private lateinit var coreServiceManager: CoreServiceManager
     private lateinit var contactModelRepository: ContactModelRepository
 
-    @Before
+    @BeforeTest
     fun before() {
         databaseService = TestDatabaseService()
         val serviceManager = ThreemaApplication.requireServiceManager()
@@ -99,13 +99,13 @@ class AddOrUpdateContactBackgroundTaskTest {
                 assertEquals(newIdentity, it.contactModel.identity)
                 val data = it.contactModel.data.value!!
                 assertEquals(newIdentity, data.identity)
-                assertArrayEquals(ByteArray(NaCl.PUBLICKEYBYTES), data.publicKey)
+                assertContentEquals(ByteArray(NaCl.PUBLICKEYBYTES), data.publicKey)
                 assertEquals(12u, data.featureMask)
                 assertEquals(IdentityType.NORMAL, data.identityType)
                 assertEquals(IdentityState.ACTIVE, data.activityState)
                 assertEquals(VerificationLevel.UNVERIFIED, data.verificationLevel)
                 assertEquals(AcquaintanceLevel.DIRECT, data.acquaintanceLevel)
-            }
+            },
         )
     }
 
@@ -129,13 +129,13 @@ class AddOrUpdateContactBackgroundTaskTest {
                 assertEquals(newIdentity, it.contactModel.identity)
                 val data = it.contactModel.data.value!!
                 assertEquals(newIdentity, data.identity)
-                assertArrayEquals(ByteArray(NaCl.PUBLICKEYBYTES), data.publicKey)
+                assertContentEquals(ByteArray(NaCl.PUBLICKEYBYTES), data.publicKey)
                 assertEquals(12u, data.featureMask)
                 assertEquals(IdentityType.NORMAL, data.identityType)
                 assertEquals(IdentityState.ACTIVE, data.activityState)
                 assertEquals(VerificationLevel.UNVERIFIED, data.verificationLevel)
                 assertEquals(AcquaintanceLevel.GROUP, data.acquaintanceLevel)
-            }
+            },
         )
     }
 
@@ -158,7 +158,7 @@ class AddOrUpdateContactBackgroundTaskTest {
                 assertEquals(newIdentity, it.contactModel.identity)
                 val data = it.contactModel.data.value!!
                 assertEquals(newIdentity, data.identity)
-                assertArrayEquals(ByteArray(NaCl.PUBLICKEYBYTES), data.publicKey)
+                assertContentEquals(ByteArray(NaCl.PUBLICKEYBYTES), data.publicKey)
                 assertEquals(127u, data.featureMask)
                 assertEquals(IdentityType.WORK, data.identityType)
                 assertEquals(IdentityState.INACTIVE, data.activityState)
@@ -205,7 +205,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             {
                 assertTrue(it is RemotePublicKeyMismatch)
             },
-            publicKey = ByteArray(NaCl.PUBLICKEYBYTES).also { it.fill(1) }
+            publicKey = ByteArray(NaCl.PUBLICKEYBYTES).also { it.fill(1) },
         )
     }
 
@@ -217,7 +217,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             },
             {
                 assertTrue(it is InvalidThreemaId)
-            }
+            },
         )
     }
 
@@ -238,7 +238,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             apiConnectorResult,
             {
                 assertTrue(it is ContactCreated)
-            }
+            },
         )
 
         // The second time adding the contact should fail
@@ -246,7 +246,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             apiConnectorResult,
             {
                 assertTrue(it is ContactExists)
-            }
+            },
         )
     }
 
@@ -279,7 +279,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             {
                 assertTrue(it is AlreadyVerified)
             },
-            publicKey = publicKey
+            publicKey = publicKey,
         )
     }
 
@@ -303,7 +303,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             {
                 assertTrue(it is ContactCreated)
             },
-            newIdentity = newIdentity
+            newIdentity = newIdentity,
         )
 
         val contactModel = contactModelRepository.getByIdentity(newIdentity)!!
@@ -323,7 +323,7 @@ class AddOrUpdateContactBackgroundTaskTest {
                 assertFalse(it.verificationLevelChanged)
                 assertEquals(AcquaintanceLevel.DIRECT, contactModel.data.value!!.acquaintanceLevel)
             },
-            newIdentity = newIdentity
+            newIdentity = newIdentity,
         )
     }
 
@@ -347,7 +347,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             {
                 assertTrue(it is ContactCreated)
             },
-            newIdentity = newIdentity
+            newIdentity = newIdentity,
         )
 
         val contactModel = contactModelRepository.getByIdentity(newIdentity)!!
@@ -364,11 +364,11 @@ class AddOrUpdateContactBackgroundTaskTest {
                 assertFalse(it.acquaintanceLevelChanged)
                 assertEquals(
                     VerificationLevel.FULLY_VERIFIED,
-                    contactModel.data.value!!.verificationLevel
+                    contactModel.data.value!!.verificationLevel,
                 )
             },
             newIdentity = newIdentity,
-            publicKey = ByteArray(NaCl.PUBLICKEYBYTES)
+            publicKey = ByteArray(NaCl.PUBLICKEYBYTES),
         )
     }
 
@@ -392,7 +392,7 @@ class AddOrUpdateContactBackgroundTaskTest {
             {
                 assertTrue(it is ContactCreated)
             },
-            newIdentity = newIdentity
+            newIdentity = newIdentity,
         )
 
         val contactModel = contactModelRepository.getByIdentity(newIdentity)!!
@@ -414,11 +414,11 @@ class AddOrUpdateContactBackgroundTaskTest {
                 assertEquals(AcquaintanceLevel.DIRECT, contactModel.data.value!!.acquaintanceLevel)
                 assertEquals(
                     VerificationLevel.FULLY_VERIFIED,
-                    contactModel.data.value!!.verificationLevel
+                    contactModel.data.value!!.verificationLevel,
                 )
             },
             newIdentity = newIdentity,
-            publicKey = ByteArray(NaCl.PUBLICKEYBYTES)
+            publicKey = ByteArray(NaCl.PUBLICKEYBYTES),
         )
     }
 
@@ -524,9 +524,8 @@ class AddOrUpdateContactBackgroundTaskTest {
             ConfigUtils.getSSLSocketFactory(host)
         }
 
-        return object : APIConnector(false, null, false, sslSocketFactoryFactory) {
+        return object : APIConnector(false, null, false, sslSocketFactoryFactory, Version(), null) {
             override fun fetchIdentity(identity: String) = onIdentityFetchCalled(identity)
         }
     }
-
 }

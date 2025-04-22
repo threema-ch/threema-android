@@ -247,9 +247,6 @@ public class BallotServiceImpl implements BallotService {
         } catch (NotAllowedException notAllowedException) {
             logger.error("Not allowed", notAllowedException);
             throw notAllowedException;
-        } catch (ThreemaException e) {
-            logger.error("Exception", e);
-            return null;
         }
     }
 
@@ -693,7 +690,7 @@ public class BallotServiceImpl implements BallotService {
         if (messageReceiver != null) {
             switch (messageReceiver.getType()) {
                 case MessageReceiver.Type_GROUP:
-                    return this.groupService.getGroupIdentities(((GroupMessageReceiver) messageReceiver).getGroup());
+                    return this.groupService.getGroupMemberIdentities(((GroupMessageReceiver) messageReceiver).getGroup());
 
                 case MessageReceiver.Type_CONTACT:
                     return new String[]{
@@ -719,7 +716,7 @@ public class BallotServiceImpl implements BallotService {
                         case GROUP:
                             GroupModel groupModel = this.getGroupModel(link);
                             if (groupModel != null) {
-                                return this.groupService.getGroupIdentities(this.getGroupModel(link));
+                                return this.groupService.getGroupMemberIdentities(this.getGroupModel(link));
                             }
                             break;
                         case CONTACT:

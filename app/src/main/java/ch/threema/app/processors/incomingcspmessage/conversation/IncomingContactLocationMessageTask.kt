@@ -33,7 +33,6 @@ class IncomingContactLocationMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<LocationMessage>(locationMessage, triggerSource, serviceManager) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult =
@@ -43,8 +42,7 @@ class IncomingContactLocationMessageTask(
         processLocationMessage()
 
     private fun processLocationMessage(): ReceiveStepsResult {
-        val processedMessageSuccessfully =
-            messageService.processIncomingContactMessage(locationMessage)
+        val processedMessageSuccessfully = messageService.processIncomingContactMessage(locationMessage, triggerSource)
         return if (processedMessageSuccessfully) ReceiveStepsResult.SUCCESS else ReceiveStepsResult.DISCARD
     }
 }

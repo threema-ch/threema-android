@@ -76,7 +76,8 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
         GROUP_DESCRIPTION_CHANGED(12),
 
         /** The creator just left the group */
-        ORPHANED(13);
+        ORPHANED(13),
+        ;
 
         companion object {
             fun fromInt(value: Int) = GroupStatusType.values().first { it.type == value }
@@ -156,6 +157,5 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
                 }
             }
         }
-
     }
 }

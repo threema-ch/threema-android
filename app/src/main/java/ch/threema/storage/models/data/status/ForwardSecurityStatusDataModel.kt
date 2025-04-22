@@ -41,8 +41,8 @@ class ForwardSecurityStatusDataModel : StatusDataModelInterface {
             ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE,
             // TODO(ANDR-2519): Can this be removed when md supports fs?
             //  Maybe not, because theses statuses might already be saved to the database...
-            ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED
-        ]
+            ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED,
+        ],
     )
     @Retention(AnnotationRetention.SOURCE)
     annotation class ForwardSecurityStatusType {

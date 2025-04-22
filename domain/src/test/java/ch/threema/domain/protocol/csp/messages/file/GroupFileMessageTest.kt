@@ -23,13 +23,12 @@ package ch.threema.domain.protocol.csp.messages.file
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.testutils.willThrow
-import org.junit.Test
 import java.io.ByteArrayOutputStream
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 open class GroupFileMessageTest {
-
     /**
      *  A group file message in the raw form consists of bytes in the following order:
      *
@@ -60,8 +59,8 @@ open class GroupFileMessageTest {
                     "lat" to "secret",
                     "lng" to "secret",
                     "hour" to 8,
-                    "minute" to 30
-                )
+                    "minute" to 30,
+                ),
             )
         }
 
@@ -78,12 +77,11 @@ open class GroupFileMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthBelowIdentityAndGroupIdLength() {
         // arrange
         val testBlockLazy = {
-
             // act
             GroupFileMessage.fromByteArray(
                 data = groupFileMessageBytes,
                 offset = 0,
-                length = 10
+                length = 10,
             )
         }
 
@@ -98,12 +96,11 @@ open class GroupFileMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthEqualsIdentityAndGroupIdLength() {
         // arrange
         val testBlockLazy = {
-
             // act
             GroupFileMessage.fromByteArray(
                 data = groupFileMessageBytes,
                 offset = 0,
-                length = 16
+                length = 16,
             )
         }
 
@@ -113,15 +110,13 @@ open class GroupFileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupFileMessage.fromByteArray(
                 data = groupFileMessageBytes,
                 offset = -1,
-                length = 64
+                length = 64,
             )
         }
 
@@ -131,15 +126,13 @@ open class GroupFileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLength() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupFileMessage.fromByteArray(
                 data = groupFileMessageBytes,
                 offset = 0,
-                length = groupFileMessageBytes.size + 1
+                length = groupFileMessageBytes.size + 1,
             )
         }
 
@@ -149,15 +142,13 @@ open class GroupFileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLengthWithOffset() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupFileMessage.fromByteArray(
                 data = groupFileMessageBytes,
                 offset = 1,
-                length = groupFileMessageBytes.size
+                length = groupFileMessageBytes.size,
             )
         }
 
@@ -167,18 +158,17 @@ open class GroupFileMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithoutOffset() {
-
         // act
         val resultGroupFileMessage = GroupFileMessage.fromByteArray(
             data = groupFileMessageBytes,
             offset = 0,
-            length = groupFileMessageBytes.size
+            length = groupFileMessageBytes.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charsets.UTF_8),
-            resultGroupFileMessage.groupCreator
+            resultGroupFileMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, resultGroupFileMessage.apiGroupId.groupId)
         assertFileDataEquals(fileData, resultGroupFileMessage.fileData)
@@ -186,7 +176,6 @@ open class GroupFileMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithOffset() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + groupFileMessageBytes
 
@@ -194,13 +183,13 @@ open class GroupFileMessageTest {
         val resultGroupFileMessage = GroupFileMessage.fromByteArray(
             data = dataWithOffsetByte,
             offset = 1,
-            length = groupFileMessageBytes.size
+            length = groupFileMessageBytes.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charsets.UTF_8),
-            resultGroupFileMessage.groupCreator
+            resultGroupFileMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, resultGroupFileMessage.apiGroupId.groupId)
         assertFileDataEquals(fileData, resultGroupFileMessage.fileData)
@@ -208,17 +197,15 @@ open class GroupFileMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetNotPassedCorrectly() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + groupFileMessageBytes
 
         val testBlockLazy = {
-
             // act
             GroupFileMessage.fromByteArray(
                 data = dataWithOffsetByte,
                 offset = 0,
-                length = groupFileMessageBytes.size
+                length = groupFileMessageBytes.size,
             )
         }
 

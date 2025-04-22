@@ -67,7 +67,7 @@ class MediaGalleryRepository {
             @Deprecated("Deprecated in Java")
             override fun doInBackground(vararg params: String?): Void? {
                 abstractMessageModels?.postValue(
-                    messageReceiver?.loadMessages(getMessageFilter())
+                    messageReceiver?.loadMessages(getMessageFilter()),
                 )
                 return null
             }
@@ -129,4 +129,3 @@ class MediaGalleryRepository {
         this.messageReceiver = messageReceiver
     }
 }
-

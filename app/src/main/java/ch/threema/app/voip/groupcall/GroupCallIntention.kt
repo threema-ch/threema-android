@@ -35,5 +35,5 @@ enum class GroupCallIntention {
      * Join an existing call. If there is no call considered running in this group, do not
      * start a new call.
      */
-    JOIN
+    JOIN,
 }

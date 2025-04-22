@@ -42,7 +42,7 @@ import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.fragments.MessageSectionFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -139,7 +139,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
     }
 
     @Override
-    public void onNewIntent(Intent intent) {
+    public void onNewIntent(@NonNull Intent intent) {
         logger.info("onNewIntent");
 
         super.onNewIntent(intent);
@@ -269,22 +269,26 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
     private boolean checkHiddenChatLock(Intent intent, int requestCode) {
         MessageReceiver<?> messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(getApplicationContext(), intent);
 
-        if (messageReceiver != null) {
-            if (serviceManager != null) {
-                DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
-                if (hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
-                    if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
-                        HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
-                    } else {
-                        GenericAlertDialog.newInstance(R.string.hide_chat, R.string.hide_chat_enter_message_explain, R.string.set_lock, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_HIDDEN_NOTICE);
-                    }
-                    return true;
-                }
-            }
-        } else {
+        if (messageReceiver == null) {
             logger.info("Intent does not have any extras. Check \"Don't keep activities\" option in developer settings.");
+            return false;
         }
-        return false;
+
+        if (serviceManager == null) {
+            logger.error("Service manager is null");
+            return false;
+        }
+
+        ConversationCategoryService conversationCategoryService = serviceManager.getConversationCategoryService();
+        if (conversationCategoryService.isPrivateChat(messageReceiver.getUniqueIdString())) {
+            if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
+                HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
+            } else {
+                GenericAlertDialog.newInstance(R.string.hide_chat, R.string.hide_chat_enter_message_explain, R.string.set_lock, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_HIDDEN_NOTICE);
+            }
+            return true;
+        }
+         return false;
     }
 
     @Override

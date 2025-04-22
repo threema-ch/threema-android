@@ -33,9 +33,9 @@ class DropDeviceTask(private val deviceId: DeviceId) : ActiveTask<Unit> {
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
         handle.write(OutboundD2mMessage.DropDevice(deviceId))
-        handle.read {
-            when (it) {
-                is InboundD2mMessage.DropDeviceAck -> if (it.deviceId == deviceId) {
+        handle.read { inboundMessage ->
+            when (inboundMessage) {
+                is InboundD2mMessage.DropDeviceAck -> if (inboundMessage.deviceId == deviceId) {
                     MessageFilterInstruction.ACCEPT
                 } else {
                     MessageFilterInstruction.BYPASS_OR_BACKLOG

@@ -4,16 +4,6 @@
     android:persistent="true"
     android:title="Developer Settings">
 
-    <PreferenceCategory
-        android:key="pref_key_multi_device"
-        android:title="Multi-Device">
-        <CheckBoxPreference
-            android:key="@string/preferences__md_unlocked"
-            android:summary="If enabled the multi device entry is shown in the main menu and multidevice can be 'activated' (this does not mean it will work...)."
-            android:title="Unlock multi device"
-            android:widgetLayout="@layout/preference_switch_layout" />
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Hints">
         <Preference
             android:key="@string/preferences__dev_reset_reaction_tooltip_shown"
@@ -48,15 +38,6 @@
         <Preference
             android:key="@string/preferences__generate_test_quotes"
             android:title="Generate Test Quotes" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="pref_key_poi"
-        android:title="POI">
-        <EditTextPreference
-            android:key="@string/preferences__poi_host"
-            android:summary="Will default to 'poi.threema.ch' if not set."
-            android:title="POI Host Override" />
     </PreferenceCategory>
 
     <PreferenceCategory

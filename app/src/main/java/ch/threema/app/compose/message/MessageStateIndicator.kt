@@ -30,13 +30,13 @@ import androidx.compose.ui.graphics.Color
 fun MessageStateIndicator(
     @DrawableRes deliveryIconRes: Int? = null,
     @StringRes deliveryIconContentDescriptionRes: Int? = null,
-    deliveryIndicatorTintColor: Color? = null
+    deliveryIndicatorTintColor: Color? = null,
 ) {
     if (deliveryIconRes != null && deliveryIconContentDescriptionRes != null) {
         DeliveryIndicator(
             deliveryIconRes = deliveryIconRes,
             deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
-            tintColor = deliveryIndicatorTintColor
+            tintColor = deliveryIndicatorTintColor,
         )
     }
 }

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2024-2025 Threema GmbH
+ * Copyright (c) 2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,8 +22,8 @@
 package ch.threema.app.messagereceiver
 
 import ch.threema.storage.models.ContactModel
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import io.mockk.every
+import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -31,34 +31,34 @@ import kotlin.test.assertTrue
 class MessageReceiverExtensionsTest {
     @Test
     fun `direct chat with gateway contact is considered a gateway chat`() {
-        val messageReceiver = mock(ContactMessageReceiver::class.java)
+        val messageReceiverMock = mockk<ContactMessageReceiver>()
         val contactModel = ContactModel("*TESTING", MOCK_PUBLIC_KEY)
-        `when`(messageReceiver.contact).thenReturn(contactModel)
+        every { messageReceiverMock.contact } returns contactModel
 
-        assertTrue(messageReceiver.isGatewayChat())
+        assertTrue(messageReceiverMock.isGatewayChat())
     }
 
     @Test
     fun `direct chat with non-gateway contact is not considered a gateway chat`() {
-        val messageReceiver = mock(ContactMessageReceiver::class.java)
+        val messageReceiverMock = mockk<ContactMessageReceiver>()
         val contactModel = ContactModel("TESTUSER", MOCK_PUBLIC_KEY)
-        `when`(messageReceiver.contact).thenReturn(contactModel)
+        every { messageReceiverMock.contact } returns contactModel
 
-        assertFalse(messageReceiver.isGatewayChat())
+        assertFalse(messageReceiverMock.isGatewayChat())
     }
 
     @Test
     fun `group chat is not considered a gateway chat`() {
-        val messageReceiver = mock(GroupMessageReceiver::class.java)
+        val messageReceiverMock = mockk<GroupMessageReceiver>()
 
-        assertFalse(messageReceiver.isGatewayChat())
+        assertFalse(messageReceiverMock.isGatewayChat())
     }
 
     @Test
     fun `distribution list chat is not considered a gateway chat`() {
-        val messageReceiver = mock(DistributionListMessageReceiver::class.java)
+        val messageReceiverMock = mockk<DistributionListMessageReceiver>()
 
-        assertFalse(messageReceiver.isGatewayChat())
+        assertFalse(messageReceiverMock.isGatewayChat())
     }
 
     companion object {

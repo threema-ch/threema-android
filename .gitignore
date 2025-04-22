@@ -19,3 +19,4 @@ threema-android-*
 release/
 .cxx/
 **/.DS_Store
+.kotlin

@@ -52,9 +52,9 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.TestUtil
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.IdentityState
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import java.util.Locale
@@ -67,7 +67,7 @@ class MentionSelectorPopup(
     private val contactService: ContactService,
     private val userService: UserService,
     private val preferenceService: PreferenceService,
-    private val groupModel: GroupModel
+    private val groupModel: GroupModel,
 ) : MovingPopupWindow(context), MentionSelectorAdapter.OnClickListener {
     private var mentionAdapter: MentionSelectorAdapter? = null
     private var filterText: String = ""
@@ -92,8 +92,10 @@ class MentionSelectorPopup(
                     editText?.post { this.run() }
                     return
                 }
+
+                // if spacebar or newline is added, escape the mention popup.
                 val last = s[start - 1]
-                if (count == 0 && (' ' == last || '\n' == last) || count == 1 && (' ' == s[start] || '\n' == s[start])) { // if spacebar or newline is added, escape the mention popup.
+                if (count == 0 && (' ' == last || '\n' == last) || count == 1 && (' ' == s[start] || '\n' == s[start])) {
                     editText?.post { this.run() }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -173,7 +175,7 @@ class MentionSelectorPopup(
             popupLayout.setCardBackgroundColor(anchorView.boxBackgroundColor)
             overlayMode =
                 if (anchorView.boxCornerRadiusTopStart == anchorView.resources.getDimensionPixelSize(
-                        R.dimen.compose_textinputlayout_radius_expanded
+                        R.dimen.compose_textinputlayout_radius_expanded,
                     )
                         .toFloat()
                 ) {
@@ -183,7 +185,7 @@ class MentionSelectorPopup(
                         R.dimen.compose_textinputlayout_radius_expanded,
                         R.dimen.compose_textinputlayout_radius_expanded,
                         R.dimen.compose_textinputlayout_radius,
-                        R.dimen.compose_textinputlayout_radius
+                        R.dimen.compose_textinputlayout_radius,
                     )
                     false
                 }
@@ -205,9 +207,12 @@ class MentionSelectorPopup(
         viewableSpaceHeight =
             coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
         this.width =
-            if (anchorView == null) WindowMetricsCalculator.getOrCreate()
-                .computeCurrentWindowMetrics(activity).bounds.width()
-            else editText.width
+            if (anchorView == null) {
+                WindowMetricsCalculator.getOrCreate()
+                    .computeCurrentWindowMetrics(activity).bounds.width()
+            } else {
+                editText.width
+            }
         this.height = viewableSpaceHeight
 
         try {
@@ -221,7 +226,7 @@ class MentionSelectorPopup(
             this.anchorView?.let {
                 ViewCompat.setWindowInsetsAnimationCallback(
                     it,
-                    windowInsetsAnimationCallback
+                    windowInsetsAnimationCallback,
                 )
                 it.addOnLayoutChangeListener(onLayoutChangeListener)
             }
@@ -232,21 +237,25 @@ class MentionSelectorPopup(
 
     private fun updateRecyclerViewDimensions() {
         val maxHeight =
-            context.resources.getDimensionPixelSize(R.dimen.group_detail_list_item_size) * (mentionAdapter?.itemCount
-                ?: 1)
+            context.resources.getDimensionPixelSize(R.dimen.group_detail_list_item_size) *
+                (mentionAdapter?.itemCount ?: 1)
         recyclerView.layoutParams.height = maxHeight.coerceAtMost(viewableSpaceHeight)
         recyclerView.requestLayout()
     }
 
     private fun updateList(init: Boolean): MentionSelectorAdapter? {
+        val groupModelData = groupModel.data.value ?: run {
+            return null
+        }
+
         var groupContacts = contactService.getByIdentities(
-            groupService.getGroupIdentities(groupModel)
+            groupModelData.getAllMembers(userService.identity).toList(),
         )
         val isSortingFirstName = preferenceService.isContactListSortingFirstName
 
         groupContacts.sortWith { model1: ContactModel?, model2: ContactModel? ->
             ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
-                ContactUtil.getSafeNameString(model2, isSortingFirstName)
+                ContactUtil.getSafeNameString(model2, isSortingFirstName),
             )
         }
         groupContacts.add(allContactModel)
@@ -259,14 +268,15 @@ class MentionSelectorPopup(
                         filterText.substring(filterStart).lowercase(Locale.getDefault())
                     if (userService.isMe(contactModel.identity) && NameUtil.getQuoteName(
                             contactModel,
-                            userService
+                            userService,
                         ).lowercase(Locale.getDefault()).contains(lowercaseName)
                     ) {
                         return@IPredicateNonNull true
                     }
                     ContactUtil.getSafeNameString(contactModel, isSortingFirstName)
                         .lowercase(Locale.getDefault()).contains(lowercaseName)
-                })
+                },
+            )
         }
 
         if (groupContacts.isEmpty()) { // just show all selector as default placeholder if there are no more specific results
@@ -279,7 +289,7 @@ class MentionSelectorPopup(
                 userService,
                 contactService,
                 groupService,
-                groupModel
+                groupModel,
             )
             mentionAdapter?.setOnClickListener(this)
         }
@@ -296,7 +306,7 @@ class MentionSelectorPopup(
             mentionSelectorListener.onContactSelected(
                 identity,
                 filterText.length - filterStart + 1,
-                if (filterStart > 0) filterStart - 1 else 0
+                if (filterStart > 0) filterStart - 1 else 0,
             )
         }
     }
@@ -308,7 +318,7 @@ class MentionSelectorPopup(
                     R.dimen.compose_textinputlayout_radius,
                     R.dimen.compose_textinputlayout_radius,
                     R.dimen.compose_textinputlayout_radius,
-                    R.dimen.compose_textinputlayout_radius
+                    R.dimen.compose_textinputlayout_radius,
                 )
                 it.removeOnLayoutChangeListener(onLayoutChangeListener)
                 ViewCompat.setWindowInsetsAnimationCallback(it, null)

@@ -38,7 +38,6 @@ class IncomingContactDeleteMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<DeleteMessage>(message, triggerSource, serviceManager) {
-
     private val messageService by lazy { serviceManager.messageService }
     private val contactService by lazy { serviceManager.contactService }
 

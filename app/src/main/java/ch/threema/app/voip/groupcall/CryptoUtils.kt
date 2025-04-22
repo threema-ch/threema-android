@@ -21,8 +21,8 @@
 
 package ch.threema.app.voip.groupcall
 
-import ove.crypto.digest.Blake2b
 import java.security.SecureRandom
+import ove.crypto.digest.Blake2b
 
 const val PERSONAL = "3ma-call"
 const val SALT_CALL_ID = "i"

@@ -66,23 +66,22 @@ class IncomingForwardSecurityProcessor(
             is ForwardSecurityDataReject -> IncomingForwardSecurityRejectTask(
                 sender,
                 data,
-                serviceManager
+                serviceManager,
             )
 
             is ForwardSecurityDataTerminate -> IncomingForwardSecurityTerminateTask(
                 fsmp,
                 sender,
-                data
+                data,
             )
 
             is ForwardSecurityDataMessage -> IncomingForwardSecurityMessageTask(
                 fsmp,
                 sender,
-                envelopeMessage
+                envelopeMessage,
             )
 
             else -> throw UnknownMessageTypeException("Unsupported message type")
         }.run(handle)
     }
-
 }

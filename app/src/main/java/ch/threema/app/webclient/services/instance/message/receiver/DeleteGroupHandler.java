@@ -21,10 +21,6 @@
 
 package ch.threema.app.webclient.services.instance.message.receiver;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.StringDef;
-import androidx.annotation.WorkerThread;
-
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -33,12 +29,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
-import ch.threema.app.services.GroupService;
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
+import androidx.annotation.WorkerThread;
+import ch.threema.app.groupflows.GroupDisbandIntent;
+import ch.threema.app.groupflows.GroupLeaveIntent;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
+import ch.threema.data.models.GroupModelData;
+import ch.threema.data.repositories.GroupModelRepository;
+import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class DeleteGroupHandler extends MessageReceiver {
@@ -58,15 +63,27 @@ public class DeleteGroupHandler extends MessageReceiver {
     private @interface ErrorCode {
     }
 
-    private final MessageDispatcher responseDispatcher;
-    private final GroupService groupService;
+    private @NonNull
+    final MessageDispatcher responseDispatcher;
+    private @NonNull
+    final GroupFlowDispatcher groupFlowDispatcher;
+    private @NonNull
+    final GroupModelRepository groupModelRepository;
+    private @NonNull
+    final String myIdentity;
 
     @AnyThread
-    public DeleteGroupHandler(MessageDispatcher responseDispatcher,
-                              GroupService groupService) {
+    public DeleteGroupHandler(
+        @NonNull MessageDispatcher responseDispatcher,
+        @NonNull GroupFlowDispatcher groupFlowDispatcher,
+        @NonNull GroupModelRepository groupModelRepository,
+        @NonNull String myIdentity
+    ) {
         super(Protocol.SUB_TYPE_GROUP);
         this.responseDispatcher = responseDispatcher;
-        this.groupService = groupService;
+        this.groupFlowDispatcher = groupFlowDispatcher;
+        this.groupModelRepository = groupModelRepository;
+        this.myIdentity = myIdentity;
     }
 
     @Override
@@ -82,44 +99,114 @@ public class DeleteGroupHandler extends MessageReceiver {
         final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
         // Load group
-        final Integer groupId = Integer.valueOf(args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().toString());
-        final GroupModel group = this.groupService.getById(groupId);
-        if (group == null || group.isDeleted()) {
+        final int groupId = Integer.parseInt(args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().toString());
+        final GroupModel group = groupModelRepository.getByLocalGroupDbId(groupId);
+        if (group == null) {
             logger.error("invalid group, aborting");
             this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
             return;
         }
-        final boolean groupLeft = !this.groupService.isGroupMember(group);
+
+        final GroupModelData groupModelData = group.getData().getValue();
+        if (groupModelData == null) {
+            logger.error("Group model data is null");
+            this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
+            return;
+        }
+
+        final boolean isLeft = !groupModelData.isMember();
+        final boolean isCreator =
+            groupModelData.groupIdentity.getCreatorIdentity().equals(myIdentity);
 
         // There are two delete types: Either we want to delete the group, or just leave it.
         switch (args.get(Protocol.ARGUMENT_DELETE_TYPE).asStringValue().toString()) {
             case TYPE_LEAVE:
-                if (groupLeft) {
+                if (isLeft) {
                     logger.error("group already left");
                     this.failed(temporaryId, Protocol.ERROR_ALREADY_LEFT);
                     return;
                 }
-                this.groupService.leaveGroupFromLocal(group);
-                this.success(temporaryId);
+                if (isCreator) {
+                    // If the group is not left and the user is the creator, then dissolve the group first
+                    disbandGroup(group, temporaryId);
+                } else {
+                    // If the group is not left and the user is a member, then leave the group first
+                    leaveGroup(group, temporaryId);
+                }
                 return;
             case TYPE_DELETE:
-                if (!groupLeft) {
-                    if (this.groupService.isGroupCreator(group)) {
+                if (!isLeft) {
+                    if (isCreator) {
                         // If the group is not left and the user is the creator, then dissolve the group first
-                        this.groupService.dissolveGroupFromLocal(group);
+                        disbandAndRemoveGroup(group, temporaryId);
                     } else {
                         // If the group is not left and the user is a member, then leave the group first
-                        this.groupService.leaveGroupFromLocal(group);
+                        leaveAndRemoveGroup(group, temporaryId);
                     }
+                } else {
+                    removeGroup(group, temporaryId);
                 }
-                // Remove the group
-                this.groupService.remove(group);
-                this.success(temporaryId);
                 break;
             default:
                 logger.error("invalid delete type argument");
                 this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
         }
+    }
+
+    private void leaveGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
+        Deferred<Boolean> result = groupFlowDispatcher.runLeaveGroupFlow(
+            null,
+            GroupLeaveIntent.LEAVE,
+            groupModel
+        );
+        awaitResult(result, temporaryId);
+    }
+
+    private void disbandGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
+        Deferred<Boolean> result = groupFlowDispatcher.runDisbandGroupFlow(
+            null,
+            GroupDisbandIntent.DISBAND,
+            groupModel
+        );
+        awaitResult(result, temporaryId);
+    }
+
+    private void leaveAndRemoveGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
+        Deferred<Boolean> result = groupFlowDispatcher.runLeaveGroupFlow(
+            null,
+            GroupLeaveIntent.LEAVE_AND_REMOVE,
+            groupModel
+        );
+        awaitResult(result, temporaryId);
+    }
+
+    private void disbandAndRemoveGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
+        Deferred<Boolean> result = groupFlowDispatcher.runDisbandGroupFlow(
+            null,
+            GroupDisbandIntent.DISBAND_AND_REMOVE,
+            groupModel
+        );
+        awaitResult(result, temporaryId);
+    }
+
+    private void removeGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
+        Deferred<Boolean> result = groupFlowDispatcher.runRemoveGroupFlow(
+            null,
+            groupModel
+        );
+        awaitResult(result, temporaryId);
+    }
+
+    private void awaitResult(@NonNull Deferred<Boolean> deferredResult, @NonNull String temporaryId) {
+        deferredResult.invokeOnCompletion(throwable -> {
+            Boolean result = deferredResult.getCompleted();
+            if (Boolean.TRUE.equals(result)) {
+                this.success(temporaryId);
+            } else {
+                this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
+            }
+            return null;
+        });
     }
 
     /**

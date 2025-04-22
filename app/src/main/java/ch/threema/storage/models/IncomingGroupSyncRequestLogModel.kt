@@ -26,17 +26,14 @@ package ch.threema.storage.models
  * to limit the number of answered group sync requests per group and sender of the request.
  */
 class IncomingGroupSyncRequestLogModel(
-
     /**
      * The database id of the group.
      */
-    val groupId: Int,
-
+    val groupId: Long,
     /**
      * The identity of the sender of the group sync request.
      */
     val senderIdentity: String,
-
     /**
      * The time when the last group request from [senderIdentity] in group [groupId] has been
      * answered.

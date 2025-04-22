@@ -62,9 +62,9 @@ public class DistributionList extends Converter {
                 .put(Receiver.CAN_DELETE, true)
                 .put(CAN_CHANGE_MEMBERS, true));
 
-            final boolean isSecretChat = getHiddenChatListService().has(distributionListService.getUniqueIdString(distributionList));
-            final boolean isVisible = !isSecretChat || !getPreferenceService().isPrivateChatsHidden();
-            builder.put(Receiver.LOCKED, isSecretChat);
+            final boolean isPrivateChat = getConversationCategoryService().isPrivateChat(distributionListService.getUniqueIdString(distributionList));
+            final boolean isVisible = !isPrivateChat || !getPreferenceService().isPrivateChatsHidden();
+            builder.put(Receiver.LOCKED, isPrivateChat);
             builder.put(Receiver.VISIBLE, isVisible);
 
             final MsgpackArrayBuilder memberBuilder = new MsgpackArrayBuilder();

@@ -31,7 +31,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -39,11 +38,13 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
@@ -57,8 +58,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
     private TextInputLayout password1layout, password2layout;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
@@ -83,37 +83,37 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 
         this.password1.addTextChangedListener(new PasswordWatcher());
         this.password2.addTextChangedListener(new PasswordWatcher());
-        this.password2.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (password1.getText() != null && password2.getText() != null) {
-                        if (getPasswordOK(password1.getText().toString(), password2.getText().toString())) {
-                            if (getActivity() != null && isAdded()) {
-                                ((WizardBaseActivity) getActivity()).nextPage();
-                            }
-                            return true;
+        this.password2.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (password1.getText() != null && password2.getText() != null) {
+                    if (getPasswordOK(password1.getText().toString(), password2.getText().toString())) {
+                        if (getActivity() != null && isAdded()) {
+                            ((WizardBaseActivity) getActivity()).nextPage();
                         }
+                        return true;
                     }
                 }
-                return false;
             }
+            return false;
         });
 
-        Button advancedOptions = rootView.findViewById(R.id.advanced_options);
-        advancedOptions.setVisibility(View.VISIBLE);
-        advancedOptions.setOnClickListener(v -> {
-            ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(callback.getSafeServerInfo(), false);
-            dialog.setTargetFragment(this, 0);
-            dialog.show(getFragmentManager(), DIALOG_TAG_ADVANCED);
-        });
+        final @NonNull WizardButtonXml advancedOptionsButtonCompose = rootView.findViewById(R.id.advanced_options_compose);
+        if (ConfigUtils.isWorkRestricted() && (callback.getSafeForcePasswordEntry() || callback.getSafeSkipBackupPasswordEntry())) {
+            advancedOptionsButtonCompose.setVisibility(View.GONE);
+        } else {
+            advancedOptionsButtonCompose.setVisibility(View.VISIBLE);
+            advancedOptionsButtonCompose.setOnClickListener(v -> {
+                ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(callback.getSafeServerInfo(), false);
+                dialog.setTargetFragment(this, 0);
+                dialog.show(getFragmentManager(), DIALOG_TAG_ADVANCED);
+            });
+        }
 
         if (ConfigUtils.isWorkRestricted()) {
             // administrator forced use of threema safe. do not allow user to override advanced settings
             if (callback.getSafeForcePasswordEntry()) {
                 TextView explainText = rootView.findViewById(R.id.safe_enable_explain);
                 explainText.setText(R.string.safe_configure_choose_password_force);
-                advancedOptions.setVisibility(View.GONE);
             }
 
             // threema safe password entry disabled completely
@@ -122,7 +122,6 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
                 this.password2layout.setVisibility(View.GONE);
                 rootView.findViewById(R.id.safe_enable_explain).setVisibility(View.GONE);
                 rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
-                advancedOptions.setVisibility(View.GONE);
             }
         }
 
@@ -141,7 +140,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 
     @Override
     public void onNo(String tag) {
-
+        // no action
     }
 
     private class PasswordWatcher implements TextWatcher {

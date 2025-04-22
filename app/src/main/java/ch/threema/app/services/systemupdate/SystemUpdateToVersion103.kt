@@ -54,7 +54,7 @@ internal class SystemUpdateToVersion103(
                 SET displayTags = (displayTags & ~1)
                 WHERE isStatusMessage = 1
                   AND (displayTags & 1) = 1;
-            """
+            """,
         )
     }
 

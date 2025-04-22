@@ -24,6 +24,7 @@ package ch.threema.data.repositories
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.testutils.TestHelpers
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.storage.EditHistoryDao
 import ch.threema.data.storage.EditHistoryDaoImpl
@@ -32,10 +33,11 @@ import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
+import java.util.UUID
+import kotlin.test.assertFailsWith
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.util.UUID
 
 class EditHistoryRepositoryTest {
     private lateinit var databaseService: TestDatabaseService
@@ -44,12 +46,17 @@ class EditHistoryRepositoryTest {
 
     @Before
     fun before() {
+        TestHelpers.setIdentity(
+            ThreemaApplication.requireServiceManager(),
+            TestHelpers.TEST_CONTACT,
+        )
+
         databaseService = TestDatabaseService()
         val testCoreServiceManager = TestCoreServiceManager(
             version = ThreemaApplication.getAppVersion(),
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
-            taskManager = TestTaskManager(UnusedTaskCodec())
+            taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         editHistoryRepository = ModelRepositories(testCoreServiceManager).editHistory
         editHistoryDao = EditHistoryDaoImpl(databaseService)
@@ -59,7 +66,7 @@ class EditHistoryRepositoryTest {
     fun testContactMessageHistoryForeignKeyConstraint() {
         val contactMessage = MessageModel().enrich()
 
-        Assert.assertThrows(EditHistoryEntryCreateException::class.java) {
+        assertFailsWith<EditHistoryEntryCreateException> {
             editHistoryRepository.createEntry(contactMessage)
         }
 
@@ -83,7 +90,7 @@ class EditHistoryRepositoryTest {
     fun testGroupMessageHistoryForeignKeyConstraint() {
         val groupMessage = GroupMessageModel().enrich()
 
-        Assert.assertThrows(EditHistoryEntryCreateException::class.java) {
+        assertFailsWith<EditHistoryEntryCreateException> {
             editHistoryRepository.createEntry(groupMessage)
         }
 
@@ -111,15 +118,14 @@ class EditHistoryRepositoryTest {
      * This is not a problem, because the message history cannot be displayed when the message was deleted.
      */
     private fun AbstractMessageModel.assertEditHistorySize(expectedSize: Int) {
-        val actualSize = editHistoryDao.findAllByMessageUid(uid).size
+        val actualSize = editHistoryDao.findAllByMessageUid(uid!!).size
 
         Assert.assertEquals(expectedSize, actualSize)
     }
 
-    private fun <T : AbstractMessageModel> T.enrich(text: String = "Text"): T {
+    private fun <T : AbstractMessageModel> T.enrich(text: String = "Text"): T = apply {
         type = MessageType.TEXT
         uid = UUID.randomUUID().toString()
         body = text
-        return this
     }
 }

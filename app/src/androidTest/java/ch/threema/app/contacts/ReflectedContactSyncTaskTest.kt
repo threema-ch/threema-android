@@ -56,9 +56,6 @@ import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.google.protobuf.kotlin.toByteString
 import com.neilalexander.jnacl.NaCl
-import kotlinx.coroutines.runBlocking
-import org.junit.Before
-import org.junit.runner.RunWith
 import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -66,10 +63,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import kotlinx.coroutines.runBlocking
+import org.junit.Before
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ReflectedContactSyncTaskTest {
-
     private lateinit var databaseService: TestDatabaseService
     private lateinit var taskCodec: TransactionAckTaskCodec
     private lateinit var coreServiceManager: TestCoreServiceManager
@@ -92,12 +91,14 @@ class ReflectedContactSyncTaskTest {
         featureMask = 511u,
         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+        isArchived = false,
         androidContactLookupKey = null,
         localAvatarExpires = null,
         isRestored = false,
         profilePictureBlobId = null,
         jobTitle = null,
         department = null,
+        notificationTriggerPolicyOverride = null,
     )
 
     @Before
@@ -166,7 +167,7 @@ class ReflectedContactSyncTaskTest {
             assertEquals(contact.readReceiptPolicyOverride.convert(), data.readReceiptPolicy)
             assertEquals(
                 contact.typingIndicatorPolicyOverride.convert(),
-                data.typingIndicatorPolicy
+                data.typingIndicatorPolicy,
             )
         }
     }
@@ -178,7 +179,7 @@ class ReflectedContactSyncTaskTest {
             contact {
                 identity = "01234567"
                 nickname = newNickname
-            }
+            },
         ) { contactModel ->
             assertEquals(newNickname, contactModel.data.value?.nickname)
         }
@@ -240,9 +241,12 @@ class ReflectedContactSyncTaskTest {
     private fun assertAndClearOneTransactionCount() {
         assertEquals(1, taskCodec.transactionBeginCount)
         assertEquals(1, taskCodec.transactionCommitCount)
+        // Assert that there are 3 outbound messages (transaction begin, reflect, and commit)
+        assertEquals(3, taskCodec.outboundMessages.size)
 
         taskCodec.transactionBeginCount = 0
         taskCodec.transactionCommitCount = 0
+        taskCodec.outboundMessages.clear()
     }
 
     private fun assertZeroTransactionCount() {
@@ -333,5 +337,4 @@ class ReflectedContactSyncTaskTest {
             TypingIndicatorPolicyOverride.OverrideCase.OVERRIDE_NOT_SET -> fail("Typing indicator policy override not set")
             null -> fail("Typing indicator policy override is null")
         }
-
 }

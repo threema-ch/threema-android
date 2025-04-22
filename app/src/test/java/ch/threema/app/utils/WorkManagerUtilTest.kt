@@ -21,13 +21,10 @@
 
 package ch.threema.app.utils
 
-import org.junit.Test
-
-import org.junit.Assert.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class WorkManagerUtilTest {
-
     /**
      * Periods in seconds less than or equal to zero should be normalized to one day in milliseconds.
      */

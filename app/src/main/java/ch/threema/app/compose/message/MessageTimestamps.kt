@@ -43,6 +43,8 @@ import ch.threema.app.activities.MessageTimestampsUiModel
 import ch.threema.app.compose.theme.customColorScheme
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.capitalize
+import ch.threema.base.utils.now
+import ch.threema.base.utils.plus
 import java.util.Date
 import kotlin.time.Duration.Companion.minutes
 
@@ -50,7 +52,7 @@ import kotlin.time.Duration.Companion.minutes
 fun MessageTimestampsListBox(
     modifier: Modifier = Modifier,
     messageTimestampsUiModel: MessageTimestampsUiModel,
-    isOutbox: Boolean
+    isOutbox: Boolean,
 ) {
     val borderColor = if (isOutbox) {
         MaterialTheme.colorScheme.secondaryContainer
@@ -67,10 +69,10 @@ fun MessageTimestampsListBox(
                         this.contentDescription = contentDescription
                         isTraversalGroup = true
                     }
-                }
+                },
             ),
         model = messageTimestampsUiModel,
-        displayIcons = true
+        displayIcons = true,
     )
 }
 
@@ -78,7 +80,7 @@ fun MessageTimestampsListBox(
 fun MessageTimestampsList(
     modifier: Modifier = Modifier,
     model: MessageTimestampsUiModel,
-    displayIcons: Boolean = false
+    displayIcons: Boolean = false,
 ) {
     Column(
         modifier = modifier,
@@ -88,56 +90,56 @@ fun MessageTimestampsList(
             MessageTimestampsRow(
                 label = stringResource(R.string.state_dialog_created),
                 timestamp = model.createdAt,
-                iconResId = if (displayIcons) R.drawable.ic_pencil_outline else null
+                iconResId = if (displayIcons) R.drawable.ic_pencil_outline else null,
             )
         }
         model.sentAt?.let {
             MessageTimestampsRow(
                 label = stringResource(R.string.state_dialog_posted),
                 timestamp = model.sentAt,
-                iconResId = if (displayIcons) R.drawable.ic_mail_filled else null
+                iconResId = if (displayIcons) R.drawable.ic_mail_filled else null,
             )
         }
         model.receivedAt?.let {
             MessageTimestampsRow(
                 label = stringResource(R.string.state_dialog_received),
                 timestamp = model.receivedAt,
-                iconResId = if (displayIcons) R.drawable.ic_inbox_filled else null
+                iconResId = if (displayIcons) R.drawable.ic_inbox_filled else null,
             )
         }
         model.deliveredAt?.let {
             MessageTimestampsRow(
                 label = stringResource(R.string.state_delivered).capitalize(),
                 timestamp = model.deliveredAt,
-                iconResId = if (displayIcons) R.drawable.ic_inbox_filled else null
+                iconResId = if (displayIcons) R.drawable.ic_inbox_filled else null,
             )
         }
         model.readAt?.let {
             MessageTimestampsRow(
                 label = stringResource(R.string.state_read).capitalize(),
                 timestamp = model.readAt,
-                iconResId = if (displayIcons) R.drawable.ic_mark_read else null
+                iconResId = if (displayIcons) R.drawable.ic_mark_read else null,
             )
         }
         model.modifiedAt?.let {
             MessageTimestampsRow(
                 label = stringResource(R.string.state_dialog_modified),
                 timestamp = model.modifiedAt,
-                iconResId = if (displayIcons) R.drawable.ic_edit_file_name else null
+                iconResId = if (displayIcons) R.drawable.ic_edit_file_name else null,
             )
         }
         model.editedAt?.let {
             MessageTimestampsRow(
                 label = stringResource(R.string.state_dialog_edited),
                 timestamp = model.editedAt,
-                iconResId = if (displayIcons) R.drawable.ic_edit_file_name else null
+                iconResId = if (displayIcons) R.drawable.ic_edit_file_name else null,
             )
         }
         model.deletedAt?.let {
             MessageTimestampsRow(
                 label = stringResource(R.string.state_dialog_deleted),
                 timestamp = model.deletedAt,
-                iconResId = if (displayIcons) R.drawable.ic_delete_outline else null
+                iconResId = if (displayIcons) R.drawable.ic_delete_outline else null,
             )
         }
     }
@@ -147,12 +149,12 @@ fun MessageTimestampsList(
 private fun MessageTimestampsRow(
     label: String,
     timestamp: Date,
-    @DrawableRes iconResId: Int?
+    @DrawableRes iconResId: Int?,
 ) {
     MessageDetailsRow(
         label = label,
         value = LocaleUtil.formatTimeStampStringAbsolute(LocalContext.current, timestamp.time),
-        iconResId = iconResId
+        iconResId = iconResId,
     )
 }
 
@@ -162,19 +164,18 @@ private fun MessageTimestampsListBoxPreview_Outbox() {
     MessageTimestampsListBox(
         modifier = Modifier.padding(16.dp),
         messageTimestampsUiModel = MessageTimestampsUiModel(
-            createdAt = Date(),
-            sentAt = Date(),
-            receivedAt = Date().apply { time += 1.minutes.inWholeMilliseconds },
-            deliveredAt = Date().apply { time += 1.minutes.inWholeMilliseconds },
-            readAt = Date().apply { time += 10.minutes.inWholeMilliseconds },
-            modifiedAt = Date().apply { time += 10.minutes.inWholeMilliseconds },
-            editedAt = Date().apply { time += 5.minutes.inWholeMilliseconds },
-            deletedAt = Date().apply { time += 15.minutes.inWholeMilliseconds }
+            createdAt = now(),
+            sentAt = now(),
+            receivedAt = now() + 1.minutes,
+            deliveredAt = now() + 1.minutes,
+            readAt = now() + 10.minutes,
+            modifiedAt = now() + 10.minutes,
+            editedAt = now() + 5.minutes,
+            deletedAt = now() + 15.minutes,
         ),
-        isOutbox = true
+        isOutbox = true,
     )
 }
-
 
 @Preview(name = "Inbox", group = "box")
 @Composable
@@ -182,15 +183,15 @@ private fun MessageTimestampsListBoxPreview_Inbox() {
     MessageTimestampsListBox(
         modifier = Modifier.padding(16.dp),
         messageTimestampsUiModel = MessageTimestampsUiModel(
-            createdAt = Date(),
-            sentAt = Date(),
-            deliveredAt = Date().apply { time += 1.minutes.inWholeMilliseconds },
-            readAt = Date().apply { time += 10.minutes.inWholeMilliseconds },
-            modifiedAt = Date().apply { time += 10.minutes.inWholeMilliseconds },
-            editedAt = Date().apply { time += 5.minutes.inWholeMilliseconds },
-            deletedAt = Date().apply { time += 15.minutes.inWholeMilliseconds }
+            createdAt = now(),
+            sentAt = now(),
+            deliveredAt = now() + 1.minutes,
+            readAt = now() + 10.minutes,
+            modifiedAt = now() + 10.minutes,
+            editedAt = now() + 5.minutes,
+            deletedAt = now() + 15.minutes,
         ),
-        isOutbox = false
+        isOutbox = false,
     )
 }
 
@@ -202,14 +203,13 @@ private fun MessageTimestampsListPreview() {
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         model = MessageTimestampsUiModel(
-            createdAt = Date(),
-            sentAt = Date(),
-            deliveredAt = Date().apply { time += 1.minutes.inWholeMilliseconds },
-            readAt = Date().apply { time += 10.minutes.inWholeMilliseconds },
-            modifiedAt = Date().apply { time += 10.minutes.inWholeMilliseconds },
-            editedAt = Date().apply { time += 5.minutes.inWholeMilliseconds },
-            deletedAt = Date().apply { time += 15.minutes.inWholeMilliseconds }
-        )
+            createdAt = now(),
+            sentAt = now(),
+            deliveredAt = now() + 1.minutes,
+            readAt = now() + 10.minutes,
+            modifiedAt = now() + 10.minutes,
+            editedAt = now() + 5.minutes,
+            deletedAt = now() + 15.minutes,
+        ),
     )
 }
-

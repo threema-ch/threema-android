@@ -39,7 +39,6 @@ class OutgoingGroupCallStartTask(
     createdAt: Date,
     serviceManager: ServiceManager,
 ) : OutgoingCspGroupControlMessageTask(serviceManager) {
-
     override val type: String = "OutgoingGroupCallStartTask"
 
     override val messageId = MessageId()

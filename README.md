@@ -167,7 +167,7 @@ Prerequisites:
 - Android SDK
 - Android NDK
 - bash shell
-- protobuf compiler version 21.12
+- protobuf compiler
 - Rust compiler and cargo (including the target architectures)
 
 The best way to install all required target architectures for Rust is
@@ -183,6 +183,10 @@ The application APK can be built using Gradle Wrapper:
 
     # Threema Store variant
     ./gradlew assembleStore_threemaDebug
+
+By default no universal apk will be built. Use `-PbuildUniversalApk` if a universal apk should be
+built as well. The flag `-PnoAbiSplits` can be used to skip building abi specific apk and only
+build a universal apk.
 
 *NOTE:* Threema for Android is developed on Linux machines, we cannot offer any
 assistance for building on macOS, Windows, or other operating systems.

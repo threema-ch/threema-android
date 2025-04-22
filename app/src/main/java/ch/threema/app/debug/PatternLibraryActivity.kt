@@ -64,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
 import ch.threema.app.compose.theme.ThreemaTheme
+import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.customColorScheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -82,16 +83,16 @@ class PatternLibraryActivity : AppCompatActivity() {
                             },
                             navigationIcon = {
                                 IconButton(
-                                    onClick = { finish() }
+                                    onClick = { finish() },
                                 ) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_arrow_back_24),
-                                        contentDescription = null
+                                        contentDescription = null,
                                     )
                                 }
                             },
                         )
-                    }
+                    },
                 ) { padding ->
 
                     val colorCategories: List<ColorSection> = listOf(
@@ -105,14 +106,14 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 MaterialTheme.colorScheme.tertiary to "tertiary",
                                 MaterialTheme.colorScheme.onTertiary to "onTertiary",
                                 MaterialTheme.colorScheme.inversePrimary to "inversePrimary",
-                            )
+                            ),
                         ),
                         ColorSection(
                             "Background",
                             listOf(
                                 MaterialTheme.colorScheme.background to "background",
                                 MaterialTheme.colorScheme.onBackground to "onBackground",
-                            )
+                            ),
                         ),
                         ColorSection(
                             "Container",
@@ -123,7 +124,7 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 MaterialTheme.colorScheme.onSecondaryContainer to "onSecondaryContainer",
                                 MaterialTheme.colorScheme.tertiaryContainer to "tertiaryContainer",
                                 MaterialTheme.colorScheme.onTertiaryContainer to "onTertiaryContainer",
-                            )
+                            ),
                         ),
                         ColorSection(
                             "Surface",
@@ -132,7 +133,7 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 MaterialTheme.colorScheme.surfaceDim to "surfaceDim",
                                 MaterialTheme.colorScheme.surfaceBright to "surfaceBright",
                                 MaterialTheme.colorScheme.onSurface to "onSurface",
-                            )
+                            ),
                         ),
                         ColorSection(
                             "Surface Container",
@@ -142,22 +143,23 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 MaterialTheme.colorScheme.surfaceContainer to "surfaceContainer",
                                 MaterialTheme.colorScheme.surfaceContainerHigh to "surfaceContainerHigh",
                                 MaterialTheme.colorScheme.surfaceContainerHighest to "surfaceContainerHighest",
+                                MaterialTheme.colorScheme.surfaceVariant to "surfaceVariant",
                                 MaterialTheme.colorScheme.onSurfaceVariant to "onSurfaceVariant",
-                            )
+                            ),
                         ),
                         ColorSection(
                             "Inverse",
                             listOf(
                                 MaterialTheme.colorScheme.inverseSurface to "inverseSurface",
                                 MaterialTheme.colorScheme.inverseOnSurface to "inverseOnSurface",
-                            )
+                            ),
                         ),
                         ColorSection(
                             "Outline",
                             listOf(
                                 MaterialTheme.colorScheme.outline to "outline",
                                 MaterialTheme.colorScheme.outlineVariant to "outlineVariant",
-                            )
+                            ),
                         ),
                         ColorSection(
                             "Error",
@@ -165,14 +167,14 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 MaterialTheme.colorScheme.error to "error",
                                 MaterialTheme.colorScheme.onError to "onError",
                                 MaterialTheme.colorScheme.errorContainer to "errorContainer",
-                                MaterialTheme.colorScheme.onErrorContainer to "onErrorContainer"
-                            )
+                                MaterialTheme.colorScheme.onErrorContainer to "onErrorContainer",
+                            ),
                         ),
                         ColorSection(
                             "Custom",
                             listOf(
-                                MaterialTheme.customColorScheme.messageBubbleContainerReceive to "messageBubbleContainerReceive"
-                            )
+                                MaterialTheme.customColorScheme.messageBubbleContainerReceive to "messageBubbleContainerReceive",
+                            ),
                         ),
                     )
 
@@ -189,16 +191,16 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.surfaceContainer)
+                                        .background(MaterialTheme.colorScheme.surfaceContainer),
                                 ) {
                                     Text(
                                         modifier = Modifier.padding(
                                             vertical = 12.dp,
-                                            horizontal = 16.dp
+                                            horizontal = 16.dp,
                                         ),
                                         color = MaterialTheme.colorScheme.onSurface,
                                         text = colorSection.name,
-                                        style = MaterialTheme.typography.bodyLarge
+                                        style = MaterialTheme.typography.bodyLarge,
                                     )
                                 }
                             }
@@ -206,10 +208,10 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 ColorSpot(
                                     modifier = Modifier.padding(
                                         vertical = 4.dp,
-                                        horizontal = 12.dp
+                                        horizontal = 12.dp,
                                     ),
                                     color = colorSection.colors[index].first,
-                                    colorName = colorSection.colors[index].second
+                                    colorName = colorSection.colors[index].second,
                                 )
                             }
                         }
@@ -226,8 +228,8 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                                 text = "Not yet implemented",
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontStyle = FontStyle.Italic
-                                )
+                                    fontStyle = FontStyle.Italic,
+                                ),
                             )
                         }
                     }
@@ -239,7 +241,7 @@ class PatternLibraryActivity : AppCompatActivity() {
     @Composable
     private fun TopLevelSectionHeader(
         modifier: Modifier = Modifier,
-        name: String
+        name: String,
     ) {
         Text(
             modifier = modifier
@@ -247,14 +249,13 @@ class PatternLibraryActivity : AppCompatActivity() {
                 .background(MaterialTheme.colorScheme.surfaceContainer)
                 .padding(vertical = 24.dp, horizontal = 16.dp),
             text = name,
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
         )
     }
 
-
     private data class ColorSection(
         val name: String,
-        val colors: List<Pair<Color, String>>
+        val colors: List<Pair<Color, String>>,
     )
 }
 
@@ -269,18 +270,17 @@ private fun Color.toHexCode(): String {
 private fun ColorSpot(
     modifier: Modifier = Modifier,
     color: Color,
-    colorName: String
+    colorName: String,
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-
         val tearShape = RoundedCornerShape(
             topStartPercent = 5,
             topEndPercent = 50,
             bottomEndPercent = 50,
-            bottomStartPercent = 50
+            bottomStartPercent = 50,
         )
         val contentColor = MaterialTheme.colorScheme.onSurface
 
@@ -290,33 +290,33 @@ private fun ColorSpot(
                 .size(size = 100.dp)
                 .shadow(
                     elevation = 4.dp,
-                    shape = tearShape
+                    shape = tearShape,
                 )
                 .clip(tearShape)
                 .border(
                     border = BorderStroke(
                         width = 1.dp,
-                        color = contentColor
+                        color = contentColor,
                     ),
-                    shape = tearShape
+                    shape = tearShape,
                 )
-                .background(color)
+                .background(color),
         ) { }
 
         Spacer(modifier = Modifier.width(24.dp))
 
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
                 text = colorName,
-                color = contentColor
+                color = contentColor,
             )
             Spacer(modifier = Modifier.height(2.dp))
             SelectionContainer {
                 Text(
                     text = color.toHexCode().toUpperCase(Locale.current),
-                    color = contentColor
+                    color = contentColor,
                 )
             }
         }
@@ -330,10 +330,10 @@ private fun ColorSpot(
 )
 @Composable
 private fun ColorSpot_Preview() {
-    ThreemaTheme {
+    ThreemaThemePreview {
         ColorSpot(
             color = MaterialTheme.colorScheme.primary,
-            colorName = "primary"
+            colorName = "primary",
         )
     }
 }
@@ -345,10 +345,10 @@ private fun ColorSpot_Preview() {
 )
 @Composable
 private fun ColorSpot_Preview_Surface() {
-    ThreemaTheme {
+    ThreemaThemePreview {
         ColorSpot(
             color = MaterialTheme.colorScheme.surface,
-            colorName = "surface"
+            colorName = "surface",
         )
     }
 }
@@ -356,14 +356,14 @@ private fun ColorSpot_Preview_Surface() {
 @Preview(
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES,
-    group = "ColorSpot"
+    group = "ColorSpot",
 )
 @Composable
 private fun ColorSpot_Preview_Night() {
-    ThreemaTheme {
+    ThreemaThemePreview {
         ColorSpot(
             color = MaterialTheme.colorScheme.primary,
-            colorName = "primary"
+            colorName = "primary",
         )
     }
 }
@@ -371,14 +371,14 @@ private fun ColorSpot_Preview_Night() {
 @Preview(
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES,
-    group = "ColorSpot"
+    group = "ColorSpot",
 )
 @Composable
 private fun ColorSpot_Preview_Night_Surface() {
-    ThreemaTheme {
+    ThreemaThemePreview {
         ColorSpot(
             color = MaterialTheme.colorScheme.surface,
-            colorName = "surface"
+            colorName = "surface",
         )
     }
 }

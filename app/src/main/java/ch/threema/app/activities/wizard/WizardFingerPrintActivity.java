@@ -65,35 +65,29 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 
         fingerView = findViewById(R.id.finger_overlay);
         ImageView infoView = findViewById(R.id.wizard_icon_info);
-        infoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_fingerprint, R.string.ok);
-                wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_FINGERPRINT_INFO);
-            }
+        infoView.setOnClickListener(v -> {
+            WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_fingerprint, R.string.ok);
+            wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_FINGERPRINT_INFO);
         });
 
         ((NewWizardFingerPrintView) findViewById(R.id.wizard1_finger_print))
-            .setOnSwipeByte(new NewWizardFingerPrintView.OnSwipeResult() {
-                @Override
-                public void newBytes(byte[] bytes, int step, int maxSteps) {
-                    swipeProgress.setProgress(step);
+            .setOnSwipeByte((bytes, step, maxSteps) -> {
+                swipeProgress.setProgress(step);
 
-                    if (fingerView != null) {
-                        fingerView.setVisibility(View.GONE);
-                        fingerView = null;
-                    }
+                if (fingerView != null) {
+                    fingerView.setVisibility(View.GONE);
+                    fingerView = null;
+                }
 
-                    if (step >= maxSteps) {
-                        // disable fingerprint widget
-                        findViewById(R.id.wizard1_finger_print).setEnabled(false);
-                        // generate id and stuff
-                        createIdentity(bytes);
-                    }
+                if (step >= maxSteps) {
+                    // disable fingerprint widget
+                    findViewById(R.id.wizard1_finger_print).setEnabled(false);
+                    // generate id and stuff
+                    createIdentity(bytes);
                 }
             }, PROGRESS_MAX);
 
-        findViewById(R.id.cancel).setOnClickListener(v -> finish());
+        findViewById(R.id.cancel_compose).setOnClickListener(v -> finish());
     }
 
     @SuppressLint("StaticFieldLeak")

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2024-2025 Threema GmbH
+ * Copyright (c) 2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,12 +23,6 @@ package ch.threema.app.utils
 
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
-import net.lingala.zip4j.io.outputstream.ZipOutputStream
-import net.lingala.zip4j.model.ZipParameters
-import net.lingala.zip4j.model.enums.AesKeyStrength
-import net.lingala.zip4j.model.enums.CompressionLevel
-import net.lingala.zip4j.model.enums.CompressionMethod
-import net.lingala.zip4j.model.enums.EncryptionMethod
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -36,22 +30,27 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.charset.Charset
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.AesKeyStrength
+import net.lingala.zip4j.model.enums.CompressionLevel
+import net.lingala.zip4j.model.enums.CompressionMethod
+import net.lingala.zip4j.model.enums.EncryptionMethod
 
 private val logger = LoggingUtil.getThreemaLogger("FileHandlingZipOutputStream")
 
 class FileHandlingZipOutputStream(
     outputStream: OutputStream,
     password: CharArray?,
-    charset: Charset?
+    charset: Charset?,
 ) :
     ZipOutputStream(outputStream, password, charset) {
-
     constructor(outputStream: OutputStream) : this(outputStream, null, null)
 
     constructor(outputStream: OutputStream, password: CharArray) : this(
         outputStream,
         password,
-        null
+        null,
     )
 
     companion object {
@@ -66,7 +65,7 @@ class FileHandlingZipOutputStream(
         @JvmStatic
         fun initializeZipOutputStream(
             outputStream: OutputStream,
-            password: String?
+            password: String?,
         ): FileHandlingZipOutputStream {
             val bufferedOutputStream = BufferedOutputStream(outputStream)
             return if (password != null) {
@@ -80,7 +79,7 @@ class FileHandlingZipOutputStream(
         @JvmStatic
         fun initializeZipOutputStream(
             zipFile: File,
-            password: String?
+            password: String?,
         ): FileHandlingZipOutputStream {
             val fileOutputStream = FileOutputStream(zipFile)
             val bufferedOutputStream = BufferedOutputStream(fileOutputStream)
@@ -100,7 +99,7 @@ class FileHandlingZipOutputStream(
     fun addFileFromInputStream(
         inputStream: InputStream?,
         filenameInZip: String,
-        compress: Boolean
+        compress: Boolean,
     ) {
         if (inputStream == null) {
             return
@@ -121,7 +120,7 @@ class FileHandlingZipOutputStream(
     fun addFile(
         filenameInZip: String,
         compress: Boolean,
-        consumer: ThrowingConsumer<OutputStream>
+        consumer: ThrowingConsumer<OutputStream>,
     ) {
         putNextEntry(createZipParameter(filenameInZip, compress))
         try {

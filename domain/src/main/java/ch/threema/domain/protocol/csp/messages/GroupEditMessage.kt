@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets
 class GroupEditMessage(payloadData: EditMessageData) :
     AbstractProtobufGroupMessage<EditMessageData>(
         ProtocolDefines.MSGTYPE_GROUP_EDIT_MESSAGE,
-        payloadData
+        payloadData,
     ) {
     override fun getMinimumRequiredForwardSecurityVersion() = Version.V1_2
 
@@ -60,7 +60,6 @@ class GroupEditMessage(payloadData: EditMessageData) :
     override fun flagSendPush() = true
 
     companion object {
-
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
          *  So we set the offset in [fromByteArray] to zero.
@@ -86,10 +85,11 @@ class GroupEditMessage(payloadData: EditMessageData) :
         }
 
         @JvmStatic
+        @Throws(BadMessageException::class)
         private fun fromByteArray(data: ByteArray): GroupEditMessage = fromByteArray(
             data = data,
             offset = 0,
-            length = data.size
+            length = data.size,
         )
 
         /**
@@ -117,7 +117,9 @@ class GroupEditMessage(payloadData: EditMessageData) :
                 }
 
                 offset < 0 -> throw BadMessageException("Bad offset ($offset) for group-edit-message")
-                data.size < length + offset -> throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
+                data.size < length + offset -> throw BadMessageException(
+                    "Invalid byte array length (${data.size}) for offset $offset and length $length",
+                )
             }
 
             var positionIndex = offset

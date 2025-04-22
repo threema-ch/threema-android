@@ -21,18 +21,23 @@
 
 package ch.threema.domain.protocol.rendezvous
 
+import java.io.IOException
+import java.lang.RuntimeException
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
-import org.junit.Test
-import java.io.IOException
-import java.lang.RuntimeException
+import kotlinx.coroutines.test.runTest
 
 class MultiplexedRendezvousPathTest {
-
     @Test
     fun testConnect() {
         val paths = TestRendezvousPath.createPaths(5)
@@ -123,12 +128,11 @@ class MultiplexedRendezvousPathTest {
                 assertTrue(it.closed)
                 assertFalse(it.connected)
             }
-
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    @Test(timeout = 1000)
-    fun testWrite() {
+    @Test
+    fun testWrite() = runTest(timeout = 1.seconds) {
         val paths = TestRendezvousPath.createPaths(5)
 
         val path = MultiplexedRendezvousPath(paths)
@@ -154,15 +158,15 @@ class MultiplexedRendezvousPathTest {
 
             paths.values.forEach {
                 val bytes = it.writtenBytes.receive()
-                assertArrayEquals(byteArrayOf(it.pid.toByte()), bytes)
+                assertContentEquals(byteArrayOf(it.pid.toByte()), bytes)
                 assertTrue(it.writtenBytes.isEmpty)
             }
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    @Test(timeout = 1000)
-    fun testRead() {
+    @Test
+    fun testRead() = runTest(timeout = 1.seconds) {
         val paths = TestRendezvousPath.createPaths(5)
 
         val path = MultiplexedRendezvousPath(paths)
@@ -186,23 +190,24 @@ class MultiplexedRendezvousPathTest {
                 it.readableBytes.send(byteArrayOf(it.pid.toByte()))
             }
 
-
             val readBytes = paths.map { path.read() }
                 .associate { it }
 
             paths.values.forEach {
-                assertArrayEquals(byteArrayOf(it.pid.toByte()), readBytes[it.pid])
+                assertContentEquals(byteArrayOf(it.pid.toByte()), readBytes[it.pid])
                 assertTrue(it.readableBytes.isEmpty)
             }
         }
     }
 
-    @Test(expected = IOException::class)
+    @Test
     fun testNoPathsConnect() {
-        val path = MultiplexedRendezvousPath(mapOf())
+        val path = MultiplexedRendezvousPath(emptyMap())
 
-        runBlocking {
-            path.connect()
+        assertFailsWith<IOException> {
+            runBlocking {
+                path.connect()
+            }
         }
     }
 
@@ -217,7 +222,7 @@ class MultiplexedRendezvousPathTest {
             path.connect()
         }
 
-        assertThrows(IOException::class.java) {
+        assertFailsWith<IOException> {
             runBlocking {
                 path.read()
             }
@@ -235,7 +240,7 @@ class MultiplexedRendezvousPathTest {
             path.connect()
         }
 
-        assertThrows(IOException::class.java) {
+        assertFailsWith<IOException> {
             runBlocking {
                 path.write(pid to ByteArray(32))
             }
@@ -245,7 +250,7 @@ class MultiplexedRendezvousPathTest {
 
 private class TestClosedRendezvousPath(
     override val pid: UInt,
-    override val closedSignal: CompletableDeferred<Unit>
+    override val closedSignal: CompletableDeferred<Unit>,
 ) : RendezvousPath {
     init {
         closedSignal.complete(Unit)
@@ -270,7 +275,7 @@ private class TestClosedRendezvousPath(
 
 private class TestRendezvousPath(
     override val pid: UInt,
-    override val closedSignal: CompletableDeferred<Unit>
+    override val closedSignal: CompletableDeferred<Unit>,
 ) : RendezvousPath {
     var connected = false
     var closed = false
@@ -295,7 +300,6 @@ private class TestRendezvousPath(
 
     override suspend fun write(bytes: ByteArray) {
         writtenBytes.send(bytes)
-
     }
 
     override suspend fun read(): ByteArray {

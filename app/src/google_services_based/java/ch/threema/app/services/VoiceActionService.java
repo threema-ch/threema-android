@@ -192,7 +192,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
         }
     }
 
-    /*	@Override
+    /*    @Override
         public boolean isTestingMode() {
             return true;
         }

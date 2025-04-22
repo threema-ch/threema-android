@@ -21,13 +21,15 @@
 
 package ch.threema.app
 
+import ch.threema.app.multidevice.DesktopClientFlavor
+
 sealed class BuildFlavor(
     val gradleName: String,
     val licenseType: LicenseType,
     val buildEnvironment: BuildEnvironment,
     private val displayName: String,
+    val desktopClientFlavor: DesktopClientFlavor,
 ) {
-
     companion object {
         @JvmStatic
         val current: BuildFlavor by lazy {
@@ -49,25 +51,35 @@ sealed class BuildFlavor(
     }
 
     enum class LicenseType {
-        NONE, GOOGLE, SERIAL, GOOGLE_WORK, HMS, HMS_WORK, ONPREM
+        NONE,
+        GOOGLE,
+        SERIAL,
+        GOOGLE_WORK,
+        HMS,
+        HMS_WORK,
+        ONPREM,
     }
 
     enum class BuildEnvironment {
-        LIVE, SANDBOX, ONPREM
+        LIVE,
+        SANDBOX,
+        ONPREM,
     }
 
     data object None : BuildFlavor(
         gradleName = "none",
         licenseType = LicenseType.NONE,
         buildEnvironment = BuildEnvironment.LIVE,
-        displayName = "DEV"
+        displayName = "DEV",
+        desktopClientFlavor = DesktopClientFlavor.Consumer,
     )
 
     data object StoreGoogle : BuildFlavor(
         gradleName = "store_google",
         licenseType = LicenseType.GOOGLE,
         buildEnvironment = BuildEnvironment.LIVE,
-        displayName = "Google Play"
+        displayName = "Google Play",
+        desktopClientFlavor = DesktopClientFlavor.Consumer,
     )
 
     data object StoreThreema : BuildFlavor(
@@ -75,6 +87,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.SERIAL,
         buildEnvironment = BuildEnvironment.LIVE,
         displayName = "Threema Shop",
+        desktopClientFlavor = DesktopClientFlavor.Consumer,
     )
 
     data object StoreGoogleWork : BuildFlavor(
@@ -82,6 +95,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.GOOGLE_WORK,
         buildEnvironment = BuildEnvironment.LIVE,
         displayName = "Work",
+        desktopClientFlavor = DesktopClientFlavor.Work,
     )
 
     data object Green : BuildFlavor(
@@ -89,6 +103,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.NONE,
         buildEnvironment = BuildEnvironment.SANDBOX,
         displayName = "Green",
+        desktopClientFlavor = DesktopClientFlavor.Green,
     )
 
     data object SandboxWork : BuildFlavor(
@@ -96,6 +111,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.GOOGLE_WORK,
         buildEnvironment = BuildEnvironment.SANDBOX,
         displayName = "Sandbox Work",
+        desktopClientFlavor = DesktopClientFlavor.Blue,
     )
 
     data object OnPrem : BuildFlavor(
@@ -103,6 +119,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.ONPREM,
         buildEnvironment = BuildEnvironment.ONPREM,
         displayName = "OnPrem",
+        desktopClientFlavor = DesktopClientFlavor.OnPrem,
     )
 
     data object Blue : BuildFlavor(
@@ -110,6 +127,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.GOOGLE_WORK,
         buildEnvironment = BuildEnvironment.SANDBOX,
         displayName = "Blue",
+        desktopClientFlavor = DesktopClientFlavor.Blue,
     )
 
     data object Hms : BuildFlavor(
@@ -117,6 +135,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.HMS,
         buildEnvironment = BuildEnvironment.LIVE,
         displayName = "HMS",
+        desktopClientFlavor = DesktopClientFlavor.Consumer,
     )
 
     data object HmsWork : BuildFlavor(
@@ -124,6 +143,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.HMS_WORK,
         buildEnvironment = BuildEnvironment.LIVE,
         displayName = "HMS Work",
+        desktopClientFlavor = DesktopClientFlavor.Work,
     )
 
     data object Libre : BuildFlavor(
@@ -131,6 +151,7 @@ sealed class BuildFlavor(
         licenseType = LicenseType.SERIAL,
         buildEnvironment = BuildEnvironment.LIVE,
         displayName = "Libre",
+        desktopClientFlavor = DesktopClientFlavor.Consumer,
     )
 
     val fullDisplayName: String by lazy {

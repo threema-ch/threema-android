@@ -47,6 +47,11 @@ interface ComposeColorPalette {
     val onSurface: Color
     val surfaceVariant: Color
     val onSurfaceVariant: Color
+    val surfaceContainerLowest: Color
+    val surfaceContainerLow: Color
+    val surfaceContainer: Color
+    val surfaceContainerHigh: Color
+    val surfaceContainerHighest: Color
     val outline: Color
     val outlineVariant: Color
     val scrim: Color

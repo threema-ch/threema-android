@@ -31,8 +31,10 @@ import com.neilalexander.jnacl.NaCl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -204,6 +206,13 @@ public class TestHelpers {
                 .setUserState(userState);
         }
 
+        @NonNull
+        public Collection<TestContact> getMembersWithoutCreator() {
+            return members.stream()
+                .filter(member -> !member.identity.equals(groupCreator.identity))
+                .collect(Collectors.toList());
+        }
+
         public void setLocalGroupId(int localGroupId) {
             this.localGroupId = localGroupId;
         }
@@ -237,6 +246,22 @@ public class TestHelpers {
             }
         }
         return false;
+    }
+
+    /**
+     * Set the provided identity if the current identity is not set or different.
+     */
+    public static void setIdentity(@NonNull ServiceManager serviceManager, TestContact user) throws Exception {
+        UserService userService = serviceManager.getUserService();
+        if (userService.hasIdentity() && userService.getIdentity().equals(user.identity)) {
+            return;
+        }
+
+        userService.restoreIdentity(
+            user.identity,
+            user.privateKey,
+            user.publicKey
+        );
     }
 
     /**

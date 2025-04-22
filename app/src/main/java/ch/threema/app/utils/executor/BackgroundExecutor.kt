@@ -23,9 +23,9 @@ package ch.threema.app.utils.executor
 
 import android.os.Handler
 import android.os.Looper
+import java.util.concurrent.Executors
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
-import java.util.concurrent.Executors
 
 /**
  * A background executor that can be used to perform background work and afterwards update the UI.
@@ -94,7 +94,6 @@ class BackgroundExecutor {
  * A task that can be run with a [BackgroundExecutor] on a background thread.
  */
 interface BackgroundTask<R> {
-
     /**
      * This method is run before [runInBackground] on the same thread as the callee of
      * [BackgroundExecutor.execute] is running.
@@ -115,5 +114,4 @@ interface BackgroundTask<R> {
     fun runAfter(result: R) {
         // The default implementation does not need to do anything
     }
-
 }

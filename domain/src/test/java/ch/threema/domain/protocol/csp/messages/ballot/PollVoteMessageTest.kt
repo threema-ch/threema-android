@@ -27,12 +27,11 @@ import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
 open class PollVoteMessageTest {
-
     private val pollVoteMessage = PollVoteMessage().apply {
         ballotId = BallotId()
         ballotCreatorIdentity = "01234567"
@@ -40,8 +39,8 @@ open class PollVoteMessageTest {
             listOf(
                 BallotVote(2, 8),
                 BallotVote(3, 5),
-                BallotVote(4, 1)
-            )
+                BallotVote(4, 1),
+            ),
         )
     }
 
@@ -51,7 +50,6 @@ open class PollVoteMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthTooShort() {
         // arrange
         val testBlockLazy = {
-
             // act
             PollVoteMessage.fromByteArray(
                 data = pollVoteMessageBody,
@@ -66,10 +64,8 @@ open class PollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             PollVoteMessage.fromByteArray(
                 data = pollVoteMessageBody,
@@ -84,15 +80,13 @@ open class PollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLength() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             PollVoteMessage.fromByteArray(
                 data = pollVoteMessageBody,
                 offset = 0,
-                length = pollVoteMessageBody.size + 1
+                length = pollVoteMessageBody.size + 1,
             )
         }
 
@@ -102,15 +96,13 @@ open class PollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLengthWithOffset() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             PollVoteMessage.fromByteArray(
                 data = pollVoteMessageBody,
                 offset = 1,
-                length = pollVoteMessageBody.size
+                length = pollVoteMessageBody.size,
             )
         }
 
@@ -120,12 +112,11 @@ open class PollVoteMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithoutOffset() {
-
         // act
         val resultPollVoteMessage = PollVoteMessage.fromByteArray(
             data = pollVoteMessageBody,
             offset = 0,
-            length = pollVoteMessageBody.size
+            length = pollVoteMessageBody.size,
         )
 
         // assert
@@ -134,7 +125,6 @@ open class PollVoteMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithOffset() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + pollVoteMessageBody
 
@@ -142,7 +132,7 @@ open class PollVoteMessageTest {
         val resultPollVoteMessage: PollVoteMessage = PollVoteMessage.fromByteArray(
             data = dataWithOffsetByte,
             offset = 1,
-            length = pollVoteMessageBody.size
+            length = pollVoteMessageBody.size,
         )
 
         // assert
@@ -151,17 +141,15 @@ open class PollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetNotPassedCorrectly() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + pollVoteMessageBody
 
         val testBlockLazy = {
-
             // act
             PollVoteMessage.fromByteArray(
                 data = dataWithOffsetByte,
                 offset = 0,
-                length = pollVoteMessageBody.size
+                length = pollVoteMessageBody.size,
             )
         }
 
@@ -171,7 +159,6 @@ open class PollVoteMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldParseBodyAndSetCommonFields() {
-
         // act
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -196,7 +183,6 @@ open class PollVoteMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
-
         // act
         val outgoingMessageId = MessageId()
         val outgoingMessageCreatedAt: Long = System.currentTimeMillis()

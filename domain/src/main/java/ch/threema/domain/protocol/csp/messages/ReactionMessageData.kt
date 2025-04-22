@@ -24,64 +24,111 @@ package ch.threema.domain.protocol.csp.messages
 import ch.threema.domain.protocol.csp.messages.protobuf.ProtobufDataInterface
 import ch.threema.protobuf.csp.e2e.Reaction
 import ch.threema.protobuf.csp.e2e.Reaction.ActionCase
+import ch.threema.protobuf.csp.e2e.reaction
 import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
-import java.util.Objects
+import com.google.protobuf.kotlin.isNotEmpty
 
-class ReactionMessageData(
-    val messageId: Long,
-    val actionCase: ActionCase,
-    val emojiSequenceBytes: ByteString?
+sealed class ReactionMessageData(
+    open val messageId: Long,
+    open val emojiSequenceBytes: ByteString,
 ) : ProtobufDataInterface<Reaction> {
+    abstract val actionCase: ActionCase
+
+    data class Apply(
+        override val messageId: Long,
+        override val emojiSequenceBytes: ByteString,
+    ) : ReactionMessageData(messageId, emojiSequenceBytes) {
+        override val actionCase: ActionCase = ActionCase.APPLY
+
+        override fun toProtobufMessage(): Reaction = reaction {
+            messageId = this@Apply.messageId
+            apply = this@Apply.emojiSequenceBytes.also { byteString ->
+                if (byteString.isEmpty) throw BadMessageException("Missing emoji sequence for action case ${ActionCase.APPLY}")
+            }
+        }
+
+        override fun toString(): String =
+            "Apply(messageId:$messageId, emojiSequence:${emojiSequenceBytes.toStringUtf8()})"
+    }
+
+    data class Withdraw(
+        override val messageId: Long,
+        override val emojiSequenceBytes: ByteString,
+    ) : ReactionMessageData(messageId, emojiSequenceBytes) {
+        override val actionCase: ActionCase = ActionCase.WITHDRAW
+
+        override fun toProtobufMessage(): Reaction = reaction {
+            messageId = this@Withdraw.messageId
+            withdraw = this@Withdraw.emojiSequenceBytes.also { byteString ->
+                if (byteString.isEmpty) throw BadMessageException("Missing emoji sequence for action case ${ActionCase.WITHDRAW}")
+            }
+        }
+
+        override fun toString(): String =
+            "Withdraw(messageId:$messageId, emojiSequence:${emojiSequenceBytes.toStringUtf8()})"
+    }
 
     companion object {
+        /**
+         * @throws BadMessageException If the `actionCase` is not `APPLY` or `WITHDRAW`, or if the emoji sequence byte string is empty.
+         */
         @JvmStatic
+        @Throws(BadMessageException::class)
         fun fromProtobuf(rawProtobufMessage: ByteArray): ReactionMessageData {
-            try {
-                val protobufMessage = Reaction.parseFrom(rawProtobufMessage)
-                return ReactionMessageData(
-                    protobufMessage.messageId,
-                    protobufMessage.actionCase,
-                    when (protobufMessage.actionCase) {
-                        ActionCase.APPLY -> protobufMessage.apply
-                        ActionCase.WITHDRAW -> protobufMessage.withdraw
-                        ActionCase.ACTION_NOT_SET -> null
-                        else -> throw BadMessageException("Unrecognized action case")
-                    }
-                )
+            val reactionMessage = try {
+                Reaction.parseFrom(rawProtobufMessage)
             } catch (e: InvalidProtocolBufferException) {
-                throw BadMessageException("Invalid Reaction protobuf data")
+                throw BadMessageException("Invalid Reaction protobuf data", e)
             } catch (e: IllegalArgumentException) {
                 throw BadMessageException("Could not create Reaction data", e)
             }
+
+            return when (reactionMessage.actionCase) {
+                ActionCase.APPLY -> {
+                    val emojiSequenceApply = reactionMessage.apply.takeIf(ByteString::isNotEmpty)
+                        ?: throw BadMessageException("Missing emoji sequence for action case ${reactionMessage.actionCase}")
+                    Apply(
+                        messageId = reactionMessage.messageId,
+                        emojiSequenceBytes = emojiSequenceApply,
+                    )
+                }
+
+                ActionCase.WITHDRAW -> {
+                    val emojiSequenceWithdraw =
+                        reactionMessage.withdraw.takeIf(ByteString::isNotEmpty)
+                            ?: throw BadMessageException("Missing emoji sequence for action case ${reactionMessage.actionCase}")
+                    Withdraw(
+                        messageId = reactionMessage.messageId,
+                        emojiSequenceBytes = emojiSequenceWithdraw,
+                    )
+                }
+
+                else -> throw BadMessageException(
+                    "ActionCase must either by ${ActionCase.APPLY} or ${ActionCase.WITHDRAW}, but was ${reactionMessage.actionCase}",
+                )
+            }
         }
-    }
 
-    override fun toProtobufMessage(): Reaction {
-        val builder = Reaction.newBuilder()
-            .setMessageId(messageId)
-
-        when (actionCase) {
-            ActionCase.APPLY -> builder.apply = emojiSequenceBytes
-            ActionCase.WITHDRAW -> builder.withdraw = emojiSequenceBytes
-            ActionCase.ACTION_NOT_SET -> throw BadMessageException("Missing action case in reaction message")
+        /**
+         * @return The specific `ReactionMessageData` implementation for the given [actionCase].
+         * @throws BadMessageException If [emojiSequenceBytes] is empty or if [actionCase] is [ActionCase.ACTION_NOT_SET].
+         */
+        @JvmStatic
+        @Throws(BadMessageException::class)
+        fun forActionCase(
+            actionCase: ActionCase,
+            messageId: Long,
+            emojiSequenceBytes: ByteString,
+        ): ReactionMessageData {
+            if (emojiSequenceBytes.isEmpty) {
+                throw BadMessageException("Missing emoji sequence")
+            }
+            return when (actionCase) {
+                ActionCase.APPLY -> Apply(messageId, emojiSequenceBytes)
+                ActionCase.WITHDRAW -> Withdraw(messageId, emojiSequenceBytes)
+                ActionCase.ACTION_NOT_SET -> throw BadMessageException("Can not create message data for action case $actionCase")
+            }
         }
-
-        return builder.build()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ReactionMessageData) return false
-
-        if (messageId != other.messageId) return false
-        if (actionCase != other.actionCase) return false
-        if (emojiSequenceBytes != other.emojiSequenceBytes) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(messageId, actionCase, emojiSequenceBytes)
     }
 }

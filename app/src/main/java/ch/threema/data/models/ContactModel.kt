@@ -26,6 +26,7 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
 import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.utils.ColorUtil
@@ -33,6 +34,7 @@ import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.UnsignedHelper
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.RepositoryToken
 import ch.threema.data.storage.DatabaseBackend
@@ -48,17 +50,19 @@ import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import kotlinx.coroutines.flow.MutableStateFlow
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Date
+import kotlinx.coroutines.flow.MutableStateFlow
 
 private val logger = LoggingUtil.getThreemaLogger("data.ContactModel")
 
 /**
  * Immutable contact model data.
+ *
+ * TODO(ANDR-2998): Notification sound policy override
  */
 data class ContactModelData(
     /** The contact identity string. Must be 8 characters long. */
@@ -93,8 +97,11 @@ data class ContactModelData(
     @JvmField val readReceiptPolicy: ReadReceiptPolicy,
     /** Typing indicator policy. */
     @JvmField val typingIndicatorPolicy: TypingIndicatorPolicy,
-    // TODO(ANDR-2998): Notification trigger policy override
-    // TODO(ANDR-2998): Notification sound policy override
+    /**
+     * Whether the conversation with the contact is archived or not. Note that this information belongs to the 'conversation visibility' and should
+     * probably be moved to the new conversation model TODO(ANDR-3010).
+     */
+    @JvmField val isArchived: Boolean,
     /** Android contact lookup key. */
     @JvmField val androidContactLookupKey: String?,
     /**
@@ -118,6 +125,11 @@ data class ContactModelData(
     @JvmField val profilePictureBlobId: ByteArray?,
     @JvmField val jobTitle: String?,
     @JvmField val department: String?,
+    /**
+     *  Encapsulates all logic of `Contact.NotificationTriggerPolicyOverride.Policy` into a single `Long?` value.
+     *  See [NotificationTriggerPolicyOverride] for possible values and their meanings.
+     */
+    @JvmField val notificationTriggerPolicyOverride: Long?,
 ) {
     companion object {
         /**
@@ -141,12 +153,14 @@ data class ContactModelData(
             syncState: ContactSyncState,
             readReceiptPolicy: ReadReceiptPolicy,
             typingIndicatorPolicy: TypingIndicatorPolicy,
+            isArchived: Boolean,
             androidContactLookupKey: String?,
             localAvatarExpires: Date?,
             isRestored: Boolean,
             profilePictureBlobId: ByteArray?,
             jobTitle: String?,
-            department: String?
+            department: String?,
+            notificationTriggerPolicyOverride: Long?,
         ): ContactModelData {
             if (colorIndex < 0 || colorIndex > 255) {
                 throw IllegalArgumentException("colorIndex must be between 0 and 255")
@@ -155,28 +169,30 @@ data class ContactModelData(
                 throw IllegalArgumentException("featureMask must be between 0 and 2^64")
             }
             return ContactModelData(
-                identity,
-                publicKey,
-                createdAt,
-                firstName,
-                lastName,
-                nickname,
-                colorIndex.toUByte(),
-                verificationLevel,
-                workVerificationLevel,
-                identityType,
-                acquaintanceLevel,
-                activityState,
-                syncState,
-                featureMask.toLong().toULong(),
-                readReceiptPolicy,
-                typingIndicatorPolicy,
-                androidContactLookupKey,
-                localAvatarExpires,
-                isRestored,
-                profilePictureBlobId,
-                jobTitle,
-                department,
+                identity = identity,
+                publicKey = publicKey,
+                createdAt = createdAt,
+                firstName = firstName,
+                lastName = lastName,
+                nickname = nickname,
+                colorIndex = colorIndex.toUByte(),
+                verificationLevel = verificationLevel,
+                workVerificationLevel = workVerificationLevel,
+                identityType = identityType,
+                acquaintanceLevel = acquaintanceLevel,
+                activityState = activityState,
+                syncState = syncState,
+                featureMask = featureMask.toLong().toULong(),
+                readReceiptPolicy = readReceiptPolicy,
+                typingIndicatorPolicy = typingIndicatorPolicy,
+                isArchived = isArchived,
+                androidContactLookupKey = androidContactLookupKey,
+                localAvatarExpires = localAvatarExpires,
+                isRestored = isRestored,
+                profilePictureBlobId = profilePictureBlobId,
+                jobTitle = jobTitle,
+                department = department,
+                notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
             )
         }
 
@@ -276,6 +292,9 @@ data class ContactModelData(
         identityType,
     )
 
+    val currentNotificationTriggerPolicyOverride
+        get() = NotificationTriggerPolicyOverride.fromDbValueContact(notificationTriggerPolicyOverride)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -298,13 +317,19 @@ data class ContactModelData(
         if (featureMask != other.featureMask) return false
         if (readReceiptPolicy != other.readReceiptPolicy) return false
         if (typingIndicatorPolicy != other.typingIndicatorPolicy) return false
+        if (isArchived != other.isArchived) return false
         if (androidContactLookupKey != other.androidContactLookupKey) return false
         if (localAvatarExpires != other.localAvatarExpires) return false
         if (isRestored != other.isRestored) return false
         if (profilePictureBlobId != null) {
             if (other.profilePictureBlobId == null) return false
             if (!profilePictureBlobId.contentEquals(other.profilePictureBlobId)) return false
-        } else if (other.profilePictureBlobId != null) return false
+        } else if (other.profilePictureBlobId != null) {
+            return false
+        }
+        if (jobTitle != other.jobTitle) return false
+        if (department != other.department) return false
+        if (notificationTriggerPolicyOverride != other.notificationTriggerPolicyOverride) return false
 
         return true
     }
@@ -330,6 +355,7 @@ data class ContactModelData(
         result = 31 * result + (localAvatarExpires?.hashCode() ?: 0)
         result = 31 * result + isRestored.hashCode()
         result = 31 * result + (profilePictureBlobId?.contentHashCode() ?: 0)
+        result = 31 * result + notificationTriggerPolicyOverride.hashCode()
         return result
     }
 }
@@ -349,17 +375,17 @@ class ContactModel(
     coreServiceManager.multiDeviceManager,
     coreServiceManager.taskManager,
 ) {
-
     private val nonceFactory by lazy { coreServiceManager.nonceFactory }
 
     init {
         runtimeAssert(identity == data.identity, "Contact model identity mismatch")
     }
 
-    // TODO(ANDR-3037): Check if this is still necessary after this ticket
     /**
      *  We have to make the bridge over to the old ContactService in order
      *  to keep the new and old caches both correct.
+     *
+     *  TODO(ANDR-3037): Check if this is still necessary after this ticket
      */
     private val deprecatedContactService: ContactService? by lazy {
         val serviceManager: ServiceManager? = ThreemaApplication.getServiceManager()
@@ -381,7 +407,7 @@ class ContactModel(
             updateData = { originalData ->
                 originalData.copy(
                     firstName = firstName,
-                    lastName = lastName
+                    lastName = lastName,
                 )
             },
             updateDatabase = ::updateDatabase,
@@ -401,8 +427,9 @@ class ContactModel(
      * Update the contact's jobTitle
      *
      * @throws ModelDeletedException if model is deleted.
+     *
+     * TODO(ANDR-3611): Reflect change to device group
      */
-    // TODO(ANDR-3611): Reflect change to device group
     fun setJobTitleFromLocal(jobTitle: String?) {
         this.updateFields(
             methodName = "setJobTitleFromLocal",
@@ -418,8 +445,9 @@ class ContactModel(
      * Update the contact's department
      *
      * @throws ModelDeletedException if model is deleted.
+     *
+     * TODO(ANDR-3611): Reflect change to device group
      */
-    // TODO(ANDR-3611): Reflect change to device group
     fun setDepartmentFromLocal(department: String?) {
         this.updateFields(
             methodName = "setDepartmentFromLocal",
@@ -455,7 +483,7 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
@@ -477,7 +505,7 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
@@ -499,7 +527,7 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
@@ -521,12 +549,12 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
     fun setFeatureMaskFromLocal(
-        featureMask: Long
+        featureMask: Long,
     ) {
         // Warn the user in case there is no forward security support anymore (indicated by a
         // feature mask change).
@@ -550,7 +578,7 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
@@ -565,7 +593,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.firstName != firstName },
             updateData = { originalData -> originalData.copy(firstName = firstName) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -580,7 +608,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.lastName != lastName },
             updateData = { originalData -> originalData.copy(lastName = lastName) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -595,7 +623,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.nickname != nickname },
             updateData = { originalData -> originalData.copy(nickname = nickname) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -603,7 +631,7 @@ class ContactModel(
         logger.debug("Updating nickname of {} to {}", identity, nickname)
 
         // We check whether the nickname is different before trying to reflect it.
-        val data = ensureNotDeleted(data.value, "setNicknameFromRemote")
+        val data = ensureNotDeleted("setNicknameFromRemote")
         if (data.nickname == nickname) {
             return
         }
@@ -623,7 +651,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.nickname != nickname },
             updateData = { originalData -> originalData.copy(nickname = nickname) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -638,7 +666,7 @@ class ContactModel(
             detectChanges = { it.verificationLevel != verificationLevel },
             updateData = { it.copy(verificationLevel = verificationLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -653,7 +681,7 @@ class ContactModel(
             detectChanges = { it.workVerificationLevel != workVerificationLevel },
             updateData = { it.copy(workVerificationLevel = workVerificationLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -668,7 +696,7 @@ class ContactModel(
             detectChanges = { it.identityType != identityType },
             updateData = { it.copy(identityType = identityType) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -683,7 +711,7 @@ class ContactModel(
             detectChanges = { it.acquaintanceLevel != acquaintanceLevel },
             updateData = { it.copy(acquaintanceLevel = acquaintanceLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -698,7 +726,7 @@ class ContactModel(
             detectChanges = { it.activityState != activityState },
             updateData = { it.copy(activityState = activityState) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -720,7 +748,7 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
@@ -735,7 +763,7 @@ class ContactModel(
             detectChanges = { it.featureMask != featureMask },
             updateData = { it.copy(featureMask = featureMask) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -754,7 +782,7 @@ class ContactModel(
                 // No need to notify listeners, this isn't something that will result in a UI change.
                 // But keep old-service cache correct:
                 deprecatedContactService?.invalidateCache(updatedData.identity)
-            }
+            },
         )
     }
 
@@ -769,7 +797,7 @@ class ContactModel(
             detectChanges = { it.readReceiptPolicy != readReceiptPolicy },
             updateData = { it.copy(readReceiptPolicy = readReceiptPolicy) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -791,7 +819,7 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
@@ -806,7 +834,7 @@ class ContactModel(
             detectChanges = { it.typingIndicatorPolicy != typingIndicatorPolicy },
             updateData = { it.copy(typingIndicatorPolicy = typingIndicatorPolicy) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -828,7 +856,7 @@ class ContactModel(
                 contactModelRepository,
                 multiDeviceManager,
                 nonceFactory,
-            )
+            ),
         )
     }
 
@@ -843,7 +871,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.androidContactLookupKey != lookupKey },
             updateData = { originalData -> originalData.copy(androidContactLookupKey = lookupKey) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -851,6 +879,8 @@ class ContactModel(
      * Unlink the contact from the android contact. This sets the android lookup key to null and
      * downgrades the verification level if it is [VerificationLevel.SERVER_VERIFIED]. Note that
      * the verification level change is reflected if MD is active.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
      */
     fun removeAndroidContactLink() {
         // Remove the android lookup key
@@ -859,7 +889,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.androidContactLookupKey != null },
             updateData = { originalData -> originalData.copy(androidContactLookupKey = null) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
 
         // Change verification level if it is server verified. Note that we do not use
@@ -896,7 +926,7 @@ class ContactModel(
                 // No need to notify listeners, this isn't something that will result in a UI change.
                 // But keep old-service cache correct:
                 deprecatedContactService?.invalidateCache(updatedData.identity)
-            }
+            },
         )
     }
 
@@ -918,7 +948,7 @@ class ContactModel(
                 // No need to notify listeners, this isn't something that will result in a UI change.
                 // But keep old-service cache correct:
                 deprecatedContactService?.invalidateCache(updatedData.identity)
-            }
+            },
         )
     }
 
@@ -936,12 +966,12 @@ class ContactModel(
             methodName = "setProfilePictureBlobId",
             detectChanges = { originalData ->
                 !originalData.profilePictureBlobId.contentEquals(
-                    blobId
+                    blobId,
                 )
             },
             updateData = { originalData -> originalData.copy(profilePictureBlobId = blobId) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::defaultOnUpdated
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -949,6 +979,8 @@ class ContactModel(
      * Set whether the contact has been restored or not. After a restore of a backup, every contact
      * is marked as restored to track whether the profile picture must be requested from this
      * contact.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
      */
     fun setIsRestored(isRestored: Boolean) {
         this.updateFields(
@@ -960,7 +992,91 @@ class ContactModel(
                 // No need to notify listeners, this isn't something that will result in a UI change.
                 // But keep old-service cache correct:
                 deprecatedContactService?.invalidateCache(updatedData.identity)
-            }
+            },
+        )
+    }
+
+    /**
+     * Update the contact's notification-trigger-policy-override **without** reflecting the change.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
+     */
+    fun setNotificationTriggerPolicyOverrideFromSync(notificationTriggerPolicyOverride: Long?) {
+        this.updateFields(
+            methodName = "setNotificationTriggerPolicyOverrideFromSync",
+            detectChanges = { originalData -> originalData.notificationTriggerPolicyOverride != notificationTriggerPolicyOverride },
+            updateData = { originalData -> originalData.copy(notificationTriggerPolicyOverride = notificationTriggerPolicyOverride) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
+        )
+    }
+
+    /**
+     * Update the contact's notification-trigger-policy-override and reflecting the change.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
+     *
+     * @see NotificationTriggerPolicyOverride
+     */
+    fun setNotificationTriggerPolicyOverrideFromLocal(notificationTriggerPolicyOverride: Long?) {
+        if (notificationTriggerPolicyOverride == DEADLINE_INDEFINITE_EXCEPT_MENTIONS) {
+            logger.error("Can not set notification-trigger-policy-override value of $notificationTriggerPolicyOverride for contact")
+            return
+        }
+        this.updateFields(
+            methodName = "setNotificationTriggerPolicyOverrideFromLocal",
+            detectChanges = { originalData -> originalData.notificationTriggerPolicyOverride != notificationTriggerPolicyOverride },
+            updateData = { originalData -> originalData.copy(notificationTriggerPolicyOverride = notificationTriggerPolicyOverride) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
+            reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate(
+                newNotificationTriggerPolicyOverride = NotificationTriggerPolicyOverride.fromDbValueContact(
+                    notificationTriggerPolicyOverride,
+                ),
+                contactIdentity = identity,
+                contactModelRepository = contactModelRepository,
+                multiDeviceManager = multiDeviceManager,
+                nonceFactory = nonceFactory,
+            ),
+        )
+    }
+
+    /**
+     * Archive or unarchive the contact.
+     *
+     * TODO(ANDR-3721): As long as it is possible to mark a contact as pinned outside of the contact model, this method must be used extremely
+     *  carefully as a contact can never be archived *and* pinned.
+     */
+    fun setIsArchivedFromLocalOrRemote(isArchived: Boolean) {
+        this.updateFields(
+            methodName = "setIsArchiveFromLocalOrRemote",
+            detectChanges = { originalData -> originalData.isArchived != isArchived },
+            updateData = { originalData -> originalData.copy(isArchived = isArchived) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
+            reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectConversationVisibilityArchiveUpdate(
+                isArchived = isArchived,
+                contactIdentity = identity,
+                contactModelRepository = contactModelRepository,
+                multiDeviceManager = multiDeviceManager,
+                nonceFactory = nonceFactory,
+            ),
+        )
+    }
+
+    /**
+     * Archive or unarchive the contact.
+     *
+     * TODO(ANDR-3721): As long as it is possible to mark a contact as pinned outside of the contact model, this method must be used extremely
+     *  carefully as a contact can never be archived *and* pinned.
+     */
+    fun setIsArchivedFromSync(isArchived: Boolean) {
+        this.updateFields(
+            methodName = "setIsArchivedFromSync",
+            detectChanges = { originalData -> originalData.isArchived != isArchived },
+            updateData = { originalData -> originalData.copy(isArchived = isArchived) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -973,7 +1089,7 @@ class ContactModel(
      *
      * Note: If the model is marked as deleted, then this will have no effect.
      */
-    internal fun refreshFromDb(token: RepositoryToken) {
+    internal fun refreshFromDb(@Suppress("UNUSED_PARAMETER") token: RepositoryToken) {
         logger.info("Refresh from database")
         synchronized(this) {
             if (mutableData.value == null) {
@@ -984,7 +1100,7 @@ class ContactModel(
             val newData = ContactModelDataFactory.toDataType(dbContact)
             runtimeAssert(
                 newData.identity == identity,
-                "Cannot update contact model with data for different identity: ${newData.identity} != $identity"
+                "Cannot update contact model with data for different identity: ${newData.identity} != $identity",
             )
             mutableData.value = newData
         }
@@ -1016,52 +1132,56 @@ class ContactModel(
 
 internal object ContactModelDataFactory : ModelDataFactory<ContactModelData, DbContact> {
     override fun toDbType(value: ContactModelData): DbContact = DbContact(
-        value.identity,
-        value.publicKey,
-        value.createdAt,
-        value.firstName,
-        value.lastName,
-        value.nickname,
-        value.colorIndex,
-        value.verificationLevel,
-        value.workVerificationLevel,
-        value.identityType,
-        value.acquaintanceLevel,
-        value.activityState,
-        value.syncState,
-        value.featureMask,
-        value.readReceiptPolicy,
-        value.typingIndicatorPolicy,
-        value.androidContactLookupKey,
-        value.localAvatarExpires,
-        value.isRestored,
-        value.profilePictureBlobId,
-        value.jobTitle,
-        value.department
+        identity = value.identity,
+        publicKey = value.publicKey,
+        createdAt = value.createdAt,
+        firstName = value.firstName,
+        lastName = value.lastName,
+        nickname = value.nickname,
+        colorIndex = value.colorIndex,
+        verificationLevel = value.verificationLevel,
+        workVerificationLevel = value.workVerificationLevel,
+        identityType = value.identityType,
+        acquaintanceLevel = value.acquaintanceLevel,
+        activityState = value.activityState,
+        syncState = value.syncState,
+        featureMask = value.featureMask,
+        readReceiptPolicy = value.readReceiptPolicy,
+        typingIndicatorPolicy = value.typingIndicatorPolicy,
+        isArchived = value.isArchived,
+        androidContactLookupKey = value.androidContactLookupKey,
+        localAvatarExpires = value.localAvatarExpires,
+        isRestored = value.isRestored,
+        profilePictureBlobId = value.profilePictureBlobId,
+        jobTitle = value.jobTitle,
+        department = value.department,
+        notificationTriggerPolicyOverride = value.notificationTriggerPolicyOverride,
     )
 
     override fun toDataType(value: DbContact): ContactModelData = ContactModelData(
-        value.identity,
-        value.publicKey,
-        value.createdAt,
-        value.firstName,
-        value.lastName,
-        value.nickname,
-        value.colorIndex,
-        value.verificationLevel,
-        value.workVerificationLevel,
-        value.identityType,
-        value.acquaintanceLevel,
-        value.activityState,
-        value.syncState,
-        value.featureMask,
-        value.readReceiptPolicy,
-        value.typingIndicatorPolicy,
-        value.androidContactLookupKey,
-        value.localAvatarExpires,
-        value.isRestored,
-        value.profilePictureBlobId,
-        value.jobTitle,
-        value.department
+        identity = value.identity,
+        publicKey = value.publicKey,
+        createdAt = value.createdAt,
+        firstName = value.firstName,
+        lastName = value.lastName,
+        nickname = value.nickname,
+        colorIndex = value.colorIndex,
+        verificationLevel = value.verificationLevel,
+        workVerificationLevel = value.workVerificationLevel,
+        identityType = value.identityType,
+        acquaintanceLevel = value.acquaintanceLevel,
+        activityState = value.activityState,
+        syncState = value.syncState,
+        featureMask = value.featureMask,
+        readReceiptPolicy = value.readReceiptPolicy,
+        typingIndicatorPolicy = value.typingIndicatorPolicy,
+        isArchived = value.isArchived,
+        androidContactLookupKey = value.androidContactLookupKey,
+        localAvatarExpires = value.localAvatarExpires,
+        isRestored = value.isRestored,
+        profilePictureBlobId = value.profilePictureBlobId,
+        jobTitle = value.jobTitle,
+        department = value.department,
+        notificationTriggerPolicyOverride = value.notificationTriggerPolicyOverride,
     )
 }

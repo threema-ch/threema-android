@@ -43,12 +43,11 @@ import kotlinx.serialization.Serializable
  */
 class ReflectUserProfileShareWithPolicySyncTask(
     newPolicy: Policy,
-    serviceManager: ServiceManager
+    serviceManager: ServiceManager,
 ) : ReflectUserProfileShareWithPolicySyncTaskBase(
     newPolicy = newPolicy,
-    serviceManager = serviceManager
+    serviceManager = serviceManager,
 ) {
-
     override val type = "ReflectUserProfileShareWithPolicySyncTask"
 
     init {
@@ -63,7 +62,7 @@ class ReflectUserProfileShareWithPolicySyncTask(
                 Policy.NOBODY -> this.nobody = unit {}
                 Policy.EVERYONE -> this.everyone = unit {}
                 Policy.ALLOW_LIST -> throw IllegalStateException(
-                    "This task does not support policy of type ALLOW_LIST. Use the more specific task in that case."
+                    "This task does not support policy of type ALLOW_LIST. Use the more specific task in that case.",
                 )
             }
         }
@@ -74,12 +73,12 @@ class ReflectUserProfileShareWithPolicySyncTask(
 
     @Serializable
     data class ReflectUserProfileShareWithPolicySyncTaskData(
-        val newPolicy: Policy
+        val newPolicy: Policy,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
             return ReflectUserProfileShareWithPolicySyncTask(
                 newPolicy = newPolicy,
-                serviceManager = serviceManager
+                serviceManager = serviceManager,
             )
         }
     }

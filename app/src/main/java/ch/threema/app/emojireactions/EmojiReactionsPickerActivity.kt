@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -35,6 +36,9 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiPicker
 import ch.threema.app.emojis.EmojiService
+import ch.threema.app.messagereceiver.GroupMessageReceiver
+import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.ui.SingleToast
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.EmojiReactionData
@@ -82,8 +86,7 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
             finish()
         }
 
-        @Suppress("DEPRECATION")
-        window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_collapsed)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.attach_status_bar_color_collapsed)
 
         emojiPicker = (findViewById<View>(R.id.emoji_stub) as ViewStub).inflate() as EmojiPicker
         emojiPicker?.setEmojiKeyListener(this)
@@ -133,21 +136,35 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
     }
 
     override fun onEmojiClick(emojiCodeString: String?) {
-        if (emojiCodeString != null) {
-            // add selected reaction
-            val messageReceiver = messageService.getMessageReceiver(messageModel)
-
-            CoroutineScope(Dispatchers.Default).launch {
-                messageService.sendEmojiReaction(
-                    messageModel as AbstractMessageModel,
-                    emojiCodeString,
-                    messageReceiver,
-                    false
-                )
-            }
-        } else {
+        if (emojiCodeString == null) {
             logger.debug("No emoji selected")
+            finish()
+            return
         }
+
+        val messageReceiver: MessageReceiver<AbstractMessageModel> = messageService.getMessageReceiver(messageModel)
+
+        // If this is a group message, we have to check if we are still an active member of the group
+        if (messageReceiver is GroupMessageReceiver) {
+            messageReceiver.groupModel?.data?.value?.let { currentGroupModelData ->
+                if (!currentGroupModelData.isMember) {
+                    SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group))
+                    finish()
+                    return
+                }
+            }
+        }
+
+        // add selected reaction
+        CoroutineScope(Dispatchers.Default).launch {
+            messageService.sendEmojiReaction(
+                messageModel as AbstractMessageModel,
+                emojiCodeString,
+                messageReceiver,
+                false,
+            )
+        }
+
         this.finish()
     }
 

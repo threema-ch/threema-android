@@ -24,121 +24,133 @@ package ch.threema.app.services;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ch.threema.app.R;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.tasks.TaskCreator;
+import ch.threema.app.utils.ConversationUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTagModel;
-import ch.threema.storage.models.TagModel;
+import ch.threema.storage.models.ConversationTag;
+import ch.threema.storage.models.GroupModel;
 
 public class ConversationTagServiceImpl implements ConversationTagService {
-    // Do not change this tag before db entries not changed
-    public static final String FIXED_TAG_PIN = "star";
-    public static final String FIXED_TAG_UNREAD = "unread"; // chats deliberately marked as unread
-
+    @NonNull
     private final DatabaseServiceNew databaseService;
-    private final List<TagModel> tagModels = new ArrayList<TagModel>() {{
-        add(new TagModel(
-            FIXED_TAG_PIN,
-            1,
-            2,
-            R.string.pin));
-        add(new TagModel(
-            FIXED_TAG_UNREAD,
-            0xFFFF0000,
-            0xFFFFFFFF,
-            R.string.unread));
-    }};
+    @NonNull
+    private final TaskCreator taskCreator;
 
-    public ConversationTagServiceImpl(DatabaseServiceNew databaseService) {
+    public ConversationTagServiceImpl(
+        @NonNull DatabaseServiceNew databaseService,
+        @NonNull TaskCreator taskCreator
+    ) {
         this.databaseService = databaseService;
+        this.taskCreator = taskCreator;
     }
 
     @Override
-    @Nullable
-    public TagModel getTagModel(@NonNull final String tagKey) {
-        for (TagModel tagModel : this.tagModels) {
-            if (tagKey.equals(tagModel.getTag())) {
-                return tagModel;
+    public void addTagAndNotify(@Nullable ConversationModel conversation, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource) {
+        if (conversation == null || this.isTaggedWith(conversation, tag)) {
+            return;
+        }
+        this.databaseService.getConversationTagFactory()
+            .create(new ConversationTagModel(conversation.getUid(), tag));
+        // Note that we only synchronize the pinned tag and not the unread
+        if (tag == ConversationTag.PINNED) {
+            reflectConversationCategoryPinnedIfApplicable(conversation, true, triggerSource);
+        }
+        this.fireOnModifiedConversation(conversation);
+    }
+
+    @Override
+    public void removeTagAndNotify(@Nullable ConversationModel conversation, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource) {
+        if (conversation == null || !this.isTaggedWith(conversation, tag)) {
+            return;
+        }
+        this.databaseService.getConversationTagFactory().deleteByConversationUidAndTag(conversation.getUid(), tag);
+        // Note that we only synchronize the pinned tag and not the unread
+        if (tag == ConversationTag.PINNED) {
+            reflectConversationCategoryPinnedIfApplicable(conversation, false, triggerSource);
+        }
+        this.fireOnModifiedConversation(conversation);
+    }
+
+    @Override
+    public void removeTag(@NonNull String conversationUid, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource) {
+        this.databaseService.getConversationTagFactory().deleteByConversationUidAndTag(conversationUid, tag);
+        // Note that we only synchronize the pinned tag and not the unread
+        if (tag == ConversationTag.PINNED) {
+            reflectConversationCategoryPinnedIfApplicable(conversationUid, false, triggerSource);
+        }
+    }
+
+    @Override
+    public void toggle(@Nullable ConversationModel conversation, @NonNull ConversationTag tag, boolean silent, @NonNull TriggerSource triggerSource) {
+        if (conversation == null) {
+            return;
+        }
+        if (this.isTaggedWith(conversation, tag)) {
+            // remove
+            this.databaseService.getConversationTagFactory()
+                .deleteByConversationUidAndTag(conversation.getUid(), tag);
+            // Note that we only synchronize the pinned tag and not the unread
+            if (tag == ConversationTag.PINNED) {
+                reflectConversationCategoryPinnedIfApplicable(conversation, false, triggerSource);
+            }
+        } else {
+            // Add
+            this.databaseService.getConversationTagFactory()
+                .create(new ConversationTagModel(conversation.getUid(), tag));
+            // Note that we only synchronize the pinned tag and not the unread
+            if (tag == ConversationTag.PINNED) {
+                reflectConversationCategoryPinnedIfApplicable(conversation, true, triggerSource);
             }
         }
-        return null;
-    }
-
-    @Override
-    public void addTagAndNotify(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
-        if (conversation != null && tagModel != null) {
-            if (!this.isTaggedWith(conversation, tagModel)) {
-                this.databaseService.getConversationTagFactory()
-                    .create(new ConversationTagModel(conversation.getUid(), tagModel.getTag()));
-                this.fireOnModifiedConversation(conversation);
-            }
+        if (!silent) {
+            this.fireOnModifiedConversation(conversation);
         }
     }
 
     @Override
-    public void removeTagAndNotify(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
-        if (conversation != null && tagModel != null) {
-            if (this.isTaggedWith(conversation, tagModel)) {
-                this.removeTag(conversation.getUid(), tagModel);
-                this.fireOnModifiedConversation(conversation);
-            }
-        }
-    }
-
-    @Override
-    public void removeTag(@NonNull String conversationUid, @NonNull TagModel tagModel) {
-        this.databaseService.getConversationTagFactory().deleteByConversationUidAndTag(
-            conversationUid, tagModel.getTag()
-        );
-    }
-
-    @Override
-    public boolean toggle(@Nullable ConversationModel conversation, @Nullable TagModel tagModel, boolean silent) {
-        if (conversation != null && tagModel != null) {
-            if (this.isTaggedWith(conversation, tagModel)) {
-                // remove
-                this.databaseService.getConversationTagFactory()
-                    .deleteByConversationUidAndTag(conversation.getUid(), tagModel.getTag());
-                if (!silent) {
-                    this.fireOnModifiedConversation(conversation);
-                }
-            } else {
-                // Add
-                this.databaseService.getConversationTagFactory()
-                    .create(new ConversationTagModel(conversation.getUid(), tagModel.getTag()));
-                if (!silent) {
-                    this.fireOnModifiedConversation(conversation);
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isTaggedWith(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
-        if (conversation == null || tagModel == null) {
+    public boolean isTaggedWith(@Nullable ConversationModel conversation, @NonNull ConversationTag tag) {
+        if (conversation == null) {
             return false;
         }
 
-        return this.databaseService.getConversationTagFactory()
-            .getByConversationUidAndTag(conversation.getUid(), tagModel.getTag()) != null;
+        return isTaggedWith(conversation.getUid(), tag);
     }
 
     @Override
-    public void removeAll(@Nullable ConversationModel conversation) {
+    public boolean isTaggedWith(@NonNull String conversationUid, @NonNull ConversationTag tag) {
+        return this.databaseService.getConversationTagFactory()
+            .getByConversationUidAndTag(conversationUid, tag) != null;
+    }
+
+    @Override
+    public void removeAll(@Nullable ConversationModel conversation, @NonNull TriggerSource triggerSource) {
         if (conversation != null) {
-            removeAll(conversation.getUid());
+            boolean wasPinTagged = isTaggedWith(conversation, ConversationTag.PINNED);
+            this.databaseService.getConversationTagFactory()
+                .deleteByConversationUid(conversation.getUid());
+            if (wasPinTagged) {
+                reflectConversationCategoryPinnedIfApplicable(conversation, false, triggerSource);
+            }
         }
     }
 
     @Override
-    public void removeAll(@NonNull String conversationUid) {
+    public void removeAll(@NonNull String conversationUid, @NonNull TriggerSource triggerSource) {
+        boolean wasPinTagged = isTaggedWith(conversationUid, ConversationTag.PINNED);
+
         this.databaseService.getConversationTagFactory()
             .deleteByConversationUid(conversationUid);
+
+        if (wasPinTagged) {
+            reflectConversationCategoryPinnedIfApplicable(conversationUid, false, triggerSource);
+        }
     }
 
     @Override
@@ -148,20 +160,68 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 
     @Override
     @NonNull
-    public List<String> getConversationUidsByTag(@NonNull TagModel tagModel) {
-        return this.databaseService.getConversationTagFactory().getAllConversationUidsByTag(
-            tagModel.getTag()
-        );
+    public List<String> getConversationUidsByTag(@NonNull ConversationTag tag) {
+        return this.databaseService.getConversationTagFactory().getAllConversationUidsByTag(tag);
     }
 
     @Override
-    public long getCount(@NonNull TagModel tagModel) {
-        return this.databaseService.getConversationTagFactory().countByTag(tagModel.getTag());
+    public long getCount(@NonNull ConversationTag tag) {
+        return this.databaseService.getConversationTagFactory().countByTag(tag);
     }
 
     private void fireOnModifiedConversation(final ConversationModel conversationModel) {
         ListenerManager.conversationListeners.handle(
             listener -> listener.onModified(conversationModel, conversationModel.getPosition())
         );
+    }
+
+    private void reflectConversationCategoryPinnedIfApplicable(
+        @NonNull ConversationModel conversationModel,
+        boolean isPinned,
+        @NonNull TriggerSource triggerSource
+    ) {
+        if (triggerSource == TriggerSource.SYNC || conversationModel.isDistributionListConversation()) {
+            return;
+        }
+        ContactModel contactModel = conversationModel.getContact();
+        if (contactModel != null) {
+            reflectContactPinnedIfApplicable(contactModel.getIdentity(), isPinned, triggerSource);
+            return;
+        }
+
+        GroupModel groupModel = conversationModel.getGroup();
+        if (groupModel != null) {
+            reflectGroupPinnedIfApplicable(groupModel.getId(), isPinned, triggerSource);
+        }
+    }
+
+    private void reflectConversationCategoryPinnedIfApplicable(@NonNull String conversationUid, boolean isPinned, @NonNull TriggerSource triggerSource) {
+        if (triggerSource == TriggerSource.SYNC) {
+            return;
+        }
+        String identity = ConversationUtil.getContactIdentityFromUid(conversationUid);
+        if (identity != null) {
+            reflectContactPinnedIfApplicable(identity, isPinned, triggerSource);
+            return;
+        }
+
+        Long groupDatabaseId = ConversationUtil.getGroupDatabaseIdFromUid(conversationUid);
+        if (groupDatabaseId != null) {
+            reflectGroupPinnedIfApplicable(groupDatabaseId, isPinned, triggerSource);
+        }
+    }
+
+    private void reflectContactPinnedIfApplicable(@NonNull String identity, boolean isPinned, @NonNull TriggerSource triggerSource) {
+        if (triggerSource == TriggerSource.SYNC) {
+            return;
+        }
+        taskCreator.scheduleReflectConversationVisibilityPinned(identity, isPinned);
+    }
+
+    private void reflectGroupPinnedIfApplicable(long groupDatabaseId, boolean isPinned, @NonNull TriggerSource triggerSource) {
+        if (triggerSource == TriggerSource.SYNC) {
+            return;
+        }
+        taskCreator.scheduleReflectGroupConversationVisibilityPinned(groupDatabaseId, isPinned);
     }
 }

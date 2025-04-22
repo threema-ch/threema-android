@@ -25,14 +25,14 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.editMessage
 import ch.threema.protobuf.d2d.incomingMessage
+import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import kotlin.random.Random.Default.nextBytes
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class EditMessageTest {
-
     /**
      *  A edit message in the raw form consists of bytes in the following order:
      *
@@ -48,15 +48,13 @@ class EditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenLengthIsTooLow() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             EditMessage.fromByteArray(
                 data = bytesProtoMessageData,
                 offset = 0,
-                length = ProtocolDefines.MESSAGE_ID_LEN - 1
+                length = ProtocolDefines.MESSAGE_ID_LEN - 1,
             )
         }
 
@@ -66,15 +64,13 @@ class EditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenOffsetIsBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             EditMessage.fromByteArray(
                 data = bytesProtoMessageData,
                 offset = -1,
-                length = bytesProtoMessageData.size
+                length = bytesProtoMessageData.size,
             )
         }
 
@@ -84,15 +80,13 @@ class EditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset1() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             EditMessage.fromByteArray(
                 data = bytesProtoMessageData,
                 offset = 1,
-                length = bytesProtoMessageData.size
+                length = bytesProtoMessageData.size,
             )
         }
 
@@ -102,15 +96,13 @@ class EditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset2() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             EditMessage.fromByteArray(
                 data = bytesProtoMessageData.copyOfRange(0, bytesProtoMessageData.size - 1),
                 offset = 0,
-                length = bytesProtoMessageData.size
+                length = bytesProtoMessageData.size,
             )
         }
 
@@ -120,12 +112,11 @@ class EditMessageTest {
 
     @Test
     fun shouldParseValuesCorrectly() {
-
         // act
         val editMessage = EditMessage.fromByteArray(
             data = bytesProtoMessageData,
             offset = 0,
-            length = bytesProtoMessageData.size
+            length = bytesProtoMessageData.size,
         )
 
         // assert
@@ -135,7 +126,6 @@ class EditMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffset() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffset = nextBytes(offset) + bytesProtoMessageData
@@ -144,7 +134,7 @@ class EditMessageTest {
         val editMessage = EditMessage.fromByteArray(
             data = bytesMessageDataContainingOffset,
             offset = offset,
-            length = bytesProtoMessageData.size
+            length = bytesProtoMessageData.size,
         )
 
         // assert
@@ -154,7 +144,6 @@ class EditMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffsetAndTooMuchData() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffsetAndJunk =
@@ -164,7 +153,7 @@ class EditMessageTest {
         val editMessage = EditMessage.fromByteArray(
             data = bytesMessageDataContainingOffsetAndJunk,
             offset = offset,
-            length = bytesProtoMessageData.size
+            length = bytesProtoMessageData.size,
         )
 
         // assert
@@ -174,7 +163,6 @@ class EditMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -199,11 +187,10 @@ class EditMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val outgoingMessageId = 12345678L
         val outgoingMessageCreatedAt: Long = System.currentTimeMillis()
-        val outgoingD2DMessage = incomingMessage {
+        val outgoingD2DMessage = outgoingMessage {
             this.messageId = outgoingMessageId
             this.createdAt = outgoingMessageCreatedAt
             this.body = bytesProtoMessageData.toByteString()

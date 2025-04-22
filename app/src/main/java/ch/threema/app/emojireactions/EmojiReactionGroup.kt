@@ -40,10 +40,12 @@ import kotlin.math.roundToInt
 data class ButtonInfo(
     val emojiSequence: String,
     val count: Int,
-    val isChecked: Boolean
+    val isChecked: Boolean,
 )
 
-class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListener,
+class EmojiReactionGroup :
+    LinearLayoutCompat,
+    OnEmojiReactionButtonClickListener,
     SelectEmojiButton.OnSelectEmojiButtonClickListener,
     MoreReactionsButton.OnMoreReactionsButtonClickListener {
     private var messageModel: AbstractMessageModel? = null
@@ -62,23 +64,15 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
         resources.getDimensionPixelSize(R.dimen.emojireactions_width_with_count)
     private lateinit var contextThemeWrapper: ContextThemeWrapper
 
-    constructor(context: Context) : super(
-        context
-    ) {
+    constructor(context: Context) : super(context) {
         init()
     }
 
-    constructor(context: Context, attrs: AttributeSet?) : super(
-        context, attrs
-    ) {
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         init()
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init()
     }
 
@@ -94,7 +88,7 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
     fun setMessageModel(
         messageReceiver: MessageReceiver<*>,
         messageModel: AbstractMessageModel,
-        reactions: List<EmojiReactionData>
+        reactions: List<EmojiReactionData>,
     ) {
         this.messageModel = messageModel
         this.reactions = reactions
@@ -132,7 +126,10 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
                         ButtonInfo(
                             emojiSequence = key,
                             count,
-                            isChecked = reactions.any { reaction -> reaction.emojiSequence == key && reaction.senderIdentity == userService.identity })
+                            isChecked = reactions.any { reaction ->
+                                reaction.emojiSequence == key && reaction.senderIdentity == userService.identity
+                            },
+                        ),
                     )
                 }
             }
@@ -214,7 +211,7 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
     private fun getContextThemeWrapper(context: Context): ContextThemeWrapper {
         return ContextThemeWrapper(
             context,
-            R.style.Threema_EmojiReactions_Button
+            R.style.Threema_EmojiReactions_Button,
         )
     }
 

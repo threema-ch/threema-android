@@ -35,7 +35,7 @@ import com.google.android.material.button.MaterialButton
 class ScrollButtonManager(
     private val upButton: MaterialButton,
     private val downButton: FrameLayout,
-    private val downBadgeDrawable: BadgeDrawable
+    private val downBadgeDrawable: BadgeDrawable,
 ) {
     private val buttonHandler = Handler()
     private val buttonTask = Runnable {

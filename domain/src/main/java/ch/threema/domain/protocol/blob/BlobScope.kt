@@ -26,7 +26,7 @@ package ch.threema.domain.protocol.blob
  *  It needs to be passed as a query parameter to all 3 endpoints (upload, download, done).
  */
 sealed class BlobScope(
-    @JvmField val name: String
+    @JvmField val name: String,
 ) {
     /**
      *  Blob is **only** present blob mirror server to share between devices in the same device group

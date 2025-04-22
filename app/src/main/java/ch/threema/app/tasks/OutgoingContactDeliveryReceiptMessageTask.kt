@@ -27,8 +27,8 @@ import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 class OutgoingContactDeliveryReceiptMessageTask(
     private val receiptType: Int,
@@ -52,7 +52,7 @@ class OutgoingContactDeliveryReceiptMessageTask(
         receiptType,
         messageIds.map { it.toString() },
         date,
-        toIdentity
+        toIdentity,
     )
 
     @Serializable

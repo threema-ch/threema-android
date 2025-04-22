@@ -44,7 +44,7 @@ class ChatServerAddressProviderImpl(
     private val lock = ReentrantLock()
 
     private var socketAddressIndex: Int = 0
-    private var serverSocketAddresses: List<InetSocketAddress> = listOf()
+    private var serverSocketAddresses: List<InetSocketAddress> = emptyList()
 
     /**
      * Move the internal pointer to the next available address.
@@ -75,16 +75,13 @@ class ChatServerAddressProviderImpl(
         UnknownHostException::class,
         ExecutionException::class,
         InterruptedException::class,
-        ThreemaException::class
+        ThreemaException::class,
     )
     override fun update(): Unit = lock.withLock {
         val serverHost = getServerHost()
 
-        val addresses = if (ProxyAwareSocketFactory.shouldUseProxy(
-                serverHost,
-                serverAddressProvider.chatServerPorts[0]
-            )
-        ) {
+        val ports = serverAddressProvider.getChatServerPorts()
+        val addresses = if (ProxyAwareSocketFactory.shouldUseProxy(serverHost, ports[0])) {
             getAddressesWithProxy(serverHost)
         } else {
             getAddressesWithoutProxy(serverHost)
@@ -100,16 +97,16 @@ class ChatServerAddressProviderImpl(
         addresses.withIndex().any {
             val newAddress = it.value.address
             val previousAddress = serverSocketAddresses[it.index].address
-            (newAddress == null && previousAddress != null)
-                || (newAddress != null && previousAddress == null)
-                || (newAddress != null && !newAddress.hostAddress.equals(previousAddress.hostAddress))
+            (newAddress == null && previousAddress != null) ||
+                (newAddress != null && previousAddress == null) ||
+                (newAddress != null && !newAddress.hostAddress.equals(previousAddress.hostAddress))
         }
 
     private fun getServerHost(): String {
         val serverNamePrefix = serverAddressProvider.getChatServerNamePrefix(ipv6)
         val serverHost = if (serverNamePrefix.isNotEmpty()) {
             val serverGroup =
-                if (serverAddressProvider.chatServerUseServerGroups) identityStore.serverGroup else "."
+                if (serverAddressProvider.getChatServerUseServerGroups()) identityStore.serverGroup else "."
             "$serverNamePrefix$serverGroup"
         } else {
             ""
@@ -118,7 +115,7 @@ class ChatServerAddressProviderImpl(
     }
 
     private fun getAddressesWithProxy(serverHost: String): List<InetSocketAddress> {
-        return serverAddressProvider.chatServerPorts
+        return serverAddressProvider.getChatServerPorts()
             .map { InetSocketAddress.createUnresolved(serverHost, it) }
     }
 
@@ -136,7 +133,7 @@ class ChatServerAddressProviderImpl(
             }
         }
         return inetAddresses.flatMap { address ->
-            serverAddressProvider.chatServerPorts.map { port -> InetSocketAddress(address, port) }
+            serverAddressProvider.getChatServerPorts().map { port -> InetSocketAddress(address, port) }
         }
     }
 }

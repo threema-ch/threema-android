@@ -59,8 +59,6 @@ import static ch.threema.domain.models.ContactKt.CONTACT_NAME_MAX_LENGTH_BYTES;
 public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEditView.AvatarEditListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ContactEditDialog");
 
-    // TODO Handle activity destruction after configuration change with "don't save activities" on
-
     private static final String ARG_TITLE = "title";
     private static final String ARG_TEXT1 = "text1";
     private static final String ARG_TEXT2 = "text2";

@@ -28,7 +28,7 @@ interface EmojiDao {
     @Transaction
     @Insert(
         entity = Emoji::class,
-        onConflict = OnConflictStrategy.IGNORE
+        onConflict = OnConflictStrategy.IGNORE,
     )
     fun insertEmojis(emojis: List<EmojiOrder>)
 
@@ -51,7 +51,7 @@ interface EmojiDao {
             "INNER JOIN SearchTerm s ON e.sequence = s.emoji_sequence " +
             "WHERE s.language LIKE :language " +
             "AND s.term LIKE :searchTerm || '%' " +
-            "ORDER by `order` ASC"
+            "ORDER by `order` ASC",
     )
     fun search(language: String, searchTerm: String): List<Emoji>
 

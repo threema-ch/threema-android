@@ -22,7 +22,6 @@
 package ch.threema.domain.taskmanager
 
 enum class TriggerSource {
-
     /**
      * An update triggered by synchronisation from another device.
      *
@@ -44,5 +43,4 @@ enum class TriggerSource {
      * side effects (e.g. implicit contact creation) will need to be reflected separately.
      */
     REMOTE,
-
 }

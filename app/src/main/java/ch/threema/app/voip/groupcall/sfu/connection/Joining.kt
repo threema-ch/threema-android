@@ -38,18 +38,19 @@ class Joining internal constructor(
     private val sfuBaseUrl: String,
     private val context: Context,
     private val me: ContactModel,
-    private val sfuConnection: SfuConnection
+    private val sfuConnection: SfuConnection,
 ) : GroupCallConnectionState(StateName.JOINING, call) {
     init {
         // Initialize and create peer connection factory
         WebRTCUtil.initializePeerConnectionFactory(
-            ThreemaApplication.getAppContext(), WebRTCUtil.Scope.CALL_OR_GROUP_CALL_OR_WEB_CLIENT
+            ThreemaApplication.getAppContext(),
+            WebRTCUtil.Scope.CALL_OR_GROUP_CALL_OR_WEB_CLIENT,
         )
     }
 
     override fun getStateProviders() = listOf(
         this::observeCallEnd,
-        this::getNextState
+        this::getNextState,
     )
 
     private suspend fun getNextState(): GroupCallConnectionState {
@@ -65,11 +66,12 @@ class Joining internal constructor(
         val joinResponse = join(fingerprint, 2)
         return if (!joinResponse.isHttpOk || joinResponse.body == null) {
             Failed(
-                call, SfuException(
+                call,
+                SfuException(
                     "Join failed with status code ${joinResponse.statusCode}",
                     joinResponse.statusCode,
-                    call.description
-                )
+                    call.description,
+                ),
             )
         } else {
             Connecting(call, me, context, certificate, joinResponse.body)
@@ -79,13 +81,13 @@ class Joining internal constructor(
     private suspend fun join(
         fingerprint: ByteArray,
         retriesOnInvalidToken: Int,
-        forceTokenRefresh: Boolean = false
+        forceTokenRefresh: Boolean = false,
     ): JoinResponse {
         val response = sfuConnection.join(
             sfuConnection.obtainSfuToken(forceTokenRefresh),
             sfuBaseUrl,
             call.description,
-            fingerprint
+            fingerprint,
         )
         return if (response.statusCode == HTTP_STATUS_TOKEN_INVALID && retriesOnInvalidToken > 0) {
             logger.info("Retry joining with refreshed token")

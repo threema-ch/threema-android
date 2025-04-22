@@ -24,27 +24,27 @@ package ch.threema.app.voip.groupcall.sfu
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.storage.models.GroupModel
-import org.junit.Assert.assertTrue
-import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import io.mockk.every
+import io.mockk.mockk
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-internal class CallIdTest {
+class CallIdTest {
     /**
      * ## Group Call ID Derivation
-
-    For group calls scoped to groups, the Group Call ID is derived by running
-    BLAKE2b on specific data provided by the `GroupCallStart`:
-
-    group-call-id = BLAKE2b(
-    out-length=32,
-    input=
-    group-creator-identity
-    || group-id
-    || u8(GroupCallStart.protocol_version)
-    || GroupCallStart.gck
-    || utf8-encode(GroupCallStart.base_url),
-    )
+     *
+     * For group calls scoped to groups, the Group Call ID is derived by running
+     * BLAKE2b on specific data provided by the `GroupCallStart`:
+     *
+     * group-call-id = BLAKE2b(
+     * out-length=32,
+     * input=
+     * group-creator-identity
+     * || group-id
+     * || u8(GroupCallStart.protocol_version)
+     * || GroupCallStart.gck
+     * || utf8-encode(GroupCallStart.base_url),
+     * )
      */
     @Test
     fun testCallIdCreation() {
@@ -67,6 +67,7 @@ internal class CallIdTest {
             0x61, 0x62, 0x63, 0x64, 0x65, 0x66 // utf8-encode(GroupCallStart.base_url)
         ]
          */
+
         // calculated with blake2b in node.js (https://github.com/emilbayes/blake2b)
         // see example implementation below
         val expected = byteArrayOf(
@@ -77,7 +78,7 @@ internal class CallIdTest {
             0xA9.toByte(), 0x55.toByte(), 0xFB.toByte(), 0xBF.toByte(),
             0xBA.toByte(), 0xB2.toByte(), 0xCD.toByte(), 0xC2.toByte(),
             0xA8.toByte(), 0x3F.toByte(), 0xBF.toByte(), 0x17.toByte(),
-            0x51.toByte(), 0xEB.toByte(), 0x8A.toByte(), 0xE0.toByte()
+            0x51.toByte(), 0xEB.toByte(), 0x8A.toByte(), 0xE0.toByte(),
         )
         assertTrue(expected.contentEquals(callId.bytes))
     }
@@ -133,18 +134,18 @@ val GCK = byteArrayOf(
     0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00
+    0x00, 0x00, 0x00, 0x00,
 )
 private const val PROTOCOL_VERSION = 1
 private const val BASE_URL = "abcdef" // [ 0x61, 0x62, 0x63, 0x64, 0x65, 0x66 ]
 
 private fun createCallId(): CallId {
-    val groupId = mock(GroupId::class.java)
-    `when`(groupId.groupId).thenReturn(GROUP_ID)
+    val groupId = mockk<GroupId>()
+    every { groupId.groupId } returns GROUP_ID
 
-    val group = mock(GroupModel::class.java)
-    `when`(group.apiGroupId).thenReturn(groupId)
-    `when`(group.creatorIdentity).thenReturn(GROUP_CREATOR_IDENTITY)
+    val group = mockk<GroupModel>()
+    every { group.apiGroupId } returns groupId
+    every { group.creatorIdentity } returns GROUP_CREATOR_IDENTITY
 
     val callStartData = GroupCallStartData(PROTOCOL_VERSION.toUInt(), GCK, BASE_URL)
     return CallId.create(group, callStartData)

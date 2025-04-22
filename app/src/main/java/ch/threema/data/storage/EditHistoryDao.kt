@@ -26,7 +26,6 @@ import ch.threema.data.repositories.EditHistoryEntryCreateException
 import ch.threema.storage.models.AbstractMessageModel
 
 interface EditHistoryDao {
-
     /**
      * Insert a new edit history entry
      *

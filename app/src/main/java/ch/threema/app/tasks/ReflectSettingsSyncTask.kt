@@ -78,6 +78,33 @@ abstract class ReflectSettingsSyncTask(
         }
     }
 
+    /**
+     * Reflect a settings sync update that contains the result of applying the provided [settingsCreators].
+     *
+     * Note that this task must be used synchronously as it won't be persisted. It is the scheduler's responsibility to check that it has run to
+     * completion.
+     */
+    class ReflectMultipleSettingsSyncUpdate(
+        multiDeviceManager: MultiDeviceManager,
+        nonceFactory: NonceFactory,
+        private val settingsCreators: List<(Settings.Builder) -> Unit>,
+    ) : ReflectSettingsSyncTask(
+        multiDeviceManager = multiDeviceManager,
+        nonceFactory = nonceFactory,
+    ) {
+        override val type = "ReflectMultipleSettingsSyncUpdate"
+
+        override fun getSettings(): Settings {
+            val settingsBuilder = Settings.newBuilder()
+
+            settingsCreators.forEach { settingsCreator ->
+                settingsCreator.invoke(settingsBuilder)
+            }
+
+            return settingsBuilder.build()
+        }
+    }
+
     class ReflectUnknownContactPolicySyncUpdate(
         multiDeviceManager: MultiDeviceManager,
         nonceFactory: NonceFactory,
@@ -85,7 +112,8 @@ abstract class ReflectSettingsSyncTask(
     ) : ReflectSettingsSyncTask(
         multiDeviceManager = multiDeviceManager,
         nonceFactory = nonceFactory,
-    ), PersistableTask {
+    ),
+        PersistableTask {
         override val type = "ReflectUnknownContactPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
@@ -119,7 +147,8 @@ abstract class ReflectSettingsSyncTask(
     ) : ReflectSettingsSyncTask(
         multiDeviceManager = multiDeviceManager,
         nonceFactory = nonceFactory,
-    ), PersistableTask {
+    ),
+        PersistableTask {
         override val type = "ReflectReadReceiptPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
@@ -153,7 +182,8 @@ abstract class ReflectSettingsSyncTask(
     ) : ReflectSettingsSyncTask(
         multiDeviceManager = multiDeviceManager,
         nonceFactory = nonceFactory,
-    ), PersistableTask {
+    ),
+        PersistableTask {
         override val type = "ReflectTypingIndicatorPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
@@ -187,7 +217,8 @@ abstract class ReflectSettingsSyncTask(
     ) : ReflectSettingsSyncTask(
         multiDeviceManager = multiDeviceManager,
         nonceFactory = nonceFactory,
-    ), PersistableTask {
+    ),
+        PersistableTask {
         override val type = "ReflectBlockedIdentitiesSyncUpdate"
 
         override fun getSettings(): Settings = settings {

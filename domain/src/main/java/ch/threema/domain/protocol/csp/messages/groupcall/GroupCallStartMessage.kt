@@ -34,8 +34,9 @@ import java.util.Arrays
 class GroupCallStartMessage(payloadData: GroupCallStartData) :
     AbstractProtobufGroupMessage<GroupCallStartData>(
         ProtocolDefines.MSGTYPE_GROUP_CALL_START,
-        payloadData
-    ), GroupCallControlMessage {
+        payloadData,
+    ),
+    GroupCallControlMessage {
     override fun flagSendPush() = true
 
     override fun getMinimumRequiredForwardSecurityVersion(): Version = Version.V1_2
@@ -59,7 +60,6 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) :
     override fun bumpLastUpdate(): Boolean = true
 
     companion object {
-
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
          *  So we set the offset in [fromByteArray] to zero.
@@ -91,7 +91,7 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) :
         @JvmStatic
         fun fromReflected(
             message: MdD2D.OutgoingMessage,
-            ownIdentity: String
+            ownIdentity: String,
         ): GroupCallStartMessage {
             val bodyBytes: ByteArray = message.body.toByteArray()
             val groupCallStartMessage = fromByteArray(bodyBytes, 0, bodyBytes.size)

@@ -96,8 +96,8 @@ public class MasterKeyTest {
         cos.write(testBytes);
         cos.close();
 
-		/* Note: CipherInputStream processes data in 512 byte chunks; therefore we need to
-		   use DataInputStream.readFully() to ensure we read all the data */
+        /* Note: CipherInputStream processes data in 512 byte chunks; therefore we need to
+           use DataInputStream.readFully() to ensure we read all the data */
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
         CipherInputStream cis = masterKey.getCipherInputStream(bis);
         DataInputStream dis = new DataInputStream(cis);

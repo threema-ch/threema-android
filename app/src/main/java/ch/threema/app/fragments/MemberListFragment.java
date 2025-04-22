@@ -31,6 +31,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.ListFragment;
 
@@ -50,8 +51,8 @@ import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
@@ -70,7 +71,8 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
     protected ConversationService conversationService;
     protected PreferenceService preferenceService;
     protected BlockedIdentitiesService blockedIdentitiesService;
-    protected DeadlineListService hiddenChatsListService;
+    @Nullable
+    protected ConversationCategoryService conversationCategoryService;
     protected Activity activity;
     protected Parcelable listInstanceState;
     protected ExtendedFloatingActionButton floatingActionButton;
@@ -95,7 +97,7 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
             blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
             conversationService = serviceManager.getConversationService();
             preferenceService = serviceManager.getPreferenceService();
-            hiddenChatsListService = serviceManager.getHiddenChatsListService();
+            conversationCategoryService = serviceManager.getConversationCategoryService();
         } catch (ThreemaException e) {
             LogUtil.exception(e, getActivity());
             return null;
@@ -123,7 +125,13 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
             checkedItemPositions = savedInstanceState.getIntegerArrayList(getBundleName() + "c");
         }
 
-        createListAdapter(checkedItemPositions, preselectedIdentities, excludedIdentities, activity instanceof GroupAddActivity, activity instanceof ProfilePicRecipientsActivity);
+        createListAdapter(
+            checkedItemPositions,
+            preselectedIdentities,
+            excludedIdentities,
+            activity instanceof GroupAddActivity,
+            activity instanceof ProfilePicRecipientsActivity
+        );
         preselectedIdentities = null;
     }
 
@@ -139,12 +147,6 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
 
         floatingActionButton = view.findViewById(R.id.floating);
         floatingActionButton.hide();
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        selectionListener.onSelectionChanged();
     }
 
     @Override
@@ -165,6 +167,13 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
 
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        selectionListener.onSelectionChanged();
+    }
+
 
     protected void onAdapterCreated() {
         selectionListener.onSelectionChanged();
@@ -209,7 +218,13 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
         void onSelectionChanged();
     }
 
-    protected abstract void createListAdapter(ArrayList<Integer> checkedItems, ArrayList<String> preselectedIdentities, ArrayList<String> excludedIdentities, boolean group, boolean profilePics);
+    protected abstract void createListAdapter(
+        @Nullable ArrayList<Integer> checkedItemPositions,
+        @Nullable ArrayList<String> preselectedIdentities,
+        @Nullable ArrayList<String> excludedIdentities,
+        boolean group,
+        boolean profilePics
+    );
 
     protected abstract String getBundleName();
 

@@ -32,7 +32,7 @@ import java.lang.ref.WeakReference;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Taken from http://stackoverflow.com/questions/27414173/equivalent-of-listview-setemptyview-in-recyclerview/27801394#27801394
+ * Taken from <a href="http://stackoverflow.com/questions/27414173/equivalent-of-listview-setemptyview-in-recyclerview/27801394#27801394">equivalent-of-listview-setemptyview-in-recyclerview</a>
  */
 public class EmptyRecyclerView extends RecyclerView {
     private int numHeadersAndFooters = 0;

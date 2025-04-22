@@ -44,11 +44,12 @@ import javax.crypto.CipherInputStream;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.ResettableInputStream;
 import ch.threema.base.ThreemaException;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
 
 public interface FileService {
 
@@ -105,8 +106,6 @@ public interface FileService {
 
     /**
      * create a temporary file
-     *
-     * @throws IOException
      */
     File createTempFile(String prefix, String suffix) throws IOException;
 
@@ -118,17 +117,12 @@ public interface FileService {
     @WorkerThread
     void cleanTempDirs();
 
-    /**
-     *
-     */
     String getWallpaperFilePath(MessageReceiver messageReceiver);
 
     String getWallpaperFilePath(String uniqueIdString);
 
     /**
      * create a file object for the wallpaper
-     *
-     * @throws IOException
      */
     File createWallpaperFile(MessageReceiver messageReceiver) throws IOException;
 
@@ -149,58 +143,67 @@ public interface FileService {
     /**
      * return a decrypted file from a message
      * null if the message or file does not exist
-     *
-     * @throws Exception
      */
+    @Nullable
     File getDecryptedMessageFile(AbstractMessageModel messageModel) throws Exception;
 
     /**
      * return a decrypted file from a message
      * null if the message or file does not exist
-     *
-     * @throws Exception
      */
+    @Nullable
     File getDecryptedMessageFile(AbstractMessageModel messageModel, String filename) throws Exception;
 
     /**
      * return a cipher input stream of a message
      * return null if the file is missing
-     *
-     * @throws Exception
      */
+    @Nullable
     CipherInputStream getDecryptedMessageStream(AbstractMessageModel messageModel) throws Exception;
 
     /**
      * return the cipher input stream of a thumbnail
      * return null if the thumbnail missing
-     *
-     * @throws Exception
      */
+    @Nullable
     CipherInputStream getDecryptedMessageThumbnailStream(AbstractMessageModel messageModel) throws Exception;
 
     /**
      * copy a decrypted message file into "gallery" folder
-     * <p>
-     * TODO: move to another service
      */
     void copyDecryptedFileIntoGallery(Uri sourceUri, AbstractMessageModel messageModel) throws Exception;
 
     File getMessageFile(AbstractMessageModel messageModel);
 
     /**
-     * Write a message (modify if needed) and return true on success.
+     * Create a media file for a specific message using the provided data, and return true on success.
+     * Will fail if the file already exists.
      */
     boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data) throws Exception;
 
     /**
-     * Write a message (modify if needed) and return true on success.
+     * Create a media file for a specific message using the provided data, and return true on success.
+     * Will fail if the file already exists.
      */
     boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length) throws Exception;
 
     /**
-     * Write a message (modify if needed) and return true on success.
+     * Create a media file for a specific message using the provided data, and return true on success.
+     * If the file already exists, it will be overwritten if [overwrite] is true, otherwise it will fail.
      */
     boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length, boolean overwrite) throws Exception;
+
+    /**
+     * Create a media file for a specific message using the provided input stream, and return true on success.
+     * Will fail if the file already exists.
+     */
+    boolean writeConversationMedia(@NonNull AbstractMessageModel messageModel, @NonNull InputStream inputStream) throws Exception;
+
+    /**
+     * Create a media file for a specific message using the provided input stream, and return true on success.
+     * If the file already exists, it will be overwritten if [overwrite] is true, otherwise it will fail.
+     */
+    boolean writeConversationMedia(@NonNull AbstractMessageModel messageModel, @NonNull InputStream inputStream, boolean overwrite) throws Exception;
 
     /**
      * Save a group avatar (resize if needed) and return true on success. Additionally, this resets
@@ -209,21 +212,71 @@ public interface FileService {
     boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException;
 
     /**
-     * get the group avatar as InputStream
+     * Save a group avatar (resize if needed) and return true on success. Additionally, this resets
+     * the avatar cache for this group.
      */
+    boolean writeGroupAvatar(GroupModel groupModel, InputStream photoData) throws IOException, MasterKeyLockedException;
+    /**
+     * Save a group avatar (resize if needed) and return true on success. Additionally, this resets
+     * the avatar cache for this group.
+     */
+    @Deprecated
+    boolean writeGroupAvatar(ch.threema.storage.models.GroupModel groupModel, byte[] photoData) throws Exception;
+
+    /**
+     * get the group avatar as InputStream
+     *
+     * @return null if there is no group avatar
+     */
+    @Nullable
     InputStream getGroupAvatarStream(GroupModel groupModel) throws IOException, MasterKeyLockedException;
 
     /**
-     * get the group avatar if the file exists
+     * get the group avatar as InputStream
+     *
+     * @return null if there is no group avatar
      */
+    @Deprecated
+    InputStream getGroupAvatarStream(ch.threema.storage.models.GroupModel groupModel) throws Exception;
+
+    /**
+     * Get the group avatar as byte array.
+     */
+    @Nullable
+    byte[] getGroupAvatarBytes(@NonNull GroupModel groupModel) throws Exception;
+
+    /**
+     * get the group avatar if the file exists
+     *
+     * @return null if there is no group avatar
+     */
+    @Nullable
     Bitmap getGroupAvatar(GroupModel groupModel) throws IOException, MasterKeyLockedException;
+
+    /**
+     * get the group avatar if the file exists
+     *
+     * @return null if there is no group avatar
+     */
+    @Deprecated
+    @Nullable
+    Bitmap getGroupAvatar(ch.threema.storage.models.GroupModel groupModel) throws Exception;
 
     /**
      * Remove the group avatar. Additionally, this resets the avatar cache for this group.
      */
     void removeGroupAvatar(@NonNull GroupModel groupModel);
 
-    boolean hasGroupAvatarFile(GroupModel groupModel);
+    /**
+     * remove the group avatar
+     */
+    @Deprecated
+    void removeGroupAvatar(ch.threema.storage.models.GroupModel groupModel);
+
+    boolean hasGroupAvatarFile(@NonNull GroupModel groupModel);
+
+    @Deprecated
+    boolean hasGroupAvatarFile(@NonNull ch.threema.storage.models.GroupModel groupModel);
 
     /**
      * Write the contact profile picture set by the user. Additionally, this resets the avatar cache
@@ -238,10 +291,25 @@ public interface FileService {
     boolean writeUserDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException;
 
     /**
+     * Write the contact profile picture set by the user. Additionally, this resets the avatar cache
+     * for this contact.
+     */
+    boolean writeUserDefinedProfilePicture(@NonNull String identity, @NonNull InputStream avatar) throws IOException, MasterKeyLockedException;
+
+    /**
      * Write the contact profile picture received by the contact. Additionally, this resets the
      * avatar cache for this contact.
      */
     boolean writeContactDefinedProfilePicture(@NonNull String identity, byte[] encryptedBlob) throws IOException, MasterKeyLockedException;
+
+    /**
+     * Write the contact profile picture received by the contact. Additionally, this resets the
+     * avatar cache for this contact.
+     */
+    boolean writeContactDefinedProfilePicture(
+        @NonNull String identity,
+        @NonNull InputStream encryptedBlob
+    ) throws IOException, MasterKeyLockedException;
 
     /**
      * Write the contact profile picture from Android's address book. Additionally, this resets the
@@ -253,24 +321,32 @@ public interface FileService {
      * return the decrypted bitmap of a contact avatar
      * if no file exists, null will be returned
      */
+    @Nullable
     Bitmap getUserDefinedProfilePicture(@NonNull String identity) throws Exception;
 
+    @Nullable
     Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception;
 
     /**
      * Return a input stream of a local saved contact avatar
      */
+    @Nullable
     InputStream getUserDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
 
     /**
      * Return a input stream of a contact photo
+     *
+     * @return null if there is no contact defined profile picture
      */
+    @Nullable
     InputStream getContactDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
 
     /**
      * return the decrypted bitmap of a contact-provided profile picture
-     * returns null if no file exists
+     *
+     * @return null if no contact defined profile picture exists
      */
+    @Nullable
     Bitmap getContactDefinedProfilePicture(@NonNull String identity) throws Exception;
 
     /**
@@ -311,14 +387,27 @@ public interface FileService {
      *
      * @param messageModel   Message Model used as the source for the file name
      * @param thumbnailBytes Byte Array of the thumbnail bitmap
-     * @throws Exception
      */
     void saveThumbnail(AbstractMessageModel messageModel, byte[] thumbnailBytes) throws Exception;
+
+    /**
+     * Save the thumbnail to disk using the file name specified in the supplied AbstractMessageModel
+     *
+     * @param messageModel   Message Model used as the source for the file name
+     * @param thumbnail      InputStream to read the thumbnail's image data from
+     */
+    void saveThumbnail(AbstractMessageModel messageModel, @NonNull InputStream thumbnail) throws Exception;
 
     /**
      * write a thumbnail to disk
      */
     void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] thumbnail) throws Exception;
+
+
+    /**
+     * write a thumbnail to disk
+     */
+    void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull ResettableInputStream thumbnail) throws Exception;
 
     /**
      * return whether a thumbnail file exists for the specified message model

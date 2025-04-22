@@ -40,15 +40,17 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.storage.DatabaseUtil
 import ch.threema.storage.CursorHelper
+import ch.threema.storage.DatabaseUtil
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupMemberModel
+import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.GroupModel
-import net.zetetic.database.sqlcipher.SQLiteDatabase
+import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
 import java.util.Collections
 import java.util.Date
+import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 class DatabaseException internal constructor(message: String, cause: Throwable?) :
     RuntimeException(message, cause) {
@@ -160,6 +162,24 @@ fun getColumnIndexOrThrow(cursor: Cursor, columName: String): Int {
 }
 
 class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : DatabaseBackend {
+    /**
+     * @return All existing contacts from the database or an empty list in case of an error while reading.
+     */
+    override fun getAllContacts(): List<DbContact> {
+        return try {
+            val cursor = sqlite.readableDatabase.query("SELECT * FROM ${ContactModel.TABLE};")
+            val dbContacts = mutableListOf<DbContact>()
+            cursor.use {
+                while (cursor.moveToNext()) {
+                    dbContacts.add(mapCursorToDbContact(cursor))
+                }
+            }
+            dbContacts
+        } catch (exception: Exception) {
+            logger.error("Failed to read contacts.", exception)
+            emptyList()
+        }
+    }
 
     override fun createContact(contact: DbContact) {
         val contentValues = ContentValues()
@@ -171,7 +191,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         sqlite.writableDatabase.insert(
             ContactModel.TABLE,
             SQLiteDatabase.CONFLICT_ROLLBACK,
-            contentValues
+            contentValues,
         )
     }
 
@@ -180,6 +200,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             SupportSQLiteQueryBuilder.builder(ContactModel.TABLE)
                 .columns(
                     arrayOf(
+                        ContactModel.COLUMN_IDENTITY,
                         ContactModel.COLUMN_PUBLIC_KEY,
                         ContactModel.COLUMN_CREATED_AT,
                         ContactModel.COLUMN_FIRST_NAME,
@@ -195,84 +216,58 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                         ContactModel.COLUMN_FEATURE_MASK,
                         ContactModel.COLUMN_READ_RECEIPTS,
                         ContactModel.COLUMN_TYPING_INDICATORS,
+                        ContactModel.COLUMN_IS_ARCHIVED,
                         ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY,
                         ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES,
                         ContactModel.COLUMN_IS_RESTORED,
                         ContactModel.COLUMN_PROFILE_PIC_BLOB_ID,
                         ContactModel.COLUMN_JOB_TITLE,
                         ContactModel.COLUMN_DEPARTMENT,
-                    )
+                        ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE,
+                    ),
                 )
                 .selection("${ContactModel.COLUMN_IDENTITY} = ?", arrayOf(identity))
-                .create()
+                .create(),
         )
         if (!cursor.moveToFirst()) {
             cursor.close()
             return null
         }
-
-        val publicKey =
-            cursor.getBlob(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PUBLIC_KEY))
-        val createdAt =
-            cursor.getDate(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_CREATED_AT))
-        val firstName =
-            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FIRST_NAME))
-                ?: ""
-        val lastName =
-            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_LAST_NAME))
-                ?: ""
-        val nickname = cursor.getStringOrNull(
-            getColumnIndexOrThrow(
-                cursor,
-                ContactModel.COLUMN_PUBLIC_NICK_NAME
-            )
-        )
-        var colorIndex =
-            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ID_COLOR_INDEX))
-        val verificationLevelRaw =
-            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_VERIFICATION_LEVEL))
-        val isWorkVerifiedRaw =
-            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_WORK))
-        val identityTypeRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPE))
-        val acquaintanceLevelRaw =
-            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ACQUAINTANCE_LEVEL))
-        val activityStateRaw =
-            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_STATE))
-        val syncStateRaw =
-            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_SYNC_STATE))
-        var featureMask =
-            cursor.getLong(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FEATURE_MASK))
-        val readReceipts =
-            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_READ_RECEIPTS))
-        val typingIndicators =
-            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPING_INDICATORS))
-        val androidContactLookupKey = cursor.getStringOrNull(
-            getColumnIndexOrThrow(
-                cursor,
-                ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY
-            )
-        )
-        val localAvatarExpires = cursor.getDateOrNull(
-            getColumnIndexOrThrow(
-                cursor,
-                ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES
-            )
-        )
-        val isRestored =
-            cursor.getBooleanOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_RESTORED))
-                ?: false
-        val profilePictureBlobId = cursor.getBlobOrNull(
-            getColumnIndexOrThrow(
-                cursor,
-                ContactModel.COLUMN_PROFILE_PIC_BLOB_ID
-            )
-        )
-        val jobTitle =
-            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_JOB_TITLE))
-        val department =
-            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_DEPARTMENT))
-
+        val dbContact = mapCursorToDbContact(cursor)
         cursor.close()
+        return dbContact
+    }
+
+    /**
+     * @param cursor needs to point to an entry
+     * @throws DatabaseException if the cursor does not contain all required columns.
+     */
+    private fun mapCursorToDbContact(cursor: Cursor): DbContact {
+        val identity = cursor.getString(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IDENTITY))
+        val publicKey = cursor.getBlob(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PUBLIC_KEY))
+        val createdAt = cursor.getDate(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_CREATED_AT))
+        val firstName = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FIRST_NAME)) ?: ""
+        val lastName = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_LAST_NAME)) ?: ""
+        val nickname = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PUBLIC_NICK_NAME))
+        var colorIndex = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ID_COLOR_INDEX))
+        val verificationLevelRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_VERIFICATION_LEVEL))
+        val isWorkVerifiedRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_WORK))
+        val identityTypeRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPE))
+        val acquaintanceLevelRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ACQUAINTANCE_LEVEL))
+        val activityStateRaw = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_STATE))
+        val syncStateRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_SYNC_STATE))
+        var featureMask = cursor.getLong(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FEATURE_MASK))
+        val readReceipts = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_READ_RECEIPTS))
+        val typingIndicators = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPING_INDICATORS))
+        val isArchived = cursor.getBoolean(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_ARCHIVED))
+        val androidContactLookupKey = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
+        val localAvatarExpires = cursor.getDateOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES))
+        val isRestored = cursor.getBooleanOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_RESTORED)) ?: false
+        val profilePictureBlobId = cursor.getBlobOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
+        val jobTitle = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_JOB_TITLE))
+        val department = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_DEPARTMENT))
+        val notificationTriggerPolicyOverride =
+            cursor.getLongOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
 
         // Validation and mapping
         if (colorIndex < 0 || colorIndex > 255) {
@@ -286,7 +281,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "verificationLevel value out of range: {}. Falling back to UNVERIFIED.",
-                    verificationLevelRaw
+                    verificationLevelRaw,
                 )
                 VerificationLevel.UNVERIFIED
             }
@@ -297,7 +292,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "workVerificationLevel value out of range: {}. Falling back to NONE.",
-                    isWorkVerifiedRaw
+                    isWorkVerifiedRaw,
                 )
                 WorkVerificationLevel.NONE
             }
@@ -308,7 +303,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "identityType value out of range: {}. Falling back to NORMAL.",
-                    identityTypeRaw
+                    identityTypeRaw,
                 )
                 IdentityType.NORMAL
             }
@@ -319,7 +314,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "acquaintanceLevel value out of range: {}. Falling back to DIRECT.",
-                    acquaintanceLevelRaw
+                    acquaintanceLevelRaw,
                 )
                 AcquaintanceLevel.DIRECT
             }
@@ -332,7 +327,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "activityState value out of range: {}. Falling back to ACTIVE.",
-                    activityStateRaw
+                    activityStateRaw,
                 )
                 IdentityState.ACTIVE
             }
@@ -344,7 +339,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "syncState value out of range: {}. Falling back to INITIAL.",
-                    syncStateRaw
+                    syncStateRaw,
                 )
                 ContactSyncState.INITIAL
             }
@@ -360,7 +355,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "readReceipts value out of range: {}. Falling back to DEFAULT.",
-                    typingIndicators
+                    typingIndicators,
                 )
                 ReadReceiptPolicy.DEFAULT
             }
@@ -372,35 +367,37 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             else -> {
                 logger.warn(
                     "typingIndicators value out of range: {}. Falling back to DEFAULT.",
-                    typingIndicators
+                    typingIndicators,
                 )
                 TypingIndicatorPolicy.DEFAULT
             }
         }
 
         return DbContact(
-            identity,
-            publicKey,
-            createdAt,
-            firstName,
-            lastName,
-            nickname,
-            colorIndex.toUByte(),
-            verificationLevel,
-            workVerificationLevel,
-            identityType,
-            acquaintanceLevel,
-            activityState,
-            syncState,
-            featureMask.toULong(),
-            readReceiptPolicy,
-            typingIndicatorPolicy,
-            androidContactLookupKey,
-            localAvatarExpires,
-            isRestored,
-            profilePictureBlobId,
-            jobTitle,
-            department
+            identity = identity,
+            publicKey = publicKey,
+            createdAt = createdAt,
+            firstName = firstName,
+            lastName = lastName,
+            nickname = nickname,
+            colorIndex = colorIndex.toUByte(),
+            verificationLevel = verificationLevel,
+            workVerificationLevel = workVerificationLevel,
+            identityType = identityType,
+            acquaintanceLevel = acquaintanceLevel,
+            activityState = activityState,
+            syncState = syncState,
+            featureMask = featureMask.toULong(),
+            readReceiptPolicy = readReceiptPolicy,
+            typingIndicatorPolicy = typingIndicatorPolicy,
+            isArchived = isArchived,
+            androidContactLookupKey = androidContactLookupKey,
+            localAvatarExpires = localAvatarExpires,
+            isRestored = isRestored,
+            profilePictureBlobId = profilePictureBlobId,
+            jobTitle = jobTitle,
+            department = department,
+            notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
         )
     }
 
@@ -425,58 +422,67 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(ContactModel.COLUMN_ID_COLOR_INDEX, contact.colorIndex.toInt())
         put(ContactModel.COLUMN_VERIFICATION_LEVEL, contact.verificationLevel.code)
         put(
-            ContactModel.COLUMN_IS_WORK, when (contact.workVerificationLevel) {
+            ContactModel.COLUMN_IS_WORK,
+            when (contact.workVerificationLevel) {
                 WorkVerificationLevel.NONE -> 0
                 WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED -> 1
-            }
+            },
         )
         put(
-            ContactModel.COLUMN_TYPE, when (contact.identityType) {
+            ContactModel.COLUMN_TYPE,
+            when (contact.identityType) {
                 IdentityType.NORMAL -> 0
                 IdentityType.WORK -> 1
-            }
+            },
         )
         put(
-            ContactModel.COLUMN_ACQUAINTANCE_LEVEL, when (contact.acquaintanceLevel) {
+            ContactModel.COLUMN_ACQUAINTANCE_LEVEL,
+            when (contact.acquaintanceLevel) {
                 AcquaintanceLevel.DIRECT -> 0
                 AcquaintanceLevel.GROUP -> 1
-            }
+            },
         )
         put(
-            ContactModel.COLUMN_STATE, when (contact.activityState) {
+            ContactModel.COLUMN_STATE,
+            when (contact.activityState) {
                 IdentityState.ACTIVE -> "ACTIVE"
                 IdentityState.INACTIVE -> "INACTIVE"
                 IdentityState.INVALID -> "INVALID"
-            }
+            },
         )
         put(
-            ContactModel.COLUMN_SYNC_STATE, when (contact.syncState) {
+            ContactModel.COLUMN_SYNC_STATE,
+            when (contact.syncState) {
                 ContactSyncState.INITIAL -> 0
                 ContactSyncState.IMPORTED -> 1
                 ContactSyncState.CUSTOM -> 2
-            }
+            },
         )
         put(ContactModel.COLUMN_FEATURE_MASK, contact.featureMask.toLong())
         put(
-            ContactModel.COLUMN_READ_RECEIPTS, when (contact.readReceiptPolicy) {
+            ContactModel.COLUMN_READ_RECEIPTS,
+            when (contact.readReceiptPolicy) {
                 ReadReceiptPolicy.DEFAULT -> 0
                 ReadReceiptPolicy.SEND -> 1
                 ReadReceiptPolicy.DONT_SEND -> 2
-            }
+            },
         )
         put(
-            ContactModel.COLUMN_TYPING_INDICATORS, when (contact.typingIndicatorPolicy) {
+            ContactModel.COLUMN_TYPING_INDICATORS,
+            when (contact.typingIndicatorPolicy) {
                 TypingIndicatorPolicy.DEFAULT -> 0
                 TypingIndicatorPolicy.SEND -> 1
                 TypingIndicatorPolicy.DONT_SEND -> 2
-            }
+            },
         )
+        put(ContactModel.COLUMN_IS_ARCHIVED, contact.isArchived)
         put(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY, contact.androidContactLookupKey)
         put(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES, contact.localAvatarExpires?.time)
         put(ContactModel.COLUMN_IS_RESTORED, contact.isRestored)
         put(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID, contact.profilePictureBlobId)
         put(ContactModel.COLUMN_JOB_TITLE, contact.jobTitle)
         put(ContactModel.COLUMN_DEPARTMENT, contact.department)
+        put(ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, contact.notificationTriggerPolicyOverride)
     }
 
     override fun deleteContactByIdentity(identity: String): Boolean {
@@ -490,7 +496,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
     override fun isContactInGroup(identity: String): Boolean {
         sqlite.readableDatabase.query(
             DatabaseUtil.IS_GROUP_MEMBER_QUERY,
-            arrayOf(identity)
+            arrayOf(identity),
         ).use {
             return if (it.moveToFirst()) {
                 it.getInt(0) == 1
@@ -517,7 +523,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             sqlite.writableDatabase.insert(
                 GroupModel.TABLE,
                 SQLiteDatabase.CONFLICT_ROLLBACK,
-                contentValues
+                contentValues,
             )
         } catch (e: SQLiteException) {
             throw DatabaseException("Could not insert group", e)
@@ -528,6 +534,56 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         }
 
         updateGroupMembers(rowId, group.members)
+    }
+
+    override fun removeGroup(localDbId: Long) {
+        // Remove messages
+        sqlite.writableDatabase.delete(
+            GroupMessageModel.TABLE,
+            "${GroupMessageModel.COLUMN_GROUP_ID} = ?",
+            arrayOf(localDbId),
+        )
+
+        // Remove members
+        sqlite.writableDatabase.delete(
+            GroupMemberModel.TABLE,
+            "${GroupMemberModel.COLUMN_GROUP_ID} = ?",
+            arrayOf(localDbId),
+        )
+
+        // Remove incoming group sync request log model. Note that outgoing group sync request logs
+        // must not be removed as they need to be persisted to prevent sending sync requests too
+        // often.
+        sqlite.writableDatabase.delete(
+            IncomingGroupSyncRequestLogModel.TABLE,
+            "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ?",
+            arrayOf(localDbId),
+        )
+
+        // TODO(ANDR-3633): Remove group calls and polls here as they are also located in the
+        //  database.
+
+        // Remove the group itself
+        sqlite.writableDatabase.delete(
+            GroupModel.TABLE,
+            "${GroupModel.COLUMN_ID} = ?",
+            arrayOf(localDbId),
+        )
+    }
+
+    override fun getAllGroups(): Collection<DbGroup> {
+        val query = SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
+            .columns(null)
+            .selection("TRUE", emptyArray())
+            .create()
+
+        sqlite.readableDatabase.query(query).use { cursor ->
+            val groups = mutableListOf<DbGroup>()
+            while (cursor.moveToNext()) {
+                groups.add(cursor.getGroup())
+            }
+            return groups
+        }
     }
 
     override fun getGroupByLocalGroupDbId(localDbId: Long): DbGroup? {
@@ -549,8 +605,26 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         }
     }
 
+    override fun getGroupDatabaseId(groupIdentity: GroupIdentity): Long? {
+        val query = SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
+            .columns(
+                arrayOf(GroupModel.COLUMN_ID),
+            ).selection(
+                GroupModel.COLUMN_API_GROUP_ID + "=? AND " + GroupModel.COLUMN_CREATOR_IDENTITY + "=?",
+                arrayOf<String?>(groupIdentity.groupIdHexString, groupIdentity.creatorIdentity),
+            ).create()
+
+        return sqlite.readableDatabase.query(query).use { cursor ->
+            if (cursor.moveToFirst()) {
+                cursor.getLong(cursor.getColumnIndexOrThrow(GroupModel.COLUMN_ID))
+            } else {
+                null
+            }
+        }
+    }
+
     private fun getGroup(addSelection: (SupportSQLiteQueryBuilder) -> Unit): DbGroup? {
-        sqlite.readableDatabase.query(
+        return sqlite.readableDatabase.query(
             SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
                 .columns(
                     arrayOf(
@@ -561,75 +635,22 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                         GroupModel.COLUMN_CREATED_AT,
                         GroupModel.COLUMN_SYNCHRONIZED_AT,
                         GroupModel.COLUMN_LAST_UPDATE,
-                        GroupModel.COLUMN_DELETED,
                         GroupModel.COLUMN_IS_ARCHIVED,
                         GroupModel.COLUMN_COLOR_INDEX,
                         GroupModel.COLUMN_GROUP_DESC,
                         GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
                         GroupModel.COLUMN_USER_STATE,
-                    )
+                        GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE,
+                    ),
                 )
                 .apply(addSelection)
-                .create()
+                .create(),
         ).use { cursor ->
-            if (!cursor.moveToFirst()) {
-                return null
+            if (cursor.moveToFirst()) {
+                cursor.getGroup()
+            } else {
+                null
             }
-
-            val localDbId = cursor.getLong(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_ID))
-            val creatorIdentity =
-                cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATOR_IDENTITY))
-            val groupId =
-                cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_API_GROUP_ID))
-            val name = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_NAME))
-            val createdAt =
-                cursor.getDateByString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATED_AT))
-            val synchronizedAt = cursor.getDateOrNull(
-                getColumnIndexOrThrow(
-                    cursor,
-                    GroupModel.COLUMN_SYNCHRONIZED_AT
-                )
-            )
-            val lastUpdate =
-                cursor.getDateOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_LAST_UPDATE))
-            val deleted =
-                cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_DELETED))
-            val isArchived =
-                cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_IS_ARCHIVED))
-            val colorIndex =
-                cursor.getUByte(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_COLOR_INDEX))
-            val groupDesc =
-                cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_GROUP_DESC))
-            val groupDescChangedAt = cursor.getDateByStringOrNull(
-                getColumnIndexOrThrow(
-                    cursor,
-                    GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP
-                )
-            )
-            val members = getGroupMembers(localDbId)
-            val userStateValue =
-                cursor.getInt(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_USER_STATE))
-            val userState = GroupModel.UserState.valueOf(userStateValue) ?: run {
-                logger.error("Invalid group user state: {}", userStateValue)
-                // We use member as fallback to not accidentally remove the user from the group
-                GroupModel.UserState.MEMBER
-            }
-
-            return DbGroup(
-                creatorIdentity = creatorIdentity,
-                groupId = groupId,
-                name = name,
-                createdAt = createdAt,
-                synchronizedAt = synchronizedAt,
-                lastUpdate = lastUpdate,
-                deleted = deleted,
-                isArchived = isArchived,
-                colorIndex = colorIndex,
-                groupDescription = groupDesc,
-                groupDescriptionChangedAt = groupDescChangedAt,
-                members = members,
-                userState = userState,
-            )
         }
     }
 
@@ -644,11 +665,56 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
             values = contentValues,
             whereClause = "${GroupModel.COLUMN_ID} = ?",
-            whereArgs = arrayOf(localGroupDbId)
+            whereArgs = arrayOf(localGroupDbId),
         )
 
         // Then update group members
         updateGroupMembers(localGroupDbId, group.members)
+    }
+
+    private fun Cursor.getGroup(): DbGroup {
+        val localDbId = getLong(getColumnIndexOrThrow(this, GroupModel.COLUMN_ID))
+        val creatorIdentity =
+            getString(getColumnIndexOrThrow(this, GroupModel.COLUMN_CREATOR_IDENTITY))
+        val groupId = getString(getColumnIndexOrThrow(this, GroupModel.COLUMN_API_GROUP_ID))
+        val name = getStringOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_NAME))
+        val createdAt = getDateByString(getColumnIndexOrThrow(this, GroupModel.COLUMN_CREATED_AT))
+        val synchronizedAt =
+            getDateOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_SYNCHRONIZED_AT))
+        val lastUpdate = getDateOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_LAST_UPDATE))
+        val isArchived = getBoolean(getColumnIndexOrThrow(this, GroupModel.COLUMN_IS_ARCHIVED))
+        val colorIndex = getUByte(getColumnIndexOrThrow(this, GroupModel.COLUMN_COLOR_INDEX))
+        val groupDesc = getStringOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_GROUP_DESC))
+        val groupDescChangedAt = getDateByStringOrNull(
+            getColumnIndexOrThrow(
+                this,
+                GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
+            ),
+        )
+        val members = getGroupMembers(localDbId)
+        val userStateValue = getInt(getColumnIndexOrThrow(this, GroupModel.COLUMN_USER_STATE))
+        val userState = GroupModel.UserState.valueOf(userStateValue) ?: run {
+            logger.error("Invalid group user state: {}", userStateValue)
+            // We use member as fallback to not accidentally remove the user from the group
+            GroupModel.UserState.MEMBER
+        }
+        val notificationTriggerPolicyOverride = getLongOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
+
+        return DbGroup(
+            creatorIdentity = creatorIdentity,
+            groupId = groupId,
+            name = name,
+            createdAt = createdAt,
+            synchronizedAt = synchronizedAt,
+            lastUpdate = lastUpdate,
+            isArchived = isArchived,
+            colorIndex = colorIndex,
+            groupDescription = groupDesc,
+            groupDescriptionChangedAt = groupDescChangedAt,
+            members = members,
+            userState = userState,
+            notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
+        )
     }
 
     private fun ContentValues.update(group: DbGroup) {
@@ -656,15 +722,15 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(GroupModel.COLUMN_NAME, group.name)
         put(GroupModel.COLUMN_LAST_UPDATE, group.lastUpdate?.time)
         put(GroupModel.COLUMN_SYNCHRONIZED_AT, group.synchronizedAt?.time)
-        put(GroupModel.COLUMN_DELETED, group.deleted)
         put(GroupModel.COLUMN_IS_ARCHIVED, group.isArchived)
         put(GroupModel.COLUMN_COLOR_INDEX, group.colorIndex.toInt())
         put(GroupModel.COLUMN_GROUP_DESC, group.groupDescription)
         put(
             GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
-            group.groupDescriptionChangedAt?.toDateStringOrNull()
+            group.groupDescriptionChangedAt?.toDateStringOrNull(),
         )
         put(GroupModel.COLUMN_USER_STATE, group.userState.value)
+        put(GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, group.notificationTriggerPolicyOverride)
     }
 
     private fun getLocalGroupDbId(group: DbGroup): Long {
@@ -679,7 +745,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
                 .columns(arrayOf(GroupModel.COLUMN_ID))
                 .selection(selection, selectionArgs)
-                .create()
+                .create(),
         ).use { cursor ->
             if (!cursor.moveToFirst()) {
                 throw DatabaseException("Could not find a group with creator ${group.creatorIdentity} and id ${group.groupId}")
@@ -694,7 +760,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             SupportSQLiteQueryBuilder.builder(GroupMemberModel.TABLE)
                 .columns(arrayOf(GroupMemberModel.COLUMN_IDENTITY))
                 .selection("${GroupMemberModel.COLUMN_GROUP_ID} = ?", arrayOf(localDbId))
-                .create()
+                .create(),
         ).use { cursor ->
             val members = mutableSetOf<String>()
 
@@ -703,9 +769,9 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                     cursor.getString(
                         getColumnIndexOrThrow(
                             cursor,
-                            GroupMemberModel.COLUMN_IDENTITY
-                        )
-                    )
+                            GroupMemberModel.COLUMN_IDENTITY,
+                        ),
+                    ),
                 )
             }
 
@@ -727,7 +793,8 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         )
 
         // Add all members (if not already exists)
-        val contentValuesList = members.map { memberIdentity ->
+        val existingMembers = getGroupMembers(localDbId)
+        val contentValuesList = (members - existingMembers).map { memberIdentity ->
             ContentValues().apply {
                 put(GroupMemberModel.COLUMN_IDENTITY, memberIdentity)
                 put(GroupMemberModel.COLUMN_GROUP_ID, localDbId)

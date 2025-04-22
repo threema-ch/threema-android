@@ -52,7 +52,7 @@ fun ExpandingBox(
     expanded: Boolean = false,
     content: @Composable (
         expandedState: Boolean,
-        toggleExpandedState: () -> Unit
+        toggleExpandedState: () -> Unit,
     ) -> Unit,
 ) {
     var expandedState by rememberSaveable(expanded) { mutableStateOf(expanded) }
@@ -64,9 +64,9 @@ fun ExpandingBox(
                     Modifier.wrapContentHeight()
                 } else {
                     Modifier.heightIn(max = collapsedMaxHeight)
-                }
+                },
             )
-            .animateContentSize()
+            .animateContentSize(),
     ) {
         content(expandedState) { expandedState = !expandedState }
     }

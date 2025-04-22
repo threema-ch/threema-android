@@ -31,11 +31,13 @@ import ch.threema.app.asynctasks.ContactSyncPolicy
 import ch.threema.app.asynctasks.DeleteContactServices
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask
 import ch.threema.app.asynctasks.MarkContactAsDeletedBackgroundTask
+import ch.threema.app.groupflows.GroupLeaveIntent
 import ch.threema.app.processors.MessageProcessorProvider
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
 import ch.threema.app.utils.executor.BackgroundExecutor
+import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.storage.EditHistoryDao
 import ch.threema.data.storage.EditHistoryDaoImpl
@@ -54,18 +56,18 @@ import ch.threema.storage.factories.MessageModelFactory
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
+import java.util.Date
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.Date
-import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
 class EditHistoryTest : MessageProcessorProvider() {
-
     private val messageService: MessageService by lazy { serviceManager.messageService }
     private val contactService: ContactService by lazy { serviceManager.contactService }
     private val groupService: GroupService by lazy { serviceManager.groupService }
@@ -80,8 +82,7 @@ class EditHistoryTest : MessageProcessorProvider() {
             contactService,
             serviceManager.conversationService,
             serviceManager.ringtoneService,
-            serviceManager.mutedChatsListService,
-            serviceManager.hiddenChatsListService,
+            serviceManager.conversationCategoryService,
             serviceManager.profilePicRecipientsService,
             serviceManager.wallpaperService,
             serviceManager.fileService,
@@ -276,12 +277,12 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         BackgroundExecutor().executeDeferred(
             MarkContactAsDeletedBackgroundTask(
-                setOf(messageModel.identity),
+                setOf(messageModel.identity!!),
                 contactModelRepository,
                 deleteContactServices,
                 ContactSyncPolicy.INCLUDE,
                 AndroidContactLinkPolicy.KEEP,
-            )
+            ),
         ).await()
 
         messageModel.assertHistorySize(0)
@@ -299,7 +300,18 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         messageModel.assertHistorySize(1)
 
-        groupService.leaveOrDissolveAndRemoveFromLocal(groupA.groupModel)
+        val groupModel = serviceManager.modelRepositories.groups.getByGroupIdentity(
+            GroupIdentity(
+                creatorIdentity = groupA.groupCreator.identity,
+                groupId = groupA.apiGroupId.toLong(),
+            ),
+        )
+        assertNotNull(groupModel)
+        serviceManager.groupFlowDispatcher.runLeaveGroupFlow(
+            fragmentManager = null,
+            intent = GroupLeaveIntent.LEAVE_AND_REMOVE,
+            groupModel = groupModel,
+        ).await()
 
         messageModel.assertHistorySize(0)
     }
@@ -312,9 +324,12 @@ class EditHistoryTest : MessageProcessorProvider() {
             mode,
             arrayOf(receiver),
             serviceManager.conversationService,
-            serviceManager.groupService,
             serviceManager.distributionListService,
-            null, null
+            serviceManager.modelRepositories.groups,
+            serviceManager.groupFlowDispatcher,
+            myContact.identity,
+            null,
+            null,
         ) { deferred.complete(Unit) }.execute()
         deferred.await()
     }
@@ -331,7 +346,7 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         return messageModelFactory.getByApiMessageIdAndIdentity(
             message.messageId,
-            message.fromIdentity
+            message.fromIdentity,
         )!!
     }
 
@@ -339,8 +354,8 @@ class EditHistoryTest : MessageProcessorProvider() {
         val editMessage = EditMessage(
             EditMessageData(
                 MessageId.fromString(apiMessageId).messageIdLong,
-                "$body Edited"
-            )
+                "$body Edited",
+            ),
         ).apply {
             fromIdentity = identity
             toIdentity = myContact.identity
@@ -350,7 +365,7 @@ class EditHistoryTest : MessageProcessorProvider() {
 
     private suspend fun MessageModel.receiveDelete() {
         val deleteMessage = DeleteMessage(
-            DeleteMessageData(MessageId.fromString(apiMessageId).messageIdLong)
+            DeleteMessageData(MessageId.fromString(apiMessageId).messageIdLong),
         ).apply {
             fromIdentity = identity
             toIdentity = myContact.identity
@@ -372,7 +387,7 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         return groupMessageModelFactory.getByApiMessageIdAndIdentity(
             message.messageId,
-            message.fromIdentity
+            message.fromIdentity,
         )!!
     }
 
@@ -380,8 +395,8 @@ class EditHistoryTest : MessageProcessorProvider() {
         val editMessage = GroupEditMessage(
             EditMessageData(
                 MessageId.fromString(apiMessageId).messageIdLong,
-                "$body Edited"
-            )
+                "$body Edited",
+            ),
         ).apply {
             apiGroupId = groupA.apiGroupId
             groupCreator = groupA.groupCreator.identity
@@ -393,7 +408,7 @@ class EditHistoryTest : MessageProcessorProvider() {
 
     private suspend fun GroupMessageModel.receiveDelete() {
         val deleteMessage = GroupDeleteMessage(
-            DeleteMessageData(MessageId.fromString(apiMessageId).messageIdLong)
+            DeleteMessageData(MessageId.fromString(apiMessageId).messageIdLong),
         ).apply {
             apiGroupId = groupA.apiGroupId
             groupCreator = groupA.groupCreator.identity
@@ -429,7 +444,7 @@ class EditHistoryTest : MessageProcessorProvider() {
     private fun <T : AbstractMessageModel> T.assertHistorySize(size: Int) {
         assertEquals(
             size,
-            editHistoryDao.findAllByMessageUid(uid).size
+            editHistoryDao.findAllByMessageUid(uid!!).size,
         )
     }
 }

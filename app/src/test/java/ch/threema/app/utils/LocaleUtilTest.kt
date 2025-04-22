@@ -22,12 +22,11 @@
 package ch.threema.app.utils
 
 import ch.threema.app.utils.LocaleUtil.mapLocaleToPredefinedLocales
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import java.util.Locale
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class LocaleUtilTest {
-
     private val predefinedLocales = arrayOf(
         "ca",
         "cs",
@@ -41,7 +40,6 @@ class LocaleUtilTest {
         "no",
         "pl",
         "pt",
-        "rm",
         "sk",
         "tr",
         "be-BY",
@@ -93,16 +91,15 @@ class LocaleUtilTest {
         assertEquals("zh-hans-CN", mapLocaleToPredefinedLocales(Locale("zh"), predefinedLocales))
         assertEquals(
             "zh-hans-CN",
-            mapLocaleToPredefinedLocales(Locale("zh", "TW"), predefinedLocales)
+            mapLocaleToPredefinedLocales(Locale("zh", "TW"), predefinedLocales),
         )
     }
 
     private fun assertLocaleMap(from: String, to: String = from) {
         assertEquals(
-            "The locale code '$from' was mapped to the wrong locale.",
             to,
-            mapLocaleToPredefinedLocales(Locale.forLanguageTag(from), predefinedLocales)
+            mapLocaleToPredefinedLocales(Locale.forLanguageTag(from), predefinedLocales),
+            "The locale code '$from' was mapped to the wrong locale.",
         )
     }
-
 }

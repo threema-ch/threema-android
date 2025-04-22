@@ -32,7 +32,6 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNew) :
     ModelFactory(databaseService, IncomingGroupSyncRequestLogModel.TABLE) {
-
     /**
      * Insert the provided model into the database.
      *
@@ -43,7 +42,7 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
         writableDatabase.insert(
             tableName,
             SQLiteDatabase.CONFLICT_REPLACE,
-            groupSyncRequestLog.toContentValues()
+            groupSyncRequestLog.toContentValues(),
         )
     }
 
@@ -54,8 +53,8 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
      */
     @Synchronized
     fun getByGroupIdAndSenderIdentity(
-        localDbGroupId: Int,
-        senderIdentity: String
+        localDbGroupId: Long,
+        senderIdentity: String,
     ): IncomingGroupSyncRequestLogModel {
         val groupIdSelection = "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ?"
         val senderIdentitySelection =
@@ -65,7 +64,7 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
         readableDatabase.query(
             SupportSQLiteQueryBuilder.builder(tableName)
                 .selection(selection, selectionArgs)
-                .create()
+                .create(),
         ).use {
             return if (it.moveToFirst()) {
                 it.toGroupSyncRequestLogModel()
@@ -85,7 +84,7 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
                     PRIMARY KEY (`${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}`, `${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY}`),
                     FOREIGN KEY(`${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}`) REFERENCES `${GroupModel.TABLE}`(`${GroupModel.COLUMN_ID}`) ON UPDATE CASCADE ON DELETE CASCADE
                 )
-            """
+            """,
         )
     }
 
@@ -98,9 +97,9 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
             getColumnIndexOrThrow(IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST)
 
         return IncomingGroupSyncRequestLogModel(
-            getInt(groupIdColumnIndex),
+            getLong(groupIdColumnIndex),
             getString(senderIdentityColumnIndex),
-            getLong(lastHandledRequestColumnIndex)
+            getLong(lastHandledRequestColumnIndex),
         )
     }
 

@@ -34,23 +34,24 @@ import ch.threema.domain.protocol.connection.data.InboundL4Message
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundL4Message
 import ch.threema.domain.protocol.connection.data.OutboundL5Message
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.connection.util.Layer4Controller
 import ch.threema.domain.protocol.connection.util.MdLayer4Controller
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.Date
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.util.Date
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("MonitoringLayer")
 
 internal class MonitoringLayer(
     private val connection: ServerConnection,
-    private val controller: Layer4Controller
+    private val controller: Layer4Controller,
 ) : Layer4Codec {
     private companion object {
         // Preserve echo sequence number across new instance creations
@@ -72,12 +73,14 @@ internal class MonitoringLayer(
 
     private var echoRequestJob: Job? = null
 
-    private val inbound = ProcessingPipe<InboundL3Message, InboundL4Message>(this::handleInbound)
+    private val inbound =
+        ProcessingPipe<InboundL3Message, InboundL4Message, ServerSocketCloseReason>(this::handleInbound)
     private val outbound =
-        ProcessingPipe<OutboundL5Message, OutboundL4Message>(this::handleOutbound)
+        ProcessingPipe<OutboundL5Message, OutboundL4Message, Unit>(this::handleOutbound)
 
-    override val encoder: PipeProcessor<OutboundL5Message, OutboundL4Message> = outbound
-    override val decoder: PipeProcessor<InboundL3Message, InboundL4Message> = inbound
+    override val encoder: PipeProcessor<OutboundL5Message, OutboundL4Message, Unit> = outbound
+    override val decoder: PipeProcessor<InboundL3Message, InboundL4Message, ServerSocketCloseReason> =
+        inbound
 
     private var stopped = false
 
@@ -142,14 +145,15 @@ internal class MonitoringLayer(
             outbound.send(
                 CspContainer(
                     ProtocolDefines.PLTYPE_UNBLOCK_INCOMING_MESSAGES.toUByte(),
-                    ByteArray(0)
-                )
+                    ByteArray(0),
+                ),
             )
         }
     }
 
     private fun handleInboundCspContainer(message: CspContainer) {
         when (message.payloadType.toInt()) {
+            ProtocolDefines.PLTYPE_ECHO_REQUEST -> handleEchoRequest(message)
             ProtocolDefines.PLTYPE_ECHO_REPLY -> handleEchoReply(message)
             ProtocolDefines.PLTYPE_ERROR -> handleCloseError(message)
             else -> inbound.send(message)
@@ -197,6 +201,14 @@ internal class MonitoringLayer(
         }
     }
 
+    private fun handleEchoRequest(requestMessage: CspContainer) {
+        controller.dispatcher.assertDispatcherContext()
+
+        logger.info("Received echo request, sending echo reply")
+        val replyMessage = CspContainer(ProtocolDefines.PLTYPE_ECHO_REPLY.toUByte(), requestMessage.data)
+        outbound.send(replyMessage)
+    }
+
     private fun handleEchoReply(message: CspContainer) {
         logger.debug("Handle echo reply")
         controller.dispatcher.assertDispatcherContext()
@@ -219,20 +231,20 @@ internal class MonitoringLayer(
             Triple(
                 ProtocolDefines.ECHO_REQUEST_INTERVAL_MD,
                 ProtocolDefines.ECHO_RESPONSE_TIMEOUT,
-                ProtocolDefines.CONNECTION_IDLE_TIMEOUT_MD
+                ProtocolDefines.CONNECTION_IDLE_TIMEOUT_MD,
             )
         } else {
             Triple(
                 ProtocolDefines.ECHO_REQUEST_INTERVAL_CSP,
                 ProtocolDefines.ECHO_RESPONSE_TIMEOUT,
-                ProtocolDefines.CONNECTION_IDLE_TIMEOUT_CSP
+                ProtocolDefines.CONNECTION_IDLE_TIMEOUT_CSP,
             )
         }
         logger.debug(
             "echoRequestInterval={}, echoResponseTimeout={}, connectionIdleTimeout={}",
             echoRequestInterval,
             echoResponseTimeout,
-            connectionIdleTimeout
+            connectionIdleTimeout,
         )
 
         if (stopped) {
@@ -280,7 +292,7 @@ internal class MonitoringLayer(
         if (lastRcvdEchoSeq < expectedSequence) {
             logger.info(
                 "No reply to echo request (seq: {}); terminate connection",
-                expectedSequence
+                expectedSequence,
             )
             controller.ioProcessingStoppedSignal.completeExceptionally(ServerConnectionException("No reply to echo request"))
         }
@@ -306,7 +318,7 @@ internal class MonitoringLayer(
             .array()
         return CspContainer(
             ProtocolDefines.PLTYPE_SET_CONNECTION_IDLE_TIMEOUT.toUByte(),
-            timeoutBytes
+            timeoutBytes,
         )
     }
 }

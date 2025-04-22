@@ -15,7 +15,6 @@
     <locale android:name="no" /> <!-- Norwegian -->
     <locale android:name="pl" /> <!-- Polish -->
     <locale android:name="pt-BR" /> <!-- Portuguese (Brazil) -->
-    <locale android:name="rm" /> <!-- Romansh -->
     <locale android:name="ru" /> <!-- Russian -->
     <locale android:name="sk" /> <!-- Slovak -->
     <locale android:name="tr" /> <!-- Turkish -->

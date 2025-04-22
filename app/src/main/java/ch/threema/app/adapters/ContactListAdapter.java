@@ -370,7 +370,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         }
 
         // Text slot top left
-        final @NonNull String contactTextTopLeft = contactModel.getContactListItemTextTopLeft(preferenceService);
+        final @NonNull String contactTextTopLeft = contactModel.getContactListItemTextTopLeft(preferenceService.isContactFormatFirstNameLastName());
         final @NonNull Spannable contactTextTopLeftSpannable = (viewType != VIEW_TYPE_RECENTLY_ADDED)
             ? highlightMatches(contactTextTopLeft, filterString, true)
             : new SpannableString(contactTextTopLeft);

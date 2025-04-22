@@ -38,7 +38,6 @@ class IncomingContactReactionMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<ReactionMessage>(message, triggerSource, serviceManager) {
-
     private val messageService by lazy { serviceManager.messageService }
     private val contactService by lazy { serviceManager.contactService }
 
@@ -67,7 +66,7 @@ class IncomingContactReactionMessageTask(
             targetMessage,
             message.fromIdentity,
             message.data.actionCase,
-            emojiSequence
+            emojiSequence,
         )
 
         return ReceiveStepsResult.SUCCESS

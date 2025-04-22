@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_wizard_intro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -40,23 +41,23 @@
             android:transitionName="@string/transition_name_dots" />
 
         <TextView
-            style="@style/WizardTitleText"
             android:id="@+id/wizard_get_started"
+            style="@style/WizardTitleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/new_wizard_lets_get_started"
-            android:textColor="@color/wizard_color_text_on_primary"
+            android:textColor="@color/color_wizard_on_primary"
             android:textSize="30dp" />
 
         <TextView
             android:id="@+id/wizard_privacy_policy_explain"
             style="@style/WizardSmallText"
-            android:layout_marginTop="32dp"
-            android:textSize="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_policy_explain" />
+            android:layout_marginTop="32dp"
+            android:text="@string/privacy_policy_explain"
+            android:textSize="16dp" />
 
     </LinearLayout>
 
@@ -64,42 +65,42 @@
         android:id="@+id/button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:gravity="center"
         android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
         android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
-        android:layout_marginBottom="@dimen/wizard_contents_padding">
+        android:layout_marginBottom="@dimen/wizard_contents_padding"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/new_to_threema_title"
+            style="@style/WizardMediumText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/wizard_contents_padding"
             android:layout_marginBottom="@dimen/wizard_edittext_hint_padding"
-            style="@style/WizardMediumText"
             android:text="@string/new_to_threema" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/setup_threema"
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/setup_threema_compose"
             android:layout_width="match_parent"
-            style="@style/WizardButtonRegular"
-            android:text="@string/new_wizard_setup_threema" />
+            android:layout_height="wrap_content"
+            app:wizardButton_text="@string/flavored__new_wizard_setup_threema" />
 
         <TextView
             android:id="@+id/back_to_threema_title"
+            style="@style/WizardMediumText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/wizard_contents_padding"
             android:layout_marginBottom="@dimen/wizard_edittext_hint_padding"
-            style="@style/WizardMediumText"
             android:text="@string/back_to_threema" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/restore_backup"
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/restore_backup_compose"
             android:layout_width="match_parent"
-            style="@style/WizardButtonRegular"
-            android:text="@string/menu_restore" />
+            android:layout_height="wrap_content"
+            app:wizardButton_text="@string/menu_restore" />
 
     </LinearLayout>
 

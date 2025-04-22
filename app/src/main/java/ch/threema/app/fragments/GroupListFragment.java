@@ -88,11 +88,6 @@ public class GroupListFragment extends RecipientListFragment {
                     }
 
                     @Override
-                    public boolean includeDeletedGroups() {
-                        return false;
-                    }
-
-                    @Override
                     public boolean includeLeftGroups() {
                         return false;
                     }

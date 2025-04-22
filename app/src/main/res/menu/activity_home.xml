@@ -87,18 +87,18 @@
             app:showAsAction="never" />
 
         <item
+            android:id="@+id/multi_device"
+            android:icon="@drawable/ic_multi_device"
+            android:orderInCategory="61"
+            android:title="@string/md_linked_devices"
+            android:visible="false"
+            app:showAsAction="never" />
+
+        <item
             android:id="@+id/webclient"
             android:icon="@drawable/ic_web_notification"
             android:orderInCategory="65"
             android:title="@string/webclient"
-            app:showAsAction="never" />
-
-        <item
-            android:id="@+id/multi_device"
-            android:icon="@drawable/ic_multi_device"
-            android:orderInCategory="66"
-            android:title="@string/md_linked_devices"
-            android:visible="false"
             app:showAsAction="never" />
 
         <item
@@ -113,7 +113,7 @@
             android:id="@+id/directory"
             android:icon="@drawable/ic_contacts_outline"
             android:orderInCategory="75"
-            android:title="@string/directory_title"
+            android:title="@string/work_directory_title"
             android:visible="false"
             app:showAsAction="never" />
 

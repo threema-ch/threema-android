@@ -24,6 +24,7 @@ package ch.threema.app.processors
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.getSubTaskFromMessage
 import ch.threema.app.processors.reflectedd2dsync.ReflectedContactSyncTask
+import ch.threema.app.processors.reflectedd2dsync.ReflectedGroupSyncTask
 import ch.threema.app.processors.reflectedmessageupdate.ReflectedIncomingMessageUpdateTask
 import ch.threema.app.processors.reflectedmessageupdate.ReflectedOutgoingMessageUpdateTask
 import ch.threema.app.processors.reflectedoutgoingmessage.getReflectedOutgoingMessageTask
@@ -35,6 +36,7 @@ import ch.threema.base.utils.toHexString
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
+import ch.threema.domain.protocol.csp.messages.AudioMessage
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
@@ -43,11 +45,15 @@ import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
+import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
+import ch.threema.domain.protocol.csp.messages.ImageMessage
+import ch.threema.domain.protocol.csp.messages.ReactionMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
+import ch.threema.domain.protocol.csp.messages.VideoMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollVoteMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
@@ -111,7 +117,7 @@ class IncomingReflectedMessageTask(
             } else {
                 logger.warn(
                     "Skipped processing of reflected message {} as its nonce has already been used",
-                    message.reflectedId
+                    message.reflectedId,
                 )
             }
         }.catchAllExceptNetworkException {
@@ -173,7 +179,7 @@ class IncomingReflectedMessageTask(
 
             else -> logger.error(
                 "Reflected message with unknown content type {} received",
-                envelope.contentCase
+                envelope.contentCase,
             )
         }
     }
@@ -187,7 +193,7 @@ class IncomingReflectedMessageTask(
         ReflectedOutgoingMessageUpdateTask(
             outgoingMessageUpdate,
             message.timestamp,
-            serviceManager
+            serviceManager,
         ).run()
     }
 
@@ -200,93 +206,90 @@ class IncomingReflectedMessageTask(
             CspE2eMessageType.FILE -> FileMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_FILE -> GroupFileMessage.fromReflected(incomingMessage)
             CspE2eMessageType.DELIVERY_RECEIPT -> DeliveryReceiptMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> GroupDeliveryReceiptMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.GROUP_TEXT -> GroupTextMessage.fromReflected(incomingMessage)
             CspE2eMessageType.POLL_SETUP -> PollSetupMessage.fromReflected(
                 incomingMessage,
-                incomingMessage.senderIdentity
+                incomingMessage.senderIdentity,
             )
 
             CspE2eMessageType.POLL_VOTE -> PollVoteMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_POLL_SETUP -> GroupPollSetupMessage.fromReflected(
                 incomingMessage,
-                incomingMessage.senderIdentity
+                incomingMessage.senderIdentity,
             )
 
             CspE2eMessageType.GROUP_POLL_VOTE -> GroupPollVoteMessage.fromReflected(incomingMessage)
             CspE2eMessageType.CALL_OFFER -> VoipCallOfferMessage.fromReflected(incomingMessage)
             CspE2eMessageType.CALL_ICE_CANDIDATE -> VoipICECandidatesMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.CALL_RINGING -> VoipCallRingingMessage.fromReflected(incomingMessage)
             CspE2eMessageType.CALL_ANSWER -> VoipCallAnswerMessage.fromReflected(incomingMessage)
             CspE2eMessageType.CALL_HANGUP -> VoipCallHangupMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_CALL_START -> GroupCallStartMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ContactRequestProfilePictureMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> SetProfilePictureMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> DeleteProfilePictureMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.LOCATION -> LocationMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_LOCATION -> GroupLocationMessage.fromReflected(incomingMessage)
             CspE2eMessageType.DELETE_MESSAGE -> DeleteMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_DELETE_MESSAGE -> GroupDeleteMessage.fromReflected(
-                incomingMessage
+                incomingMessage,
             )
 
             CspE2eMessageType.EDIT_MESSAGE -> EditMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_EDIT_MESSAGE -> GroupEditMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_SYNC_REQUEST -> GroupSyncRequestMessage.fromReflected(
                 incomingMessage,
-                myIdentity
+                myIdentity,
             )
 
-            // TODO(ANDR-3443): Process reflected incoming deprecated messages
-            CspE2eMessageType.DEPRECATED_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
-            CspE2eMessageType.DEPRECATED_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
-            CspE2eMessageType.DEPRECATED_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
-            CspE2eMessageType.GROUP_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
-            CspE2eMessageType.GROUP_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
-            CspE2eMessageType.GROUP_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
-
+            CspE2eMessageType.DEPRECATED_IMAGE -> ImageMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.DEPRECATED_AUDIO -> AudioMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.DEPRECATED_VIDEO -> VideoMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_IMAGE -> throw IllegalStateException("Deprecated group image messages are unsupported")
+            CspE2eMessageType.GROUP_AUDIO -> throw IllegalStateException("Deprecated group audio messages are unsupported")
+            CspE2eMessageType.GROUP_VIDEO -> throw IllegalStateException("Deprecated group video messages are unsupported")
             CspE2eMessageType.GROUP_JOIN_REQUEST -> throw IllegalStateException("Group join requests are unsupported")
             CspE2eMessageType.GROUP_JOIN_RESPONSE -> throw IllegalStateException("Group join responses are unsupported")
+            CspE2eMessageType.REACTION -> ReactionMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_REACTION -> GroupReactionMessage.fromReflected(incomingMessage)
 
-            // TODO(ANDR-3472): Process reflected incoming emoji reactions
-            CspE2eMessageType.REACTION -> throw NotImplementedError("Reaction implementation is missing")
-            CspE2eMessageType.GROUP_REACTION -> throw NotImplementedError("Group reaction implementation is missing")
+            CspE2eMessageType.GROUP_SETUP -> logIgnoredMessageAndReturnNull("GROUP_SETUP")
+            CspE2eMessageType.GROUP_NAME -> logIgnoredMessageAndReturnNull("GROUP_NAME")
+            CspE2eMessageType.GROUP_LEAVE -> logIgnoredMessageAndReturnNull("GROUP_LEAVE")
+            CspE2eMessageType.GROUP_SET_PROFILE_PICTURE -> logIgnoredMessageAndReturnNull("GROUP_SET_PROFILE_PICTURE")
+            CspE2eMessageType.GROUP_DELETE_PROFILE_PICTURE -> logIgnoredMessageAndReturnNull("GROUP_DELETE_PROFILE_PICTURE")
 
-            // TODO(ANDR-2990): Process group control messages from sync
-            CspE2eMessageType.GROUP_SETUP -> throw NotImplementedError("Group sync implementation is missing")
-            CspE2eMessageType.GROUP_NAME -> throw NotImplementedError("Group sync implementation is missing")
-            CspE2eMessageType.GROUP_LEAVE -> throw NotImplementedError("Group sync implementation is missing")
-            CspE2eMessageType.GROUP_SET_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
-            CspE2eMessageType.GROUP_DELETE_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
-
-            CspE2eMessageType.WEB_SESSION_RESUME -> throw NotImplementedError("Web session resume implementation is missing")
-
-            CspE2eMessageType.TYPING_INDICATOR -> TypingIndicatorMessage.fromReflected(
-                incomingMessage
+            CspE2eMessageType.WEB_SESSION_RESUME -> throw IllegalStateException(
+                "A web session resume message should never be received as reflected incoming message",
             )
 
-            CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException("A forward security envelope message should never be received as reflected incoming message")
+            CspE2eMessageType.TYPING_INDICATOR -> TypingIndicatorMessage.fromReflected(incomingMessage)
+
+            CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException(
+                "A forward security envelope message should never be received as reflected incoming message",
+            )
 
             CspE2eMessageType.EMPTY -> throw IllegalStateException("An empty message should never be received as reflected incoming message")
 
@@ -305,7 +308,7 @@ class IncomingReflectedMessageTask(
                 } else if (!nonceFactory.store(NonceScope.CSP, nonce)) {
                     logger.warn(
                         "CSP nonce {} of outgoing message could not be stored",
-                        nonce.bytes.toHexString()
+                        nonce.bytes.toHexString(),
                     )
                 }
             } else {
@@ -313,6 +316,11 @@ class IncomingReflectedMessageTask(
             }
             getSubTaskFromMessage(message, TriggerSource.SYNC, serviceManager).run(handle)
         }
+    }
+
+    private fun logIgnoredMessageAndReturnNull(messageTypeName: String): AbstractMessage? {
+        logger.info("Ignoring incoming reflected message of type {}", messageTypeName)
+        return null
     }
 
     private fun processIncomingMessageUpdate(incomingMessageUpdate: IncomingMessageUpdate) {
@@ -333,8 +341,18 @@ class IncomingReflectedMessageTask(
     }
 
     private fun processGroupSync(groupSync: GroupSync) {
-        // TODO(ANDR-2741)
-        logger.warn("Group sync is not yet supported")
+        ReflectedGroupSyncTask(
+            groupSync = groupSync,
+            groupModelRepository = serviceManager.modelRepositories.groups,
+            groupService = serviceManager.groupService,
+            fileService = serviceManager.fileService,
+            apiService = serviceManager.apiService,
+            symmetricEncryptionService = serviceManager.symmetricEncryptionService,
+            conversationService = serviceManager.conversationService,
+            conversationTagService = serviceManager.conversationTagService,
+            conversationCategoryService = serviceManager.conversationCategoryService,
+            userService = serviceManager.userService,
+        ).run()
     }
 
     private fun processDistributionListSync(distributionListSync: DistributionListSync) {
@@ -351,5 +369,4 @@ class IncomingReflectedMessageTask(
         // TODO(ANDR-2670)
         logger.warn("Mdm parameter sync is not yet supported")
     }
-
 }

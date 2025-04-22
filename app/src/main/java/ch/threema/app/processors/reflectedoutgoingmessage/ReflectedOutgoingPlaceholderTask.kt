@@ -30,9 +30,8 @@ private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingPlaceholderT
 internal class ReflectedOutgoingPlaceholderTask(
     message: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-    private val logMessage: String? = null
+    private val logMessage: String? = null,
 ) : ReflectedOutgoingContactMessageTask(message, message.type, serviceManager) {
-
     override val storeNonces: Boolean = false
 
     override val shouldBumpLastUpdate: Boolean = false

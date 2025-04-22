@@ -23,7 +23,6 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.utils.ConversationNotificationUtil
 import ch.threema.app.utils.MessageUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
@@ -41,7 +40,7 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
 ) : ReflectedOutgoingContactMessageTask(
     message,
     Common.CspE2eMessageType.DELIVERY_RECEIPT,
-    serviceManager
+    serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
     private val notificationService by lazy { serviceManager.notificationService }
@@ -72,7 +71,7 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
             if (messageModel == null) {
                 logger.warn(
                     "Message model ({}) for reflected outgoing delivery receipt is null",
-                    messageId
+                    messageId,
                 )
                 continue
             }
@@ -80,19 +79,19 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
             updateMessage(messageModel, state)
 
             if (state == MessageState.READ) {
-                cancelNotification(messageModel)
+                notificationService.cancel(messageReceiver)
             }
         }
     }
 
     private fun updateMessage(messageModel: AbstractMessageModel, state: MessageState) {
-
         if (MessageUtil.isReaction(state)) {
             messageService.addMessageReaction(
                 messageModel,
                 state,
-                myIdentity, // the identity that reacted (this is us => reflected outgoing message)
-                Date(message.createdAt)
+                // the identity that reacted (this is us => reflected outgoing message)
+                myIdentity,
+                Date(message.createdAt),
             )
         } else {
             when (state) {
@@ -109,7 +108,7 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
                     val date = Date(message.createdAt)
                     messageModel.readAt = date
                     messageModel.modifiedAt = date
-                    messageModel.setRead(true)
+                    messageModel.isRead = true
                     messageService.save(messageModel)
                     ListenerManager.messageListeners.handle { l -> l.onModified(listOf(messageModel)) }
                 }
@@ -117,13 +116,5 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
                 else -> logger.error("Unsupported delivery receipt reflected of state {}", state)
             }
         }
-    }
-
-    private fun cancelNotification(messageModel: AbstractMessageModel) {
-        // Get notification UIDs of the messages that have just been marked as read
-        val notificationUid = ConversationNotificationUtil.getUid(messageModel)
-
-        // Cancel notification
-        notificationService.cancelConversationNotification(notificationUid)
     }
 }

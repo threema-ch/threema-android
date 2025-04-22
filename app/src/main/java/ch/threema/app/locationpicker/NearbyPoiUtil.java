@@ -31,19 +31,19 @@ import org.slf4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LocationUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ProtocolStrings;
+import ch.threema.domain.protocol.ServerAddressProvider;
 
 import static ch.threema.app.locationpicker.LocationPickerActivity.POI_RADIUS;
 
@@ -58,26 +58,20 @@ public class NearbyPoiUtil {
         @NonNull LatLng center,
         @NonNull List<Poi> pois,
         int maxCount,
-        @NonNull PreferenceService preferenceService
+        @NonNull ServerAddressProvider serverAddressProvider
     ) {
         long startTime = System.currentTimeMillis();
 
         try {
-            final String poiUrl = LocationUtil.getPoiUrl(preferenceService);
-            URL serverUrl = new URL(String.format(
-                Locale.US,
-                poiUrl,
-                center.getLatitude(),
-                center.getLongitude(),
-                POI_RADIUS
-            ));
+            final String poiUrl = serverAddressProvider.getMapPOIUrl().get(center.getLatitude(), center.getLongitude(), POI_RADIUS);
+            URL serverUrl = new URL(poiUrl);
 
             if (center.getLatitude() == 0.0d && center.getLongitude() == 0.0d) {
                 logger.debug("ignoring POI fetch request for 0/0");
                 return;
             }
 
-            logger.debug("getting POIs for " + serverUrl.toString());
+            logger.debug("getting POIs for {}", poiUrl);
 
             HttpsURLConnection urlConnection = null;
             try {
@@ -104,7 +98,7 @@ public class NearbyPoiUtil {
                     try {
                         parseJson(sb.toString(), pois, maxCount);
                     } catch (JSONException e) {
-                        logger.error("Exception", e);
+                        logger.error("Failed to parse POI JSON", e);
                     }
                 }
             } finally {
@@ -112,8 +106,10 @@ public class NearbyPoiUtil {
                     urlConnection.disconnect();
                 }
             }
-        } catch (IOException e) {
-            logger.error("Exception", e);
+        } catch (InterruptedIOException e) {
+            logger.debug("Fetching of POIs interrupted");
+        } catch (IOException | ThreemaException e) {
+            logger.error("Failed to fetch nearby POIs", e);
         }
     }
 

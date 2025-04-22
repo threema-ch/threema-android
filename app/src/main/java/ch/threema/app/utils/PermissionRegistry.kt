@@ -76,8 +76,8 @@ class PermissionRegistry(private val activity: AppCompatActivity) {
         val applied = pendingRequest.complete(
             PermissionResponse(
                 granted = granted,
-                prompted = true
-            )
+                prompted = true,
+            ),
         )
         if (applied) {
             logger.debug("Permissions granted: '{}'", permissions)
@@ -90,9 +90,7 @@ class PermissionRegistry(private val activity: AppCompatActivity) {
         val requestCode = this.requestCode++
         return if (requestFn(requestCode)) {
             logger.info("Permission granted (#{})", requestCode)
-            return PermissionResponse(
-                granted = true, prompted = false
-            )
+            return PermissionResponse(granted = true, prompted = false)
         } else {
             CompletableDeferred<PermissionResponse>().also {
                 pendingRequests[requestCode] = it

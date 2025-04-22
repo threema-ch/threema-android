@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,13 +15,13 @@
         android:paddingRight="24dp">
 
         <TextView
-            style="@style/Threema.TextAppearance.Dialog"
             android:id="@+id/safe_enable_explain"
+            style="@style/Threema.TextAppearance.Dialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnBackground"
             android:layout_marginTop="8dp"
-            android:text="@string/safe_configure_server_explain"
+            android:text="@string/flavored__safe_configure_server_explain"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="16sp" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
@@ -40,7 +41,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/safe_server"
@@ -54,6 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="@string/safe_enter_server_address_explain"
+                    android:imeOptions="actionDone"
                     android:inputType="textWebEditText"
                     android:singleLine="true"
                     android:tag="https://">
@@ -64,13 +67,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                style="@style/Threema.TextAppearance.Dialog"
                 android:id="@+id/safe_credentials_title"
+                style="@style/Threema.TextAppearance.Dialog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnBackground"
                 android:layout_marginTop="8dp"
                 android:text="@string/safe_configure_server_credentials_title"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -85,7 +88,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="@string/username_hint"
+                    android:imeOptions="actionNext"
                     android:inputType="textWebEditText"
+                    android:nextFocusDown="@id/safe_edit_server_password"
                     android:singleLine="true">
 
                 </ch.threema.app.ui.ThreemaTextInputEditText>
@@ -97,14 +102,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hintAnimationEnabled="false"
-                app:passwordToggleEnabled="true"
-                app:hintEnabled="true">
+                app:hintEnabled="true"
+                app:passwordToggleEnabled="true">
 
                 <ch.threema.app.ui.ThreemaTextInputEditText
                     android:id="@+id/safe_edit_server_password"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="@string/password_hint"
+                    android:imeOptions="actionDone"
                     android:inputType="textWebPassword"
                     android:singleLine="true"
                     android:tag="https://">

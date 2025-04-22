@@ -36,7 +36,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.camera.core.processing.SurfaceProcessorNode;
 
 import org.slf4j.Logger;
 
@@ -107,7 +106,10 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 
         Intent intent = getIntent();
 
-        if (intent.getBooleanExtra(EXTRA_WIZARD, false)) {
+        final boolean usedInWizard = intent.getBooleanExtra(EXTRA_WIZARD, false);
+        if (usedInWizard) {
+            setTheme(R.style.Theme_Threema_Wizard_Translucent);
+        } else if (ConfigUtils.isTheDarkSide(this)) {
             setTheme(R.style.Theme_Threema_Translucent_Dark);
         }
 

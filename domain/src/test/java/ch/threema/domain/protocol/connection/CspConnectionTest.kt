@@ -28,6 +28,7 @@ import ch.threema.domain.protocol.connection.csp.CspControllers
 import ch.threema.domain.protocol.connection.csp.socket.CspSocket
 import ch.threema.domain.protocol.connection.csp.socket.SocketFactory
 import ch.threema.domain.protocol.connection.data.CspMessage
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import ch.threema.domain.protocol.connection.layer.AuthLayer
 import ch.threema.domain.protocol.connection.layer.CspFrameLayer
@@ -47,23 +48,33 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TaskManagerConfiguration
 import ch.threema.domain.taskmanager.TaskManagerProvider
-import ch.threema.domain.helpers.UnusedTaskCodec
-import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
 internal class CspConnectionTest : ServerConnectionTest() {
+    private val connectionLockProvider = object : ConnectionLockProvider {
+        override fun acquire(timeoutMillis: Long, tag: ConnectionLockProvider.ConnectionLogTag): ConnectionLock {
+            return object : ConnectionLock {
+                override fun release() {
+                    // Nothing to do in tests
+                }
+
+                override fun isHeld() = false
+            }
+        }
+    }
+
     override fun createChatServerConnection(): ServerConnection {
         val configuration = createConfiguration()
 
         val taskManager = object : TaskManager, InternalTaskManager {
-            override fun processInboundMessage(message: InboundMessage) {
+            override fun processInboundMessage(message: InboundMessage, lock: ConnectionLock) {
                 // Nothing to do
             }
 
             override suspend fun startRunningTasks(
                 layer5Codec: Layer5Codec,
-                incomingMessageProcessor: IncomingMessageProcessor
+                incomingMessageProcessor: IncomingMessageProcessor,
             ) {
                 // Nothing to do
             }
@@ -92,7 +103,7 @@ internal class CspConnectionTest : ServerConnectionTest() {
                 configuration.socketFactory,
                 TestChatServerAddressProvider(),
                 controllers.serverConnectionController.ioProcessingStoppedSignal,
-                controllers.serverConnectionController.dispatcher.coroutineContext
+                controllers.serverConnectionController.dispatcher.coroutineContext,
             )
 
             ServerConnectionDependencies(
@@ -102,8 +113,10 @@ internal class CspConnectionTest : ServerConnectionTest() {
                     it,
                     controllers,
                     configuration.incomingMessageProcessor,
-                    taskManager
-                )
+                    taskManager,
+                ),
+                connectionLockProvider,
+                taskManager,
             )
         }
 
@@ -114,13 +127,13 @@ internal class CspConnectionTest : ServerConnectionTest() {
         val incomingMessageProcessor = object : IncomingMessageProcessor {
             override suspend fun processIncomingCspMessage(
                 messageBox: MessageBox,
-                handle: ActiveTaskCodec
+                handle: ActiveTaskCodec,
             ) {
             }
 
             override suspend fun processIncomingD2mMessage(
                 message: InboundD2mMessage.Reflected,
-                handle: ActiveTaskCodec
+                handle: ActiveTaskCodec,
             ) {
             }
 
@@ -137,8 +150,8 @@ internal class CspConnectionTest : ServerConnectionTest() {
                     }
                 },
                 TestNoopDeviceCookieManager(),
-                true
-            )
+                true,
+            ),
         )
         return CspConnectionConfiguration(
             TestIdentityStore(),
@@ -148,9 +161,9 @@ internal class CspConnectionTest : ServerConnectionTest() {
             TestNoopDeviceCookieManager(),
             incomingMessageProcessor,
             taskManager,
-            { arrayOf() },
+            { emptyArray() },
             ipv6 = false,
-            createSocketFactory()
+            createSocketFactory(),
         )
     }
 
@@ -170,8 +183,9 @@ internal class CspConnectionTest : ServerConnectionTest() {
                 controllers.serverConnectionController,
                 connection,
                 incomingMessageProcessor,
-                taskManager
-            )
+                taskManager,
+                connectionLockProvider,
+            ),
         )
     }
 

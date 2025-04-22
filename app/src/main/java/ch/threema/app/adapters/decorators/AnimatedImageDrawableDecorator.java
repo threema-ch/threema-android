@@ -220,6 +220,11 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
                 }
 
                 @Override
+                public void onUnknownProgress(AbstractMessageModel messageModel) {
+                    RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressing());
+                }
+
+                @Override
                 public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message) {
                     //hide progressbar
                     RuntimeUtil.runOnUiThread(() -> {

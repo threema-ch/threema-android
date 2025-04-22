@@ -28,7 +28,7 @@ import androidx.room.TypeConverters
 @Database(
     entities = [Emoji::class, SearchTerm::class, SearchTermsLanguageVersion::class],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(DiversityConverters::class)
 abstract class EmojiSearchIndexDatabase : RoomDatabase() {

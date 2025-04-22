@@ -54,7 +54,7 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
         if (masterKey.isLocked) {
             val notificationCompat: NotificationCompat.Builder = NotificationCompat.Builder(
                 context,
-                NotificationChannels.NOTIFICATION_CHANNEL_NOTICE
+                NotificationChannels.NOTIFICATION_CHANNEL_NOTICE,
             )
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setContentTitle(context.getString(R.string.master_key_locked))
@@ -64,8 +64,8 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
             val notificationIntent = IntentDataUtil.createActionIntentHideAfterUnlock(
                 Intent(
                     context,
-                    HomeActivity::class.java
-                )
+                    HomeActivity::class.java,
+                ),
             )
             notificationIntent.flags =
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -73,12 +73,12 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
                 context,
                 0,
                 notificationIntent,
-                IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
+                IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE,
             )
             notificationCompat.setContentIntent(pendingIntent)
             NotificationManagerCompat.from(context).notify(
                 ThreemaApplication.MASTER_KEY_LOCKED_NOTIFICATION_ID,
-                notificationCompat.build()
+                notificationCompat.build(),
             )
         }
 
@@ -93,11 +93,11 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
         // reset feature level
         preferenceService.transmittedFeatureMask = 0
 
-        //auto fix failed sync account
+        // auto fix failed sync account
         if (preferenceService.isSyncContacts) {
             val userService = serviceManager.userService
             if (!userService.checkAccount()) {
-                //create account
+                // create account
                 userService.getAccount(true)
                 userService.enableAccountAutoSync(true)
             }

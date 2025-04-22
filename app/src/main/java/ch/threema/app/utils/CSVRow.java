@@ -251,6 +251,10 @@ public class CSVRow {
         return -1;
     }
 
+    public boolean hasField(@NonNull String fieldName) {
+        return getValuePosition(fieldName) != -1;
+    }
+
     public void write() {
         if (this.writer != null) {
             this.writer.writeNext(this.data);

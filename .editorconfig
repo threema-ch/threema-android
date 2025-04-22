@@ -8,3 +8,15 @@ trim_trailing_whitespace = true
 charset = utf-8
 indent_style = space
 indent_size = 4
+
+[{*.kt,*.kts}]
+ktlint_code_style = android_studio
+max_line_length = 150
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+# The following rules have been intentionally disabled, as they are too aggressive
+# and do not match our preferences
+ktlint_standard_function-signature = disabled
+ktlint_standard_no-wildcard-imports = disabled

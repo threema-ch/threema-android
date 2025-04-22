@@ -5,18 +5,18 @@
 #
 # Arguments:
 #
-# - `SDK_VERSION`: Set this to the desired Android SDK version (e.g. `30`)
+# - `SDK_VERSION`: Set this to the desired Android SDK version (e.g. `35`)
 # - `NDK_VERSION`: Set this to the desired Android NDK version (e.g. `25.2.9519653`)
-# - `BUILD_TOOLS_VERSION`: Set this to the desired build tools version (e.g. `28.0.3`)
-# - `RUST_VERSION`: Set this to the desired Rust version (e.g. `1.80.1`)
+# - `BUILD_TOOLS_VERSION`: Set this to the desired build tools version (e.g. `35.0.0`)
+# - `RUST_VERSION`: Set this to the desired Rust version (e.g. `1.80`)
 
 FROM docker.io/ubuntu:24.04
 
 # Arguments
-ARG SDK_VERSION=34
-ARG BUILD_TOOLS_VERSION=34.0.0
+ARG SDK_VERSION=35
+ARG BUILD_TOOLS_VERSION=35.0.0
 ARG NDK_VERSION=25.2.9519653
-ARG RUST_VERSION=1.80
+ARG RUST_VERSION
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive

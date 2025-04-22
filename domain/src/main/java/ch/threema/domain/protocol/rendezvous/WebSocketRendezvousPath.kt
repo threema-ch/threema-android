@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.rendezvous
 
 import ch.threema.base.utils.LoggingUtil
+import java.io.IOException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
@@ -34,14 +35,13 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
-import java.io.IOException
 
 private val logger = LoggingUtil.getThreemaLogger("WebSocketRendezvousPath")
 
 internal class WebSocketRendezvousPath(
     override val pid: UInt,
     private val okHttpClient: OkHttpClient,
-    private val url: String
+    private val url: String,
 ) : RendezvousPath {
     private val _closedSignal = CompletableDeferred<Unit>()
     override val closedSignal: Deferred<Unit> = _closedSignal

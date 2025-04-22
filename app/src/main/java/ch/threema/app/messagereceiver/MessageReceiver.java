@@ -34,9 +34,12 @@ import java.util.List;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.GroupModel;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
@@ -70,8 +73,6 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
      * Return all affected contact message receivers.
      * <p>
      * Note: Only used in a distribution list, other subtypes should return null.
-     * <p>
-     * TODO: refactor
      */
     default @Nullable List<ContactMessageReceiver> getAffectedMessageReceivers() {
         return null;
@@ -166,6 +167,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
      *
      * @return a list of unread messages
      */
+    @NonNull
     List<M> getUnreadMessages() throws SQLException;
 
     /**
@@ -183,9 +185,6 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
      */
     String getShortName();
 
-    /**
-     * TODO: move to IntentUtil
-     */
     void prepareIntent(Intent intent);
 
     /**
@@ -256,4 +255,25 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
      */
     @EmojiReactionsSupport
     int getEmojiReactionSupport();
+
+    /**
+     * @return The current {@code NotificationTriggerPolicyOverride} for contact- and group-receivers. Distribution lists
+     * do not have this setting.
+     */
+    @Nullable
+    default NotificationTriggerPolicyOverride getNotificationTriggerPolicyOverrideOrNull() {
+        if (this instanceof ContactMessageReceiver) {
+            final @Nullable ContactModel contactModel = ((ContactMessageReceiver) this).getContactModel();
+            return contactModel != null
+                ? contactModel.getData().getValue().getCurrentNotificationTriggerPolicyOverride()
+                : null;
+        } else if (this instanceof GroupMessageReceiver) {
+            final @Nullable GroupModel groupModel = ((GroupMessageReceiver) this).getGroupModel();
+            return groupModel != null
+                ? groupModel.getData().getValue().getCurrentNotificationTriggerPolicyOverride()
+                : null;
+        } else {
+            return null;
+        }
+    }
 }

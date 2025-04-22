@@ -49,7 +49,6 @@ class CoreServiceManagerImpl(
     override val identityStore: IdentityStore,
     private val nonceDatabaseStoreProvider: () -> DatabaseNonceStore,
 ) : CoreServiceManager {
-
     /**
      * The task archiver. Note that this must only be used to load the persisted tasks when the
      * service manager has been set.
@@ -75,8 +74,8 @@ class CoreServiceManagerImpl(
             TaskManagerConfiguration(
                 { taskArchiver },
                 deviceCookieManager,
-                ConfigUtils.isDevBuild()
-            )
+                ConfigUtils.isDevBuild(),
+            ),
         )
     }
 

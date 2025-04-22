@@ -24,6 +24,7 @@ package ch.threema.app.utils
 import android.os.Looper
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.app.utils.executor.BackgroundTask
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Rule
@@ -31,7 +32,6 @@ import org.junit.Test
 import org.junit.rules.Timeout
 
 class BackgroundExecutorTest {
-
     @Rule
     @JvmField
     val timeout: Timeout = Timeout.seconds(10)
@@ -98,7 +98,7 @@ class BackgroundExecutorTest {
 
         Assert.assertArrayEquals(
             expected,
-            methodExecutionList.toTypedArray()
+            methodExecutionList.toTypedArray(),
         )
     }
 
@@ -120,7 +120,7 @@ class BackgroundExecutorTest {
             }
         })
 
-        Assert.assertThrows(IllegalStateException::class.java) {
+        assertFailsWith<IllegalStateException> {
             runBlocking {
                 deferred.await()
             }
@@ -140,7 +140,7 @@ class BackgroundExecutorTest {
             }
         })
 
-        Assert.assertThrows(IllegalStateException::class.java) {
+        assertFailsWith<IllegalStateException> {
             runBlocking {
                 deferred.await()
             }
@@ -159,11 +159,10 @@ class BackgroundExecutorTest {
             }
         })
 
-        Assert.assertThrows(IllegalStateException::class.java) {
+        assertFailsWith<IllegalStateException> {
             runBlocking {
                 deferred.await()
             }
         }
     }
-
 }

@@ -29,6 +29,7 @@ import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContact
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
@@ -36,8 +37,8 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSyncRequestTask")
 
@@ -47,6 +48,7 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSyncRequestTask"
  * send a sync request.
  *
  * The sync request is also sent to unknown or blocked contacts.
+ * TODO(ANDR-3262): Replace this task by the Group Sync Request Steps
  */
 class OutgoingGroupSyncRequestTask(
     private val groupId: GroupId,
@@ -76,16 +78,18 @@ class OutgoingGroupSyncRequestTask(
             logger.info(
                 "Do not send request sync to group creator {}: last sync request was at {}",
                 creatorIdentity,
-                model.lastRequest
+                model?.lastRequest,
             )
             return
         }
 
         val recipient = creatorIdentity.toBasicContact(
-            contactModelRepository, contactStore, apiConnector
+            contactModelRepository = contactModelRepository,
+            contactStore = contactStore,
+            apiConnector = apiConnector,
         )
 
-        val createdAt = Date()
+        val createdAt = now()
 
         val messageCreator = OutgoingCspGroupMessageCreator(
             messageId,
@@ -113,8 +117,8 @@ class OutgoingGroupSyncRequestTask(
                 nonceFactory,
                 blockedIdentitiesService,
                 preferenceService,
-                multiDeviceManager
-            )
+                multiDeviceManager,
+            ),
         )
 
         // Update sync request sent date
@@ -130,7 +134,9 @@ class OutgoingGroupSyncRequestTask(
     }
 
     override fun serialize(): SerializableTaskData = OutgoingGroupSyncRequestData(
-        groupId.groupId, creatorIdentity, messageId.messageId
+        groupId = groupId.groupId,
+        creatorIdentity = creatorIdentity,
+        messageId = messageId.messageId,
     )
 
     @Serializable

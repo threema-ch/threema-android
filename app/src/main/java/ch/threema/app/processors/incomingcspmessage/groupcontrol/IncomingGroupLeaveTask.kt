@@ -21,13 +21,16 @@
 
 package ch.threema.app.processors.incomingcspmessage.groupcontrol
 
-import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
-import ch.threema.app.services.GroupService
-import ch.threema.app.tasks.OutgoingGroupSyncRequestTask
+import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
+import ch.threema.app.tasks.ReflectionFailed
+import ch.threema.app.tasks.ReflectionPreconditionFailed
+import ch.threema.app.tasks.ReflectionSuccess
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupIdentity
+import ch.threema.domain.models.BasicContact
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
@@ -39,69 +42,111 @@ class IncomingGroupLeaveTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupLeaveMessage>(message, triggerSource, serviceManager) {
-    private val groupService = serviceManager.groupService
-    private val userService = serviceManager.userService
-    private val groupCallManager = serviceManager.groupCallManager
+    private val groupService by lazy { serviceManager.groupService }
+    private val userService by lazy { serviceManager.userService }
+    private val groupCallManager by lazy { serviceManager.groupCallManager }
+    private val contactStore by lazy { serviceManager.contactStore }
+    private val contactService by lazy { serviceManager.contactService }
+    private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
+    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val nonceFactory by lazy { serviceManager.nonceFactory }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
-        val creator = message.groupCreator
-        val sender = message.fromIdentity
+        val creatorIdentity = message.groupCreator
+        val senderIdentity = message.fromIdentity
 
-        // 1. If the sender is the creator of the group, abort these steps
-        if (sender == creator) {
+        // If the sender is the creator of the group, abort these steps
+        if (senderIdentity == creatorIdentity) {
             logger.warn("Discarding group leave message from group creator")
             return ReceiveStepsResult.DISCARD
         }
 
-        // 2. Look up the group
-        val group = groupService.getByGroupMessage(message)
+        val groupIdentity = GroupIdentity(message.groupCreator, message.apiGroupId.toLong())
 
-        // 3. If the group could not be found or is marked as left
-        if (group == null || !groupService.isGroupMember(group)) {
-            // 3.1 If the user is the creator of the group, abort these steps
-            if (userService.identity == creator) {
+        // Look up the group
+        val groupModel = groupModelRepository.getByGroupIdentity(groupIdentity)
+
+        val groupModelData = groupModel?.data?.value
+
+        if (groupModelData == null || !groupModelData.isMember) {
+            if (userService.identity == creatorIdentity) {
+                logger.info("The user is the creator of the group")
                 return ReceiveStepsResult.DISCARD
             }
-            // 3.2 Send a group-sync-request to the group creator and abort these steps
-            OutgoingGroupSyncRequestTask(
-                message.apiGroupId,
-                creator,
-                null,
-                serviceManager
-            ).invoke(handle)
+            val creatorContact = fetchCreatorContact(creatorIdentity) ?: run {
+                logger.error("Could not get creator contact")
+                return ReceiveStepsResult.DISCARD
+            }
+            runGroupSyncRequestSteps(
+                creatorContact,
+                groupIdentity,
+                serviceManager,
+                handle,
+            )
             return ReceiveStepsResult.DISCARD
         }
 
-        @GroupService.GroupState val oldGroupState = groupService.getGroupState(group)
-
-        // 4. Remove the member from the local group
-        if (groupService.removeMemberFromGroup(group, sender)) {
-            ListenerManager.groupListeners.handle { it.onMemberLeave(group, sender) }
+        if (!groupModelData.otherMembers.contains(senderIdentity)) {
+            logger.info("Sender is not a member")
+            return ReceiveStepsResult.DISCARD
         }
-        // Reset the cache
-        groupService.resetCache(group.id)
 
-        @GroupService.GroupState val newGroupState = groupService.getGroupState(group)
+        if (multiDeviceManager.isMultiDeviceActive) {
+            val reflectionResult = ReflectGroupSyncUpdateImmediateTask.ReflectMemberLeft(
+                senderIdentity,
+                groupModel,
+                nonceFactory,
+                multiDeviceManager,
+            ).reflect(handle)
+            when (reflectionResult) {
+                is ReflectionPreconditionFailed -> {
+                    logger.warn(
+                        "Group sync race: Could not reflect contact leave",
+                        reflectionResult.transactionException,
+                    )
+                    return ReceiveStepsResult.DISCARD
+                }
 
-        // Trigger a state change if the group transitions from a people group to a notes group
-        if (oldGroupState != newGroupState) {
-            ListenerManager.groupListeners.handle {
-                it.onGroupStateChanged(group, oldGroupState, newGroupState)
+                is ReflectionFailed -> {
+                    logger.error("Could not reflect contact leave", reflectionResult.exception)
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionSuccess -> Unit
             }
         }
 
-        // 5. Run the rejected messages refresh steps for the group
-        groupService.runRejectedMessagesRefreshSteps(group)
-
-        // 6. If the user and the sender are participating in a group call of this group, remove the
+        // If the user and the sender are participating in a group call of this group, remove the
         // sender from the group call (handle it as if the sender left the call)
-        groupCallManager.updateAllowedCallParticipants(group)
+        groupCallManager.removeGroupCallParticipants(setOf(senderIdentity), groupModel)
+
+        // Remove the member from the group
+        groupModel.removeLeftMemberFromRemote(senderIdentity)
+
+        groupService.resetCache(groupModel.getDatabaseId().toInt())
+
+        // Run the rejected messages refresh steps for the group
+        groupService.runRejectedMessagesRefreshSteps(groupModel)
 
         return ReceiveStepsResult.SUCCESS
     }
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-        // TODO(ANDR-2741): Support group synchronization
+        logger.info("Discarding group leave from sync")
         return ReceiveStepsResult.DISCARD
+    }
+
+    private fun fetchCreatorContact(identity: String): BasicContact? {
+        // Fetch and cache the contact. Note that the contact is only fetched from the server if the
+        // contact is not already known.
+        contactService.fetchAndCacheContact(identity)
+        val basicContact =
+            // If the contact is unknown, it should be cached at this point.
+            contactStore.getCachedContact(identity)
+                // If the contact is not cached, then this implies that the contact must be known.
+                ?: contactModelRepository.getByIdentity(identity)?.data?.value?.toBasicContact()
+
+        return basicContact
     }
 }

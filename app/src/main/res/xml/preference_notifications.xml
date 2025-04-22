@@ -5,9 +5,9 @@
     android:summary="@string/prefs_sum_notifications"
     android:title="@string/prefs_notifications">
 
-    <!-- notification channel based settings -->
+    <!-- notification channel based settings, only shown on Android 8 and newer -->
     <PreferenceCategory
-        android:key="pref_key_notif_new"
+        android:key="@string/preferences__notification_channels"
         android:title="@string/notifications_settings">
         <Preference
             android:key="@string/preferences__chat_notification_settings"
@@ -18,14 +18,18 @@
             android:summary="@string/prefs_notification_settings_summary"
             android:title="@string/group_chats" />
         <Preference
+            android:key="@string/preferences__voip_notification_settings"
+            android:summary="@string/prefs_notification_settings_summary"
+            android:title="@string/prefs_voice_call_notifications" />
+        <Preference
             android:key="@string/preferences__group_call_notification_settings"
             android:summary="@string/prefs_notification_settings_summary"
             android:title="@string/group_calls" />
     </PreferenceCategory>
 
-    <!-- legacy notification settings -->
+    <!-- legacy notification settings, only shown on Android 7 and older -->
     <PreferenceCategory
-        android:key="pref_key_system_notif"
+        android:key="@string/preferences__single_chat_notifications_legacy"
         android:title="@string/prefs_system_notifications">
         <ch.threema.app.preference.RingtonePreference
             android:defaultValue="@string/default_notification_sound"
@@ -40,9 +44,15 @@
             android:summary="@string/prefs_sum_vibrate"
             android:title="@string/prefs_vibrate"
             android:widgetLayout="@layout/preference_switch_layout" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/preferences__notification_light_single"
+            android:summary="@string/prefs_sum_notification_light"
+            android:title="@string/prefs_notification_light"
+            android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="pref_key_group_notif"
+        android:key="@string/preferences__group_chat_notifications_legacy"
         android:title="@string/prefs_group_notifications">
         <ch.threema.app.preference.RingtonePreference
             android:defaultValue="@string/default_notification_sound"
@@ -57,9 +67,15 @@
             android:summary="@string/prefs_sum_vibrate"
             android:title="@string/prefs_vibrate"
             android:widgetLayout="@layout/preference_switch_layout" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/preferences__notification_light_group"
+            android:summary="@string/prefs_sum_notification_light"
+            android:title="@string/prefs_notification_light"
+            android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="pref_key_voice_notif"
+        android:key="@string/preferences__voip_call_notifications_legacy"
         android:title="@string/prefs_voice_call_notifications">
         <CheckBoxPreference
             android:defaultValue="false"
@@ -83,7 +99,7 @@
             android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="pref_key_groupcall_notif"
+        android:key="@string/preferences__group_call_notifications_legacy"
         android:title="@string/group_calls">
         <CheckBoxPreference
             android:defaultValue="false"
@@ -106,6 +122,7 @@
             android:title="@string/prefs_vibrate"
             android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>
+
     <PreferenceCategory
         android:key="pref_key_inapp"
         android:title="@string/prefs_inapp">
@@ -129,12 +146,6 @@
     <PreferenceCategory
         android:key="pref_key_other"
         android:title="@string/prefs_notifications">
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_outline_preview_24"
-            android:key="@string/preferences__notification_preview"
-            android:title="@string/prefs_notification_preview"
-            android:widgetLayout="@layout/preference_switch_layout" />
         <DropDownPreference
             android:defaultValue="1"
             android:entries="@array/list_notification_priority"
@@ -143,9 +154,16 @@
             android:key="@string/preferences__notification_priority"
             android:summary="%s"
             android:title="@string/prefs_title_notification_priority" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_outline_preview_24"
+            android:key="@string/preferences__notification_preview"
+            android:title="@string/prefs_notification_preview"
+            android:widgetLayout="@layout/preference_switch_layout" />
+
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="pref_key_work_life_balance"
+        android:key="@string/preferences__work_life_balance"
         android:title="@string/prefs_work_life_balance">
         <CheckBoxPreference
             android:defaultValue="false"

@@ -35,6 +35,7 @@ import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.GroupId
@@ -111,40 +112,15 @@ fun String.fetchContactModel(apiConnector: APIConnector): BasicContact =
                 when (it.type) {
                     0 -> IdentityType.NORMAL
                     1 -> IdentityType.WORK
-                    else -> IdentityType.NORMAL /* Out of range! */
+                    else -> IdentityType.NORMAL // Out of range!
                 },
             )
         }
 
 /**
- * Remove the group creator if no messages should be sent to it according to
- * [GroupUtil.sendMessageToCreator].
- */
-fun Collection<ContactModel>.removeCreatorIfRequired(group: GroupModel): Collection<ContactModel> =
-    filterIf(!GroupUtil.sendMessageToCreator(group)) { it.identity != group.creatorIdentity }
-
-/**
- * Remove the group creator if no messages should be sent to it according to
- * [GroupUtil.sendMessageToCreator].
- */
-fun Collection<ch.threema.data.models.ContactModel>.removeGroupCreatorIfRequired(group: GroupModel): Collection<ch.threema.data.models.ContactModel> =
-    filterIf(!GroupUtil.sendMessageToCreator(group)) { it.identity != group.creatorIdentity }
-
-/**
- * If the [condition] is fulfilled, the [predicate] is used to filter the collection.
- */
-fun <T> Collection<T>.filterIf(condition: Boolean, predicate: (T) -> Boolean): Collection<T> =
-    if (condition) {
-        this.filter(predicate)
-    } else {
-        this
-    }
-
-/**
  * Used to create messages that are sent with [ActiveTaskCodec.runBundledMessagesSendSteps].
  */
 sealed interface OutgoingCspMessageCreator {
-
     /**
      * The message id that is used to create the message.
      */
@@ -185,17 +161,14 @@ class OutgoingCspContactMessageCreator(
      * The message id that will be applied to the given message.
      */
     override val messageId: MessageId,
-
     /**
      * The date that will be used as created-at date for the message.
      */
     override val createdAt: Date,
-
     /**
      * The identity of the recipient contact.
      */
     private val identity: String,
-
     /**
      * This should create the contact message with all message type specific attributes set. Note
      * that the following fields should not be set, as they will get overridden by these utils:
@@ -207,9 +180,8 @@ class OutgoingCspContactMessageCreator(
      */
     private val createContactMessage: () -> AbstractMessage,
 ) : OutgoingCspMessageCreator {
-
     override fun createGenericMessage(myIdentity: String) =
-    // We need to set the 'toIdentity' here because the conversation is determined based on this
+        // We need to set the 'toIdentity' here because the conversation is determined based on this
         // message when reflecting it.
         createAbstractMessage(myIdentity, identity)
 
@@ -218,7 +190,7 @@ class OutgoingCspContactMessageCreator(
             // Check that this message creator is only used for contact messages
             if (it is AbstractGroupMessage) {
                 throw IllegalArgumentException(
-                    "The contact message creator cannot be used for group messages"
+                    "The contact message creator cannot be used for group messages",
                 )
             }
 
@@ -228,7 +200,6 @@ class OutgoingCspContactMessageCreator(
             it.toIdentity = toIdentity
         }
     }
-
 }
 
 /**
@@ -239,22 +210,18 @@ class OutgoingCspGroupMessageCreator(
      * The message id that will be set for the outgoing messages.
      */
     override val messageId: MessageId,
-
     /**
      * The date that will be used as created-at date for the outgoing messages.
      */
     override val createdAt: Date,
-
     /**
      * The group id of the group that will be set for the outgoing messages.
      */
     private val groupId: GroupId,
-
     /**
      * The group creator identity that will be set for the outgoing messages.
      */
     private val groupCreator: String,
-
     /**
      * This should create the contact message with all message type specific attributes set. Note
      * that the following fields should not be set, as they will get overridden by these utils:
@@ -270,7 +237,6 @@ class OutgoingCspGroupMessageCreator(
      */
     private val createGroupMessage: () -> AbstractGroupMessage,
 ) : OutgoingCspMessageCreator {
-
     constructor(
         messageId: MessageId,
         createdAt: Date,
@@ -284,9 +250,34 @@ class OutgoingCspGroupMessageCreator(
         createAbstractGroupMessage,
     )
 
+    constructor(
+        messageId: MessageId,
+        createdAt: Date,
+        group: ch.threema.data.models.GroupModel,
+        createAbstractGroupMessage: () -> AbstractGroupMessage,
+    ) : this(
+        messageId,
+        createdAt,
+        group.groupIdentity,
+        createAbstractGroupMessage,
+    )
+
+    constructor(
+        messageId: MessageId,
+        createdAt: Date,
+        groupIdentity: GroupIdentity,
+        createAbstractGroupMessage: () -> AbstractGroupMessage,
+    ) : this(
+        messageId,
+        createdAt,
+        GroupId(groupIdentity.groupId),
+        groupIdentity.creatorIdentity,
+        createAbstractGroupMessage,
+    )
+
     override fun createGenericMessage(myIdentity: String): AbstractMessage =
-    // We do not need to set a 'toIdentity' in case of a generic message as this message will
-    // never be sent. In case of a group message it is sufficient if it contains the correct
+        // We do not need to set a 'toIdentity' in case of a generic message as this message will
+        // never be sent. In case of a group message it is sufficient if it contains the correct
         // group identity.
         createAbstractMessage(myIdentity, "")
 
@@ -485,11 +476,11 @@ private class OutgoingCspMessageSender(
                     receiver,
                     messageCreator.createAbstractMessage(
                         identityStore.identity,
-                        receiver.identity
+                        receiver.identity,
                     ),
                     nonce,
                     nonceFactory,
-                    handle
+                    handle,
                 )
                 receiver.identity to result
             } else {
@@ -517,8 +508,8 @@ private class OutgoingCspMessageSender(
                     message.toCspMessage(
                         identityStore,
                         contactStore,
-                        nonce
-                    )
+                        nonce,
+                    ),
                 )
                 message.logMessage("Sent")
             }
@@ -560,7 +551,7 @@ private class OutgoingCspMessageSender(
             val encryptedEnvelopeResult = getEncryptedOutgoingMessageUpdateSentEnvelope(
                 genericMessage,
                 multiDeviceProperties.mediatorDeviceId,
-                multiDeviceProperties.keys
+                multiDeviceProperties.keys,
             )
             val reflectId: UInt = handle.reflect(encryptedEnvelopeResult)
             pendingReflectAck = reflectId to encryptedEnvelopeResult.nonce
@@ -702,7 +693,7 @@ private fun runProfilePictureDistributionSteps(
         logger.info(
             "{}: Contact {} should not receive the profile picture",
             prefix,
-            receiverIdentity
+            receiverIdentity,
         )
         return null
     }
@@ -736,7 +727,7 @@ private fun runProfilePictureDistributionSteps(
         logger.debug(
             "{}: Contact {} already has the latest profile picture",
             prefix,
-            receiverIdentity
+            receiverIdentity,
         )
         return null
     }

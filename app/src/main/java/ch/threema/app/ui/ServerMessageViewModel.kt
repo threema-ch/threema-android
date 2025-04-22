@@ -29,7 +29,6 @@ import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.factories.ServerMessageModelFactory
 
 class ServerMessageViewModel : ViewModel() {
-
     private val serverMessageModelFactory: ServerMessageModelFactory?
 
     private val serverMessage = MutableLiveData<String?>()

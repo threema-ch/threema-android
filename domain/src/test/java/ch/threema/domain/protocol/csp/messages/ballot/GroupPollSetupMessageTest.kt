@@ -28,13 +28,12 @@ import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
 open class GroupPollSetupMessageTest {
-
     private val fromIdentity = "01234567"
 
     private val groupPollSetupMessage = GroupPollSetupMessage().apply {
@@ -55,21 +54,21 @@ open class GroupPollSetupMessageTest {
                     .setId(0)
                     .setSortKey(0)
                     .setDescription("Coice 1")
-                    .build()
+                    .build(),
             )
             addChoice(
                 BallotDataChoiceBuilder()
                     .setId(1)
                     .setSortKey(1)
                     .setDescription("Coice 2")
-                    .build()
+                    .build(),
             )
             addChoice(
                 BallotDataChoiceBuilder()
                     .setId(2)
                     .setSortKey(2)
                     .setDescription("Coice 3")
-                    .build()
+                    .build(),
             )
             addParticipant("01234567")
             addParticipant("0Y123456")
@@ -83,13 +82,12 @@ open class GroupPollSetupMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthTooShort() {
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollSetupMessage.fromByteArray(
                 data = groupPollSetupMessageBody,
                 offset = 0,
                 length = 0,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
         }
 
@@ -99,16 +97,14 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollSetupMessage.fromByteArray(
                 data = groupPollSetupMessageBody,
                 offset = -1,
                 length = 64,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
         }
 
@@ -118,16 +114,14 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLength() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollSetupMessage.fromByteArray(
                 data = groupPollSetupMessageBody,
                 offset = 0,
                 length = groupPollSetupMessageBody.size + 1,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
         }
 
@@ -137,16 +131,14 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLengthWithOffset() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollSetupMessage.fromByteArray(
                 data = groupPollSetupMessageBody,
                 offset = 1,
                 length = groupPollSetupMessageBody.size,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
         }
 
@@ -156,13 +148,12 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithoutOffset() {
-
         // act
         val resultGroupPollSetupMessage = GroupPollSetupMessage.fromByteArray(
             data = groupPollSetupMessageBody,
             offset = 0,
             length = groupPollSetupMessageBody.size,
-            fromIdentity = fromIdentity
+            fromIdentity = fromIdentity,
         )
 
         // assert
@@ -171,7 +162,6 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithOffset() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + groupPollSetupMessageBody
 
@@ -180,7 +170,7 @@ open class GroupPollSetupMessageTest {
             data = dataWithOffsetByte,
             offset = 1,
             length = groupPollSetupMessageBody.size,
-            fromIdentity = fromIdentity
+            fromIdentity = fromIdentity,
         )
 
         // assert
@@ -189,7 +179,6 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldParseBodyAndSetCommonFields() {
-
         // act
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -204,7 +193,7 @@ open class GroupPollSetupMessageTest {
         val resultGroupPollSetupMessage: GroupPollSetupMessage =
             GroupPollSetupMessage.fromReflected(
                 message = incomingD2DMessage,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
 
         // assert
@@ -216,7 +205,6 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
-
         // act
         val outgoingMessageId = MessageId()
         val outgoingMessageCreatedAt: Long = 42424242
@@ -230,7 +218,7 @@ open class GroupPollSetupMessageTest {
         val resultGroupPollSetupMessage: GroupPollSetupMessage =
             GroupPollSetupMessage.fromReflected(
                 message = outgoingD2DMessage,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
 
         // assert
@@ -241,18 +229,16 @@ open class GroupPollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetNotPassedCorrectly() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + groupPollSetupMessageBody
 
         val testBlockLazy = {
-
             // act
             GroupPollSetupMessage.fromByteArray(
                 data = dataWithOffsetByte,
                 offset = 0,
                 length = groupPollSetupMessageBody.size,
-                fromIdentity = fromIdentity
+                fromIdentity = fromIdentity,
             )
         }
 
@@ -270,26 +256,26 @@ open class GroupPollSetupMessageTest {
         assertEquals(groupPollSetupMessage.ballotCreatorIdentity, actual.ballotCreatorIdentity)
         assertEquals(
             groupPollSetupMessage.ballotData!!.description,
-            actual.ballotData!!.description
+            actual.ballotData!!.description,
         )
         assertEquals(groupPollSetupMessage.ballotData!!.state, actual.ballotData!!.state)
         assertEquals(
             groupPollSetupMessage.ballotData!!.assessmentType,
-            actual.ballotData!!.assessmentType
+            actual.ballotData!!.assessmentType,
         )
         assertEquals(groupPollSetupMessage.ballotData!!.type, actual.ballotData!!.type)
         assertEquals(groupPollSetupMessage.ballotData!!.choiceType, actual.ballotData!!.choiceType)
         assertContentEquals(
             groupPollSetupMessage.ballotData!!.participants,
-            actual.ballotData!!.participants
+            actual.ballotData!!.participants,
         )
         assertEquals(
             groupPollSetupMessage.ballotData!!.displayType,
-            actual.ballotData!!.displayType
+            actual.ballotData!!.displayType,
         )
         assertEquals(
             groupPollSetupMessage.ballotData!!.choiceList.size,
-            actual.ballotData!!.choiceList.size
+            actual.ballotData!!.choiceList.size,
         )
         groupPollSetupMessage.ballotData!!.choiceList.forEachIndexed { index, value ->
             assertEquals(value.id, actual.ballotData!!.choiceList[index].id)
@@ -297,7 +283,7 @@ open class GroupPollSetupMessageTest {
             assertEquals(value.order, actual.ballotData!!.choiceList[index].order)
             assertContentEquals(
                 value.ballotDataChoiceResults,
-                actual.ballotData!!.choiceList[index].ballotDataChoiceResults
+                actual.ballotData!!.choiceList[index].ballotDataChoiceResults,
             )
             assertEquals(value.totalVotes, actual.ballotData!!.choiceList[index].totalVotes)
         }

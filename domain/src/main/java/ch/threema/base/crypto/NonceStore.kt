@@ -26,7 +26,7 @@ import com.neilalexander.jnacl.NaCl
 
 enum class NonceScope {
     CSP,
-    D2D
+    D2D,
 }
 
 @JvmInline
@@ -53,7 +53,7 @@ interface NonceStore {
         scope: NonceScope,
         chunkSize: Int,
         offset: Int,
-        nonces: MutableList<HashedNonce>
+        nonces: MutableList<HashedNonce>,
     )
 
     fun insertHashedNonces(scope: NonceScope, nonces: List<HashedNonce>): Boolean
@@ -66,10 +66,10 @@ fun interface NonceFactoryNonceBytesProvider {
 class NonceFactory(
     private val nonceStore: NonceStore,
     // Nonce Provider is injectable for testing purposes
-    private val nonceProvider: NonceFactoryNonceBytesProvider
+    private val nonceProvider: NonceFactoryNonceBytesProvider,
 ) {
-    constructor(nonceStore: NonceStore)
-        : this(nonceStore, { length -> SecureRandomUtil.generateRandomBytes(length) })
+    constructor(nonceStore: NonceStore) :
+        this(nonceStore, { length -> SecureRandomUtil.generateRandomBytes(length) })
 
     @JvmName("nextNonce")
     fun next(scope: NonceScope): Nonce {
@@ -102,7 +102,7 @@ class NonceFactory(
         scope: NonceScope,
         chunkSize: Int,
         offset: Int,
-        nonces: MutableList<HashedNonce>
+        nonces: MutableList<HashedNonce>,
     ) {
         nonceStore.addHashedNoncesChunk(scope, chunkSize, offset, nonces)
     }

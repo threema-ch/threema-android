@@ -28,7 +28,6 @@ import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.taskmanager.ActiveTask
-
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.getEncryptedContactSyncCreate
 
@@ -41,7 +40,6 @@ class ReflectContactSyncCreateTask(
     private val createLocally: () -> ContactModel,
     multiDeviceManager: MultiDeviceManager,
 ) : ReflectContactSyncTask<Unit, ContactModel>(multiDeviceManager), ActiveTask<ContactModel> {
-
     override val type = "ReflectContactSyncCreate"
 
     override suspend fun invoke(handle: ActiveTaskCodec): ContactModel = reflectContactSync(handle)
@@ -61,7 +59,7 @@ class ReflectContactSyncCreateTask(
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
             storeD2dNonce = true,
-            nonceFactory = nonceFactory
+            nonceFactory = nonceFactory,
         )
     }
 

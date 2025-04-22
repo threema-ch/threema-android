@@ -25,10 +25,11 @@ import android.content.Context
 import androidx.annotation.StringRes
 import androidx.annotation.WorkerThread
 import ch.threema.app.R
-import ch.threema.app.utils.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
@@ -46,9 +47,8 @@ import ch.threema.domain.protocol.api.APIConnector.FetchIdentityResult
 import ch.threema.domain.protocol.api.APIConnector.HttpConnectionException
 import ch.threema.domain.protocol.api.APIConnector.NetworkException
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import kotlinx.coroutines.runBlocking
 import java.net.HttpURLConnection
-import java.util.Date
+import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("AddOrUpdateContactBackgroundTask")
 
@@ -78,7 +78,6 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
     private val context: Context,
     private val expectedPublicKey: ByteArray? = null,
 ) : BackgroundTask<T> {
-
     /**
      * Run this task synchronously on the same thread. Note that this performs network communication
      * and must not be run on the main thread.
@@ -151,8 +150,8 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
         }
 
         // Only proceed if adding contacts is allowed
-        if (addContactRestrictionPolicy == AddContactRestrictionPolicy.CHECK
-            && AppRestrictionUtil.isAddContactDisabled(context)
+        if (addContactRestrictionPolicy == AddContactRestrictionPolicy.CHECK &&
+            AppRestrictionUtil.isAddContactDisabled(context)
         ) {
             return PolicyViolation(context)
         }
@@ -206,7 +205,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
                     ContactModelData(
                         identity = result.identity,
                         publicKey = result.publicKey,
-                        createdAt = Date(),
+                        createdAt = now(),
                         firstName = "",
                         lastName = "",
                         nickname = null,
@@ -220,13 +219,15 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
                         featureMask = result.featureMask.toULong(),
                         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
                         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                        isArchived = false,
                         androidContactLookupKey = null,
                         localAvatarExpires = null,
                         isRestored = false,
                         profilePictureBlobId = null,
                         jobTitle = null,
                         department = null,
-                    )
+                        notificationTriggerPolicyOverride = null,
+                    ),
                 )
                 ContactCreated(contactModel)
             } catch (e: ContactCreateException) {
@@ -271,7 +272,9 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
 
         return when {
             acquaintanceLevelChanged || verificationLevelChanged -> ContactModified(
-                contactModel, acquaintanceLevelChanged, verificationLevelChanged
+                contactModel,
+                acquaintanceLevelChanged,
+                verificationLevelChanged,
             )
 
             contactVerifiedAgain -> AlreadyVerified(contactModel)
@@ -321,7 +324,7 @@ open class BasicAddOrUpdateContactBackgroundTask(
     contactModelRepository,
     addContactRestrictionPolicy,
     context,
-    expectedPublicKey
+    expectedPublicKey,
 ) {
     final override fun onContactAdded(result: ContactResult): ContactResult = result
 }
@@ -341,7 +344,7 @@ enum class AddContactRestrictionPolicy {
      * The add contact restriction won't be respected and the contact will be added anyways. Note
      * that this must only be used in cases where adding the contact is not triggered by the user.
      */
-    IGNORE
+    IGNORE,
 }
 
 /**

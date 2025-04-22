@@ -33,9 +33,8 @@ import ch.threema.app.activities.MessageTimestampsUiModel
 @Composable
 fun CombinedMessageDetailsList(
     messageTimestampsUiModel: MessageTimestampsUiModel,
-    messageDetailsUiModel: MessageDetailsUiModel
+    messageDetailsUiModel: MessageDetailsUiModel,
 ) {
-
     Column {
         MessageTimestampsList(model = messageTimestampsUiModel)
         Spacer(modifier = Modifier.size(4.dp))

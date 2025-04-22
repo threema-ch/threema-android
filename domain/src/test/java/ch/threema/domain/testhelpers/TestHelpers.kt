@@ -27,8 +27,8 @@ import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.crypto.NonceStore
-import ch.threema.domain.models.Contact
 import ch.threema.domain.models.BasicContact
+import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.protocol.csp.coders.MessageCoder
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
@@ -38,7 +38,7 @@ import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.IdentityStoreInterface
 
 object TestHelpers {
-    const val myIdentity = "TESTTEST"
+    const val MY_IDENTITY = "TESTTEST"
 
     @JvmStatic
     val noopContactStore: ContactStore
@@ -63,7 +63,7 @@ object TestHelpers {
             override fun encryptData(
                 plaintext: ByteArray,
                 nonce: ByteArray,
-                receiverPublicKey: ByteArray
+                receiverPublicKey: ByteArray,
             ): ByteArray {
                 return plaintext
             }
@@ -71,7 +71,7 @@ object TestHelpers {
             override fun decryptData(
                 ciphertext: ByteArray,
                 nonce: ByteArray,
-                senderPublicKey: ByteArray
+                senderPublicKey: ByteArray,
             ): ByteArray {
                 return ciphertext
             }
@@ -81,7 +81,7 @@ object TestHelpers {
             }
 
             override fun getIdentity(): String {
-                return myIdentity
+                return MY_IDENTITY
             }
 
             override fun getServerGroup(): String {
@@ -104,7 +104,7 @@ object TestHelpers {
                 identity: String,
                 serverGroup: String,
                 publicKey: ByteArray,
-                privateKey: ByteArray
+                privateKey: ByteArray,
             ) {
             }
         }
@@ -132,7 +132,7 @@ object TestHelpers {
                 scope: NonceScope,
                 chunkSize: Int,
                 offset: Int,
-                nonces: MutableList<HashedNonce>
+                nonces: MutableList<HashedNonce>,
             ) {
                 // noop
             }
@@ -149,7 +149,7 @@ object TestHelpers {
     fun setMessageDefaultSenderAndReceiver(msg: AbstractMessage): AbstractMessage {
         val toIdentity = "ABCDEFGH"
         msg.fromIdentity = toIdentity
-        msg.toIdentity = myIdentity
+        msg.toIdentity = MY_IDENTITY
         return msg
     }
 

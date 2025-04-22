@@ -25,8 +25,10 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.handleIncomingGroupSyncRequest
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModel
+import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.Contact
-import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityDecryptionResult
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject
@@ -34,7 +36,6 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.Common
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
@@ -50,7 +51,10 @@ class IncomingForwardSecurityRejectTask(
     private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
     private val messageService by lazy { serviceManager.messageService }
     private val voipStateService by lazy { serviceManager.voipStateService }
+    private val userService by lazy { serviceManager.userService }
     private val contactService by lazy { serviceManager.contactService }
+    private val contactStore by lazy { serviceManager.contactStore }
+    private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
     private val groupService by lazy { serviceManager.groupService }
     private val databaseService by lazy { serviceManager.databaseServiceNew }
     private val notificationService by lazy { serviceManager.notificationService }
@@ -61,7 +65,10 @@ class IncomingForwardSecurityRejectTask(
         // Note that in this case we should not send a terminate if we do not support fs. Sending a
         // terminate could trigger the sender to respond with a terminate again.
         if (!forwardSecurityMessageProcessor.canForwardSecurityMessageBeProcessed(
-                sender, data.sessionId, false, handle
+                sender = sender,
+                sessionId = data.sessionId,
+                sendTerminate = false,
+                handle = handle,
             )
         ) {
             return ForwardSecurityDecryptionResult.NONE
@@ -69,11 +76,11 @@ class IncomingForwardSecurityRejectTask(
 
         forwardSecurityMessageProcessor.processReject(sender, data, handle)
 
-        val groupIdentity = data.groupIdentity
-        if (groupIdentity == null || groupIdentity.isEmpty()) {
+        val groupIdentityProto = data.groupIdentity
+        if (groupIdentityProto == null || groupIdentityProto.isEmpty()) {
             handleContactMessageReject()
         } else {
-            handleGroupMessageReject(groupIdentity.groupId, groupIdentity.creatorIdentity, handle)
+            handleGroupMessageReject(groupIdentityProto.convert(), handle)
         }
 
         return ForwardSecurityDecryptionResult.NONE
@@ -92,26 +99,25 @@ class IncomingForwardSecurityRejectTask(
             else -> {
                 logger.warn(
                     "Invalid message model found for rejected message id {}",
-                    data.rejectedApiMessageId
+                    data.rejectedApiMessageId,
                 )
             }
         }
     }
 
     private suspend fun handleGroupMessageReject(
-        groupId: Long,
-        creatorIdentity: String,
+        groupIdentity: GroupIdentity,
         handle: ActiveTaskCodec,
     ) {
         // 1. Run the common group receive steps and abort if the group is not found
         val group = runCommonGroupReceiveSteps(
-            GroupId(groupId),
-            creatorIdentity,
+            groupIdentity,
             sender.identity,
             handle,
-            serviceManager
+            serviceManager,
         )
 
+        // TODO(ANDR-3565): Fix protocol step numbers
         // 2. Lookup the group and 3. abort if not defined
         if (group == null) {
             logger.warn("Received reject of a group message of unknown group")
@@ -125,8 +131,13 @@ class IncomingForwardSecurityRejectTask(
         if (messageModel == null) {
             // 5.1 If the user is the creator of the group, assume that a group sync request has
             // been received
-            if (groupService.isGroupCreator(group)) {
-                handleIncomingGroupSyncRequest(group, sender.identity, handle, serviceManager)
+            if (groupIdentity.creatorIdentity == userService.identity) {
+                val senderContact = getBasicContact(sender.identity)
+                if (senderContact == null) {
+                    logger.error("Could not get cached sender contact")
+                    return
+                }
+                handleIncomingGroupSyncRequest(group, senderContact, handle, serviceManager)
             }
             // 5.2 Abort these steps
             return
@@ -147,13 +158,14 @@ class IncomingForwardSecurityRejectTask(
         databaseService.messageModelFactory.getByApiMessageIdAndIdentityAndIsOutbox(
             data.rejectedApiMessageId,
             sender.identity,
-            true
+            true,
         )
 
     private fun getGroupMessageModel(group: GroupModel): GroupMessageModel? {
+        val messageReceiver = groupService.createReceiver(group) ?: return null
         val messageModel = messageService.getMessageModelByApiMessageIdAndReceiver(
             data.rejectedApiMessageId.toString(),
-            groupService.createReceiver(group)
+            messageReceiver,
         )
         return when (messageModel) {
             is GroupMessageModel -> {
@@ -179,13 +191,13 @@ class IncomingForwardSecurityRejectTask(
             MessageType.LOCATION,
             MessageType.FILE,
             MessageType.BALLOT,
-                -> {
+            -> {
                 // Mark the message with 're-send requested'. Note that we use the fs key mismatch
                 // state to represent the 're-send requested'-mark.
                 messageService.updateOutgoingMessageState(
                     messageModel,
                     MessageState.FS_KEY_MISMATCH,
-                    Date()
+                    Date(),
                 )
 
                 // Show a notification that a reject was received (if the contact is known)
@@ -199,7 +211,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.VIDEO,
             MessageType.VOICEMESSAGE,
             MessageType.CONTACT,
-                -> logger.warn("Received a reject for a deprecated message")
+            -> logger.warn("Received a reject for a deprecated message")
 
             MessageType.STATUS,
             MessageType.VOIP_STATUS,
@@ -207,7 +219,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.GROUP_CALL_STATUS,
             MessageType.FORWARD_SECURITY_STATUS,
             MessageType.GROUP_STATUS,
-                -> logger.warn("Received a reject for a status message")
+            -> logger.warn("Received a reject for a status message")
         }
     }
 
@@ -218,31 +230,33 @@ class IncomingForwardSecurityRejectTask(
             MessageType.LOCATION,
             MessageType.FILE,
             MessageType.BALLOT,
-                -> {
+            -> {
                 // Mark the message with 're-send requested'. Note that we use the fs key mismatch
                 // state to represent the 're-send requested'-mark.
                 messageService.updateOutgoingMessageState(
                     messageModel,
                     MessageState.FS_KEY_MISMATCH,
-                    Date()
+                    Date(),
                 )
 
                 // Add the sender to the list of recipients requesting a re-send
                 databaseService.rejectedGroupMessageFactory.insertMessageReject(
-                    MessageId.fromString(messageModel.apiMessageId), sender.identity, group
+                    MessageId.fromString(messageModel.apiMessageId),
+                    sender.identity,
+                    group.getDatabaseId(),
                 )
 
                 // Show a notification that a reject was received
-                notificationService.showForwardSecurityMessageRejectedNotification(
-                    groupService.createReceiver(group)
-                )
+                groupService.createReceiver(group)?.let {
+                    notificationService.showForwardSecurityMessageRejectedNotification(it)
+                }
             }
 
             MessageType.IMAGE,
             MessageType.VIDEO,
             MessageType.VOICEMESSAGE,
             MessageType.CONTACT,
-                -> logger.warn("Received a reject for a deprecated message")
+            -> logger.warn("Received a reject for a deprecated message")
 
             MessageType.STATUS,
             MessageType.VOIP_STATUS,
@@ -250,9 +264,15 @@ class IncomingForwardSecurityRejectTask(
             MessageType.GROUP_CALL_STATUS,
             MessageType.FORWARD_SECURITY_STATUS,
             MessageType.GROUP_STATUS,
-                -> logger.warn("Received a reject for a status message")
+            -> logger.warn("Received a reject for a status message")
         }
     }
 
     private fun Common.GroupIdentity.isEmpty() = groupId == 0L && creatorIdentity == ""
+
+    private fun Common.GroupIdentity.convert() = GroupIdentity(creatorIdentity, groupId)
+
+    private fun getBasicContact(identity: String): BasicContact? =
+        contactStore.getCachedContact(identity)
+            ?: contactModelRepository.getByIdentity(identity)?.data?.value?.toBasicContact()
 }

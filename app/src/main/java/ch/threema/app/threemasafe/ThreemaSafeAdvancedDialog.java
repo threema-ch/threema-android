@@ -34,6 +34,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 
@@ -42,12 +44,12 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 
 public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements View.OnClickListener {
@@ -65,12 +67,14 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 
     private ThreemaSafeServerInfo serverInfo;
 
-    private Button positiveButton;
+    private @Nullable Button positiveButtonXml;
+    private @Nullable WizardButtonXml positiveButtonCompose;
     private EditText serverUrlEditText, usernameEditText, passwordEditText;
     private LinearLayout serverContainer;
     private MaterialSwitch defaultServerSwitch;
 
-    public static ThreemaSafeAdvancedDialog newInstance(ThreemaSafeServerInfo serverInfo, boolean plainStyle) {
+    @NonNull
+    public static ThreemaSafeAdvancedDialog newInstance(@NonNull ThreemaSafeServerInfo serverInfo, boolean plainStyle) {
         ThreemaSafeAdvancedDialog dialog = new ThreemaSafeAdvancedDialog();
         Bundle args = new Bundle();
         args.putString(ARG_SERVER_URL, serverInfo.getCustomServerName());
@@ -108,12 +112,13 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
 
         this.activity = activity;
     }
 
+    @NonNull
     @Override
     public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
         serverInfo = new ThreemaSafeServerInfo();
@@ -123,14 +128,20 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
         boolean plainStyle = getArguments().getBoolean(ARG_PLAIN_STYLE);
 
         final View dialogView = activity.getLayoutInflater().inflate(plainStyle ? R.layout.dialog_safe_advanced : R.layout.dialog_wizard_safe_advanced, null);
-        positiveButton = dialogView.findViewById(R.id.ok);
+
+        if (!plainStyle) {
+            dialogView.findViewById(R.id.cancel_compose).setOnClickListener(v -> onCancel(null));
+            positiveButtonCompose = dialogView.findViewById(R.id.ok_compose);
+            positiveButtonCompose.setOnClickListener(v -> customOnClickedYes());
+        }
+
         serverUrlEditText = dialogView.findViewById(R.id.safe_edit_server);
         serverContainer = dialogView.findViewById(R.id.safe_server_container);
         usernameEditText = dialogView.findViewById(R.id.safe_edit_username);
         passwordEditText = dialogView.findViewById(R.id.safe_edit_server_password);
         defaultServerSwitch = dialogView.findViewById(R.id.safe_switch_server);
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), plainStyle ? getTheme() : R.style.Threema_Dialog_Wizard);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(), plainStyle ? getTheme() : R.style.Threema_Dialog_Wizard);
         builder.setView(dialogView);
 
         try {
@@ -161,7 +172,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                updateButtons();
+                updatePositiveButtonEnabledState();
             }
 
             @Override
@@ -174,10 +185,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
             builder.setPositiveButton(getString(R.string.ok), null);
             builder.setNegativeButton(getString(R.string.cancel), null);
         } else {
-            positiveButton.setOnClickListener(this);
-            updateButtons();
-            dialogView.findViewById(R.id.cancel).setOnClickListener(v -> onCancel(null));
-            updateButtons();
+            updatePositiveButtonEnabledState();
         }
 
         setCancelable(false);
@@ -190,18 +198,27 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
     @Override
     public void onStart() {
         super.onStart();
-
-        Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        if (button != null) {
-            this.positiveButton = button;
-            this.positiveButton.setOnClickListener(this);
+        final @Nullable Button dialogPositiveButtonXml = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        if (dialogPositiveButtonXml != null) {
+            this.positiveButtonXml = dialogPositiveButtonXml;
+            this.positiveButtonXml.setOnClickListener(this);
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> onCancel(null));
-            updateButtons();
+            updatePositiveButtonEnabledState();
+        } else {
+            final @Nullable WizardButtonXml dialogPositiveButtonCompose = alertDialog.findViewById(R.id.ok_compose);
+            final @Nullable WizardButtonXml dialogNegativeButtonCompose = alertDialog.findViewById(R.id.cancel_compose);
+            if (dialogPositiveButtonCompose != null) {
+                this.positiveButtonCompose = dialogPositiveButtonCompose;
+                positiveButtonCompose.setOnClickListener(v -> customOnClickedYes());
+            }
+            if (dialogNegativeButtonCompose != null) {
+                dialogNegativeButtonCompose.setOnClickListener(v -> onCancel(null));
+            }
         }
     }
 
     private void updateUI() {
-        updateButtons();
+        updatePositiveButtonEnabledState();
 
         if (defaultServerSwitch.isChecked()) {
             if (serverContainer.getVisibility() == View.VISIBLE) {
@@ -214,13 +231,21 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
         }
     }
 
-    private void updateButtons() {
-        if (positiveButton != null && serverUrlEditText != null && defaultServerSwitch != null) {
-            if (defaultServerSwitch.isChecked()) {
-                positiveButton.setEnabled(true);
-            } else {
-                positiveButton.setEnabled(serverUrlEditText.getText() != null && serverUrlEditText.getText().length() >= 9);
+    private void updatePositiveButtonEnabledState() {
+        if (serverUrlEditText != null && defaultServerSwitch != null) {
+            final boolean isPositiveButtonEnabled = defaultServerSwitch.isChecked()
+                || (serverUrlEditText.getText() != null && serverUrlEditText.getText().length() >= 9);
+            if (positiveButtonXml != null) {
+                positiveButtonXml.setEnabled(isPositiveButtonEnabled);
+            } else if (positiveButtonCompose != null) {
+                setPositiveButtonEnabled(isPositiveButtonEnabled);
             }
+        }
+    }
+
+    private void setPositiveButtonEnabled(final boolean isEnabled) {
+        if (positiveButtonCompose != null) {
+            positiveButtonCompose.setButtonEnabled(isEnabled);
         }
     }
 
@@ -270,6 +295,10 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 
     @Override
     public void onClick(View v) {
+        customOnClickedYes();
+    }
+
+    private void customOnClickedYes() {
         if (!defaultServerSwitch.isChecked()) {
             EditTextUtil.hideSoftKeyboard(serverUrlEditText);
             serverInfo.setCustomServerName(serverUrlEditText.getText().toString());
@@ -281,5 +310,4 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
             onYes();
         }
     }
-
 }

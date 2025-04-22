@@ -33,19 +33,18 @@ class ResendGroupMessageDialog(
     private val contactService: ContactService,
     private val callback: ResendMessageCallback,
 ) : ThreemaDialogFragment() {
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val concatenatedContactNames = ContactUtil.joinDisplayNames(
             context,
-            contactService.getByIdentities(rejectedIdentities.toList())
+            contactService.getByIdentities(rejectedIdentities.toList()),
         )
         val builder = MaterialAlertDialogBuilder(requireActivity())
         builder.setTitle(getString(R.string.resend_message_dialog_title))
         builder.setMessage(
             getString(
                 R.string.resend_message_dialog_message,
-                concatenatedContactNames
-            )
+                concatenatedContactNames,
+            ),
         )
         builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
             callback.onPositiveClicked()
@@ -64,7 +63,7 @@ class ResendGroupMessageDialog(
             return ResendGroupMessageDialog(
                 rejectedIdentities,
                 contactService,
-                resendMessageCallback
+                resendMessageCallback,
             )
         }
     }
@@ -72,5 +71,4 @@ class ResendGroupMessageDialog(
     interface ResendMessageCallback {
         fun onPositiveClicked()
     }
-
 }

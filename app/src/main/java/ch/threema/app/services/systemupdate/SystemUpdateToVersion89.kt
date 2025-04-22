@@ -74,7 +74,7 @@ internal class SystemUpdateToVersion89(
                 GROUP BY m.identity
             ) tmp
             WHERE contacts.identity = tmp.identity;
-        """
+        """,
         )
     }
 
@@ -96,7 +96,7 @@ internal class SystemUpdateToVersion89(
                 GROUP BY m.groupId
             ) tmp
             WHERE m_group.id = tmp.groupId;
-        """
+        """,
         )
 
         // Set lastUpdate for groups without messages.
@@ -106,7 +106,7 @@ internal class SystemUpdateToVersion89(
             UPDATE m_group
             SET lastUpdate = strftime('%s', createdAt, 'utc') * 1000
             WHERE lastUpdate IS NULL;
-        """
+        """,
         )
     }
 
@@ -124,7 +124,7 @@ internal class SystemUpdateToVersion89(
                 GROUP BY m.distributionListId
             ) tmp
             WHERE distribution_list.id = tmp.distributionListId;
-        """
+        """,
         )
 
         // Set lastUpdate for distribution lists without messages.
@@ -134,8 +134,7 @@ internal class SystemUpdateToVersion89(
             UPDATE distribution_list
             SET lastUpdate = strftime('%s', createdAt, 'utc') * 1000
             WHERE lastUpdate IS NULL;
-        """
+        """,
         )
     }
-
 }

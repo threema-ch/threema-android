@@ -67,7 +67,7 @@ class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
         if (numDeleted > 1) {
             logger.error(
                 "{} instead of 1 tasks were deleted. Some tasks may have been skipped or reordered.",
-                numDeleted
+                numDeleted,
             )
         }
     }
@@ -84,7 +84,7 @@ class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
             null,
             null,
             null,
-            "$COLUMN_ID ASC"
+            "$COLUMN_ID ASC",
         ).use {
             val tasks = mutableListOf<String>()
             val taskColumnId = it.getColumnIndex(COLUMN_TASK)
@@ -98,7 +98,7 @@ class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
     override fun getStatements() = arrayOf(
         "CREATE TABLE `$tableName` (" +
             "`$COLUMN_ID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "`$COLUMN_TASK` STRING NOT NULL)"
+            "`$COLUMN_TASK` STRING NOT NULL)",
     )
 
     private fun getOldestIdForTask(task: String): Long? {
@@ -110,7 +110,7 @@ class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
             null,
             null,
             "$COLUMN_ID ASC",
-            "1"
+            "1",
         ).use {
             if (it.moveToFirst()) {
                 return it.getLong(it.getColumnIndexOrThrow(COLUMN_ID))

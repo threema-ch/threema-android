@@ -35,9 +35,8 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync
 
 abstract class ReflectUserProfileShareWithPolicySyncTaskBase(
     protected val newPolicy: ProfilePictureSharePolicy.Policy,
-    serviceManager: ServiceManager
+    serviceManager: ServiceManager,
 ) : ActiveTask<Unit>, PersistableTask {
-
     private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
@@ -62,12 +61,12 @@ abstract class ReflectUserProfileShareWithPolicySyncTaskBase(
     private suspend fun encryptAndReflectUserProfileUpdate(handle: ActiveTaskCodec) {
         val encryptedEnvelopeResult = getEncryptedUserProfileSyncUpdate(
             userProfile = createUpdatedUserProfile(),
-            multiDeviceProperties = mdProperties
+            multiDeviceProperties = mdProperties,
         )
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
             storeD2dNonce = true,
-            nonceFactory = nonceFactory
+            nonceFactory = nonceFactory,
         )
     }
 

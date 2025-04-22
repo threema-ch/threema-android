@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/reached_max_device_count_Mcv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_two_grid_unit"
+    android:layout_marginVertical="@dimen/spacing_half_grid_unit"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeColor="?attr/colorOnBackground">
+
+    <TextView
+        android:id="@+id/reached_max_device_count_Tv"
+        style="@style/Threema.TextAppearance.BodyMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/spacing_one_and_a_half_grid_unit"
+        android:drawableTint="?attr/colorOnSurface"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/spacing_two_grid_unit"
+        android:paddingVertical="@dimen/spacing_one_and_a_half_grid_unit"
+        app:drawableStartCompat="@drawable/ic_info_outline"
+        tools:text="Maximum number of 7 linked devices reached. Removed devices to add new ones." />
+
+</com.google.android.material.card.MaterialCardView>
+

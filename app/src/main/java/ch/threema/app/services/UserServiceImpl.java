@@ -203,7 +203,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             //if sync enabled, create one!
             if (this.account == null && (createIfNotExists || this.preferenceService.isSyncContacts())) {
                 this.account = new Account(context.getString(R.string.app_name), context.getString(R.string.package_name));
-                // TODO: crashes on some phones after update! java.lang.SecurityException: caller uid 10025 is different than the authenticator's uid
                 // This method requires the caller to have the same UID as the added account's authenticator.
                 try {
                     accountManager.addAccountExplicitly(this.account, "", null);
@@ -294,7 +293,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public void linkWithEmail(String email) throws Exception {
+    public void linkWithEmail(String email, @NonNull TriggerSource triggerSource) throws Exception {
         boolean pending = this.apiConnector.linkEmail(
             email,
             this.getLanguage(),
@@ -302,10 +301,22 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
         this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, email);
         this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL_PENDING, pending);
+
+        // Note that we sync the identity links regardless from the pending-flag to be safe. In both
+        // cases there is a scenario where we want to reflect the change:
+        //
+        // 1. pending == false: The email address is verified immediately and therefore already
+        // returns false here. This is very unlikely, but it might happen in theory.
+        //
+        // 2. pending == true: Prior to the current execution of this method we may have had an
+        // email address that has been successfully linked and verified. The new email address won't
+        // be reflected yet by the reflection task if it is not yet verified, but the old email
+        // address will be removed already (as it technically has been unlinked).
+        reflectUserProfileIdentityLinksIfApplicable(triggerSource);
     }
 
     @Override
-    public void unlinkEmail() throws Exception {
+    public void unlinkEmail(@NonNull TriggerSource triggerSource) throws Exception {
         String email = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_EMAIL);
         if (email == null) {
             throw new ThreemaException("no email linked");
@@ -314,6 +325,9 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         this.apiConnector.linkEmail("", this.getLanguage(), this.identityStore);
         this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL);
         this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL_PENDING);
+
+        // Reflect an update
+        reflectUserProfileIdentityLinksIfApplicable(triggerSource);
     }
 
     @Override
@@ -328,11 +342,12 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public void checkEmailLinkState() {
+    public void checkEmailLinkState(@NonNull TriggerSource triggerSource) {
         if (this.getEmailLinkingState() == LinkingState_PENDING) {
             try {
                 if (this.apiConnector.linkEmailCheckStatus(this.getLinkedEmail(), this.identityStore)) {
                     this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL_PENDING);
+                    reflectUserProfileIdentityLinksIfApplicable(triggerSource);
                 }
             } catch (Exception e) {
                 logger.error("Exception", e);
@@ -341,11 +356,13 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public Date linkWithMobileNumber(String number) throws Exception {
+    public Date linkWithMobileNumber(String number, @NonNull TriggerSource triggerSource) throws Exception {
+        boolean aPhoneNumberHasBeenLinked = getMobileLinkingState() == LinkingState_LINKED;
+
         Date linkWithMobileTime = new Date();
         String normalizedMobileNo = this.localeService.getNormalizedPhoneNumber(number);
 
-        if (normalizedMobileNo != null && normalizedMobileNo.length() > 0 && normalizedMobileNo.startsWith("+")) {
+        if (normalizedMobileNo != null && normalizedMobileNo.startsWith("+")) {
             normalizedMobileNo = normalizedMobileNo.substring(1);
         }
 
@@ -366,6 +383,12 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
         this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE_PENDING, System.currentTimeMillis());
         this.preferenceStore.save(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID, verificationId);
+
+        // If a phone number is currently successfully linked, then we trigger an update already now
+        // as it is removed immediately and the new phone number may never be verified
+        if (aPhoneNumberHasBeenLinked) {
+            reflectUserProfileIdentityLinksIfApplicable(triggerSource);
+        }
 
         ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerificationStarted);
 
@@ -390,7 +413,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public void unlinkMobileNumber() throws Exception {
+    public void unlinkMobileNumber(@NonNull TriggerSource triggerSource) throws Exception {
         String mobileNumber = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_MOBILE);
         if (mobileNumber == null) {
 
@@ -405,17 +428,21 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
         this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
 
+        reflectUserProfileIdentityLinksIfApplicable(triggerSource);
+
         ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
     }
 
     @Override
-    public boolean verifyMobileNumber(String code) throws Exception {
+    public boolean verifyMobileNumber(String code, @NonNull TriggerSource triggerSource) throws Exception {
         if (this.getMobileLinkingState() == LinkingState_PENDING) {
             this.apiConnector.linkMobileNoVerify(getCurrentMobileNumberVerificationId(), code);
 
             //verification ok, save phone number
             this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
             this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
+
+            reflectUserProfileIdentityLinksIfApplicable(triggerSource);
 
             ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
             return true;
@@ -608,7 +635,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         try {
             BlobUploader blobUploader = this.apiService.createUploader(
                 imageData,
-                false,
+                true,
                 BlobScope.Public.INSTANCE
             );
             data.blobId = blobUploader.upload();
@@ -703,6 +730,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
+    @WorkerThread
     public boolean sendFeatureMask() {
         boolean success = false;
         try {
@@ -859,5 +887,11 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         }
 
         return baseObject;
+    }
+
+    private void reflectUserProfileIdentityLinksIfApplicable(@NonNull TriggerSource triggerSource) {
+        if (triggerSource != TriggerSource.SYNC && multiDeviceManager.isMultiDeviceActive()) {
+            taskCreator.scheduleReflectUserProfileIdentityLinksTask();
+        }
     }
 }

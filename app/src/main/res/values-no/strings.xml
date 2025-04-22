@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontakter</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">Samtaler</string>
     <string name="title_compose_message">Start samtale</string>
     <string name="title_choose_recipient">Velg mottaker</string>
     <string name="title_keyfingerprint">Fingeravtrykkindikator</string>
-    <string name="title_mythreemaid">Min Threema ID</string>
-    <string name="title_threemaid">Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">Min ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short} ID</string>
     <string name="title_adduser">Legg til ny kontakt</string>
     <string name="title_enter_id">Legg til ID</string>
     <string name="title_invite_friend">Inviter en venn</string>
-    <string name="invite_via">Inviter en venn via...</string>
-    <string name="invite_email_body">Hei,\n\nJeg bruker %1$s, den sikre Instant Messenger appen som beskytter brukernes personvern.\n\nMin Threema ID: https://threema.id/%2$s\n\nLa oss kommunisere via %1$s!\n\nVi ses,\n</string>
-    <string name="invite_sms_body">Hei! La oss bruke %1$s til å kommunisere på en sikker og privat måte! Min Threema ID: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema. Den sikre meldingsapplikasjonen som beskytter ditt personvern.</string>
-    <string name="enter_id_hint">Legg til Threema ID</string>
+    <string name="invite_via">Inviter en venn via…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">Hei,\n\nJeg bruker %1$s, den sikre Instant Messenger appen som beskytter brukernes personvern.\n\nMin ${app_name_short} ID: https://threema.id/%2$s\n\nLa oss kommunisere via %1$s!\n\nVi ses,\n</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">Hei! La oss bruke %1$s til å kommunisere på en sikker og privat måte! Min ${app_name_short} ID: https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}. Den sikre meldingsapplikasjonen som beskytter ditt personvern.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">Legg til ${app_name_short} ID</string>
     <string name="account_links">Tilkoblede kontoer</string>
     <string name="menu_settings">Innstillinger</string>
-    <string name="menu_about">Om Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">Om ${app_name}</string>
     <string name="menu_add_contact">Ny kontakt</string>
     <string name="menu_done">Ferdig</string>
     <string name="compose_message_and_enter">Trykk her for å skrive</string>
@@ -50,6 +58,8 @@ når den første meldingen mottas.</string>
     <string name="prefs_sum_notification_sound">Standardinnstilling</string>
     <string name="prefs_vibrate">Vibrer</string>
     <string name="prefs_sum_vibrate">Vibrer ved innkommende melding</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
     <string name="prefs_sum_light">Hvit</string>
     <string name="prefs_title_wallpaper">Velg bakgrunn</string>
     <string name="prefs_sum_wallpaper">Velg bilde for bakgrunn</string>
@@ -66,8 +76,10 @@ når den første meldingen mottas.</string>
     <string name="prefs_inapp_vibrate_on">Vibrer når du mottar meldinger</string>
     <string name="prefs_inapp_vibrate_off">Ikke vibrer når du mottar meldinger</string>
     <string name="workarounds">Løsninger</string>
-    <string name="prefs_title_threema_push_switch">Bruk Threema Push</string>
-    <string name="prefs_sum_threema_push_on">Bruk Threema Push for for å bli varslet om nye meldinger.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_threema_push_switch">Bruk ${app_name_short} Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_threema_push_on">Bruk ${app_name_short} Push for for å bli varslet om nye meldinger.</string>
     <string name="prefs_sum_threema_push_off">Sjekk for nye meldinger ved bruk av systemets push-tjeneste</string>
     <string name="prefs_logging">Logging</string>
     <string name="prefs_title_message_log_switch">Logg til fil</string>
@@ -83,19 +95,11 @@ når den første meldingen mottas.</string>
     <string name="image_size_large">Stor (1600x1600)</string>
     <string name="image_size_xlarge">Ekstra stor (2592x2592)</string>
     <string name="image_size_original">Original størrelse</string>
-    <string name="color_none">Ingen</string>
-    <string name="color_orange">Oransje</string>
-    <string name="color_red">Rød</string>
-    <string name="color_green">Grønn</string>
-    <string name="color_blue">Blå</string>
-    <string name="color_cyan">Cyan</string>
-    <string name="color_magenta">Magenta</string>
-    <string name="color_yellow">Gul</string>
-    <string name="color_white">Hvit</string>
     <string name="next">Neste</string>
     <string name="finish">Ferdig</string>
-    <string name="please_wait">Vennligst vent...</string>
-    <string name="wizard_first_create_id">Opprett din Threema ID...</string>
+    <string name="please_wait">Vennligst vent…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_first_create_id">Opprett din ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">Synkroniser kontakter</string>
     <string name="wizard2_email_hint">Legg til din e-postadresse</string>
     <string name="wizard2_email_linking">Legg til e-post til din ID</string>
@@ -118,24 +122,28 @@ når den første meldingen mottas.</string>
     <string name="linked_email">E-post</string>
     <string name="linked_mobile">Telefonnummer</string>
     <string name="public_nickname">Kallenavn</string>
-    <string name="share_via">Del via...</string>
+    <string name="share_via">Del via…</string>
     <string name="share_subject">%s samtale</string>
     <string name="message_delete_undo">Angre</string>
-    <string name="mobile_already_linked">Din Threema ID er allerede koblet til dette telefonnummeret</string>
-    <string name="email_already_linked">Din Threema ID er allerede koblet til denne e-postadressen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">Din ${app_name_short} ID er allerede koblet til dette telefonnummeret</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">Din ${app_name_short} ID er allerede koblet til denne e-postadressen</string>
     <string name="whoaaa">Varsel</string>
     <string name="really_delete_message_title">Slett melding</string>
     <string name="really_delete_thread">Slett samtale</string>
     <string name="really_delete_multiple_threads">Slett samtaler</string>
     <string name="really_delete_contact">Er du sikker på at du vil slette denne kontakten og alle tilhørende meldinger?</string>
     <string name="image_placeholder">Bilde</string>
-    <string name="invalid_threema_id">Ugyldig Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">Ugyldig ${app_name_short} ID</string>
     <string name="contact_already_exists">Kontakten finnes allerede</string>
     <string name="close">Lukk</string>
     <string name="creating_contact">Legger til ny kontakt</string>
     <string name="creating_contact_successful">Kontakt lagt til</string>
     <string name="invalid_threema_qr_code">Ugyldig QR-kode</string>
-    <string name="threema_contact">Threema kontakt</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short} kontakt</string>
     <string name="first_name">Fornavn</string>
     <string name="last_name">Etternavn</string>
     <string name="os_licenses">Lisenser</string>
@@ -146,7 +154,8 @@ når den første meldingen mottas.</string>
     <string name="verify_failed_not_linked">Verifisering av telefonnummeret mislyktes. Verifikasjonsprosessen har blitt avbrutt.</string>
     <string name="check_incoming_sms">Sjekker for innkommende SMS</string>
     <string name="backup_title">Eksporter ID</string>
-    <string name="backup_sum">Eksporter din Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">Eksporter din ${app_name_short} ID</string>
     <string name="backup_and_delete">Sikkerhetskopier og slett</string>
     <string name="delete_id_title">Slett ID</string>
     <string name="delete_id_message">Du vil ikke ha muligheten til å sende eller motta meldinger med denne IDen igjen, med mindre du har tatt en sikkerhetskopi eller eksportert og lagret en kopi av IDen.\n\nOm du ikke har planer om å bruke denne IDen igjen, er det anbefalt å opprette et tilbakekallingspassord og tilbakekalle IDen på myid.threema.ch/revoke før du sletter den.</string>
@@ -160,8 +169,10 @@ når den første meldingen mottas.</string>
     <string name="backup_id_summary">Teksten som er vist ovenfor eller QR-koden, sammen med passordet du har valgt, kan bli brukt til å gjenopprette IDen din på en annen enhet. Du burde kopiere det til et passende sted, del det via e-post eller skann QR-koden med en annen enhet.</string>
     <string name="support">Hjelp</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Den følgende teksten, sammen med det valgte passordet, kan bli brukt til å gjenopprette din Threema ID.</string>
-    <string name="backup_share_subject">Threema ID eksport for</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_content">Den følgende teksten, sammen med det valgte passordet, kan bli brukt til å gjenopprette din ${app_name_short} ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">${app_name_short} ID eksport for</string>
     <string name="add_attachment">Nytt vedlegg</string>
     <string name="invalid_passphrase">Ugyldig passfrase</string>
     <string name="master_key_locked">Masternøkkel er låst</string>
@@ -182,9 +193,13 @@ når den første meldingen mottas.</string>
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Lyd</string>
     <string name="restoring_backup">Gjenopprett sikkerhetskopi</string>
-    <string name="server_message_title">Melding fra Threema Server</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">Melding fra ${company_name} Server</string>
     <string name="error">Feil</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
     <string name="no_contacts"><![CDATA[Du har ingen kontakter enda. Skru på synkronisering (Innstillinger > Personvern) eller legg til kontakter manuelt.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="masterkey_title">Skriv inn passfrase</string>
     <string name="masterkey_body">Masternøkkelen din er beskyttet av en passfrase. Skriv inn passfrasen for å låse opp nøkkelen.</string>
     <string name="masterkey_unlocking">Låser opp masternøkkelen</string>
@@ -203,6 +218,7 @@ når den første meldingen mottas.</string>
     <string name="unlink">Koble fra</string>
     <string name="threema_version">Versjon</string>
     <string name="threema_version_code">Versjon kode</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
     <string name="wrong_backupid_or_password_or_no_internet_connection">Ingen internettilkobling, ugyldig ID eksport informasjon eller feil passord</string>
     <string name="prefs_header_other">Annet</string>
     <string name="an_error_occurred">Det oppstod en feil</string>
@@ -223,10 +239,17 @@ når den første meldingen mottas.</string>
     <string name="file_too_large">Filen er større enn maksimal tillatt størrelse på %1$d MB</string>
     <string name="deleting_thread">Sletter samtale</string>
     <string name="enter_serial_body"><![CDATA[Vennligst skriv inn din lisensnøkkel. Du kan <a href="https://shop.threema.ch/">kjøpe</a> en lisens eller <a href="https://shop.threema.ch/retrieve_keys">hente</a> nøklene dine i tilfelle du allerede har kjøpt en lisens.]]></string>
-    <string name="enter_serial_title">Lås opp Threema</string>
-    <string name="serial_required_want_exit">Lisensnøkkelen er ugyldig. Vil du prøve igjen eller lukke Threema?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">Lås opp ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">Lisensnøkkelen er ugyldig. Vil du prøve igjen eller lukke ${app_name}?</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Sjekker lisens</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
     <string name="update_available">Oppdatering tilgjengelig</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
     <string name="no_update_available">Ingen oppdatering tilgjengelig</string>
     <string name="download">Last ned</string>
     <string name="not_now">Påminn meg senere</string>
@@ -327,7 +350,8 @@ når den første meldingen mottas.</string>
     <string name="prefs_header_lists">Lister</string>
     <string name="prefs_sum_blocked_contacts">Meldinger fra IDer i denne listen blir ignorert.</string>
     <string name="verified">Verifisert</string>
-    <string name="want_to_add_to_exclude_list">Denne kontakten er koblet til en oppføring i enhetens kontakter. Om du sletter den i Threema, dukker den opp igjen etter en sykronisering av kontakter.\nVil du ekskludere den fra synkronisering?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="want_to_add_to_exclude_list">Denne kontakten er koblet til en oppføring i enhetens kontakter. Om du sletter den i ${app_name_short}, dukker den opp igjen etter en sykronisering av kontakter.\nVil du ekskludere den fra synkronisering?</string>
     <string name="no">Nei</string>
     <string name="yes">Ja</string>
     <string name="deleting_contact">Sletter kontakt</string>
@@ -340,8 +364,10 @@ når den første meldingen mottas.</string>
     <string name="prefs_show_inactive_contacts">Vis inaktive IDer</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Vis en multi-farget eksempel-figur om kontaktbilde mangler</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Bruk en grå eksempel-figur om kontaktbilde mangler</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Vis alle Threema-IDer i kontaktlisten din</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Skjul inaktive/opphevede Threema IDer</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">Vis alle ${app_name_short}-IDer i kontaktlisten din</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">Skjul inaktive/opphevede ${app_name_short} IDer</string>
     <string name="contact_sorting_first_name">Fornavn - Etternavn</string>
     <string name="contact_sorting_last_name">Etternavn - Fornavn</string>
     <string name="contact_format_first_name_last_name">Fornavn Etternavn</string>
@@ -359,7 +385,8 @@ når den første meldingen mottas.</string>
     <string name="prefs_title_fullscreen_ime">Fullskjerm tastatur</string>
     <string name="prefs_sum_fullscreen_ime_on">Tastaturet kommer til å dekke over applikasjonen om enheten er i landskapsmodus</string>
     <string name="prefs_sum_fullscreen_ime_off">Vis en forhåndsvisning av samtalen over tastaturet om det er plass</string>
-    <string name="add_acount_from_within_threema">Behandle Threema IDen din internt i applikasjonen</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">Behandle ${app_name_short} IDen din internt i applikasjonen</string>
     <string name="save_image">Lagre bilde</string>
     <string name="share_image">Del bilde</string>
     <string name="view_in_gallery">Vis i galleri</string>
@@ -375,13 +402,14 @@ når den første meldingen mottas.</string>
     <string name="distribution_list">Distribusjonsliste</string>
     <string name="title_tab_distribution_list">Distribusjonslister</string>
     <string name="no_matching_distribution_lists">Ingen treff på distribusjonsliste</string>
-    <string name="is_typing">skriver...</string>
+    <string name="is_typing">skriver…</string>
     <string name="push_not_available_title">Ingen push-tjeneste funnet</string>
     <string name="push_not_available_text1">Vi fant ikke en push-tjeneste på din enhet fordi Google Play Services ikke er installert eller at det er utdatert.</string>
     <string name="push_not_available_text2">%s vil prøve å åpne en vedvarende backgrunnstilkobling til serveren. Dette kan være ustabilt om batterioptimalisering på din enhet forstyrrer bakgrunnstilkoblingen.</string>
     <string name="backup_in_progress">Sikkerhetskopi pågår</string>
     <string name="backup_or_restore_success_body">Sikkerhetskopi fullført</string>
-    <string name="backup_or_restore_error">Threema sikkerhetskopi</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short} sikkerhetskopi</string>
     <string name="backup_or_restore_error_body">Sikkerhetskopi ble ikke skikkelig fullført</string>
     <string name="could_not_download_message">Kunne ikke laste ned melding</string>
     <string name="info">Info</string>
@@ -413,7 +441,8 @@ når den første meldingen mottas.</string>
     <string name="num_items_sected">%s valgt</string>
     <string name="really_delete_media">Vil du virkelig slette %d media-meldinger?</string>
     <string name="check_updates">Sjekk for oppdateringer</string>
-    <string name="masterkey_lock_explain">Threema tar vare på passfrasen i minnet. Om du ofte må skrive inn passfrasen på nytt, sørg for at strømsparingsinnstillinger på telefonen ikke stenger ned Threema.</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name} tar vare på passfrasen i minnet. Om du ofte må skrive inn passfrasen på nytt, sørg for at strømsparingsinnstillinger på telefonen ikke stenger ned ${app_name_short}.</string>
     <string name="identity_already_exists">Denne IDen er allerede i kontaktlisten din.</string>
     <string name="share_contact">Del kontakt</string>
     <string name="add_shortcut">Legg til snarvei</string>
@@ -448,7 +477,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="ballot_subject_hint">Legg til en tittel på avstemningen</string>
     <string name="ballot_no_ballots_yet">Ingen avstemning enda</string>
     <string name="print">Skriv ut</string>
-    <string name="ballot_wizard0_explain">Lag en online avstemning direkte med Threema. Planlegg et arrangement, lag en spørreundersøkelse eller spør vennene dine om hva som helst.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">Lag en online avstemning direkte med ${app_name_short}. Planlegg et arrangement, lag en spørreundersøkelse eller spør vennene dine om hva som helst.</string>
     <string name="ballot_add_choices">Skriv rett svar</string>
     <string name="blocked_cannot_send">Du kan ikke sende meldinger til en kontakt som er blokkert</string>
     <string name="really_block_contact">Fremtidige meldinger fra denne kontakten blir forkastet. Vil du fortsette?</string>
@@ -462,7 +492,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="back">Tilbake</string>
     <string name="wearable_reply">Svar</string>
     <string name="wearable_reply_label">Svar til %s</string>
-    <string name="push_disable_text">Om du fortsetter, så vil \"Threema Push\" bli brukt istedenfor push-tjenesten til systemet. Dette hjelper til å redusere ditt digitale fotavtrykk, men krever at telefonen er satt opp til å tillate å kjøre i bakgrunnen. Du må kanskje kontakte brukerstøtten til produsenten av din telefon for hjelp til konfigurasjon om du ikke finner denne innstillingen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">Om du fortsetter, så vil \"${app_name_short} Push\" bli brukt istedenfor push-tjenesten til systemet. Dette hjelper til å redusere ditt digitale fotavtrykk, men krever at telefonen er satt opp til å tillate å kjøre i bakgrunnen. Du må kanskje kontakte brukerstøtten til produsenten av din telefon for hjelp til konfigurasjon om du ikke finner denne innstillingen.</string>
     <string name="ballot_intermediate_results_show">Vis midlertidige resultater</string>
     <string name="converting_video">Behandler video</string>
     <string name="video_size_small">Høy (mindre data)</string>
@@ -477,7 +508,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="kick_user_from_group">Fjern %1$s fra gruppen</string>
     <string name="show_as_qrcode">Vis som en QR-kode</string>
     <string name="qr_code">QR-kode</string>
-    <string name="really_leave_id_export">Om du ikke allerede har gjort det; vennligst lagre din ID eksport tekst eller den tilsvarende QR-koden på en trygg plass eller skriv den ut. Threema IDen din kan ikke gjenopprettes uten en sikkerhetskopi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="really_leave_id_export">Om du ikke allerede har gjort det; vennligst lagre din ID eksport tekst eller den tilsvarende QR-koden på en trygg plass eller skriv den ut. ${app_name_short} IDen din kan ikke gjenopprettes uten en sikkerhetskopi.</string>
     <string name="revocation_key_title">ID opphevelse</string>
     <string name="revocation_key_not_set">Ingen passord for ID opphevelse</string>
     <string name="revocation_key_set_at">Passord valgt %1$s</string>
@@ -553,8 +585,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="invalid_data">Ugyldig data, kan ikke sende.</string>
     <string name="prefs_emoji_style">Emoji stil</string>
     <string name="prefs_android_emojis">System Emojier</string>
-    <string name="prefs_default_emojis">Threema Emojier (standard)</string>
-    <string name="android_emojis_warning">Merk: Systemets tegnsett kan kanskje ikke vise alle Emojier som er støttet av Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short} Emojier (standard)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="android_emojis_warning">Merk: Systemets tegnsett kan kanskje ikke vise alle Emojier som er støttet av ${app_name_short}.</string>
     <string name="crop">Beskjær</string>
     <string name="scan_id_mismatch_title">ID samsvarer ikke</string>
     <string name="scan_id_mismatch_message">ID-en du har skannet, stemmer ikke overens med kontakten du har lagret.</string>
@@ -571,12 +605,16 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="fontsize_xlarge">Ekstra stor</string>
     <string name="no_app_for_location">Ingen kart-applikasjon er funnet på denne enheten</string>
     <string name="prefs_sendlog">Send loggfil</string>
-    <string name="prefs_sendlog_summary">Send loggfil til Threema for videre analyse, i tilfelle du har problemer</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">Send loggfil til ${company_name} for videre analyse, i tilfelle du har problemer</string>
     <string name="prefs_exportlog">Eksport loggfil</string>
     <string name="prefs_exportlog_summary">Del loggfil med en annen app</string>
-    <string name="permission_storage_required">For å lagre eller sende media, gi Threema tilgang til lagring på enheten.</string>
-    <string name="permission_location_required">For å sende en posisjon til andre, gi Threema tilgang til din posisjon.</string>
-    <string name="permission_contacts_required">For å sende en kontakt, gi Threema tilgang til å se kontakter.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_storage_required">For å lagre eller sende media, gi ${app_name} tilgang til lagring på enheten.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_location_required">For å sende en posisjon til andre, gi ${app_name} tilgang til din posisjon.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_contacts_required">For å sende en kontakt, gi ${app_name} tilgang til å se kontakter.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
     <string name="notifications_settings">Varsler</string>
@@ -593,37 +631,49 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="new_wizard_select_country">Velg ditt land</string>
     <string name="new_wizard_lets_get_started">La oss komme i gang!</string>
     <string name="new_wizard_setup_threema">Sett opp nå</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_restore_id_backup">Gjenopprett eksportert ID</string>
-    <string name="new_wizard_welcome">Velkommen til Threema!</string>
-    <string name="new_wizard_move_finger">Beveg fingeren din på skjermen for å generere en ny Threema ID.</string>
-    <string name="new_wizard_this_is_your_id">Dette er din Threema ID.</string>
-    <string name="new_wizard_works_like_phone_number">Din Threema ID fungerer på samme måte som et telefonnummer.\nDine venner kan nå deg gjennom denne ID-en.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">Velkommen til ${app_name}!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">Beveg fingeren din på skjermen for å generere en ny ${app_name_short} ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">Dette er din ${app_name_short} ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">Din ${app_name_short} ID fungerer på samme måte som et telefonnummer.\nDine venner kan nå deg gjennom denne ID-en.</string>
     <string name="new_wizard_choose_nickname">Velg et kallenavn</string>
     <string name="new_wizard_nickname_explain">Vennene dine vil se ditt kallenavn i varslene sine.</string>
     <string name="new_wizard_hint_enter_nickname">Skriv ett kallenavn</string>
     <string name="new_wizard_help_your_friends_find_you">Hjelp vennene dine å finne deg!</string>
-    <string name="new_wizard_link_mobile">Koble telefonnummeret ditt og/eller e-postadressen din til din Threema ID.</string>
-    <string name="new_wizard_link_mobile_only">Koble telefonnummeret ditt til din Threema ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">Koble telefonnummeret ditt og/eller e-postadressen din til din ${app_name_short} ID.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">Koble telefonnummeret ditt til din ${app_name_short} ID.</string>
     <string name="new_wizard_hint_mobile_number">Telefonnummer (valgfritt)</string>
     <string name="new_wizard_hint_email">E-post (valgfritt)</string>
-    <string name="new_wizard_find_friends">Finn vennene dine i Threema</string>
-    <string name="new_wizard_sync_contacts_explain">Skru på for å se hvilke venner som bruker Threema.</string>
     <string name="new_wizard_done_title">Du er ferdig!\nEr alt korrekt?</string>
     <string name="new_wizard_linked_to">Koblet til</string>
-    <string name="new_wizard_need_internet">En stabil internettilkobling er nødvendig for å lage din unike Threema ID. Vennligst prøv igjen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">En stabil internettilkobling er nødvendig for å lage din unike ${app_name_short} ID. Vennligst prøv igjen.</string>
     <string name="new_wizard_more_information">Mer informasjon</string>
     <string name="contact_details_id_copied">ID ble kopiert til utklippstavlen</string>
     <string name="contact_details_nickname_copied">Kallenavn ble kopiert til utklippstavlen</string>
-    <string name="new_wizard_use_id_as_nickname">Vil du bruke Threema ID-en din som kallenavn?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">Vil du bruke ${app_name_short} ID-en din som kallenavn?</string>
     <string name="new_wizard_phone_email_invalid">Telefonnummeret eller e-postadressen du har skrevet er ikke gyldig. \nVennligst fiks før du fortsetter.</string>
     <string name="new_wizard_phone_invalid">Telefonnummeret du har skrevet er ikke gyldig. \nVennligst fiks før du fortsetter.</string>
-    <string name="new_wizard_info_fingerprint">Ved å flytte på fingeren din, lager du tilfeldig data (kalt entropi), som blir brukt til å generere nøkkelparet som er knyttet til din nye unike Threema ID. Nøkkelparet består av en <b>offentlig nøkkel</b> som er sendt til dine venner og en <b>privat nøkkel</b> som er trygt lagret på din enhet. Vennene dine krypterer meldinger til deg med din offentlige nøkkel. Bare eieren av den private nøkkelen, og ingen andre, kan dekryptere disse meldingene.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_fingerprint">Ved å flytte på fingeren din, lager du tilfeldig data (kalt entropi), som blir brukt til å generere nøkkelparet som er knyttet til din nye unike ${app_name_short} ID. Nøkkelparet består av en <b>offentlig nøkkel</b> som er sendt til dine venner og en <b>privat nøkkel</b> som er trygt lagret på din enhet. Vennene dine krypterer meldinger til deg med din offentlige nøkkel. Bare eieren av den private nøkkelen, og ingen andre, kan dekryptere disse meldingene.</string>
     <string name="new_wizard_info_id">Du har også laget et nøkkelpar. Den offentlige nøkkelen har blitt sendt til våre servere på en sikker måte. Den private nøkkelen forlater aldri din enhet. Dette sørger for at ingen andre kan lese dine meldinger.</string>
-    <string name="new_wizard_info_sync_contacts">Om du aktiverer denne funksjonen, så krypterer Threema e-postadresser og telefonnummer på en sikker måte (en-veis ved hjelp av hash), før det blir sendt til serveren for å sjekke om der finnes matcher. Vi lagrer aldri data fra adresseboken din på våre servere.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_sync_contacts">Om du aktiverer denne funksjonen, så krypterer ${app_name_short} e-postadresser og telefonnummer på en sikker måte (en-veis ved hjelp av hash), før det blir sendt til serveren for å sjekke om der finnes matcher. Vi lagrer aldri data fra adresseboken din på våre servere.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Kontaktsynkronisering kan hjelpe deg å finne vennene dine automatisk. Om du godtar, så vil telefonnummer og e-postadresser fra din kontaktliste bli kryptert og sendt til vår server for å se etter treff. Ingen data vil bli lagret eller delt med noen. \n\nVil du aktivere kontaktsynkronisering?</string>
-    <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan Threema hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema helt anonymt, så kan du hoppe over dette trinnet.</string>
-    <string name="new_wizard_info_link_phone_only">Ved å oppgi ditt telefonnummer, så kan Threema hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Telefonnummeret blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema helt anonymt, så kan du hoppe over dette trinnet.</string>
-    <string name="new_wizard_info_nickname">Kallenavnet blir brukt i push-varsler på noen enheter eller som en ekstra måte å identifisere deg for brukere som ikke enda har deg i sin adressebok. Vi anbefaler å bare oppgi fornavnet ditt eller et pseudonym. Om du ikke velger et kallenavn så blir din Threema ID brukt som standard.</string>
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan ${app_name_short} hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke ${app_name} helt anonymt, så kan du hoppe over dette trinnet.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">Ved å oppgi ditt telefonnummer, så kan ${app_name_short} hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Telefonnummeret blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke ${app_name_short} helt anonymt, så kan du hoppe over dette trinnet.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_nickname">Kallenavnet blir brukt i push-varsler på noen enheter eller som en ekstra måte å identifisere deg for brukere som ikke enda har deg i sin adressebok. Vi anbefaler å bare oppgi fornavnet ditt eller et pseudonym. Om du ikke velger et kallenavn så blir din ${app_name_short} ID brukt som standard.</string>
     <string name="not_linked">Ikke koblet</string>
     <string name="linked">Koblet</string>
     <string name="pending_sms_verification_notice">Telefonnummeret ditt er ikke bekreftet enda.</string>
@@ -635,8 +685,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="status_ballot_user_modified_vote">\"%1$s\" har endret stemmen sin til \"%2$s\"</string>
     <string name="status_ballot_all_votes">Stemmer for \"%1$s\" er fullført</string>
     <string name="restore">Gjenopprett</string>
-    <string name="new_wizard_anonymous_confirm">Du har ikke skrevet et telefonnummer eller en e-postadresse for å koble til din Threema ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke Threema anonymt?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Du har ikke skrevet et telefonnummer for å koble til din Threema ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke Threema anonymt?</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">Du har ikke skrevet et telefonnummer eller en e-postadresse for å koble til din ${app_name_short} ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke ${app_name} anonymt?</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">Du har ikke skrevet et telefonnummer for å koble til din ${app_name_short} ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke ${app_name} anonymt?</string>
     <string name="new_wizard_scan_id_backup">Eller skann QR-koden av din ID-eksport</string>
     <string name="error_saving_file">Feil ved lagring av fil. Sjekk tillatelser.</string>
     <string name="wait_one_minute">Vennligst vent minst 10 minutter for at SMS-en skal bli mottatt før du spør om en telefonsamtale.</string>
@@ -679,7 +731,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="lock_option_none">Ingen</string>
     <string name="lock_option_pin">PIN-kode</string>
     <string name="lock_option_screenlock">Skjermlås</string>
-    <string name="hide_chat_message_explain">Threema tillater deg å beskytte enkelte samtaler med en PIN-kode og å gjemme dem midlertidig fra meldingslisten. For å aktivere private samtaler, vennligst lag en PIN-kode eller aktiver Skjermlås (Android 6.0+) i innstillingene.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="hide_chat_message_explain">${app_name_short} tillater deg å beskytte enkelte samtaler med en PIN-kode og å gjemme dem midlertidig fra meldingslisten. For å aktivere private samtaler, vennligst lag en PIN-kode eller aktiver Skjermlås (Android 6.0+) i innstillingene.</string>
     <string name="set_lock">Lag lås nå</string>
     <string name="prefs_title_access_protection">Adgangsbeskyttelse</string>
     <string name="private_chat_subject">Privat</string>
@@ -691,7 +744,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="grace_thirty_minutes">30 minutter</string>
     <string name="grace_never">Aldri (manuelt)</string>
     <string name="never">Aldri</string>
-    <string name="unhide_chats_confirm">Om du fjerner adgangsbeskyttelse nå, så blir de private samtalene dine synlige igjen.</string>
     <string name="verification_started">Verifisering startet</string>
     <string name="cannot_open_file">Kunne ikke åpne fil</string>
     <string name="prefs_title_image_attach_previews">Raskt filvalg</string>
@@ -701,12 +753,13 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="restore_disable_energy_saving">Vennligst koble enheten din til en lader og skru av alle batterisparings-innstillinger for å forhindre enheten din fra å avbryte sikkerhetskopi- eller gjenopprettingsjobben.</string>
     <string name="draft">Utkast</string>
     <string name="prefs_bigger_single_emojis">Større emojier (når alene)</string>
-    <string name="wizard1_sync_work">Synkroniserer Threema Work data...</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard1_sync_work">Synkroniserer ${app_name} data…</string>
     <string name="notification_hidden_text">Innhold er skjult</string>
     <string name="really_reset_ringtones">Vil du virkelig resette innstillinger for varsellyder til standard?</string>
     <string name="reset_ringtones_confirm">Innstillinger for varsellyder har blitt resatt.</string>
     <string name="prefs_language_override">Språk</string>
-    <string name="threema_channel_intro">Threema Channel gir deg nyheter om alt som omhandler Threema. Vil du abonnere til Threema Channel og legge det til dine kontakter? Det er gratis og du kan avslutte abonnementet når som helst.</string>
+    <string name="threema_channel_intro">${app_name_short} Channel gir deg nyheter om alt som omhandler ${app_name_short}. Vil du abonnere til ${app_name_short} Channel og legge det til dine kontakter? Det er gratis og du kan avslutte abonnementet når som helst.</string>
     <string name="quote">Sitat</string>
     <string name="contacts_deleted">Kontakter har blitt slettet</string>
     <string name="take_photo">Ta bilde</string>
@@ -725,7 +778,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="battery_optimizations_disable_guide_ctd">Søk etter %s i listen og deaktiver optimaliseringen</string>
     <string name="battery_optimizations_disable_confirm">Vil du virkelig beholde batterioptimalisering for %1$s? %2$s vil ikke fungere skikkelig i hvilemodus.</string>
     <string name="enter_text_hint">Skriv inn tekst</string>
-    <string name="backup_explain_text">Om du endrer eller mister enheten din, så kan ingen gjenopprette din Threema ID eller samtalene dine, om det ikke er sikkerhetskopiert. Vennligst lag en sikkerhetskopi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">Om du endrer eller mister enheten din, så kan ingen gjenopprette din ${app_name_short} ID eller samtalene dine, om det ikke er sikkerhetskopiert. Vennligst lag en sikkerhetskopi.</string>
     <string name="data_backup_explain">Sikkerhetskopien inneholder: \n\n&#9679; IDen og nøkkelparet ditt\n&#9679; Kontakter og tillitsnivå\n&#9679; Gruppemedlemskap\n&#9679; Samtaler\n&#9679; Media og filer (valgfritt)\n\nData blir lagret til en kryptert ZIP-fil. Det er anbefalt å flytte filen vekk fra enheten etter at sikkerhetskopien er fullført.</string>
     <string name="draw">Tegn</string>
     <string name="edit">Rediger</string>
@@ -735,6 +789,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_ipv6_preferred_off">Bruk bare IPv4 tilkoblinger</string>
     <string name="prefs_ipv6_preferred_on">Foretrekk IPv6 tilkoblinger fremfor IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 for anrop og web</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="ipv6_requires_restart">For å ta i bruk denne innstillingen, så må appen startes på nytt.</string>
     <string name="ipv6_restart_now">Start på nytt nå</string>
     <string name="on_cap">På</string>
@@ -760,38 +816,51 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="menu_send_profilpic_off">Fjern som mottaker av profilbilde</string>
     <string name="menu_send_profilpic_now">Send profilbilde nå</string>
     <string name="profile_picture_sent">Profilbilde sendt</string>
-    <string name="sending_messages">Sender...</string>
-    <string name="backup_data_media_confirm">Å lagre store mediafiler til en lokal ZIP-sikkerhetskopi kan overstige kapasiteten til enhetens prosessor og minne, og det kan ta veldig lang tid å fullføre. Threema vil ikke sende eller motta meldinger mens sikkerhetskopieringen kjører. Fortsette likevel?</string>
+    <string name="sending_messages">Sender…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">Å lagre store mediafiler til en lokal ZIP-sikkerhetskopi kan overstige kapasiteten til enhetens prosessor og minne, og det kan ta veldig lang tid å fullføre. ${app_name} vil ikke sende eller motta meldinger mens sikkerhetskopieringen kjører. Fortsette likevel?</string>
     <string name="backup_data_cancelled">Sikkerhetskopi avbrutt</string>
-    <string name="service_manager_not_available">Klarer ikke å starte Threema. Vennligst skru av enheten din, deretter på igjen.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="service_manager_not_available">Klarer ikke å starte ${app_name}. Vennligst skru av enheten din, deretter på igjen.</string>
     <string name="message_sent">Melding er sendt</string>
-    <string name="threema_call">Threema anrop</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">${app_name_short} anrop</string>
     <string name="threema_message_to">Melding til %s</string>
     <string name="threema_call_with">Ring %s</string>
-    <string name="prefs_title_voip">Threema anrop</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">${app_name_short} anrop</string>
     <string name="prefs_title_force_turn">Alltid videresend anrop</string>
-    <string name="prefs_summary_force_turn_off">Opprett en direkte tilkobling, om det er mulig, og bare videresend anrop til/fra uverifiserte kontakter gjennom Threema sine servere. Dette kan avdekke din IP adresse.</string>
-    <string name="prefs_summary_force_turn_on">Tving videresending av alle anrop gjennom Threema sine servere, for å beskytte din IP adresse. Dette kan påvirke samtalekvalitet.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">Opprett en direkte tilkobling, om det er mulig, og bare videresend anrop til/fra uverifiserte kontakter gjennom ${company_name} sine servere. Dette kan avdekke din IP adresse.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">Tving videresending av alle anrop gjennom ${company_name} sine servere, for å beskytte din IP adresse. Dette kan påvirke samtalekvalitet.</string>
     <string name="permission_record_audio_required">For å ha krypterte anrop og lydmeldinger, vennligst tillat tilgang til mikrofonen.</string>
-    <string name="prefs_voice_call_notifications">Threema anrop</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_voice_call_notifications">${app_name_short} anrop</string>
     <string name="prefs_voice_call_sound">Ringetone</string>
-    <string name="prefs_sum_voice_call_sound">Velg ringetone for innkommende Threema anrop</string>
-    <string name="prefs_sum_voice_call_vibrate">Vibrer på innkommende Threema anrop</string>
-    <string name="prefs_title_voip_enable">Aktiver Threema anrop</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">Velg ringetone for innkommende ${app_name_short} anrop</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">Vibrer på innkommende ${app_name_short} anrop</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">Aktiver ${app_name_short} anrop</string>
     <string name="webclient_invalid_push_token_message">Manuell start er nødvendig</string>
     <string name="threema_work_contact">Threema Work Kontakt</string>
-    <string name="permission_phone_required">Tillat tilgang for å håndtere anrop når du bruker Threema anrop</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">Tillat tilgang for å håndtere anrop når du bruker ${app_name} anrop</string>
     <string name="strikethrough">Gjennomstreking</string>
     <string name="italic">Kursiv</string>
     <string name="bold">Fet</string>
-    <string name="shortcut_choice_title">Opprett en snarvei for en...</string>
+    <string name="shortcut_choice_title">Opprett en snarvei for en…</string>
     <string name="prefs_title_device_info">Enhetsinformasjon</string>
     <string name="notifications_disabled_title">Varsler er deaktivert</string>
-    <string name="notifications_disabled_text">Varsler for Threema har blitt dektivert i systeminnstillingene. Du vil ikke får varsler om nye innkommende meldinger.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">Varsler for ${app_name} har blitt dektivert i systeminnstillingene. Du vil ikke får varsler om nye innkommende meldinger.</string>
     <string name="notifications_disabled_settings">Endre systeminnstillinger</string>
     <string name="error_attaching_files">Feil når du legger til vedlegg.</string>
     <string name="prefs_fix_powermanager_problems">Skru av strømbegrensninger</string>
-    <string name="prefs_fix_powermanager_problems_desc">Tillat at Threema kjører i bakgrunnen slik at den kan motta meldinger selv om appen ikke er aktiv.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">Tillat at ${app_name} kjører i bakgrunnen slik at den kan motta meldinger selv om appen ikke er aktiv.</string>
     <string name="disable_powermanager_explain">På den neste skjermen, sørg for at \"%s\" er beskyttet eller ekskludert fra strømstyringsinnstillinger på telefonen. Trykk på tilbakeknappen når du er ferdig.</string>
     <string name="disable_autostart_explain">På den neste skjermen, sørg for at \"%s\" er inkludert i listen over apper som kan starte automatisk. Trykk på tilbakeknappen når du er ferdig.</string>
     <string name="notification_priority_default">Lav</string>
@@ -812,10 +881,12 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_auto_download_title">Automatisk last ned media</string>
     <string name="prefs_auto_download_wifi">Med Wi-Fi</string>
     <string name="prefs_auto_download_mobile">Med mobildata</string>
-    <string name="rate_intro">Hvordan vil du vurdere Threema?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">Hvordan vil du vurdere ${app_name}?</string>
     <string name="rate_feedback_intro">Vennligst si ifra om hva vi kan gjøre for å forbedre oss (valgfritt).</string>
     <string name="rate_positive">Send vurdering</string>
-    <string name="rate_title">Vurder Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">Vurder ${app_name}</string>
     <string name="rate_thank_you">Takk for din vurdering av oss!</string>
     <string name="disabled_by_policy_short">Funksjon er deaktivert av administrator</string>
     <string name="rate_forward_to_play_store">Vil du vurdere oss på Google Play også?</string>
@@ -826,15 +897,18 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="plus">Pluss</string>
     <string name="switched_off">Av</string>
     <string name="switched_on">På</string>
-    <string name="title_tab_work_users">Threema Work brukere</string>
-    <string name="no_matching_work_contacts">Ingen admin-verifisert Threema Work kontakter er funnet</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">${app_name} brukere</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">Ingen admin-verifisert ${app_name} kontakter er funnet</string>
     <string name="all">Alle</string>
     <string name="webclient_session_stop_all">Lukk alle</string>
     <string name="passphrase_service_name">Passfrase Tjeneste</string>
     <string name="passphrase_service_description">Varsel når passfrase er opplåst</string>
     <string name="webclient_service_description">Varsel når Web-/Skrivebordsøkt er aktiv</string>
     <string name="prefs_title_accept_privacy_policy">Godkjenn Personvernerklæring</string>
-    <string name="privacy_policy_explain">%1$s beskytter ditt personvern strengere enn noen annen meldingsapp. Finn ut mer her %2$s.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name} beskytter ditt personvern strengere enn noen annen meldingsapp. Finn ut mer her %1$s.</string>
     <string name="privacy_policy_check_confirm">For å bruke %s, vennligst godkjenn Personvernerklæringen.\n(Påkrevd etter EU forordning 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Be om incognito tastatur</string>
     <string name="prefs_sum_incognito_keyboard">Deaktiver datainnsamling for personaliserte forslag (om det er støttet av tastaturet)</string>
@@ -847,41 +921,58 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="password_too_short_generic">Passord er for kort</string>
     <string name="passwords_dont_match">Passordene er ikke like</string>
     <string name="test_unsuccessful">Testen mislyktes</string>
-    <string name="preparing_threema_safe">Forbereder Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">Forbereder ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">Strømbegrensninger</string>
     <string name="disable_autostart_title">Autostart</string>
     <string name="unchanged">uendret</string>
     <string name="safe_learn_more_button">Lær mer</string>
-    <string name="safe_enable_explain">Alt du trenger til å ha en samtale er bare lagret på din enhet. Du har ikke en konto med oss og dermed kan vi ikke hjelpe deg om du mister telefonen din eller sletter data ved en feil.\n\nThreema Safe lager automatiske sikkerhetskopifiler av de viktigste dataene, inkludert dine nøkler, kontaktlisten og dine guppemedlemskap (men ingen meldinger eller innhold). Dette er anonymt på en sikker server som du velger selv.</string>
-    <string name="safe_disable_confirm">Vil du fortsette uten å aktivere Threema Safe? Når du bruker Threema Safe så kan du gjenopprette din Threema ID, kontakter og grupper i tilfelle du mister tilgangen til din enhet.</string>
-    <string name="safe_configure_choose_password">Vennligst velg et sterkt passord. Du kommer til å trenge passordet for å kunne gjenopprette din Threema Safe sikkerhetskopi.</string>
-    <string name="safe_configure_choose_server">Velg en Threema Safe server</string>
-    <string name="safe_configure_server_explain">Du kan bruke Threemas server eller spesifisere en tredjeparts-server for din sikkerhetskopi.</string>
+    <string name="safe_enable_explain">Alt du trenger til å ha en samtale er bare lagret på din enhet. Du har ikke en konto med oss og dermed kan vi ikke hjelpe deg om du mister telefonen din eller sletter data ved en feil.\n\n${app_name_short} Safe lager automatiske sikkerhetskopifiler av de viktigste dataene, inkludert dine nøkler, kontaktlisten og dine guppemedlemskap (men ingen meldinger eller innhold). Dette er anonymt på en sikker server som du velger selv.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">Vil du fortsette uten å aktivere ${app_name_short} Safe? Når du bruker ${app_name_short} Safe så kan du gjenopprette din ${app_name_short} ID, kontakter og grupper i tilfelle du mister tilgangen til din enhet.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">Vennligst velg et sterkt passord. Du kommer til å trenge passordet for å kunne gjenopprette din ${app_name_short} Safe sikkerhetskopi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_server">Velg en ${app_name_short} Safe server</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">Du kan bruke ${company_name} server eller spesifisere en tredjeparts-server for din sikkerhetskopi.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_use_default_server">Bruk standard server</string>
     <string name="safe_test_server">Test server</string>
     <string name="safe_advanced_options">Ekspertinnstillinger</string>
-    <string name="safe_enter_password">Vennligst skriv ditt Threema Safe passord</string>
-    <string name="safe_threema_id">Din Threema ID</string>
-    <string name="safe_restore_enter_id">Vennligst skriv Threema IDen du vil gjenopprette</string>
+    <string name="safe_enter_password">Vennligst skriv ditt ${app_name_short} Safe passord</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">Din ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">Vennligst skriv ${app_name_short} IDen du vil gjenopprette</string>
     <string name="safe_search_id_title">Vennligst skriv mobilnummeret eller e-postadressen som er koblet til din ID</string>
-    <string name="safe_id_lookup">Sjekker Threema ID</string>
-    <string name="safe_no_id_found">Ingen Threema ID funnet</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">Sjekker ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">Ingen ${app_name_short} ID funnet</string>
     <string name="safe_no_backup_found">Ingen sikkerhetskopi er funnet på serveren. Sjekk ID og passord.</string>
-    <string name="safe_select_id">Flere Threema IDer er funnet. Vennligst velg ID du vil bruke:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">Flere ${app_name_short} IDer er funnet. Vennligst velg ID du vil bruke:</string>
     <string name="safe_backup_now">Sikkerhetskopier</string>
-    <string name="safe_enable_explain_short">Aktiver Threema Safe for å opprette automatiske, sikre og anonyme sikkerhetskopier av alle dine viktigste data.</string>
-    <string name="safe_deleting">Sletter Threema Safe sikkerhetskopi</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">Aktiver ${app_name_short} Safe for å opprette automatiske, sikre og anonyme sikkerhetskopier av alle dine viktigste data.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">Sletter ${app_name_short} Safe sikkerhetskopi</string>
     <string name="safe_delete_error">Feil ved sletting av sikkerhetsk.: %s</string>
     <string name="safe_delete_success">Sikkerhetskopi er slettet fra serveren</string>
-    <string name="safe_error_preparing">Feil ved oppretting av Threema Safe sikkerhetskopi</string>
-    <string name="safe_configure_choose_password_force">Vennligst velg et sterkt passord for å sikre din Threema ID med Threema Safe. Ikke glem det du skriver inn her!</string>
-    <string name="safe_deactivate">Skru av Threema Safe</string>
-    <string name="safe_deactivate_explain">Om du deaktiverer Threema Safe så blir eksisterende sikkerhetskopier slettet fra serveren. Vil du fortsette?</string>
+    <string name="safe_error_preparing">Feil ved oppretting av ${app_name_short} Safe sikkerhetskopi</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">Vennligst velg et sterkt passord for å sikre din ${app_name_short} ID med ${app_name_short} Safe. Ikke glem det du skriver inn her!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">Skru av ${app_name_short} Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">Om du deaktiverer ${app_name_short} Safe så blir eksisterende sikkerhetskopier slettet fra serveren. Vil du fortsette?</string>
     <string name="add_group_members">Legg til ny medlem</string>
     <string name="contact_add_confirm">Vil du legge til den nye kontakten \"%1$s\" til din kontaktliste?</string>
     <string name="password_bad">Svakt passord</string>
     <string name="prefs_fix_background_data">Skru på bakgrunnsdata</string>
-    <string name="prefs_fix_background_data_desc">For å motta meldinger mens Threema er i bakgrunnen, aktiver både bakgrunnsdata og ubegrenset databruk på enheten.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">For å motta meldinger mens ${app_name} er i bakgrunnen, aktiver både bakgrunnsdata og ubegrenset databruk på enheten.</string>
     <string name="prefs_fix_device">Fiks konfigurasjonsproblemer med enheten</string>
     <string name="safe_successful">Vellykket</string>
     <string name="safe_unsuccessful">Mislykket</string>
@@ -897,8 +988,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="safe_size">Kopistørrelse</string>
     <string name="backup_version_mismatch">Versjonen av sikkerhetskopien er høyere enn den støttede versjonen. Vennligst oppdater til den siste versjonen av applikasjonen.</string>
     <string name="safe_restore_failed">Gjenoppret. mislyktes</string>
-    <string name="safe_failed_notification">Threema Safe sikkerhetskopi mislyktes i %d påfølgende dager. Trykk her for å sjekke.</string>
-    <string name="safe_restore">Gjenopprett Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">${app_name_short} Safe sikkerhetskopi mislyktes i %d påfølgende dager. Trykk her for å sjekke.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">Gjenopprett ${app_name_short} Safe</string>
     <string name="backup_restore_in_progress">Sikkerhetskopi eller gjenoppretting pågår nå. Sjekk varsel for status og informasjon.</string>
     <string name="restore_error_body">Gjenoppretting ble ikke fullført skikkelig</string>
     <string name="forgot_your_id">Har du glemt din ID?</string>
@@ -906,8 +999,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="work_data_sync">Data synk.</string>
     <string name="private_contact">Privat kontakt</string>
     <string name="ringtone_selection_default">Standard (%s)</string>
-    <string name="work_data_sync_desc">Threema Work synkronisering</string>
-    <string name="ballot_not_connected">Sørg for at Threema er online før du stenger en avstemning.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">${app_name} synkronisering</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">Sørg for at ${app_name} er online før du stenger en avstemning.</string>
     <string name="empty_chat_title">Tøm samtale</string>
     <string name="empty_chat_confirm">Alle meldinger i denne samtalen vil bli slettet. Vil du fortsette?</string>
     <string name="emptying_chat">Tømmer samtale</string>
@@ -925,29 +1020,35 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="notification_channel_notices">Varsler</string>
     <string name="chat_updates">Samtaleoppdateringer</string>
     <string name="backup_or_restore_progress">Sikkerhetskopi og gjenoppretting - Status</string>
-    <string name="tooltip_export_id">Trykk her for å dele eller skrive ut din krypterte Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">Trykk her for å dele eller skrive ut din krypterte ${app_name_short} ID</string>
     <string name="downloading">Laster ned</string>
     <string name="today">I dag</string>
     <string name="restore_data_cancelled">Gjenoppretting avbrutt</string>
     <string name="safe_change_password">Endre passord</string>
     <string name="safe_configure_choose_password_title">Velg et passord</string>
-    <string name="password_bad_explain">Det valgte passordet for Threema Safe er ikke sikkert og kan enkelt bli gjettet av en angriper. Vennligst velg et annet passord. Hint: Bruk et passord som består av flere individuelle ord.</string>
-    <string name="safe_password_updated">Threema Safe passordet har blitt oppdatert.</string>
-    <string name="safe_activated">Threema Safe er nå akivert.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">Det valgte passordet for ${app_name_short} Safe er ikke sikkert og kan enkelt bli gjettet av en angriper. Vennligst velg et annet passord. Hint: Bruk et passord som består av flere individuelle ord.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">${app_name_short} Safe passordet har blitt oppdatert.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">${app_name_short} Safe er nå akivert.</string>
     <string name="restore_zip_invalid_file">Gjenopprettingsfil er ugyldig.</string>
     <string name="push_token_cleared">Push token har blitt fjernet</string>
     <string name="insert_date">Legg inn dato</string>
     <string name="add_answer">Legg til svar</string>
     <string name="title_cannot_be_empty">Tittelen kan ikke være tom</string>
-    <string name="voip_disabled">Threema anrop er deaktivert</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short} anrop er deaktivert</string>
     <string name="hide_chat_enter_message_explain">Denne samtalen er merket som privat samtale. For å åpne, vennligst opprett tilgangsbeskyttelse først.</string>
     <string name="unknown">Ukjent</string>
     <string name="miui_notification_title">Viktig melding om varsler i MIUI</string>
-    <string name="miui_notification_body">MIUI 10 deaktiverer lyd og lys for alle nylig opprettede varslinger som standard (bortsett fra noen applikasjoner som Xiaomi har merket som \"viktig\"). Du må spesifikt aktivere lyd og lys i innstillingene for varsler, for Threema. Kontakt produsenten av mobilen din for mer informasjon.</string>
+    <string name="miui_notification_body">MIUI 10 deaktiverer lyd og lys for alle nylig opprettede varslinger som standard (bortsett fra noen applikasjoner som Xiaomi har merket som \"viktig\"). Du må spesifikt aktivere lyd og lys i innstillingene for varsler, for ${app_name_short}. Kontakt produsenten av mobilen din for mer informasjon.</string>
     <string name="miui12_notification_body">MIUI lyd, lys og svevende varsler for alle apper som standard (bortsett fra noen veldig populære applikasjoner som Xiaomi har merket som \"viktig\"). Du må manuelt aktivere slike varsler i innstillingene for din mobil. Dette må også gjentas etter hver oppdatering av appen. Kontakt Xiaomi for mer informasjon.</string>
     <string name="dont_show_again">Ikke vis igjen</string>
     <string name="miui_notification_prefs">MIUI innstillinger</string>
-    <string name="threema_safe_upload_successful">Threema Safe sikkerhetskopi er opplastet</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">${app_name_short} Safe sikkerhetskopi er opplastet</string>
     <string name="time_remaining">%s gjenstår</string>
     <string name="safe_configure_server_credentials_title">Autentisering (valgfritt)</string>
     <string name="username_hint">Brukernavn</string>
@@ -956,7 +1057,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="biometric_enter_authentication">For å låse opp, vennligst autentiser deg</string>
     <string name="biometric_authentication_failed">Autentisering feilet</string>
     <string name="biometric_authentication_successful">Vellykket autentisering</string>
-    <string name="work_safe_forced_explain">Din administrator har aktivert Threema Safe for din enhet.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">Din administrator har aktivert ${app_name_short} Safe for din enhet.</string>
     <string name="pin_locked_cannot_send">Applikasjonen er låst. Kan ikke sende.</string>
     <string name="prefs_summary_hide_screenshots_notice">For personvernsgrunner så er miniatyrbilder og skjermbilder forhindret når \"App lås\" er aktivert i sikkerhetsinnstillingene.</string>
     <string name="work_select_categories">Velg kategorier</string>
@@ -966,7 +1068,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="advanced_options">Avanserte valg</string>
     <string name="url_warning_body">Vertsnavnet til linken du er i ferd med å åpne er mistenkelig: \n\nVisningsnavn: <b>%s</b>\nEkte navn: <b>%s</b>\n\nDette kan være et forsøk på å lure deg til å åpne en side som later som den er noe annet.\n\nVil du likevel fortsette?</string>
     <string name="url_warning_title">Phishing-advarsel</string>
-    <string name="permission_camera_qr_required">For å kunne skanne QR-koder så trenger Threema tilgang til kameraet</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">For å kunne skanne QR-koder så trenger ${app_name} tilgang til kameraet</string>
     <string name="voice_action_title">Stemmehandlinger</string>
     <string name="voice_action_body">Stemmehandling blir behandlet</string>
     <string name="permission_camera_photo_required">For å ta et bilde, tillat tilgang til kameraet</string>
@@ -987,17 +1090,22 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="archived">Arkivert</string>
     <string name="to_archive">Arkivér</string>
     <string name="archived_chats">Arkiverte samtaler</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
     <string name="unarchive">Ikke arkivér</string>
     <string name="no_archived_chats">Ingen arkiverte samtaler.\nFor å arkivere en samtale, sveip den til venstre i samtalelisten</string>
-    <string name="add_contact_enter_id_hint">Skriv inn Threema IDen til kontakten du vil legge til</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">Skriv inn ${app_name_short} IDen til kontakten du vil legge til</string>
     <string name="notification_channel_new_contact">Nye kontakter</string>
     <string name="notification_channel_new_contact_desc">Varsel om nye kontakter</string>
-    <string name="notification_contact_has_joined">%1$s er ny i %2$s. Trykk her for å sende en melding.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d kontakter er ny i %2$s: %3$s. Trykk her for å sende dem en melding.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s er ny i ${app_name_short}. Trykk her for å sende en melding.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d kontakter er ny i ${app_name_short}: %2$s. Trykk her for å sende dem en melding.</string>
     <string name="system_default">Bruk systemstandard</string>
     <string name="open_in_maps_app">Åpne i kart-app</string>
     <string name="delete">Slett</string>
     <string name="continue_recording">Fortsett opptak</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
     <string name="invalid_backup_path">Ugyldig kopiplassering</string>
@@ -1005,7 +1113,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_sum_show_unread_badge">Vis ulest-merker i navigasjonsfaner i bunnen</string>
     <string name="prefs_title_show_unread_badge">Merker</string>
     <string name="pinning_not_trusted">Sertifikat \"pinning\" feil: Sjekk om \"Entrust Root Certification Authority - G2\" er installert og aktivert i legitimasjons-lagringen i enheten din.</string>
-    <string name="pinning_failed">Sertifikat \"pinning\" feil. Mulig et Man-in-the-middle-angrep. Om du har en reklameblokkerings-app, innholdsfilter eller en brannmur-app installert (f.eks. \"AdGuard\"), deaktiver det for Threema.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">Sertifikat \"pinning\" feil. Mulig et Man-in-the-middle-angrep. Om du har en reklameblokkerings-app, innholdsfilter eller en brannmur-app installert (f.eks. \"AdGuard\"), deaktiver det for ${app_name}.</string>
     <string name="open_myid_popup">Åpne hurtigtilgangsvinduet</string>
     <string name="logo">Logo / Scroll til toppen</string>
     <string name="quote_subj_end">Slutt sitat</string>
@@ -1028,7 +1137,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="mime_type">Filtype (MIME)</string>
     <string name="password_does_not_comply">Passordet stemmer ikke overens med retningslinjene som er satt av administratoren.</string>
     <string name="audio_mute_due_to_focus_loss">Lyd har blitt dempet midlertidig på grunn av tap av lyd-fokus.</string>
-    <string name="restore_data_backup_explain">For å gjenopprette en sikkerhetskopi, slett din Threema ID fra \"Min profil\" skjerm, først.\n\nNår appen starter på nytt, velg \"Gjenopprett fra sikkerhetskopi\", Andre gjenopprettings-valg\", \"Sikkerhetskopi\" og deretter velg filen du vil gjenopprette.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">For å gjenopprette en sikkerhetskopi, slett din ${app_name_short} ID fra \"Min profil\" skjerm, først.\n\nNår appen starter på nytt, velg \"Gjenopprett fra sikkerhetskopi\", Andre gjenopprettings-valg\", \"Sikkerhetskopi\" og deretter velg filen du vil gjenopprette.</string>
     <string name="audio_focus_loss_complete">Anrop frakoblet på grunn av tap av lyd-fokus.</string>
     <string name="tap_for_picture_hold_for_video">Trykk for bilde, hold for video</string>
     <string name="sending_media">Sender media</string>
@@ -1036,7 +1146,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="media_files">Filer</string>
     <string name="auto_download_limit_explain">Videoer og filer større enn %s vil alltid bli lastet ned ved behov.</string>
     <string name="quoted_message_deleted">Sitert melding er ikke tilgjengelig lenger</string>
-    <string name="searching">Søker...</string>
+    <string name="searching">Søker…</string>
     <string name="prefs_work_life_balance">Ikke forstyrr</string>
     <string name="prefs_title_working_days">Arbeidsdager</string>
     <string name="prefs_working_days_sum">Velg arbeidsdager</string>
@@ -1050,7 +1160,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="warning">Varsel</string>
     <string name="password_remember_warning">Husk det du skriver inn her! Fordi %s ikke lagrer passord på serveren, så kan vi ikke hjelpe om du glemmer passord eller PIN-kode.</string>
     <string name="safe_backup_tap_to_restart">Trykk på system-varselet for å restarte appen nå. Om du ikke kan se varselet, vennligst sveip ned fra telefonens varselområde.</string>
-    <string name="send_to_support">Send til Threema Support</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">Send til ${company_name} Support</string>
     <string name="menu_legal">Lov</string>
     <string name="tooltip_work_hint">Denne kontakten bruker Threema Work.</string>
     <string name="video_camera_on">Kamera er aktivert</string>
@@ -1093,7 +1204,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_sum_disable_smart_replies">Ikke tillat \"Smart Replies\" (Smarte varsler) i Android varsler.</string>
     <string name="prefs_title_disable_smart_replies">Deaktiver Smart Replies</string>
     <string name="url_warning_body_alt">Vertsnavnet til linken du er i ferd med å åpne er mistenkelig:  \n\nDette kan være et forsøk på å lure deg til å åpne en side som later som den er noe annet. \n\nVil du likevel fortsette?</string>
-    <string name="read_on">Fortsett...</string>
+    <string name="read_on">Fortsett…</string>
     <string name="forward_text">Videresend tekst</string>
     <string name="an_error_occurred_during_send">En feil skjedde under sending av en eller flere meldinger.</string>
     <string name="state_processing">Behandler</string>
@@ -1146,7 +1257,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="video_size_explain">Store videofiler kan bli komprimert uavhengig av denne innstillingen.</string>
     <string name="status_create_notes">*Du er den eneste medlemmen i denne gruppen*\nBruk denne samtalen som en sikker notatbok for tekst, media eller dokumenter.</string>
     <string name="status_create_notes_off">*Du er ikke lenger alene i denne samtalen*\nNye meldinger vil bli sendt til alle gruppemedlemmer.</string>
-    <string name="note_group_howto">Tips: Om du ikke legger til andre medlemmer i gruppen, så vil meldinger forbli lokale. Det er ideelt for å lagre notater, media og dokumenter på en sikker måte, eller å overføre til en annen enhet (via Threema Web).</string>
+    <string name="note_group_howto">Tips: Om du ikke legger til andre medlemmer i gruppen, så vil meldinger forbli lokale. Det er ideelt for å lagre notater, media og dokumenter på en sikker måte, eller å overføre til en annen enhet (via ${app_name_short} Web).</string>
     <string name="mark_unread">Merk som ulest</string>
     <string name="mark_read_short">Merk som lest</string>
     <string name="unread">Ulest</string>
@@ -1174,7 +1285,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_response_full">Din forespørsel til %s ble avvist fordi gruppen er full</string>
     <string name="group_response_rejected">Din forespørsel til %s ble avvist</string>
     <string name="group_link_expiration_none">Ubegrenset</string>
-    <string name="group_request_hint">Hei! Det er meg...</string>
+    <string name="group_request_hint">Hei! Det er meg…</string>
     <string name="group_request_send_title">Send forespørsel for å bli med</string>
     <string name="group_request_message_empty">Forespørselsmelding kan ikke være tom</string>
     <string name="group_requests_all_title">Alle gruppeforespørsler</string>
@@ -1201,7 +1312,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="open_group_requests_show">Vis forespørsler</string>
     <string name="open_group_requests_hide">Skjul forespørsler</string>
     <string name="group_request_link_already_deleted">Gruppelinken har blitt slettet</string>
-    <string name="incoming_group_request_no_message">Sendt via åpen link... ingen melding</string>
+    <string name="incoming_group_request_no_message">Sendt via åpen link… ingen melding</string>
     <string name="group_request_received_through">Gjennom link: %s</string>
     <string name="reaccept">Reaksepter</string>
     <string name="group_link_edit_expiration_date">Endre utløpsdato</string>
@@ -1209,26 +1320,30 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_link_rename">Endre navn</string>
     <string name="group_link_rename_tag">Nytt navn</string>
     <string name="tap_here_for_more">Trykk her for mer informasjon</string>
-    <string name="another_connection_instructions"><![CDATA[Serveren har oppdaget to eller flere tilkoblinger fra forskjellige enheter med samme Threema ID.
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[Serveren har oppdaget to eller flere tilkoblinger fra forskjellige enheter med samme ${app_name_short} ID.
 
-Det er ikke mulig å bruke den samme Threema ID-en på flere enheter samtidig. Nye meldinger blir bare sendt til enheten som ble logget på sist.
+Det er ikke mulig å bruke den samme ${app_name_short} ID-en på flere enheter samtidig. Nye meldinger blir bare sendt til enheten som ble logget på sist.
 
 Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den gamle enheten og deretter restart den nye enheten.]]></string>
     <string name="app_store_error_code">App Store feilkode: %d</string>
-    <string name="backup_restore_type"><![CDATA[Hvilken type sikkerhetskopi vil du gjenopprette? <br/><br/> <a href=%s>Lær mer om sikkerhetskopier i Threema</a>]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[Hvilken type sikkerhetskopi vil du gjenopprette? <br/><br/> <a href=%s>Lær mer om sikkerhetskopier i ${app_name_short}</a>]]></string>
     <string name="data_backup_info">Gjenopprett alt, inkludert samtaler</string>
     <string name="new_to_threema">Ny til %s?</string>
     <string name="back_to_threema">Tilbake til %s?</string>
     <string name="id_backup_info">Bare gjenopprett IDen din</string>
     <string name="restore_your_id_contacts_and_groups">Gjenopprett din ID, kontakter og grupper</string>
-    <string name="threema_safe_backup">Threema Safe Backup</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">${app_name_short} Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Glemt passordet?</a>]]></string>
     <string name="download_failed">Nedlasting feilet. Feilkode: %d</string>
     <string name="edit_answer">Rediger svar</string>
-    <string name="share_media">Del med en annen app...</string>
+    <string name="share_media">Del med en annen app…</string>
     <string name="group_link_administered">Link sendt</string>
     <string name="group_link_open">Åpen</string>
-    <string name="group_link_share_message">Bli med min Threema-gruppe gjennom denne linken!: %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">Bli med min ${app_name_short}-gruppe gjennom denne linken!: %s</string>
     <string name="group_link_bottom_sheet_title">Gruppelink</string>
     <string name="group_link_bottom_sheet_desc">Del denne linken med personer som du vil legge til gruppen. Se gjennom valgene nedenfor.</string>
     <string name="group_link_bottom_sheet_link_title">Link</string>
@@ -1239,7 +1354,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="group_link_property_expiration_desc">Linken utløper etter valgt tid.</string>
     <string name="group_image">Gruppebilde</string>
     <string name="add_group_link">Legg til medlemmer gjennom gruppelink</string>
-    <string name="miui_battery_optimization">Vennligst deaktiver batterioptimalisering for %s, slik at den kan gjøre denne operasjonen. Siden Xiaomi ikke tillter apper å åpne denne innstillingen direkte, så må du gjøre det manuelt i innstillingene. Vennligst kontakt Xiaomi brukerstøtte om du trenger assistanse med å deaktivere batterioptimalisering for Threema-appen.</string>
+    <string name="miui_battery_optimization">Vennligst deaktiver batterioptimalisering for %s, slik at den kan gjøre denne operasjonen. Siden Xiaomi ikke tillter apper å åpne denne innstillingen direkte, så må du gjøre det manuelt i innstillingene. Vennligst kontakt Xiaomi brukerstøtte om du trenger assistanse med å deaktivere batterioptimalisering for ${app_name_short}-appen.</string>
     <string name="forward_captions">Inkluder kommentarer</string>
     <string name="importing_files_failed">Ikke mulig å importere sikkerhetskopi. Sørg for at det er nok ledig plass på det interne minnet.</string>
     <string name="label_continue">Fortsett</string>
@@ -1252,7 +1367,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="unable_to_determine_recording_length">Tomt opptak, eller umulig å vurdere lengde</string>
     <string name="prefs_header_receipts">Kvittering</string>
     <string name="prefs_title_reset_receipts">Fjern individuelle innstillinger</string>
-    <string name="prefs_sum_reset_receipts">Resett kontakt-spesifikke innstillinger for lesekvitteringer og \"Skriver...\"-indikator til standard.</string>
+    <string name="prefs_sum_reset_receipts">Resett kontakt-spesifikke innstillinger for lesekvitteringer og \"Skriver…\"-indikator til standard.</string>
     <string name="reset_successful">Vellykket resett til standard</string>
     <string name="group_link_add">Legg til gruppelink</string>
     <string name="group_requests_show_menu_title">Vis åpne forespørsler</string>
@@ -1263,15 +1378,17 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="really_delete_multiple_group_links_title">Slett gruppelinker</string>
     <string name="qr_scan_result_dialog_title">QR-skann resultat</string>
     <string name="scan_failure_dialog_title">Skann feilet</string>
-    <string name="no_threema_qr_info">Dette er ikke en QR-kode som hører til Threema. Det dekodede innholdet av koden er:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">Dette er ikke en QR-kode som hører til ${app_name_short}. Det dekodede innholdet av koden er:</string>
     <string name="default_group_link">Standard gruppelink</string>
     <string name="default_link_name">Standard link</string>
     <string name="reset_default_group_link">Resett standard gruppelink</string>
     <string name="resend">Send igjen</string>
     <string name="group_request_already_sent_title">Forespørsel allerede sendt</string>
-    <string name="qr_scanner_id_hint">Skann QR-koden til en kontakt for å verifisere identiteten. For å vise koden, spør kontakten om å trykke på profilbildet i det øvre venstre hjørnet på hovedskjermen til Threema-appen.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">Skann QR-koden til en kontakt for å verifisere identiteten. For å vise koden, spør kontakten om å trykke på profilbildet i det øvre venstre hjørnet på hovedskjermen til ${app_name_short}-appen.</string>
     <string name="enable_storage_access_for_media">Tillat tilgang til lagring for å se bilder og videoer på enheten din</string>
-    <string name="take_me_there">Ta meg dit...</string>
+    <string name="take_me_there">Ta meg dit…</string>
     <string name="notification_channel_group_join_request">Varselskanal for mottatte gruppeforespørsler</string>
     <string name="reset_default_group_link_title">Resett standard link informasjon</string>
     <string name="reset_default_group_link_desc">Linken som allerede er delt vil bli gjort ugyldig og forespørsler som blir sendt gjennom den gamle linken blir automatisk avvist med en utløpt-beskjed.</string>
@@ -1285,13 +1402,17 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="contact_update">Oppdaterer kontakt-tilstander</string>
     <string name="invalid_onprem_id">Enten så eksisterer ikke denne ID-en (lenger), eller så er den ikke kompatibel med din ID.</string>
     <string name="enable_unknown_sources">Ikke mulig å installere. Vennligst sørg for at \"Installer ukjente apper\" er aktivert for %s.</string>
-    <string name="threema_push">Threema Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push">${app_name_short} Push</string>
     <string name="threema_push_notification_text">Trykk for å vite mer.</string>
-    <string name="threema_push_notification_info_text_1">Threema Push er aktiv i bakgrunnen, for å kunne varsle deg om innkommende meldinger og anrop.</string>
-    <string name="threema_push_notification_info_text_2">Apper kan ikke kjøre i bakgrunnen uten å vise en vedvarende varsel. Ved å vise dette varselet så kan vi sørge for at Threema Push vil forbli aktiv, selv om du ikke aktivt bruker appen.</string>
-    <string name="threema_push_notification_info_text_3">Om du fortsatt får problemer med forsinket eller manglende varsler, vennligst endre systeminnstillinger for å sørge for at appen kan være aktiv i bakgrunnen uten noen begrensninger og all batterisparing er deaktivert for Threema.</string>
-    <string name="threema_push_service_description">Vedvarende varsel blir vist når Threema er aktiv</string>
-    <string name="threema_push_activated">Threema Push aktivert.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_notification_info_text_1">${app_name_short} Push er aktiv i bakgrunnen, for å kunne varsle deg om innkommende meldinger og anrop.</string>
+    <string name="threema_push_notification_info_text_2">Apper kan ikke kjøre i bakgrunnen uten å vise en vedvarende varsel. Ved å vise dette varselet så kan vi sørge for at ${app_name_short} Push vil forbli aktiv, selv om du ikke aktivt bruker appen.</string>
+    <string name="threema_push_notification_info_text_3">Om du fortsatt får problemer med forsinket eller manglende varsler, vennligst endre systeminnstillinger for å sørge for at appen kan være aktiv i bakgrunnen uten noen begrensninger og all batterisparing er deaktivert for ${app_name_short}.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_service_description">Vedvarende varsel blir vist når ${app_name_short} er aktiv</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_activated">${app_name_short} Push aktivert.</string>
     <string name="add_shortcut_success">Snarvei opprettet</string>
     <string name="add_shortcut_error">Feil ved å legge til snarvei på hjemskjerm</string>
     <string name="web_link">Link</string>
@@ -1338,12 +1459,13 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="permission_bluetooth_connect_required">Aktiver \"Enheter i nærheten\" tillatelse for å finne tilkoblede Blåtann hodetelefoner</string>
     <string name="tooltip_multiple_recipients_title">Flere mottakere</string>
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
-    <string name="synchronizing">Synkroniserer...</string>
+    <string name="synchronizing">Synkroniserer…</string>
     <string name="forward_security">Send meldinger med Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">Ingen</string>
     <string name="clear_forward_security">Resett Perfect Forward Secrecy for denne kontakten</string>
-    <string name="clear_forward_security_warning">Sørg for å bare gjøre dette om du får beskjed fra Threema support.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="clear_forward_security_warning">Sørg for å bare gjøre dette om du får beskjed fra ${company_name} support.</string>
     <string name="forward_security_cleared">Perfect Forward Secrecy-økt med denne kontakten har blitt fjernet</string>
     <string name="message_without_forward_security">En melding uten Perfect Forward Secrecy er mottatt. Verifiser at avsender har skrudd av Perfect Forward Secrecy med vilje.</string>
     <string name="forward_security_disabled">Perfect Forward Secrecy er deaktivert for denne samtalen.</string>
@@ -1360,13 +1482,15 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
     <string name="spam_first_contact">Denne samtalen er fra en ukjent kontakt</string>
     <string name="spam_report">Rapporter spam</string>
-    <string name="spam_report_dialog_explain">Om du fortsetter så vil IDen og kallenavnet til denne kontakten bli videresendt til Threema sammen med din ID. Ingen innhold eller personlig data blir sendt. Kontakten vil ikke bli varlet om dette.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="spam_report_dialog_explain">Om du fortsetter så vil IDen og kallenavnet til denne kontakten bli videresendt til ${company_name} sammen med din ID. Ingen innhold eller personlig data blir sendt. Kontakten vil ikke bli varlet om dette.</string>
     <string name="spam_report_dialog_block_checkbox">Blokker og slett samtalen også</string>
     <string name="spam_report_dialog_title">Rapporter %s</string>
     <string name="spam_successfully_reported">Denne IDen har blitt rapportert for å sende spam.</string>
     <string name="spam_error_reporting">En feil skjedde under rapporteringen av spam: %s</string>
     <string name="spam_report_short">Rapporter</string>
-    <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. Threema MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. ${app_name_short} MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
     <string name="messages_cannot_be_recovered">Du har ikke muligheten til å gjenopprette meldingene.</string>
     <string name="groups_left_or_dissolved">Grupper vil bli forlatt eller oppløst og deretter slettet.</string>
     <string name="contact_deleted">Kontakt slettet</string>
@@ -1380,38 +1504,46 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="send_without_audio">Fjern lyd</string>
     <string name="edit_filename">Endre filnavn</string>
     <string name="unable_to_restore_identity_because">Ikke mulig å gjenopprette IDen. Årsak: %s</string>
-    <string name="share_with_app">Del med Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="share_with_app">Del med ${app_name}</string>
     <string name="read_phone_state_dialog_allow">Gi tilgang</string>
     <string name="read_phone_state_dialog_disallow">Fortsett uansett</string>
     <string name="read_phone_state_dialog_never_ask_again">Ikke spør igjen</string>
     <string name="read_phone_state_dialog_title">Tilgang er nødvendig</string>
-    <string name="read_phone_state_dialog_message">For å unngå at Threema-anrop avbryter vanlige anrop, så trenger vi Telefon-tilgang. Om denne tilgangen ikke blir gitt, så vil et anrop til Threema ringe, selv om det allerede er et aktivt anrop på telefonen.</string>
-    <string name="read_phone_state_short_message">For at Threema skal kunne se om der er pågående samtaler, gi tilgang til Telefon.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_dialog_message">For å unngå at ${app_name_short}-anrop avbryter vanlige anrop, så trenger vi Telefon-tilgang. Om denne tilgangen ikke blir gitt, så vil et anrop til ${app_name_short} ringe, selv om det allerede er et aktivt anrop på telefonen.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_short_message">For at ${app_name} skal kunne se om der er pågående samtaler, gi tilgang til Telefon.</string>
     <string name="prefs_title_read_phone_state">Gi tilgang til Telefon</string>
     <string name="prefs_title_hibernation">Ubrukte apper-innstilling</string>
-    <string name="prefs_summary_hibernation_api_32">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Fjern tillatelser og frigjør plass\".</string>
-    <string name="prefs_summary_hibernation_api">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api_32">For å unngå at ${app_name} blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Fjern tillatelser og frigjør plass\".</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api">For å unngå at ${app_name} blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
     <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
-    <string name="rogue_device_warning"><![CDATA[Serveren har oppdaget en tilkobling med den samme Threema IDen, men fra en annen enhet. Har du nylig brukt Threema på en annen enhet?
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rogue_device_warning"><![CDATA[Serveren har oppdaget en tilkobling med den samme ${app_name_short} IDen, men fra en annen enhet. Har du nylig brukt ${app_name_short} på en annen enhet?
 
 Om du har gjort det, så kan du ignorere denne meldingen.
 
-Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre versjon av Threema, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.ch/en/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.]]></string>
+Om du ikke har brukt din ${app_name_short} ID på en annen enhet eller brukt en eldre versjon av ${app_name_short}, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.ch/en/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.]]></string>
     <string name="fetch2_failure">Synkronisering med server mislyktes.</string>
     <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
     <string name="group_calls">Gruppesamtaler</string>
     <string name="prefs_title_group_calls_enable">Aktiver gruppesamtaler</string>
     <string name="group_no_members">Denne gruppen har ikke andre medlemmer</string>
     <string name="group_call">Gruppesamtale</string>
-    <string name="checking_compatibility">Sjekker kompatibilitet...</string>
+    <string name="checking_compatibility">Sjekker kompatibilitet…</string>
     <string name="group_call_mic_permission_rationale">For å starte gruppesamtaler så må du tillate %s å få tilgang til mikrofon under \"Tillatelser\".</string>
     <string name="group_call_mic_permission_description">For å bli med i en gruppesamtale, må du aktivere tilgang til mikrofonen, slik at andre kan høre deg.</string>
     <string name="call_mic_permission_description">For å starte et anrop, må du aktivere tilgang til mikrofonen, slik at andre kan høre deg.</string>
     <string name="group_call_camera_permission_rationale">For at andre deltakere skal kunne se bildet ditt, så må du tillate %s å få tilgang til kamera under \"Tillatelser\".</string>
     <string name="group_call_phone_permission_description">For å bli med i en gruppesamtale, må du aktivere tilgang til telefon, for å oppdage om det kommer et annet anrop som kan forstyrre gruppesamtalen.</string>
-    <string name="call_phone_permission_description">For å starte et anrop i Threema, må du aktivere tilgang til telefon, for å oppdage om det kommer et annet anrop som kan forstyrre anropet i Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_phone_permission_description">For å starte et anrop i ${app_name_short}, må du aktivere tilgang til telefon, for å oppdage om det kommer et annet anrop som kan forstyrre anropet i ${app_name_short}.</string>
     <string name="group_call_nearby_devices_permission_description">For å starte en gruppesamtale med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
-    <string name="call_nearby_devices_permission_description">For å starte et anrop i Threema med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_nearby_devices_permission_description">For å starte et anrop i ${app_name} med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
     <string name="settings">Innstillinger</string>
     <string name="leave">Forlat</string>
     <string name="fs_key_mismatch">Nøkler er ikke lik</string>
@@ -1434,7 +1566,8 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="scroll_to_top">Rull til toppen</string>
     <string name="contact_sync_mdm_rationale">Din administrator har aktivert synkronisering av kontakter på din enhet. Derfor er tilgangen til kontaktene dine nødvendig.</string>
     <string name="welcome_back">Velkommen tilbake!</string>
-    <string name="id_restored_successfully">Din Threema ID har blitt gjenopprettet uten feil</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="id_restored_successfully">Din ${app_name_short} ID har blitt gjenopprettet uten feil</string>
     <string name="prefs_dynamic_colors">Dynamisk farge</string>
     <string name="prefs_dynamic_colors_sum">Bruk systemfarger (BETA)</string>
     <string name="apply_changes">Aktiver endringer</string>
@@ -1465,13 +1598,16 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="no_starred_messages">Ingen stjernemerkede meldinger funnet. For å stjernemerke en melding, langtrykk på meldingen og trykk på stjernen.</string>
     <string name="remove_all_stars">Fjern all stjernemerking</string>
     <string name="remove_star">Fjern stjerne</string>
-    <string name="samsung_permission_problem_explain">%1$s har ikke tilgang til mediafiler på grunn av en manglende tillatelse. For å fikse dette, sørg for at tillatelsen for \"Ekstern lagring\" er aktivert på den neste skjermen og deretter restart %1$s.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="samsung_permission_problem_explain">${app_name} har ikke tilgang til mediafiler på grunn av en manglende tillatelse. For å fikse dette, sørg for at tillatelsen for \"Ekstern lagring\" er aktivert på den neste skjermen og deretter restart %1$s.</string>
     <string name="min_n_chars">min. %d tegn</string>
     <string name="prefs_title_grant_bluetooth_permission">Gi tilgang til Bluetooth</string>
-    <string name="safe_managed_password_confirm">Det har blitt definert et administrert passord for din Threema Safe sikkerhetskopi.\n\nVil du bruke dette passordet? Om du er i tvil, vennligst ta kontakt med din administrator.</string>
-    <string name="safe_managed_new_password_confirm">Det har blitt definert et nytt administrert passord for din Threema Safe sikkerhetskopi.\n\nVil du bytte ut det nåværende passordet med det nye, administrerte passordet? Om du er i tvil, vennligst ta kontakt med din administrator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_password_confirm">Det har blitt definert et administrert passord for din ${app_name_short} Safe sikkerhetskopi.\n\nVil du bruke dette passordet? Om du er i tvil, vennligst ta kontakt med din administrator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_new_password_confirm">Det har blitt definert et nytt administrert passord for din ${app_name_short} Safe sikkerhetskopi.\n\nVil du bytte ut det nåværende passordet med det nye, administrerte passordet? Om du er i tvil, vennligst ta kontakt med din administrator.</string>
     <string name="real_not_now">Ikke nå</string>
-    <string name="add_contact_in">Legg til kontakt i...</string>
+    <string name="add_contact_in">Legg til kontakt i…</string>
     <string name="really_remove_all_stars">Vil du virkelig fjerne stjernemerking for alle meldinger?</string>
     <string name="prefs_sum_storage_management">Administrer minne og slett meldinger eller media</string>
     <string name="delete_automatically">Slett automatisk</string>
@@ -1491,14 +1627,18 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="group_dissolved_notice">Gruppen har blitt oppløst og kan ikke bli brukt lenger.</string>
     <string name="md_linked_devices">Tilkoblede enheter</string>
     <string name="md_link_device">Koble til ny enhet</string>
-    <string name="md_enable">Aktiver tilkoblede enheter</string>
-    <string name="md_linked_devices_empty">Last ned det nye, flotte skrivebodsprogrammet fra en plass og skyt opp i rommet 🚀</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
     <string name="md_link_device_qr_scan_message">Vennligst skann QR-koden</string>
     <string name="directory_request_failed">Katalogforespørsel mislyktes. Prøv igjen.</string>
     <string name="add_shortcut_exists">En snarvei for dette finnes allerede.</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="resend_message_dialog_title">Send gruppemelding på nytt?</string>
     <string name="resend_message_dialog_message">Meldingen kunne ikke bli sendt til alle medlemmer. Send på nytt til %1$s?</string>
-    <string name="work_lost_credentials_help">Glemt innloggingsdetaljene dine? Vennligst kontakt din %1$s administrator.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_lost_credentials_help">Glemt innloggingsdetaljene dine? Vennligst kontakt din ${app_name_short} administrator.</string>
     <string name="problemsolver_intro">Noen systemkonfigurasjoner kan føre til at %s ikke fungerer skikkelig. Vennligst rett opp i disse ved å følge instruksjonene nedenfor.</string>
     <string name="problemsolver_title">Løs problemer med konfigurasjon</string>
     <string name="problemsolver_title_background">Begrenset bakgrunnsaktivitet</string>
@@ -1511,7 +1651,8 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="problemsolver_explain_background">Appen får ikke lov til å kjøre i bakgrunnen. Du får derfor ingen varsler og mange funksjoner vil ikke fungere som normalt. For å løse dette, trykk på \"Batterbruk\" og velg \"Ubegenset\".</string>
     <string name="problemsolver_info_text">Navnet på noen av disse systeminnstillingene kan variere basert på hvilken enhet du har.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Batteribruk satt til \"Optimalisert\"</string>
-    <string name="problemsolver_explain_app_battery_usgae_optimized">Appen har ikke tillatelse til å opprettholde en permanent tilkobling til serverne, noe som er nødvendig for at Threema Push skal fungere. Du vil ikke få varsel om nye meldinger så lenge appen er i bakgrunnen. For å løse dette, trykk på \"Batteribruk\" og velg \"Ubegrenset\".</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Appen har ikke tillatelse til å opprettholde en permanent tilkobling til serverne, noe som er nødvendig for at ${app_name_short} Push skal fungere. Du vil ikke få varsel om nye meldinger så lenge appen er i bakgrunnen. For å løse dette, trykk på \"Batteribruk\" og velg \"Ubegrenset\".</string>
     <string name="problemsolver_to_settings">Til innstillinger</string>
     <string name="prefs_advanced_options">Avanserte innstillinger</string>
     <string name="push_service">Push-tjeneste</string>
@@ -1519,10 +1660,21 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="media_gallery_animated_webps">Animerte WebP-er</string>
     <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
     <string name="application_setup_steps_failed">Det er krav om en aktiv internettforbindelse for å sjekke tilstanden til kontaktene dine. Sørg for at du er tilkoblet internett, og prøv igjen.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Instruction text for the user directory search -->
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>

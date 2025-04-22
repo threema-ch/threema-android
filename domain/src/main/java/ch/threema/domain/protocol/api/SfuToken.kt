@@ -33,7 +33,7 @@ data class SfuToken(
     val sfuBaseUrl: String,
     val allowedSfuHostnameSuffixes: Set<String>,
     val sfuToken: String,
-    val expirationDate: Date
+    val expirationDate: Date,
 ) {
     fun isAllowedBaseUrl(baseUrl: String): Boolean {
         return when (val url = parseUrl(baseUrl)) {
@@ -65,7 +65,7 @@ data class SfuToken(
         }
     }
 
-    override fun toString(): String {
-        return "SfuToken(sfuBaseUrl='$sfuBaseUrl', allowedSfuHostnameSuffixes=$allowedSfuHostnameSuffixes, sfuToken='********', expirationDate=$expirationDate)"
-    }
+    override fun toString() =
+        """SfuToken(sfuBaseUrl='$sfuBaseUrl', allowedSfuHostnameSuffixes=$allowedSfuHostnameSuffixes, """ +
+            """sfuToken='********', expirationDate=$expirationDate)"""
 }

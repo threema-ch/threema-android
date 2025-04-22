@@ -26,10 +26,6 @@ import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.socket.ServerSocketException
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.withContext
 import java.io.DataInputStream
 import java.io.OutputStream
 import java.net.Inet6Address
@@ -37,6 +33,11 @@ import java.net.Socket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("CspSocket")
 
@@ -46,13 +47,12 @@ internal class CspSocket(
     ioProcessingStoppedSignal: CompletableDeferred<Unit>,
     inputDispatcher: CoroutineContext,
 ) : BaseSocket(ioProcessingStoppedSignal, inputDispatcher) {
-
     private var _address: String? = null
     override val address: String? get() = _address
 
     private lateinit var socket: Socket
 
-    override fun connect() {
+    override suspend fun connect() {
         if (this::socket.isInitialized && !socket.isClosed) {
             logger.trace("Close socket (Connect)")
             socket.close()
@@ -67,6 +67,7 @@ internal class CspSocket(
 
         logger.info("Connecting to {} ...", address)
         socket = socketFactory.makeSocket(address)
+        socket.tcpNoDelay = true
 
         val timeout = when (address.address) {
             is Inet6Address -> ProtocolDefines.CONNECT_TIMEOUT_IPV6 * 1000
@@ -77,11 +78,16 @@ internal class CspSocket(
         _address = address.toString()
     }
 
-    override fun closeSocket(reason: ServerSocketCloseReason) {
+    override suspend fun closeSocket(reason: ServerSocketCloseReason) {
         if (this::socket.isInitialized) {
+            closeInbound(reason)
+            // We await the write and read jobs. Note that if we do not await the write job, the
+            // read job won't be cancelable.
+            writeJob?.cancelAndJoin()
+            readJob?.cancelAndJoin()
             if (!socket.isClosed) {
                 logger.trace("Close socket (reason={})", reason)
-                socket.close()
+                withContext(Dispatchers.IO) { socket.close() }
                 _address = null
             }
             logger.info("Socket is closed")

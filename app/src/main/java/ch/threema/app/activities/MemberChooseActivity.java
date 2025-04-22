@@ -79,13 +79,13 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     private final static int NUM_FRAGMENTS = 2;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MODE_NEW_GROUP, MODE_ADD_TO_GROUP, MODE_NEW_DISTRIBUTION_LIST, MODE_PROFILE_PIC_RECIPIENTS})
+    @IntDef({MODE_NEW_GROUP, MODE_ADD_TO_GROUP, MODE_DISTRIBUTION_LIST, MODE_PROFILE_PIC_RECIPIENTS})
     public @interface MemberChooseMode {
     }
 
     protected final static int MODE_NEW_GROUP = 1;
     protected final static int MODE_ADD_TO_GROUP = 2;
-    protected final static int MODE_NEW_DISTRIBUTION_LIST = 3;
+    protected final static int MODE_DISTRIBUTION_LIST = 3;
     protected final static int MODE_PROFILE_PIC_RECIPIENTS = 4;
     private static final String BUNDLE_QUERY_TEXT = "query";
 
@@ -138,28 +138,19 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
         if (!super.initActivity(savedInstanceState)) {
             return false;
         }
-        ;
 
         // add notice, if desired
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             searchBar = (SearchBar) getToolbar();
-            searchBar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (searchView.isIconified()) {
-                        goHome();
-                    } else {
-                        searchView.setIconified(true);
-                    }
+            searchBar.setNavigationOnClickListener(v -> {
+                if (searchView.isIconified()) {
+                    goHome();
+                } else {
+                    searchView.setIconified(true);
                 }
             });
-            searchBar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    searchView.setIconified(false);
-                }
-            });
+            searchBar.setOnClickListener(v -> searchView.setIconified(false));
             ConfigUtils.adjustSearchBarTextViewMargin(this, searchBar);
 
             if (getNotice() != 0) {
@@ -177,12 +168,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
         if (getMode() == MODE_PROFILE_PIC_RECIPIENTS) {
             floatingActionButton.hide();
         } else {
-            this.floatingActionButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    menuNext(getSelectedContacts());
-                }
-            });
+            this.floatingActionButton.setOnClickListener(v -> menuNext(getSelectedContacts()));
         }
 
         this.rootView = findViewById(R.id.coordinator);
@@ -197,7 +183,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     }
 
     @MainThread
-    protected void updateToolbarTitle(@StringRes int title, @StringRes int subtitle) {
+    protected void updateToolbarSubtitle(@StringRes int subtitle) {
         if (searchBar != null) {
             searchBar.setHint(subtitle);
         }
@@ -262,14 +248,11 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
                             searchView.setQuery("", false);
                             queryText = null;
                         } else {
-                            searchMenuItem.getActionView().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!searchMenuItem.isActionViewExpanded()) {
-                                        searchMenuItem.expandActionView();
-                                    }
-                                    searchView.setQuery(query, true);
+                            searchMenuItem.getActionView().post(() -> {
+                                if (!searchMenuItem.isActionViewExpanded()) {
+                                    searchMenuItem.expandActionView();
                                 }
+                                searchView.setQuery(query, true);
                             });
                             queryText = query.toString();
                         }
@@ -331,11 +314,10 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                goHome();
-                return true;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            goHome();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -368,8 +350,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     }
 
     public class MemberChoosePagerAdapter extends FragmentPagerAdapter {
-        // these globals are not persistent across orientation changes (at least in Android <= 4.1)!
-        SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+        SparseArray<Fragment> registeredFragments = new SparseArray<>();
 
         public MemberChoosePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -438,8 +419,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     @Override
     public void onSelectionChanged() {
         List<ContactModel> contacts = getSelectedContacts();
-
-        if (contacts.size() > 0) {
+        if (!contacts.isEmpty()) {
             if (snackbar == null) {
                 snackbar = SnackbarUtil.make(rootView, "", Snackbar.LENGTH_INDEFINITE, 4);
                 snackbar.getView().getLayoutParams().width = AppBarLayout.LayoutParams.MATCH_PARENT;
@@ -448,7 +428,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
             if (!snackbar.isShown()) {
                 snackbar.show();
             }
-            if (getMode() == MODE_NEW_GROUP || getMode() == MODE_ADD_TO_GROUP || getMode() == MODE_NEW_DISTRIBUTION_LIST) {
+            if (getMode() == MODE_NEW_GROUP || getMode() == MODE_ADD_TO_GROUP || getMode() == MODE_DISTRIBUTION_LIST) {
                 if (!floatingActionButton.isShown()) {
                     floatingActionButton.show();
                 }
@@ -469,6 +449,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
         }
     }
 
+    @NonNull
     private String getMemberNames() {
         StringBuilder builder = new StringBuilder();
         for (ContactModel contactModel : getSelectedContacts()) {
@@ -512,7 +493,8 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     @MainThread
     protected abstract void initData(Bundle savedInstanceState);
 
-    protected abstract @StringRes int getNotice();
+    @StringRes
+    protected abstract int getNotice();
 
     protected abstract void menuNext(List<ContactModel> selectedContacts);
 }

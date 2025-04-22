@@ -35,19 +35,18 @@ import ch.threema.base.utils.Utils
 import ch.threema.protobuf.groupcall.CallState
 import ch.threema.protobuf.groupcall.ParticipantToParticipant
 import com.neilalexander.jnacl.NaCl
-import org.apache.commons.io.EndianUtils
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import org.apache.commons.io.EndianUtils
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallContext")
 
 @WorkerThread
 internal class GroupCallContext(
     val connectionCtx: ConnectionCtx,
-    private val localParticipant: LocalParticipant
+    private val localParticipant: LocalParticipant,
 ) {
-
     private val p2pHandshakes: MutableMap<ParticipantId, P2PHandshake> = mutableMapOf()
 
     @AnyThread
@@ -161,7 +160,7 @@ internal class GroupCallContext(
         return GroupCallState(
             localParticipant.id,
             Date().time.toULong(),
-            getAllCallParticipants()
+            getAllCallParticipants(),
         ).toProtobuf()
     }
 
@@ -246,11 +245,11 @@ sealed class P2PContext(val pckPublic: ByteArray, val pcck: ByteArray) {
 class RemoteP2PContext(
     val participant: NormalRemoteParticipant,
     pckPublic: ByteArray,
-    pcck: ByteArray
+    pcck: ByteArray,
 ) : P2PContext(pckPublic, pcck)
 
 class LocalP2PContext(
     val participant: LocalParticipant,
     val pckPrivate: ByteArray,
-    pcck: ByteArray
+    pcck: ByteArray,
 ) : P2PContext(NaCl.derivePublicKey(pckPrivate), pcck)

@@ -21,6 +21,7 @@
 
 package ch.threema.domain.taskmanager
 
+import ch.threema.domain.protocol.connection.ConnectionLock
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.BufferOverflow
@@ -31,7 +32,6 @@ internal class TaskQueue(
     taskArchiver: TaskArchiver,
     private val dispatcherAsserters: TaskManagerImpl.TaskManagerDispatcherAsserters,
 ) {
-
     /**
      * A channel that allows the schedule dispatcher to notify the executor dispatcher that a new
      * task (or incoming message) is available. It has a capacity of one and drops the latest
@@ -51,6 +51,11 @@ internal class TaskQueue(
     private var incomingMessageQueue: IncomingMessageTaskQueue? = null
 
     /**
+     * This manager holds connection locks that are kept as long as there are tasks to execute.
+     */
+    private val connectionLockManager = ConnectionLockManager()
+
+    /**
      * Enqueue a new local task. Note that this method must be called from the schedule dispatcher.
      */
     internal suspend fun <R> enqueueTask(task: Task<R, TaskCodec>, done: CompletableDeferred<R>) {
@@ -67,8 +72,14 @@ internal class TaskQueue(
      * Enqueue a new inbound message. Note that this method must be called from the schedule
      * dispatcher.
      */
-    internal fun enqueueInboundMessage(inboundMessage: InboundMessage) = runBlocking {
+    internal fun enqueueInboundMessage(
+        inboundMessage: InboundMessage,
+        connectionLock: ConnectionLock,
+    ) = runBlocking {
         dispatcherAsserters.scheduleDispatcher.assertDispatcherContext()
+
+        // Add the connection lock so that it can be released once there are no left tasks
+        connectionLockManager.addConnectionLock(connectionLock)
 
         // Add the inbound message to the incoming message queue
         incomingMessageQueue.get().add(inboundMessage)
@@ -91,10 +102,13 @@ internal class TaskQueue(
      * Read a message from the incoming message queue. Depending on the result of [preProcess], the
      * message is accepted, bypassed, backlogged, or rejected.
      */
-    internal suspend fun readMessage(preProcess: (InboundMessage) -> MessageFilterInstruction): ReadMessageResult {
+    internal suspend fun readMessage(
+        preProcess: (InboundMessage) -> MessageFilterInstruction,
+        bypassTaskCodec: BypassTaskCodec,
+    ): InboundMessage {
         dispatcherAsserters.executorDispatcher.assertDispatcherContext()
 
-        return incomingMessageQueue.get().readMessage(preProcess)
+        return incomingMessageQueue.get().readMessage(preProcess, bypassTaskCodec)
     }
 
     /**
@@ -113,7 +127,9 @@ internal class TaskQueue(
         // Get next task if available
         var queueEntity = poll()
         while (queueEntity == null) {
-            // If currently there is no task, suspend until a new task has been signaled
+            // If currently there is no task, release all connection locks
+            connectionLockManager.releaseConnectionLocks()
+            // Then suspend until a new task has been signaled
             newTaskChannel.receive()
             queueEntity = poll()
         }

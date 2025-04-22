@@ -71,20 +71,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.locationpicker.NearbyPoiUtil;
 import ch.threema.app.locationpicker.Poi;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.storage.models.data.LocationDataModel;
 
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
@@ -102,8 +102,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
     private static final int MAX_POI_COUNT = 50;
 
-    // URLs for Threema Map server
-    public static final String MAP_STYLE_URL = "https://map.threema.ch/styles/streets/style.json";
+    private ServerAddressProvider serverAddressProvider;
 
     private MapView mapView;
     private MapLibreMap maplibreMap;
@@ -115,8 +114,6 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
     private LatLng markerPosition;
     private String markerName, markerProvider;
-
-    private PreferenceService preferenceService;
 
     private int insetTop = 0;
 
@@ -144,21 +141,6 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
                 getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
 
-        try {
-            preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-        } catch (Exception e) {
-            logger.error("Exception", e);
-            finish();
-            return;
-        }
-        if (preferenceService == null) {
-            finish();
-            return;
-        }
-        if (BuildConfig.DEBUG && preferenceService.getPoiServerHostOverride() != null) {
-            Toast.makeText(this, "Using POI host override", Toast.LENGTH_SHORT).show();
-        }
-
         parentView = findViewById(R.id.coordinator);
         mapView = findViewById(R.id.map);
 
@@ -167,6 +149,12 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
             finish();
             return;
         }
+        var serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            finish();
+            return;
+        }
+        serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
 
         mapView.onCreate(savedInstanceState);
 
@@ -200,7 +188,13 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
         }
 
         initUi();
-        initMap();
+        try {
+            var mapStyleUrl = serverAddressProvider.getMapStyleUrl();
+            initMap(mapStyleUrl);
+        } catch (ThreemaException e) {
+            logger.error("Failed to get map style url", e);
+            finish();
+        }
     }
 
     private void initUi() {
@@ -252,12 +246,12 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
         startActivity(intent);
     }
 
-    private void initMap() {
+    private void initMap(@NonNull String mapStyleUrl) {
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull MapLibreMap mapLibreMap1) {
                 maplibreMap = mapLibreMap1;
-                maplibreMap.setStyle(new Style.Builder().fromUrl(MAP_STYLE_URL), new Style.OnStyleLoaded() {
+                maplibreMap.setStyle(new Style.Builder().fromUri(mapStyleUrl), new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
                         // Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
@@ -295,7 +289,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
             protected List<MarkerOptions> doInBackground(LatLng... latLngs) {
                 LatLng latLng = latLngs[0];
                 List<Poi> pois = new ArrayList<>();
-                NearbyPoiUtil.getPOIs(latLng, pois, MAX_POI_COUNT, preferenceService);
+                NearbyPoiUtil.getPOIs(latLng, pois, MAX_POI_COUNT, serverAddressProvider);
 
                 List<MarkerOptions> markerOptions = new ArrayList<>();
                 for (Poi poi : pois) {
@@ -400,7 +394,6 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
         if (requestLocationEnabled(locationManager)) {
             locationComponent.setLocationComponentEnabled(true);
             Location location = locationComponent.getLastKnownLocation();
-            // TODO: Wait for a fix if there's no last known location
             if (location != null) {
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), true, -1);
             }

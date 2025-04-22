@@ -33,8 +33,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,16 +47,17 @@ import androidx.core.text.HtmlCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.AppRestrictionService;
+import ch.threema.app.restrictions.AppRestrictionService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.license.SerialCredentials;
 import ch.threema.app.services.license.UserCredentials;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
@@ -79,13 +78,14 @@ public class EnterSerialActivity extends ThreemaActivity {
     private TextView stateTextView = null;
     private EditText licenseKeyOrUsernameText, passwordText, serverText;
     private MaterialButton unlockButton;
-    private Button loginButton;
+    private WizardButtonXml loginButtonCompose;
     private LicenseService licenseService;
     private PreferenceService preferenceService;
 
-    private final LazyProperty<BackgroundExecutor> backgroundExecutor =
-        new LazyProperty<>(BackgroundExecutor::new);
+    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
+    // We need to use getResources().getIdentifier(...) because of flavor specific layout files for this fragment
+    @SuppressLint("DiscouragedApi")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,7 +130,7 @@ public class EnterSerialActivity extends ThreemaActivity {
         serverText = findViewById(getResources().getIdentifier("server", "id", getPackageName()));
 
         TextView enterKeyExplainText = findViewById(R.id.layout_top);
-        enterKeyExplainText.setText(HtmlCompat.fromHtml(getString(R.string.enter_serial_body), HtmlCompat.FROM_HTML_MODE_COMPACT));
+        enterKeyExplainText.setText(HtmlCompat.fromHtml(getString(R.string.flavored__enter_serial_body), HtmlCompat.FROM_HTML_MODE_COMPACT));
         enterKeyExplainText.setClickable(true);
         enterKeyExplainText.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -173,42 +173,35 @@ public class EnterSerialActivity extends ThreemaActivity {
         licenseKeyOrUsernameText.addTextChangedListener(new PasswordWatcher());
         licenseKeyOrUsernameText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         licenseKeyOrUsernameText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(11)});
-        licenseKeyOrUsernameText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (licenseKeyOrUsernameText.getText().length() == 11) {
-                        doUnlock();
-                    }
-                    return true;
+        licenseKeyOrUsernameText.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (licenseKeyOrUsernameText.getText().length() == 11) {
+                    doUnlock();
                 }
-                return false;
+                return true;
             }
+            return false;
         });
         unlockButton = findViewById(R.id.unlock_button);
-        unlockButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doUnlock();
-            }
-        });
+        unlockButton.setOnClickListener(v -> doUnlock());
 
-        this.enableLogin(false);
+        this.setLoginButtonEnabled(false);
     }
 
-    @SuppressLint("StringFormatInvalid")
+    // We need to use getResources().getIdentifier(...) because of flavor specific layout files for this fragment
+    @SuppressLint("DiscouragedApi")
     private void setupForWorkBuild() {
         licenseKeyOrUsernameText.addTextChangedListener(new TextChangeWatcher());
         passwordText.addTextChangedListener(new TextChangeWatcher());
-        loginButton = findViewById(getResources().getIdentifier("unlock_button_work", "id", getPackageName()));
-        loginButton.setOnClickListener(v -> doUnlock());
 
-        String appName = getString(R.string.app_name);
+        loginButtonCompose = findViewById(getResources().getIdentifier("unlock_button_work_compose", "id", getPackageName()));
+        loginButtonCompose.setOnClickListener(v -> doUnlock());
+
         TextView lostCredentialsHelp = findViewById(getResources().getIdentifier("work_lost_credential_help", "id", getPackageName()));
-        lostCredentialsHelp.setText(getString(R.string.work_lost_credentials_help, appName));
+        lostCredentialsHelp.setText(getString(R.string.work_lost_credentials_help));
 
-        // Always enable login button
-        this.enableLogin(true);
+        // Always enable for work build
+        setLoginButtonEnabled(true);
     }
 
     private void handleUrlIntent(@Nullable Intent intent) {
@@ -255,21 +248,18 @@ public class EnterSerialActivity extends ThreemaActivity {
         }
     }
 
-    private void enableLogin(boolean enable) {
+    private void setLoginButtonEnabled(final boolean isEnabled) {
         if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
             if (this.unlockButton != null) {
-                unlockButton.setClickable(enable);
-                unlockButton.setEnabled(enable);
+                unlockButton.setClickable(isEnabled);
+                unlockButton.setEnabled(isEnabled);
             }
-        } else {
-            if (this.loginButton != null) {
-                this.loginButton.setClickable(true);
-                this.loginButton.setEnabled(true);
-            }
+        } else if (this.loginButtonCompose != null) {
+            loginButtonCompose.setButtonEnabled(isEnabled);
         }
     }
 
-    private void parseUrlAndCheck(Uri data) {
+    private void parseUrlAndCheck(@NonNull Uri data) {
         String query = data.getQuery();
         if (!TestUtil.isEmptyOrNull(query)) {
             if (licenseService instanceof LicenseServiceUser) {
@@ -280,14 +270,14 @@ public class EnterSerialActivity extends ThreemaActivity {
         }
     }
 
-    private void parseConsumerLicense(Uri data) {
+    private void parseConsumerLicense(@NonNull Uri data) {
         final String key = data.getQueryParameter("key");
         if (!TestUtil.isEmptyOrNull(key)) {
             check(new SerialCredentials(key), null);
         }
     }
 
-    private void parseWorkLicense(Uri data) {
+    private void parseWorkLicense(@NonNull Uri data) {
         final String username = data.getQueryParameter("username");
         final String password = data.getQueryParameter("password");
         final String server = data.getQueryParameter("server");
@@ -314,20 +304,20 @@ public class EnterSerialActivity extends ThreemaActivity {
         // hide keyboard to make error message visible on low resolution displays
         EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
 
-        this.enableLogin(false);
+        this.setLoginButtonEnabled(false);
 
         if (ConfigUtils.isOnPremBuild()) {
             if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString()) && !TestUtil.isEmptyOrNull(this.serverText.getText().toString())) {
                 this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), this.serverText.getText().toString());
             } else {
-                this.enableLogin(true);
+                this.setLoginButtonEnabled(true);
                 this.stateTextView.setText(getString(R.string.invalid_input));
             }
         } else if (ConfigUtils.isWorkBuild()) {
             if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString())) {
                 this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), null);
             } else {
-                this.enableLogin(true);
+                this.setLoginButtonEnabled(true);
                 this.stateTextView.setText(getString(R.string.invalid_input));
             }
         } else {
@@ -355,7 +345,7 @@ public class EnterSerialActivity extends ThreemaActivity {
             }
 
             //enable login only if the length of the key is 11 chars
-            enableLogin(s.length() == 11);
+            setLoginButtonEnabled(s.length() == 11);
         }
     }
 
@@ -377,7 +367,7 @@ public class EnterSerialActivity extends ThreemaActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (licenseKeyOrUsernameText != null && !TestUtil.isBlankOrNull(licenseKeyOrUsernameText.getText())) {
@@ -414,7 +404,7 @@ public class EnterSerialActivity extends ThreemaActivity {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected void onPreExecute() {
-                GenericProgressDialog.newInstance(R.string.checking_serial, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CHECKING);
+                GenericProgressDialog.newInstance(R.string.flavored__checking_serial, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CHECKING);
             }
 
             @Override
@@ -440,8 +430,8 @@ public class EnterSerialActivity extends ThreemaActivity {
 
             @Override
             protected void onPostExecute(String error) {
+                setLoginButtonEnabled(true);
                 DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CHECKING, true);
-                enableLogin(true);
                 if (error == null) {
                     ConfigUtils.recreateActivity(EnterSerialActivity.this);
                 } else {

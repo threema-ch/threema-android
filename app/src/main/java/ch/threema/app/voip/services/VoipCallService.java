@@ -30,7 +30,6 @@ import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NO
 
 import android.Manifest;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -1088,7 +1087,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
         // Create and audio manager that will take care of audio routing,
         // audio modes, audio device enumeration etc.
-        this.audioManager = VoipAudioManager.create(getApplicationContext(), voipStateService.getRingtoneAudioFocusAbandoned());
+        this.audioManager = VoipAudioManager.create(getApplicationContext());
         VoipListenerManager.audioManagerListener.add(this.audioManagerListener);
         logCallInfo(callId, "Starting the audio manager...");
         this.audioManager.start();

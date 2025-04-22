@@ -59,7 +59,7 @@ class QuotePopup(
     private val contactService: ContactService,
     private val userService: UserService,
     private val fileService: FileService,
-    private val thumbnailCache: ThumbnailCache<*>
+    private val thumbnailCache: ThumbnailCache<*>,
 ) : MovingPopupWindow(context) {
     private val quoteTextView: TextView
     private val quoteIdentityView: TextView
@@ -107,7 +107,7 @@ class QuotePopup(
         messageModel: AbstractMessageModel?,
         identity: String?,
         @ColorInt color: Int,
-        listener: QuotePopupListener?
+        listener: QuotePopupListener?,
     ) {
         this.quotePopupListener = listener
 
@@ -153,7 +153,7 @@ class QuotePopup(
         try {
             val thumbnail = fileService.getMessageThumbnailBitmap(
                 messageModel,
-                thumbnailCache
+                thumbnailCache,
             )
             if (thumbnail != null) {
                 quoteThumbnail.setImageBitmap(thumbnail)
@@ -177,7 +177,7 @@ class QuotePopup(
                 R.dimen.compose_textinputlayout_radius_expanded,
                 R.dimen.compose_textinputlayout_radius_expanded,
                 R.dimen.compose_textinputlayout_radius,
-                R.dimen.compose_textinputlayout_radius
+                R.dimen.compose_textinputlayout_radius,
             )
         }, delayMs)
     }
@@ -189,7 +189,7 @@ class QuotePopup(
                     R.dimen.compose_textinputlayout_radius,
                     R.dimen.compose_textinputlayout_radius,
                     R.dimen.compose_textinputlayout_radius,
-                    R.dimen.compose_textinputlayout_radius
+                    R.dimen.compose_textinputlayout_radius,
                 )
             }, 200)
             it.removeOnLayoutChangeListener(onLayoutChangeListener)

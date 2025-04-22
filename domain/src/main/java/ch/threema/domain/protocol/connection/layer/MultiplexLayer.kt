@@ -23,21 +23,22 @@ package ch.threema.domain.protocol.connection.layer
 
 import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.InvalidSizeException
-import ch.threema.domain.protocol.connection.ServerConnectionException
 import ch.threema.domain.protocol.connection.PipeProcessor
 import ch.threema.domain.protocol.connection.ProcessingPipe
+import ch.threema.domain.protocol.connection.ServerConnectionException
 import ch.threema.domain.protocol.connection.data.CspData
 import ch.threema.domain.protocol.connection.data.CspFrame
 import ch.threema.domain.protocol.connection.data.CspLoginMessage
 import ch.threema.domain.protocol.connection.data.D2mContainer
-import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.D2mProtocolException
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundL1Message
 import ch.threema.domain.protocol.connection.data.InboundL2Message
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundL2Message
 import ch.threema.domain.protocol.connection.data.OutboundL3Message
 import ch.threema.domain.protocol.connection.data.toHex
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.connection.util.MdServerConnectionController
 import ch.threema.domain.protocol.connection.util.ServerConnectionController
@@ -48,13 +49,16 @@ import java.nio.ByteOrder
 private val logger = ConnectionLoggingUtil.getConnectionLogger("MultiplexLayer")
 
 internal class MultiplexLayer(private val controller: ServerConnectionController) : Layer2Codec {
-
-    private val inbound = ProcessingPipe<InboundL1Message, InboundL2Message> { handleInbound(it) }
+    private val inbound =
+        ProcessingPipe<InboundL1Message, InboundL2Message, ServerSocketCloseReason> {
+            handleInbound(it)
+        }
     private val outbound =
-        ProcessingPipe<OutboundL3Message, OutboundL2Message> { handleOutbound(it) }
+        ProcessingPipe<OutboundL3Message, OutboundL2Message, Unit> { handleOutbound(it) }
 
-    override val encoder: PipeProcessor<OutboundL3Message, OutboundL2Message> = outbound
-    override val decoder: PipeProcessor<InboundL1Message, InboundL2Message> = inbound
+    override val encoder: PipeProcessor<OutboundL3Message, OutboundL2Message, Unit> = outbound
+    override val decoder: PipeProcessor<InboundL1Message, InboundL2Message, ServerSocketCloseReason> =
+        inbound
 
     private fun handleInbound(message: InboundL1Message) {
         controller.dispatcher.assertDispatcherContext()
@@ -87,7 +91,7 @@ internal class MultiplexLayer(private val controller: ServerConnectionController
         }
         logger.info(
             "Handle inbound D2mContainer with payloadType={}",
-            container.payloadType.toHex()
+            container.payloadType.toHex(),
         )
         if (container.payloadType == D2mPayloadType.PROXY) {
             handleInboundCspMessage(getCspDataFromD2mProxyMessage(container))

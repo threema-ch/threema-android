@@ -110,8 +110,17 @@ public class GroupDetailViewModel extends ViewModel {
         this.savedState.set(KEY_AVATAR_REMOVED, isRemoved);
     }
 
+    /**
+     * Get the group name. If there is no group name available, an empty string is returned.
+     */
+    @NonNull
     public String getGroupName() {
-        return this.savedState.get(KEY_GROUP_NAME);
+        String savedGroupName = this.savedState.get(KEY_GROUP_NAME);
+        if (savedGroupName == null) {
+            return "";
+        } else {
+            return savedGroupName.trim();
+        }
     }
 
 

@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
@@ -90,7 +91,7 @@ public class ImageDataModel implements MediaMessageDataInterface {
         }
     }
 
-    public void fromString(String s) {
+    public void fromString(@Nullable String s) {
         if (TestUtil.isEmptyOrNull(s)) {
             // "old" image model, set defaults
             this.isDownloaded = true;
@@ -141,5 +142,13 @@ public class ImageDataModel implements MediaMessageDataInterface {
         ImageDataModel m = new ImageDataModel();
         m.fromString(s);
         return m;
+    }
+
+    /**
+     * Do not use this in new code. It only exists to handle places where a [ImageDataModel] needs to be returned and `null` is not allowed.
+     */
+    @Deprecated()
+    public static ImageDataModel createEmpty() {
+        return new ImageDataModel();
     }
 }

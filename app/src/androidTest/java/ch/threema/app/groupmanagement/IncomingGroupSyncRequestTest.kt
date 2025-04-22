@@ -28,27 +28,25 @@ import ch.threema.app.DangerousTest
 import ch.threema.app.activities.HomeActivity
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
-import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
+import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
  * Tests that incoming group sync request messages are handled correctly.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
 class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>() {
-
     override fun createMessageForGroup() = GroupSyncRequestMessage()
 
     @Test
@@ -79,27 +77,27 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
         assertLeftGroupSyncRequest(myLeftGroup, contactA)
     }
 
-    override fun testCommonGroupReceiveStep2_1() {
+    override fun testCommonGroupReceiveStepUnknownGroupUserCreator() {
         // Common group receive steps are not executed for group sync request messages
     }
 
-    override fun testCommonGroupReceiveStep2_2() {
+    override fun testCommonGroupReceiveStepUnknownGroupUserNotCreator() {
         // Common group receive steps are not executed for group sync request messages
     }
 
-    override fun testCommonGroupReceiveStep3_1() {
+    override fun testCommonGroupReceiveStepLeftGroupUserCreator() {
         // Common group receive steps are not executed for group sync request messages
     }
 
-    override fun testCommonGroupReceiveStep3_2() {
+    override fun testCommonGroupReceiveStepLeftGroupUserNotCreator() {
         // Common group receive steps are not executed for group sync request messages
     }
 
-    override fun testCommonGroupReceiveStep4_1() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserCreator() {
         // Common group receive steps are not executed for group sync request messages
     }
 
-    override fun testCommonGroupReceiveStep4_2() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserNotCreator() {
         // Common group receive steps are not executed for group sync request messages
     }
 
@@ -120,7 +118,10 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
 
         // Check that the first sent message (setup) is correct
         val setupMessage = sentMessagesInsideTask.poll() as GroupSetupMessage
-        assertArrayEquals(group.members.map { it.identity }.toTypedArray(), setupMessage.members)
+        assertContentEquals(
+            group.membersWithoutCreator.map { it.identity }.toTypedArray(),
+            setupMessage.members,
+        )
         assertEquals(myContact.contact.identity, setupMessage.fromIdentity)
         assertEquals(contact.identity, setupMessage.toIdentity)
         assertEquals(group.groupCreator.identity, setupMessage.groupCreator)
@@ -134,7 +135,7 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
         assertEquals(group.groupCreator.identity, renameMessage.groupCreator)
         assertEquals(group.apiGroupId, renameMessage.apiGroupId)
 
-        assertTrue("Groups with photo are not supported for testing", group.profilePicture == null)
+        assertNull(group.profilePicture, "Groups with photo are not supported for testing")
 
         // Check that the third sent message (set/delete photo) is correct
         val deletePhotoMessage = sentMessagesInsideTask.poll() as GroupDeleteProfilePictureMessage
@@ -180,7 +181,7 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
         // Check that a setup message has been sent with empty members list
         assertEquals(1, sentMessagesInsideTask.size)
         val setupMessage = sentMessagesInsideTask.first() as GroupSetupMessage
-        assertArrayEquals(emptyArray(), setupMessage.members)
+        assertContentEquals(emptyArray(), setupMessage.members)
         assertEquals(myContact.contact.identity, setupMessage.fromIdentity)
         assertEquals(contact.identity, setupMessage.toIdentity)
         assertEquals(group.groupCreator.identity, setupMessage.groupCreator)

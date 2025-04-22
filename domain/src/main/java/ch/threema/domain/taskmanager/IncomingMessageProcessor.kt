@@ -26,7 +26,6 @@ import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.csp.coders.MessageBox
 
 interface IncomingMessageProcessor {
-
     /**
      * Process an incoming csp message.
      */
@@ -37,7 +36,7 @@ interface IncomingMessageProcessor {
      */
     suspend fun processIncomingD2mMessage(
         message: InboundD2mMessage.Reflected,
-        handle: ActiveTaskCodec
+        handle: ActiveTaskCodec,
     )
 
     /**
@@ -49,5 +48,4 @@ interface IncomingMessageProcessor {
      * Process an incoming server error
      */
     fun processIncomingServerError(errorData: CspMessage.ServerErrorData)
-
 }

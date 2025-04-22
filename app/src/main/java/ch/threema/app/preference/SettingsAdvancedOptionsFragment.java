@@ -82,8 +82,8 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
@@ -94,7 +94,7 @@ import ch.threema.app.services.ThreemaPushService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.WallpaperService;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -147,9 +147,9 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     private FileService fileService;
     private UserService userService;
     private LifetimeService lifetimeService;
-    private DeadlineListService mutedChatsListService, mentionOnlyChatsListService;
     private MessageService messageService;
     private ContactService contactService;
+    private GroupService groupService;
     private APIConnector apiConnector;
     private ContactModelRepository contactModelRepository;
     private View fragmentView;
@@ -582,9 +582,9 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
             this.fileService,
             this.userService,
             this.ringtoneService,
-            this.mutedChatsListService,
             this.messageService,
             this.contactService,
+            this.groupService,
             this.apiConnector,
             this.contactModelRepository
         );
@@ -600,10 +600,9 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
                 this.fileService = serviceManager.getFileService();
                 this.userService = serviceManager.getUserService();
                 this.ringtoneService = serviceManager.getRingtoneService();
-                this.mutedChatsListService = serviceManager.getMutedChatsListService();
-                this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
                 this.messageService = serviceManager.getMessageService();
                 this.contactService = serviceManager.getContactService();
+                this.groupService = serviceManager.getGroupService();
                 this.notificationService = serviceManager.getNotificationService();
                 this.apiConnector = serviceManager.getAPIConnector();
                 this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
@@ -628,10 +627,9 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
                 break;
             case DIALOG_TAG_RESET_RINGTONES:
                 ringtoneService.resetRingtones(requireActivity().getApplicationContext());
-                mutedChatsListService.clear();
-                mentionOnlyChatsListService.clear();
-                notificationService.deleteNotificationChannels();
-                notificationService.createNotificationChannels();
+                contactService.resetAllNotificationTriggerPolicyOverrideFromLocal();
+                groupService.resetAllNotificationTriggerPolicyOverrideFromLocal();
+                notificationService.recreateNotificationChannels();
                 if (ConfigUtils.isWorkBuild()) {
                     preferenceService.setAfterWorkDNDEnabled(false);
                 }
@@ -862,8 +860,12 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+    @Deprecated
+    public void onRequestPermissionsResult(
+        int requestCode,
+        @NonNull String[] permissions,
+        @NonNull int[] grantResults
+    ) {
         boolean result = (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
 
         switch (requestCode) {

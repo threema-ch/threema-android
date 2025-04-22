@@ -29,25 +29,22 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.nio.charset.StandardCharsets
 
-internal data class PersistedMultiDeviceProperties(
+data class PersistedMultiDeviceProperties(
     val registrationTime: ULong?,
     val deviceLabel: String,
     val mediatorDeviceId: DeviceId,
     val cspDeviceId: DeviceId,
-    val dgk: ByteArray
-
+    val dgk: ByteArray,
 ) {
-
     class DeserializeException(msg: String) : Error(msg)
     companion object {
-
         fun deserialize(byteArray: ByteArray): PersistedMultiDeviceProperties {
             val minimalPropertiesSize = (
-                Long.SIZE_BYTES // registration time
-                    + Int.SIZE_BYTES  // device label size
-                    + Long.SIZE_BYTES // mediator device id
-                    + Long.SIZE_BYTES // csp device id
-                    + D2mProtocolDefines.DGK_LENGTH_BYTES // dgk
+                Long.SIZE_BYTES + // registration time
+                    Int.SIZE_BYTES + // device label size
+                    Long.SIZE_BYTES + // mediator device id
+                    Long.SIZE_BYTES + // csp device id
+                    D2mProtocolDefines.DGK_LENGTH_BYTES // dgk
                 )
 
             if (byteArray.size < minimalPropertiesSize) {
@@ -83,7 +80,7 @@ internal data class PersistedMultiDeviceProperties(
                     deviceLabel,
                     mediatorDeviceId,
                     cspDeviceId,
-                    dgk
+                    dgk,
                 )
             }
         }
@@ -106,7 +103,6 @@ internal data class PersistedMultiDeviceProperties(
             it.write(dgk)
         }
         return bos.toByteArray()
-
     }
 
     fun withRegistrationTime(registrationTime: ULong?): PersistedMultiDeviceProperties {
@@ -115,7 +111,7 @@ internal data class PersistedMultiDeviceProperties(
             deviceLabel,
             mediatorDeviceId,
             cspDeviceId,
-            dgk
+            dgk,
         )
     }
 
@@ -125,7 +121,7 @@ internal data class PersistedMultiDeviceProperties(
             deviceLabel,
             mediatorDeviceId,
             cspDeviceId,
-            dgk
+            dgk,
         )
     }
 
@@ -147,7 +143,7 @@ internal data class PersistedMultiDeviceProperties(
         return result
     }
 
-    override fun toString(): String {
-        return "PersistedMultiDeviceProperties(registrationTime=$registrationTime, deviceLabel='$deviceLabel', mediatorDeviceId=$mediatorDeviceId, cspDeviceId=$cspDeviceId, dgk=********)"
-    }
+    override fun toString() =
+        "PersistedMultiDeviceProperties(registrationTime=$registrationTime, deviceLabel='$deviceLabel', " +
+            "mediatorDeviceId=$mediatorDeviceId, cspDeviceId=$cspDeviceId, dgk=********)"
 }

@@ -49,7 +49,7 @@ class BlockedIdentitiesServiceImpl(
             Toast.makeText(
                 context,
                 context.getString(R.string.contact_now_blocked),
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_SHORT,
             ).show()
         }
     }
@@ -65,7 +65,7 @@ class BlockedIdentitiesServiceImpl(
             Toast.makeText(
                 context,
                 context.getString(R.string.contact_now_unblocked),
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_SHORT,
             ).show()
         }
     }
@@ -121,7 +121,6 @@ class BlockedIdentitiesServiceImpl(
             blockedIdentitiesCache = WeakReference(blockedIdentitiesSet)
             blockedIdentitiesSet
         }
-
     }
 
     private fun getFromPreferences(): MutableSet<String> {

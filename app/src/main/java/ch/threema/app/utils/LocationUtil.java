@@ -32,10 +32,8 @@ import org.maplibre.android.annotations.IconFactory;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.locationpicker.Poi;
-import ch.threema.app.services.PreferenceService;
 
 public class LocationUtil {
     public static int getPlaceDrawableRes(@NonNull Context context, @NonNull Poi poi, boolean returnDefault) {
@@ -91,35 +89,6 @@ public class LocationUtil {
 
         return IconFactory.getInstance(context).fromBitmap(bitmap);
     }
-
-
-    // URL for Threema POI server
-    private static final String POI_HOST = "poi.threema.ch";
-
-    private static @NonNull String getPoiHost(@NonNull PreferenceService preferenceService) {
-        if (BuildConfig.DEBUG) {
-            final String hostOverride = preferenceService.getPoiServerHostOverride();
-            if (hostOverride != null) {
-                return hostOverride;
-            }
-        }
-        return POI_HOST;
-    }
-
-    /**
-     * Return the URL template for the "names" POI server lookup.
-     */
-    public static @NonNull String getPlacesUrl(@NonNull PreferenceService preferenceService) {
-        return "https://" + getPoiHost(preferenceService) + "/names/%f/%f/%s/";
-    }
-
-    /**
-     * Return the URL template for the "around" POI server lookup.
-     */
-    public static @NonNull String getPoiUrl(@NonNull PreferenceService preferenceService) {
-        return "https://" + getPoiHost(preferenceService) + "/around/%f/%f/%d/";
-    }
-
 
     /**
      * Move marker bitmap up so its bottom will be at the center of the resulting bitmap

@@ -35,9 +35,8 @@ internal class D2mController(configuration: D2mConnectionConfiguration) :
     MdLayer3Controller,
     MdLayer4Controller,
     MainConnectionController {
-
     override val dispatcher = SingleThreadedServerConnectionDispatcher(
-        configuration.assertDispatcherContext
+        configuration.assertDispatcherContext,
     )
 
     override val cspSession: CspSession = CspSession(configuration, dispatcher)

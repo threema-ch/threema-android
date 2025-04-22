@@ -31,12 +31,22 @@
         <Preference android:key="@string/preferences__device_info" />
 
         <Preference
+            android:key="@string/preferences__check_updates"
+            android:title="@string/check_updates" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/preferences__server_config"
+        android:title="@string/about_server_config_title">
+
+        <Preference
             android:key="@string/preferences__work_license_name"
             android:title="@string/username_hint" />
 
         <Preference
-            android:key="@string/preferences__check_updates"
-            android:title="@string/check_updates" />
+            android:key="@string/preferences__onprem_server"
+            android:title="@string/server_hint" />
 
     </PreferenceCategory>
 

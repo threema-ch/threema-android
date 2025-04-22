@@ -26,9 +26,9 @@ import androidx.work.*
 import ch.threema.app.ThreemaApplication
 import ch.threema.base.utils.LoggingUtil
 
-class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParameters) :
-    Worker(context, workerParameters) {
-    private val logger = LoggingUtil.getThreemaLogger("ConnectivityChangeWorker")
+private val logger = LoggingUtil.getThreemaLogger("ConnectivityChangeWorker")
+
+class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
 
     companion object {
         private const val MESSAGE_SEND_TIME = 30L * 1000L
@@ -68,7 +68,7 @@ class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParamet
                         serviceManager.lifetimeService.acquireConnection("connectivityChange")
                         serviceManager.lifetimeService.releaseConnectionLinger(
                             "connectivityChange",
-                            MESSAGE_SEND_TIME
+                            MESSAGE_SEND_TIME,
                         )
                     }
                 } catch (e: Exception) {

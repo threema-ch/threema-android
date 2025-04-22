@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/wizard_footer_height"
     android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+    android:paddingTop="@dimen/wizard_contents_padding"
     android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-    android:paddingTop="@dimen/wizard_contents_padding">
+    android:paddingBottom="@dimen/wizard_footer_height">
 
     <TextView
-        style="@style/WizardTitleText"
         android:id="@+id/wizard_welcome"
+        style="@style/WizardTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -114,8 +114,8 @@
                 android:layout_height="24dp"
                 android:layout_marginLeft="8dp"
                 android:indeterminate="true"
-                android:maxHeight="24dp"
                 android:maxWidth="24dp"
+                android:maxHeight="24dp"
                 android:visibility="gone" />
 
         </FrameLayout>
@@ -190,8 +190,8 @@
                 android:layout_height="24dp"
                 android:layout_marginLeft="8dp"
                 android:indeterminate="true"
-                android:maxHeight="24dp"
                 android:maxWidth="24dp"
+                android:maxHeight="24dp"
                 android:visibility="gone" />
 
         </FrameLayout>
@@ -257,8 +257,8 @@
             android:layout_height="24dp"
             android:layout_marginRight="8dp"
             android:indeterminate="true"
-            android:maxHeight="24dp"
             android:maxWidth="24dp"
+            android:maxHeight="24dp"
             android:visibility="gone" />
 
         <TextView
@@ -301,8 +301,8 @@
             android:layout_height="24dp"
             android:layout_marginRight="8dp"
             android:indeterminate="true"
-            android:maxHeight="24dp"
             android:maxWidth="24dp"
+            android:maxHeight="24dp"
             android:visibility="gone" />
 
         <TextView
@@ -310,18 +310,18 @@
             style="@style/WizardSummaryBodyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
+            android:layout_gravity="center_vertical"
             android:ellipsize="end"
-            android:layout_gravity="center_vertical" />
+            android:maxLines="1" />
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/wizard_finish"
-        style="@style/WizardButtonRegular"
+    <ch.threema.app.activities.wizard.components.WizardButtonXml
+        android:id="@+id/wizard_finish_compose"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="16dp"
-        android:text="@string/finish" />
+        app:wizardButton_text="@string/finish" />
 
 </RelativeLayout>

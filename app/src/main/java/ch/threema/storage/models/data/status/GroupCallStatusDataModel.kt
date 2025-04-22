@@ -103,7 +103,7 @@ open class GroupCallStatusDataModel protected constructor() : StatusDataModelInt
         }
 
         fun createEnded(
-            callId: String
+            callId: String,
         ): GroupCallStatusDataModel {
             val status = GroupCallStatusDataModel()
             status.callId = callId

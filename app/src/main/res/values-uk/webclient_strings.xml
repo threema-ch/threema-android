@@ -39,5 +39,7 @@
     <string name="webclient_diagnostics_start">Почати</string>
     <string name="webclient_diagnostics_intro">Натисніть \"Почати\", щоб запустити перевірку.</string>
     <string name="webclient_diagnostics_done">Перевірку завершено. Якщо вам не вдається підключитися до веб-клієнта або додатка для ПК, надішліть цей журнал службі підтримки Threema.</string>
-    <string name="webclient_unsupported_desktop_beta_message">Наразі цю бета-версію додатка для ПК можна зв\'язати лише з пристроєм iOS. Якщо ви користуєтеся пристроєм Android, завантажте звичайну версію додатка для ПК.</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">Неправильний QR-код</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
+    <string name="webclient_scanned_md_linking_qr_code_message">QR-код, який ви відсканували, належить новому додатку для ПК (бета-версія).\n\nПоверніться до розділу \"Головне меню\" &gt; \"${app_name_desktop} 2.0 для ПК (бета-версія)\" і виберіть \"${md_link_device}\", щоб зв\'язати пристрій із цим додатком для ПК.</string>
 </resources>

@@ -123,4 +123,12 @@ public class AudioDataModel implements MediaMessageDataInterface {
         m.fromString(s);
         return m;
     }
+
+    /**
+     * Do not use this in new code. It only exists to handle places where a [AudioDataModel] needs to be returned and `null` is not allowed.
+     */
+    @Deprecated()
+    public static AudioDataModel createEmpty() {
+        return new AudioDataModel();
+    }
 }

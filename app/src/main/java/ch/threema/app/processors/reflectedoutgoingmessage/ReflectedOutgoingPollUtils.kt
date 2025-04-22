@@ -102,7 +102,7 @@ private fun handleReflectedOutgoingClosedPoll(
         logger.error(
             "Ballot model not found for id {} and creator {}",
             ballotId,
-            ballotCreatorIdentity
+            ballotCreatorIdentity,
         )
         return
     }

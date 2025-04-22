@@ -40,7 +40,7 @@ class IncomingGroupCallControlTask(
         runCommonGroupReceiveSteps(
             message = groupCallControlMessage as AbstractGroupMessage,
             handle = handle,
-            serviceManager = serviceManager
+            serviceManager = serviceManager,
         ) ?: return ReceiveStepsResult.DISCARD
         return processGroupCallControl()
     }

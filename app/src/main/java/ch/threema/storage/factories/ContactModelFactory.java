@@ -117,18 +117,19 @@ public class ContactModelFactory extends ModelFactory {
         return result;
     }
 
-    private ContactModel convert(CursorHelper cursorFactory) {
+    private ContactModel convert(@NonNull CursorHelper cursorFactory) {
         final ContactModel[] cm = new ContactModel[1];
         cursorFactory.current((CursorHelper.Callback) cursorFactory1 -> {
-            ContactModel c = new ContactModel(
+            ContactModel contactModel = new ContactModel(
                 cursorFactory1.getString(ContactModel.COLUMN_IDENTITY),
                 cursorFactory1.getBlob(ContactModel.COLUMN_PUBLIC_KEY)
             );
 
-            c
+            contactModel
                 .setName(
                     cursorFactory1.getString(ContactModel.COLUMN_FIRST_NAME),
-                    cursorFactory1.getString(ContactModel.COLUMN_LAST_NAME))
+                    cursorFactory1.getString(ContactModel.COLUMN_LAST_NAME)
+                )
                 .setPublicNickName(cursorFactory1.getString(ContactModel.COLUMN_PUBLIC_NICK_NAME))
                 .setState(IdentityState.valueOf(cursorFactory1.getString(ContactModel.COLUMN_STATE)))
                 .setAndroidContactLookupKey(cursorFactory1.getString(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
@@ -155,35 +156,36 @@ public class ContactModelFactory extends ModelFactory {
                 .setTypingIndicators(cursorFactory1.getInt(ContactModel.COLUMN_TYPING_INDICATORS))
                 .setForwardSecurityState(cursorFactory1.getInt(ContactModel.COLUMN_FORWARD_SECURITY_STATE))
                 .setJobTitle(cursorFactory1.getString(ContactModel.COLUMN_JOB_TITLE))
-                .setDepartment(cursorFactory1.getString(ContactModel.COLUMN_DEPARTMENT));
+                .setDepartment(cursorFactory1.getString(ContactModel.COLUMN_DEPARTMENT))
+                .setNotificationTriggerPolicyOverride(cursorFactory1.getLong(ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE));
 
             // Convert state to enum
             switch (cursorFactory1.getString(ContactModel.COLUMN_STATE)) {
                 case "INACTIVE":
-                    c.setState(IdentityState.INACTIVE);
+                    contactModel.setState(IdentityState.INACTIVE);
                     break;
                 case "INVALID":
-                    c.setState(IdentityState.INVALID);
+                    contactModel.setState(IdentityState.INVALID);
                     break;
                 case "ACTIVE":
                 case "TEMPORARY": // Legacy state, see !276
                 default:
-                    c.setState(IdentityState.ACTIVE);
+                    contactModel.setState(IdentityState.ACTIVE);
                     break;
             }
 
             switch (cursorFactory1.getInt(ContactModel.COLUMN_VERIFICATION_LEVEL)) {
                 case 1:
-                    c.verificationLevel = VerificationLevel.SERVER_VERIFIED;
+                    contactModel.verificationLevel = VerificationLevel.SERVER_VERIFIED;
                     break;
                 case 2:
-                    c.verificationLevel = VerificationLevel.FULLY_VERIFIED;
+                    contactModel.verificationLevel = VerificationLevel.FULLY_VERIFIED;
                     break;
                 default:
-                    c.verificationLevel = VerificationLevel.UNVERIFIED;
+                    contactModel.verificationLevel = VerificationLevel.UNVERIFIED;
             }
 
-            cm[0] = c;
+            cm[0] = contactModel;
 
             return false;
         });
@@ -232,7 +234,7 @@ public class ContactModelFactory extends ModelFactory {
         contentValues.put(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES, contactModel.getLocalAvatarExpires() != null ?
             contactModel.getLocalAvatarExpires().getTime()
             : null);
-        contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWork());
+        contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWorkVerified());
         contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType() == IdentityType.WORK ? 1 : 0);
         contentValues.put(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID, contactModel.getProfilePicBlobID());
         contentValues.put(ContactModel.COLUMN_CREATED_AT, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime() : null);
@@ -245,6 +247,7 @@ public class ContactModelFactory extends ModelFactory {
         contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_STATE, contactModel.getForwardSecurityState());
         contentValues.put(ContactModel.COLUMN_JOB_TITLE, contactModel.getJobTitle());
         contentValues.put(ContactModel.COLUMN_DEPARTMENT, contactModel.getDepartment());
+        contentValues.put(ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, contactModel.getNotificationTriggerPolicyOverride());
         // Note: Sync state not implemented in "old model" anymore
 
         if (insert) {
@@ -321,6 +324,7 @@ public class ContactModelFactory extends ModelFactory {
                 "`" + ContactModel.COLUMN_SYNC_STATE + "` INTEGER NOT NULL DEFAULT 0," +
                 "`" + ContactModel.COLUMN_JOB_TITLE + "` VARCHAR DEFAULT NULL," +
                 "`" + ContactModel.COLUMN_DEPARTMENT + "` VARCHAR DEFAULT NULL," +
+                "`" + ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE + "` BIGINT DEFAULT NULL," +
                 "PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
         };
     }

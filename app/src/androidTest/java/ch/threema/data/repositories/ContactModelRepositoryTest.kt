@@ -25,6 +25,7 @@ import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.testutils.TestHelpers
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
@@ -42,19 +43,19 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.nonSecureRandomArray
 import ch.threema.testhelpers.randomIdentity
 import com.neilalexander.jnacl.NaCl
-import junit.framework.TestCase.assertNotNull
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertThrows
-import org.junit.Before
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 import java.util.Date
+import junit.framework.TestCase.assertNotNull
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import kotlinx.coroutines.runBlocking
+import org.junit.Before
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 @RunWith(value = Parameterized::class)
 class ContactModelRepositoryTest(private val contactModelData: ContactModelData) {
@@ -126,24 +127,31 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             featureMask = featureMask,
             readReceiptPolicy = readReceiptPolicy,
             typingIndicatorPolicy = typingIndicatorPolicy,
+            isArchived = false,
             androidContactLookupKey = androidContactLookupKey,
             localAvatarExpires = localAvatarExpires,
             isRestored = isRestored,
             profilePictureBlobId = profilePictureBlobId,
             jobTitle = jobTitle,
             department = department,
+            notificationTriggerPolicyOverride = null,
         )
     }
 
     @Before
     fun before() {
+        TestHelpers.setIdentity(
+            ThreemaApplication.requireServiceManager(),
+            TestHelpers.TEST_CONTACT,
+        )
+
         // Instantiate services where MD is disabled
         this.databaseService = TestDatabaseService()
         this.coreServiceManager = TestCoreServiceManager(
             version = ThreemaApplication.getAppVersion(),
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
-            taskManager = TestTaskManager(UnusedTaskCodec())
+            taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         this.contactModelRepository = ModelRepositories(coreServiceManager).contacts
 
@@ -158,7 +166,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
                 isMultiDeviceActive = true,
                 isMdDisabledOrSupportsFs = false,
             ),
-            taskManager = TestTaskManager(taskCodecMd)
+            taskManager = TestTaskManager(taskCodecMd),
         )
         this.contactModelRepositoryMd = ModelRepositories(coreServiceManagerMd).contacts
     }
@@ -322,7 +330,6 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
                         )
                     }
             }
-
         }
 
         // Insert it for the first time
@@ -344,8 +351,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertContentEquals(contactModelData, newModelMd.data.value)
 
         // Insert for the second time and assert that an exception is thrown
-        assertThrows(ContactStoreException::class.java) { runBlocking { runCreation() } }
-        assertThrows(ContactReflectException::class.java) { runBlocking { runCreationMd() } }
+        assertFailsWith<ContactStoreException> { runBlocking { runCreation() } }
+        assertFailsWith<ContactReflectException> { runBlocking { runCreationMd() } }
 
         // Assert that there is still only one transaction and therefore the transaction has not
         // been executed again (due to precondition failure)
@@ -399,7 +406,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertContentEquals(contactModelData, addedData)
 
         // Assert that the contact data cannot be inserted again (as it already exists)
-        assertThrows(ContactStoreException::class.java) {
+        assertFailsWith<ContactStoreException> {
             contactModelRepositoryMd.createFromSync(contactModelData)
         }
 
@@ -415,8 +422,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         databaseService.contactModelFactory.createOrUpdate(
             ContactModel(
                 identity,
-                nonSecureRandomArray(32)
-            )
+                nonSecureRandomArray(32),
+            ),
         )
 
         // Fetch model
@@ -457,9 +464,13 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertEquals(expected.featureMask, actual.featureMask)
         assertEquals(expected.readReceiptPolicy, actual.readReceiptPolicy)
         assertEquals(expected.typingIndicatorPolicy, actual.typingIndicatorPolicy)
-        // TODO(ANDR-2998): Assert that notification trigger and sound policy override are set
-        //  correctly
+        assertEquals(
+            expected.notificationTriggerPolicyOverride,
+            actual.notificationTriggerPolicyOverride,
+        )
         assertEquals(expected.androidContactLookupKey, actual.androidContactLookupKey)
+
+        // TODO(ANDR-2998): Assert that notification sound policy override are set correctly
 
         // Just in case there are new fields added that are not explicitly compared here
         assertEquals(expected, actual)

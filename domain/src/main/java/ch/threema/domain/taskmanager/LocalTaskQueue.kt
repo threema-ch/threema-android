@@ -94,6 +94,5 @@ internal class LocalTaskQueue(private val taskArchiver: TaskArchiver) {
                 taskArchiver.removeTask(task)
             }
         }
-
     }
 }

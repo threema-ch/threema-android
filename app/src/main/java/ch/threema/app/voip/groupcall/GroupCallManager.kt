@@ -26,7 +26,7 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
-import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.storage.models.GroupModel
 
 @JvmInline
@@ -34,6 +34,9 @@ value class LocalGroupId(val id: Int)
 
 val GroupModel.localGroupId: LocalGroupId
     get() = LocalGroupId(id)
+
+val ch.threema.data.models.GroupModel.localGroupId: LocalGroupId
+    get() = LocalGroupId(getDatabaseId().toInt())
 
 interface GroupCallManager {
     /**
@@ -70,10 +73,16 @@ interface GroupCallManager {
     fun addGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
 
     @AnyThread
+    fun addGroupCallObserver(group: ch.threema.data.models.GroupModel, observer: GroupCallObserver)
+
+    @AnyThread
     fun removeGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver)
 
     @AnyThread
     fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
+
+    @AnyThread
+    fun removeGroupCallObserver(group: ch.threema.data.models.GroupModel, observer: GroupCallObserver)
 
     /**
      * The same as [addGroupCallObserver] with the difference that the observer is notified of updates
@@ -161,36 +170,42 @@ interface GroupCallManager {
     fun hasJoinedCall(): Boolean
 
     /**
-     * Get the current chosen call for the supplied group represented by its GroupModel
-     * Returns null if no call was found.
+     * @return The current chosen call for the supplied group represented by its GroupModel or null if no call was found.
      */
     @AnyThread
     fun getCurrentChosenCall(groupModel: GroupModel): GroupCallDescription?
 
     /**
-     * Get the group call controller for the currently joined call.
-     * Returns null if no call is joined.
+     * @return The current chosen call for the supplied group represented by its GroupModel or null if no call was found.
+     */
+    @AnyThread
+    fun getCurrentChosenCall(groupModel: ch.threema.data.models.GroupModel): GroupCallDescription?
+
+    /**
+     * @return The current chosen call for the supplied group represented by its GroupModel or null if no call was found.
+     */
+    @AnyThread
+    fun getCurrentChosenCall(localGroupId: LocalGroupId): GroupCallDescription?
+
+    /**
+     * @return The group call controller for the currently joined call or null if no call is joined.
      */
     fun getCurrentGroupCallController(): GroupCallController?
 
     /**
-     * Sends the current group call of the given group to the new members. If there is no call in
-     * the group or no new members, nothing is done.
+     * Get the group call start data for the given group in case there is a group call running.
      */
     @AnyThread
-    fun sendGroupCallStartToNewMembers(
-        groupModel: GroupModel,
-        newMembers: Set<String>,
-        handle: ActiveTaskCodec
-    )
+    suspend fun getGroupCallStartData(groupModel: ch.threema.data.models.GroupModel): GroupCallStartData?
 
     /**
-     * Schedules the current group call of the given group to the new members. If there is no call
-     * in the group or no new members, nothing is done.
+     * Removes the given [identities] from the group call in [groupModel] if there is currently a
+     * group call running. Note that the group call is left if [identities] contains the user's
+     * identity.
      */
     @AnyThread
-    fun scheduleGroupCallStartForNewMembers(groupModel: GroupModel, newMembers: Set<String>)
-
-    @AnyThread
-    fun updateAllowedCallParticipants(groupModel: GroupModel)
+    fun removeGroupCallParticipants(
+        identities: Set<String>,
+        groupModel: ch.threema.data.models.GroupModel,
+    )
 }

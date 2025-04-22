@@ -32,7 +32,6 @@ interface ServerMessageService {
 class ServerMessageServiceImpl(
     private val databaseService: DatabaseServiceNew,
 ) : ServerMessageService {
-
     override fun saveIncomingServerMessage(msg: ServerMessageModel) {
         // store message
         databaseService.serverMessageModelFactory.storeServerMessageModel(msg)

@@ -30,7 +30,7 @@ import com.google.protobuf.InvalidProtocolBufferException
 class GroupCallStartData(
     val protocolVersion: UInt,
     val gck: ByteArray,
-    val sfuBaseUrl: String
+    val sfuBaseUrl: String,
 ) : ProtobufDataInterface<GroupCallStart> {
     companion object {
         const val GCK_LENGTH = 32
@@ -42,7 +42,7 @@ class GroupCallStartData(
                 return GroupCallStartData(
                     protobufMessage.protocolVersion.toUInt(),
                     protobufMessage.gck.toByteArray(),
-                    protobufMessage.sfuBaseUrl
+                    protobufMessage.sfuBaseUrl,
                 )
             } catch (e: InvalidProtocolBufferException) {
                 throw BadMessageException("Invalid group call start protobuf data", e)

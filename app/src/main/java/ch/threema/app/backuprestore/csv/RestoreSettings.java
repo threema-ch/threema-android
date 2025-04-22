@@ -45,8 +45,9 @@ public class RestoreSettings {
      * 24: add deletedAt
      * 25: add group user state
      * 26: add reactions
+     * 27: remove 'deleted' column from groups
      */
-    public static final int CURRENT_VERSION = 26;
+    public static final int CURRENT_VERSION = 27;
     private int version;
 
     public RestoreSettings(int version) {

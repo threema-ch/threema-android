@@ -28,10 +28,10 @@ import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.sfu.webrtc.FactoryCtx
 import ch.threema.app.voip.util.VideoCapturerUtil
 import ch.threema.base.utils.LoggingUtil
-import kotlinx.coroutines.CompletableDeferred
-import org.webrtc.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlinx.coroutines.CompletableDeferred
+import org.webrtc.*
 
 private val logger = LoggingUtil.getThreemaLogger("VideoContext")
 
@@ -85,7 +85,6 @@ private data class CameraVideoCapturerState(
             var capturer: org.webrtc.CameraVideoCapturer? = null
             var currentCamera: Camera? = null
 
-
             VideoCapturerUtil.createVideoCapturer(context, cameraEventsHandler)?.let {
                 capturer = it.first
                 currentCamera = Camera.from(it.second.first, it.second.second)
@@ -108,13 +107,12 @@ private data class CameraVideoCapturerState(
 
             // Sanity-check
             assert(
-                (capturer == null && front.size + back.size == 0)
-                    || (capturer != null && front.size + back.size > 0)
+                (capturer == null && front.size + back.size == 0) ||
+                    (capturer != null && front.size + back.size > 0),
             )
 
             // Done
             return CameraVideoCapturerState(capturer, currentCamera, front, back)
-
         }
     }
 }
@@ -178,25 +176,27 @@ internal class CameraVideoCapturer private constructor(
     suspend fun switchTo(camera: Camera) {
         val done = CompletableDeferred<Unit>()
         lock.withLock {
-            state.capturer?.switchCamera(object :
-                org.webrtc.CameraVideoCapturer.CameraSwitchHandler {
-                override fun onCameraSwitchDone(front: Boolean) {
-                    lock.withLock {
-                        state.currentCamera = camera
-                        done.complete(Unit)
+            state.capturer?.switchCamera(
+                object : org.webrtc.CameraVideoCapturer.CameraSwitchHandler {
+                    override fun onCameraSwitchDone(front: Boolean) {
+                        lock.withLock {
+                            state.currentCamera = camera
+                            done.complete(Unit)
+                        }
                     }
-                }
 
-                override fun onCameraSwitchError(error: String?) {
-                    lock.withLock {
-                        done.completeExceptionally(
-                            GroupCallException(
-                                "Unable to switch to camera '${camera.name}', reason: $error"
+                    override fun onCameraSwitchError(error: String?) {
+                        lock.withLock {
+                            done.completeExceptionally(
+                                GroupCallException(
+                                    "Unable to switch to camera '${camera.name}', reason: $error",
+                                ),
                             )
-                        )
+                        }
                     }
-                }
-            }, camera.name)
+                },
+                camera.name,
+            )
         }
         done.await()
     }
@@ -259,7 +259,7 @@ class RemoteVideoContext private constructor(
     companion object {
         @AnyThread
         fun create(
-            transceiver: RtpTransceiver
+            transceiver: RtpTransceiver,
         ): RemoteVideoContext {
             if (transceiver.mediaType != MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO) {
                 throw Error("Invalid transceiver kind for remote video context: '${transceiver.mediaType.name}")
@@ -343,7 +343,7 @@ class LocalCameraVideoContext private constructor(
                     cameraEventsHandler = WrappedCameraEventsHandler(object :
                         SaneCameraEventsHandler {
                         // TODO(ANDR-1978): Handle camera events
-                    })
+                    }),
                 )
 
                 return LocalCameraVideoContext(track, capturer, settings)

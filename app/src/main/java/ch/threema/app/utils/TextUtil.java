@@ -22,11 +22,6 @@
 package ch.threema.app.utils;
 
 import android.content.Context;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextUtils;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
 
 import org.slf4j.Logger;
 
@@ -38,10 +33,9 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiParser;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class TextUtil {
@@ -49,58 +43,6 @@ public class TextUtil {
 
     public static final String TILDE = "~";
     public static final String SPACE = " ";
-
-    public static String trim(String string, int maxLength, String postFix) {
-        if ((maxLength > 0) && (string.length() > maxLength)) {
-            return string.substring(0, maxLength - postFix.length()) + postFix;
-        }
-        return string;
-    }
-
-    public static String trim(String string, int maxLength) {
-        return trim(string, maxLength, "...");
-    }
-
-    public static CharSequence trim(CharSequence string, int maxLength, CharSequence postFix) {
-        if ((maxLength > 0) && (string.length() > maxLength)) {
-            if (postFix != null) {
-                TextUtils.concat(string.subSequence(0, maxLength), postFix);
-            } else {
-                string.subSequence(0, maxLength);
-            }
-        }
-        return string;
-    }
-
-    public static Spannable highlightMatches(Context context, @Nullable CharSequence fullText, @Nullable String filterText, boolean background, boolean normalize) {
-        if (fullText == null) {
-            return new SpannableString("");
-        }
-
-        int stringLength = fullText.length();
-        Spannable spannableString = new SpannableString(fullText);
-
-        if (filterText != null && stringLength > 0) {
-            int start, end, index = 0, length = filterText.length();
-            int highlightColor = context.getResources().getColor(R.color.match_highlight_color);
-            String fullUpperText = normalize ? LocaleUtil.normalize(fullText.toString()) : fullText.toString().toLowerCase();
-            String filterUpperText = normalize ? LocaleUtil.normalize(filterText) : filterText.toLowerCase();
-
-            while ((start = fullUpperText.indexOf(filterUpperText, index)) >= 0) {
-                end = start + length;
-
-                if (end <= stringLength) {
-                    spannableString.setSpan(background ?
-                            new BackgroundColorSpan(highlightColor) :
-                            new ForegroundColorSpan(highlightColor),
-                        start, end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                index = start + 1;
-            }
-        }
-        return spannableString;
-    }
 
     /**
      * Splits a given text string into multiple strings no longer than maxLength bytes keeping in account emojis (even composite emojis such as flags)
@@ -191,17 +133,5 @@ public class TextUtil {
             }
         }
         return false;
-    }
-
-    @NonNull
-    public static String capitalize(String string) {
-        if (TestUtil.isEmptyOrNull(string)) {
-            return "";
-        }
-        if (string.length() > 1) {
-            return Character.toUpperCase(string.charAt(0)) + string.substring(1);
-        } else {
-            return Character.toString(Character.toUpperCase(string.charAt(0)));
-        }
     }
 }

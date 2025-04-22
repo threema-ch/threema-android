@@ -33,8 +33,8 @@ import ch.threema.app.asynctasks.ContactSyncPolicy.EXCLUDE
 import ch.threema.app.asynctasks.ContactSyncPolicy.INCLUDE
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
-import ch.threema.app.services.DeadlineListService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.IdListService
 import ch.threema.app.services.RingtoneService
@@ -68,8 +68,7 @@ data class DeleteContactServices(
     val contactService: ContactService,
     val conversationService: ConversationService,
     val ringtoneService: RingtoneService,
-    val mutedChatsListService: DeadlineListService,
-    val hiddenChatsListService: DeadlineListService,
+    val conversationCategoryService: ConversationCategoryService,
     val profilePicRecipientsService: IdListService,
     val wallpaperService: WallpaperService,
     val fileService: FileService,
@@ -242,7 +241,7 @@ open class DeleteAllContactsBackgroundTask(
     contactModelRepository,
     deleteContactServices,
     INCLUDE,
-    KEEP
+    KEEP,
 ) {
     override fun runAfter(result: Set<String>) {
         if (contacts.size != result.size) {
@@ -262,7 +261,7 @@ open class DeleteAllContactsBackgroundTask(
      * - Conversation
      * - Custom ringtone setting
      * - Mute preference
-     * - Hidden chat preference
+     * - Private chat (conversation category) preference
      * - Profile picture receive preference
      * - Custom wallpaper
      * - Android contact avatar
@@ -282,8 +281,7 @@ open class DeleteAllContactsBackgroundTask(
         val uniqueIdString = ContactUtil.getUniqueIdString(identity)
 
         deleteContactServices.ringtoneService.removeCustomRingtone(uniqueIdString)
-        deleteContactServices.mutedChatsListService.remove(uniqueIdString)
-        deleteContactServices.hiddenChatsListService.remove(uniqueIdString)
+        deleteContactServices.conversationCategoryService.persistDefaultChat(uniqueIdString)
         deleteContactServices.profilePicRecipientsService.remove(identity)
         deleteContactServices.wallpaperService.removeWallpaper(uniqueIdString)
         deleteContactServices.fileService.removeAndroidDefinedProfilePicture(identity)
@@ -321,7 +319,7 @@ open class DialogMarkContactAsDeletedBackgroundTask(
         val dialog: CancelableHorizontalProgressDialog =
             CancelableHorizontalProgressDialog.newInstance(
                 R.string.deleting_contact,
-                contacts.size
+                contacts.size,
             )
         dialog.show(fragmentManager, DIALOG_TAG_DELETE_CONTACT)
 
@@ -334,7 +332,7 @@ open class DialogMarkContactAsDeletedBackgroundTask(
         DialogUtil.dismissDialog(
             fragmentManager,
             DIALOG_TAG_DELETE_CONTACT,
-            true
+            true,
         )
 
         val context = contextRef.get() ?: return
@@ -347,9 +345,9 @@ open class DialogMarkContactAsDeletedBackgroundTask(
                     ThreemaApplication.getAppContext(),
                     R.plurals.some_contacts_not_deleted,
                     failed,
-                    failed
+                    failed,
                 ),
-                Toast.LENGTH_LONG
+                Toast.LENGTH_LONG,
             ).show()
         } else {
             if (result.size > 1) {

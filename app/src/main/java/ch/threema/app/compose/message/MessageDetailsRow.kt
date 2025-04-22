@@ -60,24 +60,22 @@ fun MessageDetailsRow(
     label: String,
     value: String,
     @DrawableRes iconResId: Int? = null,
-    selectableValueOption: SelectableValueOption = SelectableValueOption.NotSelectable
+    selectableValueOption: SelectableValueOption = SelectableValueOption.NotSelectable,
 ) {
-
     val context = LocalContext.current
 
     fun copyToClipboardAndShowHintLink() {
         copyToClipboardAndShowHint(
             context = context,
             value = value,
-            selectableValueOption = selectableValueOption as SelectableValueOption.Selectable
+            selectableValueOption = selectableValueOption as SelectableValueOption.Selectable,
         )
     }
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-
         if (iconResId != null) {
             Icon(
                 modifier = Modifier
@@ -86,7 +84,7 @@ fun MessageDetailsRow(
                     .size(20.dp),
                 painter = painterResource(id = iconResId),
                 tint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = null
+                contentDescription = null,
             )
         }
 
@@ -95,7 +93,7 @@ fun MessageDetailsRow(
                 .weight(1f)
                 .padding(vertical = 2.dp)
                 .semantics(mergeDescendants = true) { },
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             ThemedText(
                 modifier = Modifier.padding(end = 16.dp),
@@ -108,9 +106,9 @@ fun MessageDetailsRow(
                     enabled = selectableValueOption.isSelectable,
                     onLongClick = ::copyToClipboardAndShowHintLink,
                     onDoubleClick = ::copyToClipboardAndShowHintLink,
-                    onClick = {}
+                    onClick = {},
                 ),
-                color = Color.Transparent
+                color = Color.Transparent,
             ) {
                 ThemedText(
                     text = value,
@@ -126,7 +124,7 @@ sealed class SelectableValueOption(val isSelectable: Boolean) {
     data object NotSelectable : SelectableValueOption(isSelectable = false)
 
     data class Selectable(
-        @StringRes val onValueCopiedNoticeStringResId: Int
+        @StringRes val onValueCopiedNoticeStringResId: Int,
     ) : SelectableValueOption(isSelectable = true)
 }
 
@@ -147,7 +145,7 @@ private fun MessageDetailsRowPreview() {
     MessageDetailsRow(
         modifier = Modifier.padding(16.dp),
         label = "Label",
-        value = "Value"
+        value = "Value",
     )
 }
 
@@ -158,7 +156,7 @@ private fun MessageDetailsRowPreview_Icon() {
         modifier = Modifier.padding(16.dp),
         label = "Label",
         value = "Value",
-        iconResId = R.drawable.ic_key_outline
+        iconResId = R.drawable.ic_key_outline,
     )
 }
 
@@ -168,7 +166,7 @@ private fun MessageDetailsRowPreview_Multiline() {
     MessageDetailsRow(
         modifier = Modifier.padding(16.dp),
         label = "Labelllllllllllllllllllllllllllllllllllllllllll",
-        value = "Valueeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        value = "Valueeeeeeeeeeeeeeeeeeeeeeeeeeee",
     )
 }
 
@@ -179,6 +177,6 @@ private fun MessageDetailsRowPreview_Multiline_Icon() {
         modifier = Modifier.padding(16.dp),
         label = "Labelllllllllllllllllllllllllllllllllllllllllll",
         value = "Valueeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        iconResId = R.drawable.ic_key_outline
+        iconResId = R.drawable.ic_key_outline,
     )
 }

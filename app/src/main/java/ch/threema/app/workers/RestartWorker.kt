@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit
 
 class RestartWorker(val appContext: Context, workerParameters: WorkerParameters) :
     Worker(appContext, workerParameters) {
-
     override fun doWork(): Result {
         logger.debug("Scheduling restart")
         val restartIntent: Intent? = appContext.packageManager

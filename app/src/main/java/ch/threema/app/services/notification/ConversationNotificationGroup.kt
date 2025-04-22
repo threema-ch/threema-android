@@ -25,22 +25,16 @@ import android.graphics.Bitmap
 import ch.threema.app.messagereceiver.MessageReceiver
 
 data class ConversationNotificationGroup(
-
     @JvmField
     val uid: String,
-
     @JvmField
     var name: String,
-
     @JvmField
     var shortName: String?,
-
     @JvmField
     val messageReceiver: MessageReceiver<*>,
-
-    private val onFetchAvatar: () -> Bitmap?
+    private val onFetchAvatar: () -> Bitmap?,
 ) {
-
     @JvmField
     var lastNotificationDate: Long = 0L
 

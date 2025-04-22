@@ -27,6 +27,7 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -91,6 +92,18 @@ public interface ConversationService {
     int getArchivedCount();
 
     /**
+     * Marks the conversation that the message belongs to as fully read,
+     * i.e., its unread count is reset and the 'unread' tag is removed if it exists.
+     */
+    void markConversationAsRead(@NonNull AbstractMessageModel messageModel);
+
+    /**
+     * Marks the conversation as fully read,
+     * i.e., its unread count is reset and the 'unread' tag is removed if it exists.
+     */
+    void markConversationAsRead(@NonNull MessageReceiver<?> messageReceiver);
+
+    /**
      * update the conversation cache entry for the given contact model
      *
      * @param contactModel the contact model that is loaded again from the database
@@ -145,14 +158,14 @@ public interface ConversationService {
     /**
      * mark conversation as archived
      */
-    void archive(@NonNull ConversationModel conversationModel);
+    void archive(@NonNull ConversationModel conversationModel, @NonNull TriggerSource triggerSource);
 
     /**
      * clear archived flag in archived conversations
      *
      * @param conversations
      */
-    void unarchive(List<ConversationModel> conversations);
+    void unarchive(List<ConversationModel> conversations, @NonNull TriggerSource triggerSource);
 
     /**
      * Empty associated conversation (remove all messages).

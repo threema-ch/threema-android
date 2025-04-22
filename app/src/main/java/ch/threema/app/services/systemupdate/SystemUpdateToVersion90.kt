@@ -41,7 +41,7 @@ class SystemUpdateToVersion90(
                 "`type`, " +
                 "`state`, " +
                 "`outbox` " +
-                ")"
+                ")",
         )
 
         db.execSQL(
@@ -49,7 +49,7 @@ class SystemUpdateToVersion90(
                 "`type`, " +
                 "`state`, " +
                 "`outbox` " +
-                ")"
+                ")",
         )
 
         db.execSQL(
@@ -57,7 +57,7 @@ class SystemUpdateToVersion90(
                 "`type`, " +
                 "`state`, " +
                 "`outbox` " +
-                ")"
+                ")",
         )
         return true
     }

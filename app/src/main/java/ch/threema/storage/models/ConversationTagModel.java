@@ -39,6 +39,10 @@ public class ConversationTagModel {
         this.createdAt = new Date();
     }
 
+    public ConversationTagModel(String conversationUid, ConversationTag tag) {
+        this(conversationUid, tag.value);
+    }
+
     public ConversationTagModel() {
     }
 

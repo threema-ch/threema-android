@@ -42,7 +42,7 @@ class IncomingCspMessageTask(
             ProtocolDefines.PLTYPE_OUTGOING_MESSAGE_ACK -> processOutgoingMessageAck(message.toOutgoingMessageAck())
             ProtocolDefines.PLTYPE_INCOMING_MESSAGE -> processIncomingMessage(
                 message.toIncomingMessageData(),
-                handle
+                handle,
             )
 
             ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE -> processQueueSendComplete()
@@ -66,7 +66,7 @@ class IncomingCspMessageTask(
         logger.warn(
             "Processed ack for outgoing message {} to {} in incoming csp message task",
             data.messageId,
-            data.recipient
+            data.recipient,
         )
     }
 
@@ -97,5 +97,4 @@ class IncomingCspMessageTask(
         // Note that device cookie change indications are already processed in the task manager
         logger.warn("Processed device cookie change indication inside incoming csp message task")
     }
-
 }

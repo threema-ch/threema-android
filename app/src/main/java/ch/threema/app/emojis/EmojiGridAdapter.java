@@ -89,7 +89,6 @@ public class EmojiGridAdapter extends BaseAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-        // TODO hack
         if (pageNumber == 0) {
             this.emojis.clear();
             getRecents();

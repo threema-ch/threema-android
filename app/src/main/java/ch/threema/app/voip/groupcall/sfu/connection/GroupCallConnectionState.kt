@@ -32,7 +32,7 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState")
 
 sealed class GroupCallConnectionState constructor(
     val stateName: StateName,
-    internal val call: GroupCall
+    internal val call: GroupCall,
 ) {
     enum class StateName {
         JOINING,
@@ -92,11 +92,11 @@ sealed class GroupCallConnectionState constructor(
     @WorkerThread
     private fun processStateProvider(
         stateProvider: suspend () -> GroupCallConnectionState?,
-        nextStateSignal: CompletableDeferred<GroupCallConnectionState?>
+        nextStateSignal: CompletableDeferred<GroupCallConnectionState?>,
     ): Job {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        return CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        return CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             try {
                 nextStateSignal.complete(stateProvider.invoke())
             } catch (e: Exception) {
@@ -104,5 +104,4 @@ sealed class GroupCallConnectionState constructor(
             }
         }
     }
-
 }

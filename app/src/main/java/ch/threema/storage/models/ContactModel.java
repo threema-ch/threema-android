@@ -37,6 +37,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -82,6 +83,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     public static final String COLUMN_SYNC_STATE = "syncState"; /* contact synchronization state, 0: INITIAL, 1: IMPORTED, 2: CUSTOM */
     public static final String COLUMN_JOB_TITLE = "jobTitle";
     public static final String COLUMN_DEPARTMENT = "department";
+    public static final String COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE = "notificationTriggerPolicyOverride";
 
     public static final byte[] NO_PROFILE_PICTURE_BLOB_ID = new byte[0];
 
@@ -144,6 +146,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     private int forwardSecurityState;
     private @Nullable String jobTitle;
     private @Nullable String department;
+    private @Nullable Long notificationTriggerPolicyOverride;
 
     public ContactModel(String identity, @NonNull byte[] publicKey) {
         super(identity, publicKey, VerificationLevel.UNVERIFIED);
@@ -325,7 +328,7 @@ public class ContactModel extends Contact implements ReceiverModel {
      *
      * @return true if the contact is "work verified", false otherwise
      */
-    public boolean isWork() {
+    public boolean isWorkVerified() {
         return this.isWork;
     }
 
@@ -503,6 +506,21 @@ public class ContactModel extends Contact implements ReceiverModel {
         return this;
     }
 
+    @Nullable
+    public Long getNotificationTriggerPolicyOverride() {
+        return notificationTriggerPolicyOverride;
+    }
+
+    @NonNull
+    public NotificationTriggerPolicyOverride currentNotificationTriggerPolicyOverride() {
+        return NotificationTriggerPolicyOverride.fromDbValueContact(notificationTriggerPolicyOverride);
+    }
+
+    public ContactModel setNotificationTriggerPolicyOverride(@Nullable Long notificationTriggerPolicyOverride) {
+        this.notificationTriggerPolicyOverride = notificationTriggerPolicyOverride;
+        return this;
+    }
+
     @NonNull
     public BasicContact toBasicContact() {
         if (type == null) {
@@ -549,20 +567,18 @@ public class ContactModel extends Contact implements ReceiverModel {
     @Override
     @NonNull
     public String toString() {
-        return "ContactModel(identity=" + this.getIdentity() + ")";
+        return "ContactModel(identity=" + this.getIdentity() + ", display=" + this.getContactListItemTextTopLeft(true) +")";
     }
 
     /**
      * Priority: (first-/lastname) --> (~nickname) --> (identity) <br>
      *
-     * @param preferenceService used to read the first- & lastname order preference
      * @return Either the first/lastname, the nickname or the identity. Never returns empty string because the identity is always filled.
      */
     @NonNull
-    public String getContactListItemTextTopLeft(@NonNull PreferenceService preferenceService) {
+    public String getContactListItemTextTopLeft(boolean isContactFormatFirstNameLastName) {
         final StringBuilder textTopLeftBuilder = new StringBuilder();
         if (getHasFirstOrLastName()) {
-            final boolean isContactFormatFirstNameLastName = preferenceService.isContactFormatFirstNameLastName();
             final @Nullable String firstPart = isContactFormatFirstNameLastName ? getFirstName() : getLastName();
             final @Nullable String lastPart = isContactFormatFirstNameLastName ? getLastName() : getFirstName();
             if (firstPart != null && !firstPart.isBlank()) {
@@ -619,7 +635,7 @@ public class ContactModel extends Contact implements ReceiverModel {
         final @NonNull PreferenceService preferenceService,
         final @NonNull String filterQuery
     ) {
-        final @NonNull String contactTextTopLeft = getContactListItemTextTopLeft(preferenceService);
+        final @NonNull String contactTextTopLeft = getContactListItemTextTopLeft(preferenceService.isContactFormatFirstNameLastName());
         final @NonNull String contactTextBottomLeft = getContactListItemTextBottomLeft();
         final @NonNull String contactTextBottomRight = getContactListItemTextBottomRight();
 

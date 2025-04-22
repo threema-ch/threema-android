@@ -25,7 +25,7 @@ import ch.threema.app.services.UpdateSystemService
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion77(
-    private val sqLiteDatabase: SQLiteDatabase
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : UpdateSystemService.SystemUpdate {
     companion object {
         const val VERSION = 77
@@ -39,7 +39,7 @@ internal class SystemUpdateToVersion77(
                 "`callId` TEXT PRIMARY KEY NOT NULL, " +
                 "`groupId` INTEGER NOT NULL, " +
                 "`sfuBaseUrl` TEXT NOT NULL, " +
-                "`gck` TEXT NOT NULL)"
+                "`gck` TEXT NOT NULL)",
         )
         return true
     }

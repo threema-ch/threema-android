@@ -21,46 +21,126 @@
 
 package ch.threema.app.tasks
 
+import ch.threema.app.groupflows.LeaveGroupFlow
 import ch.threema.app.managers.ServiceManager
-import ch.threema.domain.models.GroupId
+import ch.threema.app.utils.OutgoingCspGroupMessageCreator
+import ch.threema.app.utils.OutgoingCspMessageHandle
+import ch.threema.app.utils.OutgoingCspMessageServices
+import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
+import ch.threema.app.utils.runBundledMessagesSendSteps
+import ch.threema.app.utils.toBasicContacts
+import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupIdentity
+import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
+import ch.threema.domain.taskmanager.ActiveTask
+import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.taskmanager.TransactionScope
+import ch.threema.domain.taskmanager.createTransaction
+import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.storage.models.GroupModel
+import java.util.Date
 import kotlinx.serialization.Serializable
 
+private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupLeaveTask")
+
+/**
+ * This task is used to send out a [GroupLeaveMessage] to each member of the given group. Note that
+ * this task should only be scheduled by the [LeaveGroupFlow] as it only handles csp
+ * messages.
+ */
 class OutgoingGroupLeaveTask(
-    override val groupId: GroupId,
-    override val creatorIdentity: String,
-    override val recipientIdentities: Set<String>,
-    messageId: MessageId?,
-    serviceManager: ServiceManager,
-) : OutgoingCspGroupControlMessageTask(serviceManager) {
-    override val type: String = "OutgoingGroupLeaveTask"
+    private val groupIdentity: GroupIdentity,
+    private val messageId: MessageId,
+    private val memberIdentities: Set<String>,
+    private val groupModelRepository: GroupModelRepository,
+    private val apiConnector: APIConnector,
+    private val outgoingCspMessageServices: OutgoingCspMessageServices,
+) : ActiveTask<Unit>, PersistableTask {
+    private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
-    override val messageId = messageId ?: MessageId()
+    override val type = "GroupLeaveTask"
 
-    override fun createGroupMessage() = GroupLeaveMessage()
+    override suspend fun invoke(handle: ActiveTaskCodec) {
+        if (multiDeviceManager.isMultiDeviceActive) {
+            try {
+                sendLeaveMessagesInTransaction(handle)
+            } catch (e: TransactionScope.TransactionException) {
+                logger.warn("A group sync race occurred", e)
+            }
+        } else {
+            sendLeaveMessages(handle)
+        }
+    }
 
-    override fun serialize(): SerializableTaskData = OutgoingGroupLeaveData(
-        groupId.groupId, creatorIdentity, recipientIdentities, messageId.messageId
+    private suspend fun sendLeaveMessagesInTransaction(handle: ActiveTaskCodec) {
+        val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
+
+        handle.createTransaction(
+            multiDeviceProperties.keys,
+            MdD2D.TransactionScope.Scope.GROUP_SYNC,
+            TRANSACTION_TTL_MAX,
+        ) {
+            val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data?.value
+            if (groupModelData != null) {
+                // If the group exists, then the user state must be left
+                groupModelData.userState == GroupModel.UserState.LEFT
+            } else {
+                // It is fine if the group does not exist
+                true
+            }
+        }.execute {
+            sendLeaveMessages(handle)
+        }
+    }
+
+    private suspend fun sendLeaveMessages(handle: ActiveTaskCodec) {
+        val receivers = memberIdentities.toBasicContacts(
+            outgoingCspMessageServices.contactModelRepository,
+            outgoingCspMessageServices.contactStore,
+            apiConnector,
+        ).toSet()
+
+        handle.runBundledMessagesSendSteps(
+            OutgoingCspMessageHandle(
+                receivers,
+                OutgoingCspGroupMessageCreator(
+                    messageId,
+                    Date(),
+                    groupIdentity,
+                ) {
+                    GroupLeaveMessage()
+                },
+            ),
+            outgoingCspMessageServices,
+        )
+    }
+
+    override fun serialize() = OutgoingGroupLeaveTaskData(
+        groupIdentity = groupIdentity,
+        messageId = messageId.messageId,
+        memberIdentities = memberIdentities,
     )
 
     @Serializable
-    class OutgoingGroupLeaveData(
-        private val groupId: ByteArray,
-        private val creatorIdentity: String,
-        private val receiverIdentities: Set<String>,
+    class OutgoingGroupLeaveTaskData(
+        private val groupIdentity: GroupIdentity,
         private val messageId: ByteArray,
+        private val memberIdentities: Set<String>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupLeaveTask(
-                GroupId(groupId),
-                creatorIdentity,
-                receiverIdentities,
+                groupIdentity,
                 MessageId(messageId),
-                serviceManager,
+                memberIdentities,
+                serviceManager.modelRepositories.groups,
+                serviceManager.apiConnector,
+                serviceManager.getOutgoingCspMessageServices(),
             )
     }
-
 }

@@ -44,7 +44,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.webclient.Protocol;

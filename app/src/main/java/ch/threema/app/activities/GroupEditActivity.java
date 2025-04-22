@@ -28,11 +28,12 @@ import android.text.InputType;
 import java.io.File;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.ContactEditDialog;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
@@ -48,7 +49,8 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
     protected @NonNull GroupModelRepository groupModelRepository;
     protected UserService userService;
     protected FileService fileService;
-    protected DeadlineListService hiddenChatsListService;
+    @Nullable
+    protected ConversationCategoryService conversationCategoryService;
     private File avatarFile = null;
     private boolean isAvatarRemoved = false;
 
@@ -62,7 +64,7 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
             this.groupModelRepository = this.serviceManager.getModelRepositories().getGroups();
             this.userService = this.serviceManager.getUserService();
             this.fileService = this.serviceManager.getFileService();
-            this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();
+            this.conversationCategoryService = this.serviceManager.getConversationCategoryService();
         } catch (Exception e) {
             LogUtil.exception(e, this);
             return;

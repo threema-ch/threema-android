@@ -21,9 +21,14 @@
 
 package ch.threema.app
 
+import androidx.annotation.AnyThread
 import ch.threema.app.managers.CoreServiceManager
+import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.LinkedDevice
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.multidevice.PersistedMultiDeviceProperties
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
+import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.stores.IdentityStore
@@ -36,11 +41,10 @@ import ch.threema.base.crypto.NonceScope
 import ch.threema.base.crypto.NonceStore
 import ch.threema.domain.helpers.TransactionAckTaskCodec
 import ch.threema.domain.models.AppVersion
-import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.D2mProtocolDefines
+import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
-import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.D2mProtocolVersion
 import ch.threema.domain.protocol.connection.data.DeviceId
@@ -54,13 +58,14 @@ import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.DatabaseServiceNew
+import ch.threema.testhelpers.MUST_NOT_BE_CALLED
+import kotlin.time.Duration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -113,7 +118,7 @@ class TestDeviceCookieManager : DeviceCookieManager {
 }
 
 class TestTaskManager(
-    val taskCodec: TaskCodec
+    private val taskCodec: TaskCodec,
 ) : TaskManager {
     private val taskQueue = Channel<QueueElement<Any>>()
 
@@ -160,43 +165,52 @@ class TestMultiDeviceManager(
     override val isMultiDeviceActive: Boolean = false,
     override val propertiesProvider: MultiDevicePropertyProvider = TestMultiDevicePropertyProvider,
     override val socketCloseListener: D2mSocketCloseListener = D2mSocketCloseListener { },
-    override val latestSocketCloseReason: Flow<D2mSocketCloseReason?> = flowOf(),
 ) : MultiDeviceManager {
-    override suspend fun activate(
-        deviceLabel: String,
+    @AnyThread
+    override suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec) {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override suspend fun setDeviceLabel(deviceLabel: String) {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override suspend fun linkDevice(
+        serviceManager: ServiceManager,
+        deviceJoinOfferUri: String,
+        taskCreator: TaskCreator,
+    ): Flow<DeviceLinkingStatus> {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override suspend fun dropDevice(
+        deviceId: DeviceId,
+        taskCreator: TaskCreator,
+        timeout: Duration,
+    ): DropDeviceResult {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>> {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override suspend fun setProperties(persistedProperties: PersistedMultiDeviceProperties?) {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun reconnect() {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override suspend fun disableForwardSecurity(
+        handle: ActiveTaskCodec,
         contactService: ContactService,
         userService: UserService,
         fsMessageProcessor: ForwardSecurityMessageProcessor,
         taskCreator: TaskCreator,
     ) {
-        throw AssertionError("Not supported")
-    }
-
-    override suspend fun deactivate(
-        userService: UserService,
-        fsMessageProcessor: ForwardSecurityMessageProcessor,
-        taskCreator: TaskCreator,
-    ) {
-        throw AssertionError("Not supported")
-    }
-
-    override suspend fun setDeviceLabel(deviceLabel: String) {
-        throw AssertionError("Not supported")
-    }
-
-    override suspend fun linkDevice(
-        deviceJoinOfferUri: String,
-        taskCreator: TaskCreator,
-    ): Flow<DeviceLinkingStatus> {
-        throw AssertionError("Not supported")
-    }
-
-    override suspend fun purge(taskCreator: TaskCreator) {
-        throw AssertionError("Not supported")
-    }
-
-    override suspend fun loadLinkedDevicesInfo(taskCreator: TaskCreator): List<String> {
-        throw AssertionError("Not supported")
+        MUST_NOT_BE_CALLED()
     }
 }
 
@@ -219,7 +233,6 @@ class TestNonceStore : NonceStore {
     }
 
     override fun insertHashedNonces(scope: NonceScope, nonces: List<HashedNonce>) = true
-
 }
 
 object TestMultiDevicePropertyProvider : MultiDevicePropertyProvider {
@@ -233,8 +246,8 @@ object TestMultiDevicePropertyProvider : MultiDevicePropertyProvider {
                 D2dMessage.DeviceInfo.Platform.ANDROID,
                 "",
                 "",
-                ""
+                "",
             ),
-            D2mProtocolVersion(UInt.MIN_VALUE, UInt.MAX_VALUE)
+            D2mProtocolVersion(UInt.MIN_VALUE, UInt.MAX_VALUE),
         ) { }
 }

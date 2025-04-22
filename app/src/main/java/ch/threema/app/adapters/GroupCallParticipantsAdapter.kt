@@ -90,9 +90,8 @@ class GroupCallParticipantsAdapter(
     class GroupCallParticipantViewHolder(
         eglBase: EglBase,
         itemView: View,
-        val parent: ViewGroup
+        val parent: ViewGroup,
     ) : RecyclerView.ViewHolder(itemView) {
-
         var isAttachedToWindow = false
 
         val name: TextView = itemView.findViewById(R.id.participant_name)
@@ -139,7 +138,7 @@ class GroupCallParticipantsAdapter(
                         }
                     }
                 }
-                subscribeCameraJob = CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+                subscribeCameraJob = CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                     delay(CAMERA_SUBSCRIPTION_DELAY_MILLIS)
                     subscribe()
                 }
@@ -239,7 +238,6 @@ class GroupCallParticipantsAdapter(
             }
             notifyDataSetChanged()
         } else {
-
             // Remove participants
             removedParticipants.forEach { participant ->
                 val index = this.participants.indexOf(participant)
@@ -270,12 +268,15 @@ class GroupCallParticipantsAdapter(
     @UiThread
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
+        viewType: Int,
     ): GroupCallParticipantViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
-            /* resource = */ R.layout.item_group_call_participant_list,
-            /* root = */ parent,
-            /* attachToRoot = */ false
+            /* resource = */
+            R.layout.item_group_call_participant_list,
+            /* root = */
+            parent,
+            /* attachToRoot = */
+            false,
         )
         return GroupCallParticipantViewHolder(eglBase, view, parent).also(viewHolders::add)
     }
@@ -294,17 +295,16 @@ class GroupCallParticipantsAdapter(
 
     @UiThread
     override fun onBindViewHolder(holder: GroupCallParticipantViewHolder, position: Int) {
-
         val participant = participants[position]
 
         val itemHeightPx = getViewHeight(holder.parent)
         holder.avatar.layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
-            itemHeightPx
+            itemHeightPx,
         )
         holder.itemView.layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
-            itemHeightPx
+            itemHeightPx,
         )
 
         holder.participant = participant
@@ -323,7 +323,7 @@ class GroupCallParticipantsAdapter(
                     participant.contactModel,
                     holder.avatar,
                     AVATAR_OPTIONS,
-                    requestManager
+                    requestManager,
                 )
             } else {
                 logger.warn("Unknown group call participant type bound: {}", participant.type)
@@ -377,7 +377,7 @@ class GroupCallParticipantsAdapter(
          */
         val STABLE_HEIGHT_RANGES: Map<Orientation, List<IntRange>> = mapOf(
             Orientation.LANDSCAPE to listOf(0..2, 3..Int.MAX_VALUE),
-            Orientation.PORTRAIT to listOf(0..1, 2..4, 5..Int.MAX_VALUE)
+            Orientation.PORTRAIT to listOf(0..1, 2..4, 5..Int.MAX_VALUE),
         )
 
         fun getRowCount(participants: Int, isPortrait: Boolean) = when {
@@ -390,5 +390,6 @@ class GroupCallParticipantsAdapter(
 }
 
 private enum class Orientation {
-    LANDSCAPE, PORTRAIT
+    LANDSCAPE,
+    PORTRAIT,
 }

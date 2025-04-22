@@ -25,7 +25,6 @@ package ch.threema.domain.taskmanager
  * This interface defines the functionality of a task archiver to achieve persistence.
  */
 interface TaskArchiver {
-
     /**
      * Add another task to the archive.
      */
@@ -41,5 +40,4 @@ interface TaskArchiver {
      * Load all tasks in the same order they have been archived.
      */
     fun loadAllTasks(): List<Task<*, TaskCodec>>
-
 }

@@ -28,8 +28,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -43,16 +41,6 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.preference.PreferenceManager;
-
 import com.google.android.material.snackbar.Snackbar;
 
 import org.apache.commons.io.FileUtils;
@@ -62,6 +50,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -81,6 +70,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.NamedFileProvider;
 import ch.threema.app.R;
@@ -101,23 +98,26 @@ import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.app.utils.ResettableInputStream;
 import ch.threema.app.utils.RingtoneChecker;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
+import ch.threema.app.utils.StreamUtilKt;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupModel;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
+import static ch.threema.app.utils.StreamUtilKt.orEmpty;
 
 public class FileServiceImpl implements FileService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("FileServiceImpl");
@@ -132,6 +132,7 @@ public class FileServiceImpl implements FileService {
 
     private final Context context;
     private final MasterKey masterKey;
+    @NonNull
     private final PreferenceService preferenceService;
     private final File imagePath;
     private final File videoPath;
@@ -147,6 +148,7 @@ public class FileServiceImpl implements FileService {
         @NonNull Context c,
         @NonNull MasterKey masterKey,
         @NonNull PreferenceService preferenceService,
+        @NonNull NotificationPreferenceService notificationPreferenceService,
         @NonNull AvatarCacheService avatarCacheService
     ) {
         this.context = c;
@@ -178,23 +180,25 @@ public class FileServiceImpl implements FileService {
         this.downloadsPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         getDownloadsPath();
 
-        // initialize ringtone
-        if (needRingtonePreferencesUpdate(context.getContentResolver())) {
-            preferenceService.setVoiceCallSound(RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
+        if (!ConfigUtils.supportsNotificationChannels()) {
+            updateLegacyRingtoneIfInvalid(context.getContentResolver(), notificationPreferenceService);
         }
     }
 
-    /*
-     * Check if current ringtone prefs point to a valid ringtone or if an update is needed
-     */
-    private boolean needRingtonePreferencesUpdate(ContentResolver contentResolver) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context);
-        String uriString = sharedPreferences.getString(this.context.getString(R.string.preferences__voip_ringtone), null);
-        RingtoneChecker ringtoneChecker = new RingtoneChecker(contentResolver);
-        return !ringtoneChecker.isValidRingtoneUri(uriString);
+    private static void updateLegacyRingtoneIfInvalid(
+            @NonNull ContentResolver contentResolver,
+            @NonNull NotificationPreferenceService notificationPreferenceService
+    ) {
+        @Nullable final Uri ringtone = notificationPreferenceService.getLegacyVoipCallRingtone();
+        @Nullable final String uriString = ringtone != null ? ringtone.toString() : null;
+        final RingtoneChecker ringtoneChecker = new RingtoneChecker(contentResolver);
+        if (!ringtoneChecker.isValidRingtoneUri(uriString)) {
+            notificationPreferenceService.setLegacyVoipCallRingtone(RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
+        }
     }
 
     @Deprecated
+    @Override
     public File getBackupPath() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             if (!this.backupPath.exists()) {
@@ -253,7 +257,6 @@ public class FileServiceImpl implements FileService {
         return this.appDataPath;
     }
 
-    // TODO: Is this really necessary. According to documentation, paths returned by getExternalFilesDir() are already absolute
     private String getAppDataPathAbsolute() {
         return getAppDataPath().getAbsolutePath();
     }
@@ -531,6 +534,7 @@ public class FileServiceImpl implements FileService {
         return false;
     }
 
+    @Override
     public boolean removeMessageFiles(AbstractMessageModel messageModel, boolean withThumbnails) {
         boolean success = false;
 
@@ -552,6 +556,7 @@ public class FileServiceImpl implements FileService {
         return success;
     }
 
+    @Override
     public File getDecryptedMessageFile(AbstractMessageModel messageModel) throws Exception {
         String ext = getMediaFileExtension(messageModel);
 
@@ -582,6 +587,7 @@ public class FileServiceImpl implements FileService {
         return null;
     }
 
+    @Override
     public File getDecryptedMessageFile(@NonNull AbstractMessageModel messageModel, @Nullable String filename) throws Exception {
         if (filename == null) {
             return getDecryptedMessageFile(messageModel);
@@ -611,6 +617,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
     public CipherInputStream getDecryptedMessageStream(AbstractMessageModel messageModel) throws Exception {
         File file = this.getMessageFile(messageModel);
         if (file != null && file.exists()) {
@@ -816,17 +823,18 @@ public class FileServiceImpl implements FileService {
         return uid.replaceAll("[^a-zA-Z0-9\\\\s]", "");
     }
 
-    private String getGroupAvatarFileName(GroupModel groupModel) {
-        return ".grp-avatar-" + groupModel.getId();
+    private String getGroupAvatarFileName(long databaseId) {
+        return ".grp-avatar-" + databaseId;
     }
 
-    private File getGroupAvatarFile(GroupModel groupModel) {
+    private File getGroupAvatarFile(long groupDatabaseId) {
+        String fileName = getGroupAvatarFileName(groupDatabaseId);
         // new in 3.0 - save group avatars in separate directory
-        File avatarFile = new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel));
+        File avatarFile = new File(getGroupAvatarDirPath(), fileName);
         if (avatarFile.exists() && avatarFile.isFile() && avatarFile.canRead()) {
             return avatarFile;
         }
-        return new File(getAppDataPathAbsolute(), getGroupAvatarFileName(groupModel));
+        return new File(getAppDataPathAbsolute(), fileName);
     }
 
     @Override
@@ -865,6 +873,20 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length, boolean overwrite) {
+        return writeConversationMedia(messageModel, new ByteArrayInputStream(data, pos, length), overwrite);
+    }
+
+    @Override
+    public boolean writeConversationMedia(@NonNull AbstractMessageModel messageModel, @NonNull InputStream inputStream) {
+        return writeConversationMedia(messageModel, inputStream, false);
+    }
+
+    @Override
+    public boolean writeConversationMedia(
+            @NonNull AbstractMessageModel messageModel,
+            @NonNull InputStream inputStream,
+            boolean overwrite
+    ) {
         boolean success = false;
 
         if (this.masterKey.isLocked()) {
@@ -887,20 +909,29 @@ public class FileServiceImpl implements FileService {
 
         try {
             if (messageFile.createNewFile()) {
-                success = this.writeFile(data, pos, length, messageFile);
+                success = writeFile(inputStream, messageFile);
             }
         } catch (Exception e) {
             logger.error("Exception", e);
         }
 
         if (success) {
-            //try to generate a thumbnail
+            // try to generate a thumbnail
             if (MessageUtil.autoGenerateThumbnail(messageModel)) {
-                File f = this.getMessageThumbnail(messageModel);
-                if (f != null && !f.exists()) {
-                    //load the data
-                    try {
-                        this.generateConversationMediaThumbnail(messageModel, data, pos, length);
+                File thumbnailFile = this.getMessageThumbnail(messageModel);
+                if (thumbnailFile != null && !thumbnailFile.exists()) {
+                    try (
+                        ResettableInputStream fileInputStream = new ResettableInputStream(
+                            () -> {
+                                try {
+                                    return orEmpty(getDecryptedMessageStream(messageModel));
+                                } catch (Exception e) {
+                                    throw new IOException("Failed to create stream for thumbnail generation", e);
+                                }
+                            }
+                        )
+                    ) {
+                        writeConversationMediaThumbnail(messageModel, fileInputStream);
                     } catch (Exception e) {
                         // unable to create thumbnail - ignore this
                         logger.error("Exception", e);
@@ -914,7 +945,22 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException {
-        boolean success = this.writeFile(photoData, new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel)));
+        return writeGroupAvatar(groupModel, new ByteArrayInputStream(photoData));
+    }
+
+    @Override
+    public boolean writeGroupAvatar(GroupModel groupModel, InputStream photoData) throws IOException, MasterKeyLockedException {
+        boolean success = this.writeFile(photoData, new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel.getDatabaseId())));
+        if (success) {
+            avatarCacheService.reset(groupModel.getGroupIdentity());
+        }
+        return success;
+    }
+
+    @Override
+    @Deprecated
+    public boolean writeGroupAvatar(ch.threema.storage.models.GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException {
+        boolean success = this.writeFile(photoData, new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel.getId())));
         if (success) {
             avatarCacheService.reset(groupModel);
         }
@@ -922,8 +968,20 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
     public InputStream getGroupAvatarStream(GroupModel groupModel) throws IOException, MasterKeyLockedException {
-        File f = this.getGroupAvatarFile(groupModel);
+        return getGroupAvatarStream(groupModel.getDatabaseId());
+    }
+
+    @Override
+    @Nullable
+    @Deprecated
+    public InputStream getGroupAvatarStream(ch.threema.storage.models.GroupModel groupModel) throws Exception {
+        return getGroupAvatarStream(groupModel.getId());
+    }
+
+    private InputStream getGroupAvatarStream(long groupDatabaseId) throws IOException, MasterKeyLockedException {
+        File f = this.getGroupAvatarFile(groupDatabaseId);
         if (f.exists()) {
             return masterKey.getCipherInputStream(new FileInputStream(f));
         }
@@ -932,28 +990,67 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
+    public byte[] getGroupAvatarBytes(@NonNull GroupModel groupModel) throws Exception {
+        InputStream inputStream = getGroupAvatarStream(groupModel);
+        if (inputStream != null) {
+            return IOUtils.toByteArray(inputStream);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    @Nullable
     public Bitmap getGroupAvatar(GroupModel groupModel) throws IOException, MasterKeyLockedException {
+        return getGroupAvatar(groupModel.getDatabaseId());
+    }
+
+    @Override
+    @Nullable
+    @Deprecated
+    public Bitmap getGroupAvatar(ch.threema.storage.models.GroupModel groupModel) throws IOException, MasterKeyLockedException {
+        return getGroupAvatar(groupModel.getId());
+    }
+
+    @Nullable
+    private Bitmap getGroupAvatar(long groupDatabaseId) throws IOException, MasterKeyLockedException {
         if (this.masterKey.isLocked()) {
             throw new MasterKeyLockedException("no masterkey or locked");
         }
 
-        return decryptBitmapFromFile(this.getGroupAvatarFile(groupModel));
+        return decryptBitmapFromFile(this.getGroupAvatarFile(groupDatabaseId));
     }
 
     @Override
     public void removeGroupAvatar(@NonNull GroupModel groupModel) {
-        File f = this.getGroupAvatarFile(groupModel);
+        removeGroupAvatar(groupModel.getDatabaseId());
+        avatarCacheService.reset(groupModel.getGroupIdentity());
+    }
+
+    @Override
+    @Deprecated
+    public void removeGroupAvatar(ch.threema.storage.models.GroupModel groupModel) {
+        removeGroupAvatar(groupModel.getId());
+        avatarCacheService.reset(groupModel);
+    }
+
+    private void removeGroupAvatar(long groupDatabaseId) {
+        File f = this.getGroupAvatarFile(groupDatabaseId);
         if (f.exists()) {
             FileUtil.deleteFileOrWarn(f, "removeGroupAvatar", logger);
-            avatarCacheService.reset(groupModel);
         }
     }
 
     @Override
-    public boolean hasGroupAvatarFile(GroupModel groupModel) {
-        File f = this.getGroupAvatarFile(groupModel);
+    public boolean hasGroupAvatarFile(@NonNull GroupModel groupModel) {
+        return getGroupAvatarFile(groupModel.getDatabaseId()).exists();
+    }
 
-        return f.exists();
+    @Override
+    @Deprecated
+    public boolean hasGroupAvatarFile(@NonNull ch.threema.storage.models.GroupModel groupModel) {
+        return getGroupAvatarFile(groupModel.getId()).exists();
     }
 
     @Override
@@ -967,7 +1064,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean writeUserDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
-        boolean success = this.writeFile(avatarFile, this.getContactAvatarFile(identity));
+        return writeUserDefinedProfilePicture(identity, new ByteArrayInputStream(avatarFile));
+    }
+
+    @Override
+    public boolean writeUserDefinedProfilePicture(@NonNull String identity, @NonNull InputStream avatar) throws IOException, MasterKeyLockedException {
+        boolean success = this.writeFile(avatar, this.getContactAvatarFile(identity));
         if (success) {
             avatarCacheService.reset(identity);
         }
@@ -976,6 +1078,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean writeContactDefinedProfilePicture(@NonNull String identity, byte[] encryptedBlob) throws IOException, MasterKeyLockedException {
+        return writeContactDefinedProfilePicture(identity, new ByteArrayInputStream(encryptedBlob));
+    }
+
+    @Override
+    public boolean writeContactDefinedProfilePicture(@NonNull String identity, @NonNull InputStream encryptedBlob) throws IOException, MasterKeyLockedException {
         boolean success = this.writeFile(encryptedBlob, this.getContactPhotoFile(identity));
         if (success) {
             avatarCacheService.reset(identity);
@@ -993,6 +1100,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
     public Bitmap getUserDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
         if (this.masterKey.isLocked()) {
             throw new MasterKeyLockedException("no masterkey or locked");
@@ -1002,6 +1110,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
     public Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception {
         if (this.masterKey.isLocked()) {
             throw new MasterKeyLockedException("no masterkey or locked");
@@ -1027,6 +1136,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
     public InputStream getUserDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
         File f = this.getContactAvatarFile(identity);
         if (f != null && f.exists() && f.length() > 0) {
@@ -1037,6 +1147,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
     public InputStream getContactDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
         File f = this.getContactPhotoFile(identity);
         if (f != null && f.exists() && f.length() > 0) {
@@ -1046,6 +1157,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Nullable
     public Bitmap getContactDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
         if (this.masterKey.isLocked()) {
             throw new MasterKeyLockedException("no masterkey or locked");
@@ -1054,6 +1166,7 @@ public class FileServiceImpl implements FileService {
         return decryptBitmapFromFile(this.getContactPhotoFile(identity));
     }
 
+    @Nullable
     private Bitmap decryptBitmapFromFile(@Nullable File file) throws IOException, MasterKeyLockedException {
         if (file != null && file.exists()) {
             InputStream inputStream = masterKey.getCipherInputStream(new FileInputStream(file));
@@ -1108,46 +1221,41 @@ public class FileServiceImpl implements FileService {
     }
 
     private boolean writeFile(@Nullable byte[] data, @Nullable File file) throws IOException, MasterKeyLockedException {
-        if (data != null && data.length > 0 && file != null) {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
-                cipherOutputStream.write(data);
-                return true;
-            } catch (FileNotFoundException e) {
-                logger.error("Unable to save file to " + file.getAbsolutePath(), e);
-                throw new FileNotFoundException(e.getMessage());
-            }
+        if (data == null || data.length == 0 || file == null) {
+            return false;
         }
-        return false;
+        return writeFile(new ByteArrayInputStream(data), file);
     }
 
-    private boolean writeFile(byte[] data, int pos, int length, File file) throws IOException, MasterKeyLockedException {
-        if (data != null && data.length > 0) {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
-                cipherOutputStream.write(data, pos, length);
-                return true;
-            } catch (OutOfMemoryError e) {
-                throw new IOException("Out of memory");
-            } catch (FileNotFoundException e) {
-                logger.error("Unable to save file to " + file.getAbsolutePath(), e);
-                throw new FileNotFoundException(e.getMessage());
-            }
+    private boolean writeFile(@NonNull InputStream inputStream, @NonNull File file) throws IOException, MasterKeyLockedException {
+        try (
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            CipherOutputStream cipherOutputStream = masterKey.getCipherOutputStream(fileOutputStream)
+        ) {
+            IOUtils.copy(inputStream, cipherOutputStream);
+            return true;
+        } catch (OutOfMemoryError e) {
+            throw new IOException("Out of memory");
+        } catch (FileNotFoundException e) {
+            logger.error("Unable to save file to " + file.getAbsolutePath(), e);
+            throw new FileNotFoundException(e.getMessage());
         }
-        return false;
     }
 
-    private void generateConversationMediaThumbnail(
-        AbstractMessageModel messageModel,
-        @NonNull byte[] originalPicture,
-        int pos,
-        int length
-    ) throws Exception {
+    @Override
+    public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] originalPicture) throws Exception {
+        writeConversationMediaThumbnail(messageModel, new ResettableInputStream(() -> new ByteArrayInputStream(originalPicture)));
+    }
+
+    @Override
+    public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull ResettableInputStream thumbnail) throws Exception {
         if (this.masterKey.isLocked()) {
             throw new Exception("no masterkey or locked");
         }
 
         int preferredThumbnailWidth = ConfigUtils.getPreferredThumbnailWidth(context, false);
         int maxWidth = THUMBNAIL_SIZE_PX << 1;
-        byte[] resizedThumbnailBytes = BitmapUtil.resizeBitmapByteArrayToMaxWidth(originalPicture, Math.min(preferredThumbnailWidth, maxWidth), pos, length);
+        byte[] resizedThumbnailBytes = BitmapUtil.resizeImageToMaxWidth(thumbnail, Math.min(preferredThumbnailWidth, maxWidth));
         if (resizedThumbnailBytes == null) {
             throw new Exception("Unable to scale thumbnail");
         }
@@ -1157,17 +1265,17 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void saveThumbnail(AbstractMessageModel messageModel, byte[] thumbnailBytes) throws Exception {
+        saveThumbnail(messageModel, new ByteArrayInputStream(thumbnailBytes));
+    }
+
+    @Override
+    public void saveThumbnail(AbstractMessageModel messageModel, @NonNull InputStream thumbnail) throws Exception {
         File thumbnailFile = this.getMessageThumbnail(messageModel);
         if (thumbnailFile != null) {
             FileUtil.createNewFileOrLog(thumbnailFile, logger);
             logger.info("Writing thumbnail...");
-            this.writeFile(thumbnailBytes, thumbnailFile);
+            this.writeFile(thumbnail, thumbnailFile);
         }
-    }
-
-    @Override
-    public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] originalPicture) throws Exception {
-        generateConversationMediaThumbnail(messageModel, originalPicture, 0, originalPicture.length);
     }
 
     /**
@@ -1407,6 +1515,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @WorkerThread
+    @Override
     public void loadDecryptedMessageFiles(final List<AbstractMessageModel> models, final OnDecryptedFilesComplete onDecryptedFilesComplete) {
         final ArrayList<Uri> shareFileUris = new ArrayList<>();
 
@@ -1446,6 +1555,7 @@ public class FileServiceImpl implements FileService {
      * Load encrypted media file, decrypt it and save it to a temporary file
      */
     @MainThread
+    @Override
     public void loadDecryptedMessageFile(final AbstractMessageModel model, final OnDecryptedFileComplete onDecryptedFileComplete) {
         if (model.getType() == MessageType.TEXT || model.getType() == MessageType.BALLOT || model.getType() == MessageType.LOCATION) {
             onDecryptedFileComplete.complete(null);

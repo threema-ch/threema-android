@@ -39,5 +39,7 @@
     <string name="webclient_diagnostics_start">Başlat</string>
     <string name="webclient_diagnostics_intro">Testi çalıştırmak için «Başlat» tıklayın.</string>
     <string name="webclient_diagnostics_done">Tamamlandı. Masaüstü uygulamasına veya web istemcisine bağlantı kurmayla ilgili sorunlar yaşıyorsanız, lütfen bu günlüğü Threema desteğine gönderin.</string>
-    <string name="webclient_unsupported_desktop_beta_message">Şu anda, masaüstüne yönelik bu beta uygulama yalnızca bir iOS cihazına bağlanabilmektedir. Android cihazlar için lütfen normal masaüstü uygulamasını indirin.</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">Yanlış QR Kodu</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
+    <string name="webclient_scanned_md_linking_qr_code_message">Taradığınız QR kodu yeni masaüstü beta uygulamasına aittir.\n\n\"Ana menü &gt; Masaüstü için ${app_name_desktop} 2.0 (Beta)\" bölümüne geri dönün ve bu masaüstü uygulamasına bağlanmak için \"${md_link_device}\" öğesini seçin.</string>
 </resources>

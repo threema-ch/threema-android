@@ -43,7 +43,7 @@ import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
@@ -106,7 +106,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
                 getTableName(),
                 null,
                 GroupMessageModel.COLUMN_GROUP_ID + "=? AND " + AbstractMessageModel.COLUMN_STATE + "=?",
-                new String[]{String.valueOf(group.getId()), MessageState.FS_KEY_MISMATCH.toString()},
+                new String[]{String.valueOf(group.getDatabaseId()), MessageState.FS_KEY_MISMATCH.toString()},
                 null,
                 null,
                 null
@@ -162,7 +162,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
             if (text == null) {
                 return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
                     "SELECT * FROM " + GroupMessageModel.TABLE + " m" +
-                        " INNER JOIN " + GroupModel.TABLE + " g ON g.id = m.groupId" +
+                        " INNER JOIN " + ch.threema.storage.models.GroupModel.TABLE + " g ON g.id = m.groupId" +
                         " WHERE g.isArchived = 0" +
                         " AND m.isStatusMessage = 0" +
                         displayClause +
@@ -173,7 +173,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 
             return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
                 "SELECT * FROM " + GroupMessageModel.TABLE + " m" +
-                    " INNER JOIN " + GroupModel.TABLE + " g ON g.id = m.groupId" +
+                    " INNER JOIN " + ch.threema.storage.models.GroupModel.TABLE + " g ON g.id = m.groupId" +
                     " WHERE g.isArchived = 0" +
                     " AND ( ( m.body LIKE ? " +
                     " AND m.type IN (" +
@@ -390,7 +390,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
         return messageModels;
     }
 
-    public List<GroupMessageModel> getByGroupIdUnsorted(int groupId) {
+    public List<GroupMessageModel> getByGroupIdUnsorted(long groupId) {
         return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
             null,
             GroupMessageModel.COLUMN_GROUP_ID + "=?",
@@ -410,7 +410,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
             });
     }
 
-    public int deleteByGroupId(int groupId) {
+    public int deleteByGroupId(long groupId) {
         return this.databaseService.getWritableDatabase().delete(this.getTableName(),
             GroupMessageModel.COLUMN_GROUP_ID + "=?",
             new String[]{
@@ -458,25 +458,19 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
                 "`" + GroupMessageModel.COLUMN_UID + "` VARCHAR , " +
                 "`" + GroupMessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR , " +
                 "`" + GroupMessageModel.COLUMN_GROUP_ID + "` INTEGER NOT NULL , " +
-
-                //TODO: remove field
                 "`" + GroupMessageModel.COLUMN_IDENTITY + "` VARCHAR , " +
-                //TODO: change to TINYINT
                 "`" + GroupMessageModel.COLUMN_OUTBOX + "` SMALLINT , " +
                 "`" + GroupMessageModel.COLUMN_TYPE + "` INTEGER ," +
                 "`" + GroupMessageModel.COLUMN_CORRELATION_ID + "` VARCHAR ," +
                 "`" + GroupMessageModel.COLUMN_BODY + "` VARCHAR ," +
                 "`" + GroupMessageModel.COLUMN_CAPTION + "` VARCHAR ," +
-                //TODO: change to TINYINT
                 "`" + GroupMessageModel.COLUMN_IS_READ + "` SMALLINT ," +
-                //TODO: change to TINYINT
                 "`" + GroupMessageModel.COLUMN_IS_SAVED + "` SMALLINT ," +
                 "`" + GroupMessageModel.COLUMN_IS_QUEUED + "` TINYINT ," +
                 "`" + GroupMessageModel.COLUMN_STATE + "` VARCHAR , " +
                 "`" + GroupMessageModel.COLUMN_POSTED_AT + "` BIGINT , " +
                 "`" + GroupMessageModel.COLUMN_CREATED_AT + "` BIGINT , " +
                 "`" + GroupMessageModel.COLUMN_MODIFIED_AT + "` BIGINT , " +
-                //TODO: change to TINYINT
                 "`" + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
                 "`" + GroupMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
                 "`" + GroupMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +

@@ -3,7 +3,6 @@
         android:id="@+id/compoundBackgroundItem"
         android:drawable="@drawable/ripple_call_button" />
 
-    <!-- TODO tinting is ineffective with vector drawables - find another way -->
     <item android:id="@+id/moreIndicatorItem">
         <bitmap
             android:gravity="center"

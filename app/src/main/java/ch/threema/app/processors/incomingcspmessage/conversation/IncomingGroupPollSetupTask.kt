@@ -48,7 +48,7 @@ class IncomingGroupPollSetupTask(
 
     private fun processPollSetupMessage(): ReceiveStepsResult {
         val successfullyProcessed =
-            messageService.processIncomingGroupMessage(groupPollSetupMessage)
+            messageService.processIncomingGroupMessage(groupPollSetupMessage, triggerSource)
         return if (successfullyProcessed) {
             ReceiveStepsResult.SUCCESS
         } else {

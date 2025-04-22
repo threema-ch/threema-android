@@ -33,8 +33,8 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import kotlinx.serialization.Serializable
 import java.nio.charset.StandardCharsets
+import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("SendPushTokenTask")
 
@@ -88,15 +88,15 @@ class SendPushTokenTask(
         handle.write(
             CspMessage(
                 ProtocolDefines.PLTYPE_PUSH_NOTIFICATION_TOKEN.toUByte(),
-                tokenData
-            )
+                tokenData,
+            ),
         )
         // Send voip push token. This is identical to the regular push token.
         handle.write(
             CspMessage(
                 ProtocolDefines.PLTYPE_VOIP_PUSH_NOTIFICATION_TOKEN.toUByte(),
-                tokenData
-            )
+                tokenData,
+            ),
         )
 
         logger.info("Push token successfully sent to server")

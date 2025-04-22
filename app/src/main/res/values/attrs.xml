@@ -138,4 +138,15 @@
         <attr name="barColorActivated" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="WizardButtonXmlWrapper">
+        <attr name="wizardButton_style" format="enum">
+            <enum name="wizardButton_default" value="0" />
+            <enum name="wizardButton_inverse" value="1" />
+        </attr>
+        <attr name="wizardButton_text" format="reference" />
+        <attr name="wizardButton_trailingIcon" format="reference" />
+        <attr name="wizardButton_colorPrimary" format="reference" />
+        <attr name="wizardButton_colorOnPrimary" format="reference" />
+    </declare-styleable>
+
 </resources>

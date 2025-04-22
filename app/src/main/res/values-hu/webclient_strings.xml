@@ -38,4 +38,5 @@
     <string name="webclient_diagnostics_start">Indítás</string>
     <string name="webclient_diagnostics_intro">A teszt elindításához kattintson az \"Indítás\" gombra.</string>
     <string name="webclient_diagnostics_done">Befejezve. Ha problémái vannak a Threema webkapcsolat létrehozásával, kérjük küldje el ezt a naplót a Threema ügyfélszolgálatának.</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
 </resources>

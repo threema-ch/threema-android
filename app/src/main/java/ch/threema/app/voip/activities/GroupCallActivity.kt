@@ -45,6 +45,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.transition.addListener
 import androidx.core.view.*
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -77,16 +78,17 @@ import ch.threema.app.voip.viewmodel.GroupCallViewModel
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.GroupModel
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.*
 import java.lang.Runnable
 import java.util.*
+import kotlinx.coroutines.*
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallActivity")!!
 
 @UiThread
-class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListener,
+class GroupCallActivity :
+    ThreemaActivity(),
+    GenericAlertDialog.DialogClickListener,
     SensorListener {
-
     companion object {
         private const val EXTRA_GROUP_ID = "EXTRA_GROUP_ID"
         private const val EXTRA_MICROPHONE_ACTIVE = "EXTRA_MICROPHONE_ACTIVE"
@@ -113,7 +115,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
         fun getJoinCallIntent(
             context: Context,
             groupId: Int,
-            microphoneActive: Boolean = true
+            microphoneActive: Boolean = true,
         ): Intent {
             return getJoinCallIntent(context, groupId)
                 .putExtra(EXTRA_MICROPHONE_ACTIVE, microphoneActive)
@@ -149,7 +151,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
         }
 
     private val cameraSettingsLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {
         if (ConfigUtils.isPermissionGranted(this, CAMERA)) {
             checkCameraPermissionAndStartCapturing()
@@ -246,10 +248,10 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                 views.buttonToggleMic.visibility = View.VISIBLE
                 views.buttonSelectAudioDevice.visibility = View.VISIBLE
                 views.buttonToggleCamera.postDelayed({
-                    if (!viewModel.toggleCameraTooltipShown
-                        && infoAndControlsShown
-                        && views.buttonToggleCamera.visibility == View.VISIBLE
-                        && views.buttonFlipCamera.visibility != View.VISIBLE
+                    if (!viewModel.toggleCameraTooltipShown &&
+                        infoAndControlsShown &&
+                        views.buttonToggleCamera.isVisible &&
+                        views.buttonFlipCamera.visibility != View.VISIBLE
                     ) {
                         val location = IntArray(2)
                         views.buttonToggleCamera.getLocationInWindow(location)
@@ -258,7 +260,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                         TooltipPopup(
                             this,
                             R.string.preferences__tooltip_gc_camera,
-                            this
+                            this,
                         ).show(
                             activity = this,
                             anchor = views.buttonToggleCamera,
@@ -282,17 +284,20 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
         keepAliveHandler.removeCallbacksAndMessages(null)
         keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY)
 
-        gestureDetector = GestureDetectorCompat(this, object : SimpleOnGestureListener() {
-            override fun onSingleTapUp(e: MotionEvent): Boolean {
-                logger.trace("onSingleTapUp")
-                toggleInfoAndControls()
-                return true
-            }
+        gestureDetector = GestureDetectorCompat(
+            this,
+            object : SimpleOnGestureListener() {
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    logger.trace("onSingleTapUp")
+                    toggleInfoAndControls()
+                    return true
+                }
 
-            override fun onLongPress(e: MotionEvent) {
-                logger.trace("onLongPress")
-            }
-        })
+                override fun onLongPress(e: MotionEvent) {
+                    logger.trace("onLongPress")
+                }
+            },
+        )
 
         if (intent?.hasExtra(EXTRA_MICROPHONE_ACTIVE) == true) {
             intent?.getBooleanExtra(EXTRA_MICROPHONE_ACTIVE, true)?.let {
@@ -307,7 +312,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
         if (views.duration.visibility == View.VISIBLE) {
             views.layout.postDelayed(
                 autoRemoveInfoAndControlsRunnable,
-                TIMEOUT_HIDE_NAVIGATION_MILLIS
+                TIMEOUT_HIDE_NAVIGATION_MILLIS,
             )
         }
     }
@@ -356,7 +361,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         permissionRegistry.handlePermissionResult(requestCode, permissions, grantResults)
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -399,7 +404,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                 // A PSTN call is ongoing
                 SimpleStringAlertDialog.newInstance(
                     R.string.group_call,
-                    R.string.voip_another_pstn_call
+                    R.string.voip_another_pstn_call,
                 )
                     .setOnDismissRunnable { finish() }
                     .show(supportFragmentManager, "err")
@@ -448,10 +453,10 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                             override fun onDismissCancelled() {
                                 logger.debug("Keyguard dismissing cancelled")
                             }
-                        })
+                        },
+                    )
                 }
             }
-
         }
     }
 
@@ -474,7 +479,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(
             window,
-            findViewById(R.id.group_call_layout)
+            findViewById(R.id.group_call_layout),
         ).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior =
@@ -533,7 +538,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                     sensorService.registerSensors(
                         SENSOR_TAG_GROUP_CALL,
                         this@GroupCallActivity,
-                        true
+                        true,
                     )
                 }
                 sensorEnabled = true
@@ -546,7 +551,8 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                 AudioDevice.SPEAKER_PHONE -> AudioManager.STREAM_MUSIC
                 AudioDevice.EARPIECE,
                 AudioDevice.WIRED_HEADSET,
-                AudioDevice.BLUETOOTH -> AudioManager.STREAM_VOICE_CALL
+                AudioDevice.BLUETOOTH,
+                -> AudioManager.STREAM_VOICE_CALL
 
                 else -> AudioManager.USE_DEFAULT_STREAM_TYPE
             }
@@ -571,8 +577,8 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                             BottomSheetItem(
                                 device.getIconResource(),
                                 getString(device.getStringResource()),
-                                index.toString()
-                            )
+                                index.toString(),
+                            ),
                         )
                         if (device == selectedDevice) {
                             currentDeviceIndex = i
@@ -631,7 +637,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                 logger.info("Camera permission denied")
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(
                         this@GroupCallActivity,
-                        CAMERA
+                        CAMERA,
                     )
                 ) {
                     // permission was permanently denied
@@ -640,14 +646,14 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                             R.string.group_call,
                             getString(
                                 R.string.group_call_camera_permission_rationale,
-                                getString(R.string.app_name)
+                                getString(R.string.app_name),
                             ),
                             R.string.settings,
-                            R.string.cancel
+                            R.string.cancel,
                         )
                         alert.show(
                             this@GroupCallActivity.supportFragmentManager,
-                            DIALOG_TAG_CAMERA_PERMISSION_DENIED
+                            DIALOG_TAG_CAMERA_PERMISSION_DENIED,
                         )
                     }
                 }
@@ -732,7 +738,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
             if (!infoAndControlsShownManually) {
                 views.layout.postDelayed(
                     autoRemoveInfoAndControlsRunnable,
-                    TIMEOUT_HIDE_NAVIGATION_MILLIS
+                    TIMEOUT_HIDE_NAVIGATION_MILLIS,
                 )
             }
         } else {
@@ -754,7 +760,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
         if (groupModel != null) {
             views.title.setOnClickListener {
                 val intent = Intent(this, ComposeMessageActivity::class.java)
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.id)
+                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.id)
                 startActivity(intent)
             }
         } else {
@@ -784,7 +790,8 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
             GroupCallViewModel.FinishEvent.Reason.ERROR -> showToast(R.string.voip_gc_call_error)
             GroupCallViewModel.FinishEvent.Reason.INVALID_DATA,
             GroupCallViewModel.FinishEvent.Reason.TOKEN_INVALID,
-            GroupCallViewModel.FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION -> showToast(R.string.voip_gc_call_start_error)
+            GroupCallViewModel.FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION,
+            -> showToast(R.string.voip_gc_call_start_error)
 
             GroupCallViewModel.FinishEvent.Reason.NO_SUCH_CALL -> showToast(R.string.voip_gc_call_already_ended)
             GroupCallViewModel.FinishEvent.Reason.SFU_NOT_AVAILABLE -> showToast(R.string.voip_gc_sfu_not_available)
@@ -822,7 +829,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
                             insets.displayCutout?.safeInsetLeft ?: 0,
                             insets.displayCutout?.safeInsetTop ?: 0,
                             insets.displayCutout?.safeInsetRight ?: 0,
-                            insets.displayCutout?.safeInsetBottom ?: 0
+                            insets.displayCutout?.safeInsetBottom ?: 0,
                         )
                     }
                 } else {
@@ -854,7 +861,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
             ConstraintSet.TOP,
             ConstraintSet.PARENT_ID,
             ConstraintSet.TOP,
-            0
+            0,
         )
         constraints.clear(R.id.in_call_buttons, ConstraintSet.BOTTOM)
         constraints.clear(R.id.in_call_buttons, ConstraintSet.TOP)
@@ -863,7 +870,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
             ConstraintSet.BOTTOM,
             ConstraintSet.PARENT_ID,
             ConstraintSet.BOTTOM,
-            layoutMargin
+            layoutMargin,
         )
 
         applyInfoAndControlsTransformation(true, constraints)
@@ -881,7 +888,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
             R.id.call_info,
             ConstraintSet.BOTTOM,
             ConstraintSet.PARENT_ID,
-            ConstraintSet.TOP
+            ConstraintSet.TOP,
         )
         constraints.clear(R.id.in_call_buttons, ConstraintSet.BOTTOM)
         constraints.clear(R.id.in_call_buttons, ConstraintSet.TOP)
@@ -889,7 +896,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
             R.id.in_call_buttons,
             ConstraintSet.TOP,
             ConstraintSet.PARENT_ID,
-            ConstraintSet.BOTTOM
+            ConstraintSet.BOTTOM,
         )
 
         applyInfoAndControlsTransformation(false, constraints)
@@ -956,9 +963,11 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 
     override fun onYes(tag: String?, addData: Any?) {
         if (DIALOG_TAG_CAMERA_PERMISSION_DENIED == tag) {
-            cameraSettingsLauncher.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", packageName, null)
-            })
+            cameraSettingsLauncher.launch(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                },
+            )
         }
     }
 

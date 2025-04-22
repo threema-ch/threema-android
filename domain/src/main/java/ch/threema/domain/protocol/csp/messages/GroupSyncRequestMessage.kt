@@ -28,8 +28,8 @@ import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.conversationOrNull
 import ch.threema.protobuf.d2d.groupOrNull
-import org.slf4j.Logger
 import java.io.ByteArrayOutputStream
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("GroupSyncRequestMessage")
 
@@ -71,7 +71,6 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
     }
 
     companion object {
-
         @JvmStatic
         @Throws(BadMessageException::class)
         fun fromReflected(
@@ -95,14 +94,13 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
 
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromByteArray(data: ByteArray, creatorIdentity: String): GroupSyncRequestMessage {
-            return fromByteArray(
+        fun fromByteArray(data: ByteArray, creatorIdentity: String): GroupSyncRequestMessage =
+            fromByteArray(
                 data = data,
                 offset = 0,
                 length = data.size,
                 creatorIdentity = creatorIdentity,
             )
-        }
 
         @JvmStatic
         @Throws(BadMessageException::class)
@@ -115,7 +113,9 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
             when {
                 length != ProtocolDefines.GROUP_ID_LEN -> throw BadMessageException("Bad length ($length) for group-sync-request message")
                 offset < 0 -> throw BadMessageException("Bad offset ($offset) for group-sync-request message")
-                data.size < length + offset -> throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
+                data.size < length + offset -> throw BadMessageException(
+                    "Invalid byte array length (${data.size}) for offset $offset and length $length",
+                )
             }
 
             return GroupSyncRequestMessage().apply {
@@ -124,5 +124,4 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
             }
         }
     }
-
 }

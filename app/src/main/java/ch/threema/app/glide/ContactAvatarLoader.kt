@@ -38,11 +38,11 @@ class ContactAvatarLoader(val context: Context) :
         config: AvatarCacheServiceImpl.ContactAvatarConfig,
         width: Int,
         height: Int,
-        options: Options
+        options: Options,
     ): ModelLoader.LoadData<Bitmap> {
         return ModelLoader.LoadData(
             ObjectKey(config),
-            ContactAvatarFetcher(context, contactService, config, preferenceService)
+            ContactAvatarFetcher(context, contactService, config, preferenceService),
         )
     }
 

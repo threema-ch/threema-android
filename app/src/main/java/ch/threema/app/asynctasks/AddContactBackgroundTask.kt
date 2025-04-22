@@ -41,7 +41,6 @@ class AddContactBackgroundTask(
     private val contactModelData: ContactModelData,
     private val contactModelRepository: ContactModelRepository,
 ) : BackgroundTask<ContactModel?> {
-
     /**
      * Add the contact model data if the contact does not exist.
      *

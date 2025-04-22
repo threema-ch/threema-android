@@ -39,5 +39,5 @@
     <string name="webclient_diagnostics_start">Пачаць</string>
     <string name="webclient_diagnostics_intro">Націсніце кнопку \"Пуск\" для запуску тэсту</string>
     <string name="webclient_diagnostics_done">Гатова! Калі ў вас узнікаюць непаладкі з наладжваннем злучэння з праграмай для ПК або вэб-кліентам, адпраўце дадзеныя ў службу падтрымкі Threema.</string>
-    <string name="webclient_unsupported_desktop_beta_message">Бэта-версію праграмы для Пк можна звязаць толькі з прыладамі на базе iOS. Для прылад на базе Android выкарыстоўвайце стабільны выпуск праграмы для ПК.</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
 </resources>

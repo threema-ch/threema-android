@@ -25,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -34,6 +33,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.storage.models.ContactModel;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -46,8 +46,8 @@ public class NameUtilTest {
     @Before
     public void setUp() {
         this.userServiceMock = PowerMockito.mock(UserService.class);
-        when(this.userServiceMock.isMe(Matchers.eq(meIdentity))).thenReturn(true);
-        when(this.userServiceMock.isMe(Matchers.eq(otherIdentity))).thenReturn(false);
+        when(this.userServiceMock.isMe(eq(meIdentity))).thenReturn(true);
+        when(this.userServiceMock.isMe(eq(otherIdentity))).thenReturn(false);
         when(this.userServiceMock.getIdentity()).thenReturn(meIdentity);
     }
 

@@ -39,7 +39,7 @@ sealed interface Handshake {
         val identity: String,
         val nickname: String,
         val pck: ByteArray,
-        val pcck: ByteArray
+        val pcck: ByteArray,
     ) : Handshake {
         companion object {
             fun decode(bytes: ByteArray): Hello {
@@ -52,7 +52,7 @@ sealed interface Handshake {
                     hello.identity,
                     hello.nickname,
                     hello.pck.toByteArray(),
-                    hello.pcck.toByteArray()
+                    hello.pcck.toByteArray(),
                 )
             }
         }
@@ -95,7 +95,7 @@ sealed interface Handshake {
     data class Auth(
         val pck: ByteArray,
         val pcck: ByteArray,
-        val mediaKeys: List<P2PMessageContent.MediaKey>
+        val mediaKeys: List<P2PMessageContent.MediaKey>,
     ) : Handshake {
         companion object {
             fun decode(bytes: ByteArray): Auth {
@@ -107,7 +107,7 @@ sealed interface Handshake {
                 return Auth(
                     auth.pck.toByteArray(),
                     auth.pcck.toByteArray(),
-                    auth.mediaKeysList.map { P2PMessageContent.MediaKey.fromProtobuf(it) }
+                    auth.mediaKeysList.map { P2PMessageContent.MediaKey.fromProtobuf(it) },
                 )
             }
         }
@@ -151,8 +151,6 @@ sealed interface Handshake {
             result = 31 * result + mediaKeys.hashCode()
             return result
         }
-
-
     }
 }
 
@@ -238,7 +236,7 @@ sealed class P2PMessageContent {
                 return MediaKey(
                     mediaKey.epoch.toUInt(),
                     mediaKey.ratchetCounter.toUInt(),
-                    mediaKey.pcmk.toByteArray()
+                    mediaKey.pcmk.toByteArray(),
                 )
             }
         }
@@ -276,7 +274,7 @@ sealed class P2PMessageContent {
 data class P2POuterEnvelope(
     val senderId: ParticipantId,
     val receiverId: ParticipantId,
-    val encryptedData: ByteArray
+    val encryptedData: ByteArray,
 ) : S2PMessage, P2SMessage() {
     override val type = "P2POuterEnvelope"
 
@@ -286,7 +284,7 @@ data class P2POuterEnvelope(
                 return P2POuterEnvelope(
                     ParticipantId(outerEnvelope.sender.toUInt()),
                     ParticipantId(outerEnvelope.receiver.toUInt()),
-                    outerEnvelope.encryptedData.toByteArray()
+                    outerEnvelope.encryptedData.toByteArray(),
                 )
             } catch (e: InvalidProtocolBufferException) {
                 throw SfuException("Failed to decode P2PMessage", e)

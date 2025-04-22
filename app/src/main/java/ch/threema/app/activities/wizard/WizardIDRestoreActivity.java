@@ -26,17 +26,14 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 
 import org.slf4j.Logger;
@@ -45,6 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.services.QRCodeServiceImpl;
@@ -63,8 +61,9 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 
     private EditText backupIdText;
     private EditText passwordEditText;
-    private boolean passwordOK = false, idOK = false;
-    private Button nextButton, scanButton;
+    private boolean passwordOK = false;
+    private boolean idOK = false;
+    private WizardButtonXml nextButtonCompose;
     final private int BACKUP_STRING_LENGTH = 99;
 
     @Override
@@ -75,8 +74,6 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        nextButton = findViewById(R.id.wizard_finish);
-
         backupIdText = findViewById(R.id.restore_id_edittext);
         backupIdText.setImeOptions(EditorInfo.IME_ACTION_SEND);
         backupIdText.setRawInputType(InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -84,7 +81,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 idOK = s.length() > 0 && s.toString().trim().length() == BACKUP_STRING_LENGTH;
-                updateMenu();
+                setRestoreButtonEnabled(idOK && passwordOK);
             }
 
             @Override
@@ -101,7 +98,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 passwordOK = s.length() >= ThreemaApplication.MIN_PW_LENGTH_ID_EXPORT_LEGACY;
-                updateMenu();
+                setRestoreButtonEnabled(idOK && passwordOK);
             }
 
             @Override
@@ -113,34 +110,31 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
             }
         });
 
-        scanButton = findViewById(R.id.wizard_scan);
-        scanButton.getCompoundDrawables()[2].setColorFilter(getResources().getColor(R.color.wizard_button_text_inverse), PorterDuff.Mode.SRC_IN);
+        findViewById(R.id.wizard_cancel_compose).setOnClickListener(v -> finish());
+
+        nextButtonCompose = findViewById(R.id.wizard_finish_compose);
+        nextButtonCompose.setOnClickListener(v -> restoreID());
+        setRestoreButtonEnabled(false);
+
+        findViewById(R.id.wizard_scan_compose).setOnClickListener(v -> {
+            if (ConfigUtils.requestCameraPermissions(WizardIDRestoreActivity.this, null, PERMISSION_REQUEST_CAMERA)) {
+                scanQR();
+            }
+        });
 
         Intent intent = getIntent();
         if (intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP) &&
             intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW)) {
             backupIdText.setText(intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP));
             passwordEditText.setText(intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW));
-            restoreID(null);
+            restoreID();
         }
-
-        findViewById(R.id.wizard_finish).setOnClickListener(this::restoreID);
-        findViewById(R.id.wizard_cancel).setOnClickListener(this::onCancel);
-        findViewById(R.id.wizard_scan).setOnClickListener(v -> {
-            if (ConfigUtils.requestCameraPermissions(WizardIDRestoreActivity.this, null, PERMISSION_REQUEST_CAMERA)) {
-                scanQR();
-            }
-        });
     }
 
-    private void updateMenu() {
-        if (nextButton == null) return;
-
-        nextButton.setEnabled(idOK && passwordOK);
-    }
-
-    public void onCancel(View view) {
-        finish();
+    private void setRestoreButtonEnabled(final boolean isEnabled) {
+        if (nextButtonCompose != null) {
+            nextButtonCompose.setButtonEnabled(isEnabled);
+        }
     }
 
     public void scanQR() {
@@ -148,7 +142,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void restoreID(View view) {
+    public void restoreID() {
         EditTextUtil.hideSoftKeyboard(backupIdText);
         EditTextUtil.hideSoftKeyboard(passwordEditText);
 

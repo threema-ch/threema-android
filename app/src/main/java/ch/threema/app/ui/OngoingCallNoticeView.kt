@@ -51,7 +51,7 @@ private val logger = LoggingUtil.getThreemaLogger("OngoingCallNoticeView")
 enum class OngoingCallNoticeMode {
     MODE_VOIP,
     MODE_GROUP_CALL_RUNNING,
-    MODE_GROUP_CALL_JOINED
+    MODE_GROUP_CALL_JOINED,
 }
 
 class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
@@ -75,7 +75,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init()
     }
@@ -95,7 +95,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
     fun hideVoip() {
         logger.info(
             "Hide voip in operation mode `{}`",
-            operationMode
+            operationMode,
         ) // TODO(ANDR-2441): remove eventually
         if (operationMode == OngoingCallNoticeMode.MODE_VOIP) {
             hide()
@@ -194,7 +194,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
             openIntent.putExtra(VoipCallService.EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL)
             openIntent.putExtra(
                 VoipCallService.EXTRA_CONTACT_IDENTITY,
-                VoipCallService.getOtherPartysIdentity()
+                VoipCallService.getOtherPartysIdentity(),
             )
             openIntent.putExtra(VoipCallService.EXTRA_START_TIME, VoipCallService.getStartTime())
             context.startActivity(openIntent)
@@ -249,7 +249,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
                 context,
                 R.plurals.n_participants_in_call,
                 participantCount,
-                participantCount
+                participantCount,
             )
             participantsText.visibility = VISIBLE
             ongoingCallDivider.visibility = VISIBLE

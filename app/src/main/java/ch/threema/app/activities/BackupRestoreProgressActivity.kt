@@ -43,7 +43,6 @@ import ch.threema.app.utils.ConfigUtils
  * This is useful to get a hint about the progress if notifications are not allowed or activated.
  */
 class BackupRestoreProgressActivity : AppCompatActivity() {
-
     private lateinit var titleTextView: TextView
     private lateinit var infoTextView: TextView
     private lateinit var durationDelimiter: View
@@ -143,7 +142,7 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
         progress: Int,
         maxSteps: Int,
         progressMessage: String?,
-        errorMessage: String?
+        errorMessage: String?,
     ) {
         if (progress >= 0 && maxSteps > 0 && progress <= maxSteps) {
             backupRestoreProgress.isIndeterminate = false
@@ -200,8 +199,7 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
             when (progressType) {
                 ProgressType.BACKUP -> BackupService.BACKUP_COMPLETION_NOTIFICATION_ID
                 ProgressType.RESTORE -> RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID
-            }
+            },
         )
     }
-
 }

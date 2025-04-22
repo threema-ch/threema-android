@@ -40,7 +40,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.crypto.NativeJnaclCryptoProvider;

@@ -80,7 +80,7 @@ interface EmojiReactionsDao {
         val apiMessageId: String,
         val senderIdentity: String,
         val emojiSequence: String,
-        val reactedAt: Long
+        val reactedAt: Long,
     )
 
     data class BackupGroupReaction(
@@ -89,7 +89,7 @@ interface EmojiReactionsDao {
         val apiMessageId: String,
         val senderIdentity: String,
         val emojiSequence: String,
-        val reactedAt: Long
+        val reactedAt: Long,
     )
 
     fun interface ReactionInsertHandle {

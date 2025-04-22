@@ -25,7 +25,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
@@ -34,12 +33,10 @@ import org.junit.runner.RunWith
 /**
  * Tests that the common group receive steps are executed for a group text message.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
 class IncomingGroupTextTest : GroupControlTest<GroupTextMessage>() {
-
     @Test
     fun testForwardSecureTextMessages() = runBlocking {
         val firstMessage = GroupTextMessage()

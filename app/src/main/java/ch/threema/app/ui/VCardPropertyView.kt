@@ -51,7 +51,6 @@ private val logger = LoggingUtil.getThreemaLogger("VCardPropertyView")
  * This class manages the presentation and the selection of a VCard property.
  */
 class VCardPropertyView(context: Context) : FrameLayout(context) {
-
     private val container: View
     private val checkbox: CheckBox
     private val contactPropertyText: TextView
@@ -162,14 +161,14 @@ class VCardPropertyView(context: Context) : FrameLayout(context) {
             contactPropertyText.setTextColor(
                 ConfigUtils.getColorFromAttribute(
                     context,
-                    R.attr.colorOnBackground
-                )
+                    R.attr.colorOnBackground,
+                ),
             )
             contactPropertyType.setTextColor(
                 ConfigUtils.getColorFromAttribute(
                     context,
-                    R.attr.colorOnSurface
-                )
+                    R.attr.colorOnSurface,
+                ),
             )
         } else {
             iconExcluded?.let { contactPropertyIcon.setBackgroundResource(it) }
@@ -177,14 +176,14 @@ class VCardPropertyView(context: Context) : FrameLayout(context) {
             contactPropertyText.setTextColor(
                 ConfigUtils.getColorFromAttribute(
                     context,
-                    R.attr.colorOnSurfaceVariant
-                )
+                    R.attr.colorOnSurfaceVariant,
+                ),
             )
             contactPropertyType.setTextColor(
                 ConfigUtils.getColorFromAttribute(
                     context,
-                    R.attr.colorOnSurfaceVariant
-                )
+                    R.attr.colorOnSurfaceVariant,
+                ),
             )
         }
     }

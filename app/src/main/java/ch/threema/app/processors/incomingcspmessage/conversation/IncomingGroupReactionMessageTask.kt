@@ -28,10 +28,12 @@ import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupR
 import ch.threema.app.tasks.runCommonReactionMessageReceiveEmojiSequenceConversion
 import ch.threema.app.tasks.runCommonReactionMessageReceiveSteps
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.AbstractMessageModel
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupReactionMessageTask")
 
@@ -40,9 +42,9 @@ class IncomingGroupReactionMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupReactionMessage>(message, triggerSource, serviceManager) {
-
     private val messageService by lazy { serviceManager.messageService }
     private val groupService by lazy { serviceManager.groupService }
+    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         logger.debug("IncomingGroupReactionMessageTask from remote id: {}", message.data.messageId)
@@ -56,7 +58,12 @@ class IncomingGroupReactionMessageTask(
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
         logger.debug("IncomingGroupReactionMessageTask from sync id: {}", message.data.messageId)
 
-        val groupModel = groupService.getByGroupMessage(message)
+        val groupModel = groupModelRepository.getByGroupIdentity(
+            GroupIdentity(
+                message.groupCreator,
+                message.apiGroupId.toLong(),
+            ),
+        )
 
         if (groupModel == null) {
             logger.error("Received a reflected group reaction message in an unknown group")
@@ -67,20 +74,35 @@ class IncomingGroupReactionMessageTask(
     }
 
     private fun applyGroupReaction(groupModel: GroupModel): ReceiveStepsResult {
-        val receiver = groupService.createReceiver(groupModel)
-        val targetMessage = runCommonReactionMessageReceiveSteps(message, receiver, messageService)
-            ?: return ReceiveStepsResult.DISCARD
-        val emojiSequence =
-            runCommonReactionMessageReceiveEmojiSequenceConversion(message.data.emojiSequenceBytes)
-                ?: return ReceiveStepsResult.DISCARD
+        val receiver = groupService.createReceiver(groupModel) ?: run {
+            logger.error("Could not create receiver for group")
+            return ReceiveStepsResult.DISCARD
+        }
 
-        messageService.saveEmojiReactionMessage(
+        val targetMessage: AbstractMessageModel = runCommonReactionMessageReceiveSteps(
+            reactionMessage = message,
+            receiver = receiver,
+            messageService = messageService,
+        ) ?: return ReceiveStepsResult.DISCARD
+
+        val emojiSequence: String = runCommonReactionMessageReceiveEmojiSequenceConversion(
+            emojiSequenceBytes = message.data.emojiSequenceBytes,
+        ) ?: return ReceiveStepsResult.DISCARD
+
+        val savedSuccessfully: Boolean = messageService.saveEmojiReactionMessage(
+            /* targetMessage = */
             targetMessage,
+            /* senderIdentity = */
             message.fromIdentity,
+            /* actionCase = */
             message.data.actionCase,
-            emojiSequence
+            /* emojiSequence = */
+            emojiSequence,
         )
-
-        return ReceiveStepsResult.SUCCESS
+        return if (savedSuccessfully) {
+            ReceiveStepsResult.SUCCESS
+        } else {
+            ReceiveStepsResult.DISCARD
+        }
     }
 }

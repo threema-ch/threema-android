@@ -24,6 +24,7 @@ package ch.threema.app.services;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -329,7 +330,23 @@ public interface ContactService extends AvatarService<ContactModel> {
         @NonNull ContactModel.AcquaintanceLevel acquaintanceLevel
     );
 
-    void setIsArchived(String identity, boolean archived);
+    /**
+     * Mark the contact as archived or unarchived. This change is reflected and uses the new contact
+     * model. Listeners are triggered by the contact model repository.
+     * <p>
+     * TODO(ANDR-3721): Use this method with care until the pinned state is moved to the same
+     *  database column as the archived state. This method must only be called with isArchived=true
+     *  when the conversation of this contact is *not* pinned.
+     *
+     * @param identity the identity of the contact
+     * @param isArchived whether the contact should be archived or not
+     * @param triggerSource the source that triggered this action
+     */
+    void setIsArchived(
+        @NonNull String identity,
+        boolean isArchived,
+        @NonNull TriggerSource triggerSource
+    );
 
     /**
      * Set the `lastUpdate` field of the specified contact to the current date.
@@ -509,4 +526,17 @@ public interface ContactService extends AvatarService<ContactModel> {
         @NonNull ActiveTaskCodec handle
     );
 
+    /**
+     * This will wipe every value of `notificationTriggerPolicyOverride` and trigger
+     * contact syncs for mutated models.
+     */
+    void resetAllNotificationTriggerPolicyOverrideFromLocal();
+
+    /**
+     * @return A list of all removed contact identities loaded from database. A contact is removed when it`s acquaintance level
+     * is {@code AcquaintanceLevel.GROUP} and it is not part of any common group with the current user anymore. In case of an error,
+     * an empty result set is returned.
+     */
+    @NonNull
+    Set<String> getRemovedContacts();
 }

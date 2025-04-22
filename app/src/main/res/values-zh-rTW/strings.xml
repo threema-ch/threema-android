@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">聯絡人</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">對話</string>
     <string name="title_compose_message">建立新對話</string>
     <string name="title_choose_recipient">選擇收件者</string>
     <string name="title_keyfingerprint">密鑰指紋</string>
-    <string name="title_mythreemaid">我的 Threema ID</string>
-    <string name="title_threemaid">Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">我的 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short} ID</string>
     <string name="title_adduser">新增聯絡人</string>
     <string name="title_enter_id">輸入ID</string>
     <string name="title_invite_friend">邀請好友</string>
-    <string name="invite_via">透過...邀請好友</string>
-    <string name="invite_email_body">你好，\n\n我使用%1$s，這是保護使用者隱私的安全即時通訊工具。\n\n我的Threema ID：https://threema.id/%2$s\n\n讓我們透過%1$s進行通訊吧！\n\n\n關心您</string>
-    <string name="invite_sms_body">嘿！讓我們使用%1$s以安全和符合隱私的方式進行通訊！我的 Threema ID：https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema，保護隱私的安全即時通訊工具。</string>
-    <string name="enter_id_hint">輸入 Threema ID</string>
+    <string name="invite_via">透過…邀請好友</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">你好，\n\n我使用%1$s，這是保護使用者隱私的安全即時通訊工具。\n\n我的${app_name_short} ID：https://threema.id/%2$s\n\n讓我們透過%1$s進行通訊吧！\n\n\n關心您</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">嘿！讓我們使用%1$s以安全和符合隱私的方式進行通訊！我的 ${app_name_short} ID：https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}，保護隱私的安全即時通訊工具。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">輸入 ${app_name_short} ID</string>
     <string name="account_links">連結帳戶</string>
     <string name="menu_settings">設定</string>
-    <string name="menu_about">關於 Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">關於 ${app_name}</string>
     <string name="menu_add_contact">新增聯絡人</string>
     <string name="menu_done">完成</string>
     <string name="compose_message_and_enter">點擊這裡輸入訊息</string>
@@ -51,6 +59,10 @@
     <string name="prefs_sum_notification_sound">系統預設</string>
     <string name="prefs_vibrate">震動</string>
     <string name="prefs_sum_vibrate">收到訊息時震動</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_notification_light">通知燈</string>
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_sum_notification_light">使用彩色通知證（如裝置有通知證）顯示收到的訊息</string>
     <string name="prefs_sum_light">白色</string>
     <string name="prefs_title_wallpaper">選擇背景圖片</string>
     <string name="prefs_sum_wallpaper">選擇背景圖片</string>
@@ -67,8 +79,10 @@
     <string name="prefs_inapp_vibrate_on">接收訊息時震動</string>
     <string name="prefs_inapp_vibrate_off">接收訊息時不要震動</string>
     <string name="workarounds">解決方法</string>
-    <string name="prefs_title_threema_push_switch">使用 Threema Push</string>
-    <string name="prefs_sum_threema_push_on">使用 Threema Push 以取得新訊息通知</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_threema_push_switch">使用 ${app_name_short} Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_threema_push_on">使用 ${app_name_short} Push 以取得新訊息通知</string>
     <string name="prefs_sum_threema_push_off">使用系統推播服務檢查新訊息</string>
     <string name="prefs_logging">記錄</string>
     <string name="prefs_title_message_log_switch">記錄至檔案</string>
@@ -84,19 +98,11 @@
     <string name="image_size_large">大（1600x1600）</string>
     <string name="image_size_xlarge">最大（2592x2592）</string>
     <string name="image_size_original">原始大小</string>
-    <string name="color_none">沒有</string>
-    <string name="color_orange">橙色</string>
-    <string name="color_red">紅色</string>
-    <string name="color_green">綠色</string>
-    <string name="color_blue">藍色</string>
-    <string name="color_cyan">青色</string>
-    <string name="color_magenta">紫紅色</string>
-    <string name="color_yellow">黃色</string>
-    <string name="color_white">白色</string>
     <string name="next">下一步</string>
     <string name="finish">完成</string>
-    <string name="please_wait">請等候...</string>
-    <string name="wizard_first_create_id">正在建立您的 Threema ID…</string>
+    <string name="please_wait">請等候…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_first_create_id">正在建立您的 ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">正在同步通訊錄…</string>
     <string name="wizard2_email_hint">輸入您的電子郵件地址</string>
     <string name="wizard2_email_linking">將電子郵件連結至您的ID</string>
@@ -120,24 +126,28 @@
     <string name="linked_email">電子郵件</string>
     <string name="linked_mobile">電話號碼</string>
     <string name="public_nickname">暱稱</string>
-    <string name="share_via">分享至...</string>
+    <string name="share_via">分享至…</string>
     <string name="share_subject">%s個對話</string>
     <string name="message_delete_undo">還原</string>
-    <string name="mobile_already_linked">您的 Threema ID 已連結至此電話號碼</string>
-    <string name="email_already_linked">您的 Threema ID 已連結至此電子郵件地址</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">您的 ${app_name_short} ID 已連結至此電話號碼</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">您的 ${app_name_short} ID 已連結至此電子郵件地址</string>
     <string name="whoaaa">公告</string>
     <string name="really_delete_message_title">刪除訊息</string>
     <string name="really_delete_thread">刪除對話</string>
     <string name="really_delete_multiple_threads">刪除對話</string>
     <string name="really_delete_contact">您確定要刪除此聯絡人和所有相關的訊息吗？</string>
     <string name="image_placeholder">圖片</string>
-    <string name="invalid_threema_id">無效的 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">無效的 ${app_name_short} ID</string>
     <string name="contact_already_exists">聯絡人已存在</string>
     <string name="close">關閉</string>
     <string name="creating_contact">正在新增聯絡人</string>
     <string name="creating_contact_successful">已成功新增聯絡人</string>
     <string name="invalid_threema_qr_code">無效的QR碼</string>
-    <string name="threema_contact">Threema 聯絡人</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short} 聯絡人</string>
     <string name="first_name">名字</string>
     <string name="last_name">姓氏</string>
     <string name="os_licenses">授權條款</string>
@@ -149,7 +159,8 @@
     <string name="verify_failed_not_linked">驗證您的電話號碼失敗。驗證過程已中止。</string>
     <string name="check_incoming_sms">正在檢查收到的簡訊</string>
     <string name="backup_title">匯出ID</string>
-    <string name="backup_sum">匯出您的 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">匯出您的 ${app_name_short} ID</string>
     <string name="backup_and_delete">備份和刪除</string>
     <string name="delete_id_title">刪除ID</string>
     <string name="delete_id_message">除非您已建立備份或匯出並儲存了此ID的副本，否則您將永遠無法使用該ID再次傳送或接收訊息。\n\n如果您不想再使用此ID，建議在刪除ID之前，在 myid.threema.ch/revoke 上設定撤銷密碼並撤銷該ID。</string>
@@ -165,9 +176,11 @@
 電子郵件分享或使用其他裝置掃描QR碼。</string>
     <string name="support">説明</string>
     <string name="support_url">https://threema.ch/android/support/</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">以下文字字串可以與所選密碼一起使用
-        ，以還原您的 Threema ID。</string>
-    <string name="backup_share_subject">Threema ID 匯出為</string>
+        ，以還原您的 ${app_name_short} ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">${app_name_short} ID 匯出為</string>
     <string name="add_attachment">新增附件</string>
     <string name="invalid_passphrase">密碼無效</string>
     <string name="master_key_locked">主密鑰已被鎖定</string>
@@ -188,9 +201,14 @@
     <string name="video_placeholder">影片</string>
     <string name="audio_placeholder">音訊</string>
     <string name="restoring_backup">正在還原備份</string>
-    <string name="server_message_title">來自 Threema 伺服器的訊息</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">來自 ${company_name} 伺服器的訊息</string>
     <string name="error">錯誤</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
     <string name="no_contacts"><![CDATA[您還沒有任何聯絡人。開啟同步（「設定」>「隱私」）或手動新增聯絡人。]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_contacts_sync_on"><![CDATA[您還沒有任何聯絡人。同步已經開始，但在通訊錄中的聯絡人看似都不在 ${app_name_short} 上（您可以邀請他們加入）。]]></string>
     <string name="masterkey_title">輸入密碼</string>
     <string name="masterkey_body">您的主密鑰受密碼保護，請輸入密碼以解鎖密鑰。</string>
     <string name="masterkey_unlocking">正在解鎖主密鑰</string>
@@ -210,6 +228,8 @@
     <string name="unlink">解除連結</string>
     <string name="threema_version">版本</string>
     <string name="threema_version_code">版本號</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
+    <string name="about_server_config_title">伺服器配置</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">無法連線至網際網路，無效的ID匯出資料或錯誤的密碼</string>
     <string name="prefs_header_other">其他</string>
     <string name="an_error_occurred">發生錯誤</string>
@@ -230,10 +250,21 @@
     <string name="file_too_large">檔案大於最大大小 %1$dMB</string>
     <string name="deleting_thread">正在刪除對話</string>
     <string name="enter_serial_body"><![CDATA[請輸入您的商店授權金鑰。 如果您之前已經購買了授權，您可以<a href="https://shop.threema.ch/">購買</a>授權或<a href="https://shop.threema.ch/retrieve_keys">找回</a>您的金鑰。]]></string>
-    <string name="enter_serial_title">解鎖 Threema</string>
-    <string name="serial_required_want_exit">授權金鑰無效。您想再試一次還是退出 Threema？</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_enter_serial_body">請輸入貴公司提供的 ${app_name_short} 憑證。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">解鎖 ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">授權金鑰無效。您想再試一次還是退出 ${app_name}？</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_serial_required_want_exit">授權為無效。您想再試一次還是退出 ${app_name}？</string>
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">正在檢查授權金鑰</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
+    <string name="work_checking_credentials">正在檢查憑證</string>
     <string name="update_available">有可用更新</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
+    <string name="update_available_message">新版本已經推出，您想立即下載嗎？</string>
     <string name="no_update_available">沒有更新</string>
     <string name="download">下載</string>
     <string name="not_now">稍後提醒我</string>
@@ -348,8 +379,9 @@
     <string name="prefs_title_blocked_contacts">被封鎖的聯絡人</string>
     <string name="prefs_sum_blocked_contacts">來自這裡列出的ID的訊息將被忽略。</string>
     <string name="verified">已驗證</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="want_to_add_to_exclude_list">此聯絡人已連結至電話通訊錄中的記錄。如果您
-在 Threema 中將其刪除，在聯絡人同步之後他會重新出現。 \n是否要從同步中排除他？</string>
+在 ${app_name_short} 中將其刪除，在聯絡人同步之後他會重新出現。 \n是否要從同步中排除他？</string>
     <string name="no">否</string>
     <string name="yes">是</string>
     <string name="deleting_contact">正在刪除聯絡人</string>
@@ -363,8 +395,10 @@
     <string name="prefs_sum_default_contact_picture_colored_on">如果缺少大頭貼，
 則顯示多色預留位置</string>
     <string name="prefs_sum_default_contact_picture_colored_off">如果缺少大頭貼，則使用灰色預留位置</string>
-    <string name="prefs_sum_show_inactive_contacts_on">顯示您的聯絡人名單中的所有 Threema ID</string>
-    <string name="prefs_sum_show_inactive_contacts_off">隱藏非活躍/已撤銷的 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">顯示您的聯絡人名單中的所有 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">隱藏非活躍/已撤銷的 ${app_name_short} ID</string>
     <string name="contact_sorting_first_name">名字 - 姓氏</string>
     <string name="contact_sorting_last_name">姓氏 - 名字</string>
     <string name="contact_format_first_name_last_name">先名字，後姓氏</string>
@@ -382,7 +416,8 @@
     <string name="prefs_title_fullscreen_ime">全螢幕鍵盤</string>
     <string name="prefs_sum_fullscreen_ime_on">如果您的裝置處於橫向模式，鍵盤將覆蓋應用程式</string>
     <string name="prefs_sum_fullscreen_ime_off">如果有空間，則在鍵盤上方顯示對話的預覽</string>
-    <string name="add_acount_from_within_threema">在 Threema 內管理您的 Threema ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">在 ${app_name_short} 內管理您的 ${app_name_short} ID。</string>
     <string name="save_image">儲存圖片</string>
     <string name="share_image">分享圖片</string>
     <string name="view_in_gallery">在圖片庫中檢視</string>
@@ -401,10 +436,11 @@
     <string name="is_typing">輸入中…</string>
     <string name="push_not_available_title">找不到推播服務</string>
     <string name="push_not_available_text1">我們無法在您的裝置上找到推播服務，因為 Google Play 服務未安裝或過期。</string>
-    <string name="push_not_available_text2">%s 將在背景持續地與伺服器連線。如果您的裝置啟用了電池最佳化，這可能會干擾背景連線，Threema Push 將可能無法可靠地執行。</string>
+    <string name="push_not_available_text2">%s 將在背景持續地與伺服器連線。如果您的裝置啟用了電池最佳化，這可能會干擾背景連線，${app_name_short} Push 將可能無法可靠地執行。</string>
     <string name="backup_in_progress">正在進行備份</string>
     <string name="backup_or_restore_success_body">資料備份成功完成</string>
-    <string name="backup_or_restore_error">Threema 備份</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short} 備份</string>
     <string name="backup_or_restore_error_body">備份未成功完成</string>
     <string name="could_not_download_message">無法下載訊息</string>
     <string name="info">資訊</string>
@@ -437,8 +473,8 @@
     <string name="num_items_sected">已選定 %s</string>
     <string name="really_delete_media">您確定要刪除%d則媒體訊息嗎？</string>
     <string name="check_updates">檢查更新</string>
-    <string name="masterkey_lock_explain">Threema 一直記錄密碼。如果您遇到需要經常重新輸入密碼
-的情况，請確保已停用可能會過早結束 Threema 的工作管理員和電池最佳化應用程式。</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name} 一直記錄密碼。如果您遇到需要經常重新輸入密碼 的情况，請確保已停用可能會過早結束 ${app_name_short} 的工作管理員和電池最佳化應用程式。</string>
     <string name="identity_already_exists">此ID已在您的聯絡人名單中</string>
     <string name="share_contact">分享聯絡人</string>
     <string name="add_shortcut">建立捷徑</string>
@@ -473,7 +509,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_subject_hint">輸入這次投票的標題</string>
     <string name="ballot_no_ballots_yet">還沒有人投票。</string>
     <string name="print">列印</string>
-    <string name="ballot_wizard0_explain">您可以直接用 Threema 快速建立線上投票，例如安排活動、建立問卷調查或向好友問任何問題。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">您可以直接用 ${app_name_short} 快速建立線上投票，例如安排活動、建立問卷調查或向好友問任何問題。</string>
     <string name="ballot_add_choices">新增答案</string>
     <string name="blocked_cannot_send">您無法將訊息傳送給被封鎖的聯絡人</string>
     <string name="invalid_some_cannot_send">無法選擇傳送至某些收件者。</string>
@@ -489,7 +526,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="back">返回</string>
     <string name="wearable_reply">回覆</string>
     <string name="wearable_reply_label">回覆 %s</string>
-    <string name="push_disable_text">如果繼續，您將使用「Threema Push」代替系統內置的推播服務。雖然這能減少您的數碼足跡，但您需要允許「應用程式在背景執行」才能順利使用。如果在裝置設定中找不到相應的選項，您可能需要聯絡裝置製造商的支援以取得配置說明。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">如果繼續，您將使用「${app_name_short} Push」代替系統內置的推播服務。雖然這能減少您的數碼足跡，但您需要允許「應用程式在背景執行」才能順利使用。如果在裝置設定中找不到相應的選項，您可能需要聯絡裝置製造商的支援以取得配置說明。</string>
     <string name="ballot_intermediate_results_show">顯示中間結果</string>
     <string name="converting_video">正在處理影片</string>
     <string name="video_size_small">高品質（佔用數據用量較少）</string>
@@ -504,7 +542,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="kick_user_from_group">將%1$s踢出群組</string>
     <string name="show_as_qrcode">顯示為QR碼</string>
     <string name="qr_code">QR碼</string>
-    <string name="really_leave_id_export">如果您還沒有備份，請將ID匯出文字字串或將相應的QR碼儲存至安全位置或列印。沒有備份的話，則無法還原您的 Threema ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="really_leave_id_export">如果您還沒有備份，請將ID匯出文字字串或將相應的QR碼儲存至安全位置或列印。沒有備份的話，則無法還原您的 ${app_name_short} ID。</string>
     <string name="revocation_key_title">ID撤銷</string>
     <string name="revocation_key_not_set">未設定撤銷密碼</string>
     <string name="revocation_key_set_at">撤銷密碼設定為%1$s</string>
@@ -528,7 +567,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="internal_storage">內部儲存</string>
     <string name="no_activity_for_mime_type">找不到開啟此檔案的應用程式。</string>
     <string name="no_activity_for_intent">找不到應用程式。</string>
-    <string name="open_from">從...開啟</string>
+    <string name="open_from">從…開啟</string>
     <string name="file_one_contact_not_supported">%1$s 無法接收檔案。</string>
     <string name="file_x_contact_not_supported">警告：%1$d個聯絡人無法接收您的檔案。</string>
     <string name="mime_android_apk">Android 套件</string>
@@ -586,9 +625,11 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="invalid_data">無效資料。無法傳送。</string>
     <string name="prefs_emoji_style">表情符號樣式</string>
     <string name="prefs_android_emojis">系統表情符號</string>
-    <string name="prefs_default_emojis">Threema 表情符號（預設）</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short} 表情符號（預設）</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="android_emojis_warning">注意：系統的字元集可能無法顯示
-Threema 支援的所有表情符號。</string>
+${app_name_short} 支援的所有表情符號。</string>
     <string name="crop">裁剪</string>
     <string name="scan_id_mismatch_title">ID不相符</string>
     <string name="scan_id_mismatch_message">您掃描的ID與您儲存的聯絡人不相符。</string>
@@ -605,12 +646,16 @@ Threema 支援的所有表情符號。</string>
     <string name="fontsize_xlarge">特大</string>
     <string name="no_app_for_location">在此裝置上找不到地圖應用程式</string>
     <string name="prefs_sendlog">傳送日誌</string>
-    <string name="prefs_sendlog_summary">將日誌傳送至 Threema，以便在出現問題時進行進一步分析</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">將日誌傳送至 ${company_name}，以便在出現問題時進行進一步分析</string>
     <string name="prefs_exportlog">匯出紀錄檔案</string>
     <string name="prefs_exportlog_summary">與其他應用程式分享紀錄檔案</string>
-    <string name="permission_storage_required">如要儲存或傳送媒體，請允許 Threema 取用儲存權限。</string>
-    <string name="permission_location_required">如要傳送位置，請允許 Threema 取用您的位置的權限。</string>
-    <string name="permission_contacts_required">如要傳送聯絡人，請允許 Threema 讀取聯絡人的權限。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_storage_required">如要儲存或傳送媒體，請允許 ${app_name} 取用儲存權限。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_location_required">如要傳送位置，請允許 ${app_name} 取用您的位置的權限。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_contacts_required">如要傳送聯絡人，請允許 ${app_name} 讀取聯絡人的權限。</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <string name="message_acknowledged">已發送「讚好」</string>
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
@@ -629,46 +674,57 @@ Threema 支援的所有表情符號。</string>
     <string name="new_wizard_select_country">選擇您的國家</string>
     <string name="new_wizard_lets_get_started">讓我們開始吧！</string>
     <string name="new_wizard_setup_threema">立即設定</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_new_wizard_setup_threema">設定 ${app_name}</string>
     <string name="new_wizard_restore_id_backup">還原已匯出的ID</string>
-    <string name="new_wizard_welcome">歡迎使用 Threema！</string>
-    <string name="new_wizard_move_finger">在螢幕上移動手指以生成新的 Threema ID。</string>
-    <string name="new_wizard_this_is_your_id">這是您的 Threema ID：</string>
-    <string name="new_wizard_works_like_phone_number">您的 Threema ID 就像電話號碼一樣。\n您的好友可以透過這個ID與您聯絡。</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">歡迎使用 ${app_name}！</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">在螢幕上移動手指以生成新的 ${app_name_short} ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">這是您的 ${app_name_short} ID：</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">您的 ${app_name_short} ID 就像電話號碼一樣。\n您的好友可以透過這個ID與您聯絡。</string>
     <string name="new_wizard_choose_nickname">選擇暱稱</string>
     <string name="new_wizard_nickname_explain">您的好友會在通知中看到您的暱稱</string>
     <string name="new_wizard_hint_enter_nickname">輸入暱稱</string>
     <string name="new_wizard_help_your_friends_find_you">協助您的好友找到您！</string>
-    <string name="new_wizard_link_mobile">將您的電話號碼和/或電子郵件連結至 Threema ID。</string>
-    <string name="new_wizard_link_mobile_only">\u5c07\u60a8\u7684\u96fb\u8a71\u865f\u78bc\u9023\u7d50\u81f3 Threema ID\u3002</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">將您的電話號碼和/或電子郵件連結至 ${app_name_short} ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">將您的電話號碼連結至 ${app_name_short} ID。</string>
     <string name="new_wizard_hint_mobile_number">電話號碼（選用）</string>
     <string name="new_wizard_hint_email">電子郵件（選用）</string>
-    <string name="new_wizard_find_friends">在 Threema 上尋找您的好友</string>
-    <string name="new_wizard_sync_contacts_explain">開啟查看哪些好友正在使用 Threema。</string>
     <string name="new_wizard_done_title">大功告成！\n資料正確嗎？</string>
     <string name="new_wizard_linked_to">連結至</string>
-    <string name="new_wizard_need_internet">建立唯一的 Threema ID 需要穩定的網路連線。請再試一次。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">建立唯一的 ${app_name_short} ID 需要穩定的網路連線。請再試一次。</string>
     <string name="new_wizard_more_information">更多資訊</string>
     <string name="message_details_message_id_copied">訊息ID已複製至剪貼簿</string>
     <string name="contact_details_id_copied">ID已複製至剪貼簿</string>
     <string name="contact_details_nickname_copied">暱稱已複製至剪貼簿</string>
-    <string name="new_wizard_use_id_as_nickname">您想用 Threema ID 作為您的暱稱嗎？</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">您想用 ${app_name_short} ID 作為您的暱稱嗎？</string>
     <string name="new_wizard_phone_email_invalid">您輸入的電話號碼或電子郵件地址無效。\n請先更正，然後再繼續。</string>
     <string name="new_wizard_phone_invalid">您輸入的電話號碼無效。\n請先更正，然後再繼續。</string>
-    <string name="new_wizard_info_fingerprint">透過移動手指，您可以建立隨機資料（稱為熵），該資料用於生成與全新而唯一的 Threema ID 相關的金鑰對。該金鑰對包括一個<b>公鑰</b>，分配給您的好友，而<b>私鑰</b>安全地儲存在您的電話上。您的好友將使用您的公鑰加密傳送給您的訊息。只有私鑰的擁有者才能解密這些訊息，其他人都不能解密。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_fingerprint">透過移動手指，您可以建立隨機資料（稱為熵），該資料用於生成與全新而唯一的 ${app_name_short} ID 相關的金鑰對。該金鑰對包括一個<b>公鑰</b>，分配給您的好友，而<b>私鑰</b>安全地儲存在您的電話上。您的好友將使用您的公鑰加密傳送給您的訊息。只有私鑰的擁有者才能解密這些訊息，其他人都不能解密。</string>
     <string name="new_wizard_info_id">您還建立了一個金鑰對。金鑰已安全地傳輸到我們的伺服器。
 私鑰永遠不會離開您的裝置。這樣可以確保沒有其他人可以閱讀您的訊息。</string>
-    <string name="new_wizard_info_sync_contacts">如果開啟此選項，Threema 會將電子郵件地址和電話號碼單向加密（雜湊），
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_sync_contacts">如果開啟此選項，${app_name_short} 會將電子郵件地址和電話號碼單向加密（雜湊），
 然後將其傳送到伺服器以尋找相符的聯絡人。我們不會儲存任何通訊錄資料。</string>
     <string name="new_wizard_info_sync_contacts_dialog">聯絡人同步可以協助您找到您的好友。如果選擇同意，電話簿中的電話號碼和電郵地址將先以加密的形式傳送到我們的伺服器，來尋找相符的聯絡人。我們絕對不會儲存或分享任何資料。\n\n是否要開啟聯絡人同步？</string>
-    <string name="new_wizard_info_link">透過提供您的電話號碼和電子郵件地址，Threema 可以協助您的好友自動在您的電話通訊錄中找到您。
-資料將以單向加密（雜湊）形式儲存在我們的伺服器上。
-如果您想完全匿名使用 Threema，則可以跳過此步驟。</string>
-    <string name="new_wizard_info_link_phone_only">透過提供您的電話號碼，Threema 可以協助您的好友自動在您的電話通訊錄中找到您。
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">透過提供您的電話號碼和電子郵件地址，${app_name_short} 可以協助您的好友自動在您的電話通訊錄中找到您。\n資料將以單向加密（雜湊）形式儲存在我們的伺服器上。\n如果您想完全匿名使用 ${app_name}，則可以跳過此步驟。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">透過提供您的電話號碼，${app_name_short} 可以協助您的好友自動在您的電話通訊錄中找到您。
 電話號碼將單向加密（雜湊）形式儲存在我們的伺服器上。
-如果您想完全匿名使用 Threema，則可以跳過此步驟。</string>
+如果您想完全匿名使用 ${app_name_short}，則可以跳過此步驟。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_nickname">暱稱用於裝置上的推播通知，或向尚未將您儲存在通訊錄的使用者識別您的身份。
 我們建議您僅提供您的名字或化名作為暱稱。
-如果您未設定暱稱，在預設情況下，我們將使用您的 Threema ID。</string>
+如果您未設定暱稱，在預設情況下，我們將使用您的 ${app_name_short} ID。</string>
     <string name="not_linked">尚未連結</string>
     <string name="linked">已連結</string>
     <string name="pending_sms_verification_notice">您的電話號碼尚未驗證。</string>
@@ -680,8 +736,10 @@ Threema 支援的所有表情符號。</string>
     <string name="status_ballot_user_modified_vote">%1$s 變更了 %2$s 的投票</string>
     <string name="status_ballot_all_votes">已完成 %1$s 的投票</string>
     <string name="restore">還原</string>
-    <string name="new_wizard_anonymous_confirm">您沒有輸入電話號碼或電子郵件地址連結至 Threema ID，您將不會出現在好友的聯絡人名單中。您確定要匿名使用 Threema 嗎？</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">您沒有輸入電話號碼連結至 Threema ID。您將不會出現在好友的聯絡人名單中。您確定要匿名使用 Threema 嗎？</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">您沒有輸入電話號碼或電子郵件地址連結至 ${app_name_short} ID，您將不會出現在好友的聯絡人名單中。您確定要匿名使用 ${app_name} 嗎？</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">您沒有輸入電話號碼連結至 ${app_name_short} ID。您將不會出現在好友的聯絡人名單中。您確定要匿名使用 ${app_name} 嗎？</string>
     <string name="new_wizard_scan_id_backup">或掃描ID匯出的QR碼</string>
     <string name="error_saving_file">儲存檔案時出錯。請檢查權限。</string>
     <string name="wait_one_minute">要求通話前，請至少等候10分鐘，直至收到簡訊。</string>
@@ -725,7 +783,8 @@ Threema 支援的所有表情符號。</string>
     <string name="lock_option_none">沒有</string>
     <string name="lock_option_pin">PIN 碼</string>
     <string name="lock_option_screenlock">系統螢幕鎖定</string>
-    <string name="hide_chat_message_explain">Threema 允許您使用 PIN 碼保護某些對話，並將其暫時隱藏在訊息清單中。如要開啟私密對話，請設定 PIN 碼或在設定中啟用系統螢幕鎖定（Android 6.0+）。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="hide_chat_message_explain">${app_name_short} 允許您使用 PIN 碼保護某些對話，並將其暫時隱藏在訊息清單中。如要開啟私密對話，請設定 PIN 碼或在設定中啟用系統螢幕鎖定（Android 6.0+）。</string>
     <string name="set_lock">現在設定</string>
     <string name="prefs_title_access_protection">取用保障</string>
     <string name="private_chat_subject">私密</string>
@@ -737,7 +796,7 @@ Threema 支援的所有表情符號。</string>
     <string name="grace_thirty_minutes">30分鐘</string>
     <string name="grace_never">從不（手動）</string>
     <string name="never">從不</string>
-    <string name="unhide_chats_confirm">如果立即移除取用保障，您的私密對話將再次可見。</string>
+    <string name="access_protection_cannot_be_removed">由於存在有私密對話，因此無法移除存取保護。</string>
     <string name="verification_started">驗證開始</string>
     <string name="cannot_open_file">無法開啟檔案</string>
     <string name="prefs_title_image_attach_previews">媒體快速選擇</string>
@@ -747,7 +806,8 @@ Threema 支援的所有表情符號。</string>
     <string name="restore_disable_energy_saving">請將裝置連接至充電器，並停用所有節能選項，以防裝置中斷備份或還原過程。</string>
     <string name="draft">草稿</string>
     <string name="prefs_bigger_single_emojis">更大的單個表情符號</string>
-    <string name="wizard1_sync_work">正在同步 Threema Work 資料…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard1_sync_work">正在同步 ${app_name} 資料…</string>
     <string name="notification_hidden_text">內容已隱藏</string>
     <string name="really_reset_ringtones">真的將通知音效設定重設為預設值嗎？</string>
     <string name="reset_ringtones_confirm">通知音效設定已重設。</string>
@@ -771,7 +831,8 @@ Threema 支援的所有表情符號。</string>
     <string name="battery_optimizations_disable_guide_ctd">在清單中搜尋 %s 並停用最佳化</string>
     <string name="battery_optimizations_disable_confirm">您確定要對 %1$s 保持開啟電池最佳化嗎？%2$s 無法正常執行。</string>
     <string name="enter_text_hint">輸入文字</string>
-    <string name="backup_explain_text">如果您切換或丟失裝置，如果您沒有備份，您將無法還原您的 Threema ID 或對話。請使用適當的備份方法儲存您的資料。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">如果您切換或丟失裝置，如果您沒有備份，您將無法還原您的 ${app_name_short} ID 或對話。請使用適當的備份方法儲存您的資料。</string>
     <string name="data_backup_explain">資料備份包括：\n\n&#9679; 您的ID和金鑰對\n&#9679; 聯絡人和信任等級\n&#9679; 群組成員資格\n&#9679; 對話\n&#9679; 媒體和檔案（選用）\n\n資料將儲存至加密的 ZIP 檔案中。建議備份成功完成後，將檔案儲存至其他地方。</string>
     <string name="draw">繪畫</string>
     <string name="edit">編輯</string>
@@ -785,8 +846,10 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_ipv6_preferred_off">僅限使用 IPv4 連線</string>
     <string name="prefs_ipv6_preferred_on">在 IPv4 上優先使用 IPv6 連線</string>
     <string name="prefs_title_ipv6_webrtc_allowed">以 IPv6 通話和上網</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">允許 Threema 通話和桌面應用程式/網頁用戶端使用 IPv6。</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">禁止 Threema 通話和桌面應用程式/網頁用戶端使用 IPv6。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_on">允許 ${app_name_short} 通話和桌面應用程式/網頁用戶端使用 IPv6。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_off">禁止 ${app_name_short} 通話和桌面應用程式/網頁用戶端使用 IPv6。</string>
     <string name="ipv6_requires_restart">如要應用此設定，需要重新啟動應用程式。</string>
     <string name="ipv6_restart_now">立即重新啟動</string>
     <string name="on_cap">開啟</string>
@@ -812,38 +875,51 @@ Threema 支援的所有表情符號。</string>
     <string name="menu_send_profilpic_off">移除大頭貼收件者</string>
     <string name="menu_send_profilpic_now">立即傳送大頭貼</string>
     <string name="profile_picture_sent">大頭貼已傳送</string>
-    <string name="sending_messages">傳送中...</string>
-    <string name="backup_data_media_confirm">將大型媒體檔案儲存至本地 ZIP 備份可能會超過裝置的 CPU 和記憶體容量，並且可能需要很長時間才能完成。在備份運行期間，Threema 不能傳送或接收訊息。是否繼續？</string>
+    <string name="sending_messages">傳送中…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">將大型媒體檔案儲存至本地 ZIP 備份可能會超過裝置的 CPU 和記憶體容量，並且可能需要很長時間才能完成。在備份運行期間，${app_name} 不能傳送或接收訊息。是否繼續？</string>
     <string name="backup_data_cancelled">備份已取消</string>
-    <string name="service_manager_not_available">無法開啟 Threema。請先重新啟動裝置，然後再開啟應用程式。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="service_manager_not_available">無法開啟 ${app_name}。請先重新啟動裝置，然後再開啟應用程式。</string>
     <string name="message_sent">訊息已傳送</string>
-    <string name="threema_call">Threema 通話</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">${app_name_short} 通話</string>
     <string name="threema_message_to">傳送至%s的訊息</string>
     <string name="threema_call_with">致電至 %s</string>
-    <string name="prefs_title_voip">Threema 通話</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">${app_name_short} 通話</string>
     <string name="prefs_title_force_turn">始終中繼通話</string>
-    <string name="prefs_summary_force_turn_off">如果可以的話，則建立直接連線，並且僅透過 Threema 伺服器將呼叫中繼到未經驗證的聯絡人。這可能會暴露您的IP位址。</string>
-    <string name="prefs_summary_force_turn_on">透過 Threema 伺服器強制中繼所有通話，從而保護您的 IP 地址。這可能會影響通話品質。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">如果可以的話，則建立直接連線，並且僅透過 ${company_name} 伺服器將呼叫中繼到未經驗證的聯絡人。這可能會暴露您的IP位址。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">透過 ${company_name} 伺服器強制中繼所有通話，從而保護您的 IP 地址。這可能會影響通話品質。</string>
     <string name="permission_record_audio_required">如要撥打加密電話並傳送語音訊息，請允許取用麥克風。</string>
-    <string name="prefs_voice_call_notifications">語音通話</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_voice_call_notifications">${app_name_short} 通話</string>
     <string name="prefs_voice_call_sound">鈴聲</string>
-    <string name="prefs_sum_voice_call_sound">選擇 Threema 通話的來電鈴聲</string>
-    <string name="prefs_sum_voice_call_vibrate">收到 Threema 通話來電時震動</string>
-    <string name="prefs_title_voip_enable">開啟 Threema 通話</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">選擇 ${app_name_short} 通話的來電鈴聲</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">收到 ${app_name_short} 通話來電時震動</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">開啟 ${app_name_short} 通話</string>
     <string name="webclient_invalid_push_token_message">需要手動啟動</string>
     <string name="threema_work_contact">Threema Work 聯絡人</string>
-    <string name="permission_phone_required">使用 Threema 通話時允許管理電話的權限</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">使用 ${app_name} 通話時允許管理電話的權限</string>
     <string name="strikethrough">刪除線</string>
     <string name="italic">斜體</string>
     <string name="bold">粗體</string>
     <string name="shortcut_choice_title">為…建立捷徑</string>
     <string name="prefs_title_device_info">裝置資訊</string>
     <string name="notifications_disabled_title">停用推播通知</string>
-    <string name="notifications_disabled_text">在系統設定中已停用 Threema 的通知。您將不會收到有關新訊息的通知。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">在系統設定中已停用 ${app_name} 的通知。您將不會收到有關新訊息的通知。</string>
     <string name="notifications_disabled_settings">編輯系統設定</string>
     <string name="error_attaching_files">新增附件時出錯。</string>
     <string name="prefs_fix_powermanager_problems">停用電源限制</string>
-    <string name="prefs_fix_powermanager_problems_desc">允許 Threema 在背景執行，即使不在執行狀態也可以接收訊息。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">允許 ${app_name} 在背景執行，即使不在執行狀態也可以接收訊息。</string>
     <string name="disable_powermanager_explain">在下一個畫面中，確保對 %s 允許背景執行，以及設定「忽略電池效能最佳化」。完成後，點擊「返回」按鈕。</string>
     <string name="disable_autostart_explain">在下一個畫面中，確保 %s 在自動啟動的應用程式清單中。完成後，點擊「返回」按鈕。</string>
     <string name="notification_priority_default">低</string>
@@ -864,10 +940,12 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_auto_download_title">自動下載多媒體檔案</string>
     <string name="prefs_auto_download_wifi">當連線至 Wifi 時</string>
     <string name="prefs_auto_download_mobile">當使用行動數據時</string>
-    <string name="rate_intro">你如何評價 Threema？</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">你如何評價 ${app_name}？</string>
     <string name="rate_feedback_intro">請讓我們知道如何改善應用程式（選用）。</string>
     <string name="rate_positive">發表評論</string>
-    <string name="rate_title">評價 Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">評價 ${app_name}</string>
     <string name="rate_thank_you">謝謝您的評價！</string>
     <string name="disabled_by_policy_short">管理員已停用功能</string>
     <string name="rate_forward_to_play_store">您還要在 Google Play 上給我們評分嗎？</string>
@@ -878,15 +956,18 @@ Threema 支援的所有表情符號。</string>
     <string name="plus">加</string>
     <string name="switched_off">關閉</string>
     <string name="switched_on">開啟</string>
-    <string name="title_tab_work_users">Threema Work 使用者</string>
-    <string name="no_matching_work_contacts">找不到經管理員驗證的 Threema Work 聯絡人</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">${app_name} 使用者</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">找不到經管理員驗證的 ${app_name} 聯絡人</string>
     <string name="all">所有</string>
     <string name="webclient_session_stop_all">關閉所有</string>
     <string name="passphrase_service_name">密碼服務</string>
     <string name="passphrase_service_description">密碼解鎖時的通知</string>
-    <string name="webclient_service_description">Threema 桌面版/網頁版工作階段執行時的通知</string>
+    <string name="webclient_service_description">桌面版/網頁版工作階段執行時的通知</string>
     <string name="prefs_title_accept_privacy_policy">接受隱私權政策</string>
-    <string name="privacy_policy_explain">%1$s比任何其他即時通訊工具都更加嚴格地保護您的隱私。在我們的%2$s中了解更多。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name}比任何其他即時通訊工具都更加嚴格地保護您的隱私。在我們的%1$s中了解更多。</string>
     <string name="privacy_policy_check_confirm">使用 %s 前，請接受隱私權政策。\n\n（根據歐盟法規 2016/679《一般資料保護規範》的要求）</string>
     <string name="prefs_title_incognito_keyboard">要求隱身鍵盤</string>
     <string name="prefs_sum_incognito_keyboard">停止資料收集以取得個人化建議（如果鍵盤支援）</string>
@@ -899,41 +980,59 @@ Threema 支援的所有表情符號。</string>
     <string name="password_too_short_generic">密碼長度太短</string>
     <string name="passwords_dont_match">密碼不相符</string>
     <string name="test_unsuccessful">測試失敗</string>
-    <string name="preparing_threema_safe">正在準備 Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">正在準備 ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">電源限制</string>
     <string name="disable_autostart_title">自動重啟</string>
     <string name="unchanged">不變</string>
     <string name="safe_learn_more_button">更多資訊</string>
-    <string name="safe_enable_explain">您對話相關的所有資料只儲存在您的裝置上。因為我們沒有儲存您的帳戶，所以如果您丢失了電話或意外刪除了資料，我们將無法為您提供協助。\n\nThreema Safe 在您選擇的安全伺服器上，以匿名方式建立所有重要資料的自動備份，包括您的金鑰，聯絡人清單和群組成員身份（但不包括訊息內容）。</string>
-    <string name="safe_disable_confirm">您確定要在不開啟 Threema Safe 的情況下繼續嗎？當使用 Threema Safe 時，您可以還原您的 Threema ID、聯絡人和群組，以防您失去裝置的存取權。</string>
-    <string name="safe_configure_choose_password">請選擇一個強密碼。您將需要此密碼來還原 Threema Safe 備份。</string>
-    <string name="safe_configure_choose_server">選擇 Threema Safe 伺服器</string>
-    <string name="safe_configure_server_explain">您可以使用 Threema 官方的伺服器，也可以選擇使用第三方備份伺服器。</string>
+    <string name="safe_enable_explain">您對話相關的所有資料只儲存在您的裝置上。因為我們沒有儲存您的帳戶，所以如果您丢失了電話或意外刪除了資料，我们將無法為您提供協助。\n\n${app_name_short} Safe 在您選擇的安全伺服器上，以匿名方式建立所有重要資料的自動備份，包括您的金鑰，聯絡人清單和群組成員身份（但不包括訊息內容）。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">您確定要在不開啟 ${app_name_short} Safe 的情況下繼續嗎？當使用 ${app_name_short} Safe 時，您可以還原您的 ${app_name_short} ID、聯絡人和群組，以防您失去裝置的存取權。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">請選擇一個強密碼。您將需要此密碼來還原 ${app_name_short} Safe 備份。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_server">選擇 ${app_name_short} Safe 伺服器</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">您可以使用 ${company_name} 官方的伺服器，也可以選擇使用第三方備份伺服器。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="onprem_safe_configure_server_explain">將您的 ${app_name_short} Safe 備份儲存在貴機構的伺服器上，或指定不同的備份伺服器。</string>
     <string name="safe_use_default_server">使用預設伺服器</string>
     <string name="safe_test_server">測試連接伺服器</string>
     <string name="safe_advanced_options">專業設定</string>
-    <string name="safe_enter_password">請輸入您的 Threema Safe 密碼</string>
-    <string name="safe_threema_id">您的 Threema ID</string>
-    <string name="safe_restore_enter_id">請輸入您想恢復的 Threema ID</string>
-    <string name="safe_search_id_title">請輸入與您的ID所連結的電話號碼或電子郵件地址</string>
-    <string name="safe_id_lookup">查找 Threema ID</string>
-    <string name="safe_no_id_found">找不到 Threema ID</string>
+    <string name="safe_enter_password">請輸入您的 ${app_name_short} Safe 密碼</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">您的 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">請輸入您想恢復的 ${app_name_short} ID</string>
+    <string name="safe_search_id_title">請輸入與您的 ${app_name_short} ID所連結的電話號碼或電子郵件地址</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">查找 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">找不到 ${app_name_short} ID</string>
     <string name="safe_no_backup_found">在伺服器上找不到備份。請檢查ID和密碼。</string>
-    <string name="safe_select_id">找到多個 Threema ID。請選擇要使用的 ID：</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">找到多個 ${app_name_short} ID。請選擇要使用的 ID：</string>
     <string name="safe_backup_now">立即備份</string>
-    <string name="safe_enable_explain_short">開啟 Threema Safe 可以自動為所有重要資料建立安全和匿名的備份。</string>
-    <string name="safe_deleting">刪除 Threema Safe 備份</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">開啟 ${app_name_short} Safe 可以自動為所有重要資料建立安全和匿名的備份。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">刪除 ${app_name_short} Safe 備份</string>
     <string name="safe_delete_error">刪除備份時出錯：%s</string>
     <string name="safe_delete_success">備份已在伺服器上成功刪除</string>
-    <string name="safe_error_preparing">準備 Threema Safe 備份時出錯</string>
-    <string name="safe_configure_choose_password_force">請設定一個強密碼，以使用 Threema Safe 保護您的 Threema ID。請不要忘記您在這裡輸入的內容！</string>
-    <string name="safe_deactivate">停用 Threema Safe</string>
-    <string name="safe_deactivate_explain">如果您停用 Threema Safe，任何現有的備份都將在伺服器上被刪除。是否繼續？</string>
+    <string name="safe_error_preparing">準備 ${app_name_short} Safe 備份時出錯</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">請設定一個強密碼，以使用 ${app_name_short} Safe 保護您的 ${app_name_short} ID。請不要忘記您在這裡輸入的內容！</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">停用 ${app_name_short} Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">如果您停用 ${app_name_short} Safe，任何現有的備份都將在伺服器上被刪除。是否繼續？</string>
     <string name="add_group_members">新增更多成員</string>
     <string name="contact_add_confirm">您想將新聯絡人「%1$s」新增至您的聯絡人清單中嗎？</string>
     <string name="password_bad">密碼強度低</string>
     <string name="prefs_fix_background_data">開啟背景數據</string>
-    <string name="prefs_fix_background_data_desc">如要讓 Threema 處於背景時接收訊息，請同時開啟「背景數據」和「數據用量不受限」</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">如要讓 ${app_name} 處於背景時接收訊息，請同時開啟「背景數據」和「數據用量不受限」</string>
     <string name="prefs_fix_device">解決裝置配置問題</string>
     <string name="safe_successful">成功</string>
     <string name="safe_unsuccessful">失敗</string>
@@ -949,8 +1048,10 @@ Threema 支援的所有表情符號。</string>
     <string name="safe_size">備份大小</string>
     <string name="backup_version_mismatch">此備份的版本高於支援的版本。請更新至最新版本的應用程式。</string>
     <string name="safe_restore_failed">還原失敗</string>
-    <string name="safe_failed_notification">Threema Safe 備份連續%d天失敗。點擊這裡檢視。</string>
-    <string name="safe_restore">還原 Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">${app_name_short} Safe 備份連續%d天失敗。點擊這裡檢視。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">還原 ${app_name_short} Safe</string>
     <string name="backup_restore_in_progress">正在進行備份或還原。檢查通知以取用狀態資訊。</string>
     <string name="restore_error_body">還原未成功完成</string>
     <string name="forgot_your_id">忘記了您的ID？</string>
@@ -958,8 +1059,10 @@ Threema 支援的所有表情符號。</string>
     <string name="work_data_sync">資料同步</string>
     <string name="private_contact">私密聯絡人</string>
     <string name="ringtone_selection_default">預設（%s）</string>
-    <string name="work_data_sync_desc">Threema Work 同步</string>
-    <string name="ballot_not_connected">在結束投票之前，請確保 Threema 在線。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">${app_name} 同步</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">在結束投票之前，請確保 ${app_name} 在線。</string>
     <string name="empty_chat_title">清空對話記錄</string>
     <string name="empty_chat_confirm">此對話中的所有訊息將被刪除。是否繼續？</string>
     <string name="emptying_chat">正在清空對話記錄</string>
@@ -977,21 +1080,26 @@ Threema 支援的所有表情符號。</string>
     <string name="notification_channel_notices">告示</string>
     <string name="chat_updates">對話更新</string>
     <string name="backup_or_restore_progress">備份和還原進度</string>
-    <string name="tooltip_export_id">點擊這裡立即分享或列印您的加密 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">點擊這裡立即分享或列印您的加密 ${app_name_short} ID</string>
     <string name="downloading">下載中</string>
     <string name="today">今天</string>
     <string name="restore_data_cancelled">還原已取消</string>
     <string name="safe_change_password">變更密碼</string>
     <string name="safe_configure_choose_password_title">選擇密碼</string>
-    <string name="password_bad_explain">Threema Safe 選定的密碼不安全，容易被攻擊者猜中，請選擇其他密碼。提示：使用由多個詞彙組成的密碼。</string>
-    <string name="safe_password_updated">Threema Safe 密碼已更新。</string>
-    <string name="safe_activated">Threema Safe 現在已開啟。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">${app_name_short} Safe 選定的密碼不安全，容易被攻擊者猜中，請選擇其他密碼。提示：使用由多個詞彙組成的密碼。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">${app_name_short} Safe 密碼已更新。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">${app_name_short} Safe 現在已開啟。</string>
     <string name="restore_zip_invalid_file">備份檔案無效。</string>
     <string name="push_token_cleared">推播服務已清除</string>
     <string name="insert_date">輸入日期</string>
     <string name="add_answer">新增答案</string>
     <string name="title_cannot_be_empty">投票標題不能為空白</string>
-    <string name="voip_disabled">Threema 通話被停用</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short} 通話被停用</string>
     <string name="hide_chat_enter_message_explain">此對話標示為私密對話。如要進入該對話，請先設定訪問保護。</string>
     <string name="unknown">未知</string>
     <string name="miui_notification_title">有關 MIUI 通知的重要告示</string>
@@ -999,7 +1107,8 @@ Threema 支援的所有表情符號。</string>
     <string name="miui12_notification_body">MIUI 預設停用了所有應用程式的音效、燈光和浮動通知（除了一些被小米視為「重要」的非常流行的應用程式）。你需要在電話的應用通知權限設定中手動開啟這些設定，並在每次應用程式更新後重複這些步驟。請聯絡小米公司以了解更多訊息。</string>
     <string name="dont_show_again">不再顯示</string>
     <string name="miui_notification_prefs">MIUI 設定</string>
-    <string name="threema_safe_upload_successful">Threema Safe 備份成功上傳</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">${app_name_short} Safe 備份成功上傳</string>
     <string name="time_remaining">剩餘%s</string>
     <string name="safe_configure_server_credentials_title">驗證（選用）</string>
     <string name="username_hint">用戶名稱</string>
@@ -1008,7 +1117,8 @@ Threema 支援的所有表情符號。</string>
     <string name="biometric_enter_authentication">請認證以解鎖</string>
     <string name="biometric_authentication_failed">認證失敗</string>
     <string name="biometric_authentication_successful">成功認證</string>
-    <string name="work_safe_forced_explain">您的管理員為您的裝置開啟了 Threema Safe。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">您的管理員為您的裝置開啟了 ${app_name_short} Safe。</string>
     <string name="pin_locked_cannot_send">此應用程式已鎖定，無法傳送。</string>
     <string name="prefs_summary_hide_screenshots_notice">出於隱私考慮，在安全設定中開啟「應用鎖定」後，始終會阻止縮圖和螢幕擷取畫面</string>
     <string name="work_select_categories">選擇類別</string>
@@ -1018,7 +1128,8 @@ Threema 支援的所有表情符號。</string>
     <string name="advanced_options">進階選項</string>
     <string name="url_warning_body">您要打開的連結的主機名有可疑。\n\n顯示的主機名：<b>%s</b>\n真實的主機名：<b>%s</b>\n\n這可能是試圖欺騙您開啟一個假裝成其他網站的虛假網頁。\n\n您仍然要繼續嗎？</string>
     <string name="url_warning_title">網路釣魚警告</string>
-    <string name="permission_camera_qr_required">Threema 需要取用相機權限以掃描QR碼</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">${app_name} 需要取用相機權限以掃描QR碼</string>
     <string name="voice_action_title">語音操作</string>
     <string name="voice_action_body">語音操作正在處理中</string>
     <string name="permission_camera_photo_required">請允許取用相機權限以拍照</string>
@@ -1039,13 +1150,18 @@ Threema 支援的所有表情符號。</string>
     <string name="archived">已封存對話</string>
     <string name="to_archive">封存</string>
     <string name="archived_chats">已封存對話</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
+    <string name="archive_chat">封存對話</string>
     <string name="unarchive">取消封存</string>
     <string name="no_archived_chats">沒有已封存的對話記錄。\n如要將對話記錄封存，請在訊息清單中向左滑動。</string>
-    <string name="add_contact_enter_id_hint">請輸入您要新增的聯絡人的 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">請輸入您要新增的聯絡人的 ${app_name_short} ID</string>
     <string name="notification_channel_new_contact">新聯絡人</string>
     <string name="notification_channel_new_contact_desc">關於新聯絡人的通知</string>
-    <string name="notification_contact_has_joined">%1$s加入了%2$s。點擊這裡傳送訊息。</string>
-    <string name="notification_contact_has_joined_multiple">%1$d個聯絡人已加入%2$s: %3$s。點擊這裡向他們傳送訊息。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s加入了${app_name_short}。點擊這裡傳送訊息。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d個聯絡人已加入${app_name_short}: %2$s。點擊這裡向他們傳送訊息。</string>
     <string name="system_default">系統預設</string>
     <string name="open_in_maps_app">在地圖應用程式中開啟</string>
     <string name="delete">刪除</string>
@@ -1053,8 +1169,10 @@ Threema 支援的所有表情符號。</string>
     <string name="delete_for_all">為所有人刪除</string>
     <string name="message_was_deleted">此訊息已刪除</string>
     <string name="continue_recording">繼續錄音</string>
-    <string name="whatsnew_title">%1$s %2$s 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[        <p>為了改善通知的顯示效果，在背景執行時的通知已進行了全面改進。如果某些對話已啟用個別通知設定，就需要重新設定。</p>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
+    <string name="whatsnew_title">${app_name} %1$s 有哪些新功能？</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>您現在可以將 Android 裝置連結至新的桌面版應用程式（測試版），並測試多裝置功能。</p>
+        <p>有關詳細資訊，請瀏覽「選單 > Threema 2.0 桌面版（測試版）」。</p>
         ]]></string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
@@ -1063,7 +1181,8 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_sum_show_unread_badge">在導覽列顯示未讀訊息提示</string>
     <string name="prefs_title_show_unread_badge">未讀訊息提示</string>
     <string name="pinning_not_trusted">憑證鎖定失敗。請檢查您的裝置上的認證儲存中是否安裝並啟動了「Entrust Root Certification Authority - G2」。</string>
-    <string name="pinning_failed">憑證固定失敗。可能發生了中間人攻擊。如果您安裝了廣告攔截器、內容過濾器或防火牆應用程式，例如 AdGuard，請停用後重啟 Threema。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">憑證固定失敗。可能發生了中間人攻擊。如果您安裝了廣告攔截器、內容過濾器或防火牆應用程式，例如 AdGuard，請停用後重啟 ${app_name}。</string>
     <string name="open_myid_popup">開啟快速存取彈出式視窗</string>
     <string name="logo">標誌/回到頁首</string>
     <string name="quote_subj_end">結束引用</string>
@@ -1086,7 +1205,8 @@ Threema 支援的所有表情符號。</string>
     <string name="mime_type">MIME類型</string>
     <string name="password_does_not_comply">密碼不符合管理員設定的準則。</string>
     <string name="audio_mute_due_to_focus_loss">由於其他應用程式正在播放音訊，目前音訊已暫時靜音</string>
-    <string name="restore_data_backup_explain">請首先在「個人檔案」畫面中刪除您的 Threema ID 以還原資料備份。\n\n當應用程式重新啟動後，請選擇「從備份還原」&gt; 「其他還原選項」&gt;「資料備份」，然後選擇要還原的資料備份檔案。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">請首先在「個人檔案」畫面中刪除您的 ${app_name_short} ID 以還原資料備份。\n\n當應用程式重新啟動後，請選擇「從備份還原」&gt; 「其他還原選項」&gt;「資料備份」，然後選擇要還原的資料備份檔案。</string>
     <string name="audio_focus_loss_complete">由於完全失去音訊焦點，通話已中斷。</string>
     <string name="tap_for_picture_hold_for_video">輕觸拍攝相片，長按錄製影片</string>
     <string name="sending_media">正在傳送媒體</string>
@@ -1094,7 +1214,7 @@ Threema 支援的所有表情符號。</string>
     <string name="media_files">檔案</string>
     <string name="auto_download_limit_explain">大於%s的影片和檔案將始終按需下載</string>
     <string name="quoted_message_deleted">所引用的訊息現時已不可用</string>
-    <string name="searching">搜尋中...</string>
+    <string name="searching">搜尋中…</string>
     <string name="prefs_work_life_balance">請勿打擾</string>
     <string name="prefs_title_working_days">工作日</string>
     <string name="prefs_working_days_sum">選擇工作日</string>
@@ -1108,7 +1228,8 @@ Threema 支援的所有表情符號。</string>
     <string name="warning">警告</string>
     <string name="password_remember_warning">請您記住在這裡輸入的內容！由於 %s 不會在伺服器上儲存任何密碼，如果您忘記了 PIN 碼或密碼，我們無法協助您找回密碼。</string>
     <string name="safe_backup_tap_to_restart">點擊系統通知以重新啟動應用程式。如果看不到通知，請向下滑動開啟電話的通知欄。</string>
-    <string name="send_to_support">傳送給 Threema 支援</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">傳送給 ${company_name} 支援</string>
     <string name="menu_legal">法律</string>
     <string name="tooltip_work_hint">此聯絡人使用 Threema Work。</string>
     <string name="video_camera_on">攝影機已開啟</string>
@@ -1267,22 +1388,26 @@ Threema 支援的所有表情符號。</string>
     <string name="group_link_rename">重新命名</string>
     <string name="group_link_rename_tag">新名稱</string>
     <string name="tap_here_for_more">點擊這裡查看更多資訊</string>
-    <string name="another_connection_instructions"><![CDATA[伺服器檢測到相同的 Threema ID 在兩個或更多的裝置上同時連線。<br><br>相同的 Threema ID 不可以在多個裝置上同時使用。新的訊息只會傳送至最新登入的裝置上。<br><br>如果您要切換至新裝置，請先在舊裝置上解除安裝或停用 %s，然後重新啟動新裝置。]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[伺服器檢測到相同的 ${app_name_short} ID 在兩個或更多的裝置上同時連線。<br><br>相同的 ${app_name_short} ID 不可以在多個裝置上同時使用。新的訊息只會傳送至最新登入的裝置上。<br><br>如果您要切換至新裝置，請先在舊裝置上解除安裝或停用 %s，然後重新啟動新裝置。]]></string>
     <string name="app_store_error_code">應用程式商店錯誤代碼：%d</string>
-    <string name="backup_restore_type"><![CDATA[您想還原哪些備份資料？ <br/><br/> <a href=%s>了解更多關於 Threema 備份的資訊</a>。]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[您想還原哪些備份資料？ <br/><br/> <a href=%s>了解更多關於 ${app_name_short} 備份的資訊</a>。]]></string>
     <string name="data_backup_info">還原所有內容，包括對話記錄</string>
     <string name="new_to_threema">第一次使用 %s？</string>
     <string name="back_to_threema">返回至 %s？</string>
     <string name="id_backup_info">僅限還原您的ID</string>
     <string name="restore_your_id_contacts_and_groups">還原您的ID、聯絡人和群組</string>
-    <string name="threema_safe_backup">Threema Safe 備份</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">${app_name_short} Safe 備份</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>需要協助？</a>]]></string>
     <string name="download_failed">下載失敗。錯誤代碼：%d</string>
     <string name="edit_answer">編輯答案</string>
-    <string name="share_media">與其他應用程式分享...</string>
+    <string name="share_media">與其他應用程式分享…</string>
     <string name="group_link_administered">管理</string>
     <string name="group_link_open">公開</string>
-    <string name="group_link_share_message">透過以下連結加入我的 Threema 群組！：%s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">透過以下連結加入我的 ${app_name_short} 群組！：%s</string>
     <string name="group_link_bottom_sheet_title">群組連結</string>
     <string name="group_link_bottom_sheet_desc">與想加入群組的人分享這個連結，請選擇以下的選項。</string>
     <string name="group_link_bottom_sheet_link_title">連結</string>
@@ -1317,13 +1442,15 @@ Threema 支援的所有表情符號。</string>
     <string name="really_delete_multiple_group_links_title">刪除群組連結</string>
     <string name="qr_scan_result_dialog_title">QR碼掃描結果</string>
     <string name="scan_failure_dialog_title">掃描失敗</string>
-    <string name="no_threema_qr_info">這不是 Threema 特定的QR碼。解碼後的內容為：</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">這不是 ${app_name_short} 專用的QR碼。解碼後的內容為：</string>
     <string name="default_group_link">預設群組連結</string>
     <string name="default_link_name">預設連結</string>
     <string name="reset_default_group_link">重設預設群組連結</string>
     <string name="resend">重新傳送</string>
     <string name="group_request_already_sent_title">要求已傳送</string>
-    <string name="qr_scanner_id_hint">您可以掃描聯絡人的QR碼以驗證其身份。如要顯示QR碼，請讓您的聯絡人按下 Threema 主畫面左上角的大頭貼。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">您可以掃描聯絡人的QR碼以驗證其身份。如要顯示QR碼，請讓您的聯絡人按下 ${app_name_short} 主畫面左上角的大頭貼。</string>
     <string name="enable_storage_access_for_media">啟用儲存取用權限以檢視裝置上的圖片和影片</string>
     <string name="select_storage_access_for_media_is_granted">您已授予部份的照片和影片的存取權。</string>
     <string name="take_me_there">帶我去…</string>
@@ -1341,13 +1468,17 @@ Threema 支援的所有表情符號。</string>
     <string name="contact_update">更新聯絡人狀態</string>
     <string name="invalid_onprem_id">此ID(永久)不再存在，或者與您的ID不相容。</string>
     <string name="enable_unknown_sources">無法安裝。請確保為 %s 啟用了「安裝不明的應用程式」。</string>
-    <string name="threema_push">Threema Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push">${app_name_short} Push</string>
     <string name="threema_push_notification_text">按一下了解更多資訊。</string>
-    <string name="threema_push_notification_info_text_1">Threema Push 在背景持續執行，以通知您新收到的訊息和來電。</string>
-    <string name="threema_push_notification_info_text_2">如果不能顯示永久通知，此應用程式就不能在背景執行。透過顯示永久通知，可以確保 Threema Push 即使在您不主動使用此應用程式時也會保持執行。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_notification_info_text_1">${app_name_short} Push 在背景持續執行，以通知您新收到的訊息和來電。</string>
+    <string name="threema_push_notification_info_text_2">如果不能顯示永久通知，此應用程式就不能在背景執行。透過顯示永久通知，可以確保 ${app_name_short} Push 即使在您不主動使用此應用程式時也會保持執行。</string>
     <string name="threema_push_notification_info_text_3">如果您仍然遇到延遲或丟失通知的問題，請調整您的系統設定，以確保應用程式可以在背景不受任何限制地運行，並停用省電模式。</string>
-    <string name="threema_push_service_description">當 Threema Push 執行時，顯示永久通知</string>
-    <string name="threema_push_activated">Threema Push 現在已開啟。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_service_description">當 ${app_name_short} Push 執行時，顯示永久通知</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_activated">${app_name_short} Push 現在已開啟。</string>
     <string name="add_shortcut_success">捷徑建立成功</string>
     <string name="add_shortcut_error">將捷徑新增至主畫面時發生錯誤</string>
     <string name="web_link">連結</string>
@@ -1399,7 +1530,8 @@ Threema 支援的所有表情符號。</string>
     <string name="forward_security_mode">完全正向保密</string>
     <string name="forward_security_mode_none">沒有</string>
     <string name="clear_forward_security">重設對此聯絡人的「完全正向保密」狀態</string>
-    <string name="clear_forward_security_warning">僅限在 Threema 支援團隊的指示下，才執行此作業。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="clear_forward_security_warning">僅限在 ${company_name} 支援團隊的指示下，才執行此作業。</string>
     <string name="forward_security_cleared">與此聯絡人的完全正向保密對話已被清除</string>
     <string name="message_without_forward_security">您收到一則沒有完全正向保密的訊息，您可以驗證寄件者是否主動停用完美前向保密。</string>
     <string name="forward_security_disabled">此對話已停用完全正向保密功能。</string>
@@ -1416,13 +1548,15 @@ Threema 支援的所有表情符號。</string>
     <string name="self_updater_installation_failed">下載更新失敗。請手動從 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下載並安裝更新。</string>
     <string name="spam_first_contact">此對話來自一位未知聯絡人</string>
     <string name="spam_report">檢舉垃圾訊息</string>
-    <string name="spam_report_dialog_explain">如果繼續，此聯絡人的ID、暱稱與您的ID將傳送至 Threema。我們不會傳送任何對話內容或個人資料，也不會通知該聯絡人有關檢舉為垃圾消息的事項。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="spam_report_dialog_explain">如果繼續，此聯絡人的ID、暱稱與您的ID將傳送至 ${company_name}。我們不會傳送任何對話內容或個人資料，也不會通知該聯絡人有關檢舉為垃圾消息的事項。</string>
     <string name="spam_report_dialog_block_checkbox">同時封鎖此聯絡人並刪除對話</string>
     <string name="spam_report_dialog_title">檢舉%s</string>
     <string name="spam_successfully_reported">該ID已被其他使用者報告為傳送垃圾訊息。</string>
     <string name="spam_error_reporting">檢舉垃圾訊息時發生錯誤：%s</string>
     <string name="spam_report_short">檢舉</string>
-    <string name="wizard_incompatible_contact_sync_params">您可能設定了不相容的 MDM 參數。如果使用者限制設定為 DISALLOW_MODIFY_ACCOUNTS，Threema MDM 參數 th_contact_sync 則無法設定為 true。請聯絡您的裝置管理員以取得協助。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_incompatible_contact_sync_params">您可能設定了不相容的 MDM 參數。如果使用者限制設定為 DISALLOW_MODIFY_ACCOUNTS，${app_name_short} MDM 參數 th_contact_sync 則無法設定為 true。請聯絡您的裝置管理員以取得協助。</string>
     <string name="messages_cannot_be_recovered">您將無法還原訊息。</string>
     <string name="groups_left_or_dissolved">群組將被保留或解散，然後被刪除。</string>
     <string name="contact_deleted">聯絡人已刪除</string>
@@ -1436,19 +1570,25 @@ Threema 支援的所有表情符號。</string>
     <string name="send_without_audio">移除音訊</string>
     <string name="edit_filename">編輯檔案名</string>
     <string name="unable_to_restore_identity_because">無法還原ID。原因：%s</string>
-    <string name="share_with_app">分享至 Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="share_with_app">分享至 ${app_name}</string>
     <string name="read_phone_state_dialog_allow">授予權限</string>
     <string name="read_phone_state_dialog_disallow">仍然繼續</string>
     <string name="read_phone_state_dialog_never_ask_again">下次不再提示</string>
     <string name="read_phone_state_dialog_title">需要權限</string>
-    <string name="read_phone_state_dialog_message">為防止 Threema 通話中斷一般通話，需要授予通話權限。如果未授予此權限，當正在進行一般通話時，Threema 通話有來電也會同時響鈴，阻礙一般通話。</string>
-    <string name="read_phone_state_short_message">如要檢查正在進行的通話，請授予 Threema 通話權限。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_dialog_message">為防止 ${app_name_short} 通話中斷一般通話，需要授予通話權限。如果未授予此權限，當正在進行一般通話時，${app_name_short} 通話有來電也會同時響鈴，阻礙一般通話。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_short_message">如要檢查正在進行的通話，請授予 ${app_name} 通話權限。</string>
     <string name="prefs_title_read_phone_state">授予通話權限</string>
     <string name="prefs_title_hibernation">未使用的應用程式設定</string>
-    <string name="prefs_summary_hibernation_api_32">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「移除權限並釋出空間」。</string>
-    <string name="prefs_summary_hibernation_api">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「暫停未使用的應用程式活動」。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api_32">為防止 ${app_name} 在長時間不使用後被系統暫停，請停用系統設定中的「移除權限並釋出空間」。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api">為防止 ${app_name} 在長時間不使用後被系統暫停，請停用系統設定中的「暫停未使用的應用程式活動」。</string>
     <string name="unable_to_fetch_configuration">無法從配置伺服器取得資料，請稍後再試。</string>
-    <string name="rogue_device_warning"><![CDATA[我們的伺服器檢測到有人試圖從另一台裝置登入現有的 Threema ID，您最近是否在其他裝置上登入過您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此訊息。&lt;br&gt;&lt;br&gt;如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rogue_device_warning"><![CDATA[我們的伺服器檢測到有人試圖從另一台裝置登入現有的 ${app_name_short} ID，您最近是否在其他裝置上登入過您的 ${app_name_short} ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此訊息。&lt;br&gt;&lt;br&gt;如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。]]></string>
     <string name="fetch2_failure">與配置伺服器同步失敗。</string>
     <string name="no_members_support_group_calls">此群組中沒有成員可以接聽群組通話</string>
     <string name="group_calls">群組通話</string>
@@ -1460,10 +1600,12 @@ Threema 支援的所有表情符號。</string>
     <string name="group_call_mic_permission_description">如要進行群組通話，您必須允許取用麥克風的權限，以便其他人可以聽到您的聲音。</string>
     <string name="call_mic_permission_description">如要進行語音通話，您必須允許取用麥克風的權限，以便其他人可以聽到您的聲音。</string>
     <string name="group_call_camera_permission_rationale">為了讓其他參與者看到您的照片，您必須在系統「權限」設定下允許 %s 取用相機權限。</string>
-    <string name="group_call_phone_permission_description">如要進行群組通話，您必須允許取用電話權限，以防止語音通話中斷 Threema 通話。</string>
-    <string name="call_phone_permission_description">如要進行 Threema 通話，您必須允許取用電話權限，以防止語音通話中斷 Threema 通話。</string>
+    <string name="group_call_phone_permission_description">如要進行群組通話，您必須允許取用電話權限，以防止語音通話中斷 通話。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_phone_permission_description">如要進行 ${app_name_short} 通話，您必須允許取用電話權限，以防止語音通話中斷 ${app_name_short} 通話。</string>
     <string name="group_call_nearby_devices_permission_description">如要使用藍牙耳機進行群組通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
-    <string name="call_nearby_devices_permission_description">如要使用藍牙耳機進行 Threema 通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_nearby_devices_permission_description">如要使用藍牙耳機進行 ${app_name} 通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
     <string name="settings">設定</string>
     <string name="leave">離開</string>
     <string name="fs_key_mismatch">密鑰不相符</string>
@@ -1486,7 +1628,8 @@ Threema 支援的所有表情符號。</string>
     <string name="scroll_to_top">回到頁首</string>
     <string name="contact_sync_mdm_rationale">由於您的管理員為您的裝置啟用了聯絡人同步的功能，因此我們需要取用聯絡人的權限。</string>
     <string name="welcome_back">歡迎回來！</string>
-    <string name="id_restored_successfully">您的 Threema ID 已成功還原</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="id_restored_successfully">您的 ${app_name_short} ID 已成功還原</string>
     <string name="prefs_dynamic_colors">動態色彩</string>
     <string name="prefs_dynamic_colors_sum">使用系統色彩</string>
     <string name="apply_changes">套用變更</string>
@@ -1511,17 +1654,20 @@ Threema 支援的所有表情符號。</string>
     <string name="starred">已加上星號</string>
     <string name="starred_messages">已加上星號的訊息</string>
     <string name="sorting">排序</string>
-    <string name="sort_by">按...排序</string>
+    <string name="sort_by">按…排序</string>
     <string name="newest_first">最新到最舊</string>
     <string name="oldest_first">最舊到最新</string>
     <string name="no_starred_messages">未找到已加星號的訊息。如要為訊息加上星號，請先長按該訊息，然後按一下星星按鈕。</string>
     <string name="remove_all_stars">移除所有星號</string>
     <string name="remove_star">移除星號</string>
-    <string name="samsung_permission_problem_explain">由於「外部儲存空間」權限被停用，%1$s 無法取用媒體檔案。如要解決這個問題，請先在下一個畫面中允許「外部儲存空間」權限，然後重新啟動 %1$s。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="samsung_permission_problem_explain">由於「外部儲存空間」權限被停用，${app_name} 無法取用媒體檔案。如要解決這個問題，請先在下一個畫面中允許「外部儲存空間」權限，然後重新啟動 %1$s。</string>
     <string name="min_n_chars">至少%d個字元</string>
     <string name="prefs_title_grant_bluetooth_permission">授予藍牙權限</string>
-    <string name="safe_managed_password_confirm">您的 Threema Safe 備份的管理密碼已設定。\n\n您想使用此密碼嗎？ 如有疑問，請聯絡您的管理員。</string>
-    <string name="safe_managed_new_password_confirm">您的 Threema Safe 備份的新管理密碼已設定。\n\n您想用這個新的管理密碼取代目前的密碼嗎？如有疑問，請聯絡您的管理員。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_password_confirm">您的 ${app_name_short} Safe 備份的管理密碼已設定。\n\n您想使用此密碼嗎？ 如有疑問，請聯絡您的管理員。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_new_password_confirm">您的 ${app_name_short} Safe 備份的新管理密碼已設定。\n\n您想用這個新的管理密碼取代目前的密碼嗎？如有疑問，請聯絡您的管理員。</string>
     <string name="real_not_now">現在不要</string>
     <string name="add_contact_in">在…中新增聯絡人</string>
     <string name="really_remove_all_stars">您確定要為所有訊息移除星號嗎？</string>
@@ -1541,14 +1687,17 @@ Threema 支援的所有表情符號。</string>
     <string name="group_orphaned_notice">由於群組建立者已離開群組，請您克隆群組，成為新的管理員。</string>
     <string name="group_not_a_member_notice">由於您不再是這個群組的成員，因此您不能再參與這個群組的討論。</string>
     <string name="group_dissolved_notice">因於這個群組已解散，因此您不能再參與這個群組的討論。</string>
-    <string name="md_linked_devices">已連結裝置</string>
+    <string name="md_linked_devices">${app_name_desktop} 2.0 桌面版（測試版）</string>
     <string name="md_link_device">連結新裝置</string>
-    <string name="md_enable">啟用連結裝置功能</string>
-    <string name="md_linked_devices_empty">從其他地方下載精美的桌面用戶端，並盡情使用 🚀</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <string name="md_linked_devices_empty">在連結新裝置前，請下載並開啟 [${app_name_desktop} 桌面版] 的最新測試版。</string>
     <string name="md_link_device_qr_scan_message">請掃描QR碼</string>
     <string name="directory_request_failed">目錄要求失敗，請再試一次。</string>
     <string name="add_shortcut_exists">此目標的捷徑已經存在。</string>
     <string name="scan_qr_code">掃描QR碼</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="scan_qr_code_explain">在您要連結的裝置上掃描 %s 桌面測試版中顯示的QR碼。</string>
     <string name="connecting">連線中…</string>
     <string name="trust_new_device">信任新裝置</string>
@@ -1558,10 +1707,12 @@ Threema 支援的所有表情符號。</string>
     <string name="sending_data">正在傳送資料…</string>
     <string name="continue_on_new_device">請在您的新裝置上繼續</string>
     <string name="device_linked_successfully">裝置連結成功</string>
-    <string name="device_linked_successfully_explain">現在，您可以在你剛剛連結的裝置上使用 %s（即使此裝置已關機或沒有網路連線）。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linked_successfully_explain">現在，您可以在你剛剛連結的裝置上使用 ${app_name}（即使此裝置已關機或沒有網路連線）。</string>
     <string name="resend_message_dialog_title">重新傳送群組訊息？</string>
     <string name="resend_message_dialog_message">此訊息無法傳送給群組所有成員。重新傳送訊息至%1$s？</string>
-    <string name="work_lost_credentials_help">忘記了您的憑證？請聯絡您的 %1$s 管理員。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_lost_credentials_help">忘記了您的憑證？請聯絡您的 ${app_name_short} 管理員。</string>
     <string name="problemsolver_intro">某些系統配置問題可能會阻止 %s 正常執行，請按照以下步驟以解決問題。</string>
     <string name="problemsolver_title">修復配置問題</string>
     <string name="problemsolver_title_background">背景使用量受限制</string>
@@ -1574,7 +1725,8 @@ Threema 支援的所有表情符號。</string>
     <string name="problemsolver_explain_background">此應用程式在背景執行受到限制，您將不會收到任何通知，並且許多功能將無法正常執行。如要解決問題，請先按「應用程式電池使用量」，然後選擇「無限制」。</string>
     <string name="problemsolver_info_text">上述某些系統設定選項的命名可能會因 Android 版本和裝置製造商而有所不同。</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">應用程式電池使用量設定為「最佳化」。</string>
-    <string name="problemsolver_explain_app_battery_usgae_optimized">此應用程式被禁止與伺服器永久保持連線，以至 Threema Push 無法正常執行。當此應用程式在背景執行時，您將不會收到新訊息的通知。如要解決問題，請先按「應用程式電池使用量」，然後選擇「無限制」。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="problemsolver_explain_app_battery_usgae_optimized">此應用程式被禁止與伺服器永久保持連線，以至 ${app_name_short} Push 無法正常執行。當此應用程式在背景執行時，您將不會收到新訊息的通知。如要解決問題，請先按「應用程式電池使用量」，然後選擇「無限制」。</string>
     <string name="problemsolver_to_settings">前往設定</string>
     <string name="prefs_advanced_options">進階選項</string>
     <string name="push_service">推播服務</string>
@@ -1594,7 +1746,8 @@ Threema 支援的所有表情符號。</string>
     <string name="delete_message_not_supported_for_all_group_members">此訊息不會為以下群組成員刪除：%1$s</string>
     <string name="work_intro_more_link_text">進一步了解 Threema Work</string>
     <string name="work_intro_subtitle">為公司而設的安全商業版即時通訊工具。</string>
-    <string name="work_intro_login">登入 %1$s</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_login">登入 ${app_name}</string>
     <string name="consumer_notice_description">如果您是個人使用者，請下載普通版 Threema 應用程式。</string>
     <string name="consumer_notice_playstore_link_description">Google Play 商店上的 Threema</string>
     <string name="consumer_notice_appgallery_link_description">華為 AppGallery 商店上的 Threema</string>
@@ -1607,6 +1760,22 @@ Threema 支援的所有表情符號。</string>
     <string name="device_linking_failed_explain">無法連結裝置，請再試一次。\n原因：%s。</string>
     <string name="qr_code_scan_error">掃描QR碼時發生錯誤</string>
     <string name="verification_failed">驗證失敗</string>
+    <string name="md_device_currently_active">目前在線</string>
+    <string name="md_device_last_active_at">最後上線時間：%s</string>
+    <plurals name="md_max_device_slots_reached_info">
+        <item quantity="other">已達到%d個裝置的數量限制，請移除現有已連結的裝置以新增新的裝置。</item>
+    </plurals>
+    <string name="md_device_invalid_label">裝置</string>
+    <string name="md_device_invalid_hint">無法取得資訊</string>
+    <string name="device_linking_cancel_dialog_title">取消連結</string>
+    <string name="device_linking_cancel_dialog_message">連結尚未完成。是否要取消連結？</string>
+    <string name="device_linking_cancel_dialog_cancel">取消連結</string>
+    <string name="device_linking_cancel_dialog_continue">繼續</string>
+    <string name="md_drop_device_dialog_drop_button">移除裝置</string>
+    <string name="md_drop_device_dialog_close_button">關閉</string>
+    <string name="md_drop_device_failed_dialog_title">移除已連結的裝置失敗</string>
+    <string name="md_drop_device_failed_dialog_message">請檢查您的網路連線並再試一次。</string>
+    <string name="md_drop_device_failed_dialog_button_close">關閉</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">您對這則訊息表示「同意」。</string>
     <string name="cd_dec_icon">您對這則訊息表示「不同意」。</string>
@@ -1638,6 +1807,39 @@ Threema 支援的所有表情符號。</string>
     <string name="emoji_reactions_popup_hint_title">表情回應</string>
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <string name="emoji_reactions_popup_hint_text">有人對此訊息新增了表情回應。在對話內，長按任意表情符號氣泡即可檢視所有表情回應。</string>
+    <string name="accessibility_device_linking_pfs_warning_icon">資訊</string>
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_pfs_warning_body">當您連結新裝置時，將對所有聯絡人停用完全正向保密。\n\n這是當前測試版的限制。如想知道更多其他的限制，請參閱[這則常見問題解答條目]。</string>
+    <string name="device_linking_pfs_warning_button_continue">連結新裝置</string>
+    <string name="device_linking_pfs_warning_button_cancel">取消</string>
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_web_link_to_multi_device_feature_banner_title">最新消息：推出 ${app_name_desktop} 2.0 桌面版（測試版）</string>
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <string name="threema_web_link_to_multi_device_feature_banner_body">按一下這裡使用支援多裝置登入的新一代電腦版應用程式。</string>
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <string name="accessibility_dismiss_hint">關閉提示</string>
+    <string name="device_linking_error_generic_title">傳送資料失敗</string>
+    <string name="device_linking_error_generic_body">請重試連結裝置。如果問題仍然存在，請聯絡我們的支援人員（「主選單 &gt; 說明」）。</string>
+    <string name="device_linking_error_generic_network_title">沒有網路連線</string>
+    <string name="device_linking_error_generic_network_body">請重試連結裝置。如果問題仍然存在，請聯絡我們的支援人員（「主選單 &gt; 說明」）。</string>
+    <string name="device_linking_error_unknown_qr_code_title">未知的QR碼</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_unknown_qr_code_body">請確保您使用的是來自 [我們的網站] 相對應的應用程式。</string>
+    <string name="device_linking_error_old_rendezvous_version_title">不相容版本</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linking_error_old_rendezvous_version_body">請在兩台裝置上安裝最新版本的 ${app_name}。</string>
+    <string name="device_linking_error_emoji_mismatch_title">圖像與新裝置不相符？</string>
+    <string name="device_linking_error_emoji_mismatch_body">連結裝置時似乎存在問題。請在新裝置上重新啟動此應用程式，然後再試一次。</string>
+    <string name="device_linking_error_unexpected_title">發生意外的錯誤</string>
+    <string name="device_linking_error_unexpected_body">請重試連結裝置。如果問題仍然存在，請聯絡我們的支援人員（「主選單 &gt; 說明」）。</string>
+    <string name="device_linking_error_screen_close">關閉</string>
+    <string name="work_directory_title">公司目錄</string>
+    <!-- Instruction text for the user directory search -->
+    <string name="work_directory_search">在公司目錄中搜尋</string>
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_directory_empty_view_text">請輸入至少3個字元，以便在貴公司的 ${app_name_short} 使用者目錄中搜尋。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

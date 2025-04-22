@@ -22,9 +22,7 @@
 package ch.threema.domain.protocol.csp.fs;
 
 import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.exceptions.base.MockitoException;
+import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
 import java.lang.reflect.Field;
@@ -103,6 +101,7 @@ import ch.threema.protobuf.csp.e2e.fs.VersionRange;
 import kotlin.Pair;
 
 import static ch.threema.domain.protocol.connection.ConnectionTestUtilsKt.getFromOutboundMessage;
+import static ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessorTestHelperKt.mockMessageBody;
 import static ch.threema.domain.taskmanager.OutgoingCspMessageUtilsKt.toCspMessageJava;
 
 public class ForwardSecurityMessageProcessorTest {
@@ -1530,15 +1529,7 @@ public class ForwardSecurityMessageProcessorTest {
     private void assertNewSessionMessageEncapsulated(AbstractMessage message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException {
         // We mock 'getBody' to support encapsulating 'invalid' messages. This simplifies message
         // creation in the tests.
-        AbstractMessage messageMock;
-        try {
-            messageMock = Mockito.spy(message);
-            Mockito.doReturn(new byte[0]).when(messageMock).getBody();
-        } catch (MockitoException exception) {
-            // If mocking did fail, we try without mocking. Note that sending the message without
-            // mocking usually only works for the empty message.
-            messageMock = message;
-        }
+        AbstractMessage messageMock = mockMessageBody(message, new byte[0]);
         ForwardSecurityEncryptionResult result = senderContext.fsmp.runFsEncapsulationSteps(
             DummyUsers.getBasicContactForUser(recipient),
             messageMock,

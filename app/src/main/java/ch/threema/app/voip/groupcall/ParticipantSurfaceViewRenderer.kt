@@ -53,7 +53,7 @@ class ParticipantSurfaceViewRenderer : SurfaceViewRenderer {
         FROZEN,
 
         /* There is no video stream for this participant */
-        INACTIVE
+        INACTIVE,
     }
 
     private var state: VideoState = VideoState.INACTIVE
@@ -86,7 +86,7 @@ class ParticipantSurfaceViewRenderer : SurfaceViewRenderer {
             logger.info(
                 "Initialise new video view. VideoViews initialised: {}, VideoViews released: {}",
                 videoViewsInitialized,
-                videoViewsReleased
+                videoViewsReleased,
             )
             init(eglBaseContext, null)
             videoViewsInitialized++
@@ -207,7 +207,10 @@ class ParticipantSurfaceViewRenderer : SurfaceViewRenderer {
             it.animate()
                 .alpha(0f)
                 .setDuration(animationDuration)
-                .withEndAction { it.visibility = INVISIBLE; it.alpha = 1f }
+                .withEndAction {
+                    it.visibility = INVISIBLE
+                    it.alpha = 1f
+                }
                 .start()
         }
 

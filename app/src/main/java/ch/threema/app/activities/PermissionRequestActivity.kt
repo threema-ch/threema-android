@@ -61,7 +61,6 @@ private val logger = LoggingUtil.getThreemaLogger("PermissionRequestActivity")
  * [INTENT_PERMISSION_REQUESTS].
  */
 class PermissionRequestActivity : ThreemaActivity() {
-
     companion object {
         const val INTENT_PERMISSION_REQUESTS = "permission_requests_extra"
     }
@@ -206,7 +205,7 @@ class PermissionRequestActivity : ThreemaActivity() {
         val requests = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableArrayListExtra(
                 INTENT_PERMISSION_REQUESTS,
-                PermissionRequest::class.java
+                PermissionRequest::class.java,
             )
         } else {
             @Suppress("DEPRECATION")
@@ -235,7 +234,7 @@ class PermissionRequestActivity : ThreemaActivity() {
 
     private fun createPermissionView(
         context: Context,
-        request: PermissionRequest
+        request: PermissionRequest,
     ): PermissionIconView {
         val view = PermissionIconView(context)
         view.setIcon(request.icon)
@@ -397,7 +396,7 @@ class PermissionRequestActivity : ThreemaActivity() {
                 "Permission '{}': granted={}, redirectToSettings={}",
                 permission.permission,
                 permission.granted,
-                permission.goToSettings
+                permission.goToSettings,
             )
         }
     }
@@ -434,21 +433,30 @@ class PermissionRequestActivity : ThreemaActivity() {
 
     /**
      * The current state of the permission request.
+     *
+     * @param permission the permission string
+     * @param title the name of the permission
+     * @param description the explanation of the permission
+     * @param goToSettings true if the user (is likely) redirected to the settings
+     * @param granted true if the permission is granted
+     * @param asked true if the user has granted or denied this permission
+     * @param optional true if this permission is optional
+     * @param ignorePermissionPreference the 'never-ask-again'-preference (if nonnull)
      */
     private data class PermissionState(
-        val permission: String,                     // the permission string
-        val title: String,                          // the name of the permission
-        val description: String,                    // the explanation of the permission
-        var goToSettings: Boolean,                  // true if the user (is likely) redirected to the settings
-        var granted: Boolean,                       // true if the permission is granted
-        var asked: Boolean,                         // true if the user has granted or denied this permission
-        var optional: Boolean,                      // true if this permission is optional
-        val ignorePermissionPreference: String?,    // the 'never-ask-again'-preference (if nonnull)
+        val permission: String,
+        val title: String,
+        val description: String,
+        var goToSettings: Boolean,
+        var granted: Boolean,
+        var asked: Boolean,
+        var optional: Boolean,
+        val ignorePermissionPreference: String?,
     ) {
         constructor(
             permissionRequest: PermissionRequest,
             preferences: SharedPreferences,
-            context: Context
+            context: Context,
         ) : this(
             permissionRequest.permission.getPermissionString(),
             permissionRequest.permission.getPermissionName(context),
@@ -457,7 +465,7 @@ class PermissionRequestActivity : ThreemaActivity() {
             false,
             preferences.getBoolean(permissionRequest.permissionIgnorePreference, false),
             permissionRequest.optional,
-            permissionRequest.permissionIgnorePreference
+            permissionRequest.permissionIgnorePreference,
         )
     }
 }

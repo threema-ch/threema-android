@@ -40,7 +40,7 @@ internal class ReflectedOutgoingGroupTextTask(
 ) : ReflectedOutgoingGroupMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_TEXT,
-    serviceManager
+    serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
@@ -59,7 +59,7 @@ internal class ReflectedOutgoingGroupTextTask(
         val messageModel = messageReceiver.createLocalModel(
             MessageType.TEXT,
             MessageContentsType.TEXT,
-            Date(message.createdAt)
+            Date(message.createdAt),
         )
         initializeMessageModelsCommonFields(messageModel)
 

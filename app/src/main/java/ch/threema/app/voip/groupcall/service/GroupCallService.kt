@@ -68,11 +68,11 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.storage.models.GroupModel
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicBoolean
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallService")
 
@@ -111,7 +111,7 @@ class GroupCallService : Service() {
             context: Context,
             sfuBaseUrl: String,
             callId: CallId,
-            groupId: LocalGroupId
+            groupId: LocalGroupId,
         ): Intent {
             return getServiceIntent(context)
                 .putExtra(EXTRA_SFU_BASE_URL, sfuBaseUrl)
@@ -122,7 +122,7 @@ class GroupCallService : Service() {
         private fun getLeaveCallIntent(
             context: Context,
             callId: CallId,
-            groupId: LocalGroupId
+            groupId: LocalGroupId,
         ): Intent {
             return getServiceIntent(context)
                 .putExtra(EXTRA_CALL_ID, callId.bytes)
@@ -245,12 +245,16 @@ class GroupCallService : Service() {
     }
 
     private fun startForeground() {
-        ServiceCompat.startForeground(this, NOTIFICATION_ID, with(getForegroundNotification()) {
-            this.flags = this.flags or
-                NotificationCompat.FLAG_NO_CLEAR or
-                NotificationCompat.FLAG_ONGOING_EVENT
-            this
-        }, FG_SERVICE_TYPE)
+        ServiceCompat.startForeground(
+            this,
+            NOTIFICATION_ID,
+            getForegroundNotification().apply {
+                this.flags = this.flags or
+                    NotificationCompat.FLAG_NO_CLEAR or
+                    NotificationCompat.FLAG_ONGOING_EVENT
+            },
+            FG_SERVICE_TYPE,
+        )
     }
 
     @SuppressLint("MissingPermission")
@@ -267,9 +271,7 @@ class GroupCallService : Service() {
             .setName(getNotificationTitle(group))
             .setImportant(true)
             .build()
-        val builder = NotificationCompat.Builder(
-            this, NotificationChannels.NOTIFICATION_CHANNEL_IN_CALL
-        )
+        val builder = NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_IN_CALL)
             .setContentTitle(getNotificationTitle(group))
             .setContentText(getString(R.string.group_call))
             .setSmallIcon(R.drawable.ic_phone_locked_outline)
@@ -289,8 +291,8 @@ class GroupCallService : Service() {
                     setStyle(
                         NotificationCompat.CallStyle.forOngoingCall(
                             callerPerson,
-                            leaveCallPendingIntent
-                        )
+                            leaveCallPendingIntent,
+                        ),
                     )
                 }
             }
@@ -303,9 +305,8 @@ class GroupCallService : Service() {
             applicationContext,
             REQUEST_CODE_JOIN_CALL,
             GroupCallActivity.getJoinCallIntent(applicationContext, groupId.id),
-            flags or PENDING_INTENT_FLAG_IMMUTABLE
+            flags or PENDING_INTENT_FLAG_IMMUTABLE,
         )
-
     }
 
     private fun getLeaveCallPendingIntent(flags: Int): PendingIntent? {
@@ -313,7 +314,7 @@ class GroupCallService : Service() {
             applicationContext,
             REQUEST_CODE_LEAVE_CALL,
             getLeaveCallIntent(applicationContext, callId, groupId.localGroupId),
-            flags or PENDING_INTENT_FLAG_IMMUTABLE
+            flags or PENDING_INTENT_FLAG_IMMUTABLE,
         )
     }
 
@@ -333,30 +334,30 @@ class GroupCallService : Service() {
 
         setPSTNCallStateListener()
 
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             groupCallController = GroupCallControllerImpl(
                 callId,
                 this@GroupCallService::leaveCall,
-                contactService.me
+                contactService.me,
             ).also { controller ->
                 controller.parameters = GroupCallParameters(
                     preferenceService.allowWebrtcIpv6(),
                     preferenceService.aecMode,
-                    PreferenceService.VIDEO_CODEC_SW
+                    PreferenceService.VIDEO_CODEC_SW,
                 )
                 controller.dependencies = GroupCallDependencies(
                     identityStore,
                     contactService,
                     groupService,
                     apiConnector,
-                    contactModelRepository
+                    contactModelRepository,
                 )
-                CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+                CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                     launch {
                         controller.join(
                             applicationContext,
                             sfuBaseUrl,
-                            sfuConnection
+                            sfuConnection,
                         ) { stopService() }
                     }
                     val startedAt = controller.descriptionSignal.await().startedAt.toLong()
@@ -375,11 +376,10 @@ class GroupCallService : Service() {
     @Suppress("DEPRECATION")
     private fun setPSTNCallStateListener() {
         val telephonyManager = getSystemService(TELEPHONY_SERVICE)
-        if (telephonyManager is TelephonyManager && (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-                || ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED)
+        if (telephonyManager is TelephonyManager && (
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                )
         ) {
             telephonyManager.listen(onCallStateListener, PhoneStateListener.LISTEN_CALL_STATE)
         }
@@ -404,13 +404,15 @@ class GroupCallService : Service() {
     private fun leaveCall() {
         logger.info("Call has been left. Stop service.")
         if (groupCallController?.hasForeverAloneTimerFired() == true) {
-            RuntimeUtil.runOnUiThread(Runnable {
-                Toast.makeText(
-                    applicationContext,
-                    getString(R.string.group_call_inactivity_left),
-                    Toast.LENGTH_LONG
-                ).show()
-            })
+            RuntimeUtil.runOnUiThread(
+                Runnable {
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.group_call_inactivity_left),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                },
+            )
         }
         stopService()
     }

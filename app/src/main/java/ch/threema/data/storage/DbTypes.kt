@@ -34,6 +34,7 @@ import java.util.Date
 
 // This file contains the types used in the database abstraction layer.
 
+// TODO(ANDR-2998): Notification sound policy override
 data class DbContact(
     /** The contact identity string. Must be 8 characters long. */
     val identity: String,
@@ -67,8 +68,8 @@ data class DbContact(
     val readReceiptPolicy: ReadReceiptPolicy,
     /** Typing indicator policy. */
     val typingIndicatorPolicy: TypingIndicatorPolicy,
-    // TODO(ANDR-2998): Notification trigger policy override
-    // TODO(ANDR-2998): Notification sound policy override
+    /** Whether the contact is archived or not */
+    val isArchived: Boolean,
     /** Android contact lookup key. */
     val androidContactLookupKey: String?,
     /** Local avatar expiration date. */
@@ -78,7 +79,8 @@ data class DbContact(
     /** BlobId of the latest profile picture that was sent to this contact. */
     val profilePictureBlobId: ByteArray?,
     val jobTitle: String?,
-    val department: String?
+    val department: String?,
+    val notificationTriggerPolicyOverride: Long?,
 )
 
 data class DbGroup(
@@ -97,8 +99,6 @@ data class DbGroup(
     val synchronizedAt: Date?,
     /** Last update flag. */
     val lastUpdate: Date?,
-    /** Deleted flag. */
-    val deleted: Boolean,
     /** Is archived flag. */
     val isArchived: Boolean,
     /** The color index. */
@@ -111,6 +111,7 @@ data class DbGroup(
     val members: Set<String>,
     /** The group user state. */
     val userState: UserState,
+    val notificationTriggerPolicyOverride: Long?,
 )
 
 data class DbEditHistoryEntry(
@@ -126,7 +127,7 @@ data class DbEditHistoryEntry(
     /** The former text of the edited message. */
     val text: String?,
     /** Timestamp when the message was edited and hence the entry created. */
-    val editedAt: Date
+    val editedAt: Date,
 ) {
     companion object {
         const val COLUMN_UID = "uid"
@@ -145,7 +146,7 @@ data class DbEmojiReaction(
     /** The emoji codepoint sequence of the reaction. This can never be empty */
     val emojiSequence: String,
     /** Timestamp when the reaction was locally created. */
-    val reactedAt: Date
+    val reactedAt: Date,
 ) {
     companion object {
         const val COLUMN_MESSAGE_ID = "messageId"
@@ -154,4 +155,3 @@ data class DbEmojiReaction(
         const val COLUMN_REACTED_AT = "reactedAt"
     }
 }
-

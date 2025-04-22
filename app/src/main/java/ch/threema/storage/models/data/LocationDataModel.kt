@@ -39,9 +39,8 @@ data class LocationDataModel(
     @JvmField val latitude: Double,
     @JvmField val longitude: Double,
     @JvmField val accuracy: Double?,
-    @JvmField val poi: Poi?
+    @JvmField val poi: Poi?,
 ) : MessageDataInterface {
-
     /**
      *  While our protocol defines [accuracy] as optional, a lot of classes
      *  (e.g. [android.location.Location]) required a value.
@@ -74,7 +73,6 @@ data class LocationDataModel(
         }.toString()
 
     companion object {
-
         /**
          *  Creates an instance with the minimum required values by the protocol.
          */
@@ -82,7 +80,7 @@ data class LocationDataModel(
             latitude = 0.0,
             longitude = 0.0,
             accuracy = null,
-            poi = null
+            poi = null,
         )
 
         /**
@@ -108,13 +106,11 @@ data class LocationDataModel(
          */
         @JvmStatic
         fun fromStringOrDefault(jsonString: String?): LocationDataModel {
-
             if (jsonString == null) {
                 return defaultValuesInstance()
             }
 
             try {
-
                 val jsonArray: JsonArray = Json.decodeFromString<JsonArray>(jsonString)
 
                 check(jsonArray.size >= 2) {
@@ -154,7 +150,9 @@ data class LocationDataModel(
                         JsonNull, null -> null
                         is JsonPrimitive -> if (jsonElement.isString) {
                             jsonElement.content
-                        } else throw IllegalStateException("Expected a string value or explicit null at array index 4")
+                        } else {
+                            throw IllegalStateException("Expected a string value or explicit null at array index 4")
+                        }
 
                         else -> throw IllegalStateException("Expected a string value or explicit null at array index 4")
                     }
@@ -162,7 +160,7 @@ data class LocationDataModel(
                 val poi: Poi? = when {
                     !poiName.isNullOrBlank() && !poiAddress.isNullOrBlank() -> Poi.Named(
                         name = poiName,
-                        address = poiAddress
+                        address = poiAddress,
                     )
 
                     !poiAddress.isNullOrBlank() -> Poi.Unnamed(address = poiAddress)
@@ -173,12 +171,16 @@ data class LocationDataModel(
                     latitude = latitude,
                     longitude = longitude,
                     accuracy = accuracy,
-                    poi = poi
+                    poi = poi,
                 )
             } catch (exception: Exception) {
                 logger.error(exception.message)
                 return defaultValuesInstance()
             }
         }
+
+        @Deprecated("Do not use. This only exists to handle places where null cannot be returned")
+        fun createEmpty(): LocationDataModel =
+            defaultValuesInstance()
     }
 }

@@ -65,7 +65,6 @@ private val logger = LoggingUtil.getThreemaLogger("EditSendContactActivity")
  * it in a chat. The name of the contact can be modified.
  */
 class EditSendContactActivity : ThreemaToolbarActivity() {
-
     private lateinit var viewModel: ContactEditViewModel
     private lateinit var toolbar: MaterialToolbar
     private lateinit var appBarLayout: AppBarLayout
@@ -83,14 +82,15 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         viewModel = ViewModelProvider(this)[ContactEditViewModel::class.java]
 
         // Finish activity when chat activity (in "background") is clicked
-        ((findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator).parent as ViewGroup)
-            .parent as ViewGroup).setOnClickListener { cancelAndFinish() }
+        (
+            (findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator).parent as ViewGroup)
+                .parent as ViewGroup
+            ).setOnClickListener { cancelAndFinish() }
 
         // Finish activity when bottom sheet gets hidden and adapt status bar color on expand/drag
         bottomSheet = findViewById<View>(R.id.bottom_sheet)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             addBottomSheetCallback(object : BottomSheetCallback() {
-
                 override fun onStateChanged(view: View, i: Int) {
                     when (i) {
                         BottomSheetBehavior.STATE_HIDDEN -> cancelAndFinish()
@@ -169,7 +169,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         viewModel.initializeContact(
             contactUri,
             contentResolver,
-            VCardExtractor(DateFormat.getDateFormat(applicationContext), resources)
+            VCardExtractor(DateFormat.getDateFormat(applicationContext), resources),
         )
 
         // Show edit-texts for the name properties that are set in the contact
@@ -179,7 +179,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             MiddleNameWrapper(R.id.middle_name_edit_text),
             LastNameWrapper(R.id.last_name_edit_text),
             NameSuffixWrapper(R.id.name_suffix_edit_text),
-            FullNameWrapper(R.id.name_full_edit_text)
+            FullNameWrapper(R.id.name_full_edit_text),
         )
 
         // Expand bottom sheet when the focused edit text is hidden behind the soft keyboard
@@ -338,7 +338,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
 
     abstract inner class StructuredNameWrapper(
         @IdRes id: Int,
-        extractFromStructuredName: (StructuredName) -> String?
+        extractFromStructuredName: (StructuredName) -> String?,
     ) : EditTextWrapper(id) {
         init {
             viewModel.getStructuredName().observe(this@EditSendContactActivity) { name ->
@@ -356,9 +356,8 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      */
     inner class NamePrefixWrapper(@IdRes id: Int) : StructuredNameWrapper(
         id,
-        { n -> n.prefixes?.joinToString(" ")?.trim()?.let { if (it == "") null else it } }
+        { n -> n.prefixes?.joinToString(" ")?.trim()?.let { if (it == "") null else it } },
     ) {
-
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.prefixes?.clear()
             viewModel.getStructuredName().value?.prefixes?.add(text)
@@ -370,7 +369,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      */
     inner class FirstNameWrapper(@IdRes id: Int) : StructuredNameWrapper(
         id,
-        { n -> n.given ?: "" }
+        { n -> n.given ?: "" },
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.given = text
@@ -382,7 +381,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      */
     inner class MiddleNameWrapper(@IdRes id: Int) : StructuredNameWrapper(
         id,
-        { n -> n.additionalNames?.joinToString("")?.trim()?.let { if (it == "") null else it } }
+        { n -> n.additionalNames?.joinToString("")?.trim()?.let { if (it == "") null else it } },
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.additionalNames?.clear()
@@ -395,7 +394,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      */
     inner class LastNameWrapper(@IdRes id: Int) : StructuredNameWrapper(
         id,
-        { n -> n.family ?: "" }
+        { n -> n.family ?: "" },
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.family = text
@@ -411,7 +410,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             n.suffixes?.joinToString("")?.trim()?.let {
                 if (it == "") null else it
             }
-        }
+        },
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.suffixes?.clear()
@@ -426,7 +425,6 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * shown.
      */
     inner class FullNameWrapper(@IdRes id: Int) : EditTextWrapper(id) {
-
         init {
             viewModel.getFormattedName().observe(this@EditSendContactActivity) {
                 setInitialText(viewModel.getFormattedName().value?.value ?: "")
@@ -444,4 +442,3 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         const val RESULT_CONTACT_NAME = "CONTACT_NAME"
     }
 }
-

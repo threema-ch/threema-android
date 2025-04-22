@@ -41,7 +41,6 @@ object AutoDeleteUtil {
         return 0
     }
 
-
     /**
      * Validate provided number of days for auto delete to conform to range specs
      * @param days Number of days to validate

@@ -22,19 +22,18 @@
 package ch.threema.app.voip.groupcall.sfu
 
 import ch.threema.domain.protocol.api.SfuToken
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
 import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 private const val SFU_BASE_URL = "https://server-1-sfu.threema.ch/"
 private val SFU_BASE_URL_ALLOWED_SUFFIXES: Set<String> = setOf(
     "sfu.threema.ch",
-    "sfu.threema-work.ch"
+    "sfu.threema-work.ch",
 )
 
 internal class SfuTokenTest {
-
     @Test
     fun isAllowedBaseUrl_emptyBaseUrlIsInvalid() {
         assertFalse(isAllowedBaseUrl(""))
@@ -119,7 +118,7 @@ internal class SfuTokenTest {
             SFU_BASE_URL,
             allowedSuffixes,
             "${expirationDate.time / 1000L}:ABCD1234:YvKFP429AWBkIsJ4upEm9b6OJ3tayu",
-            expirationDate
+            expirationDate,
         )
     }
 }

@@ -39,7 +39,6 @@ class IncomingGroupDeleteMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupDeleteMessage>(message, triggerSource, serviceManager) {
-
     private val messageService = serviceManager.messageService
     private val groupService = serviceManager.groupService
 

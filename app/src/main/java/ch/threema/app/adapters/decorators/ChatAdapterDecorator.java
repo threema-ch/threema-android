@@ -66,7 +66,7 @@ import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.TextUtil;
+import ch.threema.app.utils.TextExtensionsKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -74,6 +74,8 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.DisplayTag;
+
+import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
 
 abstract public class ChatAdapterDecorator extends AdapterDecorator {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ChatAdapterDecorator");
@@ -108,6 +110,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
     private int groupId = 0;
     protected Map<String, Integer> identityColors = null;
+    @Nullable
     protected String filterString;
 
     // whether this message should be displayed as a continuation of a previous message by the same sender
@@ -294,7 +297,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         this.onTouchElement = onTouchElement;
     }
 
-    final public void setFilter(String filterString) {
+    final public void setFilter(@Nullable String filterString) {
         this.filterString = filterString;
     }
 
@@ -347,7 +350,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
         final @NonNull ComposeMessageHolder viewHolder = (ComposeMessageHolder) abstractViewHolder;
 
-        applyContentColor(viewHolder, getMessageModel().getUiContentColor(getContext()));
+        applyContentColor(viewHolder, getUiContentColor(getMessageModel(), getContext()));
 
         //configure the chat message
         configureChatMessage(viewHolder, position);
@@ -448,7 +451,13 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
     }
 
     public Spannable highlightMatches(@Nullable CharSequence fullText, @Nullable String filterText) {
-        return TextUtil.highlightMatches(getContext(), fullText, filterText, true, false);
+        return TextExtensionsKt.highlightMatches(
+            fullText,
+            getContext(),
+            filterText,
+            true,
+            false
+        );
     }
 
     CharSequence formatTextString(@Nullable String string, String filterString) {

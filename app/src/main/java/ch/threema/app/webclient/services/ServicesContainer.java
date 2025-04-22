@@ -28,11 +28,12 @@ import androidx.annotation.NonNull;
 
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
@@ -42,6 +43,7 @@ import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.DatabaseServiceNew;
 
@@ -80,7 +82,7 @@ public class ServicesContainer {
     @NonNull
     public final UserService user;
     @NonNull
-    public final DeadlineListService hiddenChat;
+    public final ConversationCategoryService conversationCategoryService;
     @NonNull
     public final FileService file;
     @NonNull
@@ -97,6 +99,10 @@ public class ServicesContainer {
     public final APIConnector apiConnector;
     @NonNull
     public final ContactModelRepository contactModelRepository;
+    @NonNull
+    public final GroupModelRepository groupModelRepository;
+    @NonNull
+    public final GroupFlowDispatcher groupFlowDispatcher;
 
     public ServicesContainer(
         @NonNull final Context appContext,
@@ -112,12 +118,14 @@ public class ServicesContainer {
         @NonNull final BlockedIdentitiesService blockedIdentitiesService,
         @NonNull final PreferenceService preference,
         @NonNull final UserService user,
-        @NonNull final DeadlineListService hiddenChat,
+        @NonNull final ConversationCategoryService conversationCategoryService,
         @NonNull final FileService file,
         @NonNull final SynchronizeContactsService synchronizeContacts,
         @NonNull final LicenseService license,
         @NonNull final APIConnector apiConnector,
-        @NonNull final ContactModelRepository contactModelRepository
+        @NonNull final ContactModelRepository contactModelRepository,
+        @NonNull final GroupModelRepository groupModelRepository,
+        @NonNull final GroupFlowDispatcher groupFlowDispatcher
     ) {
         this.appContext = appContext;
         this.lifetime = lifetime;
@@ -132,13 +140,15 @@ public class ServicesContainer {
         this.blockedIdentitiesService = blockedIdentitiesService;
         this.preference = preference;
         this.user = user;
-        this.hiddenChat = hiddenChat;
+        this.conversationCategoryService = conversationCategoryService;
         this.file = file;
         this.synchronizeContacts = synchronizeContacts;
         this.license = license;
         this.sessionWakeUp = SessionWakeUpServiceImpl.getInstance();
         this.apiConnector = apiConnector;
         this.contactModelRepository = contactModelRepository;
+        this.groupModelRepository = groupModelRepository;
+        this.groupFlowDispatcher = groupFlowDispatcher;
 
         // Initialize wakelock service
         this.wakeLock = new WakeLockServiceImpl(appContext, lifetime);

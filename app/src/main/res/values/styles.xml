@@ -427,9 +427,9 @@
 
     <style name="Threema.Dialog.Wizard" parent="@style/Theme.Material3.Dark.Dialog.Alert">
         <item name="colorSurface">@color/md_theme_dark_surface</item>
-        <item name="colorAccent">@color/md_theme_dark_primary</item>
-        <item name="colorPrimary">@color/md_theme_dark_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorAccent">@color/color_wizard_primary</item>
+        <item name="colorPrimary">@color/color_wizard_primary</item>
+        <item name="colorOnPrimary">@color/color_wizard_on_primary</item>
         <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
         <item name="colorOutline">@color/md_theme_dark_outline</item>
         <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
@@ -469,41 +469,16 @@
     </style>
 
     <!-- wizard -->
-    <style name="WizardButton" parent="android:style/Widget.Button">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">@dimen/wizard_button_height</item>
-        <item name="android:background">@drawable/selector_button_green</item>
-        <item name="android:textColor">@color/wizard_button_text_inverse</item>
-        <item name="android:textSize">@dimen/wizard_button_text_size</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-    </style>
-
-    <style name="WizardButtonRegular" parent="WizardButton">
-        <item name="android:background">@drawable/selector_button_green</item>
-        <item name="android:textColor">@color/wizard_button_text_inverse</item>
-        <item name="android:textSize">@dimen/wizard_button_text_size</item>
-    </style>
-
-    <style name="WizardButtonInverse" parent="WizardButton">
-        <item name="android:background">@drawable/selector_button_green_inverse</item>
-        <item name="android:textColor">@color/wizard_button_text</item>
-    </style>
-
     <style name="WizardTitleText">
         <item name="android:textAlignment">center</item>
         <item name="android:fontFamily">@font/lab_grotesque</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/wizard_title_text_size</item>
         <item name="android:layout_marginTop">@dimen/wizard_title_text_margin_top</item>
-        <item name="android:textColor">@color/wizard_color_text_on_primary</item>
+        <item name="android:textColor">@color/color_wizard_on_primary</item>
         <item name="android:textColorHint">?android:attr/textColorHint</item>
         <item name="android:textColorHighlight">?android:attr/textColorHighlight</item>
-        <item name="android:textColorLink">@color/wizard_color_accent</item>
+        <item name="android:textColorLink">@color/color_wizard_primary</item>
     </style>
 
     <style name="WizardSubTitleText" parent="@style/WizardTitleText">
@@ -575,7 +550,7 @@
         <item name="android:paddingRight">16dp</item>
         <item name="android:background">@drawable/shape_switch</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/wizard_button_text_size</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="WizardSwitchSmallText">
@@ -719,7 +694,7 @@
     </style>
 
     <style name="Threema.MaterialButton.Wizard" parent="@style/Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/wizard_color_accent</item>
+        <item name="android:textColor">@color/color_wizard_primary</item>
     </style>
 
     <style name="Threema.MaterialButton.Fatal" parent="@style/Widget.Material3.Button">
@@ -818,6 +793,8 @@
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginStart">0dp</item>
         <item name="ensureMinTouchTargetSize">false</item>
+        <item name="android:textColor">@color/color_wizard_primary</item>
+        <item name="iconTint">@color/color_wizard_primary</item>
     </style>
 
     <style name="Threema.TextAppearance.DetailTitle" parent="@style/TextAppearance.Material3.DisplaySmall">

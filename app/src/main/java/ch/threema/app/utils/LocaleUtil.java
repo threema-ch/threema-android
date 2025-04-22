@@ -48,6 +48,7 @@ public class LocaleUtil {
         try {
             return URLEncoder.encode(Locale.getDefault().getLanguage(), UTF8_ENCODING);
         } catch (UnsupportedEncodingException ignored) {
+            // ignore exception
         }
         return "en";
     }
@@ -90,6 +91,7 @@ public class LocaleUtil {
         return DateUtils.getRelativeTimeSpanString(when, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_ABBREV_ALL).toString();
     }
 
+    @NonNull
     public static String formatDateRelative(long when) {
         return DateUtils.getRelativeTimeSpanString(when, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_SHOW_DATE).toString();
     }

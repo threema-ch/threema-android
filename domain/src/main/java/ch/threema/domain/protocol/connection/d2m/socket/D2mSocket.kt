@@ -24,9 +24,9 @@ package ch.threema.domain.protocol.connection.d2m.socket
 import ch.threema.domain.protocol.connection.socket.BaseSocket
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -34,7 +34,6 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
-import kotlin.coroutines.CoroutineContext
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("D2mSocket")
 
@@ -42,7 +41,7 @@ internal class D2mSocket(
     private val okHttpClient: OkHttpClient,
     private val addressProvider: D2mServerAddressProvider,
     ioProcessingStoppedSignal: CompletableDeferred<Unit>,
-    inputDispatcher: CoroutineContext
+    inputDispatcher: CoroutineContext,
 ) : BaseSocket(ioProcessingStoppedSignal, inputDispatcher) {
     private val inboundQueue = Channel<ByteArray>(Channel.UNLIMITED)
 
@@ -55,7 +54,6 @@ internal class D2mSocket(
     private val webSocketListener = object : WebSocketListener() {
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             logger.debug("WebSocket closed: code={}, reason={}", code, reason)
-            ioJob?.cancel()
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -65,14 +63,15 @@ internal class D2mSocket(
             ioProcessingStoppedSignal.completeExceptionally(
                 D2mSocketCloseException(
                     "WebSocket closing",
-                    closeCode
-                )
+                    closeCode,
+                ),
             )
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             logger.warn("WebSocket failure", t)
-            ioJob?.cancel()
+            readJob?.cancel()
+            writeJob?.cancel()
             connectedSignal.completeExceptionally(t)
         }
 
@@ -95,7 +94,7 @@ internal class D2mSocket(
         }
     }
 
-    override fun connect() {
+    override suspend fun connect() {
         ioProcessingStopped = false
 
         val url = addressProvider.get()
@@ -107,10 +106,23 @@ internal class D2mSocket(
             .build()
 
         webSocket = okHttpClient.newWebSocket(request, webSocketListener)
-        runBlocking { connectedSignal.await() }
+        connectedSignal.await()
     }
 
-    override fun closeSocket(reason: ServerSocketCloseReason) {
+    override suspend fun closeSocket(reason: ServerSocketCloseReason) {
+        // In case the read job is still active, we propagate the information that the connection is
+        // stopping via closing the inbound queue. This ensures that the the close event does not
+        // overtake some inbound message that is still being processed. In case the read job is not
+        // running anymore, we propagate the close reason directly.
+        if (readJob?.isActive == true) {
+            // Close the inbound queue and await the read job to ensure the close event has been
+            // propagated.
+            inboundQueue.close(ServerSocketClosed(reason))
+            readJob?.join()
+        } else {
+            closeInbound(reason)
+        }
+
         webSocket?.let {
             if (it.close(D2mCloseCode.NORMAL, reason.msg)) {
                 logger.trace("WebSocket shutdown initiated (reason={})", reason)
@@ -146,13 +158,25 @@ internal class D2mSocket(
     }
 
     private suspend fun readInput() {
-        while (!ioProcessingStopped) {
-            val data = inboundQueue.receive()
-            logger.debug("Received {} bytes", data.size)
+        try {
+            // We read from the input as long as possible. It is important that we continue reading
+            // until the inbound queue has been closed - even if io processing is already
+            // terminated. This ensures that received messages are still propagated towards the
+            // task manager until the connection has been closed.
+            while (true) {
+                val data = inboundQueue.receive()
+                logger.debug("Received {} bytes", data.size)
 
-            // Send the received data inbound. Only carry on receiving data again after the
-            // sending has completed.
-            sendInbound(data)
+                // Send the received data inbound. Only carry on receiving data again after the
+                // sending has completed.
+                sendInbound(data)
+            }
+        } catch (e: ServerSocketClosed) {
+            logger.debug("Inbound queue closed", e)
+            closeInbound(e.serverSocketCloseReason)
         }
     }
 }
+
+private data class ServerSocketClosed(val serverSocketCloseReason: ServerSocketCloseReason) :
+    Throwable()

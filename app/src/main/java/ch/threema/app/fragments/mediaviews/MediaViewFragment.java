@@ -275,7 +275,6 @@ abstract public class MediaViewFragment extends Fragment {
                         throw new Exception("Decrypted file not found");
                     }
 
-                    // TODO: If the fragment has been destroyed in the meantime, stop calling any callbacks!
                     RuntimeUtil.runOnUiThread(() -> {
                         fileDecrypted(decrypted);
 

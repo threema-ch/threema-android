@@ -28,17 +28,27 @@ import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
+import ch.threema.data.models.ContactModelData
+import ch.threema.data.models.GroupIdentity
+import ch.threema.domain.models.ContactSyncState
+import ch.threema.domain.models.IdentityState
+import ch.threema.domain.models.IdentityType
+import ch.threema.domain.models.ReadReceiptPolicy
+import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.VerificationLevel
+import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
-import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupModel
+import com.neilalexander.jnacl.NaCl
+import java.util.Date
 import junit.framework.TestCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -48,11 +58,12 @@ import org.junit.runner.RunWith
  * Runs different tests that verify that incoming group setup messages are handled according to the
  * protocol.
  */
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
 class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
+    private val groupService by lazy { serviceManager.groupService }
+    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
 
     override fun createMessageForGroup() = GroupSetupMessage()
 
@@ -64,7 +75,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         val scenario = startScenario()
 
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "initial groups")
 
         val setupTracker = GroupSetupTracker(
             groupAUnknown,
@@ -84,7 +95,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, groupAUnknown.groupCreator.identityStore)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "no changes")
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -104,7 +115,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         val scenario = startScenario()
 
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "epect initial group")
 
         val setupTracker = GroupSetupTracker(
             groupAUnknown,
@@ -124,7 +135,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, groupAUnknown.groupCreator.identityStore)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "no changes")
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -149,46 +160,17 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         serviceManager.blockedIdentitiesService.blockIdentity(contactA.identity)
         serviceManager.blockedIdentitiesService.blockIdentity(contactB.identity)
 
-        val setupTracker = GroupSetupTracker(
-            newAGroup,
+        val newGroup = TestGroup(
+            newAGroup.apiGroupId,
+            newAGroup.groupCreator,
+            newAGroup.members,
+            // Note that this will be the group name because we only test the group setup message
+            // that is not followed by a group rename
+            "Me, 12345678, ABCDEFGH",
             myContact.identity,
-            expectCreate = false,
-            expectKick = false,
-            emptyList(),
-            emptyList(),
-        )
-        setupTracker.start()
-
-        // Create the group setup message
-        val message = createGroupSetupMessage(newAGroup)
-        // Create message box from contact A (group creator)
-        processMessage(message, newAGroup.groupCreator.identityStore)
-
-        // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups)
-
-        // Assert that a group leave message is sent to the created and all provided members
-        // including those that are blocked
-        assertEquals(2, sentMessagesInsideTask.size)
-        val first = sentMessagesInsideTask.first() as GroupLeaveMessage
-        assertEquals(myContact.identity, first.fromIdentity)
-        assertEquals(newAGroup.apiGroupId, first.apiGroupId)
-        assertEquals(newAGroup.groupCreator.identity, first.groupCreator)
-        val second = sentMessagesInsideTask.last() as GroupLeaveMessage
-        assertEquals(myContact.identity, second.fromIdentity)
-        assertEquals(newAGroup.apiGroupId, second.apiGroupId)
-        assertEquals(newAGroup.groupCreator.identity, second.groupCreator)
-        // Assert that one message is for contact A and the other for contact B
-        assertTrue(
-            (first.toIdentity == contactA.identity && second.toIdentity == contactB.identity)
-                || (first.toIdentity == contactB.identity && second.toIdentity == contactA.identity)
         )
 
-        // Assert that no action has been triggered
-        setupTracker.assertAllNewMembersAdded()
-        setupTracker.assertAllKickedMembersRemoved()
-        setupTracker.assertCreateLeave()
-        setupTracker.stop()
+        testNewGroup(newGroup)
     }
 
     /**
@@ -199,13 +181,13 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         val scenario = startScenario()
 
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "initial groups")
 
         // Assert that the user is a member of groupAB
-        val beforeKicked = serviceManager.groupService.getById(groupAB.groupModel.id)
+        val beforeKicked = groupService.getById(groupAB.groupModel.id)
         assertNotNull(beforeKicked)
-        assertEquals(GroupModel.UserState.MEMBER, beforeKicked!!.userState)
-        assertTrue(serviceManager.groupService.isGroupMember(beforeKicked))
+        assertEquals(GroupModel.UserState.MEMBER, beforeKicked.userState)
+        assertTrue(groupService.isGroupMember(beforeKicked))
 
         val setupTracker = GroupSetupTracker(
             groupAB,
@@ -225,13 +207,14 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, groupAB.groupCreator.identityStore)
 
         // Assert that the user state has been changed to 'kicked'
-        val afterKicked = serviceManager.groupService.getById(groupAB.groupModel.id)
+        val afterKicked = groupModelRepository.getByGroupIdentity(
+            GroupIdentity(groupAB.groupCreator.identity, groupAB.apiGroupId.toLong()),
+        )
         assertNotNull(afterKicked)
-        assertEquals(GroupModel.UserState.KICKED, afterKicked!!.userState)
-        assertFalse(serviceManager.groupService.isGroupMember(afterKicked))
+        assertEquals(GroupModel.UserState.KICKED, afterKicked.data.value?.userState)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "no changes")
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -272,7 +255,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, groupAB.groupCreator.identityStore)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "no changes")
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -289,82 +272,17 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
      */
     @Test
     fun testNewGroup() = runTest {
-        val scenario = startScenario()
-
-        // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
-
         val newGroup = TestGroup(
-            newAGroup.apiGroupId,
-            newAGroup.groupCreator,
-            newAGroup.members,
+            newBGroup.apiGroupId,
+            newBGroup.groupCreator,
+            newBGroup.members,
             // Note that this will be the group name because we only test the group setup message
             // that is not followed by a group rename
-            "Me, 12345678, ABCDEFGH",
+            "Me, ABCDEFGH",
             myContact.identity,
         )
 
-        val setupTracker = GroupSetupTracker(
-            newGroup,
-            myContact.identity,
-            expectCreate = true,
-            expectKick = false,
-            newGroup.members.map { it.identity } + newGroup.groupCreator.identity,
-            emptyList(),
-        )
-        setupTracker.start()
-
-        // Create the group setup message
-        val message = createGroupSetupMessage(newGroup)
-        // Create message box from contact A (group creator)
-        processMessage(message, newGroup.groupCreator.identityStore)
-
-        // Assert that the new group appears in the list
-        assertGroupConversations(scenario, initialGroups + newGroup)
-
-        // Assert that no message is sent
-        assertEquals(0, sentMessagesInsideTask.size)
-
-        // Assert that the group has been created and the new members are set correctly
-        setupTracker.assertAllNewMembersAdded()
-        setupTracker.assertAllKickedMembersRemoved()
-        setupTracker.assertCreateLeave()
-        setupTracker.stop()
-
-        // Assert that the group has the correct members
-        val group = serviceManager.groupService.getByApiGroupIdAndCreator(
-            newGroup.apiGroupId,
-            newGroup.groupCreator.identity
-        )
-        assertNotNull(group!!)
-        val expectedMemberCount = newGroup.members.size
-        // Assert that there is one more member than member models (as the user is not stored into
-        // the database).
-        assertEquals(
-            expectedMemberCount,
-            serviceManager.databaseServiceNew.groupMemberModelFactory.getByGroupId(group.id).size + 1
-        )
-        assertEquals(
-            expectedMemberCount,
-            serviceManager.databaseServiceNew.groupMemberModelFactory.countMembersWithoutUser(group.id)
-                .toInt() + 1
-        )
-
-        // Assert that the group service returns the member lists including the user
-        assertEquals(expectedMemberCount, serviceManager.groupService.getMembers(group).size)
-        assertEquals(
-            expectedMemberCount,
-            serviceManager.groupService.getGroupIdentities(group).size
-        )
-        assertEquals(
-            expectedMemberCount,
-            serviceManager.groupService.getMembersWithoutUser(group).size + 1
-        )
-        assertEquals(expectedMemberCount, serviceManager.groupService.countMembers(group))
-        assertEquals(
-            expectedMemberCount,
-            serviceManager.groupService.countMembersWithoutUser(group) + 1
-        )
+        testNewGroup(newGroup)
     }
 
     /**
@@ -375,7 +293,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         val scenario = startScenario()
 
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(scenario, initialGroups, "initial groups")
 
         val setupTracker = GroupSetupTracker(
             groupAB,
@@ -426,7 +344,8 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         val newGroup = TestGroup(
             newAGroup.apiGroupId,
             newAGroup.groupCreator,
-            newAGroup.members + TestContact(invalidMemberId), // Note that this ID is not valid
+            // Note that this ID is not valid
+            newAGroup.members + TestContact(invalidMemberId),
             // Note that this will be the group name because we only test the group setup message
             // that is not followed by a group rename
             "Me, 12345678, ABCDEFGH",
@@ -450,7 +369,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, newGroup.groupCreator.identityStore)
 
         // Assert that the new group appears in the list
-        assertGroupConversations(scenario, initialGroups + newGroup)
+        assertGroupConversations(scenario, listOf(newGroup) + initialGroups)
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -460,6 +379,141 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         setupTracker.assertAllKickedMembersRemoved()
         setupTracker.assertCreateLeave()
         setupTracker.stop()
+    }
+
+    @Test
+    fun testGroupContainingRevokedButKnownContact() = runTest {
+        val scenario = startScenario()
+
+        // Assert initial group conversations
+        assertGroupConversations(scenario, initialGroups)
+
+        // Add a revoked contact
+        serviceManager.modelRepositories.contacts.createFromLocal(revokedContactModelData)
+
+        val newGroup = TestGroup(
+            newAGroup.apiGroupId,
+            newAGroup.groupCreator,
+            // Note that the activity state of this contact is INVALID
+            newAGroup.members + TestContact(revokedContactModelData.identity),
+            // Note that this will be the group name because we only test the group setup message
+            // that is not followed by a group rename
+            "Me, 12345678, ABCDEFGH",
+            myContact.identity,
+        )
+
+        val setupTracker = GroupSetupTracker(
+            newGroup,
+            myContact.identity,
+            expectCreate = true,
+            expectKick = false,
+            newGroup.members.filter { it.identity != revokedContactModelData.identity }
+                .map { it.identity } + newGroup.groupCreator.identity,
+            emptyList(),
+        )
+        setupTracker.start()
+
+        // Create the group setup message
+        val message = createGroupSetupMessage(newGroup)
+
+        // Check that the group setup message contains the revoked ID. Otherwise this test does not make sense.
+        assertTrue(message.members.contains(revokedContactModelData.identity))
+
+        // Create message box from contact A (group creator)
+        processMessage(message, newGroup.groupCreator.identityStore)
+
+        // Assert that the new group appears in the list
+        assertGroupConversations(scenario, listOf(newGroup) + initialGroups)
+
+        // Assert that no message is sent
+        assertEquals(0, sentMessagesInsideTask.size)
+
+        // Assert that the group has been created and the new members are set correctly
+        setupTracker.assertAllNewMembersAdded()
+        setupTracker.assertAllKickedMembersRemoved()
+        setupTracker.assertCreateLeave()
+        setupTracker.stop()
+
+        // Get the group model of the group and check that it exists and the revoked identity is not listed as a member
+        val newGroupModel = groupModelRepository.getByCreatorIdentityAndId(newGroup.groupCreator.identity, newGroup.apiGroupId)
+        assertNotNull(newGroupModel)
+        val data = newGroupModel.data.value
+        assertNotNull(data)
+        assertFalse(data.otherMembers.contains(revokedContactModelData.identity))
+    }
+
+    private suspend fun testNewGroup(newGroup: TestGroup) {
+        assertNull(
+            groupModelRepository.getByCreatorIdentityAndId(
+                newGroup.groupCreator.identity,
+                newGroup.apiGroupId,
+            )?.data?.value,
+        )
+
+        val scenario = startScenario()
+
+        // Assert initial group conversations
+        assertGroupConversations(scenario, initialGroups, "initial groups")
+
+        val setupTracker = GroupSetupTracker(
+            newGroup,
+            myContact.identity,
+            expectCreate = true,
+            expectKick = false,
+            newGroup.members.map { it.identity } + newGroup.groupCreator.identity,
+            emptyList(),
+        )
+        setupTracker.start()
+
+        // Create the group setup message
+        val message = createGroupSetupMessage(newGroup)
+        // Create message box from contact A (group creator)
+        processMessage(message, newGroup.groupCreator.identityStore)
+
+        // Assert that the new group model exists
+        val groupModel = groupModelRepository.getByCreatorIdentityAndId(
+            creatorIdentity = newGroup.groupCreator.identity,
+            groupId = newGroup.apiGroupId,
+        )
+        assertNotNull(groupModel)
+
+        // Assert that no message is sent
+        assertEquals(0, sentMessagesInsideTask.size)
+
+        // Assert that the group has been created and the new members are set correctly
+        setupTracker.assertAllNewMembersAdded()
+        setupTracker.assertAllKickedMembersRemoved()
+        setupTracker.assertCreateLeave()
+        setupTracker.stop()
+
+        // Assert that the group has the correct members
+        val group = groupService.getByApiGroupIdAndCreator(
+            newGroup.apiGroupId,
+            newGroup.groupCreator.identity,
+        )
+        assertNotNull(group!!)
+        val expectedMemberCount = newGroup.members.size
+        // Assert that there is one more member than member models (as the user is not stored into
+        // the database).
+        assertEquals(
+            expectedMemberCount,
+            serviceManager.databaseServiceNew.groupMemberModelFactory.getByGroupId(group.id).size + 1,
+        )
+        assertEquals(
+            expectedMemberCount,
+            serviceManager.databaseServiceNew.groupMemberModelFactory.countMembersWithoutUser(group.id)
+                .toInt() + 1,
+        )
+
+        // Assert that the group service returns the member lists including the user
+        assertEquals(expectedMemberCount, groupService.getMembers(group).size)
+        assertEquals(expectedMemberCount, groupService.getGroupMemberIdentities(group).size)
+        assertEquals(expectedMemberCount, groupService.getMembersWithoutUser(group).size + 1)
+        assertEquals(expectedMemberCount, groupService.countMembers(group))
+        assertEquals(expectedMemberCount, groupService.countMembersWithoutUser(group) + 1)
+
+        // Assert that the new group appears in the list
+        assertGroupConversations(scenario, listOf(newGroup) + initialGroups)
     }
 
     private fun createGroupSetupMessage(testGroup: TestGroup) = GroupSetupMessage()
@@ -488,64 +542,64 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         private var kickedMembersRemoved = mutableListOf<String>()
 
         private val groupListener = object : GroupListener {
-            override fun onCreate(newGroupModel: GroupModel?) {
+            override fun onCreate(groupIdentity: GroupIdentity) {
                 assertTrue(expectCreate)
                 assertFalse(hasBeenCreated)
                 group?.let {
-                    Assert.assertArrayEquals(
-                        it.apiGroupId.groupId,
-                        newGroupModel?.apiGroupId?.groupId
+                    assertEquals(
+                        it.apiGroupId.toLong(),
+                        groupIdentity.groupId,
                     )
-                    TestCase.assertEquals(it.groupCreator.identity, newGroupModel?.creatorIdentity)
+                    TestCase.assertEquals(it.groupCreator.identity, groupIdentity.creatorIdentity)
                 }
                 hasBeenCreated = true
             }
 
-            override fun onRename(groupModel: GroupModel?) = fail()
+            override fun onRename(groupIdentity: GroupIdentity) = fail()
 
-            override fun onUpdatePhoto(groupModel: GroupModel?) = fail()
+            override fun onUpdatePhoto(groupIdentity: GroupIdentity) = fail()
 
-            override fun onRemove(groupModel: GroupModel?) = fail()
+            override fun onRemove(groupDbId: Long) = fail()
 
             override fun onNewMember(
-                group: GroupModel?,
-                newIdentity: String?,
+                groupIdentity: GroupIdentity,
+                identityNew: String?,
             ) {
-                assertTrue("Did not expect member $newIdentity", newMembers.contains(newIdentity))
-                newMembersAdded.add(newIdentity!!)
+                assertTrue("Did not expect member $identityNew", newMembers.contains(identityNew))
+                newMembersAdded.add(identityNew!!)
             }
 
             override fun onMemberLeave(
-                group: GroupModel?,
-                identity: String?,
+                groupIdentity: GroupIdentity,
+                identityLeft: String,
             ) = fail()
 
             override fun onMemberKicked(
-                group: GroupModel?,
-                identity: String?,
+                groupIdentity: GroupIdentity,
+                identityKicked: String,
             ) {
-                assertTrue(kickedMembers.contains(identity))
-                kickedMembersRemoved.add(identity!!)
+                assertTrue(kickedMembers.contains(identityKicked))
+                kickedMembersRemoved.add(identityKicked)
 
-                if (identity == myIdentity) {
+                if (identityKicked == myIdentity) {
                     assertTrue(expectKick)
                     assertFalse(hasBeenKicked)
                     hasBeenKicked = true
                 }
             }
 
-            override fun onUpdate(groupModel: GroupModel?) {
+            override fun onUpdate(groupIdentity: GroupIdentity) {
                 // This should only be called if the receiver has been changed (a member has been
                 // added or kicked)
                 assertTrue(newMembers.isNotEmpty() || kickedMembers.isNotEmpty())
             }
 
-            override fun onLeave(groupModel: GroupModel?) = fail()
+            override fun onLeave(groupIdentity: GroupIdentity) = fail()
 
             override fun onGroupStateChanged(
-                groupModel: GroupModel?,
+                groupIdentity: GroupIdentity,
                 oldState: Int,
-                newState: Int
+                newState: Int,
             ) {
             }
         }
@@ -590,27 +644,53 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         GroupSetupTracker.stopAllListeners()
     }
 
-    override fun testCommonGroupReceiveStep2_1() {
+    private val revokedContactModelData = ContactModelData(
+        identity = "01238765",
+        publicKey = ByteArray(NaCl.PUBLICKEYBYTES),
+        createdAt = Date(),
+        firstName = "1234",
+        lastName = "8765",
+        nickname = null,
+        verificationLevel = VerificationLevel.FULLY_VERIFIED,
+        workVerificationLevel = WorkVerificationLevel.NONE,
+        identityType = IdentityType.NORMAL,
+        acquaintanceLevel = AcquaintanceLevel.DIRECT,
+        activityState = IdentityState.INVALID,
+        syncState = ContactSyncState.INITIAL,
+        featureMask = 0u,
+        readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+        typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+        isArchived = false,
+        androidContactLookupKey = null,
+        localAvatarExpires = null,
+        isRestored = false,
+        profilePictureBlobId = null,
+        jobTitle = null,
+        department = null,
+        notificationTriggerPolicyOverride = null,
+    )
+
+    override fun testCommonGroupReceiveStepUnknownGroupUserCreator() {
         // The common group receive steps are not executed for group setup messages
     }
 
-    override fun testCommonGroupReceiveStep2_2() {
+    override fun testCommonGroupReceiveStepUnknownGroupUserNotCreator() {
         // The common group receive steps are not executed for group setup messages
     }
 
-    override fun testCommonGroupReceiveStep3_1() {
+    override fun testCommonGroupReceiveStepLeftGroupUserCreator() {
         // The common group receive steps are not executed for group setup messages
     }
 
-    override fun testCommonGroupReceiveStep3_2() {
+    override fun testCommonGroupReceiveStepLeftGroupUserNotCreator() {
         // The common group receive steps are not executed for group setup messages
     }
 
-    override fun testCommonGroupReceiveStep4_1() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserCreator() {
         // The common group receive steps are not executed for group setup messages
     }
 
-    override fun testCommonGroupReceiveStep4_2() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserNotCreator() {
         // The common group receive steps are not executed for group setup messages
     }
 }

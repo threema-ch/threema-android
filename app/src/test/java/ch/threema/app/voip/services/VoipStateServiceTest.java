@@ -43,8 +43,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
-import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.RingtoneService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.listeners.VoipMessageListener;
@@ -64,13 +63,13 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyByte;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -87,8 +86,7 @@ public class VoipStateServiceTest {
     private AudioManager mockAudioManager;
     private ContactService mockContactService;
     private ContactMessageReceiver contactMessageReceiver;
-    private RingtoneService mockRingtoneService;
-    private PreferenceService mockPreferenceService;
+    private NotificationPreferenceService mockNotificationPreferenceService;
     private LifetimeService mockLifetimeService;
 
     // Service
@@ -104,8 +102,7 @@ public class VoipStateServiceTest {
 
         // Mock services
         this.mockContactService = PowerMockito.mock(ContactService.class);
-        this.mockRingtoneService = PowerMockito.mock(RingtoneService.class);
-        this.mockPreferenceService = PowerMockito.mock(PreferenceService.class);
+        this.mockNotificationPreferenceService = PowerMockito.mock(NotificationPreferenceService.class);
         this.mockLifetimeService = PowerMockito.mock(LifetimeService.class);
 
         // Mock contact message receiver
@@ -117,9 +114,6 @@ public class VoipStateServiceTest {
         when(this.mockContactService.getByIdentity("AAAAAAAA")).thenReturn(new ContactModel("AAAAAAAA", new byte[]{1, 2, 3}));
         when(this.mockContactService.getByIdentity("BBBBBBBB")).thenReturn(new ContactModel("BBBBBBBB", new byte[]{2, 3, 4}));
         when(this.mockContactService.createReceiver(any(ContactModel.class))).thenReturn(this.contactMessageReceiver);
-
-        // Set up return values for preference service
-        when(this.mockPreferenceService.isVoipEnabled()).thenReturn(true);
 
         // Static mocks
         mockStatic(LogUtil.class);
@@ -133,8 +127,7 @@ public class VoipStateServiceTest {
         // Instantiate service
         this.service = new VoipStateService(
             this.mockContactService,
-            this.mockRingtoneService,
-            this.mockPreferenceService,
+            this.mockNotificationPreferenceService,
             this.mockLifetimeService,
             this.mockContext
         );

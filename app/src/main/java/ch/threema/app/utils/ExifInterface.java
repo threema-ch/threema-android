@@ -169,6 +169,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #DATA_UNCOMPRESSED
      * @see #DATA_JPEG
      */
@@ -184,6 +185,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #PHOTOMETRIC_INTERPRETATION_RGB
      * @see #PHOTOMETRIC_INTERPRETATION_YCBCR
      */
@@ -198,6 +200,7 @@ public class ExifInterface {
      *     <li>Default = {@link #ORIENTATION_NORMAL}</li>
      * </ul>
      * <p>
+     *
      * @see #ORIENTATION_UNDEFINED
      * @see #ORIENTATION_NORMAL
      * @see #ORIENTATION_FLIP_HORIZONTAL
@@ -233,6 +236,7 @@ public class ExifInterface {
      *     <li>Count = 1</li>
      * </ul>
      * <p>
+     *
      * @see #FORMAT_CHUNKY
      * @see #FORMAT_PLANAR
      */
@@ -273,6 +277,7 @@ public class ExifInterface {
      *     <li>Default = {@link #Y_CB_CR_POSITIONING_CENTERED}</li>
      * </ul>
      * <p>
+     *
      * @see #Y_CB_CR_POSITIONING_CENTERED
      * @see #Y_CB_CR_POSITIONING_CO_SITED
      */
@@ -288,6 +293,7 @@ public class ExifInterface {
      *     <li>Default = 72</li>
      * </ul>
      * <p>
+     *
      * @see #TAG_Y_RESOLUTION
      * @see #TAG_RESOLUTION_UNIT
      */
@@ -303,6 +309,7 @@ public class ExifInterface {
      *     <li>Default = 72</li>
      * </ul>
      * <p>
+     *
      * @see #TAG_X_RESOLUTION
      * @see #TAG_RESOLUTION_UNIT
      */
@@ -319,6 +326,7 @@ public class ExifInterface {
      *     <li>Default = {@link #RESOLUTION_UNIT_INCHES}</li>
      * </ul>
      * <p>
+     *
      * @see #RESOLUTION_UNIT_INCHES
      * @see #RESOLUTION_UNIT_CENTIMETERS
      * @see #TAG_X_RESOLUTION
@@ -344,6 +352,7 @@ public class ExifInterface {
      * <p>StripsPerImage = floor(({@link #TAG_IMAGE_LENGTH} + {@link #TAG_ROWS_PER_STRIP} - 1)
      * / {@link #TAG_ROWS_PER_STRIP})</p>
      * <p>
+     *
      * @see #TAG_ROWS_PER_STRIP
      * @see #TAG_STRIP_BYTE_COUNTS
      */
@@ -360,6 +369,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #TAG_STRIP_OFFSETS
      * @see #TAG_STRIP_BYTE_COUNTS
      */
@@ -635,6 +645,7 @@ public class ExifInterface {
      *     <li>Count = 1</li>
      * </ul>
      * <p>
+     *
      * @see #COLOR_SPACE_S_RGB
      * @see #COLOR_SPACE_UNCALIBRATED
      */
@@ -927,6 +938,7 @@ public class ExifInterface {
      *     <li>Default = {@link #EXPOSURE_PROGRAM_NOT_DEFINED}</li>
      * </ul>
      * <p>
+     *
      * @see #EXPOSURE_PROGRAM_NOT_DEFINED
      * @see #EXPOSURE_PROGRAM_MANUAL
      * @see #EXPOSURE_PROGRAM_NORMAL
@@ -996,6 +1008,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #SENSITIVITY_TYPE_UNKNOWN
      * @see #SENSITIVITY_TYPE_SOS
      * @see #SENSITIVITY_TYPE_REI
@@ -1153,6 +1166,7 @@ public class ExifInterface {
      *     <li>Default = {@link #METERING_MODE_UNKNOWN}</li>
      * </ul>
      * <p>
+     *
      * @see #METERING_MODE_UNKNOWN
      * @see #METERING_MODE_AVERAGE
      * @see #METERING_MODE_CENTER_WEIGHT_AVERAGE
@@ -1173,6 +1187,7 @@ public class ExifInterface {
      *     <li>Default = {@link #LIGHT_SOURCE_UNKNOWN}</li>
      * </ul>
      * <p>
+     *
      * @see #LIGHT_SOURCE_UNKNOWN
      * @see #LIGHT_SOURCE_DAYLIGHT
      * @see #LIGHT_SOURCE_FLUORESCENT
@@ -1209,6 +1224,7 @@ public class ExifInterface {
      *     <li>Count = 1</li>
      * </ul>
      * <p>
+     *
      * @see #FLAG_FLASH_FIRED
      * @see #FLAG_FLASH_RETURN_LIGHT_NOT_DETECTED
      * @see #FLAG_FLASH_RETURN_LIGHT_DETECTED
@@ -1321,6 +1337,7 @@ public class ExifInterface {
      *     <li>Default = {@link #RESOLUTION_UNIT_INCHES}</li>
      * </ul>
      * <p>
+     *
      * @see #TAG_RESOLUTION_UNIT
      * @see #RESOLUTION_UNIT_INCHES
      * @see #RESOLUTION_UNIT_CENTIMETERS
@@ -1363,6 +1380,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #SENSOR_TYPE_NOT_DEFINED
      * @see #SENSOR_TYPE_ONE_CHIP
      * @see #SENSOR_TYPE_TWO_CHIP
@@ -1383,6 +1401,7 @@ public class ExifInterface {
      *     <li>Default = {@link #FILE_SOURCE_DSC}</li>
      * </ul>
      * <p>
+     *
      * @see #FILE_SOURCE_OTHER
      * @see #FILE_SOURCE_TRANSPARENT_SCANNER
      * @see #FILE_SOURCE_REFLEX_SCANNER
@@ -1400,6 +1419,7 @@ public class ExifInterface {
      *     <li>Default = 1</li>
      * </ul>
      * <p>
+     *
      * @see #SCENE_TYPE_DIRECTLY_PHOTOGRAPHED
      */
     public static final String TAG_SCENE_TYPE = "SceneType";
@@ -1413,6 +1433,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #TAG_SENSING_METHOD
      * @see #SENSOR_TYPE_ONE_CHIP
      */
@@ -1429,6 +1450,7 @@ public class ExifInterface {
      *     <li>Default = {@link #RENDERED_PROCESS_NORMAL}</li>
      * </ul>
      * <p>
+     *
      * @see #RENDERED_PROCESS_NORMAL
      * @see #RENDERED_PROCESS_CUSTOM
      */
@@ -1445,6 +1467,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #EXPOSURE_MODE_AUTO
      * @see #EXPOSURE_MODE_MANUAL
      * @see #EXPOSURE_MODE_AUTO_BRACKET
@@ -1460,6 +1483,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #WHITEBALANCE_AUTO
      * @see #WHITEBALANCE_MANUAL
      */
@@ -1501,6 +1525,7 @@ public class ExifInterface {
      *     <li>Default = 0</li>
      * </ul>
      * <p>
+     *
      * @see #SCENE_CAPTURE_TYPE_STANDARD
      * @see #SCENE_CAPTURE_TYPE_LANDSCAPE
      * @see #SCENE_CAPTURE_TYPE_PORTRAIT
@@ -1517,6 +1542,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #GAIN_CONTROL_NONE
      * @see #GAIN_CONTROL_LOW_GAIN_UP
      * @see #GAIN_CONTROL_HIGH_GAIN_UP
@@ -1535,6 +1561,7 @@ public class ExifInterface {
      *     <li>Default = {@link #CONTRAST_NORMAL}</li>
      * </ul>
      * <p>
+     *
      * @see #CONTRAST_NORMAL
      * @see #CONTRAST_SOFT
      * @see #CONTRAST_HARD
@@ -1551,6 +1578,7 @@ public class ExifInterface {
      *     <li>Default = {@link #SATURATION_NORMAL}</li>
      * </ul>
      * <p>
+     *
      * @see #SATURATION_NORMAL
      * @see #SATURATION_LOW
      * @see #SATURATION_HIGH
@@ -1567,6 +1595,7 @@ public class ExifInterface {
      *     <li>Default = {@link #SHARPNESS_NORMAL}</li>
      * </ul>
      * <p>
+     *
      * @see #SHARPNESS_NORMAL
      * @see #SHARPNESS_SOFT
      * @see #SHARPNESS_HARD
@@ -1594,6 +1623,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #SUBJECT_DISTANCE_RANGE_UNKNOWN
      * @see #SUBJECT_DISTANCE_RANGE_MACRO
      * @see #SUBJECT_DISTANCE_RANGE_CLOSE_VIEW
@@ -1623,6 +1653,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @deprecated Use {@link #TAG_CAMERA_OWNER_NAME} instead.
      */
     @Deprecated
@@ -1728,6 +1759,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #LATITUDE_NORTH
      * @see #LATITUDE_SOUTH
      */
@@ -1757,6 +1789,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #LONGITUDE_EAST
      * @see #LONGITUDE_WEST
      */
@@ -1789,6 +1822,7 @@ public class ExifInterface {
      *     <li>Default = 0</li>
      * </ul>
      * <p>
+     *
      * @see #ALTITUDE_ABOVE_SEA_LEVEL
      * @see #ALTITUDE_BELOW_SEA_LEVEL
      */
@@ -1841,6 +1875,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_MEASUREMENT_IN_PROGRESS
      * @see #GPS_MEASUREMENT_INTERRUPTED
      */
@@ -1857,6 +1892,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_MEASUREMENT_2D
      * @see #GPS_MEASUREMENT_3D
      */
@@ -1883,6 +1919,7 @@ public class ExifInterface {
      *     <li>Default = {@link #GPS_SPEED_KILOMETERS_PER_HOUR}</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_SPEED_KILOMETERS_PER_HOUR
      * @see #GPS_SPEED_MILES_PER_HOUR
      * @see #GPS_SPEED_KNOTS
@@ -1909,6 +1946,7 @@ public class ExifInterface {
      *     <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_DIRECTION_TRUE
      * @see #GPS_DIRECTION_MAGNETIC
      */
@@ -1935,6 +1973,7 @@ public class ExifInterface {
      *     <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_DIRECTION_TRUE
      * @see #GPS_DIRECTION_MAGNETIC
      */
@@ -1973,6 +2012,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #LATITUDE_NORTH
      * @see #LATITUDE_SOUTH
      */
@@ -2002,6 +2042,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #LONGITUDE_EAST
      * @see #LONGITUDE_WEST
      */
@@ -2031,6 +2072,7 @@ public class ExifInterface {
      *     <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_DIRECTION_TRUE
      * @see #GPS_DIRECTION_MAGNETIC
      */
@@ -2057,6 +2099,7 @@ public class ExifInterface {
      *     <li>Default = {@link #GPS_DISTANCE_KILOMETERS}</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_DISTANCE_KILOMETERS
      * @see #GPS_DISTANCE_MILES
      * @see #GPS_DISTANCE_NAUTICAL_MILES
@@ -2118,6 +2161,7 @@ public class ExifInterface {
      *     <li>Default = None</li>
      * </ul>
      * <p>
+     *
      * @see #GPS_MEASUREMENT_NO_DIFFERENTIAL
      * @see #GPS_MEASUREMENT_DIFFERENTIAL_CORRECTED
      */
@@ -5435,6 +5479,16 @@ public class ExifInterface {
     public static boolean isJpegFormat(byte[] signatureCheckBytes) throws IOException {
         for (int i = 0; i < JPEG_SIGNATURE.length; i++) {
             if (signatureCheckBytes[i] != JPEG_SIGNATURE[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isJpegFormat(InputStream imageData) throws IOException {
+        for (byte b : JPEG_SIGNATURE) {
+            int imageByte = imageData.read();
+            if (imageByte != b || imageByte == -1) {
                 return false;
             }
         }

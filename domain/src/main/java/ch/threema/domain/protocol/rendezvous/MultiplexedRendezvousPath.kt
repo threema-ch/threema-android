@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.rendezvous
 
 import ch.threema.base.utils.LoggingUtil
+import java.io.IOException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 typealias MultiplexedBytes = Pair<UInt, ByteArray>
 
@@ -38,7 +38,7 @@ private val logger = LoggingUtil.getThreemaLogger("MultiplexedRendezvousPath")
 
 internal class MultiplexedRendezvousPath(
     paths: Map<UInt, RendezvousPath>,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val paths = paths.toMutableMap()
     private val readBytes = Channel<MultiplexedBytes>(Channel.UNLIMITED)

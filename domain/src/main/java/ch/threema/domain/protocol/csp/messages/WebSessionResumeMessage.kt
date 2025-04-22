@@ -24,7 +24,6 @@ package ch.threema.domain.protocol.csp.messages
 import ch.threema.domain.protocol.csp.ProtocolDefines
 
 class WebSessionResumeMessage(private val data: Map<String, String>) : AbstractMessage() {
-
     override fun getType() = ProtocolDefines.MSGTYPE_WEB_SESSION_RESUME
 
     override fun getMinimumRequiredForwardSecurityVersion() = null

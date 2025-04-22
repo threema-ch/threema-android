@@ -49,9 +49,8 @@ import com.bumptech.glide.request.target.Target
 
 class SendMediaPreviewAdapter(
     private val context: Context,
-    private val mm: MediaAdapterManager
+    private val mm: MediaAdapterManager,
 ) : RecyclerView.Adapter<SendMediaHolder>(), MediaAdapter {
-
     init {
         mm.setMediaPreviewAdapter(this)
     }
@@ -193,8 +192,8 @@ class SendMediaPreviewAdapter(
             holder.imageView.setImageDrawable(
                 AppCompatResources.getDrawable(
                     context,
-                    IconUtil.getMimeIcon(item.mimeType)
-                )
+                    IconUtil.getMimeIcon(item.mimeType),
+                ),
             )
             holder.brokenView.visibility = View.INVISIBLE
         } else {
@@ -235,7 +234,7 @@ class SendMediaPreviewAdapter(
                     e: GlideException?,
                     model: Any?,
                     target: Target<Drawable?>,
-                    isFirstResource: Boolean
+                    isFirstResource: Boolean,
                 ): Boolean {
                     holder.imageView.setImageDrawable(null)
                     holder.brokenView.visibility = View.VISIBLE
@@ -247,7 +246,7 @@ class SendMediaPreviewAdapter(
                     model: Any,
                     target: Target<Drawable?>?,
                     dataSource: DataSource,
-                    isFirstResource: Boolean
+                    isFirstResource: Boolean,
                 ): Boolean {
                     setQualifierView(item, holder)
                     holder.brokenView.visibility = View.INVISIBLE

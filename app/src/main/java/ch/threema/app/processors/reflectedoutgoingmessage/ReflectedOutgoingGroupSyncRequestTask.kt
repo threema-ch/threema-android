@@ -35,7 +35,7 @@ internal class ReflectedOutgoingGroupSyncRequestTask(
 ) : ReflectedOutgoingGroupMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_SYNC_REQUEST,
-    serviceManager
+    serviceManager,
 ) {
     override val shouldBumpLastUpdate: Boolean
         get() = groupSyncRequestMessage.bumpLastUpdate()
@@ -45,13 +45,11 @@ internal class ReflectedOutgoingGroupSyncRequestTask(
 
     private val groupSyncRequestMessage: GroupSyncRequestMessage by lazy {
         GroupSyncRequestMessage.fromReflected(
-            message
+            message,
         )
     }
 
     override fun processOutgoingMessage() {
         logger.info("Discarding reflected outgoing group sync request message")
     }
-
-
 }

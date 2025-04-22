@@ -1,65 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:background="@color/md_theme_dark_background">
 
     <ImageView
         android:id="@+id/work_intro_logo"
-        android:src="@drawable/logo_main_white"
         android:layout_width="wrap_content"
         android:layout_height="64dp"
         android:importantForAccessibility="no"
         android:scaleX="1.5"
         android:scaleY="1.5"
-        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/logo_main_white"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        style="@style/WorkIntroSubTitleText"
         android:id="@+id/work_intro_slogan"
-        android:text="@string/work_intro_subtitle"
+        style="@style/WorkIntroSubTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/md_theme_dark_onSurface"
-        android:layout_marginRight="32dp"
         android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/work_intro_logo"
+        android:text="@string/work_intro_subtitle"
+        android:textColor="@color/md_theme_dark_onSurface"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/work_intro_logo" />
 
     <TextView
-        style="@style/WizardSmallText"
         android:id="@+id/work_intro_more_link"
+        style="@style/WizardSmallText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/work_intro_more_link_text"
-        android:gravity="center"
-        android:clickable="true"
-        android:focusable="true"
-        android:linksClickable="true"
+        android:layout_marginLeft="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginRight="32dp"
-        android:layout_marginLeft="32dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:linksClickable="true"
+        android:text="@string/work_intro_more_link_text"
         app:layout_constraintTop_toBottomOf="@id/work_intro_slogan"
         tools:textColor="@color/md_theme_dark_primary" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        style="@style/WizardButtonRegular"
-        android:id="@+id/work_intro_login_button"
-        android:layout_height="wrap_content"
+    <ch.threema.app.activities.wizard.components.WizardButtonXml
+        android:id="@+id/work_intro_login_button_compose"
         android:layout_width="0dp"
-        android:text="@string/work_intro_login"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="48dp"
         android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintTop_toBottomOf="@id/work_intro_more_link"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/work_intro_more_link" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

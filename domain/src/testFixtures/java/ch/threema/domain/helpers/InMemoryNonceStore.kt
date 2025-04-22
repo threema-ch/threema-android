@@ -53,7 +53,7 @@ class InMemoryNonceStore : NonceStore {
         scope: NonceScope,
         chunkSize: Int,
         offset: Int,
-        nonces: MutableList<HashedNonce>
+        nonces: MutableList<HashedNonce>,
     ) {
         val scopedNonces: List<HashedNonce> = getScopedHashedNonces(scope)
         val from = Math.max(0, offset)

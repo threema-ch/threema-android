@@ -21,6 +21,7 @@
 
 package ch.threema.app.connection
 
+import android.os.PowerManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ServerAddressProviderService
 import ch.threema.domain.protocol.ServerAddressProvider
@@ -34,14 +35,15 @@ import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
+import io.mockk.every
+import io.mockk.mockk
 import java8.util.function.Supplier
+import kotlin.test.Test
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import okhttp3.OkHttpClient
-import org.junit.Assert.assertTrue
-import org.junit.Test
-import org.mockito.Mockito
 
 class CspD2mDualConnectionSupplierTest {
-
     @Test
     fun testMdInactive() {
         val connectionSupplier = createSupplier(MdActiveHandle())
@@ -49,7 +51,7 @@ class CspD2mDualConnectionSupplierTest {
         val connection = connectionSupplier.get()
         assertTrue(connection is CspConnection)
         // subsequent call must return the same instance
-        assertTrue(connection === connectionSupplier.get())
+        assertSame(connection, connectionSupplier.get())
     }
 
     @Test
@@ -59,7 +61,7 @@ class CspD2mDualConnectionSupplierTest {
         val connection = connectionSupplier.get()
         assertTrue(connection is D2mConnection)
         // subsequent call must return the same instance
-        assertTrue(connection === connectionSupplier.get())
+        assertSame(connection, connectionSupplier.get())
     }
 
     @Test
@@ -86,29 +88,28 @@ class CspD2mDualConnectionSupplierTest {
         assertTrue(connectionSupplier.get() is D2mConnection)
     }
 
-
     private fun createSupplier(mdActiveHandle: MdActiveHandle): Supplier<ServerConnection> {
-        val multiDeviceManager = Mockito.mock(MultiDeviceManager::class.java)
-        val propertiesProvider = Mockito.mock(MultiDevicePropertyProvider::class.java)
-        val socketCloseListener = Mockito.mock(D2mSocketCloseListener::class.java)
-        Mockito.`when`(multiDeviceManager.isMultiDeviceActive)
-            .thenAnswer { mdActiveHandle.isMdActive }
-        Mockito.`when`(multiDeviceManager.propertiesProvider).thenReturn(propertiesProvider)
-        Mockito.`when`(multiDeviceManager.socketCloseListener).thenReturn(socketCloseListener)
-        val incomingMessageProcessor = Mockito.mock(IncomingMessageProcessor::class.java)
-        val taskManager = Mockito.mock(TaskManager::class.java)
-        val deviceCookieManager = Mockito.mock(DeviceCookieManager::class.java)
-        val serverAddressProviderService = Mockito.mock(ServerAddressProviderService::class.java)
-        val serverAddressProvider = Mockito.mock(ServerAddressProvider::class.java)
-        Mockito.`when`(serverAddressProviderService.serverAddressProvider)
-            .thenReturn(serverAddressProvider)
-        val identityStore = Mockito.mock(IdentityStoreInterface::class.java)
+        val powerManager = mockk<PowerManager>()
+        val multiDeviceManager = mockk<MultiDeviceManager>()
+        val propertiesProvider = mockk<MultiDevicePropertyProvider>()
+        val socketCloseListener = mockk<D2mSocketCloseListener>()
+        every { multiDeviceManager.isMultiDeviceActive } answers { mdActiveHandle.isMdActive }
+        every { multiDeviceManager.propertiesProvider } returns propertiesProvider
+        every { multiDeviceManager.socketCloseListener } returns socketCloseListener
+        val incomingMessageProcessor = mockk<IncomingMessageProcessor>()
+        val taskManager = mockk<TaskManager>()
+        val deviceCookieManager = mockk<DeviceCookieManager>()
+        val serverAddressProviderService = mockk<ServerAddressProviderService>()
+        val serverAddressProvider = mockk<ServerAddressProvider>()
+        every { serverAddressProviderService.serverAddressProvider } returns serverAddressProvider
+        val identityStore = mockk<IdentityStoreInterface>()
         val version = Version()
         val isIpv6Preferred = true
-        val okhttpClientSupplier = Supplier { Mockito.mock(OkHttpClient::class.java) }
+        val okhttpClientSupplier = Supplier { mockk<OkHttpClient>() }
         val isTestBuild = false
 
         return CspD2mDualConnectionSupplier(
+            powerManager,
             multiDeviceManager,
             incomingMessageProcessor,
             taskManager,
@@ -118,7 +119,7 @@ class CspD2mDualConnectionSupplierTest {
             version,
             isIpv6Preferred,
             okhttpClientSupplier,
-            isTestBuild
+            isTestBuild,
         )
     }
 

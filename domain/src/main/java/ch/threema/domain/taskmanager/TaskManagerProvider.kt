@@ -39,13 +39,13 @@ interface TaskManagerProvider {
                 TaskManagerImpl.TaskManagerDispatchers(
                     SingleThreadedTaskManagerDispatcher(
                         configuration.assertContext,
-                        "ExecutorDispatcher"
+                        "ExecutorDispatcher",
                     ),
                     SingleThreadedTaskManagerDispatcher(
                         configuration.assertContext,
-                        "ScheduleDispatcher"
+                        "ScheduleDispatcher",
                     ),
-                )
+                ),
             )
     }
 }

@@ -35,8 +35,9 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.stores.PreferenceStore;
 import ch.threema.data.models.ContactModelData;
+import ch.threema.data.models.GroupModelData;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -48,9 +49,6 @@ public class NameUtil {
 
     private static PreferenceService preferenceService;
 
-    private NameUtil(PreferenceStore preferenceStore) {
-    }
-
     private static PreferenceService getPreferenceService() {
         if (NameUtil.preferenceService == null) {
             ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -60,6 +58,50 @@ public class NameUtil {
         }
 
         return NameUtil.preferenceService;
+    }
+
+    private NameUtil() {
+        // Don't allow creating an instance of this class
+    }
+
+    public static String getDisplayName(
+        @NonNull GroupModelData groupModelData,
+        @NonNull ContactModelRepository contactModelRepository,
+        @NonNull ContactService contactService
+    ) {
+        // Use the name if it is not empty
+        if (groupModelData.name != null && !groupModelData.name.isEmpty()) {
+            return groupModelData.name;
+        }
+
+        // List members if the name is empty
+        String memberList = groupModelData.otherMembers.stream().map(identity -> {
+                ch.threema.data.models.ContactModel contactModel =
+                    contactModelRepository.getByIdentity(identity);
+                if (contactModel != null) {
+                    return getDisplayName(contactModel);
+                } else {
+                    return identity;
+                }
+            })
+            .sorted()
+            .collect(java.util.stream.Collectors.joining(", "));
+
+        if (groupModelData.isMember()) {
+            String userName = getDisplayName(contactService.getMe());
+            if (!memberList.isBlank()) {
+                return userName + ", " + memberList;
+            } else {
+                return userName;
+            }
+        }
+
+        if (!memberList.isBlank()) {
+            return memberList;
+        }
+
+        // Use group identity if there are no members
+        return groupModelData.groupIdentity.getGroupIdHexString();
     }
 
     /**

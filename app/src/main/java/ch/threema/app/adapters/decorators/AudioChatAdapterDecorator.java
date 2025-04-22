@@ -54,6 +54,8 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
+import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
+
 public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
     private static final Logger logger = LoggingUtil.getThreemaLogger("AudioChatAdapterDecorator");
 
@@ -76,7 +78,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
         final @NonNull ColorStateList contentColor
     ) {
         super.applyContentColor(viewHolder, contentColor);
-        viewHolder.audioMessageIcon.setImageTintList(getMessageModel().getUiContentColor(getContext()));
+        viewHolder.audioMessageIcon.setImageTintList(getUiContentColor(getMessageModel(), getContext()));
     }
 
     @Override

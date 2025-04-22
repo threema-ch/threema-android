@@ -23,12 +23,12 @@ package ch.threema.domain.protocol.connection
 
 import ch.threema.base.concurrent.TrulySingleThreadExecutorThreadFactory
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
-import kotlinx.coroutines.asCoroutineDispatcher
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("ServerConnectionDispatcher")
 
@@ -52,9 +52,8 @@ internal interface ServerConnectionDispatcher {
 
 internal class SingleThreadedServerConnectionDispatcher(private val assertContext: Boolean) :
     ServerConnectionDispatcher {
-
     private companion object {
-        var THREADS_CREATED = 0
+        var threadsCreated = 0
     }
 
     private lateinit var thread: Thread
@@ -72,7 +71,7 @@ internal class SingleThreadedServerConnectionDispatcher(private val assertContex
 
     init {
         val factory =
-            TrulySingleThreadExecutorThreadFactory("ServerConnectionWorker-${THREADS_CREATED++}") {
+            TrulySingleThreadExecutorThreadFactory("ServerConnectionWorker-${threadsCreated++}") {
                 thread = it
             }
         dispatcher = Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher()

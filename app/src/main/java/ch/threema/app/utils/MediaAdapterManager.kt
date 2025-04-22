@@ -222,7 +222,7 @@ class MediaAdapterManager(private val mediaAdapterListener: MediaAdapterListener
     private fun notifyItemMoved(
         fromPosition: Int,
         toPosition: Int,
-        notify: Int = NOTIFY_BOTH_ADAPTERS
+        notify: Int = NOTIFY_BOTH_ADAPTERS,
     ) {
         notifyAdapters({ a -> a.notifyItemMoved(fromPosition, toPosition) }, notify)
     }

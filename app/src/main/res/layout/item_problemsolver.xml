@@ -25,7 +25,7 @@
                 android:baselineAlignBottom="false"
                 android:layout_marginRight="8dp"
                 app:srcCompat="@drawable/ic_warning"
-                app:tint="@color/material_red" />
+                app:tint="?attr/colorError" />
 
             <TextView
                 android:id="@+id/item_title"

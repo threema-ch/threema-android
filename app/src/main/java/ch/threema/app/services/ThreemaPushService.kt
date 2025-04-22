@@ -29,7 +29,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -66,7 +66,7 @@ class ThreemaPushService : Service() {
             this,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PENDING_INTENT_FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PENDING_INTENT_FLAG_IMMUTABLE,
         )
 
         createNotificationChannel()
@@ -74,7 +74,7 @@ class ThreemaPushService : Service() {
         // Create notification
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(
             this,
-            NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH
+            NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH,
         )
             .setContentTitle(getString(R.string.threema_push))
             .setContentText(getString(R.string.threema_push_notification_text))
@@ -85,7 +85,7 @@ class ThreemaPushService : Service() {
             this,
             THREEMA_PUSH_ACTIVE_NOTIFICATION_ID,
             builder.build(),
-            FG_SERVICE_TYPE
+            FG_SERVICE_TYPE,
         )
         logger.info("startForeground called")
 
@@ -157,9 +157,15 @@ class ThreemaPushService : Service() {
         logger.info("Service destroyed")
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onLowMemory() {
         logger.info("onLowMemory")
         super.onLowMemory()
+    }
+
+    override fun onTimeout(startId: Int) {
+        logger.warn("onTimeout called, this is going to kill the foreground service :(")
+        super.onTimeout(startId)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
@@ -187,7 +193,7 @@ class ThreemaPushService : Service() {
         val notificationChannel = NotificationChannel(
             NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH,
             getString(R.string.threema_push),
-            NotificationManager.IMPORTANCE_LOW
+            NotificationManager.IMPORTANCE_LOW,
         )
         notificationChannel.description = getString(R.string.threema_push_service_description)
         notificationChannel.enableLights(false)
@@ -203,7 +209,7 @@ class ThreemaPushService : Service() {
         private const val THREEMA_PUSH_ACTIVE_NOTIFICATION_ID = 27392
         private const val LIFETIME_SERVICE_TAG = "threemaPushService"
         private val FG_SERVICE_TYPE =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING else 0
 
         // Intent actions
         const val ACTION_START = "start"

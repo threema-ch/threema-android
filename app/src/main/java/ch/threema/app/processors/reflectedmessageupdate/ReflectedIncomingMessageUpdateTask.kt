@@ -23,11 +23,12 @@ package ch.threema.app.processors.reflectedmessageupdate
 
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.utils.ConversationNotificationUtil
+import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.protobuf.Common.GroupIdentity
+import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.CONTACT
 import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.DISTRIBUTION_LIST
 import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.GROUP
@@ -35,6 +36,8 @@ import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.ID_NOT_SET
 import ch.threema.protobuf.d2d.MdD2D.IncomingMessageUpdate
 import ch.threema.protobuf.d2d.MdD2D.IncomingMessageUpdate.Update.UpdateCase.READ
 import ch.threema.storage.models.AbstractMessageModel
+import ch.threema.storage.models.GroupMessageModel
+import ch.threema.storage.models.MessageModel
 import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("ReflectedIncomingMessageUpdateTask")
@@ -44,6 +47,8 @@ class ReflectedIncomingMessageUpdateTask(
     serviceManager: ServiceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
+    private val contactService by lazy { serviceManager.contactService }
+    private val groupService by lazy { serviceManager.groupService }
     private val notificationService by lazy { serviceManager.notificationService }
 
     fun run() {
@@ -58,16 +63,16 @@ class ReflectedIncomingMessageUpdateTask(
     }
 
     private fun applyReadUpdate(update: IncomingMessageUpdate.Update) {
-        val conversation = update.conversation
+        val conversationId: MdD2D.ConversationId = update.conversation
         val messageId = MessageId(update.messageId)
         val readAt = update.read.at
-        when (conversation.idCase) {
-            CONTACT -> applyContactMessageReadUpdate(messageId, conversation.contact, readAt)
+        when (conversationId.idCase) {
+            CONTACT -> applyContactMessageReadUpdate(messageId, conversationId.contact, readAt)
 
-            GROUP -> applyGroupMessageReadUpdate(messageId, conversation.group, readAt)
+            GROUP -> applyGroupMessageReadUpdate(messageId, conversationId.group, readAt)
 
             DISTRIBUTION_LIST -> throw IllegalStateException(
-                "Received incoming message update for a distribution list"
+                "Received incoming message update for a distribution list",
             )
 
             ID_NOT_SET -> logger.warn("Received incoming message update where id is not set")
@@ -81,13 +86,13 @@ class ReflectedIncomingMessageUpdateTask(
         senderIdentity: String,
         readAt: Long,
     ) {
-        val messageModel = messageService.getContactMessageModel(messageId, senderIdentity)
-        if (messageModel == null) {
+        val abstractMessageModel = messageService.getContactMessageModel(messageId, senderIdentity)
+        if (abstractMessageModel == null) {
             logger.warn("Message model for message {} of {} not found", messageId, senderIdentity)
             return
         }
 
-        markMessageModelAsRead(messageModel, readAt)
+        markMessageModelAsRead(abstractMessageModel, readAt)
     }
 
     private fun applyGroupMessageReadUpdate(
@@ -95,36 +100,48 @@ class ReflectedIncomingMessageUpdateTask(
         groupIdentity: GroupIdentity,
         readAt: Long,
     ) {
-        val messageModel = messageService.getGroupMessageModel(
+        val abstractMessageModel = messageService.getGroupMessageModel(
             messageId,
             groupIdentity.creatorIdentity,
-            GroupId(groupIdentity.groupId)
+            GroupId(groupIdentity.groupId),
         )
 
-        if (messageModel == null) {
+        if (abstractMessageModel == null) {
             logger.warn("Group message model for message {} not found", messageId)
             return
         }
 
-        markMessageModelAsRead(messageModel, readAt)
+        markMessageModelAsRead(abstractMessageModel, readAt)
     }
 
-    private fun markMessageModelAsRead(messageModel: AbstractMessageModel, readAt: Long) {
-        messageModel.setRead(true)
-        Date(readAt).let {
-            messageModel.setReadAt(it)
-            messageModel.setModifiedAt(it)
+    private fun markMessageModelAsRead(abstractMessageModel: AbstractMessageModel, readAt: Long) {
+        abstractMessageModel.isRead = true
+        Date(readAt).let { readAtDate ->
+            abstractMessageModel.readAt = readAtDate
+            abstractMessageModel.modifiedAt = readAtDate
         }
-        messageService.save(messageModel)
-        ListenerManager.messageListeners.handle { l -> l.onModified(listOf(messageModel)) }
-        cancelNotification(messageModel)
+        messageService.save(abstractMessageModel)
+        ListenerManager.messageListeners.handle { l -> l.onModified(listOf(abstractMessageModel)) }
+        cancelNotification(abstractMessageModel)
     }
 
-    private fun cancelNotification(messageModel: AbstractMessageModel) {
-        // Get notification UIDs of the messages that have just been marked as read
-        val notificationUid = ConversationNotificationUtil.getUid(messageModel)
+    private fun cancelNotification(abstractMessageModel: AbstractMessageModel) {
+        val receiver: MessageReceiver<out AbstractMessageModel>? = when (abstractMessageModel) {
+            is MessageModel -> contactService.createReceiver(abstractMessageModel.identity!!)
+            is GroupMessageModel -> groupService.getById(abstractMessageModel.groupId)
+                ?.let { groupModel ->
+                    groupService.createReceiver(groupModel)
+                }
 
-        // Cancel notification
-        notificationService.cancelConversationNotification(notificationUid)
+            else -> null
+        }
+        if (receiver == null) {
+            logger.error(
+                "Failed to determine message receiver for message with id {}",
+                abstractMessageModel.apiMessageId,
+            )
+            return
+        }
+        notificationService.cancel(receiver)
     }
 }

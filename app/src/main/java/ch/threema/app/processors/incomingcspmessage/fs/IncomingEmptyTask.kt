@@ -36,7 +36,6 @@ class IncomingEmptyTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<EmptyMessage>(emptyMessage, triggerSource, serviceManager) {
-
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         logger.info("Processed incoming empty message {}", message.messageId)
         return ReceiveStepsResult.SUCCESS
@@ -46,5 +45,4 @@ class IncomingEmptyTask(
         logger.warn("Received empty message from sync with message id {}", message.messageId)
         return ReceiveStepsResult.DISCARD
     }
-
 }

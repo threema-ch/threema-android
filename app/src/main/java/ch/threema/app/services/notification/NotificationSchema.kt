@@ -23,11 +23,12 @@ package ch.threema.app.services.notification
 
 import android.net.Uri
 
-data class NotificationSchema(
-
+// Only used on devices that don't support notification channels, i.e., Android 7 and below
+data class NotificationSchema @JvmOverloads constructor(
     @JvmField
     val shouldVibrate: Boolean = false,
-
     @JvmField
-    val soundUri: Uri? = null
+    val soundUri: Uri? = null,
+    @JvmField
+    val shouldUseLight: Boolean = false,
 )

@@ -26,6 +26,7 @@ import ch.threema.data.storage.DbEmojiReaction.Companion.COLUMN_MESSAGE_ID
 import ch.threema.data.storage.DbEmojiReaction.Companion.COLUMN_REACTED_AT
 import ch.threema.data.storage.DbEmojiReaction.Companion.COLUMN_SENDER_IDENTITY
 import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 
@@ -39,7 +40,7 @@ abstract class EmojiReactionModelFactory(dbService: DatabaseServiceNew, tableNam
             "`$COLUMN_REACTED_AT` DATETIME NOT NULL, " +
             getConstraints() +
             ");",
-        getIndices()
+        getIndices(),
     )
 
     protected abstract fun getIndices(): String
@@ -55,7 +56,7 @@ class ContactEmojiReactionModelFactory(dbService: DatabaseServiceNew) :
     override fun getConstraints(): String {
         return "UNIQUE(`$COLUMN_MESSAGE_ID`,`$COLUMN_SENDER_IDENTITY`,`$COLUMN_EMOJI_SEQUENCE`) ON CONFLICT REPLACE, " +
             "CONSTRAINT `fk_contact_message_id` FOREIGN KEY(`$COLUMN_MESSAGE_ID`) " +
-            "REFERENCES `${MessageModel.TABLE}` (`${MessageModel.COLUMN_ID}`) ON UPDATE CASCADE ON DELETE CASCADE "
+            "REFERENCES `${MessageModel.TABLE}` (`${AbstractMessageModel.COLUMN_ID}`) ON UPDATE CASCADE ON DELETE CASCADE "
     }
 
     override fun getIndices(): String {
@@ -72,7 +73,7 @@ class GroupEmojiReactionModelFactory(dbService: DatabaseServiceNew) :
     override fun getConstraints(): String {
         return "UNIQUE(`$COLUMN_MESSAGE_ID`,`$COLUMN_SENDER_IDENTITY`,`$COLUMN_EMOJI_SEQUENCE`) ON CONFLICT REPLACE, " +
             "CONSTRAINT `fk_group_message_id` FOREIGN KEY(`$COLUMN_MESSAGE_ID`) " +
-            "REFERENCES `${GroupMessageModel.TABLE}` (`${GroupMessageModel.COLUMN_ID}`) ON UPDATE CASCADE ON DELETE CASCADE "
+            "REFERENCES `${GroupMessageModel.TABLE}` (`${AbstractMessageModel.COLUMN_ID}`) ON UPDATE CASCADE ON DELETE CASCADE "
     }
 
     override fun getIndices(): String {

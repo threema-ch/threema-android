@@ -32,14 +32,8 @@ import ch.threema.domain.protocol.connection.util.MainConnectionController
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
+import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.TaskManager
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.net.SocketException
 import java.util.concurrent.atomic.AtomicBoolean
@@ -47,6 +41,13 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.math.min
 import kotlin.math.pow
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("BaseServerConnection")
 
@@ -66,7 +67,6 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("BaseServerConnec
 internal abstract class BaseServerConnection(
     private val dependencyProvider: ServerConnectionDependencyProvider,
 ) : ServerConnection, ServerConnectionDispatcher.ExceptionHandler {
-
     private val connectionStateListeners = mutableSetOf<ConnectionStateListener>()
 
     private val stateLock = ReentrantLock()
@@ -85,6 +85,8 @@ internal abstract class BaseServerConnection(
         get() = dependencies.socket
 
     private lateinit var dependencies: ServerConnectionDependencies
+
+    private var connectionLock: ConnectionLock? = null
 
     private var reconnectAllowed = AtomicBoolean(true)
 
@@ -130,7 +132,7 @@ internal abstract class BaseServerConnection(
     }
 
     final override fun start() {
-        logger.debug("Start BaseServerConnection")
+        logger.info("Start")
 
         if (running.getAndSet(true) || connectionJob?.isActive == true) {
             logger.warn("Connection is already running")
@@ -149,6 +151,7 @@ internal abstract class BaseServerConnection(
         connectionJob = CoroutineScope(Dispatchers.Default).launch {
             while (canConnect) {
                 var monitorCloseEventJob: Job? = null
+                var queueSendCompleteListener: QueueSendCompleteListener? = null
                 try {
                     setup()
 
@@ -157,14 +160,31 @@ internal abstract class BaseServerConnection(
                     socket.connect()
                     setConnectionState(ConnectionState.CONNECTED)
 
+                    connectionLock = dependencies.connectionLockProvider.acquire(
+                        60_000,
+                        ConnectionLockProvider.ConnectionLogTag.PURGE_INCOMING_MESSAGE_QUEUE,
+                    )
+
                     // To prevent races where this while loop has been entered just before stop()
                     // has been called, and stop() has been called before the socket was
                     // initialized, check again if a reconnect is still allowed. Otherwise, close
                     // the socket and abort connection.
                     if (!reconnectAllowed.get()) {
                         socket.close(ServerSocketCloseReason("Reconnect not allowed"))
+                        connectionLock?.release()
                         break
                     }
+
+                    // We must keep the CPU awake until we have processed all incoming messages
+                    // to avoid missing messages in deeper sleep states.
+                    queueSendCompleteListener = QueueSendCompleteListener {
+                        logger.info("CSP queue was processed, releasing connection lock")
+                        connectionLock?.release()
+                    }
+                    // The listener must be registered before processing io has been started.
+                    // Otherwise the queue send complete event could already have been triggered
+                    // before the listener was added.
+                    dependencies.taskManager.addQueueSendCompleteListener(queueSendCompleteListener)
 
                     // Handle IO until the connection dies
                     ioJob = launch { processIo() }
@@ -198,6 +218,7 @@ internal abstract class BaseServerConnection(
                     }
 
                     waitForCspAuthenticatedJob.join()
+
                     ioJob?.join()
                 } catch (exception: Exception) {
                     logger.error("Connection exception", exception)
@@ -211,9 +232,12 @@ internal abstract class BaseServerConnection(
 
                 controller.connectionClosed.complete(Unit)
 
+                queueSendCompleteListener?.let { dependencies.taskManager.removeQueueSendCompleteListener(it) }
+
                 if (canConnect) {
                     prepareReconnect()
                 }
+                connectionLock?.release()
                 monitorCloseEventJob?.cancel()
             }
             logger.info("Connection ended")
@@ -226,7 +250,7 @@ internal abstract class BaseServerConnection(
     override fun stop() {
         synchronized(this) {
             if (running.get()) {
-                logger.info("Stop connection")
+                logger.info("Stop")
                 disableReconnect()
                 closeSocket("Connection stopped")
                 logger.trace("Join connection job")
@@ -276,7 +300,7 @@ internal abstract class BaseServerConnection(
                     logger.debug(
                         "Notify connection state listeners. state={}, address={}",
                         state,
-                        socket.address
+                        socket.address,
                     )
                     connectionStateListeners.forEach { listener ->
                         try {
@@ -303,14 +327,14 @@ internal abstract class BaseServerConnection(
             .pipeThrough(layers.layer2Codec.decoder)
             .pipeThrough(layers.layer3Codec.decoder)
             .pipeThrough(layers.layer4Codec.decoder)
-            .setHandler(layers.layer5Codec.sink)
+            .pipeInto(layers.layer5Codec)
 
         layers.layer5Codec.source
             .pipeThrough(layers.layer4Codec.encoder)
             .pipeThrough(layers.layer3Codec.encoder)
             .pipeThrough(layers.layer2Codec.encoder)
             .pipeThrough(layers.layer1Codec.encoder)
-            .setHandler(socket.sink)
+            .pipeInto(socket)
     }
 
     /**
@@ -382,6 +406,31 @@ internal abstract class BaseServerConnection(
         val delayS = min(reconnectDelayS, ProtocolDefines.RECONNECT_MAX_INTERVAL.toDouble())
         return (delayS * 1000).toLong()
     }
+}
+
+/**
+ * The lock keeps the device awake and prevents the app from being stopped while in the background.
+ */
+interface ConnectionLock {
+    /**
+     * Release the lock when the device can go to sleep.
+     */
+    fun release()
+
+    /**
+     * Returns true if the lock currently keeps the device awake. If false is returned, the
+     * connection lock has either been released or timed out.
+     */
+    fun isHeld(): Boolean
+}
+
+interface ConnectionLockProvider {
+    enum class ConnectionLogTag {
+        PURGE_INCOMING_MESSAGE_QUEUE,
+        INBOUND_MESSAGE,
+    }
+
+    fun acquire(timeoutMillis: Long, tag: ConnectionLogTag): ConnectionLock
 }
 
 interface BaseServerConnectionConfiguration {

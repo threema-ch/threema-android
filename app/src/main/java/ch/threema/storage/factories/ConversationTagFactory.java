@@ -37,6 +37,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
+import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.ConversationTagModel;
 
 public class ConversationTagFactory extends ModelFactory {
@@ -59,32 +60,32 @@ public class ConversationTagFactory extends ModelFactory {
         }
     }
 
-    public ConversationTagModel getByConversationUidAndTag(String conversationUid, String tag) {
+    public ConversationTagModel getByConversationUidAndTag(@NonNull String conversationUid, @NonNull ConversationTag tag) {
         return getFirst(
             ConversationTagModel.COLUMN_CONVERSATION_UID + "=? AND "
                 + ConversationTagModel.COLUMN_TAG + "=? ",
             new String[]{
                 conversationUid,
-                tag
+                tag.value
             });
     }
 
-    public long countByTag(String tag) {
+    public long countByTag(@NonNull ConversationTag tag) {
         return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + ConversationTagModel.COLUMN_TAG + "=?",
             new String[]{
-                tag
+                tag.value
             }
         ));
     }
 
     @NonNull
-    public List<String> getAllConversationUidsByTag(@NonNull String tag) {
+    public List<String> getAllConversationUidsByTag(@NonNull ConversationTag tag) {
         try (Cursor cursor = databaseService.getReadableDatabase().query(
             SupportSQLiteQueryBuilder.builder(getTableName())
                 .columns(new String[]{ConversationTagModel.COLUMN_CONVERSATION_UID})
-                .selection(ConversationTagModel.COLUMN_TAG + " = ?", new String[]{tag})
+                .selection(ConversationTagModel.COLUMN_TAG + " = ?", new String[]{tag.value})
                 .create()
         )) {
             List<String> conversationUids = new ArrayList<>(cursor.getCount());
@@ -147,7 +148,11 @@ public class ConversationTagFactory extends ModelFactory {
         this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
     }
 
-    public void deleteByConversationUidAndTag(String conversationUid, String tag) {
+    public void deleteByConversationUidAndTag(@NonNull String conversationUid, @NonNull ConversationTag tag) {
+        deleteByConversationUidAndTag(conversationUid, tag.value);
+    }
+
+    public void deleteByConversationUidAndTag(@NonNull String conversationUid, @NonNull String tag) {
         this.databaseService.getWritableDatabase().delete(this.getTableName(),
             ConversationTagModel.COLUMN_CONVERSATION_UID + "=? AND "
                 + ConversationTagModel.COLUMN_TAG + "=? ",

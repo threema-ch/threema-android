@@ -39,7 +39,6 @@ class OutgoingLocationMessageTask(
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingLocationMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -65,17 +64,17 @@ class OutgoingLocationMessageTask(
                 latitude = locationDataModel.latitude,
                 longitude = locationDataModel.longitude,
                 accuracy = locationDataModel.accuracy,
-                poi = locationDataModel.poi
-            )
+                poi = locationDataModel.poi,
+            ),
         )
 
         sendContactMessage(
             message,
             messageModel,
-            messageModel.identity,
+            messageModel.identity!!,
             ensureMessageId(messageModel),
-            messageModel.createdAt,
-            handle
+            messageModel.createdAt!!,
+            handle,
         )
     }
 
@@ -91,7 +90,7 @@ class OutgoingLocationMessageTask(
             group = group,
             recipients = recipientIdentities,
             messageModel = messageModel,
-            createdAt = messageModel.createdAt,
+            createdAt = messageModel.createdAt!!,
             messageId = ensureMessageId(messageModel),
             createAbstractMessage = {
                 GroupLocationMessage(
@@ -99,11 +98,11 @@ class OutgoingLocationMessageTask(
                         latitude = locationDataModel.latitude,
                         longitude = locationDataModel.longitude,
                         accuracy = locationDataModel.accuracy,
-                        poi = locationDataModel.poi
-                    )
+                        poi = locationDataModel.poi,
+                    ),
                 )
             },
-            handle = handle
+            handle = handle,
         )
     }
 
@@ -122,7 +121,7 @@ class OutgoingLocationMessageTask(
                 messageModelId,
                 receiverType,
                 recipientIdentities,
-                serviceManager
+                serviceManager,
             )
     }
 }

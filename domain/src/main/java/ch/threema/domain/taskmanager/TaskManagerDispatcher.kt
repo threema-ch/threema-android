@@ -23,10 +23,10 @@ package ch.threema.domain.taskmanager
 
 import ch.threema.base.concurrent.TrulySingleThreadExecutorThreadFactory
 import ch.threema.base.utils.LoggingUtil
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
-import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 
 private val logger = LoggingUtil.getThreemaLogger("TaskManagerDispatcher")
 

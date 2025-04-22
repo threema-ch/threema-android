@@ -40,7 +40,6 @@ class IncomingContactEditMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<EditMessage>(editMessage, triggerSource, serviceManager) {
-
     private val messageService by lazy { serviceManager.messageService }
     private val contactService by lazy { serviceManager.contactService }
 

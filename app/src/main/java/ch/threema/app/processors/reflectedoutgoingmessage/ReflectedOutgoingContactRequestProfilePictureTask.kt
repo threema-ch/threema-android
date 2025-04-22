@@ -42,7 +42,6 @@ internal class ReflectedOutgoingContactRequestProfilePictureTask(
     Common.CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE,
     serviceManager,
 ) {
-
     private val requestProfilePictureMessage by lazy {
         ContactRequestProfilePictureMessage.fromReflected(message)
     }
@@ -57,5 +56,4 @@ internal class ReflectedOutgoingContactRequestProfilePictureTask(
             ?.setIsRestored(false)
             ?: logger.error("Received outgoing message for unknown contact {}", identity)
     }
-
 }

@@ -42,7 +42,7 @@ class FactoryCtx(
          *
          * Note: We only use VP8 for group calls right now.
          */
-        enum class HardwareVideoCodec { VP8 }
+        enum class HardwareVideoCodec { VP8, }
     }
 
     private var _eglBase: EglBase? = EglBase.create()
@@ -93,7 +93,7 @@ class FactoryCtx(
                 .setAudioDeviceModule(audioDeviceModule)
                 .setVideoEncoderFactory(encoder)
                 .setVideoDecoderFactory(decoder)
-                .createPeerConnectionFactory()
+                .createPeerConnectionFactory(),
         )
         audioDeviceModule.release()
 

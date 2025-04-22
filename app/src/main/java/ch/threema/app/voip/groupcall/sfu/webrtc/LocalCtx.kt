@@ -23,15 +23,12 @@ package ch.threema.app.voip.groupcall.sfu.webrtc
 
 import android.content.Context
 import androidx.annotation.AnyThread
-import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.webrtc.LocalCameraVideoContext
 import ch.threema.app.webrtc.LocalMicrophoneAudioContext
 import ch.threema.app.webrtc.VideoCaptureSettings
 import ch.threema.base.utils.LoggingUtil
-import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.Executors
 
 private val logger = LoggingUtil.getThreemaLogger("LocalCtx")
 
@@ -48,9 +45,10 @@ class LocalCtx private constructor(
 
             return LocalCtx(
                 microphoneAudioContext = LocalMicrophoneAudioContext.create(factory),
-                cameraVideoContext = LocalCameraVideoContext.create(context, factory)
-                // TODO(ANDR-1952): Refine parameters
-                { VideoCaptureSettings(width = 1280u, height = 960u, fps = 30u) }
+                cameraVideoContext = LocalCameraVideoContext.create(context, factory) {
+                    // TODO(ANDR-1952): Refine parameters
+                    VideoCaptureSettings(width = 1280u, height = 960u, fps = 30u)
+                },
             ).also {
                 // microphone active by default
                 it.microphoneAudioContext.active = true

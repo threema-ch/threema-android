@@ -75,13 +75,12 @@
     <!-- theme-agnostic colors -->
 
     <!-- wizard -->
-    <color name="wizard_color_text_on_primary">@android:color/white</color>
     <color name="wizard_alpha_background">#33ffffff</color>
-    <color name="wizard_color_accent">@color/md_theme_dark_primary</color>
-    <color name="wizard_color_accent_dark">#323232</color>
-    <color name="wizard_color_button_disabled">#664caf50</color>
+    <color name="color_wizard_primary">@color/md_theme_dark_primary</color>
+    <color name="color_wizard_on_primary">#FFFFFF</color>
     <!-- primary color of consumer build to use in work build -->
-    <color name="wizard_color_accent_consumer">#05A63F</color>
+    <color name="color_wizard_primary_fixed_consumer">#05A63F</color>
+    <color name="color_wizard_on_primary_fixed_consumer">#FFFFFF</color>
 
     <!-- wizard step pager display -->
     <color name="step_pager_previous_tab_color">#4433b5e5</color>
@@ -97,9 +96,6 @@
 
     <!-- Location Picker -->
     <color name="lp_marker_icon">#ffffffff</color>
-
-    <!-- highlight color for filter matches -->
-    <color name="match_highlight_color">@color/material_blue</color>
 
     <!-- others -->
     <color name="item_controller_color">#FFAAAAAA</color>

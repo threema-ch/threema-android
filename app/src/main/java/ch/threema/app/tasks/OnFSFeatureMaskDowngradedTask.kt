@@ -65,7 +65,6 @@ class OnFSFeatureMaskDowngradedTask(
     private val identityStore: IdentityStoreInterface,
     private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
 ) : ActiveTask<Unit>, PersistableTask {
-
     override val type = "FSFeatureMaskDowngraded"
 
     private val contactModelData by lazy { contactModel.data.value }
@@ -107,14 +106,14 @@ class OnFSFeatureMaskDowngradedTask(
 
         logger.info(
             "Forward security feature has been downgraded for contact {}",
-            contactModel.identity
+            contactModel.identity,
         )
 
         // Clear and terminate all sessions with that contact
         DeleteAndTerminateFSSessionsTask(
             forwardSecurityMessageProcessor,
             Contact(data.identity, data.publicKey, data.verificationLevel),
-            Terminate.Cause.DISABLED_BY_REMOTE
+            Terminate.Cause.DISABLED_BY_REMOTE,
         ).invoke(handle)
     }
 
@@ -127,7 +126,7 @@ class OnFSFeatureMaskDowngradedTask(
             receiver,
             ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE,
             0,
-            null
+            null,
         )
     }
 

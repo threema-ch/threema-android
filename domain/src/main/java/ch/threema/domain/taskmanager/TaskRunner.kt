@@ -29,6 +29,7 @@ import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
+import kotlin.math.min
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +39,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
-import kotlin.math.min
 
 private val logger = LoggingUtil.getThreemaLogger("TaskRunner")
 
@@ -75,10 +75,7 @@ internal class TaskRunner(
         override suspend fun read(
             preProcess: (InboundMessage) -> MessageFilterInstruction,
         ): InboundMessage {
-            val (bypassMessages, inboundMessage) = taskQueue.readMessage(preProcess)
-            // TODO(ANDR-2706): Carefully handle exceptions here. Note that these should be logged.
-            bypassMessages.forEach { it.run(this) }
-            return inboundMessage
+            return taskQueue.readMessage(preProcess, bypassTaskCodec)
         }
 
         override suspend fun write(message: OutboundMessage) {
@@ -88,7 +85,7 @@ internal class TaskRunner(
         override suspend fun reflectAndAwaitAck(
             encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult,
             storeD2dNonce: Boolean,
-            nonceFactory: NonceFactory
+            nonceFactory: NonceFactory,
         ): ULong {
             val reflectId: UInt = reflect(encryptedEnvelopeResult)
             return awaitReflectAck(reflectId).also {
@@ -104,12 +101,12 @@ internal class TaskRunner(
             val reflect: OutboundD2mMessage.Reflect = OutboundD2mMessage.Reflect(
                 flags,
                 reflectId,
-                encryptedEnvelopeResult.encryptedEnvelope
+                encryptedEnvelopeResult.encryptedEnvelope,
             )
             logReflect(
                 debugInfo = encryptedEnvelopeResult.debugInfo,
                 reflectId = reflectId,
-                flags = flags
+                flags = flags,
             )
             write(reflect)
             return reflectId
@@ -118,7 +115,7 @@ internal class TaskRunner(
         private fun logReflect(
             debugInfo: MultiDeviceKeys.EncryptedEnvelopeResult.DebugInfo,
             reflectId: UInt,
-            flags: UShort
+            flags: UShort,
         ) {
             logger.run {
                 info("--> SENDING outbound D2D reflect message ${debugInfo.protoContentCaseName}")
@@ -132,13 +129,19 @@ internal class TaskRunner(
     }
 
     /**
+     * The bypass task codec is used for bypassed tasks. It ensures that tasks that are being run
+     * as bypassed task cannot reflect or expect incoming messages.
+     */
+    private val bypassTaskCodec: BypassTaskCodec = BypassTaskCodec { taskCodec }
+
+    /**
      * Start the task runner after the connection has been established.
      *
      * @param layer5Codec the current layer 5 codec for sending messages
      */
     internal suspend fun startTaskRunner(
         layer5Codec: Layer5Codec,
-        incomingMessageProcessor: IncomingMessageProcessor
+        incomingMessageProcessor: IncomingMessageProcessor,
     ) {
         logger.info("Starting task runner")
 
@@ -196,7 +199,7 @@ internal class TaskRunner(
                         logger.warn(
                             "Task executor stopped. Restarting connection in {}ms.",
                             reconnectDelayMs,
-                            cause
+                            cause,
                         )
                         restartConnection()
                     }
@@ -265,7 +268,7 @@ internal class TaskRunner(
                     else -> {
                         logger.error(
                             "Error occurred on attempt $executionAttempts when running task",
-                            exception
+                            exception,
                         )
                         // If we had an unexpected exception, we check if we have a retry left. If
                         // we don't, we complete the completable deferred exceptionally which ends
@@ -297,7 +300,6 @@ internal class TaskRunner(
         // The maximum delay until a reconnection is triggered is 512 seconds (~8.5 minutes)
         private const val RECONNECT_MAX_DELAY_MS = 512_000L
     }
-
 }
 
 /**
@@ -313,7 +315,6 @@ sealed class NetworkException(message: String) : CancellationException(message)
  * continue without server connection.
  */
 class ConnectionStoppedException internal constructor(message: String) : NetworkException(message) {
-
     /**
      * Note that this constructor should only be used in tests.
      */
@@ -378,7 +379,6 @@ suspend inline fun <R> (suspend () -> R).catchAllExceptNetworkException(then: (e
  * an outgoing message ack) or if it is not related to the task.
  */
 enum class MessageFilterInstruction {
-
     /**
      * Bypass or backlog message depending on type:
      *
@@ -402,11 +402,6 @@ enum class MessageFilterInstruction {
      */
     REJECT,
 }
-
-internal data class ReadMessageResult(
-    val bypassMessages: List<TaskQueue.TaskQueueElement>,
-    val readMessage: InboundMessage,
-)
 
 private suspend fun Job.cancelAndJoin(networkException: NetworkException) {
     cancel(networkException)

@@ -45,7 +45,7 @@ private const val RECYCLER_VIEW_STATE = "recyclerViewState"
 
 class EmojiReactionsOverviewFragment(
     val emojiSequence: String? = null,
-    val messageModel: AbstractMessageModel
+    val messageModel: AbstractMessageModel,
 ) : Fragment(), EmojiReactionsOverviewListAdapter.OnItemClickListener {
     private val emojiReactionsViewModel: EmojiReactionsViewModel by activityViewModels()
     private lateinit var emojiReactionsOverviewListAdapter: EmojiReactionsOverviewListAdapter
@@ -60,7 +60,7 @@ class EmojiReactionsOverviewFragment(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_emojireactions_overview, container, false)
         recyclerView = view.findViewById(R.id.emoji_reactions_list)
@@ -73,7 +73,7 @@ class EmojiReactionsOverviewFragment(
 
         emojiReactionsOverviewListAdapter = EmojiReactionsOverviewListAdapter(
             messageModel = messageModel,
-            onItemClickListener = this
+            onItemClickListener = this,
         )
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = emojiReactionsOverviewListAdapter
@@ -99,7 +99,7 @@ class EmojiReactionsOverviewFragment(
                 messageModel,
                 data.emojiSequence,
                 messageService.getMessageReceiver(messageModel),
-                false
+                false,
             )
         }
     }
@@ -108,7 +108,7 @@ class EmojiReactionsOverviewFragment(
         super.onSaveInstanceState(outState)
         outState.putParcelable(
             RECYCLER_VIEW_STATE,
-            recyclerView.layoutManager?.onSaveInstanceState()
+            recyclerView.layoutManager?.onSaveInstanceState(),
         )
     }
 

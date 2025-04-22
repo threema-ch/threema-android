@@ -28,12 +28,12 @@ import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.crypto.NonceStore
 import ch.threema.domain.stores.IdentityStoreInterface
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 
 class DatabaseNonceStoreTest {
     private lateinit var tempDbFileName: String
@@ -44,13 +44,12 @@ class DatabaseNonceStoreTest {
 
     @Before
     fun setup() {
-
         tempDbFileName = "threema-nonce-test-${System.currentTimeMillis()}.db"
         val identityStore = TestIdentityStore()
         _store = DatabaseNonceStore(
             ApplicationProvider.getApplicationContext(),
             identityStore,
-            tempDbFileName
+            tempDbFileName,
         )
     }
 
@@ -101,7 +100,6 @@ class DatabaseNonceStoreTest {
             assertTrue(store.store(NonceScope.CSP, it))
             assertTrue(store.store(NonceScope.D2D, it))
         }
-
 
         // Assert the nonces exist after the insert
         nonces.forEach {
@@ -194,7 +192,7 @@ class DatabaseNonceStoreTest {
 
     private fun assertSameHashedNonces(
         expected: Collection<HashedNonce>,
-        actual: Collection<HashedNonce>
+        actual: Collection<HashedNonce>,
     ) {
         assertEquals(expected.size, actual.size)
         expected.forEach { expectedNonce ->
@@ -233,13 +231,13 @@ private class TestIdentityStore : IdentityStoreInterface {
     override fun encryptData(
         plaintext: ByteArray,
         nonce: ByteArray,
-        receiverPublicKey: ByteArray
+        receiverPublicKey: ByteArray,
     ): ByteArray = throw UnsupportedOperationException()
 
     override fun decryptData(
         ciphertext: ByteArray,
         nonce: ByteArray,
-        senderPublicKey: ByteArray
+        senderPublicKey: ByteArray,
     ): ByteArray = throw UnsupportedOperationException()
 
     override fun calcSharedSecret(publicKey: ByteArray): ByteArray =
@@ -257,7 +255,6 @@ private class TestIdentityStore : IdentityStoreInterface {
         identity: String,
         serverGroup: String,
         publicKey: ByteArray,
-        privateKey: ByteArray
+        privateKey: ByteArray,
     ) = throw UnsupportedOperationException()
-
 }

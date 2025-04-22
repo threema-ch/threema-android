@@ -64,7 +64,7 @@ class IncomingGroupJoinResponseMessage(
         if (outgoingGroupJoinRequestModel.adminIdentity != sender) {
             logger.info(
                 "Group Join Response: Ignore with invalid sender {}",
-                sender
+                sender,
             )
             return ReceiveStepsResult.DISCARD
         }
@@ -92,13 +92,13 @@ class IncomingGroupJoinResponseMessage(
 
         val updateModel = updatedRequestBuilder.build()
         outgoingGroupJoinRequestModelFactory.update(
-            updateModel
+            updateModel,
         )
 
         ListenerManager.groupJoinResponseListener.handle { listener: GroupJoinResponseListener ->
             listener.onReceived(
                 updateModel,
-                status
+                status,
             )
         }
 

@@ -28,26 +28,34 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
 
+import java.util.concurrent.CountDownLatch;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.groupflows.GroupDisbandIntent;
+import ch.threema.app.groupflows.GroupLeaveIntent;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
-import ch.threema.app.services.GroupService;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupModelData;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
+import kotlinx.coroutines.Deferred;
 
 /**
  * Empty or delete one or more conversation/chat.
@@ -71,9 +79,11 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
 
     // Services
     private final @NonNull ConversationService conversationService;
-    private final @NonNull GroupService groupService;
     private final @NonNull DistributionListService distributionListService;
+    private final @NonNull GroupModelRepository groupModelRepository;
+    private final @NonNull GroupFlowDispatcher groupFlowDispatcher;
 
+    private final @NonNull String myIdentity;
     private final @NonNull Mode mode;
     private final MessageReceiver[] messageReceivers;
     private final @Nullable FragmentManager fragmentManager;
@@ -89,8 +99,10 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
      * @param mode                    Either EMPTY or DELETE
      * @param messageReceivers        The list of receivers for which to empty or delete the conversation
      * @param conversationService     Conversation service
-     * @param groupService            Group service
      * @param distributionListService Distribution list service
+     * @param groupModelRepository    Group model repository to get the group model
+     * @param groupFlowDispatcher     Group flow dispatcher to run the group flows
+     * @param myIdentity              the user's threema identity
      * @param fragmentManager         Fragment manager, required to show progress dialog
      * @param snackbarFeedbackView    If view is set, a snackbar message will be shown after completion
      * @param runOnCompletion         A runnable invoked after completion
@@ -99,8 +111,10 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
         @NonNull Mode mode,
         MessageReceiver[] messageReceivers,
         @NonNull ConversationService conversationService,
-        @NonNull GroupService groupService,
         @NonNull DistributionListService distributionListService,
+        @NonNull GroupModelRepository groupModelRepository,
+        @NonNull GroupFlowDispatcher groupFlowDispatcher,
+        @NonNull String myIdentity,
         @Nullable FragmentManager fragmentManager,
         @Nullable View snackbarFeedbackView,
         @Nullable Runnable runOnCompletion
@@ -108,11 +122,13 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
         this.mode = mode;
         this.messageReceivers = messageReceivers;
         this.conversationService = conversationService;
-        this.groupService = groupService;
         this.distributionListService = distributionListService;
+        this.groupModelRepository = groupModelRepository;
+        this.groupFlowDispatcher = groupFlowDispatcher;
         this.fragmentManager = fragmentManager;
         this.snackbarFeedbackView = snackbarFeedbackView;
         this.runOnCompletion = runOnCompletion;
+        this.myIdentity = myIdentity;
     }
 
     @Override
@@ -176,9 +192,62 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
         this.conversationService.delete(contactModel);
     }
 
+    @WorkerThread
     private void deleteGroupConversation(@NonNull GroupModel groupModel) {
-        // Note: Group conversations cannot be deleted without removing the group as well
-        this.groupService.leaveOrDissolveAndRemoveFromLocal(groupModel);
+        // Get the new group model
+        ch.threema.data.models.GroupModel group = groupModelRepository.getByCreatorIdentityAndId(
+            groupModel.getCreatorIdentity(),
+            groupModel.getApiGroupId()
+        );
+
+        if (group == null) {
+            logger.error("New group model not found");
+            return;
+        }
+
+        GroupModelData groupModelData = group.getData().getValue();
+        if (groupModelData == null) {
+            logger.error("Group is already deleted as the group model data is null");
+            return;
+        }
+
+        // Decide whether the group must be additionally left or disbanded. Note that we do not need
+        // to provide a fragment manager as this task already shows a progress dialog.
+        Deferred<Boolean> groupRemoveResult;
+        if (!groupModelData.isMember()) {
+            // In the case where the user is not a member anymore, we can just remove the group.
+            groupRemoveResult = groupFlowDispatcher.runRemoveGroupFlow(null, group);
+        } else if (myIdentity.equals(groupModelData.groupIdentity.getCreatorIdentity())) {
+            // In the case where the user is the creator, we need to disband and remove the group.
+            groupRemoveResult = groupFlowDispatcher.runDisbandGroupFlow(
+                null, GroupDisbandIntent.DISBAND_AND_REMOVE, group
+            );
+        } else {
+            // Otherwise, we need to leave and remove the group.
+            groupRemoveResult = groupFlowDispatcher.runLeaveGroupFlow(
+                null, GroupLeaveIntent.LEAVE_AND_REMOVE, group
+            );
+        }
+
+        // Await the result
+        CountDownLatch latch = new CountDownLatch(1);
+
+        groupRemoveResult.invokeOnCompletion(throwable -> {
+            // TODO(ANDR-3631): Would an exception here halt the async task forever?
+            Boolean result = groupRemoveResult.getCompleted();
+            if (result == null || !result) {
+                logger.error("Could not remove group", throwable);
+            }
+
+            latch.countDown();
+            return null;
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            logger.error("Deleting group interrupted", e);
+        }
     }
 
     private void deleteDistributionList(@NonNull DistributionListModel distributionListModel) {

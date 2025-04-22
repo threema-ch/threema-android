@@ -82,9 +82,9 @@ public class ApiServiceImpl implements ApiService {
                 ConfigUtils.isOnPremBuild() ? getAuthToken() : null,
                 blobData,
                 appVersion,
-                ConfigUtils.isDevBuild(),
                 serverAddressProvider,
                 null,
+                shouldPersist,
                 multiDeviceManager.getPropertiesProvider(),
                 blobScope
             );
@@ -94,7 +94,6 @@ public class ApiServiceImpl implements ApiService {
                 ConfigUtils.isOnPremBuild() ? getAuthToken() : null,
                 blobData,
                 appVersion,
-                ConfigUtils.isDevBuild(),
                 serverAddressProvider,
                 null,
                 useIpv6,
@@ -113,7 +112,6 @@ public class ApiServiceImpl implements ApiService {
                 baseOkHttpClient,
                 blobId,
                 appVersion,
-                ConfigUtils.isDevBuild(),
                 serverAddressProvider,
                 null,
                 multiDeviceManager.getPropertiesProvider()
@@ -123,7 +121,6 @@ public class ApiServiceImpl implements ApiService {
                 baseOkHttpClient,
                 blobId,
                 appVersion,
-                ConfigUtils.isDevBuild(),
                 serverAddressProvider,
                 null,
                 useIpv6

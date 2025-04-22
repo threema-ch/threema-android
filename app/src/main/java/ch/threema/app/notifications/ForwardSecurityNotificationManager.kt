@@ -36,7 +36,7 @@ import ch.threema.app.activities.ComposeMessageActivity
 import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
-import ch.threema.app.services.DeadlineListService
+import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 import kotlin.random.Random
@@ -45,7 +45,7 @@ private val logger = LoggingUtil.getThreemaLogger("ForwardSecurityNotificationMa
 
 class ForwardSecurityNotificationManager(
     private val context: Context,
-    private val hiddenChatListService: DeadlineListService,
+    private val conversationCategoryService: ConversationCategoryService,
 ) {
     private val notificationIdMap = HashMap<String, Int>()
 
@@ -55,7 +55,7 @@ class ForwardSecurityNotificationManager(
 
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(
             context,
-            NotificationChannels.NOTIFICATION_CHANNEL_FORWARD_SECURITY
+            NotificationChannels.NOTIFICATION_CHANNEL_FORWARD_SECURITY,
         )
             .setContentTitle(context.getString(R.string.forward_security_notification_rejected_title))
             .setContentText(contentText)
@@ -82,7 +82,7 @@ class ForwardSecurityNotificationManager(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS,
             ) == PackageManager.PERMISSION_GRANTED
         } else {
             true
@@ -105,25 +105,25 @@ class ForwardSecurityNotificationManager(
             // Use unique request code to prevent that pending intent extras are overridden
             messageReceiver.uniqueIdString.hashCode(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE,
         )
     }
 
     private fun getNotificationContextText(messageReceiver: MessageReceiver<*>): String {
         // Do not include name in case of a hidden contact. The intent remains the same, so clicking
         // the notification will still result in opening the correct chat.
-        return if (hiddenChatListService.has(messageReceiver.uniqueIdString)) {
+        return if (conversationCategoryService.isPrivateChat(messageReceiver.uniqueIdString)) {
             context.getString(R.string.forward_security_notification_rejected_text_generic)
         } else {
             when (messageReceiver) {
                 is ContactMessageReceiver -> context.getString(
                     R.string.forward_security_notification_rejected_text_contact,
-                    messageReceiver.displayName
+                    messageReceiver.displayName,
                 )
 
                 is GroupMessageReceiver -> context.getString(
                     R.string.forward_security_notification_rejected_text_group,
-                    messageReceiver.displayName
+                    messageReceiver.displayName,
                 )
 
                 // Note that messages in distribution lists are rejected in the corresponding 1:1

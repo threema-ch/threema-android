@@ -55,9 +55,7 @@ import ch.threema.app.activities.UnlockMasterKeyActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
-import ch.threema.app.listeners.ConversationListener;
-import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.BiometricUtil;
@@ -77,7 +75,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     private Preference masterkeyPreference;
     private TwoStatePreference masterkeySwitchPreference;
     private PreferenceService preferenceService;
-    private DeadlineListService hiddenChatsListService;
+    private ConversationCategoryService conversationCategoryService;
 
     private View fragmentView;
 
@@ -97,7 +95,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
         super.initializePreferences();
 
         preferenceService = requirePreferenceService();
-        hiddenChatsListService = requireHiddenChatListService();
+        conversationCategoryService = requireConversationCategoryService();
     }
 
     private void onCreateUnlocked() {
@@ -158,8 +156,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
             public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
                 switch ((String) newValue) {
                     case LockingMech_NONE:
-                        if (hiddenChatsListService.getSize() > 0) {
-                            GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.hide_chat, R.string.unhide_chats_confirm, R.string.continue_anyway, R.string.cancel);
+                        if (conversationCategoryService.hasPrivateChats()) {
+                            GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.hide_chat, R.string.access_protection_cannot_be_removed, 0, R.string.cancel);
                             dialog.setTargetFragment(SettingsSecurityFragment.this, 0);
                             dialog.show(getFragmentManager(), ID_UNHIDE_CHATS_CONFIRM);
                         } else {
@@ -280,17 +278,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     private void removeAccessProtection() {
         lockMechanismPreference.setValue(LockingMech_NONE);
         preferenceService.setPrivateChatsHidden(false);
-
-        if (hiddenChatsListService.getSize() > 0) {
-            hiddenChatsListService.clear();
-            ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-                @Override
-                public void handle(ConversationListener listener) {
-                    // make hidden chats visible again
-                    listener.onModifiedAll();
-                }
-            });
-        }
     }
 
     private void updateLockPreferences() {
@@ -441,7 +428,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     }
 
     private void setBiometricLock() {
-        /* TODO: Use BiometricLockActivity */
         if (BiometricUtil.isBiometricsSupported(requireContext())) {
             BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.prefs_title_access_protection))
@@ -548,7 +534,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                     @Override
                     protected Boolean doInBackground(Void... voids) {
                         try {
-                            // TODO let passwordentrydialog return a char array
                             int pl = text.length();
                             char[] password = new char[pl];
                             text.getChars(0, pl, password, 0);
@@ -604,10 +589,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     @Override
     public void onYes(String tag, Object data) {
         switch (tag) {
-            case ID_UNHIDE_CHATS_CONFIRM:
-                removeAccessProtection();
-                updateLockPreferences();
-                break;
             case DIALOG_TAG_PASSWORD_REMINDER_PIN:
                 setPin();
                 break;

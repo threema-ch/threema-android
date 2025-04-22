@@ -25,7 +25,7 @@ import ch.threema.app.services.UpdateSystemService
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion85(
-    private val sqLiteDatabase: SQLiteDatabase
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : UpdateSystemService.SystemUpdate {
     companion object {
         const val VERSION = 85
@@ -37,7 +37,7 @@ internal class SystemUpdateToVersion85(
         for (table in arrayOf(
             "message",
             "m_group_message",
-            "distribution_list_message"
+            "distribution_list_message",
         )) {
             if (!fieldExists(sqLiteDatabase, table, "displayTags")) {
                 sqLiteDatabase.rawExecSQL("ALTER TABLE `$table` ADD COLUMN `displayTags` TINYINT DEFAULT 0")

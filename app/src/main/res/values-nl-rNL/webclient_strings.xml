@@ -39,5 +39,7 @@
     <string name="webclient_diagnostics_start">Start</string>
     <string name="webclient_diagnostics_intro">Druk op de knop Start om de test uit te voeren.</string>
     <string name="webclient_diagnostics_done">Klaar. Als u problemen ondervindt met het opzetten van de verbinding met de desktop-app of webclient, stuur dit logbestand dan naar de Threema-klantenservice.</string>
-    <string name="webclient_unsupported_desktop_beta_message">Op dit moment kan deze bèta-app voor de desktop alleen worden gekoppeld aan een iOS-apparaat. Download voor Android-apparaten de gewone desktop-app.</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">Verkeerde QR-code</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
+    <string name="webclient_scanned_md_linking_qr_code_message">De QR-code die u gescand heeft hoort bij de nieuwe desktop bèta-app.\n\nNavigeer terug naar Hoofdmenu &gt; ${app_name_desktop} 2.0 for Desktop (Beta) en selecteer ${md_link_device} om met deze desktop-app te koppelen.</string>
 </resources>

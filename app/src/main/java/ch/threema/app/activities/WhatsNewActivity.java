@@ -44,11 +44,7 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 
         setContentView(R.layout.activity_whatsnew);
 
-        String title = getString(
-            R.string.whatsnew_title,
-            getString(R.string.app_name),
-            BuildConfig.VERSION_NAME
-        );
+        String title = getString(R.string.whatsnew_title, BuildConfig.VERSION_NAME);
         CharSequence body = Html.fromHtml(getString(R.string.whatsnew_headline));
 
         ((TextView) findViewById(R.id.whatsnew_title)).setText(title);

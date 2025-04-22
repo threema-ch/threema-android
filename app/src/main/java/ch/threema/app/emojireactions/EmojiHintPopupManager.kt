@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2025 Threema GmbH
+ * Copyright (c) 2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -180,7 +180,7 @@ class EmojiHintPopupManager(
         } else {
             handler.postDelayed(
                 { pollAnchorLocation(view, originalLocation) },
-                ANCHOR_MOVEMENT_POLL_INTERVAL
+                ANCHOR_MOVEMENT_POLL_INTERVAL,
             )
         }
     }

@@ -26,12 +26,10 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.MimeUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.file.FileData
-import ch.threema.domain.protocol.csp.messages.file.FileMessage
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
@@ -45,9 +43,8 @@ internal class ReflectedOutgoingGroupFileTask(
 ) : ReflectedOutgoingGroupMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_FILE,
-    serviceManager
+    serviceManager,
 ) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     private val groupFileMessage: GroupFileMessage by lazy { GroupFileMessage.fromByteArray(message.body.toByteArray()) }
@@ -58,13 +55,12 @@ internal class ReflectedOutgoingGroupFileTask(
     override val shouldBumpLastUpdate: Boolean = true
 
     override fun processOutgoingMessage() {
-
         // 1: Check if the group message already exists locally (from previous run(s) of this task).
         //    If so, cancel and accept that the download for the content(s) might not be complete.
         messageService.getGroupMessageModel(
             groupFileMessage.messageId,
             messageReceiver.group.creatorIdentity,
-            messageReceiver.group.apiGroupId
+            messageReceiver.group.apiGroupId,
         )?.run { return }
 
         val fileData: FileData = groupFileMessage.fileData ?: run {
@@ -79,14 +75,14 @@ internal class ReflectedOutgoingGroupFileTask(
         val groupMessageModel: GroupMessageModel = createMessageModelFromFileMessage(
             groupFileMessage = groupFileMessage,
             fileDataModel = fileDataModel,
-            fileData = fileData
+            fileData = fileData,
         )
 
         // 4. Save group message model and inform listeners about new message
         messageService.save(groupMessageModel)
         ListenerManager.messageListeners.handle { messageListener ->
             messageListener.onNew(
-                groupMessageModel
+                groupMessageModel,
             )
         }
 
@@ -103,19 +99,22 @@ internal class ReflectedOutgoingGroupFileTask(
     private fun createMessageModelFromFileMessage(
         groupFileMessage: GroupFileMessage,
         fileDataModel: FileDataModel,
-        fileData: FileData
+        fileData: FileData,
     ): GroupMessageModel {
         val messageModel: GroupMessageModel = messageReceiver.createLocalModel(
-            /* type = */ MessageType.FILE,
-            /* messageContentsType = */ MimeUtil.getContentTypeFromFileData(fileDataModel),
-            /* postedAt = */ Date(message.createdAt)
+            /* type = */
+            MessageType.FILE,
+            /* messageContentsType = */
+            MimeUtil.getContentTypeFromFileData(fileDataModel),
+            /* postedAt = */
+            Date(message.createdAt),
         )
         initializeMessageModelsCommonFields(messageModel)
         return messageModel.apply {
-            setFileDataModel(fileDataModel)
-            setMessageFlags(groupFileMessage.messageFlags)
-            setCorrelationId(fileData.correlationId)
-            setForwardSecurityMode(groupFileMessage.forwardSecurityMode)
+            this.fileData = fileDataModel
+            messageFlags = groupFileMessage.messageFlags
+            correlationId = fileData.correlationId
+            forwardSecurityMode = groupFileMessage.forwardSecurityMode
             state = MessageState.SENT
         }
     }

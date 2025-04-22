@@ -28,8 +28,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
 
-import com.google.android.material.appbar.AppBarLayout;
-
 import org.slf4j.Logger;
 
 import androidx.annotation.StringRes;

@@ -60,7 +60,6 @@ class EmojiReactionsPopup(
     private val shouldHideUnsupportedReactions: Boolean,
 ) :
     PopupWindow(context), View.OnClickListener {
-
     private val addReactionButton: ImageView
     private var emojiReactionsPopupListener: EmojiReactionsPopupListener? = null
     private val popupHeight =
@@ -77,7 +76,7 @@ class EmojiReactionsPopup(
     private val selectedBackgroundColor = ResourcesCompat.getDrawable(
         context.resources,
         R.drawable.shape_emoji_popup_selected_background,
-        null
+        null,
     )
     private val backgroundColor =
         ResourcesCompat.getColor(context.resources, android.R.color.transparent, null)
@@ -159,7 +158,7 @@ class EmojiReactionsPopup(
 
     fun show(
         originView: View,
-        messageModel: AbstractMessageModel?
+        messageModel: AbstractMessageModel?,
     ) {
         if (messageModel == null) {
             return
@@ -176,7 +175,7 @@ class EmojiReactionsPopup(
             parentView,
             Gravity.LEFT or Gravity.TOP,
             originLocation[0] + horizontalOffset,
-            originLocation[1] - this.popupHeight
+            originLocation[1] - this.popupHeight,
         )
 
         val emojiReactionsModel: EmojiReactionsModel? =
@@ -193,9 +192,11 @@ class EmojiReactionsPopup(
 
                 for (topReaction in topReactions) {
                     if (topReaction.emojiItemView != null) {
+                        animationDelay += animationDelayStep
                         AnimationUtil.bubbleAnimate(
                             topReaction.emojiItemView,
-                            animationDelayStep.let { animationDelay += it; animationDelay })
+                            animationDelay,
+                        )
 
                         if (hasUserReacted(topReaction, emojiReactionsModel)) {
                             topReaction.emojiItemView?.background = selectedBackgroundColor
@@ -211,7 +212,7 @@ class EmojiReactionsPopup(
 
     private fun hasUserReacted(
         topReaction: ReactionEntry,
-        emojiReactionsModel: EmojiReactionsModel?
+        emojiReactionsModel: EmojiReactionsModel?,
     ): Boolean {
         val reactionList = emojiReactionsModel?.data?.value
         return reactionList?.any { reaction ->
@@ -277,7 +278,7 @@ class EmojiReactionsPopup(
 
         createAlertDialogIfBodySet(
             R.string.emoji_reactions_unavailable_title,
-            body
+            body,
         )?.show(fragmentManager, "dis")
     }
 
@@ -290,7 +291,7 @@ class EmojiReactionsPopup(
                     ?.let { name ->
                         context.getString(
                             R.string.emoji_reactions_cannot_remove_body,
-                            name
+                            name,
                         )
                     }
             }
@@ -300,13 +301,13 @@ class EmojiReactionsPopup(
 
         createAlertDialogIfBodySet(
             R.string.emoji_reactions_cannot_remove_title,
-            body
+            body,
         )?.show(fragmentManager, "imp")
     }
 
     private fun createAlertDialogIfBodySet(
         @StringRes titleResId: Int,
-        body: String?
+        body: String?,
     ): SimpleStringAlertDialog? {
         return body?.let {
             SimpleStringAlertDialog.newInstance(titleResId, it)

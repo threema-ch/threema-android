@@ -27,7 +27,9 @@ import ch.threema.app.tasks.FSRefreshStepsTask
 import ch.threema.app.tasks.OutgoingContactRequestProfilePictureTask
 import ch.threema.app.workers.ContactUpdateWorker
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.IdentityState
+import ch.threema.storage.models.GroupModel
 
 private val logger = LoggingUtil.getThreemaLogger("ApplicationSetupSteps")
 
@@ -47,9 +49,10 @@ fun runApplicationSetupSteps(serviceManager: ServiceManager): Boolean {
         return false
     }
 
+    // TODO(ANDR-3583) Logic for FS Refresh Steps is duplicated
     // Get all groups where the user is a member (or creator). Only include groups that are not
     // deleted.
-    val groups = groupService.all.filter { !it.isDeleted && groupService.isGroupMember(it) }
+    val groups = groupService.all.filter { groupService.isGroupMember(it) }
 
     // Find group contacts of groups that are not left
     val groupContacts = groups.flatMap { groupService.getMembers(it) }.toSet()
@@ -79,15 +82,17 @@ fun runApplicationSetupSteps(serviceManager: ServiceManager): Boolean {
         serviceManager.taskManager.schedule(
             OutgoingContactRequestProfilePictureTask(
                 it.identity,
-                serviceManager
-            )
+                serviceManager,
+            ),
         )
     }
 
     // Send a group sync or group sync request for groups where the user is the creator or a member
     groups.forEach { group ->
         if (groupService.isGroupCreator(group)) {
-            groupService.scheduleSync(group)
+            group.toNewGroupModel(serviceManager.modelRepositories.groups)?.let {
+                serviceManager.groupFlowDispatcher.runGroupResyncFlow(it)
+            } ?: logger.error("Could not get new group model")
         } else if (groupService.isGroupMember(group)) {
             groupService.scheduleSyncRequest(group.creatorIdentity, group.apiGroupId)
         }
@@ -96,4 +101,11 @@ fun runApplicationSetupSteps(serviceManager: ServiceManager): Boolean {
     logger.info("Application setup steps completed successfully")
 
     return true
+}
+
+private fun GroupModel.toNewGroupModel(groupModelRepository: GroupModelRepository): ch.threema.data.models.GroupModel? {
+    return groupModelRepository.getByCreatorIdentityAndId(
+        creatorIdentity,
+        apiGroupId,
+    )
 }

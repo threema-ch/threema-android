@@ -21,7 +21,6 @@
 
 package ch.threema.app.glide
 
-import android.content.Context
 import android.graphics.Bitmap
 import ch.threema.storage.models.AbstractMessageModel
 import com.bumptech.glide.load.Options
@@ -33,7 +32,7 @@ class ThumbnailLoader : ModelLoader<AbstractMessageModel, Bitmap> {
         model: AbstractMessageModel,
         width: Int,
         height: Int,
-        options: Options
+        options: Options,
     ): ModelLoader.LoadData<Bitmap> {
         return ModelLoader.LoadData(ObjectKey(model), ThumbnailFetcher(model))
     }

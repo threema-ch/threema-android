@@ -47,20 +47,19 @@ import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData.Companion.GCK_LENGTH
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
-import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel
+import java.lang.ref.WeakReference
+import java.security.SecureRandom
+import java.util.*
+import kotlin.math.max
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.lang.ref.WeakReference
-import java.security.SecureRandom
-import java.util.*
-import kotlin.math.max
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallManagerImpl")
 
@@ -74,7 +73,7 @@ class GroupCallManagerImpl(
     private val preferenceService: PreferenceService,
     private val messageService: MessageService,
     private val notificationService: NotificationService,
-    private val sfuConnection: SfuConnection
+    private val sfuConnection: SfuConnection,
 ) : GroupCallManager {
     private companion object {
         private const val ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS: Long = 2000L
@@ -86,9 +85,9 @@ class GroupCallManagerImpl(
             // Normally this should only be relevant when someone was offline for some time
             // and lots of group calls have been carried out in the meantime.
             extraBufferCapacity = 256,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
         ).apply {
-            CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+            CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                 collect { processGroupCallStart(it) }
             }
         }
@@ -145,6 +144,11 @@ class GroupCallManagerImpl(
     }
 
     @AnyThread
+    override fun addGroupCallObserver(group: ch.threema.data.models.GroupModel, observer: GroupCallObserver) {
+        addGroupCallObserver(group.localGroupId, observer)
+    }
+
+    @AnyThread
     override fun addGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver) {
         synchronized(callObservers) {
             if (groupId !in callObservers) {
@@ -158,6 +162,11 @@ class GroupCallManagerImpl(
 
     @AnyThread
     override fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver) {
+        removeGroupCallObserver(group.localGroupId, observer)
+    }
+
+    @AnyThread
+    override fun removeGroupCallObserver(group: ch.threema.data.models.GroupModel, observer: GroupCallObserver) {
         removeGroupCallObserver(group.localGroupId, observer)
     }
 
@@ -212,7 +221,7 @@ class GroupCallManagerImpl(
     private fun notifyJoinedAndLeftCall(call: GroupCallController) {
         notifyCallObservers(call.description.groupId, call.description)
         notifyGeneralCallObservers(call.description)
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             try {
                 call.callLeftSignal.await()
             } catch (e: Exception) {
@@ -225,7 +234,7 @@ class GroupCallManagerImpl(
     @WorkerThread
     private suspend fun joinAndConfirmCall(
         call: GroupCallDescription,
-        groupId: LocalGroupId
+        groupId: LocalGroupId,
     ): GroupCallController {
         logger.info("Join existing group call")
         GroupCallThreadUtil.assertDispatcherThread()
@@ -283,92 +292,54 @@ class GroupCallManagerImpl(
 
     @AnyThread
     override fun getCurrentChosenCall(groupModel: GroupModel): GroupCallDescription? {
-        return chosenCalls[groupModel.localGroupId]
+        return getCurrentChosenCall(groupModel.localGroupId)
+    }
+
+    @AnyThread
+    override fun getCurrentChosenCall(groupModel: ch.threema.data.models.GroupModel): GroupCallDescription? {
+        return getCurrentChosenCall(groupModel.localGroupId)
+    }
+
+    @AnyThread
+    override fun getCurrentChosenCall(localGroupId: LocalGroupId): GroupCallDescription? {
+        return chosenCalls[localGroupId]
     }
 
     override fun getCurrentGroupCallController(): GroupCallController? {
         return serviceConnection.getCurrentGroupCallController()
     }
 
-    @AnyThread
-    override fun sendGroupCallStartToNewMembers(
-        groupModel: GroupModel,
-        newMembers: Set<String>,
-        handle: ActiveTaskCodec
-    ) {
-        scheduleOrSendGroupCallStartToNewMembers(groupModel, newMembers, handle)
-    }
-
-    @AnyThread
-    override fun scheduleGroupCallStartForNewMembers(
-        groupModel: GroupModel,
-        newMembers: Set<String>
-    ) {
-        scheduleOrSendGroupCallStartToNewMembers(groupModel, newMembers, null)
-    }
-
-    /**
-     * Schedule or send the group call start message based on whether the task codec is null or not.
-     */
-    @AnyThread
-    private fun scheduleOrSendGroupCallStartToNewMembers(
-        groupModel: GroupModel,
-        newMembers: Set<String>,
-        handle: ActiveTaskCodec?
-    ) {
-        if (newMembers.isEmpty()) {
-            return
-        }
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
-            val groupCallDescription = getChosenCall(groupModel.localGroupId) ?: return@launch
-            val startData = try {
+    override suspend fun getGroupCallStartData(groupModel: ch.threema.data.models.GroupModel): GroupCallStartData? {
+        return withContext(GroupCallThreadUtil.dispatcher) {
+            val groupCallDescription =
+                getChosenCall(groupModel.localGroupId) ?: return@withContext null
+            return@withContext try {
                 GroupCallStartData(
                     ProtocolDefines.GC_PROTOCOL_VERSION.toUInt(),
                     groupCallDescription.gck,
-                    groupCallDescription.sfuBaseUrl
+                    groupCallDescription.sfuBaseUrl,
                 )
             } catch (e: IllegalArgumentException) {
                 logger.warn("Could not create call start data", e)
                 null
             }
-            if (startData == null) {
-                logger.warn("Could not send group call start to new members")
-            } else {
-                if (handle != null) {
-                    sendGroupCallStartMessage(
-                        groupModel,
-                        startData,
-                        groupCallDescription.getStartedAtDate(),
-                        newMembers,
-                        handle
-                    )
-                } else {
-                    scheduleGroupCallStartMessage(
-                        groupModel,
-                        startData,
-                        groupCallDescription.getStartedAtDate(),
-                        newMembers
-                    )
-                }
-            }
         }
     }
 
-    override fun updateAllowedCallParticipants(groupModel: GroupModel) {
-        logger.debug("Update allowed call participants")
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+    override fun removeGroupCallParticipants(
+        identities: Set<String>,
+        groupModel: ch.threema.data.models.GroupModel,
+    ) {
+        logger.debug("Remove group call participants")
+
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             getGroupCallControllerForJoinedCall(groupModel.localGroupId)?.let {
-                val members = groupService.getGroupIdentities(groupModel).toSet()
-                it.purgeCallParticipants(members)
-            }
-            if (!groupService.isGroupMember(groupModel)) {
-                val groupId = groupModel.localGroupId
-                val callIds = getRunningCalls(groupId)
-                    .map { it.callId }
-                    .toSet()
-                removeRunningCalls(callIds)
-                chosenCalls.remove(groupId)
-                purgeCallRefreshTimers(groupId)
+                // Get the current members or an empty set if no group call data is available
+                // anymore.
+                val membersWithoutUser = groupModel.data.value?.otherMembers ?: emptySet()
+                val members = membersWithoutUser + setOf(contactService.me.identity)
+                // Remove the given identities from the members so that those will get removed.
+                it.purgeCallParticipants(members - identities)
             }
         }
     }
@@ -381,7 +352,7 @@ class GroupCallManagerImpl(
             context,
             callDescription.sfuBaseUrl,
             callDescription.callId,
-            callDescription.groupId
+            callDescription.groupId,
         )
         logger.debug("Start Group Call Foreground Service")
         ContextCompat.startForegroundService(context, intent)
@@ -398,7 +369,7 @@ class GroupCallManagerImpl(
         GroupCallThreadUtil.assertDispatcherThread()
 
         val callId = controller.callId
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             try {
                 controller.callDisposedSignal.await()
                 logger.info("Call has been disposed")
@@ -444,7 +415,7 @@ class GroupCallManagerImpl(
             callStartData.sfuBaseUrl,
             callId,
             callStartData.gck,
-            Date().time.toULong()
+            Date().time.toULong(),
         )
         val callController = joinCall(callDescription)
 
@@ -481,12 +452,7 @@ class GroupCallManagerImpl(
             callController.confirmCall()
         }
 
-        scheduleGroupCallStartMessage(
-            group,
-            callStartData,
-            callDescription.getStartedAtDate(),
-            null
-        )
+        scheduleGroupCallStartMessage(group, callStartData, callDescription.getStartedAtDate())
         sendCallInitAsText(callId, group, callStartData)
 
         addRunningCall(callDescription)
@@ -497,7 +463,7 @@ class GroupCallManagerImpl(
             group,
             contactService.me,
             true,
-            callDescription.getStartedAtDate()
+            callDescription.getStartedAtDate(),
         )
 
         groupService.bumpLastUpdate(group)
@@ -513,7 +479,7 @@ class GroupCallManagerImpl(
      */
     private suspend fun waitForChosenCall(
         group: GroupModel,
-        waitPeriodMillis: Long
+        waitPeriodMillis: Long,
     ): GroupCallDescription? {
         val signal = CompletableDeferred<GroupCallDescription>()
 
@@ -589,7 +555,7 @@ class GroupCallManagerImpl(
         if (ProtocolDefines.GC_PROTOCOL_VERSION != message.data.protocolVersion.toInt()) {
             logger.warn(
                 "Invalid protocol version {} received. Abort handling of group call start",
-                message.data.protocolVersion
+                message.data.protocolVersion,
             )
             return
         }
@@ -611,7 +577,7 @@ class GroupCallManagerImpl(
             message.data.sfuBaseUrl,
             callId,
             message.data.gck,
-            Date().time.toULong()
+            Date().time.toULong(),
         )
 
         addRunningCall(call)
@@ -624,7 +590,7 @@ class GroupCallManagerImpl(
                 group,
                 callerContactModel,
                 isOutbox,
-                message.date
+                message.date,
             )
         }
 
@@ -675,19 +641,19 @@ class GroupCallManagerImpl(
         group: GroupModel,
         caller: ContactModel,
         isOutbox: Boolean,
-        startedAt: Date
+        startedAt: Date,
     ) {
         messageService.createGroupCallStatus(
             GroupCallStatusDataModel.createStarted(
                 callDescription.callId.toString(),
                 callDescription.groupId.id,
-                caller.identity
+                caller.identity,
             ),
             groupService.createReceiver(group),
             caller,
             callDescription,
             isOutbox,
-            startedAt
+            startedAt,
         )
     }
 
@@ -702,7 +668,7 @@ class GroupCallManagerImpl(
     @WorkerThread
     private suspend fun consolidateJoinedCall(
         chosenCall: GroupCallDescription,
-        groupId: LocalGroupId
+        groupId: LocalGroupId,
     ): Boolean {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -714,12 +680,12 @@ class GroupCallManagerImpl(
         return if (joinedCall != null && isOfGroupButNotChosenCall(
                 groupId,
                 joinedCall,
-                chosenCall.callId
+                chosenCall.callId,
             )
         ) {
             logger.info(
                 "Leave joined call because it is not the chosen call for group {}. Join the chosen call instead.",
-                groupId
+                groupId,
             )
 
             val groupController = serviceConnection.getCurrentGroupCallController()
@@ -739,7 +705,7 @@ class GroupCallManagerImpl(
                     context,
                     groupId.id,
                     microphoneActive,
-                )
+                ),
             )
             true
         } else {
@@ -751,7 +717,7 @@ class GroupCallManagerImpl(
     private fun isOfGroupButNotChosenCall(
         groupId: LocalGroupId,
         callId: CallId,
-        chosenCall: CallId
+        chosenCall: CallId,
     ): Boolean {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -788,7 +754,7 @@ class GroupCallManagerImpl(
         return GroupCallStartData(
             ProtocolDefines.GC_PROTOCOL_VERSION.toUInt(),
             createGck(),
-            sfuToken.sfuBaseUrl
+            sfuToken.sfuBaseUrl,
         )
     }
 
@@ -801,50 +767,6 @@ class GroupCallManagerImpl(
     }
 
     /**
-     * Create the GroupCallStartMessage and send it to the given group members. Note that the
-     * GroupCallStartMessage is never sent to group members where the group call feature mask is not
-     * set. This method assumes that the feature masks are updated and therefore does not fetch the
-     * newest feature masks from the server.
-     *
-     * @param group     the group model where the group call message is sent to
-     * @param data      the group call start data
-     * @param startedAt the time when the group call has been started
-     * @param sendTo    the list of identities who receive the message
-     * @param handle    the active task codec used to send the message
-     */
-    @WorkerThread
-    private suspend fun sendGroupCallStartMessage(
-        group: GroupModel,
-        data: GroupCallStartData,
-        startedAt: Date,
-        sendTo: Collection<String>,
-        handle: ActiveTaskCodec
-    ) {
-        GroupCallThreadUtil.assertDispatcherThread()
-
-        logger.debug("Send group call start message")
-        val identities =
-            sendTo
-                .filter { identity ->
-                    contactService.getByIdentity(identity)
-                        ?.let { ThreemaFeature.canGroupCalls(it.featureMask) } ?: false
-                }
-                .toTypedArray()
-                .toSet()
-
-        OutgoingGroupCallStartTask(
-            group.apiGroupId,
-            group.creatorIdentity,
-            identities,
-            data.protocolVersion,
-            data.gck,
-            data.sfuBaseUrl,
-            startedAt,
-            serviceManager
-        ).invoke(handle)
-    }
-
-    /**
      * Schedule a task that creates a GroupCallStartMessage and sends it to the given group members.
      * Note that the GroupCallStartMessage is never sent to group members where the group call
      * feature mask is not set. This method assumes that the feature masks are updated and therefore
@@ -853,19 +775,17 @@ class GroupCallManagerImpl(
      * @param group     the group model where the group call message is sent to
      * @param data      the group call start data
      * @param startedAt the time when the group call has been started
-     * @param sendTo    the members that should receive the group call; if null it is sent to all group members
      */
     @WorkerThread
     private fun scheduleGroupCallStartMessage(
         group: GroupModel,
         data: GroupCallStartData,
         startedAt: Date,
-        sendTo: Collection<String>?
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         logger.debug("Schedule group call start message")
-        val identities = (sendTo?.toTypedArray() ?: groupService.getGroupIdentities(group))
+        val identities = groupService.getGroupMemberIdentities(group)
             .filter { identity ->
                 contactService.getByIdentity(identity)
                     ?.let { ThreemaFeature.canGroupCalls(it.featureMask) } ?: false
@@ -882,8 +802,8 @@ class GroupCallManagerImpl(
                 data.gck,
                 data.sfuBaseUrl,
                 startedAt,
-                serviceManager
-            )
+                serviceManager,
+            ),
         )
     }
 
@@ -891,7 +811,7 @@ class GroupCallManagerImpl(
     private fun sendCallInitAsText(
         callId: CallId,
         group: GroupModel,
-        callStartData: GroupCallStartData
+        callStartData: GroupCallStartData,
     ) {
         if (preferenceService.isGroupCallSendInitEnabled) {
             val groupJson = JSONObject()
@@ -996,7 +916,7 @@ class GroupCallManagerImpl(
     @WorkerThread
     private fun triggerGroupCallRefreshSteps(groupId: LocalGroupId) {
         logger.debug("Trigger group call refresh steps")
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             runGroupCallRefreshSteps(groupId)?.let {
                 logger.debug("Chosen call: {}", it)
                 consolidateJoinedCall(it, groupId)
@@ -1009,20 +929,23 @@ class GroupCallManagerImpl(
         // This is executed asynchronously in order to let the previous
         // group call refresh finish before the next attempt to re-schedule is started.
         // When rescheduling, a refresh is only scheduled if the previous refresh has finished.
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             val hasRunningCall = getRunningCalls(groupId).isNotEmpty()
             val hasScheduledRefresh = callRefreshTimers[groupId]?.isCompleted == false
             if (hasRunningCall && !hasScheduledRefresh) {
                 logger.trace("Schedule group call refresh steps for group {}", groupId)
                 synchronized(callRefreshTimers) {
                     callRefreshTimers[groupId] =
-                        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+                        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                             delay(ProtocolDefines.GC_GROUP_CALL_REFRESH_STEPS_TIMEOUT_SECONDS * 1_000)
                             runGroupCallRefreshSteps(groupId)
                         }
                 }
             } else if (!hasRunningCall) {
-                logger.trace("Group {} has no running call. Do not schedule group call refresh steps")
+                logger.trace(
+                    "Group {} has no running call. Do not schedule group call refresh steps",
+                    groupId,
+                )
             } else {
                 logger.trace("Group call refresh steps already scheduled for group {}", groupId)
             }
@@ -1050,7 +973,7 @@ class GroupCallManagerImpl(
                 null,
                 call,
                 false,
-                Date()
+                Date(),
             )
         }
     }
@@ -1081,7 +1004,7 @@ class GroupCallManagerImpl(
         logger.debug(
             "Call protocol version: local={}, call={}",
             ProtocolDefines.GC_PROTOCOL_VERSION,
-            call.protocolVersion
+            call.protocolVersion,
         )
         return if (call.protocolVersion == ProtocolDefines.GC_PROTOCOL_VERSION.toUInt()) {
             true
@@ -1089,7 +1012,7 @@ class GroupCallManagerImpl(
             logger.warn(
                 "Local gc protocol version is {} but running call has version {}",
                 ProtocolDefines.GC_PROTOCOL_VERSION,
-                call.protocolVersion
+                call.protocolVersion,
             )
             false
         }
@@ -1141,7 +1064,7 @@ class GroupCallManagerImpl(
         logger.trace("Peek calls {}", calls.map { it.callId })
         return calls.asFlow()
             .map(this::peekCall)
-            .flowOn(GroupCallThreadUtil.DISPATCHER)
+            .flowOn(GroupCallThreadUtil.dispatcher)
     }
 
     @WorkerThread
@@ -1153,7 +1076,7 @@ class GroupCallManagerImpl(
             PeekResult(
                 call,
                 peekCall(call, 1, false),
-                isJoined = isJoined
+                isJoined = isJoined,
             ).also {
                 logger.debug("Got peek result: {}", it.sfuResponse?.body)
             }
@@ -1163,7 +1086,7 @@ class GroupCallManagerImpl(
                 call,
                 sfuResponse = null,
                 isPeekFailed = true,
-                isJoined = isJoined
+                isJoined = isJoined,
             )
         }
     }
@@ -1172,7 +1095,7 @@ class GroupCallManagerImpl(
     private suspend fun peekCall(
         call: GroupCallDescription,
         retriesOnInvalidToken: Int,
-        forceTokenRefresh: Boolean
+        forceTokenRefresh: Boolean,
     ): PeekResponse {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -1290,7 +1213,7 @@ private data class PeekResult(
     val call: GroupCallDescription,
     val sfuResponse: PeekResponse?,
     val isJoined: Boolean = false,
-    val isPeekFailed: Boolean = false
+    val isPeekFailed: Boolean = false,
 ) {
     val isHttpOk: Boolean
         get() = !isPeekFailed && sfuResponse?.isHttpOk == true

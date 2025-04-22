@@ -21,7 +21,6 @@
 
 package ch.threema.app.webclient.activities;
 
-
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -36,7 +35,9 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
@@ -114,14 +115,11 @@ public class SessionsActivityTest {
         String label,
         WebClientSessionModel.State state,
         boolean persistent,
-        Date created,
-        Date lastConnection,
-        Browser browser
+        @NonNull Date created,
+        @NonNull Date lastConnection,
+        @NonNull Browser browser
     ) {
-        final DatabaseServiceNew databaseService = ThreemaApplication
-            .getServiceManager()
-            .getDatabaseServiceNew();
-
+        final DatabaseServiceNew databaseService = Objects.requireNonNull(ThreemaApplication.getServiceManager()).getDatabaseServiceNew();
         final WebClientSessionModel model = new WebClientSessionModel();
 
         model.setLabel(label);
@@ -190,11 +188,11 @@ public class SessionsActivityTest {
     @Test
     public void testSessionList() {
         // Create two sessions
-        createSession("Feuerfuchs", WebClientSessionModel.State.AUTHORIZED,
-            true, new Date(), new Date(), Browser.FIREFOX);
+        createSession("Feuerfuchs", WebClientSessionModel.State.AUTHORIZED, true, new Date(), new Date(), Browser.FIREFOX);
         createSession("Googlebrowser", WebClientSessionModel.State.ERROR,
             true, new Date(System.currentTimeMillis() - 3600),
-            new Date(System.currentTimeMillis() - 3500), Browser.CHROME);
+            new Date(System.currentTimeMillis() - 3500), Browser.CHROME
+        );
 
         // Start activty
         activityTestRule.launchActivity(null);
@@ -230,33 +228,19 @@ public class SessionsActivityTest {
         final Date hours23ago = new Date(System.currentTimeMillis() - hours * 23);
         final Date hours25ago = new Date(System.currentTimeMillis() - hours * 25);
 
-        createSession("Persistent now", WebClientSessionModel.State.AUTHORIZED,
-            true, now, now, Browser.FIREFOX);
-        createSession("Persistent old", WebClientSessionModel.State.AUTHORIZED,
-            true, hours25ago, hours25ago, Browser.CHROME);
-        createSession("Disposable now", WebClientSessionModel.State.AUTHORIZED,
-            false, now, now, Browser.SAFARI);
-        createSession("Disposable fresh", WebClientSessionModel.State.AUTHORIZED,
-            false, now, null, Browser.SAFARI);
-        createSession("Disposable still valid", WebClientSessionModel.State.AUTHORIZED,
-            false, hours23ago, hours23ago, Browser.OPERA);
-        createSession("Disposable expired", WebClientSessionModel.State.AUTHORIZED,
-            false, hours25ago, hours25ago, Browser.EDGE);
+        createSession("Persistent now", WebClientSessionModel.State.AUTHORIZED, true, now, now, Browser.FIREFOX);
+        createSession("Persistent old", WebClientSessionModel.State.AUTHORIZED, true, hours25ago, hours25ago, Browser.CHROME);
+        createSession("Disposable now", WebClientSessionModel.State.AUTHORIZED, false, now, now, Browser.SAFARI);
+        createSession("Disposable still valid", WebClientSessionModel.State.AUTHORIZED, false, hours23ago, hours23ago, Browser.OPERA);
+        createSession("Disposable expired", WebClientSessionModel.State.AUTHORIZED, false, hours25ago, hours25ago, Browser.EDGE);
 
         activityTestRule.launchActivity(null);
 
-        onView(withText("Persistent now"))
-            .check(matches(isDisplayed()));
-        onView(withText("Persistent old"))
-            .check(matches(isDisplayed()));
-        onView(withText("Disposable now"))
-            .check(matches(isDisplayed()));
-        onView(withText("Disposable fresh"))
-            .check(matches(isDisplayed()));
-        onView(withText("Disposable still valid"))
-            .check(matches(isDisplayed()));
-        onView(withText("Disposable expired"))
-            .check(doesNotExist());
+        onView(withText("Persistent now")).check(matches(isDisplayed()));
+        onView(withText("Persistent old")).check(matches(isDisplayed()));
+        onView(withText("Disposable now")).check(matches(isDisplayed()));
+        onView(withText("Disposable still valid")).check(matches(isDisplayed()));
+        onView(withText("Disposable expired")).check(doesNotExist());
     }
 
 }

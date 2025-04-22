@@ -204,7 +204,6 @@ public class BackupService extends Service {
                 }
 
                 logger.info("Starting backup (backupMedia={})", config.backupMedia());
-
                 // acquire wake locks
                 logger.debug("Acquiring wakelock");
                 PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
@@ -358,13 +357,12 @@ public class BackupService extends Service {
         return this.config.backupMedia()
             ? MEDIA_STEP_FACTOR_VIDEOS_AND_FILES
             : this.config.backupThumbnails()
-            ? MEDIA_STEP_FACTOR_THUMBNAILS
-            : 1;
+                ? MEDIA_STEP_FACTOR_THUMBNAILS
+                : 1;
     }
 
     private boolean backup() {
         String identity = userService.getIdentity();
-
         try (final OutputStream outputStream = getContentResolver().openOutputStream(backupFile.getUri());
              final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputStream, config.getPassword())) {
             logger.debug("Creating zip file {}", backupFile.getUri());
@@ -435,7 +433,6 @@ public class BackupService extends Service {
                 requiredBackupSteps += reactionsRepository.getContactReactionsCount() / REACTIONS_PER_STEP;
                 requiredBackupSteps += reactionsRepository.getGroupReactionsCount() / REACTIONS_PER_STEP;
             }
-
 
             this.initProgress(requiredBackupSteps);
 
@@ -626,6 +623,8 @@ public class BackupService extends Service {
             Tags.TAG_MESSAGE_DELETED_AT
         };
 
+        final @NonNull Set<String> removedContacts = contactService.getRemovedContacts();
+
         logger.info("Backup contacts, messages, and contact avatars");
         // Iterate over all contacts. Then backup every contact with the corresponding messages.
         try (final ByteArrayOutputStream contactBuffer = new ByteArrayOutputStream()) {
@@ -633,6 +632,11 @@ public class BackupService extends Service {
                 for (final ContactModel contactModel : contactService.find(null)) {
                     if (!this.next("backup contact " + contactModel.getIdentity())) {
                         return false;
+                    }
+
+                    // Do not include removed contacts in data backup
+                    if (removedContacts.contains(contactModel.getIdentity())) {
+                        continue;
                     }
 
                     String identityId = getFormattedUniqueId();
@@ -760,7 +764,6 @@ public class BackupService extends Service {
             Tags.TAG_GROUP_CREATED_AT,
             Tags.TAG_GROUP_LAST_UPDATE,
             Tags.TAG_GROUP_MEMBERS,
-            Tags.TAG_GROUP_DELETED,
             Tags.TAG_GROUP_ARCHIVED,
             Tags.TAG_GROUP_DESC,
             Tags.TAG_GROUP_DESC_TIMESTAMP,
@@ -808,11 +811,6 @@ public class BackupService extends Service {
             }
 
             @Override
-            public boolean includeDeletedGroups() {
-                return true;
-            }
-
-            @Override
             public boolean includeLeftGroups() {
                 return true;
             }
@@ -835,8 +833,7 @@ public class BackupService extends Service {
                         .write(Tags.TAG_GROUP_NAME, groupModel.getName())
                         .write(Tags.TAG_GROUP_CREATED_AT, groupModel.getCreatedAt())
                         .write(Tags.TAG_GROUP_LAST_UPDATE, groupModel.getLastUpdate())
-                        .write(Tags.TAG_GROUP_MEMBERS, this.groupService.getGroupIdentities(groupModel))
-                        .write(Tags.TAG_GROUP_DELETED, groupModel.isDeleted())
+                        .write(Tags.TAG_GROUP_MEMBERS, this.groupService.getGroupMemberIdentities(groupModel))
                         .write(Tags.TAG_GROUP_ARCHIVED, groupModel.isArchived())
                         .write(Tags.TAG_GROUP_DESC, groupModel.getGroupDesc())
                         .write(Tags.TAG_GROUP_DESC_TIMESTAMP, groupModel.getGroupDescTimestamp())
@@ -844,10 +841,14 @@ public class BackupService extends Service {
                         .write(Tags.TAG_GROUP_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().value : 0)
                         .write();
 
-                    // check if the group have a photo
+                    //check if the group have a photo
                     if (this.config.backupAvatars()) {
                         try {
-                            zipOutputStream.addFileFromInputStream(this.fileService.getGroupAvatarStream(groupModel), Tags.GROUP_AVATAR_PREFIX + groupUid, false);
+                            zipOutputStream.addFileFromInputStream(
+                                this.fileService.getGroupAvatarStream(groupModel),
+                                Tags.GROUP_AVATAR_PREFIX + groupUid,
+                                false
+                            );
                         } catch (Exception e) {
                             logger.warn("Could not back up group avatar: {}", e.getMessage());
                         }
@@ -951,7 +952,7 @@ public class BackupService extends Service {
         @NonNull FileHandlingZipOutputStream zipOutputStream
     ) throws ThreemaException {
         logger.info("Write reaction counts (contactReactions={}, groupReactions={})", contactReactionCount, groupReactionCount);
-        final String[] reactionCountsHeader = new String[]{Tags.TAG_REACTION_COUNT_CONTACTS, Tags.TAG_REACTION_COUNT_GROUPS};
+        final String[] reactionCountsHeader = new String[]{ Tags.TAG_REACTION_COUNT_CONTACTS, Tags.TAG_REACTION_COUNT_GROUPS };
 
         zipOutputStream.addFile(
             Tags.REACTION_COUNTS_FILE + Tags.CSV_FILE_POSTFIX,

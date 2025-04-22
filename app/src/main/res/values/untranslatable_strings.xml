@@ -28,4 +28,8 @@
     <string name="private_download_url_hms" translatable="false">https://appgallery.huawei.com/#/app/C103713829</string>
     <!-- should not be translated because manifest does not allow varying resources-->
     <string name="special_use_fgs_passphrase_service_explanation" translatable="false">Lock or unlock the app using a passphrase</string>
+    <string name="device_linking_pfs_warning_faq_link_value" translatable="false">https://threema.ch/faq/md_limit</string>
+    <string name="desktop_client_download_link_threema_consumer" translatable="false">https://three.ma/md</string>
+    <string name="desktop_client_download_link_threema_work" translatable="false">https://three.ma/mdw</string>
+    <string name="desktop_client_download_link_threema_on_prem" translatable="false">https://three.ma/mdo</string>
 </resources>

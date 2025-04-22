@@ -81,13 +81,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.utils.ConfigUtils;
@@ -115,9 +113,6 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
     public static final int POI_RADIUS = 750; // meters
     private static final int MAX_POI_COUNT = 30;
-
-    // Threema services
-    private PreferenceService preferenceService;
 
     private MapView mapView;
     private MapLibreMap MapLibreMap;
@@ -176,7 +171,11 @@ public class LocationPickerActivity extends ThreemaActivity implements
             logger.debug("NearbyPoiTask: get POIs for {}", latLng);
 
             List<Poi> pois = new ArrayList<>();
-            NearbyPoiUtil.getPOIs(latLng, pois, MAX_POI_COUNT, preferenceService);
+            var serviceManager = ThreemaApplication.getServiceManager();
+            if (serviceManager != null) {
+                var serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
+                NearbyPoiUtil.getPOIs(latLng, pois, MAX_POI_COUNT, serverAddressProvider);
+            }
             return pois;
         }
 
@@ -237,16 +236,6 @@ public class LocationPickerActivity extends ThreemaActivity implements
             logger.error("Could not obtain service manager");
             finish();
             return;
-        }
-        this.preferenceService = serviceManager.getPreferenceService();
-        if (this.preferenceService == null) {
-            logger.error("Could not obtain preference service");
-            finish();
-            return;
-        }
-
-        if (BuildConfig.DEBUG && this.preferenceService.getPoiServerHostOverride() != null) {
-            Toast.makeText(this, "Using POI host override", Toast.LENGTH_SHORT).show();
         }
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);

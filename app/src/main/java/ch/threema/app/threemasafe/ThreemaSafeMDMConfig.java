@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;

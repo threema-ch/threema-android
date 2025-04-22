@@ -36,7 +36,7 @@ data class ParticipantCallMediaKeyState(
     val pcmk: ByteArray,
 ) {
     override fun toString(): String {
-        return "ParticipantCallMediaKeyState(epoch=${epoch}, ratchetCounter=${ratchetCounter})"
+        return "ParticipantCallMediaKeyState(epoch=$epoch, ratchetCounter=$ratchetCounter)"
     }
 }
 
@@ -47,7 +47,6 @@ class PendingParticipantCallMediaKeyState(
     private val creator: LocalParticipantCallMediaKey,
     private var wasApplied: Boolean = false,
     internal var stale: Boolean = false,
-
     val state: ParticipantCallMediaKeyState,
 ) {
     fun applied() {

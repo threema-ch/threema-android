@@ -35,6 +35,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.util.forEach
+import androidx.core.util.size
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
@@ -58,7 +59,7 @@ class MediaGalleryAdapter(
     private val context: Context,
     clickListener: OnClickItemListener,
     messageReceiver: MessageReceiver<*>,
-    columnCount: Int
+    columnCount: Int,
 ) :
     RecyclerView.Adapter<MediaGalleryAdapter.MediaGalleryHolder>() {
     private val clickListener: OnClickItemListener
@@ -161,7 +162,7 @@ class MediaGalleryAdapter(
 
                         override fun onResourceReady(
                             resource: Drawable,
-                            transition: Transition<in Drawable?>?
+                            transition: Transition<in Drawable?>?,
                         ) {
                             holder.textContainerView?.visibility = View.GONE
                             holder.vmContainerView?.visibility = View.GONE
@@ -174,7 +175,7 @@ class MediaGalleryAdapter(
                                 holder.animatedFormatLabelIconView?.contentDescription =
                                     context.getString(R.string.attach_gif)
                             } else if (messageModel.messageContentsType == MessageContentsType.IMAGE && MimeUtil.isAnimatedImageFormat(
-                                    messageModel.fileData.mimeType
+                                    messageModel.fileData.mimeType,
                                 )
                             ) {
                                 holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
@@ -220,14 +221,14 @@ class MediaGalleryAdapter(
                 clickListener.onClick(
                     messageModel,
                     holder.itemView,
-                    holder.absoluteAdapterPosition
+                    holder.absoluteAdapterPosition,
                 )
             }
             holder.itemView.setOnLongClickListener {
                 clickListener.onLongClick(
                     messageModel,
                     holder.itemView,
-                    holder.absoluteAdapterPosition
+                    holder.absoluteAdapterPosition,
                 )
             }
         }
@@ -288,7 +289,7 @@ class MediaGalleryAdapter(
     }
 
     fun clearCheckedItems() {
-        var itemsToClear: Array<Int> = arrayOf()
+        var itemsToClear: Array<Int> = emptyArray()
 
         checkedItems.forEach { position, isChecked ->
             if (isChecked) {
@@ -301,7 +302,7 @@ class MediaGalleryAdapter(
 
     fun selectAll() {
         messageModels?.let {
-            if (checkedItems.size() == it.size) {
+            if (checkedItems.size == it.size) {
                 clearCheckedItems()
             } else {
                 for (i in it.indices) {
@@ -334,7 +335,7 @@ class MediaGalleryAdapter(
     fun getCheckedItemAt(i: Int): AbstractMessageModel? {
         if (i >= 0 && i < checkedItems.size()) {
             messageModels?.let {
-                return it[checkedItems.keyAt(i)];
+                return it[checkedItems.keyAt(i)]
             }
         }
         return null
@@ -362,7 +363,7 @@ class MediaGalleryAdapter(
         fun onLongClick(
             messageModel: AbstractMessageModel?,
             itemView: View?,
-            position: Int
+            position: Int,
         ): Boolean
     }
 }

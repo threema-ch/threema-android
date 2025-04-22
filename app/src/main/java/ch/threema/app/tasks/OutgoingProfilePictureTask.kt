@@ -24,8 +24,8 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
+import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import java.util.Date

@@ -66,6 +66,7 @@ class QRScannerActivity : ThreemaActivity() {
     private lateinit var cameraPreviewContainer: View
 
     private var hint: String = ""
+
     @QRCodeColor
     private var qrColor = QR_TYPE_ANY
 
@@ -135,7 +136,6 @@ class QRScannerActivity : ThreemaActivity() {
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
-
             // CameraProvider
             cameraProvider = cameraProviderFuture.get()
 
@@ -146,9 +146,11 @@ class QRScannerActivity : ThreemaActivity() {
 
     @SuppressLint("ClickableViewAccessibility", "WrongConstant")
     private fun bindCameraUseCases() {
-        val lensFacing =
-            if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true) CameraSelector.LENS_FACING_BACK else
-                (if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true) CameraSelector.LENS_FACING_FRONT else -1)
+        val lensFacing = when {
+            cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true -> CameraSelector.LENS_FACING_BACK
+            cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true -> CameraSelector.LENS_FACING_FRONT
+            else -> -1
+        }
 
         if (lensFacing == -1) {
             Toast.makeText(this, R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
@@ -203,7 +205,8 @@ class QRScannerActivity : ThreemaActivity() {
                                 }
                             }
                         }
-                    })
+                    },
+                )
             }
 
         try {
@@ -211,7 +214,7 @@ class QRScannerActivity : ThreemaActivity() {
             cameraProvider.unbindAll()
 
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer
+                this, cameraSelector, preview, imageCapture, imageAnalyzer,
             )
 
             // Attach the viewfinder's surface provider to preview use case
@@ -219,7 +222,7 @@ class QRScannerActivity : ThreemaActivity() {
 
             val point = cameraPreview.meteringPointFactory.createPoint(
                 cameraPreviewContainer.left + cameraPreviewContainer.width / 2.0f,
-                cameraPreviewContainer.top + cameraPreviewContainer.height / 2.0f
+                cameraPreviewContainer.top + cameraPreviewContainer.height / 2.0f,
             )
             camera?.cameraControl?.startFocusAndMetering(FocusMeteringAction.Builder(point).build())
         } catch (e: Exception) {
@@ -233,10 +236,8 @@ class QRScannerActivity : ThreemaActivity() {
                 MotionEvent.ACTION_UP -> {
                     camera?.cameraControl?.startFocusAndMetering(
                         FocusMeteringAction.Builder(
-                            cameraPreview.meteringPointFactory.createPoint(
-                                motionEvent.x, motionEvent.y
-                            )
-                        ).build()
+                            cameraPreview.meteringPointFactory.createPoint(motionEvent.x, motionEvent.y),
+                        ).build(),
                     )
                     true
                 }

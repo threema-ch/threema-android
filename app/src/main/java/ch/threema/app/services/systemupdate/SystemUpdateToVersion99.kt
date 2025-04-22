@@ -44,7 +44,7 @@ class SystemUpdateToVersion99(
                 PRIMARY KEY(`groupId`, `senderIdentity`),
                 FOREIGN KEY(`groupId`) REFERENCES `m_group`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
             )
-            """
+            """,
         )
 
         // Drop the old table

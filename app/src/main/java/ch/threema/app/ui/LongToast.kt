@@ -43,7 +43,7 @@ object LongToast {
     fun makeText(
         context: Context?,
         text: CharSequence?,
-        duration: Int
+        duration: Int,
     ): Toast {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isAppInForeground()) {
             val longToastView: View =
@@ -63,17 +63,15 @@ object LongToast {
     fun makeText(
         context: Context,
         @StringRes textRes: Int,
-        duration: Int
+        duration: Int,
     ): Toast {
         return makeText(context, context.getString(textRes), duration)
     }
 
-    private fun isAppInForeground(
-    ): Boolean {
-        val appProcessInfo = ActivityManager.RunningAppProcessInfo();
-        ActivityManager.getMyMemoryState(appProcessInfo);
+    private fun isAppInForeground(): Boolean {
+        val appProcessInfo = ActivityManager.RunningAppProcessInfo()
+        ActivityManager.getMyMemoryState(appProcessInfo)
         return appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
             appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
     }
 }
-

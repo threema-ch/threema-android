@@ -407,4 +407,12 @@ public class FileDataModel implements MediaMessageDataInterface {
         m.fromString(s);
         return m;
     }
+
+    /**
+     * Do not use this in new code. It only exists to handle places where a [FileModel] needs to be returned and `null` is not allowed.
+     */
+    @Deprecated()
+    public static FileDataModel createEmpty() {
+        return new FileDataModel();
+    }
 }

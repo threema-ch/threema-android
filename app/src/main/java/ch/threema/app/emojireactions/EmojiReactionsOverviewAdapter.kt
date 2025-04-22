@@ -29,18 +29,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.storage.models.AbstractMessageModel
-import kotlinx.coroutines.launch
 import kotlin.collections.eachCount
 import kotlin.collections.groupingBy
 import kotlin.collections.sortedByDescending
+import kotlinx.coroutines.launch
 
 class EmojiReactionsOverviewAdapter(
     fragmentActivity: FragmentActivity,
     private val viewModel: EmojiReactionsViewModel,
-    private val messageModel: AbstractMessageModel
+    private val messageModel: AbstractMessageModel,
 ) :
     FragmentStateAdapter(fragmentActivity) {
-
     private val items = mutableListOf<Map.Entry<String, Int>>()
 
     init {
@@ -72,4 +71,3 @@ class EmojiReactionsOverviewAdapter(
         return EmojiReactionsOverviewFragment(items[position].key, messageModel = messageModel)
     }
 }
-

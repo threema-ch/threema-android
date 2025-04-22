@@ -19,14 +19,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("DEPRECATION")
-
 package ch.threema.app.preference
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
+import androidx.core.net.toUri
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import ch.threema.app.BuildConfig
@@ -35,6 +34,7 @@ import ch.threema.app.R
 import ch.threema.app.activities.*
 import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.dialogs.SimpleStringAlertDialog
+import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.license.LicenseService
 import ch.threema.app.services.license.LicenseServiceSerial
@@ -45,34 +45,20 @@ private val logger = LoggingUtil.getThreemaLogger("SettingsAboutFragment")
 
 @Suppress("unused")
 class SettingsAboutFragment : ThreemaPreferenceFragment() {
-
-    private var updateUrl: String? = null
-    private var updateMessage: String? = null
-
     private var aboutCounter = 0
 
-    private var preferenceService: PreferenceService = requirePreferenceService()
-    private var licenseService: LicenseService<*> = requireLicenceService()
+    private val preferenceService: PreferenceService = requirePreferenceService()
+    private val licenseService: LicenseService<*> = requireLicenceService()
 
     override fun initializePreferences() {
-        super.initializePreferences()
-
         initLicensePref()
-
         initPrivacyPolicyPref()
-
         initTermsOfServicePref()
-
         initEndUserLicensePref()
-
         initAboutPref()
-
         initSelfUpdatePref()
-
-        initWorkLicensePref()
-
+        initServerConfigSection()
         initDeviceInfoPref()
-
         initTranslatorPref()
     }
 
@@ -82,9 +68,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private fun initLicensePref() {
         val licensePreference = getPref<Preference>(R.string.preferences__licenses)
-        licensePreference.setOnPreferenceClickListener {
+        licensePreference.onClick {
             startActivity(Intent(context, LicenseActivity::class.java))
-            true
         }
     }
 
@@ -93,11 +78,9 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         if (ConfigUtils.isOnPremBuild() && !ConfigUtils.isDemoOPServer(preferenceService)) {
             privacyPolicyPreference.isVisible = false
         } else {
-            privacyPolicyPreference.onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    startActivity(Intent(context, PrivacyPolicyActivity::class.java))
-                    true
-                }
+            privacyPolicyPreference.onClick {
+                startActivity(Intent(context, PrivacyPolicyActivity::class.java))
+            }
         }
     }
 
@@ -106,9 +89,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         if (BuildFlavor.current.licenseType == BuildFlavor.LicenseType.ONPREM) {
             licensePreference.isVisible = false
         } else {
-            licensePreference.setOnPreferenceClickListener {
+            licensePreference.onClick {
                 startActivity(Intent(context, TermsOfServiceActivity::class.java))
-                true
             }
         }
     }
@@ -116,9 +98,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private fun initEndUserLicensePref() {
         val licensePreference = getPref<Preference>(R.string.preferences__eula)
         if (BuildFlavor.current.licenseType == BuildFlavor.LicenseType.GOOGLE) {
-            licensePreference.setOnPreferenceClickListener {
+            licensePreference.onClick {
                 startActivity(Intent(context, EulaActivity::class.java))
-                true
             }
         } else {
             licensePreference.isVisible = false
@@ -129,7 +110,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         val aboutPreference = getPref<Preference>(R.string.preferences__about)
         aboutPreference.title = getVersionNameWithBuildNumber()
         aboutPreference.setSummary(R.string.about_copyright)
-        aboutPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        aboutPreference.onClick {
             if (aboutCounter % 2 == 0) {
                 aboutPreference.title = getVersionNameWithVersionCode()
             } else {
@@ -142,10 +123,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_TASK_ON_HOME
                 startActivity(intent)
                 activity?.finish()
-                true
             } else {
                 aboutCounter++
-                false
             }
         }
     }
@@ -154,9 +133,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         val checkUpdatePreference = getPref<Preference>(R.string.preferences__check_updates)
 
         if (BuildFlavor.current.maySelfUpdate) {
-            checkUpdatePreference.setOnPreferenceClickListener {
+            checkUpdatePreference.onClick {
                 checkForUpdates(licenseService as LicenseServiceSerial)
-                true
             }
         } else {
             val aboutCategory = getPref<PreferenceCategory>("pref_key_about_header")
@@ -164,22 +142,47 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         }
     }
 
-    private fun initWorkLicensePref() {
-        val aboutCategory = getPref<PreferenceCategory>("pref_key_about_header")
-        val workLicensePreference = getPref<Preference>(R.string.preferences__work_license_name)
+    private fun initServerConfigSection() {
+        val shouldShowServer = ConfigUtils.isOnPremBuild()
+        val shouldShowUsername = shouldShowUsername()
 
-        if (ConfigUtils.isWorkBuild()) {
-            workLicensePreference.summary = preferenceService.licenseUsername
-            if (ConfigUtils.isWorkRestricted()) {
-                val readonly =
-                    AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__readonly_profile))
-                if (readonly != null && readonly) {
-                    aboutCategory.removePreference(workLicensePreference)
-                }
-            }
-        } else {
-            aboutCategory.removePreference(workLicensePreference)
+        if (!shouldShowServer && !shouldShowUsername) {
+            getPref<Preference>(R.string.preferences__server_config).isVisible = false
+            return
         }
+
+        getPref<Preference>(R.string.preferences__work_license_name)
+            .let { workLicensePreference ->
+                if (shouldShowUsername) {
+                    workLicensePreference.summary = preferenceService.licenseUsername
+                }
+                workLicensePreference.isVisible = shouldShowUsername
+            }
+
+        getPref<Preference>(R.string.preferences__onprem_server)
+            .let { serverConfigPreference ->
+                if (shouldShowServer) {
+                    serverConfigPreference.summary = getServerInfo()
+                }
+                serverConfigPreference.isVisible = shouldShowServer
+            }
+    }
+
+    private fun shouldShowUsername(): Boolean {
+        return when {
+            !ConfigUtils.isWorkBuild() -> false
+            ConfigUtils.isWorkRestricted() -> {
+                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__readonly_profile)) != true
+            }
+            else -> true
+        }
+    }
+
+    private fun getServerInfo(): String {
+        return preferenceService.onPremServer
+            ?.toUri()
+            ?.authority
+            ?: "?"
     }
 
     private fun initDeviceInfoPref() {
@@ -193,55 +196,54 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private fun initTranslatorPref() {
         val translatorsPreference = getPref<Preference>(R.string.preferences__translators)
-        translatorsPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        translatorsPreference.onClick {
             SimpleStringAlertDialog.newInstance(
                 R.string.translators,
-                getString(R.string.translators_thanks, getString(R.string.translators_list))
+                getString(R.string.translators_thanks, getString(R.string.translators_list)),
             ).show(parentFragmentManager, "tt")
-            true
         }
     }
 
-    private fun getVersionNameWithBuildNumber(): String {
-        val version = StringBuilder()
-        version.appendVersionName()
-        version.appendBuildNumber()
-        version.appendBuildFlavor()
-        return version.toString()
+    private fun getVersionNameWithBuildNumber(): String = buildString {
+        appendVersionName()
+        appendBuildNumber()
+        appendBuildFlavor()
     }
 
-    private fun getVersionNameWithVersionCode(): String {
-        val version = StringBuilder()
-        version.appendVersionName()
-        version.appendVersionCode()
-        version.appendBuildFlavor()
-        return version.toString()
+    private fun getVersionNameWithVersionCode(): String = buildString {
+        appendVersionName()
+        appendVersionCode()
+        appendBuildFlavor()
     }
 
-    private fun StringBuilder.appendVersionName(): StringBuilder {
-        return append(getString(R.string.threema_version)).append(" ")
-            .append(BuildConfig.VERSION_NAME)
+    private fun StringBuilder.appendVersionName() {
+        append(getString(R.string.threema_version))
+        append(" ")
+        append(BuildConfig.VERSION_NAME)
     }
 
-    private fun StringBuilder.appendVersionCode(): StringBuilder {
-        return append(" ")
-            .append(getString(R.string.threema_version_code))
-            .append(" ").append(BuildConfig.VERSION_CODE)
+    private fun StringBuilder.appendVersionCode() {
+        append(" ")
+        append(getString(R.string.threema_version_code))
+        append(" ")
+        append(BuildConfig.VERSION_CODE)
     }
 
-    private fun StringBuilder.appendBuildNumber(): StringBuilder {
-        return append(" Build ")
-            .append(ConfigUtils.getBuildNumber(context))
+    private fun StringBuilder.appendBuildNumber() {
+        append(" Build ")
+        append(ConfigUtils.getBuildNumber(context))
     }
 
-    private fun StringBuilder.appendBuildFlavor(): StringBuilder {
-        append(" ").append(BuildFlavor.current.fullDisplayName)
+    private fun StringBuilder.appendBuildFlavor() {
+        append(" ")
+        append(BuildFlavor.current.fullDisplayName)
         if (BuildConfig.DEBUG) {
-            append(" Commit ").append(BuildConfig.GIT_HASH)
+            append(" Commit ")
+            append(BuildConfig.GIT_HASH)
         }
-        return this
     }
 
+    @Suppress("DEPRECATION")
     @SuppressLint("StaticFieldLeak")
     private fun checkForUpdates(licenseServiceSerial: LicenseServiceSerial) {
         if (!BuildFlavor.current.maySelfUpdate) {
@@ -249,6 +251,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             return
         }
         object : AsyncTask<Void?, Void?, String?>() {
+            private var updateUrl: String? = null
+
             @Deprecated("Deprecated in Java")
             override fun onPreExecute() {
                 GenericProgressDialog.newInstance(R.string.check_updates, R.string.please_wait)
@@ -258,21 +262,11 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             @Deprecated("Deprecated in Java")
             override fun doInBackground(vararg voids: Void?): String? {
                 return try {
-                    // Validate license and check for updates
                     licenseServiceSerial.validate(false)
-
-                    // If an update is available, then `updateUrl` and `updateMessage` will
-                    // be set to a non-null value.
                     updateUrl = licenseServiceSerial.updateUrl
-                    updateMessage = licenseServiceSerial.updateMessage
-                    if (TestUtil.isEmptyOrNull(updateUrl, updateMessage)) {
-                        // No update available...
-                        getString(R.string.no_update_available)
-                    } else null
-
-                    // Update available!
-                } catch (x: Exception) {
-                    String.format(getString(R.string.an_error_occurred_more), x.localizedMessage)
+                    if (updateUrl.isNullOrEmpty()) getString(R.string.no_update_available) else null
+                } catch (e: Exception) {
+                    getString(R.string.an_error_occurred_more, e.localizedMessage)
                 }
             }
 
@@ -283,10 +277,11 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
                     SimpleStringAlertDialog.newInstance(R.string.check_updates, error)
                         .show(parentFragmentManager, "nu")
                 } else {
+                    val updateMessage = getString(R.string.update_available_message)
                     val dialogIntent =
                         IntentDataUtil.createActionIntentUpdateAvailable(updateMessage, updateUrl)
-                    dialogIntent.putExtra(DownloadApkActivity.EXTRA_FORCE_UPDATE_DIALOG, true)
-                    dialogIntent.setClass(requireContext(), DownloadApkActivity::class.java)
+                            .putExtra(DownloadApkActivity.EXTRA_FORCE_UPDATE_DIALOG, true)
+                            .setClass(requireContext(), DownloadApkActivity::class.java)
                     startActivity(dialogIntent)
                 }
             }
@@ -297,5 +292,4 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         private const val ABOUT_REQUIRED_CLICKS = 10
         private const val DIALOG_TAG_CHECK_UPDATE = "checkup"
     }
-
 }

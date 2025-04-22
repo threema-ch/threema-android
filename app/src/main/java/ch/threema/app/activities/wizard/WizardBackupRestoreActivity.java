@@ -40,6 +40,7 @@ import java.io.File;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
@@ -48,6 +49,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -56,7 +58,6 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.NotificationPreferenceServiceImpl;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
@@ -110,7 +111,6 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
         initServices();
         initLayout();
-        initListeners();
     }
 
     @Override
@@ -158,18 +158,15 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         );
         backupSubtitle.setMovementMethod(LinkMovementMethod.getInstance());
 
-        if (ConfigUtils.isWorkRestricted()) {
-            if (safeMDMConfig.isRestoreDisabled()) {
-                findViewById(R.id.safe_backup).setVisibility(View.GONE);
-            }
+        final @NonNull WizardButtonXml safeBackupButtonCompose = findViewById(R.id.safe_backup_compose);
+        if (ConfigUtils.isWorkRestricted() && safeMDMConfig.isRestoreDisabled()) {
+            safeBackupButtonCompose.setVisibility(View.GONE);
+        } else {
+            safeBackupButtonCompose.setOnClickListener(v -> restoreSafe());
         }
-    }
-
-    private void initListeners() {
-        findViewById(R.id.safe_backup).setOnClickListener(v -> restoreSafe());
-        findViewById(R.id.data_backup).setOnClickListener(v -> showDisableEnergySaveDialog());
-        findViewById(R.id.id_backup).setOnClickListener(v -> restoreIDExport(null, null));
-        findViewById(R.id.cancel).setOnClickListener(v -> finish());
+        findViewById(R.id.data_backup_compose).setOnClickListener(v -> showDisableEnergySaveDialog());
+        findViewById(R.id.id_backup_compose).setOnClickListener(v -> restoreIDExport(null, null));
+        findViewById(R.id.cancel_compose).setOnClickListener(v -> finish());
     }
 
     private void restoreSafe() {
@@ -226,7 +223,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         }
     }
 
-    private void restoreBackupFile(File file) {
+    private void restoreBackupFile(@NonNull File file) {
         if (file.exists()) {
 //			try {
 // Zipfile validity check is sometimes wrong

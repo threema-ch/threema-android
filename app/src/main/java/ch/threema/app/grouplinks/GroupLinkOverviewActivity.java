@@ -109,7 +109,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
         }
 
         Intent intent = getIntent();
-        int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
+        int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
         if (groupId == 0) {
             logger.error("No group id received to display group links for");
             finish();
@@ -178,7 +178,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
     private void initListeners(int groupId) {
         this.floatingButtonView.setOnClickListener(v -> {
             Intent intent = new Intent(GroupLinkOverviewActivity.this, AddGroupLinkBottomSheet.class);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+            intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
             startActivityForResult(intent, 2);
         });
 

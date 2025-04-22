@@ -21,9 +21,6 @@
 
 package ch.threema.app.webclient.services.instance.message.receiver;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -37,12 +34,14 @@ import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.dialogs.ContactEditDialog;
-import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.app.ThreemaApplication;
+import ch.threema.app.groupflows.GroupCreateProperties;
+import ch.threema.app.groupflows.ProfilePicture;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Group;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
@@ -51,12 +50,14 @@ import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.GroupModel;
+import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class CreateGroupHandler extends MessageReceiver {
     private static final Logger logger = LoggingUtil.getThreemaLogger("CreateGroupHandler");
 
     private final MessageDispatcher dispatcher;
+    private final GroupFlowDispatcher groupFlowDispatcher;
     private final GroupService groupService;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -70,10 +71,14 @@ public class CreateGroupHandler extends MessageReceiver {
     }
 
     @AnyThread
-    public CreateGroupHandler(MessageDispatcher dispatcher,
-                              GroupService groupService) {
+    public CreateGroupHandler(
+        MessageDispatcher dispatcher,
+        GroupFlowDispatcher groupFlowDispatcher,
+        GroupService groupService
+    ) {
         super(Protocol.SUB_TYPE_GROUP);
         this.dispatcher = dispatcher;
+        this.groupFlowDispatcher = groupFlowDispatcher;
         this.groupService = groupService;
     }
 
@@ -112,31 +117,44 @@ public class CreateGroupHandler extends MessageReceiver {
         }
 
         // Parse avatar
-        Bitmap avatar = null;
-        if (data.containsKey(Protocol.ARGUMENT_AVATAR)
-            && !data.get(Protocol.ARGUMENT_AVATAR).isNilValue()) {
-            byte[] bmp = data.get(Protocol.ARGUMENT_AVATAR).asBinaryValue().asByteArray();
-            if (bmp.length > 0) {
-                avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
-
-                // Resize to max allowed size
-                avatar = BitmapUtil.resizeBitmap(avatar, ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-                    ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
-            }
+        byte[] avatar = null;
+        Value avatarArgument = data.get(Protocol.ARGUMENT_AVATAR);
+        if (avatarArgument != null && !avatarArgument.isNilValue()) {
+            avatar = avatarArgument.asBinaryValue().asByteArray();
         }
 
         // Create group
         try {
-            final GroupModel groupModel = this.groupService.createGroupFromLocal(name, identities, avatar);
-            this.success(temporaryId, groupModel);
-        } catch (PolicyViolationException e) {
-            this.failed(temporaryId, Protocol.ERROR_DISABLED_BY_POLICY);
+            Deferred<ch.threema.data.models.GroupModel> createGroupResult =
+                groupFlowDispatcher.runCreateGroupFlow(
+                    null,
+                    ThreemaApplication.getAppContext(),
+                    new GroupCreateProperties(
+                        name != null ? name : "",
+                        new ProfilePicture(avatar),
+                        identities
+                    )
+                );
+            createGroupResult.invokeOnCompletion(throwable -> {
+                ch.threema.data.models.GroupModel groupModel = createGroupResult.getCompleted();
+                if (groupModel != null) {
+                    GroupModel oldGroupModel = groupService.getByGroupIdentity(groupModel.getGroupIdentity());
+                    if (oldGroupModel != null) {
+                        this.success(temporaryId, oldGroupModel);
+                    } else {
+                        logger.error("Could not get old group model for existing group");
+                    }
+                } else {
+                    this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+                }
+                return null;
+            });
         } catch (Exception e) {
             this.failed(temporaryId, Protocol.ERROR_INTERNAL);
         }
     }
 
-    private void success(String temporaryId, GroupModel group) {
+    private void success(String temporaryId, @NonNull GroupModel group) {
         logger.debug("Respond create group success");
         try {
             this.send(this.dispatcher,

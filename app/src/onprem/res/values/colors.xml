@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- wizard -->
-    <color name="wizard_alpha_background">#33ffffff</color>
-    <color name="wizard_color_accent">#A52422</color>
-    <color name="wizard_color_accent_dark">#D94745</color>
-    <color name="wizard_color_button_disabled">#66E84735</color>
-    //OnPrem Color weight 500/Brand Primary//
+    <color name="color_wizard_primary">@color/md_theme_light_primary</color>
+    <color name="color_wizard_on_primary">@color/md_theme_light_onPrimary</color>
 
     <!-- chat items light -->
     <color name="bubble_receive">#F4F1F1</color>
-    //very very light red//
 </resources>

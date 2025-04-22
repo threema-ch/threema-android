@@ -29,7 +29,7 @@ class SfuException : GroupCallException {
 
     constructor(
         msg: String,
-        callDescription: GroupCallDescription? = null
+        callDescription: GroupCallDescription? = null,
     ) : super(msg, callDescription) {
         statusCode = null
     }
@@ -37,7 +37,7 @@ class SfuException : GroupCallException {
     constructor(
         msg: String,
         statusCode: Int,
-        callDescription: GroupCallDescription? = null
+        callDescription: GroupCallDescription? = null,
     ) : super(msg, callDescription) {
         this.statusCode = statusCode
     }
@@ -45,7 +45,7 @@ class SfuException : GroupCallException {
     constructor(
         msg: String,
         cause: Throwable,
-        callDescription: GroupCallDescription? = null
+        callDescription: GroupCallDescription? = null,
     ) : super(msg, cause, callDescription) {
         statusCode = null
     }

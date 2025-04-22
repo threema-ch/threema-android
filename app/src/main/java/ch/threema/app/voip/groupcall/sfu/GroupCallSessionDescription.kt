@@ -34,7 +34,7 @@ private val SDP_TOKEN_RANGE = listOf(
     'U', 'V', 'W', 'X', 'Y', 'Z', '^', '_', '`', 'a',
     'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
     'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-    'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'
+    'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
 )
 private val MIDS: List<String> = listOf<String>() +
     SDP_TOKEN_RANGE.map { "$it" } +
@@ -92,7 +92,7 @@ private val MICROPHONE_CODECS = mapOf(
         parameters = listOf(48_000_u, 2u),
         feedback = listOf("transport-cc"),
         fmtp = listOf("minptime=10", "useinbandfec=1", "usedtx=1"),
-    )
+    ),
 )
 
 private val CAMERA_CODECS = mapOf(
@@ -127,7 +127,7 @@ private val CAMERA_HEADER_EXTENSIONS = mapOf(
 )
 
 enum class ScalabilityMode(val temporalLayers: Int) {
-    L1T3(3)
+    L1T3(3),
 }
 
 class SendEncoding(
@@ -196,7 +196,7 @@ enum class MediaKind(val sdpKind: String) {
 }
 
 internal class GroupCallSessionDescription(
-    localParticipantId: ParticipantId
+    localParticipantId: ParticipantId,
 ) {
     private val state: SessionState = SessionState(1u, 1u, localParticipantId)
 
@@ -217,7 +217,7 @@ internal class GroupCallSessionDescription(
         // Add local media lines
         val mLineOrder = state.mLineOrder.toMutableList()
         run {
-            if (mLineOrder.removeFirst() != state.localParticipantId) {
+            if (mLineOrder.removeAt(0) != state.localParticipantId) {
                 throw Error("Expected local participant ID to be first in mLineOrder")
             }
             val mids = Mids.fromParticipantId(state.localParticipantId)
@@ -296,7 +296,7 @@ internal class GroupCallSessionDescription(
         // Ensure correct Opus settings
         return sdp.replace(
             Regex("a=fmtp:${opus.payloadType} .*"),
-            "a=fmtp:${opus.payloadType} ${opus.fmtp!!.joinToString(";")}"
+            "a=fmtp:${opus.payloadType} ${opus.fmtp!!.joinToString(";")}",
         )
     }
 
@@ -323,12 +323,12 @@ internal class GroupCallSessionDescription(
         val lines = mutableListOf(
             "m=${kind.sdpKind} ${if (active) "9" else "0"} UDP/TLS/RTP/SAVPF ${
                 payloadTypes.joinToString(
-                    " "
+                    " ",
                 )
             }",
             "c=IN IP4 0.0.0.0",
             "a=rtcp:9 IN IP4 0.0.0.0",
-            "a=mid:${mid.mid}"
+            "a=mid:${mid.mid}",
         )
         lines += extensions.map { (id, uri) -> "a=extmap:$id $uri" }
         lines += listOf(
@@ -341,9 +341,9 @@ internal class GroupCallSessionDescription(
 
         // Add codec-specific lines
         for ((name, codec) in codecs) {
-            lines.add("a=rtpmap:${codec.payloadType} ${name}/${codec.parameters.joinToString("/")}")
+            lines.add("a=rtpmap:${codec.payloadType} $name/${codec.parameters.joinToString("/")}")
             lines += codec.feedback?.map { feedback -> "a=rtcp-fb:${codec.payloadType} $feedback" }
-                ?: listOf()
+                ?: emptyList()
             if (codec.fmtp != null) {
                 lines.add("a=fmtp:${codec.payloadType} ${codec.fmtp.joinToString(";")}")
             }
@@ -377,7 +377,7 @@ internal class GroupCallSessionDescription(
 
     private fun createSessionLines(
         init: RemoteSessionDescriptionInit,
-        bundle: List<Mid>
+        bundle: List<Mid>,
     ): List<String> {
         return listOf(
             "v=0",

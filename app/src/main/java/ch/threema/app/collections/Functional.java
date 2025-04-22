@@ -30,6 +30,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import androidx.collection.SparseArrayCompat;
+
 /**
  * Functional functionality (map / filter / select etc)
  */
@@ -98,6 +100,17 @@ public class Functional {
     }
 
     public static <T> T select(SparseArray<T> target, IPredicateNonNull<T> predicate) {
+        for (int n = 0; n < target.size(); n++) {
+            int key = target.keyAt(n);
+            T object = target.get(key);
+            if (object != null && predicate.apply(object)) {
+                return object;
+            }
+        }
+        return null;
+    }
+
+    public static <T> T select(SparseArrayCompat<T> target, IPredicateNonNull<T> predicate) {
         for (int n = 0; n < target.size(); n++) {
             int key = target.keyAt(n);
             T object = target.get(key);

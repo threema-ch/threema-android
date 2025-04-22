@@ -30,7 +30,6 @@ import com.neilalexander.jnacl.NaCl;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Arrays;
 
 public class IdentityBackupDecoder {
 
@@ -97,8 +96,9 @@ public class IdentityBackupDecoder {
             byte[] hashExtract = new byte[HASH_LEN];
             System.arraycopy(decdata, ProtocolDefines.IDENTITY_LEN + NaCl.SECRETKEYBYTES, hashExtract, 0, HASH_LEN);
 
-            if (!Arrays.equals(hashCalc, hashExtract))
+            if (!MessageDigest.isEqual(hashCalc, hashExtract)) {
                 return false;
+            }
 
             /* Decryption successful; extract identity and private key, derive public key */
             identity = new String(decdata, 0, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII);

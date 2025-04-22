@@ -48,7 +48,6 @@ import ch.threema.app.emojis.EmojiTextView
 import ch.threema.app.utils.ConfigUtils
 import com.google.android.material.card.MaterialCardView
 
-
 class TooltipPopup
 @JvmOverloads
 constructor(
@@ -171,15 +170,12 @@ constructor(
             screenHeight = rect.bottom
         } else {
             screenWidth = resources.displayMetrics.widthPixels
-            screenHeight =
-                resources.displayMetrics.heightPixels + ConfigUtils.getNavigationBarHeight(activity)
+            screenHeight = resources.displayMetrics.heightPixels + ConfigUtils.getNavigationBarHeight(activity)
         }
         val maxWidth = resources.getDimensionPixelSize(R.dimen.tooltip_max_width)
         val arrowInset = resources.getDimensionPixelSize(R.dimen.tooltip_popup_arrow_inset)
-        val marginOnOtherEdge =
-            resources.getDimensionPixelSize(R.dimen.tooltip_margin_on_other_edge)
-        val arrowOffset =
-            (resources.getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2) + arrowInset
+        val marginOnOtherEdge = resources.getDimensionPixelSize(R.dimen.tooltip_margin_on_other_edge)
+        val arrowOffset = (resources.getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2) + arrowInset
         var popupX: Int
         val popupY: Int
         val popupWidth: Int

@@ -38,7 +38,6 @@ private val logger = LoggingUtil.getThreemaLogger("EditHistoryDaoImpl")
 class EditHistoryDaoImpl(
     private val sqlite: SupportSQLiteOpenHelper,
 ) : EditHistoryDao {
-
     override fun create(entry: DbEditHistoryEntry, messageModel: AbstractMessageModel): Long {
         val contentValues = ContentValues()
 
@@ -51,14 +50,14 @@ class EditHistoryDaoImpl(
             is MessageModel -> ContactEditHistoryEntryModelFactory.TABLE
             is GroupMessageModel -> GroupEditHistoryEntryModelFactory.TABLE
             else -> throw EditHistoryEntryCreateException(
-                IllegalArgumentException("Cannot create edit history entry for message of class ${messageModel.javaClass.name}")
+                IllegalArgumentException("Cannot create edit history entry for message of class ${messageModel.javaClass.name}"),
             )
         }
 
         return sqlite.writableDatabase.insert(
             table,
             SQLiteDatabase.CONFLICT_ROLLBACK,
-            contentValues
+            contentValues,
         )
     }
 
@@ -66,12 +65,12 @@ class EditHistoryDaoImpl(
         var deletedEntries = sqlite.writableDatabase.delete(
             table = ContactEditHistoryEntryModelFactory.TABLE,
             whereClause = "${DbEditHistoryEntry.COLUMN_MESSAGE_UID} = ?",
-            whereArgs = arrayOf(messageUid)
+            whereArgs = arrayOf(messageUid),
         )
         deletedEntries += sqlite.writableDatabase.delete(
             table = GroupEditHistoryEntryModelFactory.TABLE,
             whereClause = "${DbEditHistoryEntry.COLUMN_MESSAGE_UID} = ?",
-            whereArgs = arrayOf(messageUid)
+            whereArgs = arrayOf(messageUid),
         )
         logger.debug("{} edit history entries deleted for message {}", deletedEntries, messageUid)
     }
@@ -84,7 +83,7 @@ class EditHistoryDaoImpl(
                     "SELECT * FROM ${GroupEditHistoryEntryModelFactory.TABLE} WHERE ${DbEditHistoryEntry.COLUMN_MESSAGE_UID} = ? " +
                     "ORDER BY ${DbEditHistoryEntry.COLUMN_EDITED_AT} DESC",
                 messageUid,
-                messageUid
+                messageUid,
             )
 
         val result = mutableListOf<DbEditHistoryEntry>()
@@ -95,8 +94,8 @@ class EditHistoryDaoImpl(
             val text = cursor.getStringOrNull(
                 getColumnIndexOrThrow(
                     cursor,
-                    DbEditHistoryEntry.COLUMN_TEXT
-                )
+                    DbEditHistoryEntry.COLUMN_TEXT,
+                ),
             )
             val editedAt =
                 cursor.getDate(getColumnIndexOrThrow(cursor, DbEditHistoryEntry.COLUMN_EDITED_AT))
@@ -106,8 +105,8 @@ class EditHistoryDaoImpl(
                     messageUid = messageUid,
                     messageId = messageId,
                     text = text,
-                    editedAt = editedAt
-                )
+                    editedAt = editedAt,
+                ),
             )
         }
 

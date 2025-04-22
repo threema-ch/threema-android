@@ -21,12 +21,17 @@
 
 package ch.threema.app.connection
 
+import android.os.PowerManager
+import ch.threema.app.BuildConfig
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ServerAddressProviderService
 import ch.threema.base.utils.AsyncResolver
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.BaseServerConnectionConfiguration
 import ch.threema.domain.protocol.connection.BaseServerConnectionProvider
+import ch.threema.domain.protocol.connection.ConnectionLock
+import ch.threema.domain.protocol.connection.ConnectionLockProvider
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.protocol.connection.ServerConnectionException
 import ch.threema.domain.protocol.connection.csp.CspConnectionConfiguration
@@ -37,8 +42,41 @@ import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
+import java.util.Locale
 import java8.util.function.Supplier
 import okhttp3.OkHttpClient
+
+class WakeLockConnectionLockProvider(private val powerManager: PowerManager) : ConnectionLockProvider {
+    private var nextLockNumber = 1
+
+    override fun acquire(timeoutMillis: Long, tag: ConnectionLockProvider.ConnectionLogTag): ConnectionLock {
+        val lockNumber = nextLockNumber++
+        val logger = LoggingUtil.getThreemaLogger("ConnectionLock.$tag")
+        val wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "${BuildConfig.APPLICATION_ID}:ConnectionLock.$tag",
+        )
+
+        logger.info(
+            "Acquiring lock #{} with {}s timeout",
+            lockNumber,
+            String.format(Locale.US, "%.2f", timeoutMillis.toFloat() / 1000f),
+        )
+        wakeLock.acquire(timeoutMillis)
+
+        return object : ConnectionLock {
+            override fun release() {
+                if (!wakeLock.isHeld) {
+                    return
+                }
+                logger.info("Releasing lock #{}", lockNumber)
+                wakeLock.release()
+            }
+
+            override fun isHeld() = wakeLock.isHeld
+        }
+    }
+}
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("CspD2mDualConnectionSupplier")
 
@@ -51,6 +89,7 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("CspD2mDualConnec
  *                    problems. Failed checks will throw runtime exceptions.
  */
 class CspD2mDualConnectionSupplier(
+    private val powerManager: PowerManager,
     private val multiDeviceManager: MultiDeviceManager,
     private val incomingMessageProcessor: IncomingMessageProcessor,
     private val taskManager: TaskManager,
@@ -60,7 +99,7 @@ class CspD2mDualConnectionSupplier(
     private val version: Version,
     private val isIpv6Preferred: Boolean,
     private val okHttpClientSupplier: Supplier<OkHttpClient>,
-    private val isTestBuild: Boolean
+    private val isTestBuild: Boolean,
 ) : Supplier<ServerConnection> {
     private val cspConnectionConfiguration by lazy { createCspConnectionConfiguration() }
     private val d2mConnectionConfiguration by lazy { createD2mConnectionConfiguration() }
@@ -77,10 +116,10 @@ class CspD2mDualConnectionSupplier(
             }
             if (!this::latestConfiguration.isInitialized || configuration != latestConfiguration) {
                 logger.info("Create new connection")
-                val connection = BaseServerConnectionProvider.createConnection(configuration)
-                if (isTestBuild
-                    && this::latestConnection.isInitialized
-                    && connection::class == latestConnection::class
+                val connection = BaseServerConnectionProvider.createConnection(configuration, WakeLockConnectionLockProvider(powerManager))
+                if (isTestBuild &&
+                    this::latestConnection.isInitialized &&
+                    connection::class == latestConnection::class
                 ) {
                     throw ServerConnectionException("Unexpected new connection of same type")
                 }
@@ -106,7 +145,7 @@ class CspD2mDualConnectionSupplier(
             taskManager,
             AsyncResolver::getAllByName,
             isIpv6Preferred,
-            ProxyAwareSocketFactory::makeSocket
+            ProxyAwareSocketFactory::makeSocket,
         )
     }
 
@@ -122,7 +161,7 @@ class CspD2mDualConnectionSupplier(
             taskManager,
             multiDeviceManager.propertiesProvider,
             multiDeviceManager.socketCloseListener,
-            okHttpClientSupplier.get()
+            okHttpClientSupplier.get(),
         )
     }
 }

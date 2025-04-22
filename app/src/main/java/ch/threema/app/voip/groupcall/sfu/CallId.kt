@@ -27,8 +27,8 @@ import ch.threema.base.utils.Utils
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.storage.models.GroupModel
-import ove.crypto.digest.Blake2b
 import java.nio.charset.StandardCharsets
+import ove.crypto.digest.Blake2b
 
 data class CallId(val bytes: ByteArray) {
     companion object {

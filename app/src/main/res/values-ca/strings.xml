@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Contactes</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">Xats</string>
     <string name="title_compose_message">Iniciar un xat</string>
     <string name="title_choose_recipient">Seleccioneu Destinatari</string>
     <string name="title_keyfingerprint">Empremta de la clau</string>
-    <string name="title_mythreemaid">La meva ID de Threema</string>
-    <string name="title_threemaid">ID de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">La meva ID de ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">ID de ${app_name_short}</string>
     <string name="title_adduser">Afegir un contacte nou</string>
     <string name="title_enter_id">Entreu la ID</string>
     <string name="title_invite_friend">Convideu un amic</string>
     <string name="invite_via">Convideu un amic a través de…</string>
-    <string name="invite_email_body">Hola,\n\nJo utilitzo %1$s, el servei de missatgeria instantània segur que protegeix la privacitat dels usuaris.\n\nLa meva ID de Threema: https://threema.id/%2$s\n\nComuniquem-nos a través de %1$s!\n\nSalut,\n</string>
-    <string name="invite_sms_body">Ei! Comencem a utilitzar %1$s per comunicar-nos d\'una forma segura i compatible amb la privacitat! La meva ID de Threema: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema. El servei de missatgeria segura que protegeix la vostra privacitat</string>
-    <string name="enter_id_hint">Entreu la ID de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">Hola,\n\nJo utilitzo %1$s, el servei de missatgeria instantània segur que protegeix la privacitat dels usuaris.\n\nLa meva ID de ${app_name_short}: https://threema.id/%2$s\n\nComuniquem-nos a través de %1$s!\n\nSalut,\n</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">Ei! Comencem a utilitzar %1$s per comunicar-nos d\'una forma segura i compatible amb la privacitat! La meva ID de ${app_name_short}: https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}. El servei de missatgeria segura que protegeix la vostra privacitat</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">Entreu la ID de ${app_name_short}</string>
     <string name="account_links">Comptes enllaçats</string>
     <string name="menu_settings">Configuració</string>
-    <string name="menu_about">Sobre Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">Sobre ${app_name}</string>
     <string name="menu_add_contact">Nou contacte</string>
     <string name="menu_done">Fet</string>
     <string name="compose_message_and_enter">Toqueu aquí per escriure</string>
@@ -50,6 +58,8 @@ quan arribi el primer missatge.</string>
     <string name="prefs_sum_notification_sound">Predeterminat del sistema</string>
     <string name="prefs_vibrate">Vibrar</string>
     <string name="prefs_sum_vibrate">Vibrar quan es rebi un missatge</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
     <string name="prefs_sum_light">Blanca</string>
     <string name="prefs_title_wallpaper">Seleccionar fons de pantalla</string>
     <string name="prefs_sum_wallpaper">Seleccionar imatge per al fons</string>
@@ -65,6 +75,8 @@ quan arribi el primer missatge.</string>
     <string name="prefs_inapp_vibrate">Vibració des de l\'aplicació</string>
     <string name="prefs_inapp_vibrate_on">Vibrar quan es rebin missatges</string>
     <string name="prefs_inapp_vibrate_off">No vibrar quan es rebin missatges</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_logging">Registre</string>
     <string name="prefs_title_message_log_switch">Registra a fitxer</string>
     <string name="prefs_title_sum_message_log_on">Esdeveniments i informació de xarxa es registraran al fitxer debug_log.txt</string>
@@ -79,19 +91,11 @@ quan arribi el primer missatge.</string>
     <string name="image_size_large">Gran (1600x1600)</string>
     <string name="image_size_xlarge">Extra gran (2592x2592)</string>
     <string name="image_size_original">Mida original</string>
-    <string name="color_none">Cap</string>
-    <string name="color_orange">Taronja</string>
-    <string name="color_red">Vermella</string>
-    <string name="color_green">Verda</string>
-    <string name="color_blue">Blava</string>
-    <string name="color_cyan">Cian</string>
-    <string name="color_magenta">Magenta</string>
-    <string name="color_yellow">Groga</string>
-    <string name="color_white">Blanca</string>
     <string name="next">Següent</string>
     <string name="finish">Acabar</string>
     <string name="please_wait">Espereu…</string>
-    <string name="wizard_first_create_id">Creant la vostra ID de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_first_create_id">Creant la vostra ID de ${app_name_short}</string>
     <string name="wizard1_sync_contacts">Sincronitzant contactes</string>
     <string name="wizard2_email_hint">Entreu la vostra adreça de correu electrònic</string>
     <string name="wizard2_email_linking">Enllaçar correu electrònic a la ID</string>
@@ -116,20 +120,24 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="share_via">Compartir per…</string>
     <string name="share_subject">%s conversa</string>
     <string name="message_delete_undo">Desfer</string>
-    <string name="mobile_already_linked">La vostra ID de Threema ja està enllaçada amb aquest número de mòbil</string>
-    <string name="email_already_linked">La vostra ID de Threema ja està enllaçada amb aquesta adreça de correu electrònic</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">La vostra ID de ${app_name_short} ja està enllaçada amb aquest número de mòbil</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">La vostra ID de ${app_name_short} ja està enllaçada amb aquesta adreça de correu electrònic</string>
     <string name="whoaaa">Notícia</string>
     <string name="really_delete_message_title">Eliminar missatge</string>
     <string name="really_delete_thread">Eliminar xat</string>
     <string name="really_delete_contact">Realment voleu eliminar aquest contacte i tots els missatges associats?</string>
     <string name="image_placeholder">Imatge</string>
-    <string name="invalid_threema_id">ID de Threema no vàlid</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">ID de ${app_name_short} no vàlid</string>
     <string name="contact_already_exists">El contacte ja existeix</string>
     <string name="close">Tancar</string>
     <string name="creating_contact">Afegint un contacte nou</string>
     <string name="creating_contact_successful">Contacte afegit satisfactòriament</string>
     <string name="invalid_threema_qr_code">Codi QR no vàlid</string>
-    <string name="threema_contact">Contacte de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">Contacte de ${app_name_short}</string>
     <string name="first_name">Nom</string>
     <string name="last_name">Cognoms</string>
     <string name="os_licenses">Llicències</string>
@@ -141,7 +149,8 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="verify_failed_not_linked">Ha fallat la verificació del vostre número de mòbil. El procés de verificació s\'ha cancel·lat.</string>
     <string name="check_incoming_sms">Comprovant els SMS entrants</string>
     <string name="backup_title">Exportar l\'ID</string>
-    <string name="backup_sum">Exportar la vostra ID de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">Exportar la vostra ID de ${app_name_short}</string>
     <string name="backup_and_delete">Còpia de seguretat i eliminació</string>
     <string name="delete_id_title">Eliminar ID</string>
     <string name="delete_id_message">A menys que hàgiu creat una còpia de seguretat o exportat i desat una còpia d\'aquesta ID, mai més podreu tornar a enviar o rebre missatges amb aquesta ID.\n\nSi no voleu tornar a utilitzar aquesta ID, es recomana definir una contrasenya de revocació i revocar la ID a myid.threema.ch/revoke abans d\'esborrar-la.</string>
@@ -157,9 +166,11 @@ escollit, poden ser utilitzats per restaurar la vostra ID en un altre dispositiu
 correu electrònic o escanejar el codi QR utilitzant un altre dispositiu.</string>
     <string name="support">Ajuda</string>
     <string name="support_url">https://threema.ch/android/support/</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">La següent cadena de text es pot utilitzar conjuntament amb la contrasenya escollida per
-restaurar la vostra ID de Threema.</string>
-    <string name="backup_share_subject">Exportació d\'ID de Threema per</string>
+restaurar la vostra ID de ${app_name_short}.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">Exportació d\'ID de ${app_name_short} per</string>
     <string name="add_attachment">Nou Adjunt</string>
     <string name="invalid_passphrase">Contrasenya no vàlida</string>
     <string name="master_key_locked">La clau mestra està bloquejada</string>
@@ -180,9 +191,13 @@ restaurar la vostra ID de Threema.</string>
     <string name="video_placeholder">Vídeo</string>
     <string name="audio_placeholder">Àudio</string>
     <string name="restoring_backup">Restaurant la còpia</string>
-    <string name="server_message_title">Missatge del servidor de Threema</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">Missatge del servidor de ${company_name}</string>
     <string name="error">Error</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
     <string name="no_contacts"><![CDATA[Encara no teniu cap contacte. Activeu la sincronització (Configuració > Privacitat) o afegiu contactes manualment.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="masterkey_title">Entreu la Contrasenya</string>
     <string name="masterkey_body">La vostra clau mestra està protegida per una contrasenya. Entreu la vostra contrasenya per desbloquejar la clau.</string>
     <string name="masterkey_unlocking">Desbloquejant la clau mestra</string>
@@ -202,6 +217,7 @@ de continuar.</string>
     <string name="unlinking_email">Desenllaçant correu electrònic</string>
     <string name="unlink">Desenllaçar</string>
     <string name="threema_version">Versió</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
     <string name="wrong_backupid_or_password_or_no_internet_connection">No hi ha connexió a internet, les dades de la ID d\'exportació no són vàlides o la contrasenya no és correcta</string>
     <string name="prefs_header_other">Altres</string>
     <string name="an_error_occurred">Hi ha hagut un error</string>
@@ -223,10 +239,17 @@ de continuar.</string>
     <string name="deleting_thread">Esborrant el xat</string>
     <string name="enter_serial_body"><![CDATA[Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
 https://shop.threema.ch/retrieve_keys]]></string>
-    <string name="enter_serial_title">Desbloquejar Threema</string>
-    <string name="serial_required_want_exit">La clau de llicència no és vàlida. Voleu intentar-ho de nou o tancar Threema?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">Desbloquejar ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">La clau de llicència no és vàlida. Voleu intentar-ho de nou o tancar ${app_name}?</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Comprovant la llicència</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
     <string name="update_available">Actualització no disponible</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
     <string name="no_update_available">No hi ha actualitzacions</string>
     <string name="download">Descarregar</string>
     <string name="not_now">Recordar-m\'ho més tard</string>
@@ -330,8 +353,9 @@ intentar.</string>
     <string name="prefs_header_lists">Llistes</string>
     <string name="prefs_sum_blocked_contacts">Els missatges de les ID llistades aquí s\'ignoraran.</string>
     <string name="verified">Verificat</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="want_to_add_to_exclude_list">Aquest contacte està enllaçat amb una entrada de la llibreta d\'adreces del vostre telèfon.
-Si l\'elimineu de Threema tornarà a aparèixer després d\'una sincronització de contactes.\nVoleu excloure\'l de la sincronització?</string>
+Si l\'elimineu de ${app_name_short} tornarà a aparèixer després d\'una sincronització de contactes.\nVoleu excloure\'l de la sincronització?</string>
     <string name="no">No</string>
     <string name="yes">Sí</string>
     <string name="deleting_contact">Eliminant contacte</string>
@@ -345,8 +369,10 @@ Si l\'elimineu de Threema tornarà a aparèixer després d\'una sincronització 
     <string name="prefs_sum_default_contact_picture_colored_on">Mostrar contenidors multicolor si no hi ha foto
 de contacte</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Utilitzar contenidors grisos si no hi ha foto de contacte</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Mostrar totes les ID de Threema a la llista de contactes</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Amagar IDs de Threema inactives/revocades</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">Mostrar totes les ID de ${app_name_short} a la llista de contactes</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">Amagar IDs de ${app_name_short} inactives/revocades</string>
     <string name="contact_sorting_first_name">Nom - Cognoms</string>
     <string name="contact_sorting_last_name">Cognoms - Nom</string>
     <string name="contact_format_first_name_last_name">Nom Cognoms</string>
@@ -364,7 +390,8 @@ de contacte</string>
     <string name="prefs_title_fullscreen_ime">Teclat a pantalla completa</string>
     <string name="prefs_sum_fullscreen_ime_on">El teclat cobreix l\'aplicació si el dispositiu està en mode apaïsat</string>
     <string name="prefs_sum_fullscreen_ime_off">Mostra una previsualització del xat sobre el teclat si hi ha espai suficient</string>
-    <string name="add_acount_from_within_threema">Gestioneu la vostra ID de Threema des de Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">Gestioneu la vostra ID de ${app_name_short} des de ${app_name_short}.</string>
     <string name="save_image">Desar Imatge</string>
     <string name="share_image">Compartir Imatge</string>
     <string name="view_in_gallery">Veure a la Galeria</string>
@@ -385,7 +412,8 @@ de contacte</string>
     <string name="push_not_available_text1">No hem pogut trobar un servei de push al vostre dispositiu perquè els serveis de Google Play no estan instal·lats o no estan actualitzats.</string>
     <string name="backup_in_progress">Còpia en procés</string>
     <string name="backup_or_restore_success_body">Còpia de les dades completada correctament</string>
-    <string name="backup_or_restore_error">Còpia de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">Còpia de ${app_name_short}</string>
     <string name="backup_or_restore_error_body">La còpia no s\'ha completat correctament</string>
     <string name="could_not_download_message">No s\'ha pogut descarregar el missatge</string>
     <string name="info">Informació</string>
@@ -411,7 +439,8 @@ de contacte</string>
     <string name="num_items_sected">%s seleccionat</string>
     <string name="really_delete_media">Realment voleu eliminar %d missatges multimèdia?</string>
     <string name="check_updates">Comprovar actualitzacions</string>
-    <string name="masterkey_lock_explain">Threema guarda la contrasenya a la memòria. Si necessiteu tornar a entrar la contrasenya sovint, assegureu-vos que les aplicacions mata-processos i d\'estalvi de bateria que podrien tancar Threema abans d\'hora, estan desactivades.</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name} guarda la contrasenya a la memòria. Si necessiteu tornar a entrar la contrasenya sovint, assegureu-vos que les aplicacions mata-processos i d\'estalvi de bateria que podrien tancar ${app_name_short} abans d\'hora, estan desactivades.</string>
     <string name="identity_already_exists">Aquesta ID ja pertany a la vostra llista de contactes</string>
     <string name="share_contact">Compartir contacte</string>
     <string name="add_shortcut">Afegir accés directe</string>
@@ -445,7 +474,8 @@ de contacte</string>
     <string name="ballot_subject_hint">Entreu un títol per aquesta votació</string>
     <string name="ballot_no_ballots_yet">Encara no hi ha enquestes.</string>
     <string name="print">Imprimir</string>
-    <string name="ballot_wizard0_explain">Creeu ràpidament una enquesta en línia directament amb Threema. Programeu un esdeveniment o pregunteu als amics qualsevol cosa que vulgueu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">Creeu ràpidament una enquesta en línia directament amb ${app_name_short}. Programeu un esdeveniment o pregunteu als amics qualsevol cosa que vulgueu.</string>
     <string name="ballot_add_choices">Afegir respostes</string>
     <string name="blocked_cannot_send">No podeu enviar missatges a un contacte bloquejat</string>
     <string name="really_block_contact">Els missatges futurs d\'aquest contacte es descartaran. Voleu continuar?</string>
@@ -459,7 +489,8 @@ de contacte</string>
     <string name="back">Tornar</string>
     <string name="wearable_reply">Respondre</string>
     <string name="wearable_reply_label">Respondre a %s</string>
-    <string name="push_disable_text">Si continueu, es desactivaran els missatges push i Threema comprovarà si hi ha missatges nous cada 15 minuts.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">Si continueu, es desactivaran els missatges push i ${app_name_short} comprovarà si hi ha missatges nous cada 15 minuts.</string>
     <string name="ballot_intermediate_results_show">Mostrar resultats intermedis</string>
     <string name="converting_video">Processant el vídeo</string>
     <string name="video_size_small">Alta (menys dades)</string>
@@ -471,7 +502,8 @@ de contacte</string>
     <string name="kick_user_from_group">Expulsar %1$s del grup</string>
     <string name="show_as_qrcode">Mostrar com a codi QR</string>
     <string name="qr_code">Codi QR</string>
-    <string name="really_leave_id_export">Si encara no ho heu fet, deseu la cadena de text de l\'exportació de la vostra ID o el corresponent codi QR en un lloc segur o imprimiu-lo. La vostra ID de Threema no es pot restaurar sense una còpia de seguretat.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="really_leave_id_export">Si encara no ho heu fet, deseu la cadena de text de l\'exportació de la vostra ID o el corresponent codi QR en un lloc segur o imprimiu-lo. La vostra ID de ${app_name_short} no es pot restaurar sense una còpia de seguretat.</string>
     <string name="revocation_key_title">Revocació d\'ID</string>
     <string name="revocation_key_not_set">No s\'ha definit la contrasenya de revocació</string>
     <string name="revocation_key_set_at">Contrasenya definida %1$s</string>
@@ -545,8 +577,10 @@ de contacte</string>
     <string name="invalid_data">Dades no vàlides. No es pot enviar.</string>
     <string name="prefs_emoji_style">Estil d\'emoji</string>
     <string name="prefs_android_emojis">Emojis del sistema</string>
-    <string name="prefs_default_emojis">Emojis de Threema (predeterminat)</string>
-    <string name="android_emojis_warning">Nota: El joc de caràcters del sistema podria no ser capaç de mostrar tots els emojis suportats per Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">Emojis de ${app_name_short} (predeterminat)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="android_emojis_warning">Nota: El joc de caràcters del sistema podria no ser capaç de mostrar tots els emojis suportats per ${app_name_short}.</string>
     <string name="crop">Escapçar</string>
     <string name="scan_id_mismatch_title">ID no coincident</string>
     <string name="scan_id_mismatch_message">La ID que heu escanejat no coincideix amb el contacte que heu desat.</string>
@@ -562,10 +596,14 @@ de contacte</string>
     <string name="fontsize_xlarge">Extra Gran</string>
     <string name="no_app_for_location">No s\'ha trobat cap aplicació de mapes en aquest dispositiu</string>
     <string name="prefs_sendlog">Enviar registre</string>
-    <string name="prefs_sendlog_summary">Enviar el fitxer de registre a Threema per una anàlisi posterior en cas de problemes</string>
-    <string name="permission_storage_required">Per desar o enviar multimèdia, doneu a Threema permís per accedir a l\'emmagatzematge.</string>
-    <string name="permission_location_required">Per enviar una localització, doneu a Threema permís per accedir a la vostra posició.</string>
-    <string name="permission_contacts_required">Per enviar contactes, doneu a Threema permís per llegir els contactes.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">Enviar el fitxer de registre a ${company_name} per una anàlisi posterior en cas de problemes</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_storage_required">Per desar o enviar multimèdia, doneu a ${app_name} permís per accedir a l\'emmagatzematge.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_location_required">Per enviar una localització, doneu a ${app_name} permís per accedir a la vostra posició.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_contacts_required">Per enviar contactes, doneu a ${app_name} permís per llegir els contactes.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
     <string name="notifications_settings">Configuració de les notificacions</string>
@@ -582,47 +620,56 @@ de contacte</string>
     <string name="new_wizard_select_country">Seleccioneu el vostre país</string>
     <string name="new_wizard_lets_get_started">Comencem!</string>
     <string name="new_wizard_setup_threema">Configurar ara</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_restore_id_backup">Restaurar la ID exportada</string>
-    <string name="new_wizard_welcome">Benvinguts a Threema!</string>
-    <string name="new_wizard_move_finger">Moveu el dit per la pantalla per generar una nova ID de Threema.</string>
-    <string name="new_wizard_this_is_your_id">Aquesta és la vostra ID de Threema</string>
-    <string name="new_wizard_works_like_phone_number">La vostra ID de Threema actua com un número de telèfon.\nEls vostres amics poden contactar-vos a través d\'aquesta ID.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">Benvinguts a ${app_name}!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">Moveu el dit per la pantalla per generar una nova ID de ${app_name_short}.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">Aquesta és la vostra ID de ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">La vostra ID de ${app_name_short} actua com un número de telèfon.\nEls vostres amics poden contactar-vos a través d\'aquesta ID.</string>
     <string name="new_wizard_choose_nickname">Escolliu un sobrenom</string>
     <string name="new_wizard_nickname_explain">Els vostres amics veuran el vostre sobrenom a les seves notificacions</string>
     <string name="new_wizard_hint_enter_nickname">Entreu el sobrenom</string>
     <string name="new_wizard_help_your_friends_find_you">Ajudeu els vostres amics a trobar-vos!</string>
-    <string name="new_wizard_link_mobile">Enllaceu el vostre número de telèfon mòbil i/o l\'adreça de correu electrònic amb la ID de Threema.</string>
-    <string name="new_wizard_link_mobile_only">Enllaceu el vostres n\u00famero de tel\u00e8fon m\u00f2bil amb la ID de Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">Enllaceu el vostre número de telèfon mòbil i/o l\'adreça de correu electrònic amb la ID de ${app_name_short}.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">Enllaceu el vostres n\u00famero de tel\u00e8fon m\u00f2bil amb la ID de ${app_name_short}.</string>
     <string name="new_wizard_hint_mobile_number">Número de mòbil (opcional)</string>
     <string name="new_wizard_hint_email">Correu electrònic (opcional)</string>
-    <string name="new_wizard_find_friends">Trobeu els vostres amics a Threema</string>
-    <string name="new_wizard_sync_contacts_explain">Activeu per veure quins amics utilitzen Threema.</string>
     <string name="new_wizard_done_title">Fet!\nTot correcte?</string>
     <string name="new_wizard_linked_to">Enllaçat a</string>
-    <string name="new_wizard_need_internet">Es requereix una connexió a Internet estable per crear la vostra ID de Threema única. Torneu a provar-ho.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">Es requereix una connexió a Internet estable per crear la vostra ID de ${app_name_short} única. Torneu a provar-ho.</string>
     <string name="new_wizard_more_information">Més informació</string>
-    <string name="new_wizard_use_id_as_nickname">Voleu usar la vostra ID de Threema com a sobrenom?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">Voleu usar la vostra ID de ${app_name_short} com a sobrenom?</string>
     <string name="new_wizard_phone_email_invalid">El número de telèfon o l\'adreça de correu electrònic que he entrat no són vàlids.\nCorregiu-ho abans de continuar.</string>
     <string name="new_wizard_phone_invalid">El número de telèfon que heu entrat no és vàlid.\nCorregiu-ho abans de continuar.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_fingerprint">Movent el vostre dit, creareu dades aleatòries (anomenades entropia) que s\'utilitzen per generar
-el parell de claus associades amb la vostra nova i única ID de Threema. El parell de claus està format per una <b>clau pública</b> que es distribueix als
+el parell de claus associades amb la vostra nova i única ID de ${app_name_short}. El parell de claus està format per una <b>clau pública</b> que es distribueix als
 vostres amics i una <b>clau privada</b> que s\'emmagatzema de forma segura al vostres telèfon.
 Els vostres amics xifraran els missatges que us enviïn amb la vostra clau pública. Només el propietari de la clau privada i ningú més és capaç de desxifrar aquests missatges.</string>
     <string name="new_wizard_info_id">També heu creat un parell de claus. La clau pública s\'ha transmès de forma segura als nostres
 servidors. La clau privada mai surt del vostre dispositiu. Això assegura que ningú més pot llegir els vostres missatges.</string>
-    <string name="new_wizard_info_sync_contacts">Si activeu aquesta opció, Threema xifra unidireccionalment (hashes) les adreces de correu electrònic i els números de telèfon
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_sync_contacts">Si activeu aquesta opció, ${app_name_short} xifra unidireccionalment (hashes) les adreces de correu electrònic i els números de telèfon
 abans d\'enviar-los al servidor per buscar contactes coincidents. Nosaltres no guardem cap
 dada de la llibreta d\'adreces.</string>
-    <string name="new_wizard_info_link">Facilitant el vostre número de telèfon i adreça de correu electrònic, Threema pot ajudar els vostres amics
-a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. Les dades s\'emmagatzemaran d\'una
-forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema
-de forma completament anònima.</string>
-    <string name="new_wizard_info_link_phone_only">Facilitant el vostre número de telèfon, Threema pot ajudar els vostres amics
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">Facilitant el vostre número de telèfon i adreça de correu electrònic, ${app_name_short} pot ajudar els vostres amics a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. Les dades s\'emmagatzemaran d\'una forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar ${app_name} de forma completament anònima.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">Facilitant el vostre número de telèfon, ${app_name_short} pot ajudar els vostres amics
 a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. El número s\'emmagatzemarà d\'una
-forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema
+forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar ${app_name_short}
 de forma completament anònima.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_nickname">El sobrenom s\'utilitza a les notificacions push en alguns dispositius com una forma addicional per identificar-vos als usuaris que no us tenen encara a la seva llibreta d\'adreces. Recomanem
-donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzarem la vostra ID de Threema per defecte.</string>
+donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzarem la vostra ID de ${app_name_short} per defecte.</string>
     <string name="not_linked">sense enllaçar</string>
     <string name="linked">enllaçada</string>
     <string name="pending_sms_verification_notice">El vostre número de mòbil encara no està verificat.</string>
@@ -634,8 +681,10 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="status_ballot_user_modified_vote">«%1$s» a canviat el vot a favor de «%2$s»</string>
     <string name="status_ballot_all_votes">Les votacions per «%1$s» s\'han completat</string>
     <string name="restore">Restaurar</string>
-    <string name="new_wizard_anonymous_confirm">No heu entrat ni un número de mòbil ni una adreça de correu electrònic per enllaçar a la vostra ID de Threema. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar Threema anònimament?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">No heu entrat un número de mòbil per enllaçar a la vostra ID de Threema. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar Threema anònimament?</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">No heu entrat ni un número de mòbil ni una adreça de correu electrònic per enllaçar a la vostra ID de ${app_name_short}. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar ${app_name} anònimament?</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">No heu entrat un número de mòbil per enllaçar a la vostra ID de ${app_name_short}. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar ${app_name} anònimament?</string>
     <string name="new_wizard_scan_id_backup">O escanegeu el codi QR de la vostra exportació de la ID</string>
     <string name="error_saving_file">Error desant el fitxer. Comproveu els permisos.</string>
     <string name="wait_one_minute">Espereu almenys 10 minuts per tal que arribi l\'SMS abans de demanar una trucada.</string>
@@ -676,7 +725,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="lock_option_none">Cap</string>
     <string name="lock_option_pin">PIN</string>
     <string name="lock_option_screenlock">Bloqueig de pantalla del sistema</string>
-    <string name="hide_chat_message_explain">Threema us permet protegir certs xats amb un PIN i amagar-los temporalment de la llista de missatges. Per activar els xats privats, definiu un PIN o activeu el bloqueig de pantalla del sistema (Android 6.0+) a la configuració.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="hide_chat_message_explain">${app_name_short} us permet protegir certs xats amb un PIN i amagar-los temporalment de la llista de missatges. Per activar els xats privats, definiu un PIN o activeu el bloqueig de pantalla del sistema (Android 6.0+) a la configuració.</string>
     <string name="set_lock">Configurar ara</string>
     <string name="prefs_title_access_protection">Protecció d\'accés</string>
     <string name="private_chat_subject">Privats</string>
@@ -688,7 +738,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="grace_thirty_minutes">30 minuts</string>
     <string name="grace_never">Mai (manual)</string>
     <string name="never">Mai</string>
-    <string name="unhide_chats_confirm">Si suprimiu la protecció d\'accés ara, els vostres xats privats esdevindran visibles altra vegada.</string>
     <string name="verification_started">Verificació iniciada</string>
     <string name="cannot_open_file">No es pot obrir el fitxer</string>
     <string name="prefs_title_image_attach_previews">Selecció ràpida de multimèdia</string>
@@ -698,12 +747,13 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="restore_disable_energy_saving">Connecteu el vostre dispositiu al carregador i desactiveu totes les opcions d\'estalvi d\'energia per evitar que el dispositiu interrompi el procés de còpia o restauració.</string>
     <string name="draft">Esborrany</string>
     <string name="prefs_bigger_single_emojis">Emojis sols més grans</string>
-    <string name="wizard1_sync_work">Sincronitzant dades de Threema Work…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard1_sync_work">Sincronitzant dades de ${app_name}…</string>
     <string name="notification_hidden_text">Continguts amagats</string>
     <string name="really_reset_ringtones">Voleu restablir la configuració del so de notificació a la predeterminada?</string>
     <string name="reset_ringtones_confirm">S\'ha restablert la configuració del so de notificació.</string>
     <string name="prefs_language_override">Idioma</string>
-    <string name="threema_channel_intro">El Canal Threema us proporciona notícies sobre totes les coses de Threema. Voleu subscriure-us al Canal Threema i afegir-lo als vostres contactes? És gratuït i podeu revocar la subscripció en qualsevol moment.</string>
+    <string name="threema_channel_intro">El Canal ${app_name_short} us proporciona notícies sobre totes les coses de ${app_name_short}. Voleu subscriure-us al Canal ${app_name_short} i afegir-lo als vostres contactes? És gratuït i podeu revocar la subscripció en qualsevol moment.</string>
     <string name="quote">Citar</string>
     <string name="contacts_deleted">Els contactes s\'han eliminat</string>
     <string name="take_photo">Fer una foto</string>
@@ -722,7 +772,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="battery_optimizations_disable_guide_ctd">Cerqueu %s a la llista i desactiveu l\'optimització</string>
     <string name="battery_optimizations_disable_confirm">Voleu mantenir l\'optimització de la bateria activada per %1$s? %2$s no funcionarà correctament.</string>
     <string name="enter_text_hint">Entreu el text</string>
-    <string name="backup_explain_text">Si canvieu o perdeu el vostre dispositiu, ningú podrà restaurar la vostra ID de Threema ni els vostres xats si no disposeu d\'una còpia. Guardeu les vostres dades utilitzant les opcions de còpia apropiades.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">Si canvieu o perdeu el vostre dispositiu, ningú podrà restaurar la vostra ID de ${app_name_short} ni els vostres xats si no disposeu d\'una còpia. Guardeu les vostres dades utilitzant les opcions de còpia apropiades.</string>
     <string name="data_backup_explain">Les còpies de dades contenen:\n\n&#9679; La vostra ID i parell de claus\n&#9679; Contactes i nivells de confiança\n&#9679; Pertinences a grups\n&#9679; Xats\n&#9679; Multimèdia i fitxers (opcional)\n\nLes dades es guardaran en un fitxer ZIP xifrat. Es recomana moure el fitxer fora del dispositiu després que s\'hagi completat la còpia correctament.</string>
     <string name="draw">Dibuixar</string>
     <string name="edit">Editar</string>
@@ -732,6 +783,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_ipv6_preferred_off">Usar només connexions IPv4</string>
     <string name="prefs_ipv6_preferred_on">Preferència per a connexions IPv6 sobre IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 per trucades i web</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="ipv6_requires_restart">Per aplicar aquesta configuració, l\'aplicació necessita reiniciar-se.</string>
     <string name="ipv6_restart_now">Reiniciar ara</string>
     <string name="on_cap">Activat</string>
@@ -758,37 +811,50 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="menu_send_profilpic_now">Enviar la foto de perfil ara</string>
     <string name="profile_picture_sent">Foto de perfil enviada</string>
     <string name="sending_messages">Enviant…</string>
-    <string name="backup_data_media_confirm">Desant fitxers multimèdia grans a una còpia de seguretat local en ZIP podria superar la capacitat de la CPU i de la memòria del vostre dispositiu i podria trigar molt. Threema no enviarà i rebrà missatges mentre la còpia de seguretat estigui en curs. Continuar de totes maneres?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">Desant fitxers multimèdia grans a una còpia de seguretat local en ZIP podria superar la capacitat de la CPU i de la memòria del vostre dispositiu i podria trigar molt. ${app_name} no enviarà i rebrà missatges mentre la còpia de seguretat estigui en curs. Continuar de totes maneres?</string>
     <string name="backup_data_cancelled">Còpia cancel·lada</string>
-    <string name="service_manager_not_available">No es pot iniciar Threema. Apagueu el vostre dispositiu i torneu a provar-ho.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="service_manager_not_available">No es pot iniciar ${app_name}. Apagueu el vostre dispositiu i torneu a provar-ho.</string>
     <string name="message_sent">Missatge enviat</string>
-    <string name="threema_call">Trucada Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">Trucada ${app_name_short}</string>
     <string name="threema_message_to">Missatge a %s</string>
     <string name="threema_call_with">Trucar a %s</string>
-    <string name="prefs_title_voip">Trucades Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">Trucades ${app_name_short}</string>
     <string name="prefs_title_force_turn">Retransmetre sempre les trucades</string>
-    <string name="prefs_summary_force_turn_off">Establir una connexió directa, si és possible, i només retransmetre trucades a través dels servidors de Threema a contactes no verificats. Podria exposar la vostra adreça IP.</string>
-    <string name="prefs_summary_force_turn_on">Forçar la retransmissió de totes les trucades a través dels servidors de Threema, protegint la vostra adreça IP. Podria afectar la qualitat de la trucada.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">Establir una connexió directa, si és possible, i només retransmetre trucades a través dels servidors de ${company_name} a contactes no verificats. Podria exposar la vostra adreça IP.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">Forçar la retransmissió de totes les trucades a través dels servidors de ${company_name}, protegint la vostra adreça IP. Podria afectar la qualitat de la trucada.</string>
     <string name="permission_record_audio_required">Per fer trucades xifrades i enviar missatges de veu permeteu accés al micròfon.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_voice_call_notifications">Trucades de veu</string>
     <string name="prefs_voice_call_sound">To de trucada</string>
-    <string name="prefs_sum_voice_call_sound">Seleccionar el to de trucada per les trucades entrants de Threema</string>
-    <string name="prefs_sum_voice_call_vibrate">Vibrar en les trucades entrants de Threema</string>
-    <string name="prefs_title_voip_enable">Activar les trucades de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">Seleccionar el to de trucada per les trucades entrants de ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">Vibrar en les trucades entrants de ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">Activar les trucades de ${app_name_short}</string>
     <string name="webclient_invalid_push_token_message">Es requereix inici manual</string>
     <string name="threema_work_contact">Contacte de Threema Work</string>
-    <string name="permission_phone_required">Permetre el permís per gestionar trucades telefòniques mentre s\'utilitza la trucada de Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">Permetre el permís per gestionar trucades telefòniques mentre s\'utilitza la trucada de ${app_name}</string>
     <string name="strikethrough">Ratllat</string>
     <string name="italic">Cursiva</string>
     <string name="bold">Negreta</string>
     <string name="shortcut_choice_title">Crear un accés directe per a…</string>
     <string name="prefs_title_device_info">Informació del dispositiu</string>
     <string name="notifications_disabled_title">Notificacions desactivades</string>
-    <string name="notifications_disabled_text">Les notificacions per a Threema s\'han desactivat en la configuració del sistema. No se us notificarà sobre nous missatges.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">Les notificacions per a ${app_name} s\'han desactivat en la configuració del sistema. No se us notificarà sobre nous missatges.</string>
     <string name="notifications_disabled_settings">Editar la configuració del sistema</string>
     <string name="error_attaching_files">Error afegint adjunts.</string>
     <string name="prefs_fix_powermanager_problems">Desactivar restriccions d\'energia</string>
-    <string name="prefs_fix_powermanager_problems_desc">Permetre a Threema córrer en segon pla per tal que pugui rebre missatges fins i tot quan no està activa.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">Permetre a ${app_name} córrer en segon pla per tal que pugui rebre missatges fins i tot quan no està activa.</string>
     <string name="disable_powermanager_explain">A la pantalla següent, assegureu-vos que \"%s\" està protegida o exclosa de qualsevol restricció de gestió d\'energia del vostre telèfon. Toqueu el botó \"tornar\" quan ho hàgiu fet.</string>
     <string name="disable_autostart_explain">A la pantalla següent, assegureu-vos que «%s» s\'inclou a la llista d\'aplicacions que poden iniciar-se automàticament. Toqueu el botó «tornar» quan ho hagueu fet.</string>
     <string name="notification_priority_default">Baixa</string>
@@ -808,10 +874,12 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_auto_download_title">Descarregar multimèdia automàticament</string>
     <string name="prefs_auto_download_wifi">En WiFi</string>
     <string name="prefs_auto_download_mobile">En dades mòbils</string>
-    <string name="rate_intro">Com valoreu Threema?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">Com valoreu ${app_name}?</string>
     <string name="rate_feedback_intro">Digueu-nos què podem fer per millorar (opcional).</string>
     <string name="rate_positive">Enviar una revisió</string>
-    <string name="rate_title">Valorar Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">Valorar ${app_name}</string>
     <string name="rate_thank_you">Gràcies per la vostra revisió!</string>
     <string name="disabled_by_policy_short">Característica desactivada per l\'administrador</string>
     <string name="rate_forward_to_play_store">Voldríeu valorar-nos a Google Play també?</string>
@@ -822,15 +890,18 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="plus">Més</string>
     <string name="switched_off">Desactivat</string>
     <string name="switched_on">Activat</string>
-    <string name="title_tab_work_users">Usuaris de Threema Work</string>
-    <string name="no_matching_work_contacts">No s\'han trobat contactes de Threema Work verificats per l\'administrador</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">Usuaris de ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">No s\'han trobat contactes de ${app_name} verificats per l\'administrador</string>
     <string name="all">Tots</string>
     <string name="webclient_session_stop_all">Tancar tots</string>
     <string name="passphrase_service_name">Contrasenya del servei</string>
     <string name="passphrase_service_description">Notificació quan la contrasenya s\'ha desbloquejat</string>
     <string name="webclient_service_description">Notificació quan una sessió de Web/Escriptori està activa</string>
     <string name="prefs_title_accept_privacy_policy">Acceptar la política de privacitat</string>
-    <string name="privacy_policy_explain">%1$s protegeix la vostra privacitat més rigorosament que qualsevol altra eina de missatgeria. Apreneu-ne més a la nostra %2$s.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name} protegeix la vostra privacitat més rigorosament que qualsevol altra eina de missatgeria. Apreneu-ne més a la nostra %1$s.</string>
     <string name="privacy_policy_check_confirm">Per usar %s cal que accepteu la política de privacitat.\n\n(Requeriment de la regulació Europea 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Sol·licitar teclat d\'incògnit</string>
     <string name="prefs_sum_incognito_keyboard">Desactivar la recol·lecció de dades per suggeriments personalitzats (si ho suporta el vostre teclat)</string>
@@ -843,41 +914,58 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="password_too_short_generic">Contrasenya massa curta</string>
     <string name="passwords_dont_match">Les contrasenyes no coincideixen</string>
     <string name="test_unsuccessful">Prova no satisfactòria</string>
-    <string name="preparing_threema_safe">Preparant Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">Preparant ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">Restriccions d\'energia</string>
     <string name="disable_autostart_title">Inici automàtic</string>
     <string name="unchanged">sense canvis</string>
     <string name="safe_learn_more_button">Saber-ne més</string>
-    <string name="safe_enable_explain">Tot el que necessiteu per xatejar es guarda només en el vostre dispositiu. No teniu cap compte amb nosaltres i no podem ajudar-vos si perdeu el vostre telèfon o elimineu les dades accidentalment.\n\nThreema Safe crea còpies de seguretat automàtiques de totes les dades importants, incloent les vostres claus, la vostra llista de contactes i grups (però no el contingut dels missatges), anònimament en un servidor segur escollit per vós.</string>
-    <string name="safe_disable_confirm">Voleu continuar sense activar Threema Safe? Si utilitzeu Threema Safe, podeu restaurar la vostra ID de Threema, contactes i grups en cas que perdeu l\'accés al vostre dispositiu.</string>
-    <string name="safe_configure_choose_password">Escolliu una contrasenya segura. Necessitareu aquesta contrasenya per restaurar la vostra còpia de Threema Safe.</string>
-    <string name="safe_configure_choose_server">Escolliu el servidor Threema Safe</string>
-    <string name="safe_configure_server_explain">Podeu utilitzar el servidor de Threema o, en canvi, especificar un servidor de còpia de tercers.</string>
+    <string name="safe_enable_explain">Tot el que necessiteu per xatejar es guarda només en el vostre dispositiu. No teniu cap compte amb nosaltres i no podem ajudar-vos si perdeu el vostre telèfon o elimineu les dades accidentalment.\n\n${app_name_short} Safe crea còpies de seguretat automàtiques de totes les dades importants, incloent les vostres claus, la vostra llista de contactes i grups (però no el contingut dels missatges), anònimament en un servidor segur escollit per vós.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">Voleu continuar sense activar ${app_name_short} Safe? Si utilitzeu ${app_name_short} Safe, podeu restaurar la vostra ID de ${app_name_short}, contactes i grups en cas que perdeu l\'accés al vostre dispositiu.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">Escolliu una contrasenya segura. Necessitareu aquesta contrasenya per restaurar la vostra còpia de ${app_name_short} Safe.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_server">Escolliu el servidor ${app_name_short} Safe</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">Podeu utilitzar el servidor de ${company_name} o, en canvi, especificar un servidor de còpia de tercers.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_use_default_server">Usar el servidor predeterminat</string>
     <string name="safe_test_server">Provar servidor</string>
     <string name="safe_advanced_options">Configuració experta</string>
-    <string name="safe_enter_password">Entreu la vostra contrasenya de Threema Safe</string>
-    <string name="safe_threema_id">La vostra ID de Threema</string>
-    <string name="safe_restore_enter_id">Entreu la ID de Threema que voldríeu recuperar</string>
+    <string name="safe_enter_password">Entreu la vostra contrasenya de ${app_name_short} Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">La vostra ID de ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">Entreu la ID de ${app_name_short} que voldríeu recuperar</string>
     <string name="safe_search_id_title">Entreu el número de mòbil o l\'adreça de correu electrònic enllaçada amb la vostra ID</string>
-    <string name="safe_id_lookup">Buscant la ID de Threema</string>
-    <string name="safe_no_id_found">No s\'ha trobat cap ID de Threema</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">Buscant la ID de ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">No s\'ha trobat cap ID de ${app_name_short}</string>
     <string name="safe_no_backup_found">No s\'ha trobat cap còpia al servidor. Comproveu la ID i contrasenya.</string>
-    <string name="safe_select_id">S\'ha trobat múltiples IDs de Threema. Seleccioneu la ID que voleu usar:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">S\'ha trobat múltiples IDs de ${app_name_short}. Seleccioneu la ID que voleu usar:</string>
     <string name="safe_backup_now">Copiar ara</string>
-    <string name="safe_enable_explain_short">Activeu Threema Safe per crear còpies segures automàtiques i anònimes de les vostres dades importants.</string>
-    <string name="safe_deleting">Eliminant còpia de Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">Activeu ${app_name_short} Safe per crear còpies segures automàtiques i anònimes de les vostres dades importants.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">Eliminant còpia de ${app_name_short} Safe</string>
     <string name="safe_delete_error">Error eliminant la còpia: %s</string>
     <string name="safe_delete_success">Còpia eliminada correctament al servidor</string>
-    <string name="safe_error_preparing">Error preparant la còpia de Threema Safe</string>
-    <string name="safe_configure_choose_password_force">Establiu una contrasenya forta per assegurar la vostra ID de Threema amb Threema Safe. No oblideu el que poseu aquí!</string>
-    <string name="safe_deactivate">Desactivar Threema Safe</string>
-    <string name="safe_deactivate_explain">Si desactiveu Threema Safe, totes les còpies del servidor s\'eliminaran. Voleu continuar?</string>
+    <string name="safe_error_preparing">Error preparant la còpia de ${app_name_short} Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">Establiu una contrasenya forta per assegurar la vostra ID de ${app_name_short} amb ${app_name_short} Safe. No oblideu el que poseu aquí!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">Desactivar ${app_name_short} Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">Si desactiveu ${app_name_short} Safe, totes les còpies del servidor s\'eliminaran. Voleu continuar?</string>
     <string name="add_group_members">Membre nou</string>
     <string name="contact_add_confirm">Voleu afegir el contacte nou «%1$s» a la vostra llista de contactes?</string>
     <string name="password_bad">Contrasenya dèbil</string>
     <string name="prefs_fix_background_data">Activar dades en segon pla</string>
-    <string name="prefs_fix_background_data_desc">Per rebre missatges quan Threema està en segon pla activeu tant les Dades en segon pla com l\'Ús de dades sense restricció</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">Per rebre missatges quan ${app_name} està en segon pla activeu tant les Dades en segon pla com l\'Ús de dades sense restricció</string>
     <string name="prefs_fix_device">Arreglar problemes de configuració del dispositiu</string>
     <string name="safe_successful">Satisfactori</string>
     <string name="safe_unsuccessful">Fallit</string>
@@ -893,8 +981,10 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="safe_size">Mida de la còpia</string>
     <string name="backup_version_mismatch">La versió d\'aquesta còpia és major que la versió suportada. Actualitzeu a la darrera versió de l\'aplicació.</string>
     <string name="safe_restore_failed">Restauració fallida</string>
-    <string name="safe_failed_notification">La còpia de Threema Safe ha fallat durant %d dies consecutius. Toqueu per comprovar.</string>
-    <string name="safe_restore">Restaurar Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">La còpia de ${app_name_short} Safe ha fallat durant %d dies consecutius. Toqueu per comprovar.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">Restaurar ${app_name_short} Safe</string>
     <string name="backup_restore_in_progress">Còpia o restauració en procés. Comproveu la notificació per informació de l\'estat.</string>
     <string name="restore_error_body">La restauració no s\'ha completat correctament</string>
     <string name="forgot_your_id">Heu oblidat la ID?</string>
@@ -902,8 +992,10 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="work_data_sync">Sincr. de dades</string>
     <string name="private_contact">Contacte privat</string>
     <string name="ringtone_selection_default">Predeterminat (%s)</string>
-    <string name="work_data_sync_desc">Sincronització amb Threema Work</string>
-    <string name="ballot_not_connected">Assegureu-vos que Threema es troba en línia abans de tancar una enquesta.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">Sincronització amb ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">Assegureu-vos que ${app_name} es troba en línia abans de tancar una enquesta.</string>
     <string name="empty_chat_title">Buidar el xat</string>
     <string name="empty_chat_confirm">Tots els missatges d\'aquest xat s\'eliminaran. Continuar?</string>
     <string name="emptying_chat">Buidant el xat</string>
@@ -917,21 +1009,26 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="notification_channel_notices">Notícies</string>
     <string name="chat_updates">Actualitzacions de xat</string>
     <string name="backup_or_restore_progress">Progrés de còpia i restauració</string>
-    <string name="tooltip_export_id">Toqueu aquí per compartir o imprimir la vostra ID de Threema xifrada ara</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">Toqueu aquí per compartir o imprimir la vostra ID de ${app_name_short} xifrada ara</string>
     <string name="downloading">Descarregant</string>
     <string name="today">Avui</string>
     <string name="restore_data_cancelled">Restauració cancelada</string>
     <string name="safe_change_password">Canviar contrasenya</string>
     <string name="safe_configure_choose_password_title">Escollir una contrasenya</string>
-    <string name="password_bad_explain">La contrasenya escollida per a Threema Safe no és segura i pot ser deduïda fàcilment per atacants. Escolliu-ne una altra. Pista: Utilitzeu una contrasenya composta de diverses paraules inconnexes.</string>
-    <string name="safe_password_updated">La contrasenya de Threema Safe s\'ha actualitzat.</string>
-    <string name="safe_activated">Threema Safe ara està activat.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">La contrasenya escollida per a ${app_name_short} Safe no és segura i pot ser deduïda fàcilment per atacants. Escolliu-ne una altra. Pista: Utilitzeu una contrasenya composta de diverses paraules inconnexes.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">La contrasenya de ${app_name_short} Safe s\'ha actualitzat.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">${app_name_short} Safe ara està activat.</string>
     <string name="restore_zip_invalid_file">Fitxer de còpia no vàlid.</string>
     <string name="push_token_cleared">S\'ha netejat el testimoni push</string>
     <string name="insert_date">Inserir data</string>
     <string name="add_answer">Afegir resposta</string>
     <string name="title_cannot_be_empty">El títol de l\'enquesta no pot estar buit</string>
-    <string name="voip_disabled">Les trucades Threema estan desactivades</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">Les trucades ${app_name_short} estan desactivades</string>
     <string name="hide_chat_enter_message_explain">El xat està marcat com a xat privat. Per entrar-hi definiu la protecció d\'accés primer.</string>
     <string name="unknown">Desconegut</string>
     <string name="miui_notification_title">Notícia important sobre les notificacions a MIUI</string>
@@ -939,7 +1036,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="miui12_notification_body">MIUI desactiva el so, les llums i les notificacions flotants per totes les aplicacions per defecte (excepte per aplicacions molt populars que Xiaomi creu que són «importants»). Haureu d\'activar manualment aquests ajustos en la pantalla de configuració de les notificacions específiques de les aplicacions del vostre telèfon i repetir aquest procés per cada actualització de l\'aplicació. Contacteu amb Xiaomi per obtenir més informació.</string>
     <string name="dont_show_again">No m\'ho tornis a mostrar</string>
     <string name="miui_notification_prefs">Configuració MIUI</string>
-    <string name="threema_safe_upload_successful">La còpia de Threema Safe s\'ha carregat correctament</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">La còpia de ${app_name_short} Safe s\'ha carregat correctament</string>
     <string name="time_remaining">%s restants</string>
     <string name="safe_configure_server_credentials_title">Autenticació (opcional)</string>
     <string name="username_hint">Nom d\'usuari</string>
@@ -948,7 +1046,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="biometric_enter_authentication">Cal autenticar-vos per desbloquejar</string>
     <string name="biometric_authentication_failed">Error en l\'autenticació</string>
     <string name="biometric_authentication_successful">Autenticat correctament</string>
-    <string name="work_safe_forced_explain">El vostre administrador ha activat Threema Safe al vostre dispositiu</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">El vostre administrador ha activat ${app_name_short} Safe al vostre dispositiu</string>
     <string name="pin_locked_cannot_send">L\'aplicació està bloquejada. No pot enviar.</string>
     <string name="prefs_summary_hide_screenshots_notice">Per motius de privacitat, les miniatures i captures de pantalla sempre s\'eviten quan \"Bloqueig d\'Aplicació\" està activat a la configuració de seguretat</string>
     <string name="work_select_categories">Seleccioneu les categories</string>
@@ -958,7 +1057,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="advanced_options">Opcions avançades</string>
     <string name="url_warning_body">El nom de l\'amfitrió de l\'enllaç que esteu a punt d\'obrir és sospitós:\n\nNom de l\'amfitrió mostrat: <b>%s</b>\nNom de l\'amfitrió real: <b>%s</b>\n\nAixò pot ser un intent per enganyar-vos i obrir un lloc fent veure que és un altre.\n\nVoleu continuar de totes maneres?</string>
     <string name="url_warning_title">Alerta de Phishing</string>
-    <string name="permission_camera_qr_required">Per escanejar codis QR, Threema necessita accés a la càmera</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">Per escanejar codis QR, ${app_name} necessita accés a la càmera</string>
     <string name="voice_action_title">Accions de veu</string>
     <string name="voice_action_body">S\'està processant l\'acció de veu</string>
     <string name="permission_camera_photo_required">Per fer una fotografia, permeteu l\'accés a la càmera</string>
@@ -979,17 +1079,22 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="archived">Arxivats</string>
     <string name="to_archive">Arxivar</string>
     <string name="archived_chats">Xats arxivats</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
     <string name="unarchive">Desarxivar</string>
     <string name="no_archived_chats">No hi ha xats arxivats.\nPer arxivar un xat, arrossegueu-lo cap a l\'esquerra a la llista de missatges</string>
-    <string name="add_contact_enter_id_hint">Entreu la ID de Threema del contacte que voleu afegir</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">Entreu la ID de ${app_name_short} del contacte que voleu afegir</string>
     <string name="notification_channel_new_contact">Contactes nous</string>
     <string name="notification_channel_new_contact_desc">Notificació sobre contactes nous</string>
-    <string name="notification_contact_has_joined">%1$s s\'ha unit a %2$s. Toqueu aquí per enviar-li un missatge.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d contactes s\'han unit a %2$s: %3$s. Toqueu aquí per enviar-los un missatge.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s s\'ha unit a ${app_name_short}. Toqueu aquí per enviar-li un missatge.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d contactes s\'han unit a ${app_name_short}: %2$s. Toqueu aquí per enviar-los un missatge.</string>
     <string name="system_default">Igual que el sistema</string>
     <string name="open_in_maps_app">Obrir a l\'App de mapes</string>
     <string name="delete">Eliminar</string>
     <string name="continue_recording">Continuar gravant</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
     <string name="invalid_backup_path">Camí de còpia no vàlid</string>
@@ -997,7 +1102,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_sum_show_unread_badge">Mostrar insígnies a les pestanyes de navegació inferiors</string>
     <string name="prefs_title_show_unread_badge">Insígnies</string>
     <string name="pinning_not_trusted">Error de Fixació de Certificat. Comproveu si \"Entrust Root Certification Authority - G2\" està instal·lada i activada a l\'emmagatzematge de credencials del vostre dispositiu.</string>
-    <string name="pinning_failed">Error de Fixació de Certificat. Possible atac \"Man-in-the-middle\". Si teniu un bloquejador d\'anuncis, filtre de contingut, o aplicació de tallafocs instal·lades com \"AdGuard\", desactiveu-los per a Threema.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">Error de Fixació de Certificat. Possible atac \"Man-in-the-middle\". Si teniu un bloquejador d\'anuncis, filtre de contingut, o aplicació de tallafocs instal·lades com \"AdGuard\", desactiveu-los per a ${app_name}.</string>
     <string name="open_myid_popup">Obrir la finestra emergent d\'accés ràpid</string>
     <string name="logo">Logo / Desplaçar a dalt</string>
     <string name="quote_subj_end">Fi de la cita</string>
@@ -1020,7 +1126,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="mime_type">Tipus MIME</string>
     <string name="password_does_not_comply">La contrasenya no compleix amb els requeriments definits per l\'administrador.</string>
     <string name="audio_mute_due_to_focus_loss">S\'ha silenciat l\'àudio temporalment a causa d\'una pèrdua de focus</string>
-    <string name="restore_data_backup_explain">Per restaurar una còpia de dades, primer elimineu la vostra ID de Threema des de la finestra \"El meu perfil\".\n\nQuan es reiniciï l\'aplicació, escolliu \"Restaurar d\'una còpia\", \"Altres opcions de restauració\", \"Còpia de les dades\" i llavors seleccioneu el fitxer de còpia que voleu restaurar.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">Per restaurar una còpia de dades, primer elimineu la vostra ID de ${app_name_short} des de la finestra \"El meu perfil\".\n\nQuan es reiniciï l\'aplicació, escolliu \"Restaurar d\'una còpia\", \"Altres opcions de restauració\", \"Còpia de les dades\" i llavors seleccioneu el fitxer de còpia que voleu restaurar.</string>
     <string name="audio_focus_loss_complete">Trucada desconnectada a causa d\'una pèrdua de focus d\'àudio completa.</string>
     <string name="tap_for_picture_hold_for_video">Toqueu per foto, manteniu per vídeo</string>
     <string name="sending_media">Enviant multimèdia</string>
@@ -1042,7 +1149,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="warning">Avís</string>
     <string name="password_remember_warning">Recordeu el que entreu aquí! Com que %s no desa cap contrasenya als servidors no podrem ajudar-vos si oblideu el vostre PIN o contrasenya.</string>
     <string name="safe_backup_tap_to_restart">Toqueu a la notificació del sistema mostrada per reiniciar l\'aplicació. Si no veieu la notificació arrossegueu avall la barra de notificacions del vostre telèfon.</string>
-    <string name="send_to_support">Enviar a Suport de Threema</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">Enviar a Suport de ${company_name}</string>
     <string name="menu_legal">Legal</string>
     <string name="tooltip_work_hint">Aquest contacte utilitza Threema Work.</string>
     <string name="video_camera_on">Càmera de vídeo activada</string>
@@ -1196,26 +1304,30 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_link_rename">Renombrar</string>
     <string name="group_link_rename_tag">Nom nou</string>
     <string name="tap_here_for_more">Toqueu aquí per a més informació</string>
-    <string name="another_connection_instructions"><![CDATA[El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de ${app_name_short}.
 
-No es pot utilitzar la mateixa ID de Threema simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.
+No es pot utilitzar la mateixa ID de ${app_name_short} simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.
 
 Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.]]></string>
     <string name="app_store_error_code">Codi d\'error de la botiga d\'Apps: %d</string>
-    <string name="backup_restore_type"><![CDATA[Quin tipus de còpia de seguretat voleu restaurar?<br/><br/><a href=%s>Apreneu-ne més sobre còpies de seguretat a Threema</a>]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[Quin tipus de còpia de seguretat voleu restaurar?<br/><br/><a href=%s>Apreneu-ne més sobre còpies de seguretat a ${app_name_short}</a>]]></string>
     <string name="data_backup_info">Restaurar-ho tot incloent xats</string>
     <string name="new_to_threema">Nou a %s?</string>
     <string name="back_to_threema">Tornar a %s?</string>
     <string name="id_backup_info">Només restaura la vostra ID</string>
     <string name="restore_your_id_contacts_and_groups">Restaurar la vostra ID, contactes i grups</string>
-    <string name="threema_safe_backup">Threema Safe Backup</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">${app_name_short} Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Heu oblidat la contrasenya?</a>]]></string>
     <string name="download_failed">Error en la descàrrega. Codi d\'error: %d</string>
     <string name="edit_answer">Editar la resposta</string>
     <string name="share_media">Compartir amb una altra aplicació…</string>
     <string name="group_link_administered">Administrada</string>
     <string name="group_link_open">Oberta</string>
-    <string name="group_link_share_message">Uniu-vos al meu grup Threema a través del següent enllaç!: %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">Uniu-vos al meu grup ${app_name_short} a través del següent enllaç!: %s</string>
     <string name="group_link_bottom_sheet_title">Enllaç de grup</string>
     <string name="group_link_bottom_sheet_desc">Compartiu aquest enllaç amb gent que vulgueu que s\'uneixi al grup. Tingueu en compte les opcions de sota.</string>
     <string name="group_link_bottom_sheet_link_title">Enllaç</string>
@@ -1249,13 +1361,15 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="really_delete_group_link_title">Enllaç d\'eliminació de grup</string>
     <string name="qr_scan_result_dialog_title">Resultat escaneig QR</string>
     <string name="scan_failure_dialog_title">Escaneig fallit</string>
-    <string name="no_threema_qr_info">Aquest no és un codi QR específic de Threema. El contingut descodificat és:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">Aquest no és un codi QR específic de ${app_name_short}. El contingut descodificat és:</string>
     <string name="default_group_link">Enllaç de grup predeterminat</string>
     <string name="default_link_name">Enllaç predeterminat</string>
     <string name="reset_default_group_link">Restablir enllaç de grup predeterminat</string>
     <string name="resend">Reenviar</string>
     <string name="group_request_already_sent_title">Petició ja enviada</string>
-    <string name="qr_scanner_id_hint">Escanegeu el codi QR d\'un contacte per verificar la seva identitat. Per mostrar el codi, demaneu al contacte que toqui la foto de perfil a la cantonada de dalt a l\'esquerra de la pantalla d\'inici de Threema.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">Escanegeu el codi QR d\'un contacte per verificar la seva identitat. Per mostrar el codi, demaneu al contacte que toqui la foto de perfil a la cantonada de dalt a l\'esquerra de la pantalla d\'inici de ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Activar l\'accés a l\'emmagatzematge per veure fotos i vídeos del vostre dispositiu</string>
     <string name="take_me_there">Porteu-m\'hi…</string>
     <string name="notification_channel_group_join_request">Canal de notificacions per peticions de grup rebudes</string>
@@ -1270,6 +1384,10 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="not_voted_user_list">Aquests participants no han votat: %s</string>
     <string name="invalid_onprem_id">O no existeix (més) aquesta ID, o no és compatible amb la vostra ID.</string>
     <string name="enable_unknown_sources">No es pot instal·lar. Assegureu-vos que \"Instal·lar aplicacions desconegudes\" estigui activar per a %s.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="add_shortcut_success">Accés directe creat correctament</string>
     <string name="add_shortcut_error">Error afegint l\'accés directe a la pantalla del llançador</string>
     <string name="web_link">Enllaç</string>
@@ -1309,11 +1427,44 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="contact_property_key">"Clau"</string>
     <string name="header_nickname_entry">"Àlies"</string>
     <string name="organization_type">Organització</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Instruction text for the user directory search -->
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacte</item>
         <item quantity="other">%d contactes</item>

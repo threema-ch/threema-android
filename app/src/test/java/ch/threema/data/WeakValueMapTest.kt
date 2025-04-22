@@ -21,9 +21,9 @@
 
 package ch.threema.data
 
-import org.junit.Assert
 import java.util.Date
 import kotlin.test.Test
+import org.junit.Assert
 
 class WeakValueMapTest {
     @Test

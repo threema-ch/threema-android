@@ -37,7 +37,6 @@ class IncomingWebSessionResumeMessageTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<WebSessionResumeMessage>(message, triggerSource, serviceManager) {
-
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         PushUtil.processRemoteMessage(message.getData())
 
@@ -45,8 +44,6 @@ class IncomingWebSessionResumeMessageTask(
     }
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-
-
         return ReceiveStepsResult.DISCARD
     }
 }

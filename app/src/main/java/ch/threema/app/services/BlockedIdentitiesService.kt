@@ -28,7 +28,6 @@ import ch.threema.app.tasks.ReflectSettingsSyncTask
  * Manage blocked identities.
  */
 interface BlockedIdentitiesService {
-
     /**
      * Block an identity. The identity will be persisted regardless whether a contact with this
      * identity exists or not. If a [context] is provided, a toast is shown.
@@ -76,5 +75,4 @@ interface BlockedIdentitiesService {
      * [blockedIdentities]. Note that there is no reflection done.
      */
     fun persistBlockedIdentities(blockedIdentities: Set<String>)
-
 }

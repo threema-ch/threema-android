@@ -34,13 +34,13 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.protobuf.groupcall.SfuHttpRequest
 import com.google.protobuf.ByteString
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private val logger = LoggingUtil.getThreemaLogger("SfuConnectionImpl")
 
@@ -52,7 +52,7 @@ private const val SFU_JOIN_PATH_SEGMENT = "join"
 internal class SfuConnectionImpl(
     private val apiConnector: APIConnector,
     private val identityStore: IdentityStoreInterface,
-    private val version: Version
+    private val version: Version,
 ) : SfuConnection {
     private var cachedSfuToken: SfuToken? = null
 
@@ -62,7 +62,7 @@ internal class SfuConnectionImpl(
             logger.debug(
                 "Obtain sfu token forceRefresh={}, cached={}",
                 forceRefresh,
-                cachedSfuToken
+                cachedSfuToken,
             )
             cachedSfuToken.let { cachedToken ->
                 if (forceRefresh || cachedToken == null || isTokenExpired(cachedToken)) {
@@ -126,7 +126,7 @@ internal class SfuConnectionImpl(
         token: SfuToken,
         sfuBaseUrl: String,
         callDescription: GroupCallDescription,
-        dtlsFingerprint: ByteArray
+        dtlsFingerprint: ByteArray,
     ): JoinResponse {
         val url =
             createURL(sfuBaseUrl, SFU_VERSION, SFU_JOIN_PATH_SEGMENT, callDescription.callId.hex)
@@ -150,7 +150,6 @@ internal class SfuConnectionImpl(
         body: ByteArray,
         timeoutMillis: Int,
     ): ByteResponse {
-
         val connection = (url.openConnection() as HttpURLConnection).also {
             it.connectTimeout = timeoutMillis
             it.readTimeout = timeoutMillis

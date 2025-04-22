@@ -34,26 +34,30 @@ import junit.framework.TestCase
  * This class provides a utility method to verify that the correct group names are displayed.
  */
 abstract class GroupConversationListTest<T : AbstractGroupMessage> : GroupControlTest<T>() {
-
     /**
      * Assert that in the given scenario the expected groups are listed.
      */
     protected fun assertGroupConversations(
         scenario: ActivityScenario<HomeActivity>,
-        expectedGroups: List<TestGroup>
+        expectedGroups: List<TestGroup>,
+        errorMessage: String = "",
     ) {
         Thread.sleep(500)
 
         scenario.onActivity { activity ->
             val adapter = activity.findViewById<RecyclerView>(R.id.list)?.adapter
-            assertGroups(expectedGroups, adapter as MessageListAdapter)
+            assertGroups(expectedGroups, adapter as MessageListAdapter, errorMessage)
         }
     }
 
     /**
      * Assert that the given recycler view shows the given
      */
-    private fun assertGroups(testGroups: List<TestGroup>, adapter: MessageListAdapter) {
+    private fun assertGroups(
+        testGroups: List<TestGroup>,
+        adapter: MessageListAdapter,
+        errorMessage: String,
+    ) {
         val expectedGroupNames: Set<String> = testGroups.map { it.groupName }.toSet()
 
         val actualGroupNames = (0 until adapter.itemCount)
@@ -61,7 +65,6 @@ abstract class GroupConversationListTest<T : AbstractGroupMessage> : GroupContro
             .map { it.receiver.displayName }
             .toSet()
 
-        TestCase.assertEquals(expectedGroupNames, actualGroupNames)
+        TestCase.assertEquals(errorMessage, expectedGroupNames, actualGroupNames)
     }
-
 }

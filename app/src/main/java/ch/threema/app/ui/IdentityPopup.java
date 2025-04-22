@@ -54,7 +54,7 @@ import ch.threema.app.services.QRCodeService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;

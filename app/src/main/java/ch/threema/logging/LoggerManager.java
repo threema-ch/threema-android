@@ -21,6 +21,7 @@
 
 package ch.threema.logging;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.slf4j.Logger;
@@ -32,7 +33,9 @@ import java.util.WeakHashMap;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.logging.backend.DebugLogFileBackend;
+import ch.threema.logging.backend.DebugToasterBackend;
 import ch.threema.logging.backend.LogBackend;
 import ch.threema.logging.backend.LogcatBackend;
 
@@ -94,6 +97,9 @@ public class LoggerManager {
         if (BuildConfig.DEBUG || BuildFlavor.getCurrent().isSandbox()) {
             // Enable logging to logcat only for debug and sandbox builds
             backends.add(new LogcatBackend(Log.VERBOSE));
+        }
+        if (BuildConfig.DEBUG) {
+            backends.add(new DebugToasterBackend(ThreemaApplication::getAppContext, Log.ERROR));
         }
         backends.add(new DebugLogFileBackend(minLogLevel));
 

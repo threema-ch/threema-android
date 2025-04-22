@@ -81,30 +81,30 @@ open class DecryptTaskCodec(
                 is ForwardSecurityDataInit -> forwardSecurityMessageProcessor.processInit(
                     sender,
                     data,
-                    this
+                    this,
                 )
 
                 is ForwardSecurityDataAccept -> forwardSecurityMessageProcessor.processAccept(
                     sender,
                     data,
-                    this
+                    this,
                 )
 
                 is ForwardSecurityDataReject -> forwardSecurityMessageProcessor.processReject(
                     sender,
                     data,
-                    this
+                    this,
                 )
 
                 is ForwardSecurityDataTerminate -> forwardSecurityMessageProcessor.processTerminate(
                     sender,
-                    data
+                    data,
                 )
 
                 is ForwardSecurityDataMessage -> return forwardSecurityMessageProcessor.processMessage(
                     sender,
                     message,
-                    this
+                    this,
                 ).message
             }
             return null
@@ -114,9 +114,9 @@ open class DecryptTaskCodec(
                     Utils.byteToHex(
                         message.type.toByte(),
                         true,
-                        true
+                        true,
                     )
-                }"
+                }",
             )
         }
     }

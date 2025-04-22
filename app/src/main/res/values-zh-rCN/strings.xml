@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">联系人</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">会话</string>
     <string name="title_compose_message">发起新会话</string>
     <string name="title_choose_recipient">选择收件人</string>
     <string name="title_keyfingerprint">密钥指纹</string>
-    <string name="title_mythreemaid">我的 Threema ID</string>
-    <string name="title_threemaid">Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">我的 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short} ID</string>
     <string name="title_adduser">添加新的联系人</string>
     <string name="title_enter_id">输入ID</string>
     <string name="title_invite_friend">邀请朋友</string>
     <string name="invite_via">通过…邀请朋友</string>
-    <string name="invite_email_body">您好，\n\n我使用%1$s，这是保护用户隐私的安全即时通讯工具。\n\n我的Threema ID：https://threema.id/%2$s\n\n让我们通过%1$s进行通信吧！\n\n\n谨启</string>
-    <string name="invite_sms_body">嗨！让我们使用%1$s以安全和符合隐私的方式进行交流！我的Threema ID：https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema，保护隐私的安全通讯工具。</string>
-    <string name="enter_id_hint">输入 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">您好，\n\n我使用%1$s，这是保护用户隐私的安全即时通讯工具。\n\n我的${app_name_short} ID：https://threema.id/%2$s\n\n让我们通过%1$s进行通信吧！\n\n\n谨启</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">嗨！让我们使用%1$s以安全和符合隐私的方式进行交流！我的${app_name_short} ID：https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}，保护隐私的安全通讯工具。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">输入 ${app_name_short} ID</string>
     <string name="account_links">链接账户</string>
     <string name="menu_settings">设置</string>
-    <string name="menu_about">关于 Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">关于 ${app_name}</string>
     <string name="menu_add_contact">添加联系人</string>
     <string name="menu_done">完成</string>
     <string name="compose_message_and_enter">点击这里输入信息</string>
@@ -51,6 +59,10 @@
     <string name="prefs_sum_notification_sound">系统默认</string>
     <string name="prefs_vibrate">振动</string>
     <string name="prefs_sum_vibrate">收到消息时振动</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_notification_light">通知灯</string>
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_sum_notification_light">使用彩色通知灯（如设备有通知灯）显示收到的信息</string>
     <string name="prefs_sum_light">白色</string>
     <string name="prefs_title_wallpaper">选择壁纸</string>
     <string name="prefs_sum_wallpaper">选择图片作为背景</string>
@@ -67,8 +79,10 @@
     <string name="prefs_inapp_vibrate_on">接收消息时振动</string>
     <string name="prefs_inapp_vibrate_off">接收消息时不要振动</string>
     <string name="workarounds">解决方法</string>
-    <string name="prefs_title_threema_push_switch">使用 Threema Push</string>
-    <string name="prefs_sum_threema_push_on">使用 Threema Push 以获取新消息通知</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_threema_push_switch">使用 ${app_name_short} Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_threema_push_on">使用 ${app_name_short} Push 以获取新消息通知</string>
     <string name="prefs_sum_threema_push_off">使用系统推送服务检查新消息</string>
     <string name="prefs_logging">日志记录</string>
     <string name="prefs_title_message_log_switch">记录到文件</string>
@@ -84,19 +98,11 @@
     <string name="image_size_large">大（1600x1600）</string>
     <string name="image_size_xlarge">最大（2592x2592）</string>
     <string name="image_size_original">原始尺寸</string>
-    <string name="color_none">没有</string>
-    <string name="color_orange">橙色</string>
-    <string name="color_red">红色</string>
-    <string name="color_green">绿色</string>
-    <string name="color_blue">蓝色</string>
-    <string name="color_cyan">青色</string>
-    <string name="color_magenta">品红色</string>
-    <string name="color_yellow">黄色</string>
-    <string name="color_white">白色</string>
     <string name="next">下一步</string>
     <string name="finish">完成</string>
-    <string name="please_wait">请等待...</string>
-    <string name="wizard_first_create_id">正在创建您的 Threema ID…</string>
+    <string name="please_wait">请等待…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_first_create_id">正在创建您的 ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">正在同步通讯录…</string>
     <string name="wizard2_email_hint">输入您的电子邮箱地址</string>
     <string name="wizard2_email_linking">将电子邮件链接到您的ID</string>
@@ -119,24 +125,28 @@
     <string name="linked_email">电子邮箱</string>
     <string name="linked_mobile">手机号码</string>
     <string name="public_nickname">昵称</string>
-    <string name="share_via">分享到...</string>
+    <string name="share_via">分享到…</string>
     <string name="share_subject">%s 对话</string>
     <string name="message_delete_undo">撤消</string>
-    <string name="mobile_already_linked">您的 Threema ID 已链接到此手机号码</string>
-    <string name="email_already_linked">您的 Threema ID 已链接到此电子邮箱地址</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">您的 ${app_name_short} ID 已链接到此手机号码</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">您的 ${app_name_short} ID 已链接到此电子邮箱地址</string>
     <string name="whoaaa">公告</string>
     <string name="really_delete_message_title">删除消息</string>
     <string name="really_delete_thread">删除会话</string>
     <string name="really_delete_multiple_threads">删除会话</string>
     <string name="really_delete_contact">您确定要删除此联系人和所有关联的消息吗？</string>
     <string name="image_placeholder">图片</string>
-    <string name="invalid_threema_id">无效的 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">无效的 ${app_name_short} ID</string>
     <string name="contact_already_exists">联系人已存在</string>
     <string name="close">关闭</string>
     <string name="creating_contact">正在添加新联系人</string>
     <string name="creating_contact_successful">已成功添加联系人</string>
     <string name="invalid_threema_qr_code">无效的二维码</string>
-    <string name="threema_contact">Threema 联系人</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short} 联系人</string>
     <string name="first_name">名字</string>
     <string name="last_name">姓氏</string>
     <string name="os_licenses">许可证</string>
@@ -148,7 +158,8 @@
     <string name="verify_failed_not_linked">验证您的手机号码失败。验证过程已中止。</string>
     <string name="check_incoming_sms">检查收到的短信</string>
     <string name="backup_title">导出ID</string>
-    <string name="backup_sum">导出您的 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">导出您的 ${app_name_short} ID</string>
     <string name="backup_and_delete">备份和删除</string>
     <string name="delete_id_title">删除ID</string>
     <string name="delete_id_message">除非您已创建备份或导出并保存了此ID的副本，否则您将永远无法使用该ID再次发送或接收消息。\n\n如果您不想再使用此ID，建议在删除ID之前，在 myid.threema.ch/revoke 上设置撤销密码并撤销该ID。</string>
@@ -164,9 +175,11 @@
 电子邮件分享或使用其他设备扫描二维码。</string>
     <string name="support">帮助</string>
     <string name="support_url">https://threema.ch/android/support/</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">以下文本字符串可以与所选密码一起使用，以
-        恢复您的 Threema ID。</string>
-    <string name="backup_share_subject">Threema ID 导出为</string>
+        恢复您的 ${app_name_short} ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">${app_name_short} ID 导出为</string>
     <string name="add_attachment">新附件</string>
     <string name="invalid_passphrase">密码无效</string>
     <string name="master_key_locked">主密钥被锁定</string>
@@ -187,9 +200,14 @@
     <string name="video_placeholder">视频</string>
     <string name="audio_placeholder">音频</string>
     <string name="restoring_backup">正在恢复备份</string>
-    <string name="server_message_title">来自 Threema 服务器的消息</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">来自 ${company_name} 服务器的消息</string>
     <string name="error">错误</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
     <string name="no_contacts"><![CDATA[您还没有任何联系人。打开同步（“设置”>“隐私”）或手动添加联系人。]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_contacts_sync_on"><![CDATA[您还没有任何联系人。同步已经开始，但在通讯录中的联系人看似都不在 ${app_name_short} 上（您可以邀请他们加入）。]]></string>
     <string name="masterkey_title">输入密码</string>
     <string name="masterkey_body">您的主密钥受密码保护，请输入密码以解锁密钥。</string>
     <string name="masterkey_unlocking">正在解锁主密钥</string>
@@ -210,6 +228,8 @@
     <string name="unlink">解除连结</string>
     <string name="threema_version">版本</string>
     <string name="threema_version_code">版本号</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
+    <string name="about_server_config_title">服务器配置</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">无法连接到互联网，无效的ID导出数据或错误的密码</string>
     <string name="prefs_header_other">其他</string>
     <string name="an_error_occurred">发生错误</string>
@@ -230,10 +250,21 @@
     <string name="file_too_large">文件大于最大大小 %1$d MB</string>
     <string name="deleting_thread">正在删除会话</string>
     <string name="enter_serial_body"><![CDATA[请输入您的商店许可证密钥。如果您之前已经购买了许可证，您可以<a href="https://shop.threema.ch/">购买</a>许可证或<a href="https://shop.threema.ch/retrieve_keys">找回</a>您的密钥。]]></string>
-    <string name="enter_serial_title">解锁 Threema</string>
-    <string name="serial_required_want_exit">许可证密钥无效。您想重试还是退出Threema？</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_enter_serial_body">请输入贵公司提供的 ${app_name_short} 凭证。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">解锁 ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">许可证密钥无效。您想重试还是退出${app_name}？</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_serial_required_want_exit">许可证为无效。您想重试还是退出 ${app_name}？</string>
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">正在检查许可证密钥</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
+    <string name="work_checking_credentials">正在检查凭证</string>
     <string name="update_available">有可用更新</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
+    <string name="update_available_message">新版本已经发布，您想现在就下载吗？</string>
     <string name="no_update_available">没有更新</string>
     <string name="download">下载</string>
     <string name="not_now">稍后提醒我</string>
@@ -348,8 +379,9 @@
     <string name="prefs_title_blocked_contacts">被屏蔽的联系人</string>
     <string name="prefs_sum_blocked_contacts">来自这里列出的ID的消息将被忽略。</string>
     <string name="verified">已验证</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="want_to_add_to_exclude_list">此联系人已链接到手机通讯录中的记录。如果您
-在 Threema 中将其删除，在联系人同步之后他会重新出现。 \n是否要从同步中排除他？</string>
+在 ${app_name_short} 中将其删除，在联系人同步之后他会重新出现。 \n是否要从同步中排除他？</string>
     <string name="no">否</string>
     <string name="yes">是</string>
     <string name="deleting_contact">正在删除联系人</string>
@@ -363,8 +395,10 @@
     <string name="prefs_sum_default_contact_picture_colored_on">如果
 缺少联系人图片，则显示多色占位符</string>
     <string name="prefs_sum_default_contact_picture_colored_off">如果缺少联系人图片，则使用灰色占位符</string>
-    <string name="prefs_sum_show_inactive_contacts_on">显示您的联系人列表中的所有 Threema ID</string>
-    <string name="prefs_sum_show_inactive_contacts_off">隐藏不活跃/已吊销的 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">显示您的联系人列表中的所有 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">隐藏不活跃/已吊销的 ${app_name_short} ID</string>
     <string name="contact_sorting_first_name">名字 - 姓氏</string>
     <string name="contact_sorting_last_name">姓氏 - 名字</string>
     <string name="contact_format_first_name_last_name">先名字，后姓氏</string>
@@ -382,7 +416,8 @@
     <string name="prefs_title_fullscreen_ime">全屏键盘</string>
     <string name="prefs_sum_fullscreen_ime_on">如果您的设备处于横向模式，键盘将覆盖应用程序</string>
     <string name="prefs_sum_fullscreen_ime_off">如果有空间，则在键盘上方显示会话的预览</string>
-    <string name="add_acount_from_within_threema">在 Threema 内管理您的 Threema ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">在 ${app_name_short} 内管理您的 ${app_name_short} ID。</string>
     <string name="save_image">保存图片</string>
     <string name="share_image">分享图片</string>
     <string name="view_in_gallery">在相册中查看</string>
@@ -401,10 +436,11 @@
     <string name="is_typing">输入中…</string>
     <string name="push_not_available_title">找不到推送服务</string>
     <string name="push_not_available_text1">我们无法在您的设备上找到推送服务，因为 Google Play 服务没有安装或过时。</string>
-    <string name="push_not_available_text2">%s 将在后台持续地与服务器连接。如果您的设备启用了电池优化，这可能会干扰后台连接，Threema Push 将可能无法可靠地运行。</string>
+    <string name="push_not_available_text2">%s 将在后台持续地与服务器连接。如果您的设备启用了电池优化，这可能会干扰后台连接，${app_name_short} Push 将可能无法可靠地运行。</string>
     <string name="backup_in_progress">正在进行备份</string>
     <string name="backup_or_restore_success_body">数据备份成功完成</string>
-    <string name="backup_or_restore_error">Threema 备份</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short} 备份</string>
     <string name="backup_or_restore_error_body">备份未成功完成</string>
     <string name="could_not_download_message">无法下载消息</string>
     <string name="info">资讯</string>
@@ -437,8 +473,8 @@
     <string name="num_items_sected">已选择 %s</string>
     <string name="really_delete_media">您确定要删除%d条媒体消息吗？</string>
     <string name="check_updates">检查更新</string>
-    <string name="masterkey_lock_explain">Threema 一直记录密码。如果您遇到需要经常重新输入密码
-的情况，请确保已禁用可能会过早结束 Threema 的任务管理器和电池优化应用。</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name} 一直记录密码。如果您遇到需要经常重新输入密码 的情况，请确保已禁用可能会过早结束 ${app_name_short} 的任务管理器和电池优化应用。</string>
     <string name="identity_already_exists">此ID已在您的联系人列表中</string>
     <string name="share_contact">分享联系人</string>
     <string name="add_shortcut">添加快捷方式</string>
@@ -473,7 +509,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_subject_hint">输入这次投票的标题</string>
     <string name="ballot_no_ballots_yet">还没有人投票。</string>
     <string name="print">打印</string>
-    <string name="ballot_wizard0_explain">您可以直接用 Threema 快速创建在线投票，例如安排活动、创建调查问卷或向您的朋友问任何问题。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">您可以直接用 ${app_name_short} 快速创建在线投票，例如安排活动、创建调查问卷或向您的朋友问任何问题。</string>
     <string name="ballot_add_choices">添加答案</string>
     <string name="blocked_cannot_send">您无法向被屏蔽的联系人发送信息</string>
     <string name="invalid_some_cannot_send">无法选择发送到某些收件人。</string>
@@ -489,7 +526,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="back">返回</string>
     <string name="wearable_reply">回复</string>
     <string name="wearable_reply_label">回复 %s</string>
-    <string name="push_disable_text">如果继续，您将使用 “Threema Push” 代替系统内置的推送服务。虽然这能减少您的数字足迹，但您需要允许 “应用程序在后台运行” 才能顺利使用。如果在设备设置中找不到相应的选项，您可能需要联系设备制造商的支持以获取配置帮助。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">如果继续，您将使用 “${app_name_short} Push” 代替系统内置的推送服务。虽然这能减少您的数字足迹，但您需要允许 “应用程序在后台运行” 才能顺利使用。如果在设备设置中找不到相应的选项，您可能需要联系设备制造商的支持以获取配置帮助。</string>
     <string name="ballot_intermediate_results_show">显示中间结果</string>
     <string name="converting_video">正在处理影片</string>
     <string name="video_size_small">高质量（使用数据较少）</string>
@@ -504,7 +542,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="kick_user_from_group">将 %1$s 踢出群组</string>
     <string name="show_as_qrcode">显示为二维码</string>
     <string name="qr_code">二维码</string>
-    <string name="really_leave_id_export">如果您还没有备份，请将ID导出文本字符串或将相应的二维码保存到安全的地方或打印出来。没有备份的话，则无法恢复 Threema ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="really_leave_id_export">如果您还没有备份，请将ID导出文本字符串或将相应的二维码保存到安全的地方或打印出来。没有备份的话，则无法恢复 ${app_name_short} ID。</string>
     <string name="revocation_key_title">ID吊销</string>
     <string name="revocation_key_not_set">未设置吊销密码</string>
     <string name="revocation_key_set_at">吊销密码设置为%1$s</string>
@@ -528,7 +567,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="internal_storage">内部存储</string>
     <string name="no_activity_for_mime_type">找不到打开此文件的应用。</string>
     <string name="no_activity_for_intent">找不到应用程序。</string>
-    <string name="open_from">从...打开</string>
+    <string name="open_from">从…打开</string>
     <string name="file_one_contact_not_supported">%1$s 无法接收文件。</string>
     <string name="file_x_contact_not_supported">警告：%1$d个联系人无法收到您的文件。</string>
     <string name="mime_android_apk">Android 套件</string>
@@ -586,9 +625,11 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="invalid_data">无效数据。无法发送。</string>
     <string name="prefs_emoji_style">表情符号样式</string>
     <string name="prefs_android_emojis">系统表情符号</string>
-    <string name="prefs_default_emojis">Threema 表情（默认）</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short} 表情（默认）</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="android_emojis_warning">注意：系统的字符集可能无法显示
-Threema 支持的所有表情符号。</string>
+${app_name_short} 支持的所有表情符号。</string>
     <string name="crop">裁剪</string>
     <string name="scan_id_mismatch_title">ID不匹配</string>
     <string name="scan_id_mismatch_message">您扫描的ID与您存储的联系人不匹配。</string>
@@ -605,12 +646,16 @@ Threema 支持的所有表情符号。</string>
     <string name="fontsize_xlarge">超大</string>
     <string name="no_app_for_location">在此设备上找不到地图应用程序</string>
     <string name="prefs_sendlog">发送日志</string>
-    <string name="prefs_sendlog_summary">将日志发送给 Threema，以便在出现问题时进行进一步分析</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">将日志发送给 ${company_name}，以便在出现问题时进行进一步分析</string>
     <string name="prefs_exportlog">导出日志文件</string>
     <string name="prefs_exportlog_summary">与其他应用分享日志文件</string>
-    <string name="permission_storage_required">如要保存或发送媒体，请允许 Threema 访问存储权限。</string>
-    <string name="permission_location_required">如要发送位置，请允许 Threema 访问您的位置的权限。</string>
-    <string name="permission_contacts_required">如要发送联系人，请允许 Threema 读取联系人的权限。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_storage_required">如要保存或发送媒体，请允许 ${app_name} 访问存储权限。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_location_required">如要发送位置，请允许 ${app_name} 访问您的位置的权限。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_contacts_required">如要发送联系人，请允许 ${app_name} 读取联系人的权限。</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <string name="message_acknowledged">已发送 “赞”</string>
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
@@ -629,48 +674,58 @@ Threema 支持的所有表情符号。</string>
     <string name="new_wizard_select_country">选择您的国家</string>
     <string name="new_wizard_lets_get_started">让我们开始吧！</string>
     <string name="new_wizard_setup_threema">立即设置</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_new_wizard_setup_threema">设置 ${app_name}</string>
     <string name="new_wizard_restore_id_backup">恢复已导出的 ID</string>
-    <string name="new_wizard_welcome">欢迎使用 Threema！</string>
-    <string name="new_wizard_move_finger">在屏幕上移动手指以生成新的 Threema ID。</string>
-    <string name="new_wizard_this_is_your_id">这是您的 Threema ID：</string>
-    <string name="new_wizard_works_like_phone_number">您的 Threema ID 就像电话号码一样。\n您的朋友可以通过此 ID 与您联系。</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">欢迎使用 ${app_name}！</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">在屏幕上移动手指以生成新的 ${app_name_short} ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">这是您的 ${app_name_short} ID：</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">您的 ${app_name_short} ID 就像电话号码一样。\n您的朋友可以通过此 ID 与您联系。</string>
     <string name="new_wizard_choose_nickname">选择昵称</string>
     <string name="new_wizard_nickname_explain">您的朋友会在通知中看到您的昵称</string>
     <string name="new_wizard_hint_enter_nickname">输入昵称</string>
     <string name="new_wizard_help_your_friends_find_you">帮助您的朋友找到您！</string>
-    <string name="new_wizard_link_mobile">将您的手机号码和/或电子邮件链接到Threema ID。</string>
-    <string name="new_wizard_link_mobile_only">\u5c06\u60a8\u7684\u624b\u673a\u53f7\u7801\u94fe\u63a5\u5230 Threema ID\u3002</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">将您的手机号码和/或电子邮件链接到${app_name_short} ID。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">将您的手机号码链接到${app_name_short} ID。</string>
     <string name="new_wizard_hint_mobile_number">手机号码（可选）</string>
     <string name="new_wizard_hint_email">电子邮件（可选）</string>
-    <string name="new_wizard_find_friends">在 Threema 上查找您的朋友</string>
-    <string name="new_wizard_sync_contacts_explain">打开查看哪些朋友正在使用 Threema。</string>
     <string name="new_wizard_done_title">大功告成！\n资料正确吗？</string>
     <string name="new_wizard_linked_to">链接到</string>
-    <string name="new_wizard_need_internet">创建唯一的 Threema ID 需要稳定的网络连接。请再试一次。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">创建唯一的 ${app_name_short} ID 需要稳定的网络连接。请再试一次。</string>
     <string name="new_wizard_more_information">更多信息</string>
     <string name="message_details_message_id_copied">消息编号已复制到剪贴板</string>
     <string name="contact_details_id_copied">ID已复制到剪贴板</string>
     <string name="contact_details_nickname_copied">昵称已复制到剪贴板</string>
-    <string name="new_wizard_use_id_as_nickname">你想用 Threema ID 作为您的昵称吗？</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">你想用 ${app_name_short} ID 作为您的昵称吗？</string>
     <string name="new_wizard_phone_email_invalid">您输入的电话号码或电子邮件地址无效。\n请先更正，然后再继续。</string>
     <string name="new_wizard_phone_invalid">您输入的电话号码无效。\n请先更正，然后再继续。</string>
-    <string name="new_wizard_info_fingerprint">通过移动手指，您可以创建随机数据（称为熵），该数据用于生成与全新而唯一的 Threema ID 关联的密钥对。该密钥对包括一个的<b>公钥</b>分配给您的朋友，而<b>私钥</b>安全地存储在您的手机上。您的朋友将使用您的公钥加密发送给您的消息。只有私钥的擁有者才能解密这些消息，其他人都不能解密。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_fingerprint">通过移动手指，您可以创建随机数据（称为熵），该数据用于生成与全新而唯一的 ${app_name_short} ID 关联的密钥对。该密钥对包括一个的<b>公钥</b>分配给您的朋友，而<b>私钥</b>安全地存储在您的手机上。您的朋友将使用您的公钥加密发送给您的消息。只有私钥的擁有者才能解密这些消息，其他人都不能解密。</string>
     <string name="new_wizard_info_id">您还创建了一个密钥对。公钥已安全地传输到我们的
 服务器。私钥永远不会离开您的设备。这样可以确保没有其他人可以阅读您的消息。</string>
-    <string name="new_wizard_info_sync_contacts">如果启用此选项，Threema 会将电子邮件地址和电话号码单向加密（散列），
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_sync_contacts">如果启用此选项，${app_name_short} 会将电子邮件地址和电话号码单向加密（散列），
 然后再将其发送到服务器以查找匹配的联系人。我们不会存储任何地址簿数据。</string>
     <string name="new_wizard_info_sync_contacts_dialog">联系人同步可以帮助您找到您的朋友。如果选择同意，电话簿中的电话号码和电邮地址将先以加密的形式发送到我们的服务器，来查找匹配的联系人。我们绝对不会存储或分享任何数据。\n\n是否要启用联系人同步？</string>
-    <string name="new_wizard_info_link">通过提供您的电话号码和电子邮件地址，Threema 可以帮助您的朋友
-自动在您的电话通讯录中找到您。数据将以
-单向加密（散列）形式存储在我们的服务器上。如果您想
-完全匿名使用 Threema，则可以跳过此步骤。</string>
-    <string name="new_wizard_info_link_phone_only">通过提供您的电话号码，Threema 可以帮助您的朋友
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">通过提供您的电话号码和电子邮件地址，${app_name_short} 可以帮助您的朋友 自动在您的电话通讯录中找到您。数据将以 单向加密（散列）形式存储在我们的服务器上。如果您想 完全匿名使用 ${app_name}，则可以跳过此步骤。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">通过提供您的电话号码，${app_name_short} 可以帮助您的朋友
 自动在您的电话通讯录中找到您。该号码将以
 单向加密（散列）形式存储在我们的服务器上。如果您想
-完全匿名使用 Threema，则可以跳过此步骤。</string>
+完全匿名使用 ${app_name_short}，则可以跳过此步骤。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_nickname">昵称用於设备上的推送通知，向尚未将您存储在通讯录的用户识别您的身份。
 我们建议仅提供您的名字或化名作为昵称。
-如果您未设置昵称，在默认情况下，我们将使用您的 Threema ID。</string>
+如果您未设置昵称，在默认情况下，我们将使用您的 ${app_name_short} ID。</string>
     <string name="not_linked">未链接</string>
     <string name="linked">已链接</string>
     <string name="pending_sms_verification_notice">您的手机号码尚未验证。</string>
@@ -682,12 +737,10 @@ Threema 支持的所有表情符号。</string>
     <string name="status_ballot_user_modified_vote">%1$s 更改了 %2$s 的投票</string>
     <string name="status_ballot_all_votes">已完成 %1$s 的投票</string>
     <string name="restore">恢复</string>
-    <string name="new_wizard_anonymous_confirm">您没有输入手机号码或电子邮件地址链接到
-Threema ID。您将不会出现在朋友的联系人列表中。您确定要
-匿名使用 Threema 吗？</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">您没有输入手机号码链接到
-Threema ID。您将不会出现在朋友的联系人列表中。您确定要
-匿名使用 Threema 吗？</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">您没有输入手机号码或电子邮件地址链接到\n${app_name_short} ID。您将不会出现在朋友的联系人列表中。您确定要匿名使用 ${app_name} 吗？</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">您没有输入手机号码链接到\n${app_name_short} ID。您将不会出现在朋友的联系人列表中。您确定要匿名使用 ${app_name} 吗？</string>
     <string name="new_wizard_scan_id_backup">或扫描ID导出的二维码</string>
     <string name="error_saving_file">保存文件时出错。请检查权限。</string>
     <string name="wait_one_minute">请求通话前，请至少等待10分钟，直至短信到达。</string>
@@ -731,7 +784,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="lock_option_none">没有</string>
     <string name="lock_option_pin">PIN 码</string>
     <string name="lock_option_screenlock">系统屏幕锁定</string>
-    <string name="hide_chat_message_explain">Threema 允许您使用 PIN 码保护某些会话，并将其暂时隐藏在消息列表中。要启用私密会话，请设置 PIN 码或在设置中启用系统屏幕锁定（Android 6.0+）。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="hide_chat_message_explain">${app_name_short} 允许您使用 PIN 码保护某些会话，并将其暂时隐藏在消息列表中。要启用私密会话，请设置 PIN 码或在设置中启用系统屏幕锁定（Android 6.0+）。</string>
     <string name="set_lock">现在设置</string>
     <string name="prefs_title_access_protection">访问保护</string>
     <string name="private_chat_subject">私密</string>
@@ -743,7 +797,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="grace_thirty_minutes">30分钟</string>
     <string name="grace_never">从不（手动）</string>
     <string name="never">从不</string>
-    <string name="unhide_chats_confirm">如果立即删除访问保护，您的私密会话将再次可见。</string>
+    <string name="access_protection_cannot_be_removed">由于存在有私密会话，因此无法移除访问保护。</string>
     <string name="verification_started">验证开始</string>
     <string name="cannot_open_file">无法打开文件</string>
     <string name="prefs_title_image_attach_previews">图片快速选择</string>
@@ -753,12 +807,13 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="restore_disable_energy_saving">请将设备连接至充电器，并禁用所有省电选项，以防设备中断备份或恢复过程。</string>
     <string name="draft">草稿</string>
     <string name="prefs_bigger_single_emojis">更大的单个表情符号</string>
-    <string name="wizard1_sync_work">正在同步 Threema Work 数据…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard1_sync_work">正在同步 ${app_name} 数据…</string>
     <string name="notification_hidden_text">内容已隐藏</string>
     <string name="really_reset_ringtones">真的将通知声音设置重置为默认值吗？</string>
     <string name="reset_ringtones_confirm">通知声音设置已重设。</string>
     <string name="prefs_language_override">语言</string>
-    <string name="threema_channel_intro">Threema 频道为您提供关于 Threema 的所有新闻。您想订阅Threema 频道并将其添加到您的联系人中吗？这是免费的，您可以随时退订。</string>
+    <string name="threema_channel_intro">${app_name_short} 频道为您提供关于 ${app_name_short} 的所有新闻。您想订阅${app_name_short} 频道并将其添加到您的联系人中吗？这是免费的，您可以随时退订。</string>
     <string name="quote">引用</string>
     <string name="contacts_deleted">联系人已被删除</string>
     <string name="take_photo">拍摄照片</string>
@@ -777,7 +832,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="battery_optimizations_disable_guide_ctd">在列表中搜索 %s 并禁用优化</string>
     <string name="battery_optimizations_disable_confirm">你确定要对 %1$s 保持打开电池优化吗？%2$s 将无法正常运行。</string>
     <string name="enter_text_hint">输入文字</string>
-    <string name="backup_explain_text">如果您切换或丢失设备，如果您没有备份，您将无法恢复您的 Threema ID 或会话。请使用适当的备份方法保存您的数据。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">如果您切换或丢失设备，如果您没有备份，您将无法恢复您的 ${app_name_short} ID 或会话。请使用适当的备份方法保存您的数据。</string>
     <string name="data_backup_explain">数据备份包含：\n\n&#9679; 您的ID和密钥对\n&#9679; 联系人和信任级别\n&#9679; 群组成员资格\n&#9679; 会话\n&#9679; 媒体和文件（可选）\n\n数据将保存到加密的 ZIP 文件中。建议备份成功完成后，将文件保存到其他地方。</string>
     <string name="draw">绘画</string>
     <string name="edit">编辑</string>
@@ -791,8 +847,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_ipv6_preferred_off">仅使用 IPv4 连接</string>
     <string name="prefs_ipv6_preferred_on">在 IPv4 上优先使用 IPv6 连接</string>
     <string name="prefs_title_ipv6_webrtc_allowed">以 IPv6 通话和上网</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">允许 Threema 通话和桌面应用程序/网络客户端使用 IPv6。</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">禁止 Threema 通话和桌面应用程序/网络客户端使用 IPv6。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_on">允许 ${app_name_short} 通话和桌面应用程序/网络客户端使用 IPv6。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_off">禁止 ${app_name_short} 通话和桌面应用程序/网络客户端使用 IPv6。</string>
     <string name="ipv6_requires_restart">如要应用此设置，需要重新启动应用程序。</string>
     <string name="ipv6_restart_now">立即重启</string>
     <string name="on_cap">开启</string>
@@ -819,37 +877,50 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="menu_send_profilpic_now">立即发送个人头像</string>
     <string name="profile_picture_sent">个人头像已发送</string>
     <string name="sending_messages">发送中…</string>
-    <string name="backup_data_media_confirm">将大型媒体文件保存到本地 ZIP 备份可能会超出设备的 CPU 和内存容量，并且可能需要很长时间才能完成。在备份进行期间，Threema 不能发送或接收消息。是否继续？</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">将大型媒体文件保存到本地 ZIP 备份可能会超出设备的 CPU 和内存容量，并且可能需要很长时间才能完成。在备份进行期间，${app_name} 不能发送或接收消息。是否继续？</string>
     <string name="backup_data_cancelled">备份已取消</string>
-    <string name="service_manager_not_available">无法启动 Threema。请先重启设备，然后再打开应用程序。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="service_manager_not_available">无法启动 ${app_name}。请先重启设备，然后再打开应用程序。</string>
     <string name="message_sent">消息已发送</string>
-    <string name="threema_call">Threema 通话</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">${app_name_short} 通话</string>
     <string name="threema_message_to">给%s的消息</string>
     <string name="threema_call_with">致电给%s</string>
-    <string name="prefs_title_voip">Threema 通话</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">${app_name_short} 通话</string>
     <string name="prefs_title_force_turn">总是转发通话</string>
-    <string name="prefs_summary_force_turn_off">如果可以的话，则建立直接连接，并且仅通过 Threema 服务器将通话中继到未经验证的联系人。这可能会暴露您的 IP 地址。</string>
-    <string name="prefs_summary_force_turn_on">通过 Threema 服务器强制中继所有通话，从而保护您的 IP 地址。可能会影响通话质量。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">如果可以的话，则建立直接连接，并且仅通过 ${company_name} 服务器将通话中继到未经验证的联系人。这可能会暴露您的 IP 地址。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">通过 ${company_name} 服务器强制中继所有通话，从而保护您的 IP 地址。可能会影响通话质量。</string>
     <string name="permission_record_audio_required">如要拨打加密电话并发送语音消息，请允许使用麦克风。</string>
-    <string name="prefs_voice_call_notifications">语音通话</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_voice_call_notifications">${app_name_short} 通话</string>
     <string name="prefs_voice_call_sound">铃声</string>
-    <string name="prefs_sum_voice_call_sound">选择 Threema 通话的来电铃声</string>
-    <string name="prefs_sum_voice_call_vibrate">收到 Threema 通话时振动</string>
-    <string name="prefs_title_voip_enable">启用 Threema 通话</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">选择 ${app_name_short} 通话的来电铃声</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">收到 ${app_name_short} 通话时振动</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">启用 ${app_name_short} 通话</string>
     <string name="webclient_invalid_push_token_message">需要手动启动</string>
     <string name="threema_work_contact">Threema Work 联系人</string>
-    <string name="permission_phone_required">使用 Threema 通话时允许管理电话的权限</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">使用 ${app_name} 通话时允许管理电话的权限</string>
     <string name="strikethrough">删除线</string>
     <string name="italic">斜体</string>
     <string name="bold">粗体</string>
     <string name="shortcut_choice_title">为…创建快捷方式</string>
     <string name="prefs_title_device_info">设备信息</string>
     <string name="notifications_disabled_title">禁用推送通知</string>
-    <string name="notifications_disabled_text">在系统设置中已禁用 Threema 的通知。您将不会收到有关新消息的通知。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">在系统设置中已禁用 ${app_name} 的通知。您将不会收到有关新消息的通知。</string>
     <string name="notifications_disabled_settings">编辑系统设置</string>
     <string name="error_attaching_files">添加附件时出错。</string>
     <string name="prefs_fix_powermanager_problems">禁用电源限制</string>
-    <string name="prefs_fix_powermanager_problems_desc">允许 Threema 在后台运行，即使不在活动状态也可以接收消息。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">允许 ${app_name} 在后台运行，即使不在活动状态也可以接收消息。</string>
     <string name="disable_powermanager_explain">在下一个屏幕中，确保对 %s 允许后台运行，以及设置 “允许应用忽略电池优化” 。完成后，点击 “返回” 按钮。</string>
     <string name="disable_autostart_explain">在下一个屏幕中，确保 %s 在自动启动的应用程序列表中。完成后，点击 “返回” 按钮。</string>
     <string name="notification_priority_default">低</string>
@@ -870,10 +941,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_auto_download_title">自动下载媒体文件</string>
     <string name="prefs_auto_download_wifi">当连接到 WiFi 时</string>
     <string name="prefs_auto_download_mobile">当使用移动数据时</string>
-    <string name="rate_intro">您如何评价 Threema？</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">您如何评价 ${app_name}？</string>
     <string name="rate_feedback_intro">请让我们知道如何改进应用程序（可选）。</string>
     <string name="rate_positive">发送评论</string>
-    <string name="rate_title">评价 Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">评价 ${app_name}</string>
     <string name="rate_thank_you">谢谢您的评价！</string>
     <string name="disabled_by_policy_short">管理员已禁用功能</string>
     <string name="rate_forward_to_play_store">您还要在 Google Play 上给我们评分吗？</string>
@@ -884,15 +957,18 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="plus">加</string>
     <string name="switched_off">关闭</string>
     <string name="switched_on">开启</string>
-    <string name="title_tab_work_users">Threema Work 用户</string>
-    <string name="no_matching_work_contacts">找不到经过管理员验证的 Threema Work 联系人</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">${app_name} 用户</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">找不到经过管理员验证的 ${app_name} 联系人</string>
     <string name="all">所有</string>
     <string name="webclient_session_stop_all">关闭所有</string>
     <string name="passphrase_service_name">密码服务</string>
     <string name="passphrase_service_description">密码解锁时的通知</string>
-    <string name="webclient_service_description">Threema 网页版/桌面版会话运行时的通知</string>
+    <string name="webclient_service_description">${app_name_short} 网页版/桌面版会话运行时的通知</string>
     <string name="prefs_title_accept_privacy_policy">接受隐私权政策</string>
-    <string name="privacy_policy_explain">%1$s比任何其他即时通讯工具都更加严格地保护您的隐私。在我们的%2$s中了解更多。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name}比任何其他即时通讯工具都更加严格地保护您的隐私。在我们的%1$s中了解更多。</string>
     <string name="privacy_policy_check_confirm">使用 %s 前，请接受隐私政策。\n\n（根据欧盟法规 2016/679《通用数据保护条例》的要求）</string>
     <string name="prefs_title_incognito_keyboard">请求隐身键盘</string>
     <string name="prefs_sum_incognito_keyboard">禁用数据收集以获取个性化建议（如果键盘支持）</string>
@@ -905,41 +981,59 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="password_too_short_generic">密码太短</string>
     <string name="passwords_dont_match">密码不匹配</string>
     <string name="test_unsuccessful">测试失败</string>
-    <string name="preparing_threema_safe">正在准备 Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">正在准备 ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">电源限制</string>
     <string name="disable_autostart_title">自动开启</string>
     <string name="unchanged">不变</string>
     <string name="safe_learn_more_button">了解更多</string>
-    <string name="safe_enable_explain">您会话关连的所有数据只存储在您的设备上。因为我们没有保存您的帐户，所以如果您丢失了手机或意外删除了数据，我们将无法为您提供帮助。\n\nThreema Safe 在您选择的安全服务器上，以匿名方式创建所有重要数据的自动备份，包括您的密钥，联系人列表和群组成员身份（但不包含消息内容）。</string>
-    <string name="safe_disable_confirm">您真的要在不启用 Threema Safe 的情况下继续吗？当使用 Threema Safe 时，您可以恢复您的 Threema ID、联系人和群组，以防您失去设备的访问权。</string>
-    <string name="safe_configure_choose_password">请选择一个强密码。您将需要此密码来恢复 Threema Safe 备份。</string>
-    <string name="safe_configure_choose_server">选择 Threema Safe 服务器</string>
-    <string name="safe_configure_server_explain">您可以使用 Threema 官方的服务器，也可以选择使用的第三方备份服务器。</string>
+    <string name="safe_enable_explain">您会话关连的所有数据只存储在您的设备上。因为我们没有保存您的帐户，所以如果您丢失了手机或意外删除了数据，我们将无法为您提供帮助。\n\n${app_name_short} Safe 在您选择的安全服务器上，以匿名方式创建所有重要数据的自动备份，包括您的密钥，联系人列表和群组成员身份（但不包含消息内容）。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">您真的要在不启用 ${app_name_short} Safe 的情况下继续吗？当使用 ${app_name_short} Safe 时，您可以恢复您的 ${app_name_short} ID、联系人和群组，以防您失去设备的访问权。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">请选择一个强密码。您将需要此密码来恢复 ${app_name_short} Safe 备份。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_server">选择 ${app_name_short} Safe 服务器</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">您可以使用 ${company_name} 官方的服务器，也可以选择使用的第三方备份服务器。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="onprem_safe_configure_server_explain">将您的 ${app_name_short} Safe 备份保存在贵组织的服务器上，或指定不同的备份服务器。</string>
     <string name="safe_use_default_server">使用默认服务器</string>
     <string name="safe_test_server">测试连接服务器</string>
     <string name="safe_advanced_options">专家设置</string>
-    <string name="safe_enter_password">请输入您的 Threema Safe 密码</string>
-    <string name="safe_threema_id">您的 Threema ID</string>
-    <string name="safe_restore_enter_id">请输入您想恢复的 Threema ID</string>
-    <string name="safe_search_id_title">请输入与您的ID相关联的手机号码或电子邮件地址</string>
-    <string name="safe_id_lookup">查找 Threema ID</string>
-    <string name="safe_no_id_found">找不到 Threema ID</string>
+    <string name="safe_enter_password">请输入您的 ${app_name_short} Safe 密码</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">您的 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">请输入您想恢复的 ${app_name_short} ID</string>
+    <string name="safe_search_id_title">请输入与您的 ${app_name_short} ID相关联的手机号码或电子邮件地址</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">查找 ${app_name_short} ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">找不到 ${app_name_short} ID</string>
     <string name="safe_no_backup_found">在服务器上找不到备份。请检查 ID 和密码。</string>
-    <string name="safe_select_id">找到多个 Threema ID。请选择要使用的 ID：</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">找到多个 ${app_name_short} ID。请选择要使用的 ID：</string>
     <string name="safe_backup_now">立即备份</string>
-    <string name="safe_enable_explain_short">启用 Threema Safe 可以自动为所有重要数据创建安全和匿名的备份。</string>
-    <string name="safe_deleting">删除 Threema Safe 备份</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">启用 ${app_name_short} Safe 可以自动为所有重要数据创建安全和匿名的备份。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">删除 ${app_name_short} Safe 备份</string>
     <string name="safe_delete_error">删除备份时出错：%s</string>
     <string name="safe_delete_success">备份已在服务器上成功删除</string>
-    <string name="safe_error_preparing">准备 Threema Safe 备份时出错</string>
-    <string name="safe_configure_choose_password_force">请设置一个强密码，以使用 Threema Safe 保护您的 Threema ID。请不要忘记您在这里输入的内容！</string>
-    <string name="safe_deactivate">禁用 Threema Safe</string>
-    <string name="safe_deactivate_explain">如果您禁用 Threema Safe，任何现有的备份都将在服务器上被删除。是否继续？</string>
+    <string name="safe_error_preparing">准备 ${app_name_short} Safe 备份时出错</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">请设置一个强密码，以使用 ${app_name_short} Safe 保护您的 ${app_name_short} ID。请不要忘记您在这里输入的内容！</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">禁用 ${app_name_short} Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">如果您禁用 ${app_name_short} Safe，任何现有的备份都将在服务器上被删除。是否继续？</string>
     <string name="add_group_members">添加更多成员</string>
     <string name="contact_add_confirm">您想将新联系人 “%1$s” 添加到您的联系人列表中吗？</string>
     <string name="password_bad">密码强度低</string>
     <string name="prefs_fix_background_data">启用背景数据</string>
-    <string name="prefs_fix_background_data_desc">如要让 Threema 处于后台时接收消息，请同时启用 “后台数据” 和 “不限制数据使用”</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">如要让 ${app_name} 处于后台时接收消息，请同时启用 “后台数据” 和 “不限制数据使用”</string>
     <string name="prefs_fix_device">解决设备配置问题</string>
     <string name="safe_successful">成功</string>
     <string name="safe_unsuccessful">失败</string>
@@ -955,8 +1049,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="safe_size">备份大小</string>
     <string name="backup_version_mismatch">此备份的版本高于支持的版本。请更新到最新版本的应用。</string>
     <string name="safe_restore_failed">恢复失败</string>
-    <string name="safe_failed_notification">Threema Safe 备份连续%d天失败。点击这里检查。</string>
-    <string name="safe_restore">恢复 Threema Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">${app_name_short} Safe 备份连续%d天失败。点击这里检查。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">恢复 ${app_name_short} Safe</string>
     <string name="backup_restore_in_progress">正在进行备份或恢复。检查通知以获取状态消息。</string>
     <string name="restore_error_body">恢复未成功完成</string>
     <string name="forgot_your_id">忘记您的ID？</string>
@@ -964,8 +1060,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="work_data_sync">数据同步</string>
     <string name="private_contact">私密联系人</string>
     <string name="ringtone_selection_default">默认（%s）</string>
-    <string name="work_data_sync_desc">Threema Work 同步</string>
-    <string name="ballot_not_connected">在结束投票之前，请确保 Threema 在线。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">${app_name} 同步</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">在结束投票之前，请确保 ${app_name} 在线。</string>
     <string name="empty_chat_title">清空会话记录</string>
     <string name="empty_chat_confirm">此会话中的所有消息将被删除。是否继续？</string>
     <string name="emptying_chat">正在清空会话记录</string>
@@ -983,21 +1081,26 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="notification_channel_notices">告示</string>
     <string name="chat_updates">会话更新</string>
     <string name="backup_or_restore_progress">备份和恢复进度</string>
-    <string name="tooltip_export_id">点击这里立即分享或打印您的加密 Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">点击这里立即分享或打印您的加密 ${app_name_short} ID</string>
     <string name="downloading">下载中</string>
     <string name="today">今天</string>
     <string name="restore_data_cancelled">恢复已取消</string>
     <string name="safe_change_password">更改密码</string>
     <string name="safe_configure_choose_password_title">选择密码</string>
-    <string name="password_bad_explain">Threema Safe 所选的密码不安全，容易被攻击者猜中，请选择其他密码。提示：使用由多个单词组成的密码。</string>
-    <string name="safe_password_updated">Threema Safe 密码已更新。</string>
-    <string name="safe_activated">Threema Safe 现在已激活。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">${app_name_short} Safe 所选的密码不安全，容易被攻击者猜中，请选择其他密码。提示：使用由多个单词组成的密码。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">${app_name_short} Safe 密码已更新。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">${app_name_short} Safe 现在已激活。</string>
     <string name="restore_zip_invalid_file">备份文件无效。</string>
     <string name="push_token_cleared">推送令牌已清除</string>
     <string name="insert_date">输入日期</string>
     <string name="add_answer">添加答案</string>
     <string name="title_cannot_be_empty">投票标题不能为空</string>
-    <string name="voip_disabled">Threema 通话被禁用</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short} 通话被禁用</string>
     <string name="hide_chat_enter_message_explain">此会话标记为私密会话。如要进入该会话，请先设置访问保护。</string>
     <string name="unknown">未知</string>
     <string name="miui_notification_title">有关 MIUI 通知的重要提醒</string>
@@ -1005,7 +1108,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="miui12_notification_body">MIUI 默认禁用了所有应用的声音、灯光和浮动通知（除了一些被小米视为 “重要” 的非常流行的应用）。你需要在手机的应用通知权限设置中手动启用这些设置，并在每次应用更新后重复这些步骤。请联系小米公司了解更多信息。</string>
     <string name="dont_show_again">下次不再提示</string>
     <string name="miui_notification_prefs">MIUI 设置</string>
-    <string name="threema_safe_upload_successful">Threema Safe 备份成功上传</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">${app_name_short} Safe 备份成功上传</string>
     <string name="time_remaining">还剩%s</string>
     <string name="safe_configure_server_credentials_title">验证（可选）</string>
     <string name="username_hint">用户名</string>
@@ -1014,7 +1118,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="biometric_enter_authentication">请认证以解锁</string>
     <string name="biometric_authentication_failed">认证失败</string>
     <string name="biometric_authentication_successful">成功认证</string>
-    <string name="work_safe_forced_explain">您的管理员为您的设备启用了 Threema Safe。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">您的管理员为您的设备启用了 ${app_name_short} Safe。</string>
     <string name="pin_locked_cannot_send">此应用程序已锁定，无法发送。</string>
     <string name="prefs_summary_hide_screenshots_notice">出于隐私考虑，在安全设置中启用 “应用锁定” 后，始终会阻止缩略图和屏幕截图</string>
     <string name="work_select_categories">选择类别</string>
@@ -1024,7 +1129,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="advanced_options">高级选项</string>
     <string name="url_warning_body">您要打开的链接的主机名有可疑。\n\n显示的主机名：<b>%s</b>\n真实的主机名：<b>%s</b>\n\n这可能是试图欺骗您打开一个假装成其他网站的虛假网页。\n\n您仍然要继续吗？</string>
     <string name="url_warning_title">网络钓鱼警告</string>
-    <string name="permission_camera_qr_required">Threema 需要访问相机以扫描二维码</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">${app_name} 需要访问相机以扫描二维码</string>
     <string name="voice_action_title">语音操作</string>
     <string name="voice_action_body">语音操作正在处理中</string>
     <string name="permission_camera_photo_required">请允许使用相机权限以拍照</string>
@@ -1045,13 +1151,18 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="archived">已归档会话</string>
     <string name="to_archive">归档</string>
     <string name="archived_chats">已归档会话</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
+    <string name="archive_chat">归档会话</string>
     <string name="unarchive">取消归档</string>
     <string name="no_archived_chats">没有已归档的会话记录。\n如要将会话记录归档，请在消息列表中向左滑动。</string>
-    <string name="add_contact_enter_id_hint">请输入您要添加的联系人的Threema ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">请输入您要添加的联系人的${app_name_short} ID</string>
     <string name="notification_channel_new_contact">新联系人</string>
     <string name="notification_channel_new_contact_desc">关于新联系人的通知</string>
-    <string name="notification_contact_has_joined">%1$s加入了%2$s。点击这里发送信息。</string>
-    <string name="notification_contact_has_joined_multiple">%1$d个联系人已加入%2$s: %3$s。点击这里向他们发送信息。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s加入了${app_name_short}。点击这里发送信息。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d个联系人已加入${app_name_short}: %2$s。点击这里向他们发送信息。</string>
     <string name="system_default">系统默认</string>
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
@@ -1059,8 +1170,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete_for_all">为所有人删除</string>
     <string name="message_was_deleted">此消息已删除</string>
     <string name="continue_recording">继续录音</string>
-    <string name="whatsnew_title">%1$s %2$s 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[        <p>为了改善通知的显示效果，在后台运行时的通知已进行了全面改进。如果某些聊天已启用单独通知设置，就需要重新设置。</p>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
+    <string name="whatsnew_title">${app_name} %1$s 有哪些新功能？</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>您现在可以将 Android 设备连接到新的桌面版应用程序（测试版），并测试多设备功能。</p>
+        <p>如需了解更多详情，请前往 “菜单 > Threema 2.0 桌面版（测试版）”。</p>
         ]]></string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
@@ -1069,7 +1182,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_sum_show_unread_badge">在底部导航栏显示未读消息提示</string>
     <string name="prefs_title_show_unread_badge">未读消息提示</string>
     <string name="pinning_not_trusted">证书固定失败。请检查您的设备上的凭据存储中是否安装并激活了 “Entrust Root Certification Authority - G2”。</string>
-    <string name="pinning_failed">证书固定失败。可能发生中间人攻击。如果您安装了广告拦截器、内容过滤器或防火墙应用程序，例如 AdGuard，请禁用后重开 Threema。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">证书固定失败。可能发生中间人攻击。如果您安装了广告拦截器、内容过滤器或防火墙应用程序，例如 AdGuard，请禁用后重开 ${app_name}。</string>
     <string name="open_myid_popup">打开快速访问弹出窗口</string>
     <string name="logo">标志/回到顶部</string>
     <string name="quote_subj_end">结束引用</string>
@@ -1092,7 +1206,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="mime_type">MIME类型</string>
     <string name="password_does_not_comply">密码不符合管理员设置的准则。</string>
     <string name="audio_mute_due_to_focus_loss">由于其他应用正在播放音频，目前音频已暂时静音</string>
-    <string name="restore_data_backup_explain">请首先在 “个人资料” 界面中删除您的 Threema ID 以恢复数据备份。\n\n当应用程序重启后，请选择 “从备份恢复” &gt; “其他恢复选项” &gt; “数据备份”，然后选择要恢复的数据备份文件。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">请首先在 “个人资料” 界面中删除您的 ${app_name_short} ID 以恢复数据备份。\n\n当应用程序重启后，请选择 “从备份恢复” &gt; “其他恢复选项” &gt; “数据备份”，然后选择要恢复的数据备份文件。</string>
     <string name="audio_focus_loss_complete">由于完全失去音频焦点，通话已断开。</string>
     <string name="tap_for_picture_hold_for_video">点击拍摄图片，长按拍摄视频</string>
     <string name="sending_media">正在发送媒体</string>
@@ -1114,7 +1229,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="warning">警告</string>
     <string name="password_remember_warning">请您记住在这里输入的内容！由于 %s 不会在服务器上保存任何密码，如果您忘记了 PIN 码或密码，我们无法帮助您找回密码。</string>
     <string name="safe_backup_tap_to_restart">点击系统通知以重启应用程序。如果看不到通知，请向下滑动打开手机的通知栏。</string>
-    <string name="send_to_support">发送给 Threema 支持</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">发送给 ${company_name} 支持</string>
     <string name="menu_legal">法律</string>
     <string name="tooltip_work_hint">此联系人使用 Threema Work。</string>
     <string name="video_camera_on">摄像头已启用</string>
@@ -1273,22 +1389,26 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_link_rename">重命名</string>
     <string name="group_link_rename_tag">新名称</string>
     <string name="tap_here_for_more">点击这里查看更多信息</string>
-    <string name="another_connection_instructions"><![CDATA[服务器检测到相同的 Threema ID 在两个或更多的设备上同时连接。<br><br>相同的 Threema ID 不可以在多个设备上同时使用。新的消息只会发送到最新登录的设备上。<br><br>如果您要切换到新设备，请先在旧设备上卸载或禁用 %s，然后重启新设备。]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[服务器检测到相同的 ${app_name_short} ID 在两个或更多的设备上同时连接。<br><br>相同的 ${app_name_short} ID 不可以在多个设备上同时使用。新的消息只会发送到最新登录的设备上。<br><br>如果您要切换到新设备，请先在旧设备上卸载或禁用 %s，然后重启新设备。]]></string>
     <string name="app_store_error_code">应用商店错误代码：%d</string>
-    <string name="backup_restore_type"><![CDATA[您想恢复哪些备份数据？<br/><br/> <a href=%s>了解更多有关 Threema 备份的消息</a>。]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[您想恢复哪些备份数据？<br/><br/> <a href=%s>了解更多有关 ${app_name_short} 备份的消息</a>。]]></string>
     <string name="data_backup_info">恢复所有内容，包括会话记录</string>
     <string name="new_to_threema">第一次使用 %s？</string>
     <string name="back_to_threema">返回到 %s？</string>
     <string name="id_backup_info">仅恢复您的ID</string>
     <string name="restore_your_id_contacts_and_groups">恢复您的ID、联系人和群组</string>
-    <string name="threema_safe_backup">Threema Safe 备份</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">${app_name_short} Safe 备份</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>需要帮忙？</a>]]></string>
     <string name="download_failed">下载失败。错误代码：%d</string>
     <string name="edit_answer">编辑答案</string>
-    <string name="share_media">与其他应用分享...</string>
+    <string name="share_media">与其他应用分享…</string>
     <string name="group_link_administered">管理</string>
     <string name="group_link_open">公开</string>
-    <string name="group_link_share_message">通过以下链接加入我的 Threema 群组！：%s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">通过以下链接加入我的 ${app_name_short} 群组！：%s</string>
     <string name="group_link_bottom_sheet_title">群组链接</string>
     <string name="group_link_bottom_sheet_desc">与想加入群组的人分享这个链接，请选择以下的选项。</string>
     <string name="group_link_bottom_sheet_link_title">链接</string>
@@ -1323,13 +1443,15 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="really_delete_multiple_group_links_title">删除群组链接</string>
     <string name="qr_scan_result_dialog_title">二维码扫描结果</string>
     <string name="scan_failure_dialog_title">扫描失败</string>
-    <string name="no_threema_qr_info">这不是 Threema 特定的二维码。 解码后的内容为：</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">这不是 ${app_name_short} 专用的二维码。 解码后的内容为：</string>
     <string name="default_group_link">默认群组链接</string>
     <string name="default_link_name">默认链接</string>
     <string name="reset_default_group_link">重置默认群组链接</string>
     <string name="resend">重新发送</string>
     <string name="group_request_already_sent_title">请求已发送</string>
-    <string name="qr_scanner_id_hint">您可以扫描联系人的二维码以验证其身份。如要显示二维码，请让您的联系人点击 Threema 主屏幕左上角的头像。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">您可以扫描联系人的二维码以验证其身份。如要显示二维码，请让您的联系人点击 ${app_name_short} 主屏幕左上角的头像。</string>
     <string name="enable_storage_access_for_media">启用存储访问权限以查看设备上的图片和视频</string>
     <string name="select_storage_access_for_media_is_granted">您已授予部分的照片和视频的访问权限。</string>
     <string name="take_me_there">带我到…</string>
@@ -1347,13 +1469,17 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="contact_update">更新联系人状态</string>
     <string name="invalid_onprem_id">此ID(永久)不再存在，或者与您的ID不兼容。</string>
     <string name="enable_unknown_sources">无法安装。请确保为 %s 启用了 “安装未知应用程序” 。</string>
-    <string name="threema_push">Threema Push</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push">${app_name_short} Push</string>
     <string name="threema_push_notification_text">点击了解更多。</string>
-    <string name="threema_push_notification_info_text_1">Threema Push 在后台持续运行，以通知您新收到的消息和来电。</string>
-    <string name="threema_push_notification_info_text_2">如果不能显示永久通知，此应用程序就不能在后台运行。通过显示永久通知，可以确保 Threema Push 即使在您不主动使用此应用程序时也会保持运行。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_notification_info_text_1">${app_name_short} Push 在后台持续运行，以通知您新收到的消息和来电。</string>
+    <string name="threema_push_notification_info_text_2">如果不能显示永久通知，此应用程序就不能在后台运行。通过显示永久通知，可以确保 ${app_name_short} Push 即使在您不主动使用此应用程序时也会保持运行。</string>
     <string name="threema_push_notification_info_text_3">如果您仍然遇到延迟或丢失通知的问题，请调整您的系统设置，以确保应用程序可以在后台不受任何限制地运行，并禁用节电模式。</string>
-    <string name="threema_push_service_description">当 Threema Push 运行时，显示永久通知</string>
-    <string name="threema_push_activated">Threema Push 现在已激活。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_service_description">当 ${app_name_short} Push 运行时，显示永久通知</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_activated">${app_name_short} Push 现在已激活。</string>
     <string name="add_shortcut_success">快捷方式创建成功</string>
     <string name="add_shortcut_error">将快捷方式添加到主屏幕时发生错误</string>
     <string name="web_link">链接</string>
@@ -1405,7 +1531,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="forward_security_mode">完全正向保密</string>
     <string name="forward_security_mode_none">没有</string>
     <string name="clear_forward_security">重置对此联系人的 “完全正向保密” 状态</string>
-    <string name="clear_forward_security_warning">仅在 Threema 支持团队的指示下，才执行此操作。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="clear_forward_security_warning">仅在 ${company_name} 支持团队的指示下，才执行此操作。</string>
     <string name="forward_security_cleared">与此联系人的完全正向保密会话已被清除</string>
     <string name="message_without_forward_security">您收到一条没有完全正向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
     <string name="forward_security_disabled">此会话已禁用完全正向保密功能。</string>
@@ -1422,13 +1549,15 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="self_updater_installation_failed">下载更新失败。请手动从 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下载并安装更新。</string>
     <string name="spam_first_contact">此会话来自一个未知联系人</string>
     <string name="spam_report">举报垃圾消息</string>
-    <string name="spam_report_dialog_explain">如果继续，此联系人的ID、昵称与您的ID将发送到 Threema。我们不会发送任何会话内容或个人数据，也不会通知该联系人有关举报为垃圾消息的事项。</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="spam_report_dialog_explain">如果继续，此联系人的ID、昵称与您的ID将发送到 ${company_name}。我们不会发送任何会话内容或个人数据，也不会通知该联系人有关举报为垃圾消息的事项。</string>
     <string name="spam_report_dialog_block_checkbox">同时屏蔽此联系人并删除会话</string>
     <string name="spam_report_dialog_title">举报%s</string>
     <string name="spam_successfully_reported">该ID已被其他用户报告为发送垃圾消息。</string>
     <string name="spam_error_reporting">举报垃圾消息时发生错误：%s</string>
     <string name="spam_report_short">举报</string>
-    <string name="wizard_incompatible_contact_sync_params">您可能设置了不兼容的 MDM 参数。如果用户限制设置为 DISALLOW_MODIFY_ACCOUNTS，Threema MDM 参数 th_contact_sync 则无法设置为 true。请联系您的设备管理员以获取帮助。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_incompatible_contact_sync_params">您可能设置了不兼容的 MDM 参数。如果用户限制设置为 DISALLOW_MODIFY_ACCOUNTS，${app_name_short} MDM 参数 th_contact_sync 则无法设置为 true。请联系您的设备管理员以获取帮助。</string>
     <string name="messages_cannot_be_recovered">您将无法恢复消息。</string>
     <string name="groups_left_or_dissolved">群组将被保留或解散，然后被删除。</string>
     <string name="contact_deleted">联系人已删除</string>
@@ -1442,19 +1571,25 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="send_without_audio">移除音频</string>
     <string name="edit_filename">编辑文件名</string>
     <string name="unable_to_restore_identity_because">无法恢复ID。原因：%s</string>
-    <string name="share_with_app">分享到 Threema</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="share_with_app">分享到 ${app_name}</string>
     <string name="read_phone_state_dialog_allow">授予权限</string>
     <string name="read_phone_state_dialog_disallow">仍然继续</string>
     <string name="read_phone_state_dialog_never_ask_again">下次不再提示</string>
     <string name="read_phone_state_dialog_title">需要权限</string>
-    <string name="read_phone_state_dialog_message">为防止 Threema 通话中断一般通话，需要授予通话权限。 如果未授予此权限，当正在进行一般通话时，Threema 通话有来电也会同时响铃，阻碍一般通话。</string>
-    <string name="read_phone_state_short_message">如要检查正在进行的通话，请授予 Threema 通话权限。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_dialog_message">为防止 ${app_name_short} 通话中断一般通话，需要授予通话权限。 如果未授予此权限，当正在进行一般通话时，${app_name_short} 通话有来电也会同时响铃，阻碍一般通话。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_short_message">如要检查正在进行的通话，请授予 ${app_name} 通话权限。</string>
     <string name="prefs_title_read_phone_state">授予通话权限</string>
     <string name="prefs_title_hibernation">未使用的应用设置</string>
-    <string name="prefs_summary_hibernation_api_32">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤销权限并释放空间” 。</string>
-    <string name="prefs_summary_hibernation_api">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “暂停闲置应用的活动” 。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api_32">为防止 ${app_name} 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤销权限并释放空间” 。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api">为防止 ${app_name} 在长时间不使用后被系统暂停，请禁用系统设置中的 “暂停闲置应用的活动” 。</string>
     <string name="unable_to_fetch_configuration">无法从配置服务器获取数据，请稍后再试。</string>
-    <string name="rogue_device_warning"><![CDATA[我们的服务器检测到有人试图从另一台设备登录现有的 Threema ID，您最近是否在其他设备上登录过您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此消息。&lt;br&gt;&lt;br&gt;如果没有，您的私钥可能已经泄露。在创建新ID之前，请<a href="https://threema.ch/en/faq/another_connection">按照我们的建议</a>保护您的设备和数据。]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rogue_device_warning"><![CDATA[我们的服务器检测到有人试图从另一台设备登录现有的 ${app_name_short} ID，您最近是否在其他设备上登录过您的 ${app_name_short} ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此消息。&lt;br&gt;&lt;br&gt;如果没有，您的私钥可能已经泄露。在创建新ID之前，请<a href="https://threema.ch/en/faq/another_connection">按照我们的建议</a>保护您的设备和数据。]]></string>
     <string name="fetch2_failure">与配置服务器同步失败。</string>
     <string name="no_members_support_group_calls">此群组中没有成员可以接听群组通话</string>
     <string name="group_calls">群组通话</string>
@@ -1466,10 +1601,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_call_mic_permission_description">如要进行群组通话，您必须允许访问麦克风的权限，以便其他人可以听到您的声音。</string>
     <string name="call_mic_permission_description">如要进行语音通话，您必须允许访问麦克风权限，以便其他人可以听到您的声音。</string>
     <string name="group_call_camera_permission_rationale">为了让其他参与者看到您的照片，您必须在系统 “权限” 设置下允许 %s 访问相机权限。</string>
-    <string name="group_call_phone_permission_description">如要进行群组通话，您必须允许访问电话权限，来防止语音通话中断 Threema 通话。</string>
-    <string name="call_phone_permission_description">如要进行 Threema 通话，您必须允许访问电话权限，来防止语音通话中断 Threema 通话。</string>
+    <string name="group_call_phone_permission_description">如要进行群组通话，您必须允许访问电话权限，来防止语音通话中断 ${app_name_short} 通话。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_phone_permission_description">如要进行 ${app_name_short} 通话，您必须允许访问电话权限，来防止语音通话中断 ${app_name_short} 通话。</string>
     <string name="group_call_nearby_devices_permission_description">如要使用蓝牙耳机进行群组通话，您必须允许访问 “附近设备” 权限来检测蓝牙耳机。</string>
-    <string name="call_nearby_devices_permission_description">如要使用蓝牙耳机进行 Threema 通话，您必须允许访问 “附近设备” 权限来检测蓝牙耳机。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_nearby_devices_permission_description">如要使用蓝牙耳机进行 ${app_name} 通话，您必须允许访问 “附近设备” 权限来检测蓝牙耳机。</string>
     <string name="settings">设置</string>
     <string name="leave">退出</string>
     <string name="fs_key_mismatch">密钥不匹配</string>
@@ -1492,7 +1629,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="scroll_to_top">回到顶部</string>
     <string name="contact_sync_mdm_rationale">由于您的管理员为您的设备启用了联系人同步的功能，因此我们需要访问联系人的权限。</string>
     <string name="welcome_back">欢迎回来！</string>
-    <string name="id_restored_successfully">您的 Threema ID 已成功恢復</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="id_restored_successfully">您的 ${app_name_short} ID 已成功恢復</string>
     <string name="prefs_dynamic_colors">动态颜色</string>
     <string name="prefs_dynamic_colors_sum">使用系统颜色</string>
     <string name="apply_changes">应用更改</string>
@@ -1517,17 +1655,20 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="starred">已加星标</string>
     <string name="starred_messages">已加星标的消息</string>
     <string name="sorting">排序</string>
-    <string name="sort_by">按...排序</string>
+    <string name="sort_by">按…排序</string>
     <string name="newest_first">最新到最旧</string>
     <string name="oldest_first">最旧到最新</string>
     <string name="no_starred_messages">未找到已加星标的消息。如要为消息加注星标，请先长按该消息，然后点击星星按钮。</string>
     <string name="remove_all_stars">取消所有星标</string>
     <string name="remove_star">取消星标</string>
-    <string name="samsung_permission_problem_explain">由于 “外部存储” 权限被禁用，%1$s 无法访问媒体文件。如要修复这个问题，请先在接下来的界面中允许 “外部存储” 权限，然后重启 %1$s。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="samsung_permission_problem_explain">由于 “外部存储” 权限被禁用，${app_name} 无法访问媒体文件。如要修复这个问题，请先在接下来的界面中允许 “外部存储” 权限，然后重启 %1$s。</string>
     <string name="min_n_chars">至少%d个字符</string>
     <string name="prefs_title_grant_bluetooth_permission">授予蓝牙权限</string>
-    <string name="safe_managed_password_confirm">您的 Threema Safe 备份的管理密码已设置。\n\n您想使用此密码吗？ 如有疑问，请联系您的管理员。</string>
-    <string name="safe_managed_new_password_confirm">您的 Threema Safe 备份新的管理密码已设置。\n\n您想用这个新的管理密码替换当前的密码吗？如有疑问，请联系您的管理员。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_password_confirm">您的 ${app_name_short} Safe 备份的管理密码已设置。\n\n您想使用此密码吗？ 如有疑问，请联系您的管理员。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_new_password_confirm">您的 ${app_name_short} Safe 备份新的管理密码已设置。\n\n您想用这个新的管理密码替换当前的密码吗？如有疑问，请联系您的管理员。</string>
     <string name="real_not_now">现在不要</string>
     <string name="add_contact_in">在…中添加联系人</string>
     <string name="really_remove_all_stars">您确定要为所有消息取消星标吗？</string>
@@ -1547,14 +1688,17 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_orphaned_notice">由于群组创建者已离开群组，请您克隆该群组，成为新的管理员。</string>
     <string name="group_not_a_member_notice">由于您不再是这个群组的成员，因此您不能再参与这个群组的讨论。</string>
     <string name="group_dissolved_notice">由于这个群组已解散，因此您不能再参与这个群组的讨论。</string>
-    <string name="md_linked_devices">已链接设备</string>
+    <string name="md_linked_devices"> ${app_name_desktop} 2.0 桌面版（测试版）</string>
     <string name="md_link_device">链接新设备</string>
-    <string name="md_enable">启用链接设备功能</string>
-    <string name="md_linked_devices_empty">从其他地方下载精美的桌面客户端，并尽情使用 🚀</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <string name="md_linked_devices_empty">在链接新设备前，请下载并打开 [${app_name_desktop} 桌面版] 的最新测试版。</string>
     <string name="md_link_device_qr_scan_message">请扫描二维码</string>
     <string name="directory_request_failed">目录请求失败，请再试一次。</string>
     <string name="add_shortcut_exists">此目标的快捷方式已经存在。</string>
     <string name="scan_qr_code">扫描二维码</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="scan_qr_code_explain">在您要链接的设备上扫描 %s 桌面测试版中显示的二维码。</string>
     <string name="connecting">连接中…</string>
     <string name="trust_new_device">信任新设备</string>
@@ -1564,10 +1708,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="sending_data">正在发送数据…</string>
     <string name="continue_on_new_device">请在您的新设备上继续</string>
     <string name="device_linked_successfully">设备链接成功</string>
-    <string name="device_linked_successfully_explain">现在，您可以在你刚刚链接的设备上使用 %s（即使此设备已关机或无互联网连接）。</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linked_successfully_explain">现在，您可以在你刚刚链接的设备上使用 ${app_name}（即使此设备已关机或无互联网连接）。</string>
     <string name="resend_message_dialog_title">重新发送群组消息？</string>
     <string name="resend_message_dialog_message">此消息无法发送给群组所有成员。重新发送消息到%1$s？</string>
-    <string name="work_lost_credentials_help">忘记了您的凭证？请联系您的 %1$s 管理员。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_lost_credentials_help">忘记了您的凭证？请联系您的 ${app_name_short} 管理员。</string>
     <string name="problemsolver_intro">某些系统配置问题可能会阻止 %s 正常运行，请按照以下步骤以解决问题。</string>
     <string name="problemsolver_title">修复配置问题</string>
     <string name="problemsolver_title_background">后台使用量受限制</string>
@@ -1580,7 +1726,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="problemsolver_explain_background">此应用在后台运行受到限制，您将不会收到任何通知，并且许多功能将无法正常运行。如要解决问题，请先点击 “应用程序电池使用量” ，然后选择 “无限制”。</string>
     <string name="problemsolver_info_text">上述某些系统设置选项的命名可能会因 Android 版本和设备制造商而有所不同。</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">应用程序电池使用量设置为 “优化”。</string>
-    <string name="problemsolver_explain_app_battery_usgae_optimized">此应用被禁止与服务器永久保持连接，以至 Threema Push 无法正常运行。当此应用在后台运行时，您将不会收到新消息的通知。如要解决问题，请先点击 “应用程序电池使用量” ，然后选择 “无限制”。</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="problemsolver_explain_app_battery_usgae_optimized">此应用被禁止与服务器永久保持连接，以至 ${app_name_short} Push 无法正常运行。当此应用在后台运行时，您将不会收到新消息的通知。如要解决问题，请先点击 “应用程序电池使用量” ，然后选择 “无限制”。</string>
     <string name="problemsolver_to_settings">前往设置</string>
     <string name="prefs_advanced_options">高级选项</string>
     <string name="push_service">推送服务</string>
@@ -1600,7 +1747,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete_message_not_supported_for_all_group_members">此消息不会为以下群组成员删除：%1$s</string>
     <string name="work_intro_more_link_text">进一步了解 Threema Work</string>
     <string name="work_intro_subtitle">为公司而设的安全商业版通讯工具。</string>
-    <string name="work_intro_login">登录 %1$s</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_login">登录 ${app_name}</string>
     <string name="consumer_notice_description">如果您是个人用户，请下载普通版 Threema 应用程序。</string>
     <string name="consumer_notice_playstore_link_description">Google Play 商店上的 Threema</string>
     <string name="consumer_notice_appgallery_link_description">华为 AppGallery 商店上的 Threema</string>
@@ -1613,6 +1761,22 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="device_linking_failed_explain">无法链接设备，请重试。\n原因：%s。</string>
     <string name="qr_code_scan_error">扫描二维码时发生错误</string>
     <string name="verification_failed">验证失败</string>
+    <string name="md_device_currently_active">当前在线</string>
+    <string name="md_device_last_active_at">最后上线时间：%s</string>
+    <plurals name="md_max_device_slots_reached_info">
+        <item quantity="other">已达到%d个设备的数量限制，请移除现有已链接设备以添加新设备。</item>
+    </plurals>
+    <string name="md_device_invalid_label">设备</string>
+    <string name="md_device_invalid_hint">无法获得信息</string>
+    <string name="device_linking_cancel_dialog_title">取消链接</string>
+    <string name="device_linking_cancel_dialog_message">链接还未完成。是否要取消链接？</string>
+    <string name="device_linking_cancel_dialog_cancel">取消链接</string>
+    <string name="device_linking_cancel_dialog_continue">继续</string>
+    <string name="md_drop_device_dialog_drop_button">移除设备</string>
+    <string name="md_drop_device_dialog_close_button">关闭</string>
+    <string name="md_drop_device_failed_dialog_title">移除已链接设备失败</string>
+    <string name="md_drop_device_failed_dialog_message">请检查您的互联网连接并重试。</string>
+    <string name="md_drop_device_failed_dialog_button_close">关闭</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">您对这条消息表示 “同意”。</string>
     <string name="cd_dec_icon">您对这条消息表示 “不同意”。</string>
@@ -1644,6 +1808,39 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="emoji_reactions_popup_hint_title">心情表态</string>
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <string name="emoji_reactions_popup_hint_text">有人为此消息添加了心情表态。在会话內，长按任意表情符号气泡即可查看所有心情表态。</string>
+    <string name="accessibility_device_linking_pfs_warning_icon">资讯</string>
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_pfs_warning_body">当您链接新设备时，将对所有联系人禁用完全正向保密。\n\n这是当前测试版的限制。如想知道更多其他的限制，请参阅[这条常见问题解答条目]。</string>
+    <string name="device_linking_pfs_warning_button_continue">链接新设备</string>
+    <string name="device_linking_pfs_warning_button_cancel">取消</string>
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_web_link_to_multi_device_feature_banner_title">新消息：推出 ${app_name_desktop} 2.0 桌面版（测试版）</string>
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <string name="threema_web_link_to_multi_device_feature_banner_body">点击这里使用支持多设备登录的新一代电脑版应用程序。</string>
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <string name="accessibility_dismiss_hint">关闭提示</string>
+    <string name="device_linking_error_generic_title">发送数据失败</string>
+    <string name="device_linking_error_generic_body">请重试链接设备。如果问题仍然存在，请联系我们的支持人员（“主菜单 &gt; 帮助”）。</string>
+    <string name="device_linking_error_generic_network_title">没有网络连接</string>
+    <string name="device_linking_error_generic_network_body">请重试链接设备。如果问题仍然存在，请联系我们的支持人员（“主菜单 &gt; 帮助”）。</string>
+    <string name="device_linking_error_unknown_qr_code_title">未知的二维码</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_unknown_qr_code_body">请确保您使用的是来自 [我们的网站] 相应的应用程序。</string>
+    <string name="device_linking_error_old_rendezvous_version_title">不兼容版本</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linking_error_old_rendezvous_version_body">请在两台设备上安装最新版本的 ${app_name}。</string>
+    <string name="device_linking_error_emoji_mismatch_title">图片与新设备不匹配？</string>
+    <string name="device_linking_error_emoji_mismatch_body">连接设备时似乎存在问题。请在新设备上重新启动此应用程序，然后重试。</string>
+    <string name="device_linking_error_unexpected_title">发生意外错误</string>
+    <string name="device_linking_error_unexpected_body">请重试链接设备。如果问题仍然存在，请联系我们的支持人员（“主菜单 &gt; 帮助”）。</string>
+    <string name="device_linking_error_screen_close">关闭</string>
+    <string name="work_directory_title">公司目录</string>
+    <!-- Instruction text for the user directory search -->
+    <string name="work_directory_search">在公司目录中搜索</string>
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_directory_empty_view_text">请输入至少3个字符，以便在贵公司的 ${app_name_short} 用户目录中搜索。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

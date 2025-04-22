@@ -32,7 +32,7 @@ data class EmojiReactionData(
     /** The emoji codepoint sequence of the reaction. This can never be empty */
     @JvmField val emojiSequence: String,
     /** Timestamp when the reaction was locally created. */
-    @JvmField val reactedAt: Date
+    @JvmField val reactedAt: Date,
 ) {
     fun messageId() = messageId
 
@@ -56,12 +56,11 @@ data class EmojiReactionData(
         result = 31 * result + emojiSequence.hashCode()
         return result
     }
-
 }
 
 fun DbEmojiReaction.toDataType() = EmojiReactionData(
     messageId = this.messageId,
     senderIdentity = this.senderIdentity,
     emojiSequence = this.emojiSequence,
-    reactedAt = this.reactedAt
+    reactedAt = this.reactedAt,
 )

@@ -23,7 +23,7 @@ package ch.threema.app.tasks
 
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
-import ch.threema.app.utils.MessageUtil
+import ch.threema.app.utils.canBeEdited
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
@@ -37,26 +37,26 @@ private val logger: Logger = LoggingUtil.getThreemaLogger("EditMessageUtils")
 fun runCommonEditMessageReceiveSteps(
     editMessage: EditMessage,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
+    messageService: MessageService,
 ): AbstractMessageModel? {
     return runCommonEditMessageReceiveSteps(
         editMessage,
         editMessage.data.messageId,
         receiver,
-        messageService
+        messageService,
     )
 }
 
 fun runCommonEditMessageReceiveSteps(
     editMessage: GroupEditMessage,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
+    messageService: MessageService,
 ): AbstractMessageModel? {
     return runCommonEditMessageReceiveSteps(
         editMessage,
         editMessage.data.messageId,
         receiver,
-        messageService
+        messageService,
     )
 }
 
@@ -64,7 +64,7 @@ private fun runCommonEditMessageReceiveSteps(
     editMessage: AbstractMessage,
     messageId: Long,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
+    messageService: MessageService,
 ): AbstractMessageModel? {
     val apiMessageId = MessageId(messageId).toString()
     val message = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, receiver)
@@ -78,12 +78,14 @@ private fun runCommonEditMessageReceiveSteps(
     // 2.1 "If referred-message is ... or the sender is not the original sender of referred-message, discard"
     // Note: We only perform this check if the message is inbox
     if (!message.isOutbox && editMessage.fromIdentity != message.identity) {
-        logger.warn("Incoming Edit Message: original message's sender ${message.identity} does not equal edited message's sender ${editMessage.fromIdentity}")
+        logger.warn(
+            "Incoming Edit Message: original message's sender ${message.identity} does not equal edited message's sender ${editMessage.fromIdentity}",
+        )
         return null
     }
 
     // 3. "If referred-message is not editable (...), discard"
-    if (!MessageUtil.canEdit(message.type)) {
+    if (message.type?.canBeEdited != true) {
         logger.warn("Incoming Edit Message: Message of type {} cannot be edited", message.type)
         return null
     }

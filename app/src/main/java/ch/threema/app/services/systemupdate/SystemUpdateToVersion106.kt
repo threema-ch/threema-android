@@ -50,26 +50,25 @@ internal class SystemUpdateToVersion106(
         // migration to fail on some devices and were thus removed in `SystemUpdateToVersion105`
 
         sqLiteDatabase.execSQL(
-            "DROP INDEX IF EXISTS `messageUidIdx`"
+            "DROP INDEX IF EXISTS `messageUidIdx`",
         )
         sqLiteDatabase.execSQL(
-            "DROP INDEX IF EXISTS `message_uid_idx`"
+            "DROP INDEX IF EXISTS `message_uid_idx`",
         )
         sqLiteDatabase.execSQL(
-            "CREATE INDEX IF NOT EXISTS `contact_message_uid_idx` ON `message` ( `uid` )"
+            "CREATE INDEX IF NOT EXISTS `contact_message_uid_idx` ON `message` ( `uid` )",
         )
 
         sqLiteDatabase.execSQL(
-            "DROP INDEX IF EXISTS `groupMessageUidIdx`"
+            "DROP INDEX IF EXISTS `groupMessageUidIdx`",
         )
         sqLiteDatabase.execSQL(
-            "DROP INDEX IF EXISTS `m_group_message_uid_idx`"
+            "DROP INDEX IF EXISTS `m_group_message_uid_idx`",
         )
         sqLiteDatabase.execSQL(
-            "CREATE INDEX IF NOT EXISTS `group_message_uid_idx` ON `m_group_message` ( `uid` )"
+            "CREATE INDEX IF NOT EXISTS `group_message_uid_idx` ON `m_group_message` ( `uid` )",
         )
     }
-
 
     private fun migrateContactReactions() {
         migrateReactionTables(
@@ -78,7 +77,7 @@ internal class SystemUpdateToVersion106(
             messageTable = "message",
             foreignKeyName = "fk_contact_message_id",
             reactionIndexName = "contact_reactions_idx",
-            legacyReactionIndexName = "contact_reactions_message_idx"
+            legacyReactionIndexName = "contact_reactions_message_idx",
         )
     }
 
@@ -89,7 +88,7 @@ internal class SystemUpdateToVersion106(
             messageTable = "m_group_message",
             foreignKeyName = "fk_group_message_id",
             reactionIndexName = "group_reactions_idx",
-            legacyReactionIndexName = "group_reactions_message_idx"
+            legacyReactionIndexName = "group_reactions_message_idx",
         )
     }
 
@@ -99,7 +98,7 @@ internal class SystemUpdateToVersion106(
         messageTable: String,
         foreignKeyName: String,
         reactionIndexName: String,
-        legacyReactionIndexName: String
+        legacyReactionIndexName: String,
     ) {
         sqLiteDatabase.execSQL(
             "CREATE TABLE IF NOT EXISTS `$targetReactionTable` (" +
@@ -110,7 +109,7 @@ internal class SystemUpdateToVersion106(
                 "UNIQUE(`messageId`,`senderIdentity`,`emojiSequence`) ON CONFLICT REPLACE, " +
                 "CONSTRAINT `$foreignKeyName` FOREIGN KEY (`messageId`) " +
                 "REFERENCES `$messageTable` (`id`) ON UPDATE CASCADE ON DELETE CASCADE " +
-                ")"
+                ")",
         )
         sqLiteDatabase.execSQL("CREATE INDEX `$reactionIndexName` ON `$targetReactionTable` (`messageId`);")
 
@@ -119,7 +118,7 @@ internal class SystemUpdateToVersion106(
         } else {
             logger.info(
                 "Skip migrating existing reactions. Legacy reaction table {} does not exist",
-                legacyReactionTable
+                legacyReactionTable,
             )
         }
 
@@ -131,17 +130,17 @@ internal class SystemUpdateToVersion106(
     private fun migrateReactionData(
         targetReactionTable: String,
         legacyReactionTable: String,
-        messageTable: String
+        messageTable: String,
     ) {
         logger.info(
             "Migrate existing reactions from {} to {}",
             legacyReactionTable,
-            targetReactionTable
+            targetReactionTable,
         )
         sqLiteDatabase.execSQL(
             "INSERT INTO $targetReactionTable " +
                 "SELECT m.id as messageId, r.senderIdentity, r.emojiSequence, r.reactedAt " +
-                "FROM $messageTable m JOIN $legacyReactionTable r ON m.uid = r.messageUid"
+                "FROM $messageTable m JOIN $legacyReactionTable r ON m.uid = r.messageUid",
         )
     }
 

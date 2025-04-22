@@ -39,7 +39,6 @@ class OutgoingTextMessageTask(
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingTextMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -64,10 +63,10 @@ class OutgoingTextMessageTask(
         sendContactMessage(
             message,
             messageModel,
-            messageModel.identity,
+            messageModel.identity!!,
             ensureMessageId(messageModel),
-            messageModel.createdAt,
-            handle
+            messageModel.createdAt!!,
+            handle,
         )
     }
 
@@ -83,14 +82,14 @@ class OutgoingTextMessageTask(
             group,
             recipientIdentities,
             messageModel,
-            messageModel.createdAt,
+            messageModel.createdAt!!,
             ensureMessageId(messageModel),
             {
                 GroupTextMessage().apply {
                     text = textIncludingQuote
                 }
             },
-            handle
+            handle,
         )
     }
 
@@ -113,8 +112,7 @@ class OutgoingTextMessageTask(
                 messageModelId,
                 receiverType,
                 recipientIdentities,
-                serviceManager
+                serviceManager,
             )
     }
-
 }

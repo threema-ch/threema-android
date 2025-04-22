@@ -116,4 +116,12 @@ public class BallotDataModel implements MessageDataInterface {
         m.fromString(s);
         return m;
     }
+
+    /**
+     * Do not use this in new code. It only exists to handle places where a [BallotDataModel] needs to be returned and `null` is not allowed.
+     */
+    @Deprecated()
+    public static BallotDataModel createEmpty() {
+        return new BallotDataModel();
+    }
 }

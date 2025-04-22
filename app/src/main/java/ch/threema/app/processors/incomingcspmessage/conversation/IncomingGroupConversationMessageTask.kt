@@ -41,7 +41,7 @@ class IncomingGroupConversationMessageTask(
             return ReceiveStepsResult.DISCARD
         }
 
-        return if (messageService.processIncomingGroupMessage(message)) {
+        return if (messageService.processIncomingGroupMessage(message, triggerSource)) {
             ReceiveStepsResult.SUCCESS
         } else {
             ReceiveStepsResult.DISCARD
@@ -49,7 +49,7 @@ class IncomingGroupConversationMessageTask(
     }
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-        return if (messageService.processIncomingGroupMessage(message)) {
+        return if (messageService.processIncomingGroupMessage(message, triggerSource)) {
             ReceiveStepsResult.SUCCESS
         } else {
             ReceiveStepsResult.DISCARD

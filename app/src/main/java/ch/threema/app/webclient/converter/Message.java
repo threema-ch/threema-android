@@ -370,7 +370,7 @@ public class Message extends Converter {
     private static MsgpackObjectBuilder convertGroupStatus(GroupMessageModel message) throws ConversionException {
         final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
         try {
-            GroupStatusDataModel groupStatusDataModel = message.getGroupStatusDataModel();
+            GroupStatusDataModel groupStatusDataModel = message.getGroupStatusData();
             if (groupStatusDataModel != null) {
                 builder
                     .put(ID, String.valueOf(message.getId()))
@@ -539,7 +539,7 @@ public class Message extends Converter {
      */
     private static void maybePutEvents(MsgpackObjectBuilder builder, String field, AbstractMessageModel message) {
         final Date createdAt = message.getCreatedAt();
-        final Date sentAt = message.getPostedAt(false);
+        final Date sentAt = message.getRawPostedAt();
         final Date modifiedAt = message.getModifiedAt();
 
         final MsgpackArrayBuilder arrayBuilder = new MsgpackArrayBuilder();

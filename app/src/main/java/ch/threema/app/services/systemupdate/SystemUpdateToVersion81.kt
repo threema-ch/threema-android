@@ -25,7 +25,7 @@ import ch.threema.app.services.UpdateSystemService
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion81(
-    private val sqLiteDatabase: SQLiteDatabase
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : UpdateSystemService.SystemUpdate {
     companion object {
         const val VERSION = 81
@@ -37,7 +37,7 @@ internal class SystemUpdateToVersion81(
         sqLiteDatabase.execSQL(
             "CREATE TABLE `server_messages` (" +
                 "`message` VARCHAR PRIMARY KEY ON CONFLICT REPLACE, " +
-                "`type` INTEGER)"
+                "`type` INTEGER)",
         )
         return true
     }

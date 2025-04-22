@@ -36,7 +36,6 @@ internal class ReflectedOutgoingEditMessageTask(
     Common.CspE2eMessageType.EDIT_MESSAGE,
     serviceManager,
 ) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     private val editMessage by lazy { EditMessage.fromReflected(message) }
@@ -51,12 +50,12 @@ internal class ReflectedOutgoingEditMessageTask(
         runCommonEditMessageReceiveSteps(
             editMessage = editMessage,
             receiver = messageReceiver,
-            messageService = messageService
+            messageService = messageService,
         )?.let { validEditMessageModel: AbstractMessageModel ->
             messageService.saveEditedMessageText(
                 validEditMessageModel,
                 editMessage.data.text,
-                editMessage.date
+                editMessage.date,
             )
         }
     }

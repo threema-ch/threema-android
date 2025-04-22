@@ -44,7 +44,7 @@ class UnusedTaskCodec : TaskCodec {
     override suspend fun reflectAndAwaitAck(
         encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult,
         storeD2dNonce: Boolean,
-        nonceFactory: NonceFactory
+        nonceFactory: NonceFactory,
     ): ULong {
         throw IllegalStateException("This task codec should not be used.")
     }

@@ -28,14 +28,13 @@ import ch.threema.protobuf.csp.e2e.editMessage
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import java.nio.charset.Charset
 import kotlin.random.Random.Default.nextBytes
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 class GroupEditMessageTest {
-
     /**
      *  A group edit message in the raw form consists of bytes in the following order:
      *
@@ -55,15 +54,13 @@ class GroupEditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenLengthIsTooLow() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupEditMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = 0,
-                length = ProtocolDefines.MESSAGE_ID_LEN - 1
+                length = ProtocolDefines.MESSAGE_ID_LEN - 1,
             )
         }
 
@@ -73,15 +70,13 @@ class GroupEditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenOffsetIsBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupEditMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = -1,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -91,15 +86,13 @@ class GroupEditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset1() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupEditMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = 1,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -109,15 +102,13 @@ class GroupEditMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset2() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupEditMessage.fromByteArray(
                 data = bytesMessageData.copyOfRange(0, bytesMessageData.size - 1),
                 offset = 0,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -127,18 +118,17 @@ class GroupEditMessageTest {
 
     @Test
     fun shouldParseValuesCorrectly() {
-
         // act
         val editMessage = GroupEditMessage.fromByteArray(
             data = bytesMessageData,
             offset = 0,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            editMessage.groupCreator
+            editMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(messageIdToUpdate.messageIdLong, editMessage.data.messageId)
@@ -147,7 +137,6 @@ class GroupEditMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffset() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffset = nextBytes(offset) + bytesMessageData
@@ -156,13 +145,13 @@ class GroupEditMessageTest {
         val editMessage = GroupEditMessage.fromByteArray(
             data = bytesMessageDataContainingOffset,
             offset = offset,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            editMessage.groupCreator
+            editMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(messageIdToUpdate.messageIdLong, editMessage.data.messageId)
@@ -171,7 +160,6 @@ class GroupEditMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffsetAndTooMuchData() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffsetAndJunk =
@@ -181,13 +169,13 @@ class GroupEditMessageTest {
         val editMessage = GroupEditMessage.fromByteArray(
             data = bytesMessageDataContainingOffsetAndJunk,
             offset = offset,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            editMessage.groupCreator
+            editMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(messageIdToUpdate.messageIdLong, editMessage.data.messageId)
@@ -196,7 +184,6 @@ class GroupEditMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -214,7 +201,7 @@ class GroupEditMessageTest {
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            editMessage.groupCreator
+            editMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(incomingMessageId, editMessage.messageId.messageIdLong)
@@ -226,7 +213,6 @@ class GroupEditMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val outgoingMessageId = 12345678L
         val outgoingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -242,7 +228,7 @@ class GroupEditMessageTest {
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            editMessage.groupCreator
+            editMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(outgoingMessageId, editMessage.messageId.messageIdLong)

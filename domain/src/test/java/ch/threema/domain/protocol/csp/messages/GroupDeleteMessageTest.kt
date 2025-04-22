@@ -28,14 +28,13 @@ import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
 import java.nio.charset.Charset
 import kotlin.random.Random.Default.nextBytes
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class GroupDeleteMessageTest {
-
     /**
      *  A group delete message in the raw form consists of bytes in the following order:
      *
@@ -53,15 +52,13 @@ class GroupDeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenLengthIsTooLow() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupDeleteMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = 0,
-                length = ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.MESSAGE_ID_LEN - 1
+                length = ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.MESSAGE_ID_LEN - 1,
             )
         }
 
@@ -71,15 +68,13 @@ class GroupDeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenOffsetIsBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupDeleteMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = -1,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -89,15 +84,13 @@ class GroupDeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset1() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupDeleteMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = 1,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -107,15 +100,13 @@ class GroupDeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset2() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupDeleteMessage.fromByteArray(
                 data = bytesMessageData.copyOfRange(0, bytesMessageData.size - 1),
                 offset = 0,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -125,32 +116,30 @@ class GroupDeleteMessageTest {
 
     @Test
     fun shouldParseValuesCorrectly() {
-
         // act
         val groupDeleteMessage = GroupDeleteMessage.fromByteArray(
             data = bytesMessageData,
             offset = 0,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            groupDeleteMessage.groupCreator
+            groupDeleteMessage.groupCreator,
         )
         assertContentEquals(
             bytesApiGroupId,
-            groupDeleteMessage.apiGroupId.groupId
+            groupDeleteMessage.apiGroupId.groupId,
         )
         assertEquals(
             messageId.messageIdLong,
-            groupDeleteMessage.data.messageId
+            groupDeleteMessage.data.messageId,
         )
     }
 
     @Test
     fun shouldParseValuesCorrectlyWithOffset() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffset = nextBytes(offset) + bytesMessageData
@@ -159,27 +148,26 @@ class GroupDeleteMessageTest {
         val groupDeleteMessage = GroupDeleteMessage.fromByteArray(
             data = bytesMessageDataContainingOffset,
             offset = offset,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            groupDeleteMessage.groupCreator
+            groupDeleteMessage.groupCreator,
         )
         assertContentEquals(
             bytesApiGroupId,
-            groupDeleteMessage.apiGroupId.groupId
+            groupDeleteMessage.apiGroupId.groupId,
         )
         assertEquals(
             messageId.messageIdLong,
-            groupDeleteMessage.data.messageId
+            groupDeleteMessage.data.messageId,
         )
     }
 
     @Test
     fun shouldParseValuesCorrectlyWithOffsetAndTooMuchData() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffsetAndJunk =
@@ -189,27 +177,26 @@ class GroupDeleteMessageTest {
         val groupDeleteMessage = GroupDeleteMessage.fromByteArray(
             data = bytesMessageDataContainingOffsetAndJunk,
             offset = offset,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            groupDeleteMessage.groupCreator
+            groupDeleteMessage.groupCreator,
         )
         assertContentEquals(
             bytesApiGroupId,
-            groupDeleteMessage.apiGroupId.groupId
+            groupDeleteMessage.apiGroupId.groupId,
         )
         assertEquals(
             messageId.messageIdLong,
-            groupDeleteMessage.data.messageId
+            groupDeleteMessage.data.messageId,
         )
     }
 
     @Test
     fun fromReflectedIncomingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -230,7 +217,7 @@ class GroupDeleteMessageTest {
         assertEquals(incomingMessageSenderIdentity, groupDeleteMessage.fromIdentity)
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            groupDeleteMessage.groupCreator
+            groupDeleteMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, groupDeleteMessage.apiGroupId.groupId)
         assertEquals(messageId.messageIdLong, groupDeleteMessage.data.messageId)
@@ -238,7 +225,6 @@ class GroupDeleteMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val outgoingMessageId = 12345678L
         val outgoingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -256,7 +242,7 @@ class GroupDeleteMessageTest {
         assertEquals(outgoingMessageCreatedAt, groupDeleteMessage.date.time)
         assertEquals(
             bytesCreatorIdentity.toString(Charset.defaultCharset()),
-            groupDeleteMessage.groupCreator
+            groupDeleteMessage.groupCreator,
         )
         assertContentEquals(bytesApiGroupId, groupDeleteMessage.apiGroupId.groupId)
         assertEquals(messageId.messageIdLong, groupDeleteMessage.data.messageId)

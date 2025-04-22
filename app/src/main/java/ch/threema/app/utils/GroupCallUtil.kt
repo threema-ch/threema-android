@@ -69,7 +69,7 @@ fun getRunningSince(call: GroupCallDescription, context: Context?): Long {
     val isAutoTime = context != null && Settings.Global.getInt(
         context.contentResolver,
         Settings.Global.AUTO_TIME,
-        0
+        0,
     ) == 1
     return if (isAutoTime) {
         call.getRunningSince() ?: call.getRunningSinceProcessed()
@@ -87,7 +87,7 @@ fun getRunningSince(call: GroupCallDescription, context: Context?): Long {
  */
 fun initiateCall(
     activity: AppCompatActivity,
-    groupModel: GroupModel
+    groupModel: GroupModel,
 ) {
     val serviceManager = ThreemaApplication.getServiceManager() ?: return
     val contactModelRepository = serviceManager.modelRepositories.contacts
@@ -115,7 +115,7 @@ fun initiateCall(
     if (!serviceManager.deviceService.isOnline) {
         SimpleStringAlertDialog.newInstance(
             R.string.internet_connection_required,
-            R.string.connection_error
+            R.string.connection_error,
         ).show(activity.supportFragmentManager, "err")
         return
     }
@@ -145,14 +145,14 @@ fun initiateCall(
                     contactModelRepository,
                     userService,
                     apiConnector,
-                    otherMembers.map { it.identity }
+                    otherMembers.map { it.identity },
                 ).run()
             }
 
             DialogUtil.dismissDialog(
                 activity.supportFragmentManager,
                 dialogTagFetchingFeatureMask,
-                true
+                true,
             )
 
             launchGroupCallWithSupportedMembers(activity, groupModel, otherMembers)
@@ -165,7 +165,7 @@ fun initiateCall(
 private fun launchGroupCallWithSupportedMembers(
     activity: AppCompatActivity,
     groupModel: GroupModel,
-    otherMembers: List<ContactModel>
+    otherMembers: List<ContactModel>,
 ) {
     val otherMembersNotSupportingGroupCallsCount =
         otherMembers.count { !ThreemaFeature.canGroupCalls(it.featureMask) }
@@ -176,7 +176,7 @@ private fun launchGroupCallWithSupportedMembers(
     if (otherMembersNotSupportingGroupCallsCount == otherMembers.size) {
         SimpleStringAlertDialog.newInstance(
             R.string.group_call,
-            R.string.no_members_support_group_calls
+            R.string.no_members_support_group_calls,
         ).show(activity.supportFragmentManager, "err")
     } else {
         launchActivity(activity, groupModel, otherMembersNotSupportingGroupCallsCount)
@@ -186,7 +186,7 @@ private fun launchGroupCallWithSupportedMembers(
 private fun launchActivity(
     context: Context,
     groupModel: GroupModel,
-    otherMembersNotSupportingGroupCallsCount: Int
+    otherMembersNotSupportingGroupCallsCount: Int,
 ) {
     if (otherMembersNotSupportingGroupCallsCount > 0) {
         Toast.makeText(
@@ -195,15 +195,15 @@ private fun launchActivity(
                 context,
                 R.plurals.n_members_dont_support_group_calls,
                 otherMembersNotSupportingGroupCallsCount,
-                otherMembersNotSupportingGroupCallsCount
+                otherMembersNotSupportingGroupCallsCount,
             ),
-            Toast.LENGTH_LONG
+            Toast.LENGTH_LONG,
         ).show()
     }
     ContextCompat.startActivity(
         context,
         GroupCallActivity.getStartCallIntent(context, groupModel.id),
-        null
+        null,
     )
     if (context is Activity) {
         context.overridePendingTransition(R.anim.activity_open_enter, R.anim.activity_close_exit)
@@ -211,6 +211,6 @@ private fun launchActivity(
 }
 
 fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModel): Boolean =
-    ConfigUtils.isGroupCallsEnabled()                    // group calls are enabled
-        && groupService.countMembers(groupModel) > 1 // there is more than one member
-        && groupService.isGroupMember(groupModel)    // the user is a member of the group
+    ConfigUtils.isGroupCallsEnabled() &&
+        groupService.countMembers(groupModel) > 1 &&
+        groupService.isGroupMember(groupModel)

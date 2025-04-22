@@ -35,7 +35,7 @@ data class MultiDeviceProperties(
     val keys: MultiDeviceKeys,
     val deviceInfo: D2dMessage.DeviceInfo,
     val protocolVersion: D2mProtocolVersion,
-    val serverInfoListener: (serverInfo: InboundD2mMessage.ServerInfo) -> Unit
+    val serverInfoListener: (serverInfo: InboundD2mMessage.ServerInfo) -> Unit,
 ) {
     val deviceSlotState: DeviceSlotState = if (registrationTime == null) {
         DeviceSlotState.NEW
@@ -52,7 +52,8 @@ data class MultiDeviceProperties(
         serverInfoListener.invoke(serverInfo)
     }
 
-    override fun toString(): String {
-        return "MultiDeviceProperties(registrationTime=$registrationTime, mediatorDeviceId=$mediatorDeviceId, cspDeviceId=$cspDeviceId, keys=********, deviceInfo=$deviceInfo, protocolVersion=$protocolVersion, serverInfoListener=$serverInfoListener, deviceSlotState=$deviceSlotState)"
-    }
+    override fun toString() =
+        "MultiDeviceProperties(registrationTime=$registrationTime, mediatorDeviceId=$mediatorDeviceId, " +
+            "cspDeviceId=$cspDeviceId, keys=********, deviceInfo=$deviceInfo, protocolVersion=$protocolVersion, " +
+            "serverInfoListener=$serverInfoListener, deviceSlotState=$deviceSlotState)"
 }

@@ -42,7 +42,7 @@ import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.fragments.ComposeMessageFragment.EXTRA_OVERRIDE_BACK_TO_HOME_BEHAVIOR
 import ch.threema.app.services.ContactService
-import ch.threema.app.services.DeadlineListService
+import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService.MessageFilterFlags
 import ch.threema.app.services.MessageServiceImpl.FILTER_CHATS
@@ -53,6 +53,7 @@ import ch.threema.app.ui.EmptyView
 import ch.threema.app.ui.ThreemaSearchView
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
+import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
@@ -65,7 +66,6 @@ import org.slf4j.Logger
 private val logger: Logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity")
 
 class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextListener {
-
     private companion object {
         const val QUERY_MIN_LENGTH: Int = 2
         const val GLOBAL_SEARCH_QUERY_TIMEOUT_MS: Long = 500
@@ -75,7 +75,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
     private var globalSearchViewModel: GlobalSearchViewModel? = null
     private var searchView: ThreemaSearchView? = null
     private var searchBar: SearchBar? = null
-    private lateinit var hiddenChatsListService: DeadlineListService
+    private lateinit var conversationCategoryService: ConversationCategoryService
     private lateinit var contactService: ContactService
     private lateinit var groupService: GroupService
 
@@ -88,7 +88,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
             query = queryText,
             filterFlags = filterFlags,
             allowEmpty = false,
-            sortAscending = false
+            sortAscending = false,
         )
         chatsAdapter?.onQueryChanged(queryText)
     }
@@ -113,7 +113,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
                     query = null,
                     filterFlags = filterFlags,
                     allowEmpty = false,
-                    sortAscending = false
+                    sortAscending = false,
                 )
                 chatsAdapter?.onQueryChanged(null)
             }
@@ -130,7 +130,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         try {
             contactService = serviceManager.getContactService()
             groupService = serviceManager.getGroupService()
-            hiddenChatsListService = serviceManager.getHiddenChatsListService()
+            conversationCategoryService = serviceManager.conversationCategoryService
         } catch (e: Exception) {
             logger.error("Exception", e)
             finish()
@@ -163,11 +163,11 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
             this,
             Glide.with(this),
             R.layout.item_global_search,
-            17
+            17,
         )
         chatsAdapter?.setOnClickItemListener { messageModel: AbstractMessageModel?, _: View, _: Int ->
             showMessage(
-                messageModel
+                messageModel,
             )
         }
 
@@ -182,7 +182,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         emptyView.setup(
             R.string.global_search_empty_view_text,
             R.drawable.ic_search_outline,
-            ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground)
+            ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground),
         )
         (recyclerView.parent.parent as ViewGroup).addView(emptyView)
         recyclerView.emptyView = emptyView
@@ -194,19 +194,19 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
                 globalSearchViewModel.messageModels.observe(this) { messageModels ->
                     emptyView.setLoading(false)
 
-                    val messageModelsWithoutHiddenChats = messageModels.filterNot { messageModel ->
-                        val deadlineListIdentifier: String =
+                    val messageModelsWithoutPrivateChats = messageModels.filterNot { messageModel ->
+                        val uniqueIdString: String =
                             if (messageModel is GroupMessageModel) {
-                                groupService.getUniqueIdString(messageModel.groupId)
+                                GroupUtil.getUniqueIdString(messageModel.groupId.toLong())
                             } else {
                                 ContactUtil.getUniqueIdString(messageModel.identity)
                             }
-                        hiddenChatsListService.has(deadlineListIdentifier)
+                        conversationCategoryService.isPrivateChat(uniqueIdString)
                     }
 
-                    chatsAdapter?.setMessageModels(messageModelsWithoutHiddenChats)
+                    chatsAdapter?.setMessageModels(messageModelsWithoutPrivateChats)
 
-                    if (messageModelsWithoutHiddenChats.isEmpty()) {
+                    if (messageModelsWithoutPrivateChats.isEmpty()) {
                         if ((queryText?.length ?: 0) >= QUERY_MIN_LENGTH) {
                             emptyView.setup(R.string.search_no_matches)
                         } else {
@@ -266,7 +266,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
                 query = queryText,
                 filterFlags = filterFlags,
                 allowEmpty = false,
-                sortAscending = false
+                sortAscending = false,
             )
         }
     }

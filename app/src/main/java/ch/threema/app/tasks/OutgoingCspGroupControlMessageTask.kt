@@ -75,8 +75,8 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
                 nonceFactory,
                 blockedIdentitiesService,
                 preferenceService,
-                multiDeviceManager
-            )
+                multiDeviceManager,
+            ),
         )
     }
 

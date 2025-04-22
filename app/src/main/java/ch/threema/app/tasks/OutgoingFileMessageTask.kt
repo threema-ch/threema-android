@@ -46,7 +46,6 @@ class OutgoingFileMessageTask(
     private val thumbnailBlobId: ByteArray?,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     private val myIdentity by lazy { serviceManager.userService.identity }
 
     private val isMultiDeviceActive by lazy { serviceManager.multiDeviceManager.isMultiDeviceActive }
@@ -82,10 +81,10 @@ class OutgoingFileMessageTask(
         sendContactMessage(
             message,
             messageModel,
-            messageModel.identity,
+            messageModel.identity!!,
             apiMessageId,
-            messageModel.createdAt,
-            handle
+            messageModel.createdAt!!,
+            handle,
         )
     }
 
@@ -101,7 +100,7 @@ class OutgoingFileMessageTask(
             group,
             recipientIdentities,
             messageModel,
-            messageModel.createdAt,
+            messageModel.createdAt!!,
             ensureMessageId(messageModel),
             {
                 GroupFileMessage().apply {
@@ -116,7 +115,6 @@ class OutgoingFileMessageTask(
         thumbnailBlobId: ByteArray?,
         messageModel: AbstractMessageModel,
     ): FileData {
-
         // In case there are recipients or multi device is active, we need a blob id and an
         // encryption key. Otherwise the message will be invalid and cannot be sent. In case there
         // is no recipient and multi device is not active, the message is sent in a notes group
@@ -171,7 +169,7 @@ class OutgoingFileMessageTask(
                 receiverType,
                 recipientIdentities,
                 thumbnailBlobId,
-                serviceManager
+                serviceManager,
             )
     }
 }

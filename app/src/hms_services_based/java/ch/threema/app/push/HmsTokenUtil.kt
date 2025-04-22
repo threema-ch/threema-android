@@ -29,7 +29,6 @@ import com.huawei.agconnect.AGConnectOptionsBuilder
 private val logger = LoggingUtil.getThreemaLogger("HmsTokenUtil")
 
 object HmsTokenUtil {
-
     const val TOKEN_SCOPE = "HCM"
 
     private const val APP_ID_CONFIG_FIELD = "client/app_id"
@@ -56,10 +55,7 @@ object HmsTokenUtil {
                 .getString(APP_ID_CONFIG_FIELD)
                 ?: appIdHardcoded
         } catch (e: Exception) {
-            logger.error(
-                "Could not obtain HMS-App-ID from config file. Fallback to hardcoded ID.",
-                e
-            )
+            logger.error("Could not obtain HMS-App-ID from config file. Fallback to hardcoded ID.", e)
             appIdHardcoded
         }
     }

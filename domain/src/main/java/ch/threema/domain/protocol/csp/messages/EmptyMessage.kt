@@ -25,7 +25,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 
 class EmptyMessage : AbstractMessage() {
-
     override fun getType() = ProtocolDefines.MSGTYPE_EMPTY
 
     // We do never send empty messages like regular messages. Therefore, the version here is not

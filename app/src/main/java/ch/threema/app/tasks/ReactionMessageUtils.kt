@@ -39,34 +39,30 @@ private const val MAX_EMOJI_SEQUENCE_BYTE_SIZE = 64
 fun runCommonReactionMessageReceiveSteps(
     reactionMessage: ReactionMessage,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
-): AbstractMessageModel? {
-    return runCommonReactionMessageReceiveSteps(
-        reactionMessage.data.emojiSequenceBytes,
-        reactionMessage.data.messageId,
-        receiver,
-        messageService
-    )
-}
+    messageService: MessageService,
+): AbstractMessageModel? = runCommonReactionMessageReceiveSteps(
+    emojiSequenceBytes = reactionMessage.data.emojiSequenceBytes,
+    messageId = reactionMessage.data.messageId,
+    receiver = receiver,
+    messageService = messageService,
+)
 
 fun runCommonReactionMessageReceiveSteps(
     reactionMessage: GroupReactionMessage,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
-): AbstractMessageModel? {
-    return runCommonReactionMessageReceiveSteps(
-        reactionMessage.data.emojiSequenceBytes,
-        reactionMessage.data.messageId,
-        receiver,
-        messageService
-    )
-}
+    messageService: MessageService,
+): AbstractMessageModel? = runCommonReactionMessageReceiveSteps(
+    emojiSequenceBytes = reactionMessage.data.emojiSequenceBytes,
+    messageId = reactionMessage.data.messageId,
+    receiver = receiver,
+    messageService = messageService,
+)
 
 private fun runCommonReactionMessageReceiveSteps(
     emojiSequenceBytes: ByteString?,
     messageId: Long,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
+    messageService: MessageService,
 ): AbstractMessageModel? {
     val apiMessageId = MessageId(messageId).toString()
     val message = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, receiver)
@@ -79,7 +75,7 @@ private fun runCommonReactionMessageReceiveSteps(
     if (!MessageUtil.canEmojiReact(message)) {
         logger.warn(
             "Incoming Reaction Message: Message of type {} cannot be reacted to",
-            message.type
+            message.type,
         )
         return null
     }
@@ -96,16 +92,16 @@ private fun runCommonReactionMessageReceiveSteps(
  * Returns the emoji byte string as a UTF-8 string or null if the string is empty or null.
  */
 fun runCommonReactionMessageReceiveEmojiSequenceConversion(
-    emojiSequenceBytes: ByteString?
-): String? {
-    return emojiSequenceBytes?.toStringUtf8()
-        ?.takeIf { it.isNotEmpty() }
-        ?: run {
-            logger.warn("Incoming Reaction Message: Emoji sequence is empty or null.")
-            null
-        }
-}
+    emojiSequenceBytes: ByteString?,
+): String? = emojiSequenceBytes
+    ?.toStringUtf8()
+    ?.takeIf(String::isNotEmpty)
+    ?: run {
+        logger.warn("Incoming Reaction Message: Emoji sequence is empty or null.")
+        null
+    }
 
-private fun isValidReactionSequence(reactionSequence: ByteString?): Boolean {
-    return reactionSequence != null && !reactionSequence.isEmpty && reactionSequence.size() <= MAX_EMOJI_SEQUENCE_BYTE_SIZE
-}
+private fun isValidReactionSequence(reactionSequence: ByteString?): Boolean =
+    reactionSequence != null &&
+        !reactionSequence.isEmpty &&
+        reactionSequence.size() <= MAX_EMOJI_SEQUENCE_BYTE_SIZE

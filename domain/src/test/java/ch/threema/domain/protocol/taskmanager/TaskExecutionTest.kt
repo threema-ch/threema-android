@@ -23,7 +23,6 @@ package ch.threema.domain.protocol.taskmanager
 
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
-import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
 import ch.threema.domain.protocol.taskmanager.TaskExecutionTest.UnexpectedExceptionTask.UnexpectedException
 import ch.threema.domain.taskmanager.ConnectionStoppedException
@@ -34,31 +33,27 @@ import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.SingleThreadedTaskManagerDispatcher
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskManagerImpl
+import io.mockk.every
+import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
+import kotlin.random.Random
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import org.junit.Assert.assertThrows
-import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.rules.Timeout
-import org.mockito.AdditionalAnswers
-import org.mockito.Mockito.anyLong
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
-import java.util.concurrent.Executors
 
 private val logger = LoggingUtil.getThreemaLogger("TaskExecutionTest")
 
 class TaskExecutionTest {
-
     @Rule
     @JvmField
     val timeout: Timeout = Timeout.seconds(300)
@@ -72,18 +67,18 @@ class TaskExecutionTest {
      * The task manager that is tested.
      */
     private val taskManager: TaskManagerImpl = TaskManagerImpl(
-        { mock(TaskArchiver::class.java) },
-        mock(DeviceCookieManager::class.java),
+        { mockk<TaskArchiver>(relaxed = true) },
+        mockk<DeviceCookieManager>(),
         TaskManagerImpl.TaskManagerDispatchers(
             SingleThreadedTaskManagerDispatcher(
                 true,
-                "ExecutorDispatcher"
+                "ExecutorDispatcher",
             ),
             SingleThreadedTaskManagerDispatcher(
                 true,
-                "ScheduleDispatcher"
+                "ScheduleDispatcher",
             ),
-        )
+        ),
     )
 
     /**
@@ -92,7 +87,7 @@ class TaskExecutionTest {
     private open class TaskWork(protected val number: Int) {
         protected suspend fun doWork() {
             // Just do something to simulate a task that does something
-            for (i in 0..number) {
+            repeat(number) { i ->
                 logger.debug("Logging number $i of $number")
             }
             // Suspend the work a bit, so that the task manager is tempted to run the next task
@@ -178,7 +173,7 @@ class TaskExecutionTest {
         override fun throwException() = throw ConnectionStoppedException()
     }
 
-    @Before
+    @BeforeTest
     fun setup() {
         runBlocking {
             startConnection()
@@ -188,13 +183,13 @@ class TaskExecutionTest {
     @Test
     fun testExecutionOfSuccessfulTask(): Unit = runBlocking {
         // Test ascending list
-        assertSuccessfulTaskExecution((0..50).toList())
+        assertSuccessfulTaskExecution(List(50) { it })
 
         // Test descending list
-        assertSuccessfulTaskExecution((0..50).reversed().toList())
+        assertSuccessfulTaskExecution(List(50) { 50 - it })
 
         // Test random numbers
-        assertSuccessfulTaskExecution(List(50) { (0..1000).random() })
+        assertSuccessfulTaskExecution(List(50) { Random.nextInt(1000) })
 
         // Test all the same
         assertSuccessfulTaskExecution(List(50) { 10 })
@@ -203,7 +198,7 @@ class TaskExecutionTest {
     @Test
     fun testExecutionOfFailingTask(): Unit = runBlocking {
         // Test number of failed attempts below the maximum amount of attempts
-        (0 until maximumNumberOfAttempts).forEach { assertNumberOfFailedAttempts(it) }
+        repeat(maximumNumberOfAttempts) { assertNumberOfFailedAttempts(it) }
     }
 
     @Test
@@ -225,7 +220,7 @@ class TaskExecutionTest {
         val done = taskManager.schedule(ProtocolExceptionTask())
         // Assert that the deferred won't be completed immediately, as there is a minimum delay to
         // wait until the connection will be restarted.
-        assertThrows(TimeoutCancellationException::class.java) {
+        assertFailsWith<TimeoutCancellationException> {
             runBlocking {
                 withTimeout(1000) {
                     done.await()
@@ -249,7 +244,7 @@ class TaskExecutionTest {
         // the minimum delay in the task runner. Therefore, this additionally tests that the task
         // manager does not restart the connection when a ConnectionStoppedException has been
         // thrown.
-        assertThrows(TimeoutCancellationException::class.java) {
+        assertFailsWith<TimeoutCancellationException> {
             runBlocking {
                 withTimeout(5000) {
                     done.await()
@@ -296,7 +291,7 @@ class TaskExecutionTest {
             // Note that scheduling the task must not trigger any exceptions!
             val done = taskManager.schedule(UnexpectedExceptionTask(numFailedAttempts))
             // Only when awaiting the completable deferred results in an exception
-            val exception = assertThrows(UnexpectedException::class.java) {
+            val exception = assertFailsWith<UnexpectedException> {
                 runBlocking {
                     done.await()
                 }
@@ -314,24 +309,24 @@ class TaskExecutionTest {
     }
 
     private suspend fun startConnection() {
-        val layer5Codec = mock(Layer5Codec::class.java)
-        `when`(layer5Codec.restartConnection(anyLong())).then {
+        val layer5Codec = mockk<Layer5Codec>()
+        every { layer5Codec.restartConnection(any()) } answers {
             // Wait until reconnection (connection is mocked)
-            Thread.sleep(AdditionalAnswers.returnsFirstArg<Long>().answer(it))
+            val delay = firstArg<Long>()
+            Thread.sleep(delay)
             // Launch new coroutine to restart the task manager
             CoroutineScope(Dispatchers.Default).launch {
                 taskManager.pauseRunningTasks()
                 taskManager.startRunningTasks(
                     layer5Codec,
-                    mock(IncomingMessageProcessor::class.java)
+                    mockk<IncomingMessageProcessor>(),
                 )
             }
         }
-        taskManager.startRunningTasks(layer5Codec, mock(IncomingMessageProcessor::class.java))
+        taskManager.startRunningTasks(layer5Codec, mockk<IncomingMessageProcessor>())
     }
 
     private suspend fun stopConnection() {
         taskManager.pauseRunningTasks()
     }
-
 }

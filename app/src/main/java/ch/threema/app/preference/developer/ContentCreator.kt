@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2024-2025 Threema GmbH
+ * Copyright (c) 2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -32,6 +32,7 @@ import ch.threema.base.crypto.HashedNonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
 import ch.threema.data.storage.DbEmojiReaction
 import ch.threema.domain.models.MessageId
 import ch.threema.storage.models.AbstractMessageModel
@@ -41,14 +42,14 @@ import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val logger = LoggingUtil.getThreemaLogger("ContentCreator")
 
@@ -61,7 +62,6 @@ private const val SPAM_MESSAGES_PER_CONVERSATION = 1000
  */
 private const val SPAM_CHATS_PREFIX = "\uD83D\uDC7E" // 👾
 
-
 object ContentCreator {
     @JvmStatic
     @AnyThread
@@ -69,7 +69,7 @@ object ContentCreator {
         CoroutineScope(Dispatchers.Default).launch {
             val goOn = confirm(
                 fragmentManager,
-                "Create loads of messages with reactions and/or ACK/DEC for any contact/group whose name starts with '$SPAM_CHATS_PREFIX'?"
+                "Create loads of messages with reactions and/or ACK/DEC for any contact/group whose name starts with '$SPAM_CHATS_PREFIX'?",
             )
             if (!goOn) {
                 return@launch
@@ -81,6 +81,7 @@ object ContentCreator {
 
                 val groups = serviceManager.groupService.all
                     .filter { isSpamChat(it.name) }
+                logger.debug("Group ids for reaction spam: [{}]", groups.joinToString(", ") { "${it.id}" })
                 createGroupReactionSpam(groups, serviceManager)
             }
         }
@@ -88,14 +89,25 @@ object ContentCreator {
 
     private fun createGroupReactionSpam(
         groups: List<GroupModel>,
-        serviceManager: ServiceManager
+        serviceManager: ServiceManager,
     ) {
         val reactions = mutableListOf<DbEmojiReaction>()
-
+        val groupService = serviceManager.groupService
         groups.forEach { groupModel ->
+            logger.info(
+                "Create messages with reaction/ack/dec in group with id={}",
+                groupModel.id,
+            )
+            val members = groupService.getGroupMemberIdentities(groupModel).toList()
+            if (members.isEmpty()) {
+                logger.debug("Skip group without members")
+                return@forEach
+            }
             repeat(SPAM_MESSAGES_PER_CONVERSATION) {
                 logger.debug("Group spam message #{}", it)
-                reactions.addAll(createGroupReactionSpam(groupModel, serviceManager))
+                reactions.addAll(
+                    createGroupReactionSpam(groupModel, members, serviceManager),
+                )
             }
         }
 
@@ -106,15 +118,11 @@ object ContentCreator {
 
     private fun createGroupReactionSpam(
         groupModel: GroupModel,
+        members: List<String>,
         serviceManager: ServiceManager,
     ): List<DbEmojiReaction> {
-        logger.info("Create messages with reaction/ack/dec in group {}", groupModel.id)
-
-        val groupService = serviceManager.groupService
         val userIdentity = serviceManager.userService.identity
         val groupMessageModelFactory = serviceManager.databaseServiceNew.groupMessageModelFactory
-
-        val members = groupService.getGroupIdentities(groupModel).toList()
 
         val reactionIdentities = mutableListOf<String>()
         val groupMessageStates = mutableMapOf<String, Any>()
@@ -140,7 +148,7 @@ object ContentCreator {
             senderIdentity,
             userIdentity,
             groupMessageStates,
-            groupModel
+            groupModel,
         )
 
         groupMessageModelFactory.create(message)
@@ -149,7 +157,7 @@ object ContentCreator {
 
     private fun createGroupText(
         messageStates: Map<String, Any>,
-        reactions: List<Pair<String, Set<String>>>
+        reactions: List<Pair<String, Set<String>>>,
     ): String {
         val stateTexts = messageStates
             .map { (identity, state) -> "@[$identity]: $state" }
@@ -160,11 +168,12 @@ object ContentCreator {
 
     private fun createContactReactionSpam(
         contacts: List<ContactModel>,
-        serviceManager: ServiceManager
+        serviceManager: ServiceManager,
     ) {
         val reactions = mutableListOf<DbEmojiReaction>()
 
         contacts.forEach { contactModel ->
+            logger.info("Create ack/dec messages for contact with identity {}", contactModel.identity)
             repeat(SPAM_MESSAGES_PER_CONVERSATION) {
                 logger.debug("Contact spam message #{}", it)
                 reactions.addAll(createContactReactionSpam(contactModel, serviceManager))
@@ -178,17 +187,15 @@ object ContentCreator {
 
     private fun createContactReactionSpam(
         contactModel: ContactModel,
-        serviceManager: ServiceManager
+        serviceManager: ServiceManager,
     ): List<DbEmojiReaction> {
-        logger.info("Create ack/dec messages for contact {}", contactModel)
-
         val userIdentity = serviceManager.userService.identity
         val messageModelFactory = serviceManager.databaseServiceNew.messageModelFactory
 
         val hasUserReactions = Random.nextBoolean()
         val hasContactReactions = Random.nextBoolean()
-        val hasAckDec = (!hasContactReactions && !hasUserReactions)
-            || ((!hasContactReactions || !hasUserReactions) && Random.nextBoolean())
+        val hasAckDec = (!hasContactReactions && !hasUserReactions) ||
+            ((!hasContactReactions || !hasUserReactions) && Random.nextBoolean())
 
         val state = if (!hasAckDec) {
             null
@@ -213,7 +220,7 @@ object ContentCreator {
             createContactText(state, reactions),
             isOutbox = Random.nextBoolean(),
             state = state,
-            contactModel
+            contactModel,
         )
         messageModelFactory.create(message)
         return reactions.toDbReactions(message.id)
@@ -221,7 +228,7 @@ object ContentCreator {
 
     private fun createContactText(
         state: MessageState?,
-        reactions: List<Pair<String, Set<String>>>
+        reactions: List<Pair<String, Set<String>>>,
     ): String {
         val stateText = state?.let { "State: $it" }
         val reactionTexts = reactions
@@ -236,7 +243,7 @@ object ContentCreator {
                     messageId,
                     identity,
                     reaction,
-                    Date()
+                    Date(),
                 )
             }
         }
@@ -274,16 +281,16 @@ object ContentCreator {
         this.groupMessageStates = groupMessageStates.toMap()
         enrichTextMessage(
             text,
-            senderIdentity == userIdentity
+            senderIdentity == userIdentity,
         )
     }
 
     private fun AbstractMessageModel.enrichTextMessage(
         text: String,
         isOutbox: Boolean,
-        state: MessageState? = null
+        state: MessageState? = null,
     ) {
-        val theDate = Date()
+        val now = now()
         uid = UUID.randomUUID().toString()
         apiMessageId = MessageId().toString()
         this.isOutbox = isOutbox
@@ -295,8 +302,8 @@ object ContentCreator {
         } else {
             MessageState.READ
         }
-        postedAt = theDate
-        createdAt = theDate
+        postedAt = now
+        createdAt = now
         isSaved = true
     }
 
@@ -311,7 +318,7 @@ object ContentCreator {
         "💅🏿", "🤰🏻", "🧎🏽", "🏃🏿‍♂️", "👨🏼‍🚒", "🦇", "✈️", "👩🏽‍🤝‍👨🏿", "🐎", "🏒",
         "👈🏾", "🇱🇺", "🫙", "🇸🇿", "🧍🏼‍♂️", "💁🏼‍♂️", "🧑🏿‍🔧", "👨🏽‍🍳", "🦵🏽", "🧙🏿‍♂️",
         "🧙‍♀️", "💆🏾‍♀️", "↔️", "🧑🏿‍🦲", "🫴🏼", "🤚", "🫱🏼", "🏌🏾‍♂️", "🥦", "🤛🏻",
-        "\uD83E\uDEC6"
+        "\uD83E\uDEC6",
     ).shuffled().take(n)
 
     @JvmStatic
@@ -320,7 +327,7 @@ object ContentCreator {
         CoroutineScope(Dispatchers.Default).launch {
             val goOn = confirm(
                 fragmentManager,
-                "Generate $AMOUNT_OF_NONCES nonces for each scope ${NonceScope.CSP} and ${NonceScope.D2D}?"
+                "Generate $AMOUNT_OF_NONCES nonces for each scope ${NonceScope.CSP} and ${NonceScope.D2D}?",
             )
             if (!goOn) {
                 return@launch
@@ -362,7 +369,7 @@ object ContentCreator {
     private fun withGenericProgress(
         fragmentManager: FragmentManager,
         message: String,
-        block: () -> Unit
+        block: () -> Unit,
     ) {
         val dialog = GenericProgressDialog.newInstance(null, message)
         dialog.show(fragmentManager, "CONTENT_CREATOR_PROGRESS_DIALOG")

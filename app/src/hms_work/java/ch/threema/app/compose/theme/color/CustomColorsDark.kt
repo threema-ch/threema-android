@@ -24,5 +24,5 @@ package ch.threema.app.compose.theme.color
 import androidx.compose.ui.graphics.Color
 
 val CustomColorDark = CustomColor(
-    messageBubbleContainerReceive = Color(0xFF666666)
+    messageBubbleContainerReceive = Color(0xFF666666),
 )

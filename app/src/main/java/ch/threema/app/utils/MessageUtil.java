@@ -48,7 +48,6 @@ import ch.threema.app.services.UserService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.DeleteMessage;
-import ch.threema.domain.protocol.csp.messages.EditMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -110,6 +109,13 @@ public class MessageUtil {
 
     public static boolean hasDataFile(AbstractMessageModel messageModel) {
         return messageModel != null && fileMessageModelTypes.contains(messageModel.getType());
+    }
+
+    /**
+     * Checks whether the message holds a file which should be rendered as a file attachment, i.e., not as media
+     */
+    public static boolean hasFileWithDefaultRendering(@NonNull AbstractMessageModel message) {
+        return message.getType() == MessageType.FILE && message.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT;
     }
 
     /**
@@ -593,7 +599,7 @@ public class MessageUtil {
                         null,
                         null);
                 case GROUP_STATUS:
-                    GroupStatusDataModel groupStatusDataModel = messageModel.getGroupStatusDataModel();
+                    GroupStatusDataModel groupStatusDataModel = messageModel.getGroupStatusData();
                     if (groupStatusDataModel == null) {
                         return new MessageViewElement(null, null, null, null, null);
                     }
@@ -758,8 +764,7 @@ public class MessageUtil {
                     ForwardSecurityStatusDataModel forwardSecurityStatusDataModel = messageModel.getForwardSecurityStatusData();
                     if (forwardSecurityStatusDataModel != null) {
                         switch (forwardSecurityStatusDataModel.getStatus()) {
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_off_24,
                                     context.getString(R.string.forward_security_reset_simple),
@@ -767,8 +772,7 @@ public class MessageUtil {
                                     null,
                                     R.color.material_red
                                 );
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_24,
                                     context.getString(R.string.forward_security_established),
@@ -776,8 +780,7 @@ public class MessageUtil {
                                     null,
                                     R.color.material_green
                                 );
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_24,
                                     context.getString(R.string.forward_security_established_rx),
@@ -785,8 +788,7 @@ public class MessageUtil {
                                     null,
                                     R.color.material_green
                                 );
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED:
                                 String body = ConfigUtils.getSafeQuantityString(context, R.plurals.forward_security_messages_skipped, forwardSecurityStatusDataModel.getQuantity(), forwardSecurityStatusDataModel.getQuantity());
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_24,
@@ -795,8 +797,7 @@ public class MessageUtil {
                                     null,
                                     null
                                 );
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_24,
                                     context.getString(R.string.forward_security_message_out_of_order),
@@ -804,8 +805,7 @@ public class MessageUtil {
                                     null,
                                     null
                                 );
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_off_24,
                                     context.getString(R.string.message_without_forward_security),
@@ -813,8 +813,7 @@ public class MessageUtil {
                                     null,
                                     null
                                 );
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_24,
                                     context.getString(R.string.forward_security_downgraded_status_message),
@@ -822,8 +821,7 @@ public class MessageUtil {
                                     null,
                                     null
                                 );
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_off_24,
                                     context.getString(R.string.forward_security_illegal_session_status_message),
@@ -833,8 +831,7 @@ public class MessageUtil {
                                 );
                             // TODO(ANDR-2519): Can this be removed when md supports fs? Only if this
                             //  type has never been stored to the database
-                            case
-                                ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED:
+                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED:
                                 return new MessageViewElement(
                                     R.drawable.ic_baseline_key_off_24,
                                     context.getString(R.string.forward_security_disabled),
@@ -870,40 +867,6 @@ public class MessageUtil {
                 messageState == MessageState.UPLOADING ||
                 messageState == MessageState.SENDING
         );
-    }
-
-    /**
-     * Check whether the given message type allows editing the message. Note that only the message
-     * type is considered. To check whether the user should be able to edit,
-     * {@link #canEdit(AbstractMessageModel)} should be used.
-     */
-    public static boolean canEdit(@Nullable MessageType messageType) {
-        if (messageType == null) {
-            return false;
-        }
-
-        switch (messageType) {
-            case TEXT:
-            case FILE:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * Check whether the user should be able to edit the given message.
-     */
-    public static boolean canEdit(@NonNull AbstractMessageModel message) {
-        long deltaTime = new Date().getTime() - message.getCreatedAt().getTime();
-        return (message.getType() == MessageType.TEXT || message.getType() == MessageType.FILE)
-            && !message.isStatusMessage()
-            && message.isOutbox()
-            && ConfigUtils.isEditMessagesEnabled()
-            && deltaTime <= EditMessage.EDIT_MESSAGES_MAX_AGE
-            && (message instanceof MessageModel || message instanceof GroupMessageModel)
-            && (message.getPostedAt() != null || message.getState() == MessageState.SENDFAILED)
-            && !message.isDeleted();
     }
 
     /**
@@ -966,6 +929,7 @@ public class MessageUtil {
      */
     public static boolean canStarMessage(AbstractMessageModel message) {
         return (message instanceof MessageModel || message instanceof GroupMessageModel)
+            && message.getType() != null
             && (message.getType().equals(MessageType.TEXT) ||
             message.getType().equals(MessageType.FILE) ||
             message.getType().equals(MessageType.LOCATION) ||
@@ -993,6 +957,7 @@ public class MessageUtil {
         }
 
         return (messageModel instanceof MessageModel || messageModel instanceof GroupMessageModel)
+            && messageModel.getType() != null
             && (messageModel.getType().equals(MessageType.TEXT) ||
             messageModel.getType().equals(MessageType.FILE) ||
             messageModel.getType().equals(MessageType.LOCATION) ||

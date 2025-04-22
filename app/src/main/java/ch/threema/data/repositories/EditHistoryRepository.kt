@@ -32,8 +32,8 @@ import ch.threema.data.storage.DbEditHistoryEntry
 import ch.threema.data.storage.EditHistoryDao
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
-import org.slf4j.Logger
 import java.util.Date
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("EditHistoryRepository")
 
@@ -77,16 +77,16 @@ class EditHistoryRepository(
                 }
                 val historyEntry = DbEditHistoryEntry(
                     uid = 0,
-                    messageUid = message.uid,
+                    messageUid = message.uid!!,
                     messageId = message.id,
                     text = oldText,
-                    editedAt = message.editedAt ?: message.createdAt ?: Date()
+                    editedAt = message.editedAt ?: message.createdAt ?: Date(),
                 )
 
                 val uid = editHistoryDao.create(historyEntry, message)
 
                 val historyEntryWithUid = historyEntry.copy(uid = uid.toInt())
-                cache.get(message.uid)?.addEntry(historyEntryWithUid.toDataType())
+                cache.get(message.uid!!)?.addEntry(historyEntryWithUid.toDataType())
             } catch (exception: SQLiteException) {
                 throw EditHistoryEntryCreateException(exception)
             }

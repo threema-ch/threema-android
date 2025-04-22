@@ -24,7 +24,6 @@ package ch.threema.app.compose.theme.color
 import androidx.compose.material3.lightColorScheme
 
 abstract class ComposeColorPaletteLight : ComposeColorPalette {
-
     override fun toColorScheme() = lightColorScheme(
         primary = primary,
         onPrimary = onPrimary,
@@ -54,5 +53,10 @@ abstract class ComposeColorPaletteLight : ComposeColorPalette {
         inverseSurface = inverseSurface,
         inverseOnSurface = inverseOnSurface,
         inversePrimary = inversePrimary,
+        surfaceContainerLowest = surfaceContainerLowest,
+        surfaceContainerLow = surfaceContainerLow,
+        surfaceContainer = surfaceContainer,
+        surfaceContainerHigh = surfaceContainerHigh,
+        surfaceContainerHighest = surfaceContainerHighest,
     )
 }

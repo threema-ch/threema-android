@@ -142,8 +142,9 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintActivity");
@@ -229,7 +230,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
     private boolean saveSemaphore = false;
     private @StrokeMode int strokeMode = STROKE_MODE_BRUSH;
     private ActivityMode activityMode = ActivityMode.EDIT_IMAGE;
-    private int groupId = -1;
+    private long groupId = -1;
     private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
     private File cropFile;
 
@@ -315,7 +316,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         intent.putExtra(ThreemaApplication.EXTRA_OUTPUT_FILE, Uri.fromFile(outputFile));
         intent.putExtra(ImagePaintActivity.EXTRA_IMAGE_REPLY, true);
         if (groupModel != null) {
-            intent.putExtra(EXTRA_GROUP_ID, groupModel.getId());
+            intent.putExtra(EXTRA_GROUP_ID, groupModel.getDatabaseId());
         }
         IntentDataUtil.addMessageReceiverToIntent(intent, messageReceiver);
         return intent;
@@ -1401,7 +1402,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
             GroupService groupService = serviceManager.getGroupService();
             ContactService contactService = serviceManager.getContactService();
             UserService userService = serviceManager.getUserService();
-            GroupModel groupModel = groupService.getById(groupId);
+            GroupModelRepository groupModelRepository = serviceManager.getModelRepositories().getGroups();
+            ch.threema.data.models.GroupModel groupModel = groupModelRepository.getByLocalGroupDbId(groupId);
 
             if (groupModel == null) {
                 logger.error("Cannot enable mention popup: no group model with id {} found", groupId);

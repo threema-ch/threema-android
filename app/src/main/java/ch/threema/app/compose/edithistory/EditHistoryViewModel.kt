@@ -37,9 +37,7 @@ class EditHistoryViewModel(
     savedStateHandle: SavedStateHandle,
     editHistoryRepository: EditHistoryRepository,
 ) : StateFlowViewModel() {
-
     companion object {
-
         private const val MESSAGE_UID = "messageUid"
 
         fun provideFactory(messageId: String) = viewModelFactory {
@@ -48,7 +46,7 @@ class EditHistoryViewModel(
                     this.createSavedStateHandle().apply {
                         set(MESSAGE_UID, messageId)
                     },
-                    ThreemaApplication.requireServiceManager().modelRepositories.editHistory
+                    ThreemaApplication.requireServiceManager().modelRepositories.editHistory,
                 )
             }
         }
@@ -62,10 +60,10 @@ class EditHistoryViewModel(
                 EditHistoryUiState(editHistoryEntries ?: emptyList())
             }
             .stateInViewModel(
-                initialValue = EditHistoryUiState(emptyList())
+                initialValue = EditHistoryUiState(emptyList()),
             )
 }
 
 data class EditHistoryUiState(
-    val editHistoryEntries: List<EditHistoryEntryData>
+    val editHistoryEntries: List<EditHistoryEntryData>,
 )

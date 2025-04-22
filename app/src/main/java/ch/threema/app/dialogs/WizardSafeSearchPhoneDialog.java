@@ -27,7 +27,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -37,11 +36,13 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.SelectorDialogItem;
@@ -61,6 +62,7 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 
     private ArrayList<SelectorDialogItem> matchingIDs;
 
+    @NonNull
     public static WizardSafeSearchPhoneDialog newInstance() {
         return new WizardSafeSearchPhoneDialog();
     }
@@ -91,24 +93,23 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
 
         this.activity = activity;
     }
 
+    @NonNull
     @Override
     public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
         final String tag = this.getTag();
 
         final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_wizard_safe_search_phone, null);
-        Button positiveButton = dialogView.findViewById(R.id.ok);
-        final Button negativeButton = dialogView.findViewById(R.id.cancel);
 
         phoneEditText = dialogView.findViewById(R.id.safe_phone);
         emailEditText = dialogView.findViewById(R.id.safe_email);
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.Threema_Dialog_Wizard);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(), R.style.Threema_Dialog_Wizard);
         builder.setView(dialogView);
 
         try {
@@ -118,30 +119,28 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
             dismiss();
         }
 
-        positiveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String phone = null, email = null;
-                if (phoneEditText.getText() != null) {
-                    phone = localeService.getNormalizedPhoneNumber(phoneEditText.getText().toString());
-                }
-                if (emailEditText.getText() != null) {
-                    email = emailEditText.getText().toString();
-                }
-                if (phone != null || email != null) {
-                    searchID(phone, email);
-                } else {
-                    dismiss();
-                    callback.onYes(tag, null);
-                }
+        final @NonNull WizardButtonXml positiveButtonCompose = dialogView.findViewById(R.id.ok_compose);
+        final @NonNull WizardButtonXml negativeButtonCompose = dialogView.findViewById(R.id.cancel_compose);
+
+        positiveButtonCompose.setOnClickListener(v -> {
+            String phone = null, email = null;
+            if (phoneEditText.getText() != null) {
+                phone = localeService.getNormalizedPhoneNumber(phoneEditText.getText().toString());
+            }
+            if (emailEditText.getText() != null) {
+                email = emailEditText.getText().toString();
+            }
+            if (phone != null || email != null) {
+                searchID(phone, email);
+            } else {
+                dismiss();
+                callback.onYes(tag, null);
             }
         });
-        negativeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-                callback.onNo(tag);
-            }
+
+        negativeButtonCompose.setOnClickListener(v -> {
+            dismiss();
+            callback.onNo(tag);
         });
 
         phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));

@@ -1,25 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="6dp">
+    android:layout_marginHorizontal="@dimen/spacing_two_grid_unit"
+    android:layout_marginVertical="@dimen/spacing_half_grid_unit"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="?attr/colorSurface">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/text"
+        <ImageView
+            android:id="@+id/platformIconIv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/spacing_two_grid_unit"
+            android:importantForAccessibility="no"
+            app:tint="?attr/colorOnSurface"
+            tools:src="@drawable/ic_platform_desktop" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:ellipsize="end" />
-    </com.google.android.material.card.MaterialCardView>
+            android:layout_marginHorizontal="@dimen/spacing_two_grid_unit"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/spacing_one_and_a_half_grid_unit">
+
+            <TextView
+                android:id="@+id/firstLineTv"
+                style="@style/Threema.TextAppearance.Subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                tools:text="Threema Beta for Desktop" />
+
+            <TextView
+                android:id="@+id/secondLineTv"
+                style="@style/Threema.TextAppearance.BodySmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_half_grid_unit"
+                android:ellipsize="end"
+                tools:text="2.0-beta44 - Electron 30 on macOS" />
+
+            <TextView
+                android:id="@+id/thirdLineTv"
+                style="@style/Threema.TextAppearance.BodySmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_half_grid_unit"
+                android:ellipsize="end"
+                tools:text="Connected since christmas" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

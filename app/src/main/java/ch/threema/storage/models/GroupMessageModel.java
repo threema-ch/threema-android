@@ -21,6 +21,7 @@
 
 package ch.threema.storage.models;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Map;
@@ -78,24 +79,22 @@ public class GroupMessageModel extends AbstractMessageModel {
      *
      * @param sourceModel GroupMessageModel from which the data should be copied over
      */
-    public void copyFrom(GroupMessageModel sourceModel) {
-        this.dataObject = sourceModel.dataObject;
-
-        this
-            .setGroupMessageStates(sourceModel.getGroupMessageStates())
-            .setCorrelationId(sourceModel.getCorrelationId())
-            .setSaved(sourceModel.isSaved())
-            .setState(sourceModel.getState())
-            .setModifiedAt(sourceModel.getModifiedAt())
-            .setDeliveredAt(sourceModel.getDeliveredAt())
-            .setReadAt(sourceModel.getReadAt())
-            .setEditedAt(sourceModel.getEditedAt())
-            .setDeletedAt(sourceModel.getDeletedAt())
-            .setRead(sourceModel.isRead())
-            .setBody(sourceModel.getBody())
-            .setCaption(sourceModel.getCaption())
-            .setQuotedMessageId(sourceModel.getQuotedMessageId())
-            .setForwardSecurityMode(sourceModel.getForwardSecurityMode())
-        ;
+    public void copyFrom(@NonNull GroupMessageModel sourceModel) {
+        setType(sourceModel.getType());
+        setDataObject(sourceModel.getDataObject());
+        setGroupMessageStates(sourceModel.getGroupMessageStates());
+        setCorrelationId(sourceModel.getCorrelationId());
+        setSaved(sourceModel.isSaved());
+        setState(sourceModel.getState());
+        setModifiedAt(sourceModel.getModifiedAt());
+        setDeliveredAt(sourceModel.getDeliveredAt());
+        setReadAt(sourceModel.getReadAt());
+        setEditedAt(sourceModel.getEditedAt());
+        setDeletedAt(sourceModel.getDeletedAt());
+        setRead(sourceModel.isRead());
+        setBody(sourceModel.getBody());
+        setCaption(sourceModel.getCaption());
+        setQuotedMessageId(sourceModel.getQuotedMessageId());
+        setForwardSecurityMode(sourceModel.getForwardSecurityMode());
     }
 }

@@ -32,5 +32,5 @@ class TestDatabaseService : DatabaseServiceNew(
     ApplicationProvider.getApplicationContext(),
     null,
     "test-database-key",
-    UpdateSystemServiceImpl()
+    UpdateSystemServiceImpl(),
 )

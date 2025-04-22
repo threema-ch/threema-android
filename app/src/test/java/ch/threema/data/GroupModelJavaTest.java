@@ -63,13 +63,13 @@ public class GroupModelJavaTest {
         final Date createdAt = new Date();
         final Date synchronizedAt = new Date();
         final Date lastUpdate = null;
-        final boolean deleted = false;
         final boolean isArchived = false;
         final int colorIndex = 0;
         final String groupDesc = "Description";
         final Date groupDescChangedAt = new Date();
         final Set<String> members = Set.of("AAAAAAAA", "BBBBBBBB");
         final ch.threema.storage.models.GroupModel.UserState userState = ch.threema.storage.models.GroupModel.UserState.MEMBER;
+        final Long notificationTriggerPolicyOverride = null;
 
         final GroupModel groupModel = new GroupModel(
             new GroupIdentity(creatorIdentity, groupId.toLong()),
@@ -80,13 +80,13 @@ public class GroupModelJavaTest {
                 createdAt,
                 synchronizedAt,
                 lastUpdate,
-                deleted,
                 isArchived,
                 colorIndex,
                 groupDesc,
                 groupDescChangedAt,
                 members,
-                userState
+                userState,
+                notificationTriggerPolicyOverride
             ),
             databaseBackendMock,
             coreServiceManagerMock
@@ -99,12 +99,11 @@ public class GroupModelJavaTest {
         assertEquals(createdAt, value.createdAt);
         assertEquals(synchronizedAt, value.synchronizedAt);
         assertEquals(lastUpdate, value.lastUpdate);
-        assertEquals(deleted, value.deleted);
         assertEquals(isArchived, value.isArchived);
         assertEquals(colorIndex, value.colorIndexInt());
         assertEquals(groupDesc, value.groupDescription);
         assertEquals(groupDescChangedAt, value.groupDescriptionChangedAt);
-        assertEquals(members, value.members);
+        assertEquals(members, value.otherMembers);
     }
 
     @Test
@@ -170,12 +169,12 @@ public class GroupModelJavaTest {
             new Date(),
             null,
             false,
-            false,
             colorIndex,
             "Description",
             new Date(),
             Collections.emptySet(),
-            ch.threema.storage.models.GroupModel.UserState.MEMBER
+            ch.threema.storage.models.GroupModel.UserState.MEMBER,
+            null
         );
     }
 
@@ -190,12 +189,12 @@ public class GroupModelJavaTest {
                 new Date(),
                 null,
                 false,
-                false,
                 colorIndex,
                 "Description",
                 new Date(),
                 Collections.emptySet(),
-                ch.threema.storage.models.GroupModel.UserState.MEMBER
+                ch.threema.storage.models.GroupModel.UserState.MEMBER,
+                null
             )
         );
     }

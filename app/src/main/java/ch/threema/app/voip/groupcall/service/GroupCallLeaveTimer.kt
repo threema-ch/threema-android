@@ -24,13 +24,13 @@ package ch.threema.app.voip.groupcall.service
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.sfu.Participant
 import ch.threema.base.utils.LoggingUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallLeaveTimer")
 
@@ -39,7 +39,7 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallLeaveTimer")
  */
 class GroupCallLeaveTimer(
     private val participants: Flow<Set<Participant>>,
-    private val groupCallLeaveTimeoutCallback: () -> Unit
+    private val groupCallLeaveTimeoutCallback: () -> Unit,
 ) {
     private val timeUntilLeaveMs = 180_000L
 
@@ -51,7 +51,7 @@ class GroupCallLeaveTimer(
     private var participantCount = -1
 
     init {
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             participants.collect {
                 participantCount = it.size
                 onParticipantCountChanged()
@@ -82,7 +82,7 @@ class GroupCallLeaveTimer(
             scheduledFuture = scheduledExecutorService.schedule(
                 ::onTimeout,
                 timeUntilLeaveMs,
-                TimeUnit.MILLISECONDS
+                TimeUnit.MILLISECONDS,
             )
         }
     }
@@ -96,5 +96,4 @@ class GroupCallLeaveTimer(
         logger.info("Leaving group call as no one has been in the call for the last ${timeUntilLeaveMs / 1000} seconds")
         groupCallLeaveTimeoutCallback()
     }
-
 }

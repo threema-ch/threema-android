@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.map
 class EmojiReactionsViewModel(
     savedStateHandle: SavedStateHandle,
     emojiReactionsRepository: EmojiReactionsRepository,
-    private val messageService: MessageService
+    private val messageService: MessageService,
 ) : StateFlowViewModel() {
     private var emojiReactionsModel: EmojiReactionsModel? = null
 
@@ -51,7 +51,7 @@ class EmojiReactionsViewModel(
         fun provideFactory(
             emojiReactionsRepository: EmojiReactionsRepository,
             messageService: MessageService,
-            reactionMessageIdentifier: ReactionMessageIdentifier
+            reactionMessageIdentifier: ReactionMessageIdentifier,
         ) = viewModelFactory {
             initializer {
                 EmojiReactionsViewModel(
@@ -60,7 +60,7 @@ class EmojiReactionsViewModel(
                         set(MESSAGE_TYPE, reactionMessageIdentifier.messageType)
                     },
                     emojiReactionsRepository,
-                    messageService
+                    messageService,
                 )
             }
         }
@@ -81,17 +81,16 @@ class EmojiReactionsViewModel(
                 .stateInViewModel(initialValue = EmojiReactionsUiState(emptyList()))
         } ?: MutableStateFlow(EmojiReactionsUiState(emptyList()))
 
-
     private fun getMessageModel(): AbstractMessageModel? =
         when (reactionMessageIdentifier.messageType) {
             TargetMessageType.ONE_TO_ONE -> messageService.getContactMessageModel(
-                reactionMessageIdentifier.messageId
+                reactionMessageIdentifier.messageId,
             )
 
             TargetMessageType.GROUP -> messageService.getGroupMessageModel(reactionMessageIdentifier.messageId)
         }
 
     data class EmojiReactionsUiState(
-        val emojiReactions: List<EmojiReactionData>
+        val emojiReactions: List<EmojiReactionData>,
     )
 }

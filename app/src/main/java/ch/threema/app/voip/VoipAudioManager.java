@@ -42,20 +42,16 @@ import org.slf4j.Logger;
 import org.webrtc.ThreadUtils;
 
 import java.util.HashSet;
-import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.notifications.BackgroundErrorNotification;
 import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.util.AppRTCUtils;
 import ch.threema.base.utils.LoggingUtil;
-import java8.util.concurrent.CompletableFuture;
 
 /**
  * VoipAudioManager manages all audio related parts of the Threema VoIP calls.
@@ -74,8 +70,7 @@ public class VoipAudioManager {
     }
 
     private final Context apprtcContext;
-    private final CompletableFuture<AudioManager> audioManagerFuture;
-    private AudioManager audioManager;
+    private final AudioManager audioManager;
 
     private AudioManagerState amState;
     private int savedAudioMode = AudioManager.MODE_INVALID;
@@ -136,18 +131,15 @@ public class VoipAudioManager {
         }
     }
 
-    public static VoipAudioManager create(Context context, CompletableFuture<Void> audioFocusAbandonedFuture) {
-        return new VoipAudioManager(context, audioFocusAbandonedFuture);
+    public static VoipAudioManager create(Context context) {
+        return new VoipAudioManager(context);
     }
 
-    private VoipAudioManager(Context context, CompletableFuture<Void> audioFocusAbandonedFuture) {
+    private VoipAudioManager(Context context) {
         logger.info("Initializing");
         ThreadUtils.checkIsOnMainThread();
         this.apprtcContext = context;
-        this.audioManagerFuture = audioFocusAbandonedFuture
-            .thenApply(x -> {
-                return (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-            });
+        this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         this.bluetoothManager = VoipBluetoothManager.create(context, this);
         this.wiredHeadsetReceiver = new WiredHeadsetReceiver();
         this.amState = AudioManagerState.UNINITIALIZED;
@@ -173,19 +165,6 @@ public class VoipAudioManager {
 
         logger.debug("AudioManager starts...");
         amState = AudioManagerState.RUNNING;
-
-        // Store current audio state so we can restore it when stop() is called.
-        try {
-            audioManager = audioManagerFuture.get();
-        } catch (InterruptedException e) {
-            logger.error("AudioManager Future error", e);
-            BackgroundErrorNotification.showNotification(ThreemaApplication.getAppContext(), "AudioManager initialization error", "AudioManager Future failed", TAG, true, e);
-            // Restore interrupted state...
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            logger.error("AudioManager Future error", e);
-            BackgroundErrorNotification.showNotification(ThreemaApplication.getAppContext(), "AudioManager initialization error", "AudioManager Future failed", TAG, true, e);
-        }
 
         savedAudioMode = audioManager.getMode();
         savedIsSpeakerPhoneOn = audioManager.isSpeakerphoneOn();

@@ -36,7 +36,7 @@ internal class SystemUpdateToVersion93(
     override fun runDirectly(): Boolean {
         for (table in arrayOf(
             "message",
-            "m_group_message"
+            "m_group_message",
         )) {
             if (!fieldExists(sqLiteDatabase, table, "editedAtUtc")) {
                 sqLiteDatabase.rawExecSQL("ALTER TABLE `$table` ADD COLUMN `editedAtUtc` DATETIME")

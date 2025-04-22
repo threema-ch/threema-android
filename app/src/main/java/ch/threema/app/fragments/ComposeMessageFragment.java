@@ -105,6 +105,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -143,9 +144,9 @@ import ch.threema.app.actions.SendAction;
 import ch.threema.app.actions.TextMessageSendAction;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.ContactDetailActivity;
-import ch.threema.app.activities.ContactNotificationsActivity;
+import ch.threema.app.activities.notificationpolicy.ContactNotificationsActivity;
 import ch.threema.app.activities.DistributionListAddActivity;
-import ch.threema.app.activities.GroupNotificationsActivity;
+import ch.threema.app.activities.notificationpolicy.GroupNotificationsActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.ImagePaintActivity;
 import ch.threema.app.activities.MediaGalleryActivity;
@@ -161,6 +162,8 @@ import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.compose.common.interop.ComposeJavaBridge;
+import ch.threema.app.services.ConversationCategoryService;
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -197,15 +200,15 @@ import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
-import ch.threema.app.routines.ReadMessagesRoutine;
+import ch.threema.app.routines.MarkAsReadRoutine;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.DownloadService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
@@ -243,7 +246,7 @@ import ch.threema.app.ui.TypingIndicatorTextWatcher;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -260,6 +263,7 @@ import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.MessageUtil;
+import ch.threema.app.utils.MessageUtilKt;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.QuoteUtil;
@@ -280,7 +284,12 @@ import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupIdentity;
+import ch.threema.data.models.GroupModel;
+import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.EmojiReactionsRepository;
+import ch.threema.data.repositories.GroupModelRepository;
+import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.VerificationLevel;
@@ -297,12 +306,13 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.MessageContentsType;
+import kotlin.Unit;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
 import static androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP;
@@ -404,7 +414,7 @@ public class ComposeMessageFragment extends Fragment implements
     private FrameLayout dateView = null;
     private FrameLayout bottomPanel = null;
     private String identity;
-    private Integer groupId = 0;
+    private Integer groupDbId = 0;
     private Long distributionListId = 0L;
     private Uri cameraUri;
     private long intentTimestamp = 0L;
@@ -423,7 +433,7 @@ public class ComposeMessageFragment extends Fragment implements
     private ConversationService conversationService;
     private DeviceService deviceService;
     private WallpaperService wallpaperService;
-    private DeadlineListService mutedChatsListService, mentionOnlyChatsListService, hiddenChatsListService;
+    private ConversationCategoryService conversationCategoryService;
     private RingtoneService ringtoneService;
     private UserService userService;
     private FileService fileService;
@@ -499,7 +509,9 @@ public class ComposeMessageFragment extends Fragment implements
     private ListViewTouchSwipeListener listViewTouchSwipeListener;
 
     private GroupService groupService;
+    private GroupModelRepository groupModelRepository;
     private GroupCallManager groupCallManager;
+    private GroupFlowDispatcher groupFlowDispatcher;
     private boolean isGroupChat = false;
     private GroupModel groupModel;
     private Date listInitializedAt;
@@ -679,10 +691,16 @@ public class ComposeMessageFragment extends Fragment implements
         }
 
         @Override
-        public void onModified(final List<AbstractMessageModel> modifiedMessageModels) {
+        public void onModified(@NonNull final List<AbstractMessageModel> modifiedMessageModels) {
+
+            final @NonNull List<AbstractMessageModel> safeModifiedMessageModels = modifiedMessageModels
+                .stream()
+                .filter(this::ensureMessageTypeIsCorrectForCurrentChat)
+                .collect(Collectors.toUnmodifiableList());
+
             //replace model
             synchronized (messageValues) {
-                for (final AbstractMessageModel modifiedMessageModel : modifiedMessageModels) {
+                for (final AbstractMessageModel modifiedMessageModel : safeModifiedMessageModels) {
                     if (modifiedMessageModel.getId() != 0) {
                         for (int n = 0; n < messageValues.size(); n++) {
                             AbstractMessageModel listModel = messageValues.get(n);
@@ -700,13 +718,13 @@ public class ComposeMessageFragment extends Fragment implements
             }
             RuntimeUtil.runOnUiThread(() -> {
                 if (composeMessageAdapter != null) {
-                    composeMessageAdapter.notifyItemsChanged(modifiedMessageModels);
+                    composeMessageAdapter.notifyItemsChanged(safeModifiedMessageModels);
                 }
-                if (modifiedMessageModels.size() == 1) {
-                    final @Nullable AbstractMessageModel modifiedMessageModel = modifiedMessageModels.get(0);
+                if (safeModifiedMessageModels.size() == 1) {
+                    final @Nullable AbstractMessageModel modifiedMessageModel = safeModifiedMessageModels.get(0);
                     if (modifiedMessageModel != null && modifiedMessageModel.isDeleted()) {
                         updateActionModeIfNecessary(modifiedMessageModel);
-                        dismissEmojiReactionPopupIfNecessary(modifiedMessageModel);
+                        dismissEmojiReactionPopupIfMessageWasDeleted(modifiedMessageModel);
                     }
                 }
             });
@@ -746,11 +764,20 @@ public class ComposeMessageFragment extends Fragment implements
             // Ignore
         }
 
+        private boolean ensureMessageTypeIsCorrectForCurrentChat(final @NonNull AbstractMessageModel abstractMessageModel) {
+            return abstractMessageModel instanceof FirstUnreadMessageModel
+                || (isGroupChat && abstractMessageModel instanceof GroupMessageModel)
+                || (isDistributionListChat && abstractMessageModel instanceof DistributionListMessageModel)
+                || (abstractMessageModel instanceof MessageModel);
+        }
+
         /**
          *  If we currently selected one message we have to consider dismissing the emoji-reactions-popup
-         *  if it was remote-deleted.
+         *  if the message was remote-deleted.
+         *
+         *  @param  deletedMessageModel The deleted message model
          */
-        private void dismissEmojiReactionPopupIfNecessary(final @NonNull AbstractMessageModel deletedMessageModel) {
+        private void dismissEmojiReactionPopupIfMessageWasDeleted(final @NonNull AbstractMessageModel deletedMessageModel) {
 
             if (emojiReactionsPopup == null || !emojiReactionsPopup.isShowing() || selectedMessages.isEmpty()) {
                 return;
@@ -801,69 +828,152 @@ public class ComposeMessageFragment extends Fragment implements
 
     private final GroupListener groupListener = new GroupListener() {
         @Override
-        public void onCreate(GroupModel newGroupModel) {
+        public void onCreate(@NonNull GroupIdentity groupIdentity) {
             //do nothing
         }
 
         @Override
-        public void onRename(GroupModel groupModel) {
+        public void onRename(@NonNull GroupIdentity groupIdentity) {
+            final boolean changeAffectsCurrentGroup = updateLocalGroupModelAndReceiver(groupIdentity);
+            if (!changeAffectsCurrentGroup) {
+                return;
+            }
             updateToolBarTitleInUIThread();
         }
 
         @Override
-        public void onUpdatePhoto(GroupModel groupModel) {
+        public void onUpdatePhoto(@NonNull GroupIdentity groupIdentity) {
+            final boolean changeAffectsCurrentGroup = updateLocalGroupModelAndReceiver(groupIdentity);
+            if (!changeAffectsCurrentGroup) {
+                return;
+            }
             updateToolBarTitleInUIThread();
         }
 
         @Override
-        public void onRemove(GroupModel groupModel) {
-            if (isGroupChat && groupId != null && groupId == groupModel.getId()) {
+        public void onRemove(long groupDbId) {
+            if (isGroupChat && ComposeMessageFragment.this.groupDbId != null && ComposeMessageFragment.this.groupDbId == groupDbId) {
                 RuntimeUtil.runOnUiThread(() -> finishActivity());
             }
         }
 
         @Override
-        public void onNewMember(GroupModel group, String newIdentity) {
-            updateToolBarTitleInUIThread();
-        }
-
-        @Override
-        public void onMemberLeave(GroupModel group, String identity) {
-            updateToolBarTitleInUIThread();
-        }
-
-        @Override
-        public void onMemberKicked(GroupModel group, String identity) {
-            updateToolBarTitleInUIThread();
-
-            if (userService.isMe(identity)) {
-                updateGroupCallObserverRegistration();
+        public void onNewMember(@NonNull GroupIdentity groupIdentity, String identityNew) {
+            final boolean changeAffectsCurrentGroup = updateLocalGroupModelAndReceiver(groupIdentity);
+            if (!changeAffectsCurrentGroup) {
+                return;
             }
+            final boolean isMe = userService.isMe(identityNew);
+            RuntimeUtil.runOnUiThread(() -> {
+                updateToolbarTitle();
+                // Update menus because the group may have been changed from a notes group to a regular group
+                updateMenus();
+                if (isMe) {
+                    updateGroupCallObserverRegistration();
+                    setupMessageTextClickListener();
+                    updateActionModeIfVisible();
+                }
+            });
         }
 
-
         @Override
-        public void onUpdate(GroupModel groupModel) {
-            updateToolBarTitleInUIThread();
-
-            updateGroupCallObserverRegistration();
+        public void onMemberLeave(@NonNull GroupIdentity groupIdentity, @NonNull String identityLeft) {
+            final boolean changeAffectsCurrentGroup = updateLocalGroupModelAndReceiver(groupIdentity);
+            if (!changeAffectsCurrentGroup) {
+                return;
+            }
+            RuntimeUtil.runOnUiThread(() -> {
+                updateToolbarTitle();
+                // Update menus because the group may now be a notes group
+                updateMenus();
+            });
         }
 
         @Override
-        public void onLeave(GroupModel groupModel) {
-            if (isGroupChat && groupId != null && groupId == groupModel.getId()) {
+        public void onMemberKicked(@NonNull GroupIdentity groupIdentity, String identityKicked) {
+            final boolean changeAffectsCurrentGroup = updateLocalGroupModelAndReceiver(groupIdentity);
+            if (!changeAffectsCurrentGroup) {
+                return;
+            }
+            final boolean isMe = userService.isMe(identityKicked);
+            RuntimeUtil.runOnUiThread(
+                () -> {
+                    updateToolbarTitle();
+                    // Update menus because the group may now be a notes group
+                    updateMenus();
+                    if (isMe) {
+                        updateGroupCallObserverRegistration();
+                        hideEmojiPopupIfShown();
+                        hideEmojiPickerIfShown();
+                        setupMessageTextClickListener();
+                        updateActionModeIfVisible();
+                        SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group));
+                    }
+                }
+            );
+        }
+
+        @Override
+        public void onUpdate(@NonNull GroupIdentity groupIdentity) {
+            final boolean changeAffectsCurrentGroup = updateLocalGroupModelAndReceiver(groupIdentity);
+            if (!changeAffectsCurrentGroup) {
+                return;
+            }
+            RuntimeUtil.runOnUiThread(
+                () -> {
+                    updateToolbarTitle();
+                    updateGroupCallObserverRegistration();
+                    updateMuteMenu();
+                }
+            );
+        }
+
+        @Override
+        public void onLeave(@NonNull GroupIdentity groupIdentity) {
+            GroupModel group = groupModelRepository.getByGroupIdentity(groupIdentity);
+            if (isGroupChat && groupDbId != null && group != null && groupDbId == group.getDatabaseId()) {
                 RuntimeUtil.runOnUiThread(() -> finishActivity());
             }
+        }
+
+        /**
+         * Updates both the legacy {@code groupModel} and the {@code messageReceiver} variables of this fragment. We do not refresh the
+         * data from the database if the passed {@code groupIdentityOfChangedGroup} is not the currently displayed group in this chat.
+         *
+         * @return Whether the changed group affects the currently opened conversation
+         */
+        private boolean updateLocalGroupModelAndReceiver(@NonNull GroupIdentity groupIdentityOfChangedGroup) {
+            if (!(messageReceiver instanceof GroupMessageReceiver)) {
+                // We are not even in a group conversation
+                return false;
+            }
+            if (!(((GroupMessageReceiver) messageReceiver).getGroup().getGroupIdentity().equals(groupIdentityOfChangedGroup))) {
+                // The group chat that is currently opened is not the one that changed
+                return false;
+            }
+            final @Nullable GroupModel currentGroupModel = groupModelRepository.getByGroupIdentity(groupIdentityOfChangedGroup);
+            if (currentGroupModel != null) {
+                messageReceiver = groupService.createReceiver(groupModel);
+                composeMessageAdapter.setMessageReceiver(messageReceiver);
+            }
+            return true;
         }
 
         private void updateGroupCallObserverRegistration() {
             // groupModel may be null if Fragment was re-configured with a new intent
-            if (isGroupChat && groupModel != null && groupService.isGroupMember(groupModel)) {
+            if (isGroupChat && groupModel != null && groupModel.isMember()) {
                 registerGroupCallObserver();
             } else {
                 // Remove ongoing group call notice if not a member of the group anymore
                 updateOngoingCallNotice();
                 removeGroupCallObserver();
+            }
+        }
+
+        @UiThread
+        private void updateActionModeIfVisible() {
+            if (actionMode != null) {
+                actionMode.invalidate();
             }
         }
     };
@@ -927,7 +1037,7 @@ public class ComposeMessageFragment extends Fragment implements
                         && TestUtil.compare(conversationModel.getDistributionList().getId(), distributionListModel.getId());
                 } else if (groupModel != null) {
                     itsMyConversation = conversationModel.getGroup() != null
-                        && TestUtil.compare(conversationModel.getGroup().getId(), groupModel.getId());
+                        && conversationModel.getGroup().getId() == groupModel.getDatabaseId();
                 }
 
                 if (itsMyConversation) {
@@ -1207,7 +1317,13 @@ public class ComposeMessageFragment extends Fragment implements
             updateCameraButton();
 
             this.emojiButton = this.fragmentView.findViewById(R.id.emoji_button);
-            this.emojiButton.setOnClickListener(v -> showEmojiPicker());
+            this.emojiButton.setOnClickListener(v -> {
+                if (isGroupChatWhereUserIsNotMemberOf()) {
+                    SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group));
+                } else {
+                    showEmojiPicker();
+                }
+            });
 
             this.emojiMarkupUtil = EmojiMarkupUtil.getInstance();
             this.wallpaperView = this.fragmentView.findViewById(R.id.wallpaper_view);
@@ -1315,7 +1431,7 @@ public class ComposeMessageFragment extends Fragment implements
     private void initOngoingCallState() {
         ongoingCallNotice = fragmentView.findViewById(R.id.ongoing_call_notice);
         if (ongoingCallNotice != null) {
-            if (groupModel != null && groupService.isGroupMember(groupModel)) {
+            if (groupModel != null && groupModel.isMember()) {
                 registerGroupCallObserver();
             } else {
                 updateOngoingCallNotice();
@@ -1387,7 +1503,7 @@ public class ComposeMessageFragment extends Fragment implements
         removeGroupCallObserver();
         if (groupModel != null && groupCallManager != null) {
             groupCallObserver = call -> updateOngoingCallNotice();
-            logger.info("Add group call observer for group {}", groupModel.getId());
+            logger.info("Add group call observer for group {}", groupModel.getDatabaseId());
             groupCallManager.addGroupCallObserver(groupModel, groupCallObserver);
         }
     }
@@ -1404,12 +1520,14 @@ public class ComposeMessageFragment extends Fragment implements
         return emojiPicker != null && emojiPicker.isShown();
     }
 
+    @UiThread
     private void hideEmojiPickerIfShown() {
         if (isEmojiPickerShown()) {
             emojiPicker.hide();
         }
     }
 
+    @UiThread
     private void hideEmojiPopupIfShown() {
         if (emojiReactionsPopup != null && emojiReactionsPopup.isShowing()) {
             emojiReactionsPopup.dismiss();
@@ -1527,75 +1645,77 @@ public class ComposeMessageFragment extends Fragment implements
     public void onResume(@NonNull LifecycleOwner owner) {
         logger.info("onResume"); // TODO(ANDR-2441): Re-set to debug level
 
-        //set visible receiver
-        if (this.messageReceiver != null) {
-            this.notificationService.setVisibleReceiver(this.messageReceiver);
-
-            isPaused = false;
-            logger.debug("markAllRead");
-            // mark all unread messages
-            if (this.unreadMessages.size() > 0) {
-                ReadMessagesRoutine r = new ReadMessagesRoutine(this.unreadMessages,
-                    this.messageService,
-                    this.notificationService);
-
-                r.addOnFinished(success -> {
-                    if (success) {
-                        unreadMessages.clear();
-                    }
-                });
-
-                new Thread(r).start();
-            }
-
-            // update menus
-            updateMuteMenu();
-            if (isGroupChat) {
-                updateGroupCallMenuItem();
-            }
-
-            // start media players again
-            this.messagePlayerService.resumeAll(getActivity(), this.messageReceiver, SOURCE_LIFECYCLE);
-
-            // make sure to remark the active chat
-            if (ConfigUtils.isTabletLayout()) {
-                ListenerManager.chatListener.handle(listener -> listener.onChatOpened(this.conversationUid));
-            }
-
-            // restore scroll position after orientation change
-            if (getActivity() != null) {
-                Intent intent = getActivity().getIntent();
-                if (intent != null && !intent.hasExtra(EXTRA_API_MESSAGE_ID) && !intent.hasExtra(EXTRA_SEARCH_QUERY)) {
-                    convListView.post(() -> {
-                        if (listInstancePosition != AbsListView.INVALID_POSITION &&
-                            messageReceiver != null &&
-                            messageReceiver.getUniqueIdString().equals(listInstanceReceiverId)) {
-                            logger.debug("restoring position " + listInstancePosition);
-                            convListView.setSelectionFromTop(listInstancePosition, listInstanceTop);
-                            if (activity != null && convListView.getCheckedItemCount() > 0 && actionMode == null) {
-                                SparseBooleanArray itemPositions = convListView.getCheckedItemPositions();
-                                for (int i = 0; i < itemPositions.size(); i++) {
-                                    selectedMessages.add(composeMessageAdapter.getItem(itemPositions.keyAt(i)));
-                                }
-                                actionMode = activity.startSupportActionMode(new ComposeMessageAction(this.longClickItem));
-                            }
-                        } else {
-                            jumpToFirstUnreadMessage();
-                        }
-                        // make sure it's not restored twice
-                        listInstancePosition = AbsListView.INVALID_POSITION;
-                        listInstanceReceiverId = null;
-                    });
-                }
-            }
-
-            // update group requests as they could have been changed when coming back from the overview activity
-            if (ConfigUtils.supportsGroupLinks() && groupService.isGroupCreator(this.groupModel)) {
-                this.openGroupRequestNoticeView.updateGroupRequests();
-            }
-
-            updateOngoingCallNotice();
+        if (messageReceiver == null) {
+            return;
         }
+
+        this.notificationService.setVisibleReceiver(this.messageReceiver);
+
+        isPaused = false;
+
+        // mark all unread messages as read
+         if (!unreadMessages.isEmpty()) {
+            logger.debug("markAllRead");
+            new MarkAsReadRoutine(conversationService, messageService, notificationService)
+                .runAsync(
+                    unreadMessages,
+                    messageReceiver,
+                    /* onSuccess */ () -> {
+                        unreadMessages.clear();
+                        return Unit.INSTANCE;
+                    }
+                );
+        }
+
+        // update menus
+        updateMuteMenu();
+        if (isGroupChat) {
+            updateGroupCallMenuItem();
+        } else {
+            updateBlockMenu();
+        }
+
+        // start media players again
+        this.messagePlayerService.resumeAll(getActivity(), this.messageReceiver, SOURCE_LIFECYCLE);
+
+        // make sure to remark the active chat
+        if (ConfigUtils.isTabletLayout()) {
+            ListenerManager.chatListener.handle(listener -> listener.onChatOpened(this.conversationUid));
+        }
+
+        // restore scroll position after orientation change
+        if (getActivity() != null) {
+            Intent intent = getActivity().getIntent();
+            if (intent != null && !intent.hasExtra(EXTRA_API_MESSAGE_ID) && !intent.hasExtra(EXTRA_SEARCH_QUERY)) {
+                convListView.post(() -> {
+                    if (listInstancePosition != AbsListView.INVALID_POSITION &&
+                        messageReceiver != null &&
+                        messageReceiver.getUniqueIdString().equals(listInstanceReceiverId)) {
+                        logger.debug("restoring position " + listInstancePosition);
+                        convListView.setSelectionFromTop(listInstancePosition, listInstanceTop);
+                        if (activity != null && convListView.getCheckedItemCount() > 0 && actionMode == null) {
+                            SparseBooleanArray itemPositions = convListView.getCheckedItemPositions();
+                            for (int i = 0; i < itemPositions.size(); i++) {
+                                selectedMessages.add(composeMessageAdapter.getItem(itemPositions.keyAt(i)));
+                            }
+                            actionMode = activity.startSupportActionMode(new ComposeMessageAction(this.longClickItem));
+                        }
+                    } else {
+                        jumpToFirstUnreadMessage();
+                    }
+                    // make sure it's not restored twice
+                    listInstancePosition = AbsListView.INVALID_POSITION;
+                    listInstanceReceiverId = null;
+                });
+            }
+        }
+
+        // update group requests as they could have been changed when coming back from the overview activity
+        if (ConfigUtils.supportsGroupLinks() && groupModel != null && groupModel.isCreator()) {
+            this.openGroupRequestNoticeView.updateGroupRequests();
+        }
+
+        updateOngoingCallNotice();
     }
 
     @Override
@@ -1997,11 +2117,28 @@ public class ComposeMessageFragment extends Fragment implements
 
     /**
      * Setup listener for text input field.
+     * <p>
+     * If this is a group chat and the user is not an active member of the group, we prevent any input.
+     * <p>
      * If default emojis are enabled and the device is in portrait mode,
      * we will handle activation. Otherwise, leave it to the system
      */
+    @UiThread
     private void setupMessageTextClickListener() {
-        if (ConfigUtils.isDefaultEmojiStyle() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+
+        if (this.messageText == null) {
+            return;
+        }
+
+        final boolean canUserComposeMessage = !isGroupChatWhereUserIsNotMemberOf();
+        this.messageText.setFocusable(canUserComposeMessage);
+        this.messageText.setFocusableInTouchMode(canUserComposeMessage);
+
+        if (!canUserComposeMessage) {
+            this.messageText.setOnClickListener(v -> {
+                SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group));
+            });
+        } else if (ConfigUtils.isDefaultEmojiStyle() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             this.messageText.setOnClickListener(v -> {
                 if (isEmojiPickerShown()) {
                     if (ConfigUtils.isLandscape(activity) &&
@@ -2138,7 +2275,7 @@ public class ComposeMessageFragment extends Fragment implements
         removeGroupCallObserver();
 
         this.distributionListId = 0L;
-        this.groupId = 0;
+        this.groupDbId = 0;
         this.identity = null;
 
         this.groupModel = null;
@@ -2159,7 +2296,7 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void removeGroupCallObserver() {
         if (groupModel != null && groupCallObserver != null && groupCallManager != null) {
-            logger.info("Remove group call observer for group {}", groupModel.getId());
+            logger.info("Remove group call observer for group {}", groupModel.getDatabaseId());
             groupCallManager.removeGroupCallObserver(groupModel, groupCallObserver);
             groupCallObserver = null;
         }
@@ -2167,8 +2304,8 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void getValuesFromBundle(Bundle bundle) {
         if (bundle != null) {
-            this.groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP, 0);
-            this.distributionListId = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
+            this.groupDbId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
+            this.distributionListId = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
             this.identity = bundle.getString(ThreemaApplication.INTENT_DATA_CONTACT);
             this.intentTimestamp = bundle.getLong(ThreemaApplication.INTENT_DATA_TIMESTAMP, 0L);
             this.cameraUri = bundle.getParcelable(CAMERA_URI);
@@ -2356,23 +2493,27 @@ public class ComposeMessageFragment extends Fragment implements
             }
         }
 
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP) || this.groupId != 0) {
+        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID) || this.groupDbId != 0) {
             this.isGroupChat = true;
-            if (this.groupId == 0) {
-                this.groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
+            // TODO(ANDR-3786) - Only read the value as type long
+            if (this.groupDbId == 0) {
+                this.groupDbId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
             }
-            this.groupModel = this.groupService.getById(this.groupId);
+            if (this.groupDbId == 0) {
+                this.groupDbId = (int) intent.getLongExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0L);
+            }
+            this.groupModel = groupModelRepository.getByLocalGroupDbId(this.groupDbId);
 
             if (this.groupModel == null || this.groupModel.isDeleted()) {
                 logger.error(activity.getString(R.string.group_not_found), activity, (Runnable) this::finishActivity);
                 return;
             }
 
-            intent.removeExtra(ThreemaApplication.INTENT_DATA_GROUP);
+            intent.removeExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID);
             this.messageReceiver = this.groupService.createReceiver(this.groupModel);
-            this.conversationUid = ConversationUtil.getGroupConversationUid(this.groupId);
-            if (ConfigUtils.supportsGroupLinks() && groupService.isGroupCreator(this.groupModel)) {
-                this.openGroupRequestNoticeView.setGroupIdReference(this.groupModel.getApiGroupId());
+            this.conversationUid = ConversationUtil.getGroupConversationUid(this.groupDbId);
+            if (ConfigUtils.supportsGroupLinks() && groupModel.isCreator()) {
+                this.openGroupRequestNoticeView.setGroupIdReference(new GroupId(this.groupModel.getGroupIdentity().getGroupId()));
                 this.openGroupRequestNoticeView.updateGroupRequests();
             }
 
@@ -2385,12 +2526,12 @@ public class ComposeMessageFragment extends Fragment implements
                 groupModel,
                 textInputLayout
             );
-        } else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST) || this.distributionListId != 0) {
+        } else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID) || this.distributionListId != 0) {
             this.isDistributionListChat = true;
 
             try {
                 if (this.distributionListId == 0) {
-                    this.distributionListId = intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
+                    this.distributionListId = intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
                 }
                 this.distributionListModel = distributionListService.getById(this.distributionListId);
 
@@ -2399,7 +2540,7 @@ public class ComposeMessageFragment extends Fragment implements
                     return;
                 }
 
-                intent.removeExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
+                intent.removeExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID);
                 this.messageReceiver = distributionListService.createReceiver(this.distributionListModel);
             } catch (Exception e) {
                 logger.error("Exception", e);
@@ -2451,7 +2592,7 @@ public class ComposeMessageFragment extends Fragment implements
         }
 
         // hide chat from view and prevent screenshots - may not work on some devices
-        if (this.hiddenChatsListService.has(this.messageReceiver.getUniqueIdString())) {
+        if (this.conversationCategoryService.isPrivateChat(this.messageReceiver.getUniqueIdString())) {
             try {
                 activity.getWindow().addFlags(FLAG_SECURE);
             } catch (Exception ignored) {
@@ -2639,8 +2780,13 @@ public class ComposeMessageFragment extends Fragment implements
         if (messageReceiver instanceof ContactMessageReceiver) {
             ContactMessageReceiver receiver = (ContactMessageReceiver) messageReceiver;
             deleteContactMessageForAll(receiver, message);
-        } else if (messageReceiver instanceof GroupMessageReceiver && groupModel != null && groupService.isGroupMember(groupModel)) {
-            deleteGroupMessageForAll(message, groupModel);
+        } else if (messageReceiver instanceof GroupMessageReceiver && groupModel != null && groupModel.isMember()) {
+            GroupModelData groupModelData = groupModel.getData().getValue();
+            if (groupModelData != null) {
+                deleteGroupMessageForAll(message, groupModelData);
+            } else {
+                logger.warn("Cannot delete message for all in a group where the data is null");
+            }
         } else {
             logger.warn("Cannot delete message for receiver of type {}", messageReceiver.getClass().getName());
         }
@@ -2654,8 +2800,8 @@ public class ComposeMessageFragment extends Fragment implements
         }
     }
 
-    private void deleteGroupMessageForAll(@NonNull AbstractMessageModel message, @NonNull GroupModel group) {
-        GroupFeatureSupport featureSupport = groupService.getFeatureSupport(group, ThreemaFeature.DELETE_MESSAGES);
+    private void deleteGroupMessageForAll(@NonNull AbstractMessageModel message, @NonNull GroupModelData groupModelData) {
+        GroupFeatureSupport featureSupport = groupService.getFeatureSupport(groupModelData, ThreemaFeature.DELETE_MESSAGES);
         if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.ALL) {
             sendDeleteMessage(message);
         } else if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.PARTIAL) {
@@ -2849,11 +2995,8 @@ public class ComposeMessageFragment extends Fragment implements
 
         if (!this.isPaused) {
             this.recentlyAddedCount++;
-            new Thread(
-                new ReadMessagesRoutine(Collections.singletonList(message),
-                    this.messageService,
-                    this.notificationService)
-            ).start();
+            new MarkAsReadRoutine(conversationService, messageService, notificationService)
+                .runAsync(Collections.singletonList(message), messageReceiver);
         } else {
             this.unreadMessages.add(message);
         }
@@ -3119,7 +3262,7 @@ public class ComposeMessageFragment extends Fragment implements
             // re-use existing adapter (for example on tablets)
             composeMessageAdapter.clear();
             composeMessageAdapter.setThumbnailWidth(ConfigUtils.getPreferredThumbnailWidth(getContext(), false));
-            composeMessageAdapter.setGroupId(groupId);
+            composeMessageAdapter.setGroupId(groupDbId);
             composeMessageAdapter.setMessageReceiver(messageReceiver);
             composeMessageAdapter.setUnreadMessagesCount(unreadCount);
             insertToList(values, true, true, true);
@@ -3156,7 +3299,7 @@ public class ComposeMessageFragment extends Fragment implements
                 convListView.addFooterView(isTypingView, null, false);
             }
 
-            composeMessageAdapter.setGroupId(groupId);
+            composeMessageAdapter.setGroupId(groupDbId);
             composeMessageAdapter.setOnClickListener(new ComposeMessageAdapter.OnClickListener() {
                 @Override
                 public void click(View view, int position, AbstractMessageModel messageModel) {
@@ -3179,7 +3322,8 @@ public class ComposeMessageFragment extends Fragment implements
                             // Check whether sending failed or a fs reject was received
                             if (messageModel.getState() == MessageState.SENDFAILED) {
                                 // If sending failed, we try to resend it to every group member
-                                finalRecipientIdentities.addAll(Arrays.asList(groupService.getGroupIdentities(groupModel)));
+                                GroupModelData groupModelData = groupModel.getData().getValue();
+                                finalRecipientIdentities.addAll(groupModelData != null ? groupModelData.otherMembers : Set.of());
                                 resendMessage.run();
                                 return;
                             }
@@ -3199,7 +3343,7 @@ public class ComposeMessageFragment extends Fragment implements
 
                             if (finalRecipientIdentities.isEmpty()) {
                                 // If there is no rejected recipient, we can just update the message
-                                // state as the rejected recipient is not longer a group member.
+                                // state as the rejected recipient is no longer a group member.
                                 // Note that this should never happen.
                                 messageService.updateOutgoingMessageState(messageModel, MessageState.SENT, new Date());
                                 logger.warn("Resend for group members requested, although no member rejected it");
@@ -3299,6 +3443,12 @@ public class ComposeMessageFragment extends Fragment implements
 
                 @Override
                 public void onEmojiReactionClick(@Nullable String emojiSequence, @Nullable AbstractMessageModel messageModel) {
+
+                    if (isGroupChatWhereUserIsNotMemberOf()) {
+                        SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group));
+                        return;
+                    }
+
                     if (emojiSequence != null && messageModel != null) {
                         if (EmojiUtil.REPLACEMENT_CHARACTER.equals(emojiSequence)) {
                             logger.info("Unknown emoji reaction sequence clicked");
@@ -3426,7 +3576,11 @@ public class ComposeMessageFragment extends Fragment implements
 
                 @Override
                 public void onSelectButtonClick(@Nullable AbstractMessageModel messageModel) {
-                    if (MessageUtil.canEmojiReact(messageModel)) {
+                    if (isGroupChatWhereUserIsNotMemberOf()) {
+                        RuntimeUtil.runOnUiThread(() ->
+                            SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group))
+                        );
+                    } else if (MessageUtil.canEmojiReact(messageModel)) {
                         showEmojiReactionsPicker(messageModel);
                     }
                 }
@@ -3437,7 +3591,7 @@ public class ComposeMessageFragment extends Fragment implements
                 }
             });
 
-            insertToList(values, false, !hiddenChatsListService.has(messageReceiver.getUniqueIdString()), false);
+            insertToList(values, false, !conversationCategoryService.isPrivateChat(messageReceiver.getUniqueIdString()), false);
             convListView.setAdapter(composeMessageAdapter);
             convListView.setItemsCanFocus(false);
             convListView.setVisibility(View.VISIBLE);
@@ -3446,6 +3600,17 @@ public class ComposeMessageFragment extends Fragment implements
         setIdentityColors();
 
         removeIsTypingFooter();
+    }
+
+    /**
+     * @return {@code true} if the user is not a member of this group chat. In case we are in a group conversation, but we could not determine the
+     * current member status we also return {@code true}.
+     */
+    private boolean isGroupChatWhereUserIsNotMemberOf() {
+        if (!isGroupChat || groupModel == null) {
+            return false;
+        }
+        return !groupModel.isMember();
     }
 
     private void showEmojiReactionsOverview(@Nullable AbstractMessageModel messageModel, @Nullable String emojiSequence) {
@@ -3508,7 +3673,7 @@ public class ComposeMessageFragment extends Fragment implements
         logger.debug("setIdentityColors");
 
         if (this.isGroupChat) {
-            Map<String, Integer> colorIndices = this.groupService.getGroupMemberIDColorIndices(this.groupModel);
+            Map<String, Integer> colorIndices = this.groupService.getGroupMemberIDColorIndices(groupModel);
             Map<String, Integer> colors = new HashMap<>();
             boolean darkTheme = ConfigUtils.isTheDarkSide(getContext());
             for (Map.Entry<String, Integer> entry : colorIndices.entrySet()) {
@@ -3631,7 +3796,6 @@ public class ComposeMessageFragment extends Fragment implements
 
     /**
      * Recursively search for message with provided apiMessageId in chat and gradually load more records to Adapter until matching message is found by provided Filter
-     * TODO: we should provide a static version of this that does not rely on globals
      *
      * @param apiMessageId to search for
      * @param filter       Filter to use for this search
@@ -3732,6 +3896,12 @@ public class ComposeMessageFragment extends Fragment implements
             return;
         }
 
+        // Don't show the reaction popup if we are in a group chat and we are not an active group member anymore
+        if (isGroupChatWhereUserIsNotMemberOf()) {
+            logger.debug("Cannot react on group message because we are not an active group member anymore");
+            return;
+        }
+
         // check if we can react on this kind of message
         if (!MessageUtil.canEmojiReact(messageModel)) {
             return;
@@ -3753,8 +3923,7 @@ public class ComposeMessageFragment extends Fragment implements
             convListView,
             getParentFragmentManager(),
             isSendingReactionsAllowed,
-            isGatewayChat
-        );
+            isGatewayChat);
         emojiReactionsPopup.setListener(new EmojiReactionsPopup.EmojiReactionsPopupListener() {
             @Override
             public void onTopReactionClicked(@NonNull final AbstractMessageModel messageModel, @NonNull final String emojiSequence) {
@@ -3818,19 +3987,19 @@ public class ComposeMessageFragment extends Fragment implements
     }
 
     private boolean isMuted() {
-        if (messageReceiver != null && mutedChatsListService != null) {
-            String uniqueId = messageReceiver.getUniqueIdString();
-            return !TestUtil.isEmptyOrNull(uniqueId) && mutedChatsListService.has(uniqueId);
+        if (messageReceiver == null) {
+            return false;
         }
-        return false;
+        final @Nullable NotificationTriggerPolicyOverride currentNotificationTriggerPolicyOverride = messageReceiver.getNotificationTriggerPolicyOverrideOrNull();
+        return currentNotificationTriggerPolicyOverride != null && currentNotificationTriggerPolicyOverride.getMuteAppliesRightNow();
     }
 
     private boolean isMentionsOnly() {
-        if (messageReceiver != null && mentionOnlyChatsListService != null) {
-            String uniqueId = messageReceiver.getUniqueIdString();
-            return !TestUtil.isEmptyOrNull(uniqueId) && mentionOnlyChatsListService.has(uniqueId);
+        if (messageReceiver == null) {
+            return false;
         }
-        return false;
+        final @Nullable NotificationTriggerPolicyOverride currentNotificationTriggerPolicyOverride = messageReceiver.getNotificationTriggerPolicyOverrideOrNull();
+        return currentNotificationTriggerPolicyOverride instanceof NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions;
     }
 
     private boolean isSilent() {
@@ -3842,7 +4011,8 @@ public class ComposeMessageFragment extends Fragment implements
     }
 
     private void playInAppSound(final int resId, final boolean isVibrate) {
-        if (this.isMuted() || this.isSilent()) {
+
+        if (isMuted() || isSilent()) {
             //do not play
             return;
         }
@@ -4010,12 +4180,18 @@ public class ComposeMessageFragment extends Fragment implements
     }
 
     private void startEditingGroupMessage(@NonNull GroupModel groupModel, @NonNull AbstractMessageModel message) {
-        if (groupService.isNotesGroup(groupModel)) {
+        if (Boolean.TRUE.equals(groupModel.isNotesGroup())) {
             startMessageEditor(message);
             return;
         }
 
-        GroupFeatureSupport featureSupport = groupService.getFeatureSupport(groupModel, ThreemaFeature.EDIT_MESSAGES);
+        GroupModelData groupModelData = groupModel.getData().getValue();
+        if (groupModelData == null) {
+            logger.warn("Cannot start editing group message of deleted group");
+            return;
+        }
+
+        GroupFeatureSupport featureSupport = groupService.getFeatureSupport(groupModelData, ThreemaFeature.EDIT_MESSAGES);
         if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.ALL) {
             startMessageEditor(message);
         } else if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.PARTIAL) {
@@ -4044,6 +4220,11 @@ public class ComposeMessageFragment extends Fragment implements
     private void onSendEditMessage(@NonNull AbstractMessageModel messageModel, @NonNull String newBody) {
         if (editMessageActionMode != null) {
             editMessageActionMode.finish();
+        }
+
+        if (isGroupChatWhereUserIsNotMemberOf()) {
+            SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group));
+            return;
         }
 
         try {
@@ -4288,6 +4469,7 @@ public class ComposeMessageFragment extends Fragment implements
         }
     }
 
+    @UiThread
     private void updateToolbarTitle() {
         if (!TestUtil.required(
             this.actionBar,
@@ -4309,13 +4491,13 @@ public class ComposeMessageFragment extends Fragment implements
         this.actionBarTitleTextView.setPaintFlags(this.actionBarTitleTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
 
         if (this.isGroupChat) {
-            if (!groupService.isGroupMember(this.groupModel)) {
+            if (groupModel != null && !groupModel.isMember()) {
                 this.actionBarTitleTextView.setPaintFlags(this.actionBarTitleTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
             actionBarSubtitleTextView.setText(groupService.getMembersString(groupModel));
             actionBarSubtitleTextView.setVisibility(View.VISIBLE);
             if (actionBarAvatarView.getAvatarView().isAttachedToWindow()) {
-                groupService.loadAvatarIntoImage(
+                groupService.loadAvatarIntoImageView(
                     groupModel,
                     actionBarAvatarView.getAvatarView(),
                     AvatarOptions.PRESET_DEFAULT_FALLBACK,
@@ -4386,7 +4568,8 @@ public class ComposeMessageFragment extends Fragment implements
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    @Deprecated
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
         this.callItem = menu.findItem(R.id.menu_threema_call);
         this.deleteDistributionListItem = menu.findItem(R.id.menu_delete_distribution_list);
         this.mutedMenuItem = menu.findItem(R.id.menu_muted);
@@ -4399,6 +4582,7 @@ public class ComposeMessageFragment extends Fragment implements
 
         // initialize menus
         updateMenus();
+        updateMuteMenu();
 
         // initialize various toolbar items
         this.updateToolbarTitle();
@@ -4423,7 +4607,7 @@ public class ComposeMessageFragment extends Fragment implements
         }
 
         this.deleteDistributionListItem.setVisible(this.isDistributionListChat);
-        this.mutedMenuItem.setVisible(!this.isDistributionListChat && !(isGroupChat && groupService.isNotesGroup(groupModel)));
+        this.mutedMenuItem.setVisible(!this.isDistributionListChat && !isNotesGroupChat());
         updateMuteMenu();
 
         if (contactModel != null) {
@@ -4507,7 +4691,7 @@ public class ComposeMessageFragment extends Fragment implements
 
         // show/hide open group request chips if there are any
         if (ConfigUtils.supportsGroupLinks() && groupModel != null && !databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
-            .getSingleMostRecentOpenRequestsPerUserForGroup(groupModel.getApiGroupId()).isEmpty()) {
+            .getSingleMostRecentOpenRequestsPerUserForGroup(new GroupId(groupModel.getGroupIdentity().getGroupId())).isEmpty()) {
             showOpenGroupRequestsMenuItem.setVisible(true);
             showAllGroupRequestsMenuItem.setVisible(true);
             if (preferenceService.getGroupRequestsOverviewHidden()) {
@@ -4525,7 +4709,7 @@ public class ComposeMessageFragment extends Fragment implements
         showAllGroupRequestsMenuItem.setVisible(ConfigUtils.supportsGroupLinks() &&
             groupModel != null &&
             !databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
-                .getAllRequestsForGroup(groupModel.getApiGroupId()).isEmpty()
+                .getAllRequestsForGroup(new GroupId(groupModel.getGroupIdentity().getGroupId())).isEmpty()
         );
 
         // Show "empty chat" only if chat is not empty
@@ -4534,17 +4718,21 @@ public class ComposeMessageFragment extends Fragment implements
         updateVoipCallMenuItem(null);
     }
 
+    private boolean isNotesGroupChat() {
+        return isGroupChat && groupModel != null && Boolean.TRUE.equals(groupModel.isNotesGroup());
+    }
+
+    @UiThread
     private void updateMuteMenu() {
         if (!isAdded() || this.mutedMenuItem == null) {
             // do not update if no longer attached to activity
             return;
         }
-
-        if (isMuted()) {
-            this.mutedMenuItem.setIcon(R.drawable.ic_dnd_total_silence_grey600_24dp);
-            this.mutedMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        } else if (isMentionsOnly()) {
+        if (isMentionsOnly()) {
             this.mutedMenuItem.setIcon(R.drawable.ic_dnd_mention_grey600_24dp);
+            this.mutedMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        } else if (isMuted()) {
+            this.mutedMenuItem.setIcon(R.drawable.ic_dnd_total_silence_grey600_24dp);
             this.mutedMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         } else if (isSilent()) {
             this.mutedMenuItem.setIcon(R.drawable.ic_notifications_off_outline);
@@ -4561,29 +4749,29 @@ public class ComposeMessageFragment extends Fragment implements
             return;
         }
         if (TestUtil.required(this.blockMenuItem, this.blockedIdentitiesService, this.contactModel)) {
-            boolean state = this.blockedIdentitiesService.isBlocked(this.contactModel.getIdentity());
-            this.blockMenuItem.setTitle(state ? getString(R.string.unblock_contact) : getString(R.string.block_contact));
-            this.blockMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
-            this.mutedMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
-            this.mutedMenuItem.setVisible(!state);
+            boolean hasBlockedThisIdentity = this.blockedIdentitiesService.isBlocked(this.contactModel.getIdentity());
+            this.blockMenuItem.setTitle(hasBlockedThisIdentity ? getString(R.string.unblock_contact) : getString(R.string.block_contact));
+            this.blockMenuItem.setShowAsAction(hasBlockedThisIdentity ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
+            this.mutedMenuItem.setShowAsAction(hasBlockedThisIdentity ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            this.mutedMenuItem.setVisible(!hasBlockedThisIdentity);
 
-            this.callItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
+            this.callItem.setShowAsAction(hasBlockedThisIdentity ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-            updateVoipCallMenuItem(!state);
+            updateVoipCallMenuItem(!hasBlockedThisIdentity);
         }
     }
 
     @AnyThread
-    private void updateVoipCallMenuItem(@Nullable final Boolean newState) {
+    private void updateVoipCallMenuItem(@Nullable final Boolean hasBlockedThisIdentity) {
         RuntimeUtil.runOnUiThread(() -> {
             if (isGroupChat) {
                 updateGroupCallMenuItem();
             } else if (callItem != null) {
                 if (ContactUtil.canReceiveVoipMessages(contactModel, blockedIdentitiesService) && ConfigUtils.isCallsEnabled()) {
-                    logger.debug("updateVoipMenu newState " + newState);
+                    logger.debug("updateVoipMenu hasBlockedThisIdentity: {}", hasBlockedThisIdentity);
                     callItem.setIcon(R.drawable.ic_phone_locked_outline);
                     callItem.setTitle(R.string.threema_call);
-                    callItem.setVisible(newState != null ? newState : voipStateService.getCallState().isIdle());
+                    callItem.setVisible(hasBlockedThisIdentity != null ? hasBlockedThisIdentity : voipStateService.getCallState().isIdle());
                 } else {
                     callItem.setVisible(false);
                 }
@@ -4603,7 +4791,9 @@ public class ComposeMessageFragment extends Fragment implements
         }
 
         if (isGroupChat && callItem != null) {
-            if (GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel)) {
+            ch.threema.storage.models.GroupModel legacyGroupModel = groupService.getByGroupIdentity(groupModel.getGroupIdentity());
+
+            if (legacyGroupModel != null && GroupCallUtilKt.qualifiesForGroupCalls(groupService, legacyGroupModel)) {
                 GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
                 callItem.setIcon(R.drawable.ic_phone_locked_outline);
                 callItem.setTitle(R.string.group_call);
@@ -4617,10 +4807,10 @@ public class ComposeMessageFragment extends Fragment implements
     private Intent addExtrasToIntent(Intent intent, @NonNull MessageReceiver receiver) {
         switch (receiver.getType()) {
             case MessageReceiver.Type_GROUP:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupDbId);
                 break;
             case MessageReceiver.Type_DISTRIBUTION_LIST:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, distributionListModel.getId());
+                intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, distributionListModel.getId());
                 break;
             case MessageReceiver.Type_CONTACT:
             default:
@@ -4670,7 +4860,7 @@ public class ComposeMessageFragment extends Fragment implements
 
                 if (isGroupChat) {
                     intent = new Intent(activity, GroupNotificationsActivity.class);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, this.groupId);
+                    intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, this.groupDbId);
                 } else {
                     intent = new Intent(activity, ContactNotificationsActivity.class);
                     intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, this.identity);
@@ -4715,7 +4905,10 @@ public class ComposeMessageFragment extends Fragment implements
             startActivity(intent);
         } else if (id == R.id.menu_group_request_show_all) {
             Intent groupRequestsOverviewIntent = new Intent(getContext(), IncomingGroupRequestActivity.class);
-            groupRequestsOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_API, groupModel.getApiGroupId());
+            groupRequestsOverviewIntent.putExtra(
+                ThreemaApplication.INTENT_DATA_GROUP_API,
+                new GroupId(groupModel.getGroupIdentity().getGroupId())
+            );
             startActivity(groupRequestsOverviewIntent);
         } else if (id == R.id.menu_group_requests_show) {
             if (openGroupRequestNoticeView.isShown()) {
@@ -4741,7 +4934,12 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void initiateCall() {
         if (isGroupChat) {
-            GroupCallUtilKt.initiateCall(activity, groupModel);
+            ch.threema.storage.models.GroupModel legacyGroupModel = groupService.getByGroupIdentity(groupModel.getGroupIdentity());
+            if (legacyGroupModel != null) {
+                GroupCallUtilKt.initiateCall(activity, legacyGroupModel);
+            } else {
+                logger.error("Could not get legacy group model to initiate the group call");
+            }
         } else {
             VoipUtil.initiateCall(activity, contactModel, false, null);
         }
@@ -4757,8 +4955,10 @@ public class ComposeMessageFragment extends Fragment implements
             EmptyOrDeleteConversationsAsyncTask.Mode.EMPTY,
             new MessageReceiver[]{messageReceiver},
             conversationService,
-            groupService,
             distributionListService,
+            groupModelRepository,
+            groupFlowDispatcher,
+            userService.getIdentity(),
             getParentFragmentManager(),
             null,
             () -> {
@@ -4874,7 +5074,9 @@ public class ComposeMessageFragment extends Fragment implements
             boolean isSaveable = !AppRestrictionUtil.isShareMediaDisabled(getContext());
             boolean isCopyable = true;
             boolean isShareable = !AppRestrictionUtil.isShareMediaDisabled(getContext());
-            boolean isEditable = isSingleMessage && MessageUtil.canEdit(selectedMessages.get(0));
+            boolean isEditable = isSingleMessage
+                && MessageUtilKt.canBeEdited(selectedMessages.get(0), isNotesGroupChat())
+                && !isGroupChatWhereUserIsNotMemberOf();
             boolean canSendImageReply = isSingleMessage && MessageUtil.canSendImageReply(selectedMessages.get(0));
             boolean canStarMessage = isSingleMessage && MessageUtil.canStarMessage(selectedMessages.get(0));
 
@@ -4986,14 +5188,18 @@ public class ComposeMessageFragment extends Fragment implements
         private boolean isDeletableRemotely(AbstractMessageModel message) {
             // check receiver support
             if (messageReceiver instanceof GroupMessageReceiver) {
-                GroupModel group = ((GroupMessageReceiver) messageReceiver).getGroup();
-                if (!groupService.isGroupMember(group)) {
+                GroupModel groupModel = ((GroupMessageReceiver) messageReceiver).getGroupModel();
+                if (groupModel == null || !groupModel.isMember()) {
                     return false;
-                } else if (groupService.isNotesGroup(group)) {
+                } else if (Boolean.TRUE.equals(groupModel.isNotesGroup())) {
                     // delete for all is pointless in notes group
                     return false;
                 } else {
-                    GroupFeatureSupport featureSupport = groupService.getFeatureSupport(group, ThreemaFeature.DELETE_MESSAGES);
+                    GroupModelData groupModelData = groupModel.getData().getValue();
+                    if (groupModelData == null) {
+                        return false;
+                    }
+                    GroupFeatureSupport featureSupport = groupService.getFeatureSupport(groupModelData, ThreemaFeature.DELETE_MESSAGES);
                     if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.NONE) {
                         // no feature support in group
                         return false;
@@ -5448,8 +5654,8 @@ public class ComposeMessageFragment extends Fragment implements
 
         // some phones destroy the retained fragment upon going in background so we have to persist some data
         outState.putParcelable(CAMERA_URI, cameraUri);
-        outState.putInt(ThreemaApplication.INTENT_DATA_GROUP, this.groupId);
-        outState.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, this.distributionListId);
+        outState.putInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, this.groupDbId);
+        outState.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, this.distributionListId);
         outState.putString(ThreemaApplication.INTENT_DATA_CONTACT, this.identity);
         outState.putInt(BUNDLE_LIST_POSITION, this.listInstancePosition);
         outState.putString(BUNDLE_LIST_RECEIVER_ID, this.listInstanceReceiverId);
@@ -5602,6 +5808,9 @@ public class ComposeMessageFragment extends Fragment implements
         // Update header containing contact information
         updateToolbarTitle();
 
+        // Update toolbar/menu icon states
+        updateMuteMenu();
+
         // Reset cache
         if (composeMessageAdapter != null) {
             composeMessageAdapter.resetCachedContactModelData(contactModel);
@@ -5621,6 +5830,9 @@ public class ComposeMessageFragment extends Fragment implements
             this.userService,
             this.contactService,
             this.groupService,
+            this.groupModelRepository,
+            this.groupCallManager,
+            this.groupFlowDispatcher,
             this.messageService,
             this.fileService,
             this.notificationService,
@@ -5631,9 +5843,12 @@ public class ComposeMessageFragment extends Fragment implements
             this.conversationService,
             this.deviceService,
             this.wallpaperService,
-            this.mutedChatsListService,
+            this.conversationCategoryService,
             this.ringtoneService,
-            this.voipStateService
+            this.voipStateService,
+            this.downloadService,
+            this.licenseService,
+            this.emojiReactionsRepository
         );
     }
 
@@ -5645,7 +5860,9 @@ public class ComposeMessageFragment extends Fragment implements
                 this.userService = serviceManager.getUserService();
                 this.contactService = serviceManager.getContactService();
                 this.groupService = serviceManager.getGroupService();
+                this.groupModelRepository = serviceManager.getModelRepositories().getGroups();
                 this.groupCallManager = serviceManager.getGroupCallManager();
+                this.groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
                 this.messageService = serviceManager.getMessageService();
                 this.fileService = serviceManager.getFileService();
                 this.notificationService = serviceManager.getNotificationService();
@@ -5658,9 +5875,7 @@ public class ComposeMessageFragment extends Fragment implements
                 this.deviceService = serviceManager.getDeviceService();
                 this.wallpaperService = serviceManager.getWallpaperService();
                 this.wallpaperLauncher = wallpaperService.getWallpaperActivityResultLauncher(this, this::setBackgroundWallpaper, () -> this.messageReceiver);
-                this.mutedChatsListService = serviceManager.getMutedChatsListService();
-                this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
-                this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
+                this.conversationCategoryService = serviceManager.getConversationCategoryService();
                 this.ringtoneService = serviceManager.getRingtoneService();
                 this.voipStateService = serviceManager.getVoipStateService();
                 this.downloadService = serviceManager.getDownloadService();
@@ -5772,11 +5987,10 @@ public class ComposeMessageFragment extends Fragment implements
     public void markAsRead() {
         if (messageReceiver != null) {
             try {
-                List<AbstractMessageModel> unreadMessages = messageReceiver.getUnreadMessages();
-                if (unreadMessages != null && unreadMessages.size() > 0) {
-                    new Thread(new ReadMessagesRoutine(unreadMessages, this.messageService, this.notificationService)).start();
-                    notificationService.cancel(messageReceiver);
-                }
+                @NonNull List<AbstractMessageModel> unreadMessages = messageReceiver.getUnreadMessages();
+                new MarkAsReadRoutine(conversationService, messageService, notificationService)
+                    .runAsync(unreadMessages, messageReceiver);
+                notificationService.cancel(messageReceiver);
             } catch (SQLException e) {
                 logger.error("Exception", e);
             }
@@ -5899,8 +6113,10 @@ public class ComposeMessageFragment extends Fragment implements
                             EmptyOrDeleteConversationsAsyncTask.Mode.DELETE,
                             new MessageReceiver[]{messageReceiver},
                             conversationService,
-                            groupService,
                             distributionListService,
+                            groupModelRepository,
+                            groupFlowDispatcher,
+                            userService.getIdentity(),
                             null,
                             null,
                             () -> {

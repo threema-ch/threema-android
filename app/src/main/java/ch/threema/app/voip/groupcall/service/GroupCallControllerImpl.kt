@@ -37,16 +37,16 @@ import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.ContactModel
+import java.lang.Runnable
+import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.webrtc.EglBase
-import java.lang.Runnable
-import java.util.*
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallControllerImpl")
 
@@ -59,7 +59,7 @@ internal class GroupCallControllerImpl(
     private val descriptionSetSignal = CompletableDeferred<Unit>()
     private val mutableParticipants = MutableSharedFlow<Set<Participant>>(
         replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     private val mutableUpdateCaptureState = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private var remoteCtxs: MutableMap<ParticipantId, RemoteCtx> = mutableMapOf()
@@ -88,7 +88,6 @@ internal class GroupCallControllerImpl(
             }
         }
     }
-
 
     override lateinit var parameters: GroupCallParameters
 
@@ -293,7 +292,7 @@ internal class GroupCallControllerImpl(
         context: Context,
         sfuBaseUrl: String,
         sfuConnection: SfuConnection,
-        onError: () -> Unit
+        onError: () -> Unit,
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
         GroupCallThreadUtil.exceptionHandler = object : GroupCallThreadUtil.ExceptionHandler {
@@ -309,7 +308,7 @@ internal class GroupCallControllerImpl(
                 sfuBaseUrl,
                 context,
                 me,
-                sfuConnection
+                sfuConnection,
             ).process()
             // This is only reached _after_ the call has been teared down
             callDisposedSignal.complete(Unit)

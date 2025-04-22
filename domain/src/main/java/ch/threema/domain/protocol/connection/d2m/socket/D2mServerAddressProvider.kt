@@ -21,7 +21,6 @@
 
 package ch.threema.domain.protocol.connection.d2m.socket
 
-import ch.threema.base.utils.Utils
 import ch.threema.base.utils.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.protobuf.d2m.MdD2M
@@ -30,16 +29,10 @@ import com.google.protobuf.ByteString
 class D2mServerAddressProvider(
     private val serverAddressProvider: ServerAddressProvider,
     private val dgid: ByteArray,
-    private val serverGroup: String
+    private val serverGroup: String,
 ) {
-
     fun get(): String {
-        val prefix8 = Utils.byteToHex(dgid[0], false, false)
-        val prefix4 = prefix8.substring(0, 1)
-
-        val mediatorUrl = serverAddressProvider.mediatorUrl
-            .replace("{deviceGroupIdPrefix4}", prefix4, false)
-            .replace("{deviceGroupIdPrefix8}", prefix8, false)
+        val mediatorUrl = serverAddressProvider.getMediatorUrl().get(dgid)
 
         val clientUrlInfo = MdD2M.ClientUrlInfo.newBuilder()
             .setDeviceGroupId(ByteString.copyFrom(dgid))

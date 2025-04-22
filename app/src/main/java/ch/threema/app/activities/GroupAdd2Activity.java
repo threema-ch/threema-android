@@ -22,9 +22,6 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -33,21 +30,25 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.groupflows.GroupCreateProperties;
+import ch.threema.app.groupflows.ProfilePicture;
 import ch.threema.app.dialogs.ContactEditDialog;
-import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
+import kotlinx.coroutines.Deferred;
 
 public class GroupAdd2Activity extends GroupEditActivity implements ContactEditDialog.ContactEditDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAdd2Activity");
 
-    private static final String DIALOG_TAG_CREATING_GROUP = "groupCreate";
     private static final String BUNDLE_GROUP_IDENTITIES = "grId";
 
     private String[] groupIdentities;
@@ -78,41 +79,44 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
         }
     }
 
-    private void createGroup(final String groupName, final Set<String> groupIdentities, final File avatarFile) {
-        new AsyncTask<Void, Void, GroupModel>() {
-            @Override
-            protected void onPreExecute() {
-                GenericProgressDialog.newInstance(R.string.creating_group, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CREATING_GROUP);
-            }
+    private void createGroup(
+        @NonNull final String groupName,
+        @NonNull final Set<String> groupIdentities,
+        @Nullable final File avatarFile
+    ) {
+        GroupFlowDispatcher groupFlowDispatcher;
+        try {
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException e) {
+            logger.error("Could not get group flow dispatcher", e);
+            return;
+        }
 
-            @Override
-            protected GroupModel doInBackground(Void... params) {
-                try {
-                    Bitmap avatar = avatarFile != null ? BitmapFactory.decodeFile(avatarFile.getPath()) : null;
-                    return groupService.createGroupFromLocal(
-                        groupName,
-                        groupIdentities,
-                        avatar
-                    );
-                } catch (Exception x) {
-                    logger.error("Exception", x);
-                }
-                return null;
-            }
+        Deferred<ch.threema.data.models.GroupModel> groupAddResult =
+            groupFlowDispatcher.runCreateGroupFlow(
+                getSupportFragmentManager(),
+                this,
+                new GroupCreateProperties(
+                    groupName,
+                    new ProfilePicture(avatarFile),
+                    groupIdentities
+                )
+            );
 
-            @Override
-            protected void onPostExecute(GroupModel newModel) {
-                DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CREATING_GROUP, true);
-
-                if (newModel != null) {
-                    creatingGroupDone(newModel);
+        groupAddResult.invokeOnCompletion(throwable -> {
+            ch.threema.data.models.GroupModel groupModel = groupAddResult.getCompleted();
+            RuntimeUtil.runOnUiThread(() -> {
+                if (groupModel != null) {
+                    creatingGroupDone(groupModel);
                 } else {
-                    Toast.makeText(GroupAdd2Activity.this, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
+                    Toast.makeText(GroupAdd2Activity.this,
+                        getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
                     setResult(RESULT_CANCELED);
                     finish();
                 }
-            }
-        }.execute();
+            });
+            return null;
+        });
     }
 
     private void creatingGroupDone(GroupModel newModel) {
@@ -120,7 +124,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
             getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(this, ComposeMessageActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, newModel.getId());
+        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, (int) newModel.getDatabaseId());
         setResult(RESULT_OK);
         startActivity(intent);
         finish();
@@ -128,7 +132,8 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 
     @Override
     public void onYes(String tag, String text1, String text2, @Nullable File avatarFile) {
-        createGroup(text1, Set.of(this.groupIdentities), avatarFile);
+        String groupName = text1 != null ? text1 : "";
+        createGroup(groupName, Set.of(this.groupIdentities), avatarFile);
     }
 
     @Override

@@ -36,6 +36,8 @@ import ch.threema.app.R;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 
+import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
+
 /**
  * This class caches bitmaps and resources used for the message states (e.g. sent, read, acked...)
  */
@@ -137,7 +139,7 @@ public class StateBitmapUtil {
                 } else {
                     if (tintOverride == null) {
                         imageView.setColorFilter(null);
-                        imageView.setImageTintList(messageModel.getUiContentColor(context));
+                        imageView.setImageTintList(getUiContentColor(messageModel, context));
                     } else {
                         imageView.setImageTintList(null);
                         imageView.setColorFilter(tintOverride);

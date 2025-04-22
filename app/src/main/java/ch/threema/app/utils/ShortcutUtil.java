@@ -571,10 +571,10 @@ public final class ShortcutUtil {
                 persistableBundle.putString(ThreemaApplication.INTENT_DATA_CONTACT, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
                 break;
             case MessageReceiver.Type_GROUP:
-                persistableBundle.putInt(ThreemaApplication.INTENT_DATA_GROUP, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
+                persistableBundle.putInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
                 break;
             case MessageReceiver.Type_DISTRIBUTION_LIST:
-                persistableBundle.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
+                persistableBundle.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
                 break;
             default:
                 break;

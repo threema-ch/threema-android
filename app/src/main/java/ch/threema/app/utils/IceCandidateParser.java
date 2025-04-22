@@ -67,7 +67,7 @@ public class IceCandidateParser {
     public final static String COMPONENT_ID = "\\d{1,5}";
     public final static String TRANSPORT = TOKEN;
     public final static String PRIORITY = "\\d{1,10}";
-    public final static String CANDIDATE_TYPES = "(host|srflx|prflx|relay)"; // TODO: token
+    public final static String CANDIDATE_TYPES = "(host|srflx|prflx|relay)";
     public final static String CAND_TYPE = "typ" + SP + CANDIDATE_TYPES;
     public final static String CONNECTION_ADDRESS = "\\S+";
     public final static String REL_ADDR = "raddr" + SP + "(" + CONNECTION_ADDRESS + ")";

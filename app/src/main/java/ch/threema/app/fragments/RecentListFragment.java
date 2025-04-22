@@ -33,7 +33,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.RecipientListBaseActivity;
-import ch.threema.app.adapters.FilterResultsListener;
 import ch.threema.app.adapters.RecentListAdapter;
 import ch.threema.app.services.ConversationService;
 import ch.threema.storage.models.ConversationModel;

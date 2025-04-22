@@ -41,9 +41,8 @@ import ch.threema.domain.taskmanager.TaskManager
 interface CspConnection
 
 internal class CspConnectionImpl(
-    dependencyProvider: ServerConnectionDependencyProvider
+    dependencyProvider: ServerConnectionDependencyProvider,
 ) : CspConnection, BaseServerConnection(dependencyProvider) {
-
     override fun onConnected() {
         socket.let {
             if (it is CspSocket) {
@@ -81,5 +80,5 @@ data class CspConnectionConfiguration(
     override val taskManager: TaskManager,
     val hostResolver: HostResolver,
     val ipv6: Boolean,
-    val socketFactory: SocketFactory
+    val socketFactory: SocketFactory,
 ) : BaseServerConnectionConfiguration

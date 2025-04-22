@@ -32,10 +32,10 @@ import ch.threema.app.voip.groupcall.sfu.messages.S2PMessage
 import ch.threema.app.webrtc.*
 import ch.threema.base.utils.LoggingUtil
 import com.google.protobuf.InvalidProtocolBufferException
-import kotlinx.coroutines.*
-import org.webrtc.*
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
+import kotlinx.coroutines.*
+import org.webrtc.*
 
 private val logger = LoggingUtil.getThreemaLogger("ConnectionCtx")
 
@@ -69,7 +69,7 @@ internal class ConnectionCtx(
             call: GroupCall,
             sessionParameters: SessionParameters,
             certificate: RtcCertificatePem,
-            connectedSignal: CompletableDeferred<Set<ParticipantId>>
+            connectedSignal: CompletableDeferred<Set<ParticipantId>>,
         ): ConnectionCtx {
             GroupCallThreadUtil.assertDispatcherThread()
 
@@ -77,13 +77,13 @@ internal class ConnectionCtx(
             // Determine factory parameters
             val factoryParameters = determineFactoryParameters(
                 call.parameters.aecMode,
-                call.parameters.videoCodec
+                call.parameters.videoCodec,
             )
             val factory = FactoryCtx(context, factoryParameters)
 
             val peerConnectionCtx = createPeerConnection(
                 certificate,
-                factory
+                factory,
             )
 
             return ConnectionCtx(
@@ -100,7 +100,7 @@ internal class ConnectionCtx(
         @WorkerThread
         private fun determineFactoryParameters(
             aecMode: String,
-            videoCodec: String
+            videoCodec: String,
         ): FactoryCtx.Parameters = FactoryCtx.Parameters(
             acousticEchoCancelerMode = when (aecMode) {
                 "sw" -> FactoryCtx.Parameters.AecMode.SOFTWARE
@@ -108,16 +108,17 @@ internal class ConnectionCtx(
             },
             hardwareVideoCodecs = when (videoCodec) {
                 PreferenceService.VIDEO_CODEC_SW,
-                PreferenceService.VIDEO_CODEC_NO_VP8 -> emptySet()
+                PreferenceService.VIDEO_CODEC_NO_VP8,
+                -> emptySet()
 
                 else -> setOf(FactoryCtx.Parameters.HardwareVideoCodec.VP8)
-            }
+            },
         )
 
         @WorkerThread
         private fun createPeerConnection(
             certificate: RtcCertificatePem,
-            factory: FactoryCtx
+            factory: FactoryCtx,
         ): PeerConnectionCtx {
             // Configuration for the peer connection
             val configuration = getPeerConnectionConfiguration(certificate)
@@ -142,7 +143,7 @@ internal class ConnectionCtx(
             //
             // Note: We don't need any STUN servers because the server itself is publicly
             //       reachable.
-            return PeerConnection.RTCConfiguration(listOf()).also {
+            return PeerConnection.RTCConfiguration(emptyList()).also {
                 it.certificate = certificate
                 it.iceTransportsType = PeerConnection.IceTransportsType.ALL
                 it.bundlePolicy = PeerConnection.BundlePolicy.MAXBUNDLE
@@ -160,7 +161,7 @@ internal class ConnectionCtx(
                     .setEnableAes128Sha1_80CryptoCipher(false)
                     .setEnableEncryptedRtpHeaderExtensions(false)
                     .createCryptoOptions()
-                it.offerExtmapAllowMixed = true  // NEVER disable this or you will see crashes!
+                it.offerExtmapAllowMixed = true // NEVER disable this or you will see crashes!
             }
         }
     }
@@ -169,7 +170,8 @@ internal class ConnectionCtx(
     private val session = GroupCallSessionDescription(sessionParameters.participantId)
 
     private var _transceivers: TransceiversCtx? = TransceiversCtx(
-        local = null, remote = mutableMapOf()
+        local = null,
+        remote = mutableMapOf(),
     )
     private val transceivers
         get() = checkNotNull(_transceivers) { "Transceivers already disposed" }
@@ -214,7 +216,7 @@ internal class ConnectionCtx(
             RemoteSessionDescriptionInit(
                 parameters = sessionParameters,
                 remoteParticipants = remoteParticipants,
-            )
+            ),
         )
 
         // Apply offer
@@ -243,24 +245,30 @@ internal class ConnectionCtx(
     internal suspend fun addIceCandidates(addresses: List<JoinResponseBody.Address>) {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        withContext(GroupCallThreadUtil.DISPATCHER) {
+        withContext(GroupCallThreadUtil.dispatcher) {
             // Connect to the SFU
             addresses
                 .filter { address -> ipv6enabled || !address.isIpv6 }
                 .map { address ->
                     IceCandidate(
-                        "", 0, "candidate:${
+                        "",
+                        0,
+                        "candidate:${
                             arrayOf(
-                                0, // Foundation is irrelevant because we bundle
-                                1, // Component ID is always RTP (1) because we bundle
-                                "udp", // Always UDP
-                                if (address.isIpv6) 2 else 1, // IPv6 takes priority but we only expect one address for each address family
+                                // Foundation is irrelevant because we bundle
+                                0,
+                                // Component ID is always RTP (1) because we bundle
+                                1,
+                                // Always UDP
+                                "udp",
+                                // IPv6 takes priority but we only expect one address for each address family
+                                if (address.isIpv6) 2 else 1,
                                 address.ip,
                                 address.port,
                                 "typ",
                                 "host",
                             ).joinToString(" ")
-                        }"
+                        }",
                     )
                 }
                 .map {
@@ -298,7 +306,7 @@ internal class ConnectionCtx(
                 // Initial mapping: Set direction to activate correctly
                 logger.trace(
                     "Activating local transceiver (kind='{}', mid='{}')",
-                    transceiver.mediaType.name, transceiver.mid
+                    transceiver.mediaType.name, transceiver.mid,
                 )
                 transceiver.direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
 
@@ -341,7 +349,7 @@ internal class ConnectionCtx(
     @WorkerThread
     private fun setCameraVideoSimulcastEncodingParameters(
         kind: MediaKind,
-        transceiver: RtpTransceiver
+        transceiver: RtpTransceiver,
     ) {
         // For camera video, we need to set simulcast encoding parameters
         if (kind == MediaKind.VIDEO) {
@@ -385,7 +393,7 @@ internal class ConnectionCtx(
             // them explicitly.
             logger.trace(
                 "Removed (now inactive) and existing (staying active): {}",
-                transceivers.remote.keys
+                transceivers.remote.keys,
             )
             logger.trace("Added (becoming active): {}", add)
             val remoteParticipants = transceivers.remote.keys + add
@@ -422,7 +430,7 @@ internal class ConnectionCtx(
                 // Discard if the remote participant was not added
                 logger.warn(
                     "Cannot remove participant '{}', transceivers do not exist",
-                    participantId.id
+                    participantId.id,
                 )
                 continue
             }
@@ -461,7 +469,7 @@ internal class ConnectionCtx(
             if (participantId in transceivers.remote) {
                 logger.warn(
                     "Cannot add participant '{}', transceivers already exist",
-                    participantId.id
+                    participantId.id,
                 )
                 continue
             }
@@ -502,9 +510,9 @@ internal class ConnectionCtx(
                     throw Error("Local '${kind.sdpKind}' transceiver mismatch")
                 }
                 // TODO(ANDR-2036): Activate sanity-check
-                //if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_ONLY) {
+                // if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_ONLY) {
                 //    throw Error("Local '${kind.sdpKind}' transceiver direction mismatch: Got ${transceiver.direction}, expected ${RtpTransceiver.RtpTransceiverDirection.SEND_ONLY}")
-                //}
+                // }
                 kind to transceiver
             }.toMap().toMutableMap()
         }
@@ -533,9 +541,9 @@ internal class ConnectionCtx(
                     throw Error("Remote '${kind.sdpKind}' transceiver mismatch")
                 }
                 // TODO(ANDR-2036): Activate sanity-check
-                //if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.RECV_ONLY) {
+                // if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.RECV_ONLY) {
                 //    throw Error("Remote '${kind.sdpKind}' transceiver direction mismatch: Got ${transceiver.direction}, expected ${RtpTransceiver.RtpTransceiverDirection.RECV_ONLY}")
-                //}
+                // }
             }
         }
     }
@@ -544,7 +552,7 @@ internal class ConnectionCtx(
     private fun remapAddedRemoteTransceivers(
         unmapped: MutableMap<String, RtpTransceiver>,
         add: Collection<ParticipantId>,
-        call: GroupCall
+        call: GroupCall,
     ) {
         // Create all newly added (pending) remote participant states and map their
         // transceivers.
@@ -568,7 +576,8 @@ internal class ConnectionCtx(
                 // First encounter: Set direction to activate correctly
                 logger.trace(
                     "Activating remote transceiver (kind='{}', mid='{}')",
-                    transceiver.mediaType.name, transceiver.mid
+                    transceiver.mediaType.name,
+                    transceiver.mid,
                 )
                 transceiver.direction = RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
 
@@ -591,7 +600,7 @@ internal class ConnectionCtx(
 
     @AnyThread
     fun sendMessageToSfu(provider: P2SMessageProvider) {
-        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             val message = provider.get()
             val envelope = message.toProtobufEnvelope()
             val bytes = envelope.toByteArray()
@@ -603,7 +612,7 @@ internal class ConnectionCtx(
                 } else {
                     logger.warn(
                         "Connection is being teared down. Not sending message {}",
-                        message.type
+                        message.type,
                     )
                 }
             } catch (e: IllegalStateException) {
@@ -625,7 +634,7 @@ internal class ConnectionCtx(
     private fun initTeardown(): Job {
         logger.trace("Teardown: Initiate ConnectionCtx teardown")
         teardownInitiatedSignal.complete(Unit)
-        return CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+        return CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             logger.trace("Teardown: ConnectionCtx")
             if (localAudioVideoContextDelegate.isInitialized()) {
                 localAudioVideoContext.teardown()
@@ -668,7 +677,7 @@ internal class ConnectionCtx(
     @WorkerThread
     private fun setSfuHelloMessageObserver(
         dataChannelCtx: DataChannelCtx,
-        connectedSignal: CompletableDeferred<Set<ParticipantId>>
+        connectedSignal: CompletableDeferred<Set<ParticipantId>>,
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -681,7 +690,7 @@ internal class ConnectionCtx(
                 when (state) {
                     DataChannel.State.CLOSING, DataChannel.State.CLOSED ->
                         connectedSignal.completeExceptionally(
-                            Error("P2S data channel closed during connection setup")
+                            Error("P2S data channel closed during connection setup"),
                         )
 
                     else -> {
@@ -695,7 +704,8 @@ internal class ConnectionCtx(
 
                 logger.trace(
                     "P2S data channel incoming message (length={}, binary={})",
-                    buffer.data.remaining(), buffer.binary
+                    buffer.data.remaining(),
+                    buffer.binary,
                 )
 
                 try {

@@ -42,11 +42,11 @@ import com.google.android.material.button.MaterialButton
 
 class ProblemSolverActivity : ThreemaToolbarActivity() {
     private val settingsLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) { _: ActivityResult? -> recreate() }
 
     private val notificationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestPermission(),
     ) { _: Boolean -> recreate() }
 
     private class Problem(
@@ -57,7 +57,7 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
         // the action to call for fixing the problem
         val intentAction: String,
         // the check to determine if the problem exists
-        val check: Boolean
+        val check: Boolean,
     )
 
     @SuppressLint("InlinedApi")
@@ -66,38 +66,34 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
             R.string.problemsolver_title_background,
             R.string.problemsolver_explain_background,
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            ConfigUtils.isBackgroundRestricted(ThreemaApplication.getAppContext())
+            ConfigUtils.isBackgroundRestricted(ThreemaApplication.getAppContext()),
         ),
-
         Problem(
             R.string.problemsolver_title_background_data,
             R.string.problemsolver_explain_background_data,
             Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
-            ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false)
+            ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false),
         ),
-
         Problem(
             R.string.problemsolver_title_notifications,
             R.string.problemsolver_explain_notifications,
             Settings.ACTION_APP_NOTIFICATION_SETTINGS,
             ConfigUtils.isNotificationsDisabled(ThreemaApplication.getAppContext()),
         ),
-
         Problem(
             R.string.problemsolver_title_fullscreen_notifications,
             R.string.problemsolver_explain_fullscreen_notifications,
             Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
             ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext()),
         ),
-
         Problem(
             R.string.problemsolver_title_app_battery_usgae_optimized,
             R.string.problemsolver_explain_app_battery_usgae_optimized,
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             ThreemaApplication.getServiceManager()?.preferenceService?.useThreemaPush() ?: false && !PowermanagerUtil.isIgnoringBatteryOptimizations(
-                ThreemaApplication.getAppContext()
-            )
-        )
+                ThreemaApplication.getAppContext(),
+            ),
+        ),
     )
 
     override fun getLayoutResource(): Int {
@@ -124,8 +120,12 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
         for (problem in problems) {
             if (problem.check) {
                 val itemLayout: View = LayoutInflater.from(this).inflate(
+                    /* resource = */
                     R.layout.item_problemsolver,
-                    problemsParentLayout, false
+                    /* root = */
+                    problemsParentLayout,
+                    /* attachToRoot = */
+                    false,
                 )
                 itemLayout.findViewById<TextView>(R.id.item_title).text =
                     getString(problem.title)
@@ -153,8 +153,8 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
             intent = Intent(this, DisableBatteryOptimizationsActivity::class.java)
             intent.putExtra(
                 DisableBatteryOptimizationsActivity.EXTRA_NAME,
-                getString(R.string.threema_push)
-            );
+                getString(R.string.threema_push),
+            )
             intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CANCEL_LABEL, R.string.cancel)
             intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_DISABLE_RATIONALE, true)
         } else {

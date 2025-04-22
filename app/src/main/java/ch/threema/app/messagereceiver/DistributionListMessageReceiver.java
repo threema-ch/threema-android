@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -203,9 +204,10 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
         return 0;
     }
 
+    @NonNull
     @Override
     public List<DistributionListMessageModel> getUnreadMessages() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -225,7 +227,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 
     @Override
     public void prepareIntent(Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, this.getDistributionList().getId());
+        intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, this.getDistributionList().getId());
     }
 
     @Override

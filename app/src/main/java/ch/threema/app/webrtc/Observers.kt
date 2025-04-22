@@ -24,52 +24,59 @@ package ch.threema.app.webrtc
 import androidx.annotation.AnyThread
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.base.utils.LoggingUtil
-import java8.util.concurrent.CompletableFuture
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import org.webrtc.*
-import org.webrtc.CameraVideoCapturer
 import java.nio.ByteBuffer
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
+import java8.util.concurrent.CompletableFuture
 import kotlin.concurrent.withLock
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CompletableDeferred
+import org.webrtc.*
+import org.webrtc.CameraVideoCapturer
 
 /**
  * Implements the interface but ignores all observed events unless overridden.
  */
 @AnyThread
 open class DefaultNoopPeerConnectionObserver : PeerConnection.Observer {
-    override fun onRenegotiationNeeded() { /* noop */
+    override fun onRenegotiationNeeded() {
+        /* noop */
     }
 
-    override fun onSignalingChange(state: PeerConnection.SignalingState?) { /* noop */
+    override fun onSignalingChange(state: PeerConnection.SignalingState?) {
+        /* noop */
     }
 
-    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState?) { /* noop */
+    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState?) {
+        /* noop */
     }
 
-    override fun onIceConnectionChange(state: PeerConnection.IceConnectionState?) { /* noop */
+    override fun onIceConnectionChange(state: PeerConnection.IceConnectionState?) {
+        /* noop */
     }
 
-    override fun onIceConnectionReceivingChange(receiving: Boolean) { /* noop */
+    override fun onIceConnectionReceivingChange(receiving: Boolean) {
+        /* noop */
     }
 
-    override fun onIceCandidate(candidate: IceCandidate?) { /* noop */
+    override fun onIceCandidate(candidate: IceCandidate?) {
+        /* noop */
     }
 
-    override fun onIceCandidatesRemoved(candidatesRemoved: Array<out IceCandidate>?) { /* noop */
+    override fun onIceCandidatesRemoved(candidatesRemoved: Array<out IceCandidate>?) {
+        /* noop */
     }
 
-    override fun onAddStream(stream: MediaStream?) { /* noop */
+    override fun onAddStream(stream: MediaStream?) {
+        /* noop */
     }
 
-    override fun onRemoveStream(stream: MediaStream?) { /* noop */
+    override fun onRemoveStream(stream: MediaStream?) {
+        /* noop */
     }
 
-    override fun onDataChannel(dataChannel: DataChannel?) { /* noop */
+    override fun onDataChannel(dataChannel: DataChannel?) {
+        /* noop */
     }
 }
 
@@ -79,34 +86,44 @@ open class DefaultNoopPeerConnectionObserver : PeerConnection.Observer {
  */
 @AnyThread
 interface SanePeerConnectionObserver {
-    fun onDetach() { /* noop */
+    fun onDetach() {
+        /* noop */
     }
 
-    fun onRenegotiationNeeded() { /* noop */
+    fun onRenegotiationNeeded() {
+        /* noop */
     }
 
-    fun onSignalingChange(state: PeerConnection.SignalingState) { /* noop */
+    fun onSignalingChange(state: PeerConnection.SignalingState) {
+        /* noop */
     }
 
-    fun onConnectionChange(state: PeerConnection.PeerConnectionState) { /* noop */
+    fun onConnectionChange(state: PeerConnection.PeerConnectionState) {
+        /* noop */
     }
 
-    fun onIceGatheringChange(state: PeerConnection.IceGatheringState) { /* noop */
+    fun onIceGatheringChange(state: PeerConnection.IceGatheringState) {
+        /* noop */
     }
 
-    fun onIceConnectionChange(state: PeerConnection.IceConnectionState) { /* noop */
+    fun onIceConnectionChange(state: PeerConnection.IceConnectionState) {
+        /* noop */
     }
 
-    fun onIceCandidate(candidate: IceCandidate) { /* noop */
+    fun onIceCandidate(candidate: IceCandidate) {
+        /* noop */
     }
 
-    fun onSelectedCandidatePairChanged(event: CandidatePairChangeEvent) { /* noop */
+    fun onSelectedCandidatePairChanged(event: CandidatePairChangeEvent) {
+        /* noop */
     }
 
-    fun onDataChannel(channel: DataChannel) { /* noop */
+    fun onDataChannel(channel: DataChannel) {
+        /* noop */
     }
 
-    fun onTransceiver(transceiver: RtpTransceiver) { /* noop */
+    fun onTransceiver(transceiver: RtpTransceiver) {
+        /* noop */
     }
 }
 
@@ -267,7 +284,8 @@ internal class PeerConnectionObserver(
             PeerConnection.IceConnectionState.FAILED ->
                 iceFailed(GroupCallException("ICE failed explicitly"))
 
-            else -> { /* noop */
+            else -> {
+                /* noop */
             }
         }
     }
@@ -281,7 +299,8 @@ internal class PeerConnectionObserver(
     override fun onTransceiver(transceiver: RtpTransceiver) = lock.withLock {
         logger.trace(
             "New transceiver (kind='{}', mid='{}')",
-            transceiver.mediaType.name, transceiver.mid
+            transceiver.mediaType.name,
+            transceiver.mid,
         )
         addTransceiver(transceiver)
     }
@@ -304,7 +323,8 @@ internal class PeerConnectionObserver(
         }, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS))
             .exceptionally { error ->
                 when (error) {
-                    is CancellationException -> { /* noop */
+                    is CancellationException -> {
+                        /* noop */
                     }
 
                     else -> {
@@ -328,16 +348,20 @@ internal class PeerConnectionObserver(
  */
 @AnyThread
 interface SaneDataChannelObserver {
-    fun onDetach() { /* noop */
+    fun onDetach() {
+        /* noop */
     }
 
-    fun onBufferedAmountChange(bufferedAmount: ULong) { /* noop */
+    fun onBufferedAmountChange(bufferedAmount: ULong) {
+        /* noop */
     }
 
-    fun onStateChange(state: DataChannel.State) { /* noop */
+    fun onStateChange(state: DataChannel.State) {
+        /* noop */
     }
 
-    fun onMessage(buffer: DataChannel.Buffer) { /* noop */
+    fun onMessage(buffer: DataChannel.Buffer) {
+        /* noop */
     }
 }
 
@@ -353,7 +377,7 @@ interface SaneDataChannelObserver {
 @AnyThread
 class WrappedDataChannelObserver(
     private val state: () -> DataChannel.State,
-    private var observer: SaneDataChannelObserver? = null
+    private var observer: SaneDataChannelObserver? = null,
 ) : DataChannel.Observer {
     private val lock = ReentrantLock()
     private val events = mutableListOf<Any>()
@@ -409,70 +433,79 @@ class WrappedDataChannelObserver(
 
 suspend fun PeerConnection.setLocalDescription(description: SessionDescription) {
     val future = CompletableDeferred<Unit>()
-    this.setLocalDescription(object : SdpObserver {
-        override fun onCreateSuccess(description: SessionDescription?) {
-            future.completeExceptionally(Error("Unexpected onCreateSuccess event"))
-        }
+    this.setLocalDescription(
+        object : SdpObserver {
+            override fun onCreateSuccess(description: SessionDescription?) {
+                future.completeExceptionally(Error("Unexpected onCreateSuccess event"))
+            }
 
-        override fun onSetSuccess() {
-            future.complete(Unit)
-        }
+            override fun onSetSuccess() {
+                future.complete(Unit)
+            }
 
-        override fun onCreateFailure(reason: String?) {
-            future.completeExceptionally(Error("Unexpected onCreateFailure event"))
-        }
+            override fun onCreateFailure(reason: String?) {
+                future.completeExceptionally(Error("Unexpected onCreateFailure event"))
+            }
 
-        override fun onSetFailure(reason: String?) {
-            checkNotNull(reason)
-            future.completeExceptionally(Error("Setting remote description failed, reason: $reason"))
-        }
-    }, description)
+            override fun onSetFailure(reason: String?) {
+                checkNotNull(reason)
+                future.completeExceptionally(Error("Setting remote description failed, reason: $reason"))
+            }
+        },
+        description,
+    )
     return future.await()
 }
 
 suspend fun PeerConnection.setRemoteDescription(description: SessionDescription) {
     val future = CompletableDeferred<Unit>()
-    this.setRemoteDescription(object : SdpObserver {
-        override fun onCreateSuccess(description: SessionDescription?) {
-            future.completeExceptionally(GroupCallException("Unexpected onCreateSuccess event"))
-        }
+    this.setRemoteDescription(
+        object : SdpObserver {
+            override fun onCreateSuccess(description: SessionDescription?) {
+                future.completeExceptionally(GroupCallException("Unexpected onCreateSuccess event"))
+            }
 
-        override fun onSetSuccess() {
-            future.complete(Unit)
-        }
+            override fun onSetSuccess() {
+                future.complete(Unit)
+            }
 
-        override fun onCreateFailure(reason: String?) {
-            future.completeExceptionally(GroupCallException("Unexpected onCreateFailure event"))
-        }
+            override fun onCreateFailure(reason: String?) {
+                future.completeExceptionally(GroupCallException("Unexpected onCreateFailure event"))
+            }
 
-        override fun onSetFailure(reason: String?) {
-            checkNotNull(reason)
-            future.completeExceptionally(GroupCallException("Setting remote description failed, reason: $reason"))
-        }
-    }, description)
+            override fun onSetFailure(reason: String?) {
+                checkNotNull(reason)
+                future.completeExceptionally(GroupCallException("Setting remote description failed, reason: $reason"))
+            }
+        },
+        description,
+    )
     return future.await()
 }
 
 suspend fun PeerConnection.createAnswer(constraints: MediaConstraints? = null): SessionDescription {
     val future = CompletableDeferred<SessionDescription>()
-    this.createAnswer(object : SdpObserver {
-        override fun onCreateSuccess(description: SessionDescription?) {
-            checkNotNull(description)
-            future.complete(description)
-        }
+    this.createAnswer(
+        object : SdpObserver {
+            override fun onCreateSuccess(description: SessionDescription?) {
+                checkNotNull(description)
+                future.complete(description)
+            }
 
-        override fun onSetSuccess() {
-            future.completeExceptionally(Error("Unexpected onSetSuccess event"))
-        }
+            override fun onSetSuccess() {
+                future.completeExceptionally(Error("Unexpected onSetSuccess event"))
+            }
 
-        override fun onCreateFailure(reason: String?) {
-            future.completeExceptionally(Error("Creating answer failed, reason: $reason"))
-        }
+            override fun onCreateFailure(reason: String?) {
+                future.completeExceptionally(Error("Creating answer failed, reason: $reason"))
+            }
 
-        override fun onSetFailure(reason: String?) {
-            future.completeExceptionally(Error("Unexpected onSetFailure event"))
-        }
-    }, constraints ?: MediaConstraints())
+            override fun onSetFailure(reason: String?) {
+                future.completeExceptionally(Error("Unexpected onSetFailure event"))
+            }
+        },
+        constraints ?: MediaConstraints(),
+    )
     return future.await()
 }
 
@@ -481,16 +514,19 @@ suspend fun PeerConnection.createAnswer(constraints: MediaConstraints? = null): 
  */
 suspend fun PeerConnection.addIceCandidateAsync(candidate: IceCandidate) {
     val future = CompletableDeferred<Unit>()
-    this.addIceCandidate(candidate, object : AddIceObserver {
-        override fun onAddSuccess() {
-            future.complete(Unit)
-        }
+    this.addIceCandidate(
+        candidate,
+        object : AddIceObserver {
+            override fun onAddSuccess() {
+                future.complete(Unit)
+            }
 
-        override fun onAddFailure(reason: String?) {
-            checkNotNull(reason)
-            future.completeExceptionally(Error("Unable to add ICE candidate: '$reason'"))
-        }
-    })
+            override fun onAddFailure(reason: String?) {
+                checkNotNull(reason)
+                future.completeExceptionally(Error("Unable to add ICE candidate: '$reason'"))
+            }
+        },
+    )
     return future.await()
 }
 
@@ -498,22 +534,28 @@ suspend fun PeerConnection.addIceCandidateAsync(candidate: IceCandidate) {
  * Maps the PeerConnection.Observer into a more sane structure with non-nullable types.
  */
 interface SaneCameraEventsHandler {
-    fun onCameraError(error: String) { /* noop */
+    fun onCameraError(error: String) {
+        /* noop */
     }
 
-    fun onCameraDisconnected() { /* noop */
+    fun onCameraDisconnected() {
+        /* noop */
     }
 
-    fun onCameraFreeze(error: String) { /* noop */
+    fun onCameraFreeze(error: String) {
+        /* noop */
     }
 
-    fun onCameraOpening(cameraName: String) { /* noop */
+    fun onCameraOpening(cameraName: String) {
+        /* noop */
     }
 
-    fun onFirstFrameAvailable() { /* noop */
+    fun onFirstFrameAvailable() {
+        /* noop */
     }
 
-    fun onCameraClosed() { /* noop */
+    fun onCameraClosed() {
+        /* noop */
     }
 }
 

@@ -36,9 +36,8 @@ import kotlinx.serialization.Serializable
 
 class ReflectUserProfileNicknameSyncTask(
     private val newNickname: String,
-    serviceManager: ServiceManager
+    serviceManager: ServiceManager,
 ) : ActiveTask<Unit>, PersistableTask {
-
     private val identityStore by lazy { serviceManager.identityStore }
     private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
@@ -66,29 +65,28 @@ class ReflectUserProfileNicknameSyncTask(
                 userProfile = userProfile {
                     nickname = newNickname
                 },
-                mdProperties
+                mdProperties,
             )
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
             storeD2dNonce = true,
-            nonceFactory = nonceFactory
+            nonceFactory = nonceFactory,
         )
     }
 
     override fun serialize(): SerializableTaskData =
         ReflectUserProfileNicknameSyncTaskData(
-            newNickname = newNickname
+            newNickname = newNickname,
         )
 
     @Serializable
     data class ReflectUserProfileNicknameSyncTaskData(
         private val newNickname: String,
     ) : SerializableTaskData {
-
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             ReflectUserProfileNicknameSyncTask(
                 newNickname = newNickname,
-                serviceManager = serviceManager
+                serviceManager = serviceManager,
             )
     }
 }

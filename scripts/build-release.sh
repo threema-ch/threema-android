@@ -119,12 +119,13 @@ if [ "$license" != "accepted" ]; then
 fi
 
 # Determine build version
-app_version_code=$(grep "^\s*def defaultVersionCode = \d*" "$DIR/../app/build.gradle" | sed 's/[^0-9]*//g')
-app_version_name_main=$(grep '^def app_version = "' "$DIR/../app/build.gradle" | sed 's/^def app_version = "\([^"]*\)".*/\1/')
-app_version_name_suffix=$(grep '^def beta_suffix = "' "$DIR/../app/build.gradle" | sed 's/^def beta_suffix = "\([^"]*\)".*/\1/')
+app_version_code=$(grep "^\s*val defaultVersionCode = \d*" "$DIR/../app/build.gradle.kts" | sed 's/[^0-9]*//g')
+app_version_name_main=$(grep '^val appVersion = "' "$DIR/../app/build.gradle.kts" | sed 's/^val appVersion = "\([^"]*\)".*/\1/')
+app_version_name_suffix=$(grep '^val betaSuffix = "' "$DIR/../app/build.gradle.kts" | sed 's/^val betaSuffix = "\([^"]*\)".*/\1/')
 app_version_name="${app_version_name_main}${app_version_name_suffix}"
-sdk_version=$(grep "^\s*compileSdk [0-9]\+" "$DIR/../app/build.gradle" | sed 's/[^0-9]*//g')
-build_tools_version=$(grep "^\s*buildToolsVersion = '\([0-9]\+\.\?\)\+'" "$DIR/../app/build.gradle" | sed 's/[^0-9\.]*//g')
+sdk_version=$(grep "^\s*compileSdk = [0-9]\+" "$DIR/../app/build.gradle.kts" | sed 's/[^0-9]*//g')
+build_tools_version=$(grep "^\s*buildToolsVersion = \"\([0-9]\+\.\?\)\+\"" "$DIR/../app/build.gradle.kts" | sed 's/[^0-9\.]*//g')
+rust_version=$(grep channel "$DIR/../domain/libthreema/rust-toolchain.toml" | cut -d'"' -f2)
 
 # Validate target directory
 mkdir -p "$releasedir"
@@ -146,9 +147,11 @@ if [ $build -eq 1 ]; then
     log_minor "app_version_name=$app_version_name"
     log_minor "sdk_version=$sdk_version"
     log_minor "build_tools_version=$build_tools_version"
+    log_minor "rust_version=$rust_version"
     docker build $no_cache "$DIR/../scripts/" \
         --build-arg SDK_VERSION="$sdk_version" \
         --build-arg BUILD_TOOLS_VERSION="$build_tools_version" \
+        --build-arg RUST_VERSION="$rust_version" \
         -t "$DOCKERIMAGE:latest" \
         -t "$DOCKERIMAGE:$app_version_code"
 fi

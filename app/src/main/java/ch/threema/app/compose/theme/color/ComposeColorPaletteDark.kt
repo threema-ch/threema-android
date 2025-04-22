@@ -24,7 +24,6 @@ package ch.threema.app.compose.theme.color
 import androidx.compose.material3.darkColorScheme
 
 abstract class ComposeColorPaletteDark : ComposeColorPalette {
-
     override fun toColorScheme() = darkColorScheme(
         primary = primary,
         onPrimary = onPrimary,
@@ -48,6 +47,11 @@ abstract class ComposeColorPaletteDark : ComposeColorPalette {
         onSurface = onSurface,
         surfaceVariant = surfaceVariant,
         onSurfaceVariant = onSurfaceVariant,
+        surfaceContainerLowest = surfaceContainerLowest,
+        surfaceContainerLow = surfaceContainerLow,
+        surfaceContainer = surfaceContainer,
+        surfaceContainerHigh = surfaceContainerHigh,
+        surfaceContainerHighest = surfaceContainerHighest,
         outline = outline,
         outlineVariant = outlineVariant,
         scrim = scrim,

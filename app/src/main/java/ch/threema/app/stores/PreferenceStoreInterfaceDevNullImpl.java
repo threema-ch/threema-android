@@ -26,14 +26,15 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInterface {
     @Override
@@ -51,17 +52,17 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
-    public void save(String key, String thing) {
+    public void save(String key, @Nullable String thing) {
 
     }
 
     @Override
-    public void save(String key, String thing, boolean crypt) {
+    public void save(String key, @Nullable String thing, boolean crypt) {
 
     }
 
     @Override
-    public void save(String key, String[] things) {
+    public void save(String key, @NonNull String[] things) {
 
     }
 
@@ -96,22 +97,12 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
-    public void save(String key, long thing) {
+    public void save(String key, Integer thing) {
 
     }
 
     @Override
-    public void save(String key, long thing, boolean crypt) {
-
-    }
-
-    @Override
-    public void save(String key, int thing) {
-
-    }
-
-    @Override
-    public void save(String key, int thing, boolean crypt) {
+    public void save(String key, Integer thing, boolean crypt) {
 
     }
 
@@ -156,7 +147,7 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
-    public void save(String key, float thing) {
+    public void save(String key, Float thing) {
 
     }
 
@@ -186,8 +177,8 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
-    public long getLong(String key) {
-        return 0;
+    public Long getLong(String key) {
+        return 0L;
     }
 
     @Override
@@ -206,8 +197,8 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
-    public long getDateAsLong(String key) {
-        return 0;
+    public Long getDateAsLong(String key) {
+        return 0L;
     }
 
     @Override
@@ -221,7 +212,7 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
-    public float getFloat(String key, float defValue) {
+    public Float getFloat(String key, Float defValue) {
         return defValue;
     }
 
@@ -296,8 +287,8 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
-    public Set<String> getStringSet(String key, int defaultRes) {
-        return new HashSet<>();
+    public Set<String> getStringSet(String key, Integer defaultRes) {
+        return Collections.emptySet();
     }
 
     @Override

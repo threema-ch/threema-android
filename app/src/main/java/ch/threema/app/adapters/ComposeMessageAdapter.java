@@ -47,6 +47,8 @@ import androidx.media3.session.MediaController;
 import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.slf4j.Logger;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -91,6 +93,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.EmojiReactionData;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -101,6 +104,8 @@ import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> implements EmojiReactionGroup.OnEmojiReactionGroupClickListener {
+
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageAdapter");
     public static final int MIN_CONSTRAINT_LENGTH = 2;
 
     private final List<AbstractMessageModel> values;
@@ -110,11 +115,13 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
     private final FileService fileService;
     private final SparseIntArray resultMap = new SparseIntArray();
     private int resultMapIndex;
+    @NonNull
     private ConversationListFilter convListFilter = new ConversationListFilter();
     public ListView listView;
     private int groupId;
     private final EmojiMarkupUtil emojiMarkupUtil = EmojiMarkupUtil.getInstance();
-    private CharSequence currentConstraint = "";
+    @Nullable
+    private CharSequence currentConstraint = null;
     private final int bubblePaddingLeftRight;
     private final int bubblePaddingBottom;
     private final int bubblePaddingBottomGrouped;
@@ -184,6 +191,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
     // don't forget to update this after adding new types:
     private static final int TYPE_MAX_COUNT = TYPE_DELETED_RECV + 1;
 
+    @Nullable
     private OnClickListener onClickListener;
     private Map<String, Integer> identityColors = null;
 
@@ -342,7 +350,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
         }
     }
 
-    public void setOnClickListener(OnClickListener onClickListener) {
+    public void setOnClickListener(@Nullable OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
 
@@ -619,7 +627,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             }
         }
 
-        if (convListFilter != null && convListFilter.getHighlightMatches()) {
+        if (convListFilter.getHighlightMatches()) {
             /* show matches in decorator */
             decorator.setFilter(convListFilter.getFilterString());
         }
@@ -793,15 +801,22 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
     }
 
     public class ConversationListFilter extends Filter {
+        @Nullable
         private String filterString = null;
+        @Nullable
         private String filterIdentity = null;
+        @Nullable
         private String myIdentity = null;
         private boolean highlightMatches = true;
 
         @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
+        @NonNull
+        protected FilterResults performFiltering(@Nullable CharSequence constraint) {
+            logger.info("Message search started, {} characters", constraint != null ? constraint.length() : 0);
             currentConstraint = constraint;
-            onClickListener.onSearchInProgress(true);
+            if (onClickListener != null) {
+                onClickListener.onSearchInProgress(true);
+            }
 
             FilterResults results = new FilterResults();
 
@@ -864,6 +879,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                     // filtering of matching messages by content
                     for (AbstractMessageModel messageModel : values) {
                         if (messageModel.isDeleted()) {
+                            position++;
                             continue;
                         }
                         if ((messageModel.getType() == MessageType.TEXT && !messageModel.isStatusMessage())
@@ -890,7 +906,9 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                                     }
                                 }
                                 // strip away mentions
-                                body = emojiMarkupUtil.stripMentions(body);
+                                if (body != null) {
+                                    body = emojiMarkupUtil.stripMentions(body);
+                                }
                             }
 
                             if (body != null && body.toLowerCase().contains(filterString.toLowerCase())) {
@@ -924,9 +942,13 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                 }
                 results.values = resultMap;
                 results.count = resultMap.size();
+
+                logger.info("Message search completed, {} results found", results.count);
             }
 
-            onClickListener.onSearchInProgress(false);
+            if (onClickListener != null) {
+                onClickListener.onSearchInProgress(false);
+            }
             return results;
         }
 
@@ -937,9 +959,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                 return;
             }
 
+            logger.info("Publishing search results, {} characters, {} results", constraint != null ? constraint.length() : 0, results.count);
+
             final int positionOfLastMatch = getMatchPosition(filterString);
 
-            if (convListFilter != null && convListFilter.getHighlightMatches()) {
+            if (convListFilter.getHighlightMatches()) {
                 notifyDataSetChanged();
                 resultMapIndex = resultMap.size() - 1;
                 searchUpdate();
@@ -980,15 +1004,16 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             }
         }
 
+        @Nullable
         public String getFilterString() {
             return filterString;
         }
 
-        public void setFilterIdentity(String filterIdentity) {
+        public void setFilterIdentity(@Nullable String filterIdentity) {
             this.filterIdentity = filterIdentity;
         }
 
-        public void setMyIdentity(String myIdentity) {
+        public void setMyIdentity(@Nullable String myIdentity) {
             this.myIdentity = myIdentity;
         }
 
@@ -1009,10 +1034,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
 
     /**
      * Create an instance of ConversationListFilter for quote searching
-     *
-     * @param quoteContent
-     * @return
      */
+    @NonNull
     public Filter getQuoteFilter(QuoteUtil.QuoteContent quoteContent) {
         convListFilter = new ConversationListFilter();
         convListFilter.setFilterIdentity(quoteContent.identity);
@@ -1023,15 +1046,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
     }
 
     private void searchUpdate() {
-        int size = resultMap.size();
-
-        onClickListener.onSearchResultsUpdate(size > 0 ? resultMapIndex + 1 : 0, resultMap.size(), currentConstraint.length());
-    }
-
-    public void resetMatchPosition() {
-        resultMapIndex = resultMap.size() > 0 ? resultMap.size() - 1 : 0;
-
-        searchUpdate();
+        if (onClickListener != null) {
+            int size = resultMap.size();
+            int queryLength = currentConstraint != null ? currentConstraint.length() : 0;
+            onClickListener.onSearchResultsUpdate(size > 0 ? resultMapIndex + 1 : 0, resultMap.size(), queryLength);
+        }
     }
 
     public void nextMatchPosition() {

@@ -90,7 +90,6 @@ public class ClientInfoRequestHandler extends MessageReceiver {
         // not the browserName or browserVersion fields.
 
         if (this.listener != null) {
-            // TODO: Store detected browser!
             final String userAgent = data.get(Protocol.ARGUMENT_USER_AGENT).asStringValue().asString();
             this.listener.onReceived(userAgent);
         }

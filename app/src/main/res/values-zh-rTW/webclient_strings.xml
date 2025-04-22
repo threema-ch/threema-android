@@ -39,5 +39,7 @@
     <string name="webclient_diagnostics_start">開始</string>
     <string name="webclient_diagnostics_intro">點擊「開始」以啟動測試。</string>
     <string name="webclient_diagnostics_done">大功告成。如果您在桌面版應用程式或網頁版連線遇到問題，請將此日誌傳送至 Threema 支援。</string>
-    <string name="webclient_unsupported_desktop_beta_message">此測試版桌面應用程式現時只能連結至 iOS 裝置，Android 使用者請下載普通版桌面應用程式。</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">QR碼有錯誤</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
+    <string name="webclient_scanned_md_linking_qr_code_message">您掃描的QR碼屬於新的桌面測試版應用程式。\n\n請先返回「主選單 &gt; ${app_name_desktop} 2.0 桌面版（測試版）」，然後選擇「${md_link_device}」連結到此桌面版應用程式。</string>
 </resources>

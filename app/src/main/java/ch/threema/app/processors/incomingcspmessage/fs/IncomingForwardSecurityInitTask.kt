@@ -40,7 +40,10 @@ class IncomingForwardSecurityInitTask(
         // TODO(ANDR-2519): Remove when md allows fs
         // Note that we should only send a terminate message when we receive an encapsulated message.
         if (!forwardSecurityMessageProcessor.canForwardSecurityMessageBeProcessed(
-                contact, data.sessionId, false, handle
+                sender = contact,
+                sessionId = data.sessionId,
+                sendTerminate = false,
+                handle = handle,
             )
         ) {
             return ForwardSecurityDecryptionResult.NONE

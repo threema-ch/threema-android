@@ -30,12 +30,10 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory
 
 class ContactAvatarModelLoaderFactory(private val context: Context) :
     ModelLoaderFactory<AvatarCacheServiceImpl.ContactAvatarConfig, Bitmap> {
-
     override fun build(unused: MultiModelLoaderFactory): ModelLoader<AvatarCacheServiceImpl.ContactAvatarConfig, Bitmap> =
         ContactAvatarLoader(context)
 
     override fun teardown() {
         // Nothing to do here
     }
-
 }

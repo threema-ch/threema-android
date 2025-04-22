@@ -55,6 +55,7 @@ import ch.threema.app.listeners.MessageListener;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
@@ -64,6 +65,8 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.GroupModelRepository;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
@@ -81,12 +84,15 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
     private ConversationService conversationService;
     private GroupService groupService;
     private DistributionListService distributionListService;
+    private GroupModelRepository groupModelRepository;
+    private GroupFlowDispatcher groupFlowDispatcher;
 
     private ArchiveAdapter archiveAdapter;
     private ArchiveViewModel viewModel;
     private ActionMode actionMode = null;
     private EmptyRecyclerView recyclerView;
 
+    @Override
     public int getLayoutResource() {
         return R.layout.activity_archive;
     }
@@ -117,6 +123,8 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
             conversationService = serviceManager.getConversationService();
             groupService = serviceManager.getGroupService();
             distributionListService = serviceManager.getDistributionListService();
+            groupModelRepository = serviceManager.getModelRepositories().getGroups();
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
         } catch (ThreemaException e) {
             logger.error("Exception", e);
             return false;
@@ -291,7 +299,7 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
     }
 
     private void unarchive(List<ConversationModel> checkedItems) {
-        conversationService.unarchive(checkedItems);
+        conversationService.unarchive(checkedItems, TriggerSource.LOCAL);
         viewModel.onDataChanged();
         if (actionMode != null) {
             actionMode.finish();
@@ -344,8 +352,10 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
             EmptyOrDeleteConversationsAsyncTask.Mode.DELETE,
             receivers,
             conversationService,
-            groupService,
             distributionListService,
+            groupModelRepository,
+            groupFlowDispatcher,
+            getMyIdentity(),
             getSupportFragmentManager(),
             findViewById(R.id.parent_layout),
             () -> {

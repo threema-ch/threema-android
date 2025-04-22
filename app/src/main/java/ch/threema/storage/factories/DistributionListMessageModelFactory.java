@@ -270,24 +270,19 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
                 "`" + DistributionListMessageModel.COLUMN_UID + "` VARCHAR ," +
                 "`" + DistributionListMessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR ," +
                 "`" + DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "` INTEGER NOT NULL ," +
-                //TODO: remove identity field
                 "`" + DistributionListMessageModel.COLUMN_IDENTITY + "` VARCHAR ," +
-                //TODO: change to TINYINT
                 "`" + DistributionListMessageModel.COLUMN_OUTBOX + "` SMALLINT ," +
                 "`" + DistributionListMessageModel.COLUMN_TYPE + "` INTEGER ," +
                 "`" + DistributionListMessageModel.COLUMN_CORRELATION_ID + "` VARCHAR ," +
                 "`" + DistributionListMessageModel.COLUMN_BODY + "` VARCHAR ," +
                 "`" + DistributionListMessageModel.COLUMN_CAPTION + "` VARCHAR ," +
-                //TODO: change to TINYINT
                 "`" + DistributionListMessageModel.COLUMN_IS_READ + "` SMALLINT ," +
-                //TODO: change to TINYINT
                 "`" + DistributionListMessageModel.COLUMN_IS_SAVED + "` SMALLINT ," +
                 "`" + DistributionListMessageModel.COLUMN_IS_QUEUED + "` TINYINT ," +
                 "`" + DistributionListMessageModel.COLUMN_STATE + "` VARCHAR ," +
                 "`" + DistributionListMessageModel.COLUMN_POSTED_AT + "` BIGINT ," +
                 "`" + DistributionListMessageModel.COLUMN_CREATED_AT + "` BIGINT ," +
                 "`" + DistributionListMessageModel.COLUMN_MODIFIED_AT + "` BIGINT ," +
-                //TODO: change to TINYINT
                 "`" + DistributionListMessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
                 "`" + DistributionListMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
                 "`" + DistributionListMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +

@@ -22,6 +22,7 @@
 package ch.threema.app.workers
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -42,12 +43,12 @@ import ch.threema.app.services.UserService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.domain.models.IdentityState
-import ch.threema.domain.models.IdentityType
-import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ModelDeletedException
 import ch.threema.data.repositories.ContactModelRepository
+import ch.threema.domain.models.IdentityState
+import ch.threema.domain.models.IdentityType
+import ch.threema.domain.protocol.api.APIConnector
 import java.util.concurrent.TimeUnit
 
 private val logger = LoggingUtil.getThreemaLogger("ContactUpdateWorker")
@@ -60,7 +61,6 @@ class ContactUpdateWorker(
     private val context: Context,
     workerParameters: WorkerParameters,
 ) : Worker(context, workerParameters) {
-
     override fun doWork(): Result {
         val serviceManager = ThreemaApplication.getServiceManager()
 
@@ -89,7 +89,7 @@ class ContactUpdateWorker(
 
             logger.info(
                 "Initializing contact update sync. Requested schedule period: {} ms",
-                schedulePeriodMs
+                schedulePeriodMs,
             )
 
             try {
@@ -98,7 +98,7 @@ class ContactUpdateWorker(
                 if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
                         workManager,
                         WORKER_CONTACT_UPDATE_PERIODIC_NAME,
-                        schedulePeriodMs
+                        schedulePeriodMs,
                     )
                 ) {
                     logger.debug("Scheduling new job")
@@ -115,7 +115,7 @@ class ContactUpdateWorker(
                     val workRequest = PeriodicWorkRequest.Builder(
                         ContactUpdateWorker::class.java,
                         schedulePeriodMs,
-                        TimeUnit.MILLISECONDS
+                        TimeUnit.MILLISECONDS,
                     )
                         .setConstraints(constraints)
                         .addTag(schedulePeriodMs.toString())
@@ -125,7 +125,7 @@ class ContactUpdateWorker(
                     workManager.enqueueUniquePeriodicWork(
                         WORKER_CONTACT_UPDATE_PERIODIC_NAME,
                         ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                        workRequest
+                        workRequest,
                     )
                 }
             } catch (e: IllegalStateException) {
@@ -144,6 +144,7 @@ class ContactUpdateWorker(
             return WorkManagerUtil.cancelUniqueWork(context, WORKER_CONTACT_UPDATE_PERIODIC_NAME)
         }
 
+        @WorkerThread
         fun sendFeatureMaskAndUpdateContacts(serviceManager: ServiceManager) =
             sendFeatureMaskAndUpdateContacts(
                 serviceManager.modelRepositories.contacts,
@@ -154,6 +155,7 @@ class ContactUpdateWorker(
                 null,
             )
 
+        @WorkerThread
         private fun sendFeatureMaskAndUpdateContacts(
             contactModelRepository: ContactModelRepository?,
             contactService: ContactService?,
@@ -164,7 +166,9 @@ class ContactUpdateWorker(
         ): Boolean {
             logger.info("Starting contact update")
 
-            if (contactService == null || apiConnector == null || userService == null || preferenceService == null || contactModelRepository == null) {
+            if (contactService == null || apiConnector == null || userService == null || preferenceService == null ||
+                contactModelRepository == null
+            ) {
                 logger.warn("Services not available while updating contact states")
                 return false
             }
@@ -243,7 +247,9 @@ class ContactUpdateWorker(
 
                     if (newState == null) {
                         logger.warn(
-                            "Received invalid state {} for identity {}", result.states[i], identity
+                            "Received invalid state {} for identity {}",
+                            result.states[i],
+                            identity,
                         )
                     }
 
@@ -254,7 +260,7 @@ class ContactUpdateWorker(
                             logger.warn(
                                 "Received invalid type {} for identity {}",
                                 result.types[i],
-                                identity
+                                identity,
                             )
                             IdentityType.NORMAL
                         }
@@ -295,7 +301,7 @@ class ContactUpdateWorker(
                 // not allowed and will not result in any change.
                 if (newState != null && ContactUtil.allowedChangeToState(
                         data.activityState,
-                        newState
+                        newState,
                     )
                 ) {
                     contactModel.setActivityStateFromLocal(newState)
@@ -308,12 +314,11 @@ class ContactUpdateWorker(
                 } else {
                     contactModel.setFeatureMaskFromLocal(newFeatureMask)
                 }
-
             } catch (e: ModelDeletedException) {
                 logger.warn(
                     "Could not update contact {} because the model has been deleted",
                     contactModel.identity,
-                    e
+                    e,
                 )
             }
         }

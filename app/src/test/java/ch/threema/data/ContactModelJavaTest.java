@@ -30,7 +30,6 @@ import java.util.Date;
 
 import ch.threema.app.managers.CoreServiceManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -52,11 +51,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
 
 public class ContactModelJavaTest {
     private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
-    private final PreferenceService preferenceServiceMock = mock(PreferenceService.class);
     private final CoreServiceManager coreServiceManagerMock = mock(CoreServiceManager.class);
     private final ContactModelRepository contactModelRepository = new ContactModelRepository(
         new ModelTypeCache<>(), databaseBackendMock, coreServiceManagerMock
@@ -98,10 +95,12 @@ public class ContactModelJavaTest {
                 ContactSyncState.CUSTOM,
                 ReadReceiptPolicy.DONT_SEND,
                 TypingIndicatorPolicy.SEND,
+                false,
                 "asdf",
                 null,
                 false,
                 new byte[]{1, 2, 3},
+                null,
                 null,
                 null
             ),
@@ -152,12 +151,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("Firstname", contactListItemTextTopLeft);
@@ -177,12 +172,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("  ");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false);
 
         // assert
         Assert.assertEquals("Firstname", contactListItemTextTopLeft);
@@ -202,12 +193,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("  Lastname  ");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("Lastname", contactListItemTextTopLeft);
@@ -227,12 +214,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("  Lastname  ");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false);
 
         // assert
         Assert.assertEquals("Lastname", contactListItemTextTopLeft);
@@ -252,12 +235,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("Lastname");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("Firstname Lastname", contactListItemTextTopLeft);
@@ -277,12 +256,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("Lastname");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false);
 
         // assert
         Assert.assertEquals("Lastname Firstname", contactListItemTextTopLeft);
@@ -302,12 +277,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("  Lastname  ");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("Firstname Lastname", contactListItemTextTopLeft);
@@ -327,12 +298,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("  Lastname  ");
         javaContactModel.setPublicNickName("");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false);
 
         // assert
         Assert.assertEquals("Lastname Firstname", contactListItemTextTopLeft);
@@ -352,12 +319,8 @@ public class ContactModelJavaTest {
         javaContactModel.setLastName("Lastname");
         javaContactModel.setPublicNickName("Nickname");
 
-        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
-
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("Firstname Lastname", contactListItemTextTopLeft);
@@ -379,13 +342,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("~Nickname", contactListItemTextTopLeft);
-        verifyZeroInteractions(preferenceServiceMock);
     }
 
     @Test
@@ -403,13 +363,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("~Nickname", contactListItemTextTopLeft);
-        verifyZeroInteractions(preferenceServiceMock);
     }
 
     @Test
@@ -427,13 +384,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("   Nickname   ");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals("~Nickname", contactListItemTextTopLeft);
-        verifyZeroInteractions(preferenceServiceMock);
     }
 
     @Test
@@ -451,13 +405,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("  ");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
-            preferenceServiceMock
-        );
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true);
 
         // assert
         Assert.assertEquals(identity, contactListItemTextTopLeft);
-        verifyZeroInteractions(preferenceServiceMock);
     }
 
     @Test

@@ -35,7 +35,6 @@ import ch.threema.app.R
 import com.google.android.material.badge.BadgeDrawable
 
 class PermissionIconView : FrameLayout {
-
     /**
      * This indicates the state
      */
@@ -71,7 +70,7 @@ class PermissionIconView : FrameLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     )
 
     init {
@@ -120,7 +119,7 @@ class PermissionIconView : FrameLayout {
                 PermissionIconState.GRANTED -> R.color.material_green
                 PermissionIconState.OPTIONAL_AND_DENIED -> R.color.material_orange
                 PermissionIconState.REQUIRED_OR_UNDECIDED -> R.color.material_red
-            }
+            },
         )
     }
 

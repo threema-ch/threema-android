@@ -33,11 +33,10 @@ import ch.threema.base.utils.LoggingUtil
 
 class RootViewDeferringInsetsCallback(
     private val emojiPicker: EmojiPicker?,
-    private val threemaToolbarActivity: ThreemaToolbarActivity
+    private val threemaToolbarActivity: ThreemaToolbarActivity,
 ) :
     WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE),
     androidx.core.view.OnApplyWindowInsetsListener {
-
     private companion object {
         private val logger = LoggingUtil.getThreemaLogger("RootViewDeferringInsetsCallback")
     }
@@ -51,17 +50,20 @@ class RootViewDeferringInsetsCallback(
 
     override fun onApplyWindowInsets(
         v: View,
-        windowInsets: WindowInsetsCompat
+        windowInsets: WindowInsetsCompat,
     ): WindowInsetsCompat {
         logger.debug(
             "onApplyWindowInsets deferred = {}, disabledAnim = {}",
             deferredInsets,
-            disableAnimation
+            disableAnimation,
         )
         view = v
         lastWindowInsets = windowInsets
-        val types =
-            if (deferredInsets || disableAnimation) WindowInsetsCompat.Type.systemBars() else WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
+        val types = if (deferredInsets || disableAnimation) {
+            WindowInsetsCompat.Type.systemBars()
+        } else {
+            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
+        }
         val typeInsets = windowInsets.getInsets(types)
         val notchInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout())
 
@@ -69,14 +71,14 @@ class RootViewDeferringInsetsCallback(
             typeInsets.left + notchInsets.left,
             typeInsets.top,
             typeInsets.right + notchInsets.right,
-            typeInsets.bottom
+            typeInsets.bottom,
         )
         val attachedActivity: ThreemaToolbarActivity = threemaToolbarActivity
         if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
             attachedActivity.onSoftKeyboardOpened(
                 windowInsets.getInsets(WindowInsetsCompat.Type.ime()).bottom - windowInsets.getInsets(
-                    WindowInsetsCompat.Type.navigationBars()
-                ).bottom
+                    WindowInsetsCompat.Type.navigationBars(),
+                ).bottom,
             )
         } else {
             attachedActivity.onSoftKeyboardClosed()
@@ -90,7 +92,7 @@ class RootViewDeferringInsetsCallback(
             animation.typeMask,
             emojiPicker?.isShown,
             emojiPicker?.isEmojiSearchShown,
-            lastWindowInsets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom
+            lastWindowInsets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom,
         )
         if (animation.typeMask and WindowInsetsCompat.Type.ime() == WindowInsetsCompat.Type.ime()) {
             deferredInsets = true
@@ -99,14 +101,16 @@ class RootViewDeferringInsetsCallback(
 
     override fun onProgress(
         insets: WindowInsetsCompat,
-        runningAnimations: List<WindowInsetsAnimationCompat?>
+        runningAnimations: List<WindowInsetsAnimationCompat?>,
     ): WindowInsetsCompat {
         logger.debug("onProgress, disabled {}", disableAnimation)
 
         // consume insets if emojipicker showing or hiding is in progress to prevent flicker
         return if (preferenceService?.emojiStyle == PreferenceService.EmojiStyle_DEFAULT) {
             if (disableAnimation) WindowInsetsCompat.CONSUMED else insets
-        } else insets
+        } else {
+            insets
+        }
     }
 
     override fun onEnd(animation: WindowInsetsAnimationCompat) {

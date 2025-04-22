@@ -32,14 +32,15 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
-import ch.threema.app.services.ConversationTagServiceImpl;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.GroupModel;
 
 @WorkerThread
@@ -95,7 +96,7 @@ public class ActiveConversationHandler extends MessageReceiver {
         if (messageReceiver != null) {
             final ConversationModel conversationModel = this.conversationService.refresh(messageReceiver);
             if (conversationModel != null) {
-                conversationTagService.removeTagAndNotify(conversationModel, conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD));
+                conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
             }
         }
     }

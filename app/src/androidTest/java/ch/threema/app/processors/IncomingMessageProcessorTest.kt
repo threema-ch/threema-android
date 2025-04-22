@@ -31,7 +31,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK
 import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
-import ch.threema.domain.protocol.csp.messages.location.LocationMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData
@@ -41,23 +40,23 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage
 import ch.threema.domain.protocol.csp.messages.location.LocationMessageData
+import java.util.Date
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.fail
-import org.junit.Test
-import java.util.Date
 
 @DangerousTest
 class IncomingMessageProcessorTest : MessageProcessorProvider() {
-
     @Test
     fun testIncomingTextMessage() = runTest {
         assertSuccessfulMessageProcessing(
             TextMessage().also { it.text = "Hello!" }.enrich(),
-            contactA
+            contactA,
         )
     }
 
@@ -67,11 +66,11 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
             latitude = 0.0,
             longitude = 0.0,
             accuracy = null,
-            poi = null
+            poi = null,
         )
         assertSuccessfulMessageProcessing(
             message = LocationMessage(locationMessageData = locationMessageData).enrich(),
-            fromContact = contactA
+            fromContact = contactA,
         )
     }
 
@@ -107,9 +106,11 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         val pollVoteMessage = PollVoteMessage().also { voteMessage ->
             voteMessage.ballotId = ballotId
             voteMessage.ballotCreatorIdentity = ballotCreator
-            voteMessage.votes.addAll(List(5) { index ->
-                BallotVote(index, 0)
-            })
+            voteMessage.votes.addAll(
+                List(5) { index ->
+                    BallotVote(index, 0)
+                },
+            )
         }.enrich()
 
         assertSuccessfulMessageProcessing(pollVoteMessage, contactA)
@@ -125,7 +126,8 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
                 it.receiptType = DELIVERYRECEIPT_MSGRECEIVED
                 it.receiptMessageIds = arrayOf(messageId)
                 it.messageId = MessageId(0)
-            }.enrich(), contactA
+            }.enrich(),
+            contactA,
         )
 
         // Test 'read'
@@ -133,7 +135,8 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
             DeliveryReceiptMessage().also {
                 it.receiptType = DELIVERYRECEIPT_MSGREAD
                 it.receiptMessageIds = arrayOf(messageId)
-            }.enrich(), contactA
+            }.enrich(),
+            contactA,
         )
 
         // Test 'userack'
@@ -141,7 +144,8 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
             DeliveryReceiptMessage().also {
                 it.receiptType = DELIVERYRECEIPT_MSGUSERACK
                 it.receiptMessageIds = arrayOf(messageId)
-            }.enrich(), contactA
+            }.enrich(),
+            contactA,
         )
 
         // Test 'userdec'
@@ -149,7 +153,8 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
             DeliveryReceiptMessage().also {
                 it.receiptType = DELIVERYRECEIPT_MSGUSERDEC
                 it.receiptMessageIds = arrayOf(messageId)
-            }.enrich(), contactA
+            }.enrich(),
+            contactA,
         )
 
         // Test 'received' with two times the same message id
@@ -158,7 +163,8 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
                 it.receiptType = DELIVERYRECEIPT_MSGRECEIVED
                 it.receiptMessageIds = arrayOf(messageId, messageId)
                 it.messageId = MessageId(0)
-            }.enrich(), contactA
+            }.enrich(),
+            contactA,
         )
 
         // Test 'received' with many message ids
@@ -167,7 +173,8 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
                 it.receiptType = DELIVERYRECEIPT_MSGRECEIVED
                 it.receiptMessageIds = Array(100) { MessageId() }
                 it.messageId = MessageId(0)
-            }.enrich(), contactA
+            }.enrich(),
+            contactA,
         )
     }
 
@@ -175,11 +182,11 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
     fun testIncomingTypingIndicator() = runTest {
         assertSuccessfulMessageProcessing(
             TypingIndicatorMessage().also { it.isTyping = true }.enrich(),
-            contactA
+            contactA,
         )
         assertSuccessfulMessageProcessing(
             TypingIndicatorMessage().also { it.isTyping = false }.enrich(),
-            contactA
+            contactA,
         )
     }
 
@@ -222,17 +229,17 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         val messageId = message.messageId
         processMessage(
             message.also { it.fromIdentity = fromContact.identity },
-            fromContact.identityStore
+            fromContact.identityStore,
         )
 
-        val expectDeliveryReceiptSent = message.sendAutomaticDeliveryReceipt()
-            && !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
+        val expectDeliveryReceiptSent = message.sendAutomaticDeliveryReceipt() &&
+            !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
         if (expectDeliveryReceiptSent) {
             val deliveryReceiptMessage = sentMessagesInsideTask.poll()
             if (deliveryReceiptMessage is DeliveryReceiptMessage) {
-                assertArrayEquals(
+                assertContentEquals(
                     messageId.messageId,
-                    deliveryReceiptMessage.receiptMessageIds[0].messageId
+                    deliveryReceiptMessage.receiptMessageIds[0].messageId,
                 )
                 assertEquals(DELIVERYRECEIPT_MSGRECEIVED, deliveryReceiptMessage.receiptType)
             } else {
@@ -250,7 +257,7 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
     ) {
         processMessage(
             message.also { it.fromIdentity = fromContact.identity },
-            fromContact.identityStore
+            fromContact.identityStore,
         )
 
         assertTrue(sentMessagesInsideTask.isEmpty())
@@ -263,5 +270,4 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         messageId = MessageId()
         return this
     }
-
 }

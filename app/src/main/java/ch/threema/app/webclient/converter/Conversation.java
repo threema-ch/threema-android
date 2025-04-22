@@ -26,11 +26,10 @@ import java.util.List;
 
 import androidx.annotation.AnyThread;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ConversationTagServiceImpl;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.TagModel;
+import ch.threema.storage.models.ConversationTag;
 
 @AnyThread
 public class Conversation extends Converter {
@@ -84,18 +83,14 @@ public class Conversation extends Converter {
 
             builder.put(NOTIFICATIONS, NotificationSettings.convert(conversation));
 
-            final TagModel starTagModel = serviceManager.getConversationTagService()
-                .getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
             final boolean isStarred = serviceManager.getConversationTagService()
-                .isTaggedWith(conversation, starTagModel);
+                .isTaggedWith(conversation, ConversationTag.PINNED);
             if (isStarred) {
                 builder.put(IS_STARRED, isStarred);
             }
 
-            final TagModel unreadTagModel = serviceManager.getConversationTagService()
-                .getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
             final boolean isUnread = serviceManager.getConversationTagService()
-                .isTaggedWith(conversation, unreadTagModel);
+                .isTaggedWith(conversation, ConversationTag.MARKED_AS_UNREAD);
             builder.put(IS_UNREAD, isUnread);
 
             if (append != null) {

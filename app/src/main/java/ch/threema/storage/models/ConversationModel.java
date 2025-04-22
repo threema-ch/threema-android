@@ -33,6 +33,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
 import ch.threema.app.utils.ConversationUtil;
+import ch.threema.data.models.GroupModel;
 
 public class ConversationModel {
 
@@ -116,9 +117,18 @@ public class ConversationModel {
     }
 
     @Nullable
-    public GroupModel getGroup() {
+    public ch.threema.storage.models.GroupModel getGroup() {
         if (this.isGroupConversation()) {
             return ((GroupMessageReceiver) this.receiver).getGroup();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public GroupModel getGroupModel() {
+        if (this.isGroupConversation()) {
+            return ((GroupMessageReceiver) this.receiver).getGroupModel();
         }
 
         return null;

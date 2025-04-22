@@ -22,6 +22,7 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 
@@ -33,12 +34,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.GroupModel;
+import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class SyncGroupHandler extends MessageReceiver {
@@ -46,6 +50,10 @@ public class SyncGroupHandler extends MessageReceiver {
 
     private final MessageDispatcher responseDispatcher;
     private final GroupService groupService;
+    private @NonNull
+    final GroupModelRepository groupModelRepository;
+    private @NonNull
+    final GroupFlowDispatcher groupFlowDispatcher;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({
@@ -58,11 +66,17 @@ public class SyncGroupHandler extends MessageReceiver {
     }
 
     @AnyThread
-    public SyncGroupHandler(MessageDispatcher responseDispatcher,
-                            GroupService groupService) {
+    public SyncGroupHandler(
+        MessageDispatcher responseDispatcher,
+        GroupService groupService,
+        @NonNull GroupModelRepository groupModelRepository,
+        @NonNull GroupFlowDispatcher groupFlowDispatcher
+    ) {
         super(Protocol.SUB_TYPE_GROUP_SYNC);
         this.responseDispatcher = responseDispatcher;
         this.groupService = groupService;
+        this.groupModelRepository = groupModelRepository;
+        this.groupFlowDispatcher = groupFlowDispatcher;
     }
 
     @Override
@@ -86,8 +100,6 @@ public class SyncGroupHandler extends MessageReceiver {
         }
 
         if (group == null
-            // Deleted group
-            || group.isDeleted()
             // I am not the creator
             || !this.groupService.isGroupCreator(group)
             // I am not in this group (e.g. left)
@@ -97,11 +109,23 @@ public class SyncGroupHandler extends MessageReceiver {
             return;
         }
 
-        if (this.groupService.scheduleSync(group)) {
-            this.success(temporaryId);
-        } else {
-            this.failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);
+        ch.threema.data.models.GroupModel newGroupModel = groupModelRepository.getByCreatorIdentityAndId(group.getCreatorIdentity(), group.getApiGroupId());
+        if (newGroupModel == null) {
+            logger.error("New group model is null");
+            this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+            return;
         }
+
+        Deferred<Boolean> result = groupFlowDispatcher.runGroupResyncFlow(newGroupModel);
+
+        result.invokeOnCompletion(throwable -> {
+            if (result.getCompleted() == Boolean.TRUE) {
+                this.success(temporaryId);
+            } else {
+                this.failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);
+            }
+            return null;
+        });
     }
 
     private void success(String temporaryId) {

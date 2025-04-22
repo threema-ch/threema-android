@@ -28,10 +28,14 @@ import android.database.SQLException;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.services.GroupService;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.GroupId;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
@@ -96,13 +100,12 @@ public class GroupModelFactory extends ModelFactory {
 
     private GroupModel convert(Cursor cursor) {
         if (cursor != null && cursor.getPosition() >= 0) {
-            final GroupModel c = new GroupModel();
+            final GroupModel groupModel = new GroupModel();
 
             //convert default
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
-                @Override
-                public boolean next(CursorHelper cursorHelper) {
-                    c
+            new CursorHelper(cursor, columnIndexCache).current(
+                (CursorHelper.Callback) cursorHelper -> {
+                    groupModel
                         .setId(cursorHelper.getInt(GroupModel.COLUMN_ID))
                         .setApiGroupId(new GroupId(cursorHelper.getString(GroupModel.COLUMN_API_GROUP_ID)))
                         .setName(cursorHelper.getString(GroupModel.COLUMN_NAME))
@@ -110,19 +113,18 @@ public class GroupModelFactory extends ModelFactory {
                         .setSynchronizedAt(cursorHelper.getDate(GroupModel.COLUMN_SYNCHRONIZED_AT))
                         .setCreatedAt(cursorHelper.getDateByString(GroupModel.COLUMN_CREATED_AT))
                         .setLastUpdate(cursorHelper.getDate(GroupModel.COLUMN_LAST_UPDATE))
-                        .setDeleted(cursorHelper.getBoolean(GroupModel.COLUMN_DELETED))
                         .setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED))
                         .setGroupDesc(cursorHelper.getString(GroupModel.COLUMN_GROUP_DESC))
                         .setGroupDescTimestamp(cursorHelper.getDateByString(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP))
                         .setColorIndex(cursorHelper.getInt(GroupModel.COLUMN_COLOR_INDEX))
                         .setUserState(GroupModel.UserState.valueOf(cursorHelper.getInt(GroupModel.COLUMN_USER_STATE)))
-                    ;
+                        .setNotificationTriggerPolicyOverride(cursorHelper.getLong(GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE));
 
                     return false;
                 }
-            });
+            );
 
-            return c;
+            return groupModel;
         }
 
         return null;
@@ -167,13 +169,13 @@ public class GroupModelFactory extends ModelFactory {
         contentValues.put(GroupModel.COLUMN_CREATED_AT, groupModel.getCreatedAt() != null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getCreatedAt()) : null);
         contentValues.put(GroupModel.COLUMN_LAST_UPDATE, groupModel.getLastUpdate() != null ? groupModel.getLastUpdate().getTime() : null);
         contentValues.put(GroupModel.COLUMN_SYNCHRONIZED_AT, groupModel.getSynchronizedAt() != null ? groupModel.getSynchronizedAt().getTime() : null);
-        contentValues.put(GroupModel.COLUMN_DELETED, groupModel.isDeleted());
         contentValues.put(GroupModel.COLUMN_IS_ARCHIVED, groupModel.isArchived());
         contentValues.put(GroupModel.COLUMN_GROUP_DESC, groupModel.getGroupDesc());
         contentValues.put(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP, groupModel.getGroupDescTimestamp() != null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getGroupDescTimestamp()) : null);
         contentValues.put(GroupModel.COLUMN_COLOR_INDEX, groupModel.getColorIndex());
         // In case the user state is not set, we fall back to 'member'.
         contentValues.put(GroupModel.COLUMN_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().value : GroupModel.UserState.MEMBER.value);
+        contentValues.put(GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, groupModel.getNotificationTriggerPolicyOverride());
 
         return contentValues;
     }
@@ -208,6 +210,19 @@ public class GroupModelFactory extends ModelFactory {
         return true;
     }
 
+    public void setLastUpdate(@NonNull GroupIdentity groupIdentity, @Nullable Date lastUpdate) {
+        Long lastUpdateTime = lastUpdate != null ? lastUpdate.getTime() : null;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GroupModel.COLUMN_LAST_UPDATE, lastUpdateTime);
+
+        getWritableDatabase().update(
+            GroupModel.TABLE,
+            contentValues,
+            GroupModel.COLUMN_API_GROUP_ID + " = ? AND "
+                + GroupModel.COLUMN_CREATOR_IDENTITY + " = ?",
+            new String[]{groupIdentity.getGroupIdHexString(), groupIdentity.getCreatorIdentity()}
+        );
+    }
 
     public int delete(GroupModel groupModel) {
         return this.databaseService.getWritableDatabase().delete(this.getTableName(),
@@ -249,10 +264,6 @@ public class GroupModelFactory extends ModelFactory {
         List<String> placeholders = new ArrayList<>();
 
         if (filter != null) {
-            if (!filter.includeDeletedGroups()) {
-                queryBuilder.appendWhere(GroupModel.COLUMN_DELETED + "=0");
-            }
-
             String sortDirection = filter.sortAscending() ? "ASC" : "DESC";
             if (filter.sortByDate()) {
                 orderBy = GroupModel.COLUMN_CREATED_AT + " " + sortDirection;
@@ -301,12 +312,12 @@ public class GroupModelFactory extends ModelFactory {
                 "`" + GroupModel.COLUMN_CREATED_AT + "` VARCHAR , " +
                 "`" + GroupModel.COLUMN_LAST_UPDATE + "` INTEGER, " +
                 "`" + GroupModel.COLUMN_SYNCHRONIZED_AT + "` BIGINT , " +
-                "`" + GroupModel.COLUMN_DELETED + "` SMALLINT , " +
                 "`" + GroupModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0, " +
                 "`" + GroupModel.COLUMN_GROUP_DESC + "` VARCHAR DEFAULT NULL, " +
                 "`" + GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP + "` VARCHAR DEFAULT NULL, " +
                 "`" + GroupModel.COLUMN_COLOR_INDEX + "` INTEGER DEFAULT 0 NOT NULL, " +
-                "`" + GroupModel.COLUMN_USER_STATE + "` INTEGER DEFAULT 0 NOT NULL " +
+                "`" + GroupModel.COLUMN_USER_STATE + "` INTEGER DEFAULT 0 NOT NULL, " +
+                "`" + GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE + "` BIGINT DEFAULT NULL " +
                 ");",
             "CREATE UNIQUE INDEX `apiGroupIdAndCreator` ON `" + GroupModel.TABLE + "` ( " +
                 "`" + GroupModel.COLUMN_API_GROUP_ID + "`, `" + GroupModel.COLUMN_CREATOR_IDENTITY + "` " +

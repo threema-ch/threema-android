@@ -43,7 +43,7 @@ internal class SystemUpdateToVersion100(
                 "`editedAt` DATETIME NOT NULL, " +
                 "CONSTRAINT fk_contact_message_id FOREIGN KEY(messageId) " +
                 "REFERENCES message (id) ON UPDATE CASCADE ON DELETE CASCADE " +
-                ")"
+                ")",
         )
 
         sqLiteDatabase.execSQL(
@@ -55,7 +55,7 @@ internal class SystemUpdateToVersion100(
                 "`editedAt` DATETIME NOT NULL, " +
                 "CONSTRAINT fk_group_message_id FOREIGN KEY(messageId) " +
                 "REFERENCES m_group_message (id) ON UPDATE CASCADE ON DELETE CASCADE " +
-                ")"
+                ")",
         )
 
         return true

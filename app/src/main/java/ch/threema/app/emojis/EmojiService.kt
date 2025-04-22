@@ -26,16 +26,16 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.emojis.search.EmojiSearchIndex
 import ch.threema.app.services.PreferenceService
 import ch.threema.base.utils.LoggingUtil
-import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.Locale
+import kotlinx.coroutines.*
 
 private val logger = LoggingUtil.getThreemaLogger("EmojiService")
 
 class EmojiService(
     private val preferenceService: PreferenceService,
     private val searchIndex: EmojiSearchIndex,
-    private val recentEmojis: EmojiRecent
+    private val recentEmojis: EmojiRecent,
 ) {
     private val preferredDiversities = preferenceService.diverseEmojiPrefs
 
@@ -61,7 +61,7 @@ class EmojiService(
                 it,
                 EmojiSpritemap.DIVERSITY_NONE,
                 null,
-                EmojiSpritemap.DISPLAY_NO
+                EmojiSpritemap.DISPLAY_NO,
             )
         }
     }
@@ -108,7 +108,7 @@ class EmojiService(
                     searchEmojis(searchTerm)
                 } catch (e: Exception) {
                     logger.warn("Error while searching emojis", e)
-                    listOf()
+                    emptyList()
                 }
             }
         }
@@ -117,14 +117,16 @@ class EmojiService(
     @WorkerThread
     private fun searchEmojis(term: String): List<EmojiInfo> {
         return searchIndex.search(getLanguageCode(), term).map {
-            val (diversities, diversityFlag) = if (it.diversities?.isEmpty() != false)
+            val (diversities, diversityFlag) = if (it.diversities?.isEmpty() != false) {
                 Pair(null, EmojiSpritemap.DIVERSITY_NONE)
-            else Pair(it.diversities.toTypedArray(), EmojiSpritemap.DIVERSITY_PARENT)
+            } else {
+                Pair(it.diversities.toTypedArray(), EmojiSpritemap.DIVERSITY_PARENT)
+            }
             EmojiInfo(
                 it.sequence,
                 diversityFlag,
                 diversities,
-                EmojiSpritemap.DISPLAY_YES
+                EmojiSpritemap.DISPLAY_YES,
             )
         }
     }

@@ -72,7 +72,7 @@ internal sealed class ReflectedOutgoingBaseMessageTask<M : MessageReceiver<*>>(
                 } else if (!nonceFactory.store(NonceScope.CSP, nonce)) {
                     logger.warn(
                         "CSP nonce {} of outgoing message could not be stored",
-                        nonce.bytes.toHexString()
+                        nonce.bytes.toHexString(),
                     )
                 }
             }
@@ -124,7 +124,7 @@ internal abstract class ReflectedOutgoingGroupMessageTask(
         val groupIdentity = message.conversation.group
         val group = groupService.getByApiGroupIdAndCreator(
             GroupId(groupIdentity.groupId),
-            groupIdentity.creatorIdentity
+            groupIdentity.creatorIdentity,
         ) ?: throw IllegalStateException("The group of a reflected outgoing message must be known")
         groupService.createReceiver(group)
     }
@@ -138,7 +138,7 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.DELIVERY_RECEIPT -> ReflectedOutgoingDeliveryReceiptTask(this, serviceManager)
     CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> ReflectedOutgoingGroupDeliveryReceiptTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.FILE -> ReflectedOutgoingFileTask(this, serviceManager)
@@ -147,38 +147,39 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.POLL_VOTE -> ReflectedOutgoingPollVoteMessageTask(this, serviceManager)
     CspE2eMessageType.GROUP_POLL_SETUP -> ReflectedOutgoingGroupPollSetupMessageTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.GROUP_POLL_VOTE -> ReflectedOutgoingGroupPollVoteMessageTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.GROUP_CALL_START -> ReflectedOutgoingGroupCallStartTask(this, serviceManager)
     CspE2eMessageType.CALL_OFFER,
     CspE2eMessageType.CALL_RINGING,
     CspE2eMessageType.CALL_ANSWER,
-    CspE2eMessageType.CALL_HANGUP -> ReflectedOutgoingPlaceholderTask(
+    CspE2eMessageType.CALL_HANGUP,
+    -> ReflectedOutgoingPlaceholderTask(
         message = this,
         serviceManager = serviceManager,
-        logMessage = "Reflected message of type ${type.name} was received as outgoing"
+        logMessage = "Reflected message of type ${type.name} was received as outgoing",
     )
 
     CspE2eMessageType.CALL_ICE_CANDIDATE -> throw IllegalStateException("Reflected message of type ${type.name} should never be received as outgoing")
     CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ReflectedOutgoingContactRequestProfilePictureTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> ReflectedOutgoingContactSetProfilePictureTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> ReflectedOutgoingDeleteProfilePictureTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.LOCATION -> ReflectedOutgoingLocationTask(this, serviceManager)
@@ -186,47 +187,67 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.DELETE_MESSAGE -> ReflectedOutgoingDeleteMessageTask(this, serviceManager)
     CspE2eMessageType.GROUP_DELETE_MESSAGE -> ReflectedOutgoingGroupDeleteMessageTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.EDIT_MESSAGE -> ReflectedOutgoingEditMessageTask(this, serviceManager)
     CspE2eMessageType.GROUP_EDIT_MESSAGE -> ReflectedOutgoingGroupEditMessageTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
     CspE2eMessageType.GROUP_SYNC_REQUEST -> ReflectedOutgoingGroupSyncRequestTask(
         this,
-        serviceManager
+        serviceManager,
     )
 
-    // TODO(ANDR-3443): Process reflected outgoing deprecated messages
-    CspE2eMessageType.DEPRECATED_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
-    CspE2eMessageType.DEPRECATED_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
-    CspE2eMessageType.DEPRECATED_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
-    CspE2eMessageType.GROUP_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
-    CspE2eMessageType.GROUP_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
-    CspE2eMessageType.GROUP_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
-
+    CspE2eMessageType.DEPRECATED_IMAGE -> throw IllegalStateException("Deprecated image messages are unsupported")
+    CspE2eMessageType.DEPRECATED_AUDIO -> throw IllegalStateException("Deprecated audio messages are unsupported")
+    CspE2eMessageType.DEPRECATED_VIDEO -> throw IllegalStateException("Deprecated video messages are unsupported")
+    CspE2eMessageType.GROUP_IMAGE -> throw IllegalStateException("Deprecated group image messages are unsupported")
+    CspE2eMessageType.GROUP_AUDIO -> throw IllegalStateException("Deprecated group audio messages are unsupported")
+    CspE2eMessageType.GROUP_VIDEO -> throw IllegalStateException("Deprecated group video messages are unsupported")
     CspE2eMessageType.GROUP_JOIN_REQUEST -> throw IllegalStateException("Group join requests are unsupported")
     CspE2eMessageType.GROUP_JOIN_RESPONSE -> throw IllegalStateException("Group join responses are unsupported")
+    CspE2eMessageType.REACTION -> ReflectedOutgoingReactionTask(this, serviceManager)
+    CspE2eMessageType.GROUP_REACTION -> ReflectedOutgoingGroupReactionTask(this, serviceManager)
+    CspE2eMessageType.GROUP_SETUP -> ReflectedOutgoingPlaceholderTask(
+        this,
+        serviceManager,
+        "Reflected outgoing group setup is ignored",
+    )
 
-    // TODO(ANDR-3472): Process reflected outgoing emoji reactions
-    CspE2eMessageType.REACTION -> throw NotImplementedError("Reaction implementation is missing")
-    CspE2eMessageType.GROUP_REACTION -> throw NotImplementedError("Group reaction implementation is missing")
+    CspE2eMessageType.GROUP_NAME -> ReflectedOutgoingPlaceholderTask(
+        this,
+        serviceManager,
+        "Reflected outgoing group name is ignored",
+    )
 
-    // TODO(ANDR-2990): Process group control messages from sync
-    CspE2eMessageType.GROUP_SETUP -> throw NotImplementedError("Group sync implementation is missing")
-    CspE2eMessageType.GROUP_NAME -> throw NotImplementedError("Group sync implementation is missing")
-    CspE2eMessageType.GROUP_LEAVE -> throw NotImplementedError("Group sync implementation is missing")
-    CspE2eMessageType.GROUP_SET_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
-    CspE2eMessageType.GROUP_DELETE_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
+    CspE2eMessageType.GROUP_LEAVE -> ReflectedOutgoingPlaceholderTask(
+        this,
+        serviceManager,
+        "Reflected outgoing group leave is ignored",
+    )
+
+    CspE2eMessageType.GROUP_SET_PROFILE_PICTURE -> ReflectedOutgoingPlaceholderTask(
+        this,
+        serviceManager,
+        "Reflected outgoing set profile picture is ignored",
+    )
+
+    CspE2eMessageType.GROUP_DELETE_PROFILE_PICTURE -> ReflectedOutgoingPlaceholderTask(
+        this,
+        serviceManager,
+        "Reflected outgoing delete profile picture is ignored",
+    )
 
     CspE2eMessageType.WEB_SESSION_RESUME -> throw IllegalStateException("Web session resume message is unexpected as reflected outgoing message")
 
     CspE2eMessageType.TYPING_INDICATOR -> throw IllegalStateException("A typing indicator is unexpected as reflected outgoing message")
 
-    CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException("A forward security envelope message should never be received as reflected outgoing message")
+    CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException(
+        "A forward security envelope message should never be received as reflected outgoing message",
+    )
 
     CspE2eMessageType.EMPTY -> throw IllegalStateException("An empty message should never be received as reflected outgoing message")
 

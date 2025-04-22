@@ -52,7 +52,7 @@ internal class ReflectedOutgoingTextTask(
         val messageModel: MessageModel = messageReceiver.createLocalModel(
             MessageType.TEXT,
             MessageContentsType.TEXT,
-            Date(message.createdAt)
+            Date(message.createdAt),
         )
         initializeMessageModelsCommonFields(messageModel)
         val (body, messageId) = QuoteUtil.getBodyAndQuotedMessageId(textMessage.text)

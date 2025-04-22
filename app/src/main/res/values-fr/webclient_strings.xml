@@ -39,5 +39,7 @@
     <string name="webclient_diagnostics_start">Commencer</string>
     <string name="webclient_diagnostics_intro">Appuyez sur le bouton « Commencer » pour lancer le test.</string>
     <string name="webclient_diagnostics_done">Terminé. Si vous rencontrez des problèmes lors de l\'établissement d\'une connexion à l\'application Desktop ou au client Web, veuillez envoyer ce journal à l\'assistance de Threema.</string>
-    <string name="webclient_unsupported_desktop_beta_message">Pour l’instant, cette application bêta pour ordinateur de bureau ne peut être liée qu’à un appareil iOS. Pour les appareils Android, veuillez télécharger l’application de bureau classique.</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">Mauvais code QR</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
+    <string name="webclient_scanned_md_linking_qr_code_message">Le code QR que vous avez scanné appartient à la nouvelle application de bureau bêta.\n\nRevenez à « Menu principal &gt; ${app_name_desktop} 2.0 for Desktop (Beta) » et sélectionnez \"${md_link_device}\" pour vous connecter à cette application de bureau.</string>
 </resources>

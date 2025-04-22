@@ -29,8 +29,8 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 class OutgoingPollVoteContactMessageTask(
     private val messageId: MessageId,
@@ -61,7 +61,7 @@ class OutgoingPollVoteContactMessageTask(
         ballotId.ballotId,
         ballotCreator,
         ballotVotes.map { Pair(it.id, it.value) },
-        toIdentity
+        toIdentity,
     )
 
     @Serializable
@@ -81,7 +81,7 @@ class OutgoingPollVoteContactMessageTask(
                     BallotVote(it.first, it.second)
                 }.toTypedArray(),
                 toIdentity,
-                serviceManager
+                serviceManager,
             )
     }
 }

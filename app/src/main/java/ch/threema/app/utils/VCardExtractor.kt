@@ -36,9 +36,8 @@ import java.util.*
  */
 class VCardExtractor(
     private val dateFormat: java.text.DateFormat,
-    private val resources: Resources
+    private val resources: Resources,
 ) {
-
     /**
      * Extracts the text of the given VCard property.
      * @param property the vcard property
@@ -58,9 +57,7 @@ class VCardExtractor(
         is PlaceProperty -> getPlaceProperty(property)
         is Related -> getRelated(property)
         is SimpleProperty<*> -> getSimpleProperty(property)
-        is StructuredName -> if (ignoreName) throw VCardExtractionException("name should be ignored") else getStructuredName(
-            property
-        )
+        is StructuredName -> if (ignoreName) throw VCardExtractionException("name should be ignored") else getStructuredName(property)
 
         is Telephone -> getTelephone(property)
         is Timezone -> listOfNotNull(property.text, property.offset.toString()).joinToString(", ")
@@ -124,8 +121,9 @@ class VCardExtractor(
     }
 
     private fun getBinaryProperty(property: BinaryProperty<*>): String = when (property) {
-        is ImageProperty -> property.url
-            ?: "" // Include image urls if available, otherwise show picture instead of url
+        is ImageProperty ->
+            property.url
+                ?: "" // Include image urls if available, otherwise show picture instead of url
         is Key -> {
             when {
                 property.url != null && property.url.trim().isNotEmpty() -> property.url.trim()
@@ -148,20 +146,21 @@ class VCardExtractor(
             property.text
         } else {
             dateFormat.format(
-                (when {
-                property.calendar != null -> property.calendar
-                property.partialDate != null -> {
-                    val pd = property.partialDate
-                    Calendar.getInstance().apply {
-                        clear()
-                        pd.date?.let { set(Calendar.DAY_OF_MONTH, it) }
-                        pd.month?.let { set(Calendar.MONTH, it - 1) }
-                        pd.year?.let { set(Calendar.YEAR, it) }
+                when {
+                    property.calendar != null -> property.calendar
+                    property.partialDate != null -> {
+                        val pd = property.partialDate
+                        Calendar.getInstance().apply {
+                            clear()
+                            pd.date?.let { set(Calendar.DAY_OF_MONTH, it) }
+                            pd.month?.let { set(Calendar.MONTH, it - 1) }
+                            pd.year?.let { set(Calendar.YEAR, it) }
+                        }
                     }
-                }
 
-                else -> unknownProperty()
-            }).time)
+                    else -> unknownProperty()
+                }.time,
+            )
         }
 
     private fun getListProperty(property: ListProperty<*>): String =
@@ -189,7 +188,9 @@ class VCardExtractor(
             is RawProperty -> property.value?.let { v ->
                 if (v.startsWith("vnd.android.cursor.item/")) {
                     v.split(";").let { if (it.size >= 2) it[1] else "" }.toNonEmpty()
-                } else v.toNonEmpty()
+                } else {
+                    v.toNonEmpty()
+                }
             } ?: unknownProperty()
 
             is TextProperty -> property.value.toNonEmpty()
@@ -197,18 +198,23 @@ class VCardExtractor(
         }
 
     private fun getStructuredName(property: StructuredName): String =
-        StringBuilder().apply {
+        buildString {
             append(
                 listOf(
-                property.prefixes,
-                listOf(property.given),
-                property.additionalNames,
-                listOf(property.family)
-            ).flatten().filterNotNull().filter { it.isNotBlank() }.joinToString(" ") { it.trim() })
+                    property.prefixes,
+                    listOf(property.given),
+                    property.additionalNames,
+                    listOf(property.family),
+                )
+                    .flatten()
+                    .filterNotNull()
+                    .filter { it.isNotBlank() }
+                    .joinToString(" ") { it.trim() },
+            )
             if (property.suffixes.any { it.isNotBlank() }) {
                 append(property.suffixes.joinToString(" ", prefix = ", ").trim())
             }
-        }.toString().toNonEmpty()
+        }.toNonEmpty()
 
     private fun getTelephone(property: Telephone) =
         property.text?.toNullIfEmpty()
@@ -263,7 +269,7 @@ class VCardExtractor(
                 is RawProperty -> property.propertyName.let {
                     when {
                         property.value.startsWith("vnd.android.cursor.item/nickname") -> resources.getString(
-                            R.string.header_nickname_entry
+                            R.string.header_nickname_entry,
                         )
 
                         it == "X-ANDROID-CUSTOM" -> ""
@@ -303,5 +309,4 @@ class VCardExtractor(
     private fun unknownProperty(): Nothing = throw VCardExtractionException("unknown property")
 
     class VCardExtractionException(msg: String) : Exception(msg)
-
 }

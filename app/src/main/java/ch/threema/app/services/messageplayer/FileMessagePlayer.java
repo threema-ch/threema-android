@@ -26,6 +26,7 @@ import android.content.Intent;
 
 import java.io.File;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -57,7 +58,7 @@ public class FileMessagePlayer extends MessagePlayer {
     @Override
     protected AbstractMessageModel setData(MediaMessageDataInterface data) {
         AbstractMessageModel messageModel = this.getMessageModel();
-        messageModel.setFileDataModel((FileDataModel) data);
+        messageModel.setFileData((FileDataModel) data);
         return messageModel;
     }
 
@@ -88,8 +89,13 @@ public class FileMessagePlayer extends MessagePlayer {
                 final String mimeType = getMessageModel().getFileData().getMimeType();
 
                 if (!TestUtil.isEmptyOrNull(mimeType) && decryptedFile.exists()) {
-                    if (!FileUtil.isImageFile(getMessageModel().getFileData()) && !FileUtil.isVideoFile(getMessageModel().getFileData())) {
-                        messageService.viewMediaMessage(getContext(), getMessageModel(), fileService.getShareFileUri(decryptedFile, null));
+                    final @NonNull FileDataModel fileData = getMessageModel().getFileData();
+                    if (!FileUtil.isImageFile(fileData) && !FileUtil.isVideoFile(fileData)) {
+                        messageService.viewMediaMessage(
+                            getContext(),
+                            getMessageModel(),
+                            fileService.getShareFileUri(decryptedFile, fileData.getFileName())
+                        );
                     }
                 }
             });

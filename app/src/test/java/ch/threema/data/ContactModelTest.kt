@@ -29,6 +29,7 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
+import ch.threema.base.utils.now
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -45,22 +46,22 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
-import org.junit.After
-import org.junit.Assert
-import org.junit.Assert.assertArrayEquals
-import org.junit.Before
-import org.mockito.Mockito.`when`
-import org.powermock.api.mockito.PowerMockito
+import io.mockk.every
+import io.mockk.mockk
 import java.util.Date
 import kotlin.random.Random
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 
 /**
  * Track calls to the contact listener.
@@ -99,11 +100,11 @@ private class ContactListenerTracker {
 }
 
 class ContactModelTest {
-    private val databaseBackendMock = PowerMockito.mock(DatabaseBackend::class.java)
-    private val multiDeviceManagerMock = PowerMockito.mock(MultiDeviceManager::class.java).also {
-        `when`(it.isMultiDeviceActive).thenReturn(true)
+    private val databaseBackendMock = mockk<DatabaseBackend>(relaxed = true)
+    private val multiDeviceManagerMock = mockk<MultiDeviceManager> {
+        every { isMultiDeviceActive } returns true
     }
-    private val nonceStoreMock = PowerMockito.mock(NonceStore::class.java)
+    private val nonceStoreMock = mockk<NonceStore>()
     private val nonceFactory = NonceFactory(nonceStoreMock)
     private val taskManager = object : TaskManager {
         val scheduledTasks = mutableListOf<Task<*, TaskCodec>>()
@@ -123,13 +124,15 @@ class ContactModelTest {
             // Nothing to do
         }
     }
-    private val coreServiceManagerMock = PowerMockito.mock(CoreServiceManager::class.java).also {
-        `when`(it.taskManager).thenReturn(taskManager)
-        `when`(it.multiDeviceManager).thenReturn(multiDeviceManagerMock)
-        `when`(it.nonceFactory).thenReturn(nonceFactory)
+    private val coreServiceManagerMock = mockk<CoreServiceManager>().also {
+        every { it.taskManager } returns taskManager
+        every { it.multiDeviceManager } returns multiDeviceManagerMock
+        every { it.nonceFactory } returns nonceFactory
     }
     private val contactModelRepository = ContactModelRepository(
-        ModelTypeCache(), databaseBackendMock, coreServiceManagerMock
+        ModelTypeCache(),
+        databaseBackendMock,
+        coreServiceManagerMock,
     )
 
     private lateinit var contactListenerTracker: ContactListenerTracker
@@ -139,28 +142,30 @@ class ContactModelTest {
         return ContactModel(
             identity,
             ContactModelData(
-                identity,
-                Random.nextBytes(32),
-                Date(),
-                "Test",
-                "Contact",
-                null,
-                13u,
-                VerificationLevel.FULLY_VERIFIED,
-                WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-                IdentityType.NORMAL,
-                AcquaintanceLevel.DIRECT,
-                IdentityState.ACTIVE,
-                ContactSyncState.INITIAL,
-                7uL,
-                ReadReceiptPolicy.DONT_SEND,
-                TypingIndicatorPolicy.SEND,
-                null,
-                null,
-                isRestored,
-                null,
-                null,
-                null,
+                identity = identity,
+                publicKey = Random.nextBytes(32),
+                createdAt = now(),
+                firstName = "Test",
+                lastName = "Contact",
+                nickname = null,
+                colorIndex = 13u,
+                verificationLevel = VerificationLevel.FULLY_VERIFIED,
+                workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = AcquaintanceLevel.DIRECT,
+                activityState = IdentityState.ACTIVE,
+                syncState = ContactSyncState.INITIAL,
+                featureMask = 7uL,
+                readReceiptPolicy = ReadReceiptPolicy.DONT_SEND,
+                typingIndicatorPolicy = TypingIndicatorPolicy.SEND,
+                isArchived = false,
+                androidContactLookupKey = null,
+                localAvatarExpires = null,
+                isRestored = isRestored,
+                profilePictureBlobId = null,
+                jobTitle = null,
+                department = null,
+                notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
             contactModelRepository,
@@ -168,13 +173,13 @@ class ContactModelTest {
         )
     }
 
-    @Before
+    @BeforeTest
     fun beforeEach() {
         this.contactListenerTracker = ContactListenerTracker()
         this.contactListenerTracker.subscribe()
     }
 
-    @After
+    @AfterTest
     fun afterEach() {
         this.contactListenerTracker.unsubscribe()
     }
@@ -186,35 +191,38 @@ class ContactModelTest {
      */
     @Test
     fun testConstruction() {
+        val now = now()
         val publicKey = Random.nextBytes(32)
-        val createdAt = Date()
-        val localAvatarExpires = Date()
+        val createdAt = now
+        val localAvatarExpires = now
         val identity = "TESTTEST"
         val contact = ContactModel(
             identity,
             ContactModelData(
-                identity,
-                publicKey,
-                createdAt,
-                "Test",
-                "Contact",
-                null,
-                13u,
-                VerificationLevel.FULLY_VERIFIED,
-                WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-                IdentityType.NORMAL,
-                AcquaintanceLevel.DIRECT,
-                IdentityState.ACTIVE,
-                ContactSyncState.INITIAL,
-                7uL,
-                ReadReceiptPolicy.SEND,
-                TypingIndicatorPolicy.DONT_SEND,
-                null,
-                localAvatarExpires,
-                true,
-                byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
-                null,
-                null,
+                identity = identity,
+                publicKey = publicKey,
+                createdAt = createdAt,
+                firstName = "Test",
+                lastName = "Contact",
+                nickname = null,
+                colorIndex = 13u,
+                verificationLevel = VerificationLevel.FULLY_VERIFIED,
+                workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = AcquaintanceLevel.DIRECT,
+                activityState = IdentityState.ACTIVE,
+                syncState = ContactSyncState.INITIAL,
+                featureMask = 7uL,
+                readReceiptPolicy = ReadReceiptPolicy.SEND,
+                typingIndicatorPolicy = TypingIndicatorPolicy.DONT_SEND,
+                isArchived = false,
+                androidContactLookupKey = null,
+                localAvatarExpires = localAvatarExpires,
+                isRestored = true,
+                profilePictureBlobId = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
+                jobTitle = null,
+                department = null,
+                notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
             contactModelRepository,
@@ -241,7 +249,7 @@ class ContactModelTest {
         assertNull(value.androidContactLookupKey)
         assertEquals(localAvatarExpires, value.localAvatarExpires)
         assertTrue { value.isRestored }
-        assertArrayEquals(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8), value.profilePictureBlobId)
+        assertContentEquals(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8), value.profilePictureBlobId)
     }
 
     @Test
@@ -493,13 +501,13 @@ class ContactModelTest {
     @Test
     fun testConstructorValidateIdentity() {
         val data = createTestContact().data.value!!.copy(identity = "AAAAAAAA")
-        Assert.assertThrows(AssertionError::class.java) {
+        assertFailsWith<AssertionError> {
             ContactModel(
                 identity = "BBBBBBBB",
                 data = data,
                 databaseBackend = databaseBackendMock,
                 contactModelRepository = contactModelRepository,
-                coreServiceManager = coreServiceManagerMock
+                coreServiceManager = coreServiceManagerMock,
             )
         }
     }
@@ -577,23 +585,23 @@ class ContactModelTest {
 
         // Setting blob ID should update data and notify modification listeners
         contact.setProfilePictureBlobId(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
-            contact.data.value!!.profilePictureBlobId
+            contact.data.value!!.profilePictureBlobId,
         )
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Setting blob ID again to the same value should not notify listeners
         contact.setProfilePictureBlobId(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
-            contact.data.value!!.profilePictureBlobId
+            contact.data.value!!.profilePictureBlobId,
         )
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Blob ID can be set to an empty array or to null
         contact.setProfilePictureBlobId(byteArrayOf())
-        assertArrayEquals(byteArrayOf(), contact.data.value!!.profilePictureBlobId)
+        assertContentEquals(byteArrayOf(), contact.data.value!!.profilePictureBlobId)
         assertEquals(2, contactListenerTracker.onModified.size)
         contact.setProfilePictureBlobId(null)
         assertNull(contact.data.value!!.profilePictureBlobId)

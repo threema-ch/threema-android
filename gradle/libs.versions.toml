@@ -1,0 +1,212 @@
+[versions]
+activityCompose = "1.10.1"
+androidGradle = "8.9.0"
+androidImageCropper = "4.5.0"
+androidx_activity = "1.10.1"
+androidx_annotation = "1.9.1"
+androidx_appcompat = "1.7.0"
+androidx_biometric = "1.1.0"
+androidx_camera = "1.4.1"
+androidx_compose = "2.8.7"
+androidx_composeBom = "2025.03.00"
+androidx_concurrentFutures = "1.2.0"
+androidx_constraintlayout = "2.2.1"
+androidx_core = "1.15.0"
+androidx_espresso = "3.6.1"
+androidx_fragment = "1.8.6"
+androidx_junit = "1.2.1"
+androidx_lifecycle = "2.8.7"
+androidx_lifecycleExtensions = "2.2.0"
+androidx_media = "1.7.0"
+androidx_mmedia3 = "1.5.1"
+androidx_pagingRuntime = "3.3.6"
+androidx_palette = "1.0.0"
+androidx_preference = "1.2.1"
+androidx_recyclerview = "1.4.0"
+androidx_room = "2.6.1"
+androidx_sharetarget = "1.2.0"
+androidx_sqlite = "2.4.0"
+androidx_swiperefreshlayout = "1.1.0"
+androidx_test_core = "1.6.1"
+androidx_test_rules = "1.6.1"
+androidx_test_runner = "1.6.2"
+androidx_window = "1.3.0"
+androidx_workRuntime = "2.10.0"
+archunitJunit4 = "0.18.0"
+bcprovJdk15to18 = "1.80"
+chunkedDc = "1.0.1"
+commonsIo = "2.6" # >2.6 uses JDK8 features not supported by Java 8+ API desugaring, thus requiring Android 8
+commonsText = "1.13.0"
+desugarJdkLibs = "2.1.5"
+eddsa = "0.3.0"
+ezVcard = "0.11.3" # >0.11.3 uses JDK8 features not supported by Java 8+ API desugaring, thus requiring Android 8. See https://github.com/mangstadt/ez-vcard/wiki/Changelog
+fastlaneScreengrab = "2.1.1"
+fastscroll = "1.3.0"
+firebaseMessaging = "24.1.0"
+gestureViews = "2.8.3"
+glide = "4.16.0" # Glide 4.15+ does not work on API 21
+hmsPush = "6.3.0.304"
+jacksonCore = "2.18.2"
+jna = "5.13.0" # Note: when updating this version, we need to include the libjnidispatch.so of the same version for each ABI in app/libs/. Note that the description in the readme files in app/libs/ files should be updated when this version is changed. The libjnidispatch.so files can be found in the jna.aar file: https://github.com/java-native-access/jna/tree/master/dist
+json = "20250107"
+junit = "4.13.2"
+kotlin = "2.1.0"
+kotlinx_coroutines = "1.10.1"
+kotlinx_serializationJson = "1.6.3"
+ksp = "2.1.0-1.0.29" # must be kept in sync with kotlin version, see https://github.com/google/ksp/releases
+ktlint = "12.2.0"
+leakcanary = "2.14"
+libphonenumber = "9.0.1"
+maplibre = "11.0.1"
+material = "1.12.0"
+mockito = "2.0.9"
+mockitoCore = "4.8.1"
+mockk = "1.13.17"
+msgpackCore = "0.8.24"
+nvWebsocketClient = "2.9"
+okhttp3 = "4.12.0"
+opencsv = "2.3"
+playServices = "18.6.0"
+protobufKotlinLite = "4.30.2"
+rustAndroid = "0.9.6"
+saltyrtcClient = "0.14.2"
+saltyrtcTaskWebrtc = "0.18.1"
+slf4j = "2.0.17"
+sonarqube = "4.4.1.3373"
+sqlcipherAndroid = "4.5.7" # TODO(ANDR-3056): 4.6.0 enables logging to Logcat by default, which we don't want, so we need to find a way to disable that
+stem = "2.12.0"
+streamsupportCfuture = "1.7.4"
+streamsupportFlow = "1.7.4"
+subsamplingScaleImageView = "3.10.0"
+taptargetview = "1.13.3"
+trustkit = "1.1.5"
+uiautomator = "2.3.0"
+webrtcAndroid = "123.0.0"
+zip4j = "2.11.5"
+zxing = "3.3.3" # zxing 3.4 crashes on API < 24
+
+[libraries]
+android-gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
+androidImageCropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
+androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx_activity" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx_annotation" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx_appcompat" }
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "androidx_biometric" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "androidx_camera" }
+androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "androidx_camera" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "androidx_camera" }
+androidx-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "androidx_camera" }
+androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "androidx_concurrentFutures" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx_constraintlayout" }
+androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx_core" }
+androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "androidx_espresso" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx_espresso" }
+androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "androidx_espresso" }
+androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx_fragment" }
+androidx-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx_junit" }
+androidx-lifecycle-commonJava8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx_lifecycle" }
+androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "androidx_lifecycleExtensions" }
+androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx_lifecycle" }
+androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx_lifecycle" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx_lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx_compose" }
+androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "androidx_lifecycle" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx_lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx_compose" }
+androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx_lifecycle" }
+androidx-material3 = { module = "androidx.compose.material3:material3" }
+androidx-media = { module = "androidx.media:media", version.ref = "androidx_media" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "androidx_mmedia3" }
+androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "androidx_mmedia3" }
+androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "androidx_mmedia3" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx_pagingRuntime" }
+androidx-palette = { module = "androidx.palette:palette-ktx", version.ref = "androidx_palette" }
+androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx_preference" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "androidx_recyclerview" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx_room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx_room" }
+androidx-sharetarget = { module = "androidx.sharetarget:sharetarget", version.ref = "androidx_sharetarget" }
+androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "androidx_sqlite" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx_swiperefreshlayout" }
+androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "androidx_test_core" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx_test_rules" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx_test_runner" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-window = { module = "androidx.window:window", version.ref = "androidx_window" }
+androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx_workRuntime" }
+archunit-junit4 = { module = "com.tngtech.archunit:archunit-junit4", version.ref = "archunitJunit4" }
+bcprov-jdk15to18 = { module = "org.bouncycastle:bcprov-jdk15to18", version.ref = "bcprovJdk15to18" }
+chunkedDc = { module = "org.saltyrtc:chunked-dc", version.ref = "chunkedDc" }
+commonsIo = { module = "commons-io:commons-io", version.ref = "commonsIo" }
+commonsText = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx_composeBom" }
+desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+eddsa = { module = "net.i2p.crypto:eddsa", version.ref = "eddsa" }
+ezVcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezVcard" }
+fastlane-screengrab = { module = "tools.fastlane:screengrab", version.ref = "fastlaneScreengrab" }
+fastscroll = { module = "me.zhanghai.android.fastscroll:library", version.ref = "fastscroll" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+gestureViews = { module = "com.alexvasilkov:gesture-views", version.ref = "gestureViews" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+hmsPush = { module = "com.huawei.hms:push", version.ref = "hmsPush" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jacksonCore" }
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
+json = { module = "org.json:json", version.ref = "json" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx_coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx_coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx_coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx_serializationJson" }
+leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
+libphonenumber = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphonenumber" }
+maplibre = { module = "org.maplibre.gl:android-sdk", version.ref = "maplibre" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+mockito-powermock-api = { module = "org.powermock:powermock-api-mockito2", version.ref = "mockito" }
+mockito-powermock-junit4 = { module = "org.powermock:powermock-module-junit4", version.ref = "mockito" }
+mockito-powermock-junit4Rule = { module = "org.powermock:powermock-module-junit4-rule", version.ref = "mockito" }
+mockito-powermock-junit4RuleAgent = { module = "org.powermock:powermock-module-junit4-rule-agent", version.ref = "mockito" }
+mockito-powermock-reflect = { module = "org.powermock:powermock-reflect", version.ref = "mockito" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+msgpack-core = { module = "org.msgpack:msgpack-core", version.ref = "msgpackCore" }
+nvWebsocket-client = { module = "com.neovisionaries:nv-websocket-client", version.ref = "nvWebsocketClient" }
+okhttp3 = { module = "com.squareup.okhttp3:okhttp" }
+okhttp3-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp3" }
+okhttp3-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor" }
+opencsv = { module = "net.sf.opencsv:opencsv", version.ref = "opencsv" }
+playServices-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServices" }
+protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobufKotlinLite" }
+saltyrtc-client = { module = "org.saltyrtc:saltyrtc-client", version.ref = "saltyrtcClient" }
+saltyrtc-taskWebrtc = { module = "org.saltyrtc:saltyrtc-task-webrtc", version.ref = "saltyrtcTaskWebrtc" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipherAndroid" }
+streamsupport-cfuture = { module = "net.sourceforge.streamsupport:streamsupport-cfuture", version.ref = "streamsupportCfuture" } # Backport of Streams and CompletableFuture. Remove once only supporting API level 24+
+streamsupport-flow = { module = "net.sourceforge.streamsupport:streamsupport-flow", version.ref = "streamsupportFlow" }
+subsamplingScaleImageView = { module = "com.davemorrissey.labs:subsampling-scale-image-view-androidx", version.ref = "subsamplingScaleImageView" }
+taptargetview = { module = "com.getkeepsafe.taptargetview:taptargetview", version.ref = "taptargetview" }
+trustkit = { module = "com.datatheorem.android.trustkit:trustkit", version.ref = "trustkit" }
+webrtcAndroid = { module = "ch.threema:webrtc-android", version.ref = "webrtcAndroid" }
+zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
+zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
+
+[plugins]
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jacoco = { id = "jacoco" }
+java-library = { id = "java-library" }
+java-testFixtures = { id = "java-test-fixtures" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+mavenPublish = { id = "maven-publish" }
+rust-android = { id = "org.mozilla.rust-android-gradle.rust-android", version.ref = "rustAndroid" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+stem = { id = "com.likethesalad.stem", version.ref = "stem" }

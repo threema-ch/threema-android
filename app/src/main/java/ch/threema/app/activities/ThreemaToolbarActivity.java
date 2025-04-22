@@ -36,6 +36,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
@@ -182,6 +183,11 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
             AppBarLayout appBarLayout = findViewById(R.id.appbar);
             if (appBarLayout != null) {
                 appBarLayout.addLiftOnScrollListener((elevation, backgroundColor) -> getWindow().setStatusBarColor(backgroundColor));
+
+                MaterialToolbar materialToolbar = appBarLayout.findViewById(R.id.material_toolbar);
+                if (materialToolbar != null) {
+                    materialToolbar.setNavigationContentDescription(R.string.abc_action_bar_up_description);
+                }
             }
 
             connectionIndicator = findViewById(R.id.connection_indicator);
@@ -205,23 +211,19 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
-        switch (requestCode) {
-            case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
-                if (ThreemaApplication.getMasterKey().isLocked()) {
-                    new MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.master_key_locked)
-                        .setMessage(R.string.master_key_locked_want_exit)
-                        .setPositiveButton(R.string.try_again, (dialog, whichButton) -> startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY))
-                        .setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
-                } else {
-                    this.initActivity(null);
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY) {
+            if (ThreemaApplication.getMasterKey().isLocked()) {
+                new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.master_key_locked)
+                    .setMessage(R.string.master_key_locked_want_exit)
+                    .setPositiveButton(R.string.try_again, (dialog, whichButton) -> startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY))
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
+            } else {
+                this.initActivity(null);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

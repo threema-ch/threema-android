@@ -25,6 +25,7 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
+import ch.threema.base.utils.now
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
@@ -33,22 +34,21 @@ import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
+import io.mockk.every
+import io.mockk.mockk
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
-import org.junit.Assert
-import org.junit.Assert.assertArrayEquals
-import org.mockito.Mockito.`when`
-import org.powermock.api.mockito.PowerMockito
-import java.util.Date
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class GroupModelTest {
-    private val databaseBackendMock = PowerMockito.mock(DatabaseBackend::class.java)
-    private val multiDeviceManagerMock = PowerMockito.mock(MultiDeviceManager::class.java).also {
-        `when`(it.isMultiDeviceActive).thenReturn(true)
+    private val databaseBackendMock = mockk<DatabaseBackend>()
+    private val multiDeviceManagerMock = mockk<MultiDeviceManager>().also {
+        every { it.isMultiDeviceActive } returns true
     }
-    private val nonceStoreMock = PowerMockito.mock(NonceStore::class.java)
+    private val nonceStoreMock = mockk<NonceStore>()
     private val nonceFactory = NonceFactory(nonceStoreMock)
     private val taskManager = object : TaskManager {
         val scheduledTasks = mutableListOf<Task<*, TaskCodec>>()
@@ -68,30 +68,31 @@ class GroupModelTest {
             // Nothing to do
         }
     }
-    private val coreServiceManagerMock = PowerMockito.mock(CoreServiceManager::class.java).also {
-        `when`(it.taskManager).thenReturn(taskManager)
-        `when`(it.multiDeviceManager).thenReturn(multiDeviceManagerMock)
-        `when`(it.nonceFactory).thenReturn(nonceFactory)
+    private val coreServiceManagerMock = mockk<CoreServiceManager>().also {
+        every { it.taskManager } returns taskManager
+        every { it.multiDeviceManager } returns multiDeviceManagerMock
+        every { it.nonceFactory } returns nonceFactory
     }
 
     private fun createTestGroup(): GroupModel {
         val groupIdentity = GroupIdentity("TESTTEST", 42)
         val members = setOf("AAAAAAAA", "BBBBBBBB")
+        val now = now()
         return GroupModel(
             groupIdentity,
             GroupModelData(
-                groupIdentity,
-                "Group",
-                Date(),
-                Date(),
-                null,
-                deleted = false,
+                groupIdentity = groupIdentity,
+                name = "Group",
+                createdAt = now,
+                synchronizedAt = now,
+                lastUpdate = null,
                 isArchived = false,
-                0.toUByte(),
-                "Description",
-                Date(),
-                members,
-                ch.threema.storage.models.GroupModel.UserState.MEMBER,
+                precomputedColorIndex = 0.toUByte(),
+                groupDescription = "Description",
+                groupDescriptionChangedAt = now,
+                otherMembers = members,
+                userState = ch.threema.storage.models.GroupModel.UserState.MEMBER,
+                notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
             coreServiceManagerMock,
@@ -115,41 +116,41 @@ class GroupModelTest {
     @Test
     fun testGroupIdentityToByteArray() {
         val identity = "TESTTEST"
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(-42, -1, -1, -1, -1, -1, -1, -1),
-            GroupIdentity(identity, -42).groupIdByteArray
+            GroupIdentity(identity, -42).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
-            GroupIdentity(identity, -1).groupIdByteArray
+            GroupIdentity(identity, -1).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0),
-            GroupIdentity(identity, 0).groupIdByteArray
+            GroupIdentity(identity, 0).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0),
-            GroupIdentity(identity, 1).groupIdByteArray
+            GroupIdentity(identity, 1).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(42, 0, 0, 0, 0, 0, 0, 0),
-            GroupIdentity(identity, 42).groupIdByteArray
+            GroupIdentity(identity, 42).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(0, 0, 0, 0, 0, 0, 0, -128),
-            GroupIdentity(identity, Long.MIN_VALUE).groupIdByteArray
+            GroupIdentity(identity, Long.MIN_VALUE).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(-1, -1, -1, -1, -1, -1, -1, 127),
-            GroupIdentity(identity, Long.MAX_VALUE).groupIdByteArray
+            GroupIdentity(identity, Long.MAX_VALUE).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(78, -88, 120, -3, -1, -1, -1, -1),
-            GroupIdentity(identity, -42424242).groupIdByteArray
+            GroupIdentity(identity, -42424242).groupIdByteArray,
         )
-        assertArrayEquals(
+        assertContentEquals(
             byteArrayOf(-78, 87, -121, 2, 0, 0, 0, 0),
-            GroupIdentity(identity, 42424242).groupIdByteArray
+            GroupIdentity(identity, 42424242).groupIdByteArray,
         )
     }
 
@@ -160,32 +161,33 @@ class GroupModelTest {
      */
     @Test
     fun testConstruction() {
+        val now = now()
         val groupIdentity = GroupIdentity("TESTTEST", 42)
         val name = "Group"
-        val createdAt = Date()
-        val synchronizedAt = Date()
+        val createdAt = now
+        val synchronizedAt = now
         val lastUpdate = null
         val deleted = false
         val isArchived = false
         val colorIndex = 0.toUByte()
         val groupDesc = "Description"
-        val groupDescChangedAt = Date()
+        val groupDescChangedAt = now
         val members = setOf("AAAAAAAA", "BBBBBBBB")
         val group = GroupModel(
             groupIdentity,
             GroupModelData(
-                groupIdentity,
-                name,
-                createdAt,
-                synchronizedAt,
-                lastUpdate,
-                deleted,
-                isArchived,
-                colorIndex,
-                groupDesc,
-                groupDescChangedAt,
-                members,
-                ch.threema.storage.models.GroupModel.UserState.MEMBER,
+                groupIdentity = groupIdentity,
+                name = name,
+                createdAt = createdAt,
+                synchronizedAt = synchronizedAt,
+                lastUpdate = lastUpdate,
+                isArchived = isArchived,
+                precomputedColorIndex = colorIndex,
+                groupDescription = groupDesc,
+                groupDescriptionChangedAt = groupDescChangedAt,
+                otherMembers = members,
+                userState = ch.threema.storage.models.GroupModel.UserState.MEMBER,
+                notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
             coreServiceManagerMock,
@@ -197,18 +199,17 @@ class GroupModelTest {
         assertEquals(createdAt, value.createdAt)
         assertEquals(synchronizedAt, value.synchronizedAt)
         assertEquals(lastUpdate, value.lastUpdate)
-        assertEquals(deleted, value.deleted)
         assertEquals(isArchived, value.isArchived)
         assertEquals(colorIndex, value.colorIndex)
         assertEquals(groupDesc, value.groupDescription)
         assertEquals(groupDescChangedAt, value.groupDescriptionChangedAt)
-        assertEquals(members, value.members)
+        assertEquals(members, value.otherMembers)
     }
 
     @Test
     fun testConstructorValidGroupIdentity() {
         val data = createTestGroup().data.value!!.copy(
-            groupIdentity = GroupIdentity("AAAAAAAA", 42)
+            groupIdentity = GroupIdentity("AAAAAAAA", 42),
         )
         val model = GroupModel(
             // The same identity but different object is provided
@@ -227,7 +228,7 @@ class GroupModelTest {
         val testData = createTestGroup().data.value!!
         val groupIdentity = GroupIdentity("AAAAAAAA", 42)
         val data = testData.copy(groupIdentity = groupIdentity)
-        Assert.assertThrows(AssertionError::class.java) {
+        assertFailsWith<AssertionError> {
             GroupModel(
                 data.groupIdentity.copy(creatorIdentity = "BBBBBBBB"),
                 data,
@@ -242,7 +243,7 @@ class GroupModelTest {
         val testData = createTestGroup().data.value!!
         val groupIdentity = GroupIdentity("AAAAAAAA", 42)
         val data = testData.copy(groupIdentity = groupIdentity)
-        Assert.assertThrows(AssertionError::class.java) {
+        assertFailsWith<AssertionError> {
             GroupModel(
                 data.groupIdentity.copy(groupId = 0),
                 data,

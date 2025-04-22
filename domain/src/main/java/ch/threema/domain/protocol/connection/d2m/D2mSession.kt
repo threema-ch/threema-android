@@ -40,12 +40,12 @@ internal interface D2mSessionState {
 
 internal class D2mSession(
     configuration: D2mConnectionConfiguration,
-    private val dispatcher: ServerConnectionDispatcher
+    private val dispatcher: ServerConnectionDispatcher,
 ) : D2mSessionState {
     private enum class LoginState {
         AWAIT_SERVER_HELLO,
         AWAIT_SERVER_INFO,
-        DONE
+        DONE,
     }
 
     private val timeMeasureUtil = TimeMeasureUtil()
@@ -59,7 +59,7 @@ internal class D2mSession(
 
     fun handleHandshakeMessage(
         message: InboundD2mMessage,
-        outbound: InputPipe<in OutboundD2mMessage>
+        outbound: InputPipe<in OutboundD2mMessage, Unit>,
     ) {
         dispatcher.assertDispatcherContext()
 
@@ -76,12 +76,11 @@ internal class D2mSession(
 
             else -> throw getUnexpectedMessageException(message)
         }
-
     }
 
     private fun processServerHello(
         serverHello: InboundD2mMessage.ServerHello,
-        outbound: InputPipe<in OutboundD2mMessage>
+        outbound: InputPipe<in OutboundD2mMessage, Unit>,
     ) {
         if (loginState != LoginState.AWAIT_SERVER_HELLO) {
             throw getUnexpectedMessageException(serverHello)
@@ -93,7 +92,7 @@ internal class D2mSession(
     }
 
     private fun createClientHello(
-        serverHello: InboundD2mMessage.ServerHello
+        serverHello: InboundD2mMessage.ServerHello,
     ): OutboundD2mMessage.ClientHello = withProperties { properties ->
         val serverVersion = serverHello.version
         val localVersionMin = properties.protocolVersion.min
@@ -110,7 +109,7 @@ internal class D2mSession(
             OutboundD2mMessage.ClientHello.DeviceSlotsExhaustedPolicy.REJECT,
             DeviceSlotExpirationPolicy.PERSISTENT,
             properties.deviceSlotState,
-            properties.keys.encryptDeviceInfo(properties.deviceInfo)
+            properties.keys.encryptDeviceInfo(properties.deviceInfo),
         ).also { logger.trace("{}", it) }
     }
 
@@ -129,7 +128,7 @@ internal class D2mSession(
 
     private fun getUnexpectedMessageException(message: InboundD2mMessage): D2mProtocolException {
         return D2mProtocolException(
-            "Unexpected message of type `${message.type}` in login state `${loginState}`"
+            "Unexpected message of type `${message.type}` in login state `$loginState`",
         )
     }
 }

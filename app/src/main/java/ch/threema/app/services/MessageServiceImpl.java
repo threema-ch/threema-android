@@ -91,7 +91,7 @@ import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
-import ch.threema.app.routines.ReadMessagesRoutine;
+import ch.threema.app.routines.MarkAsReadRoutine;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotUpdateResult;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
@@ -106,6 +106,7 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.ExifInterface;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
+import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -141,7 +142,6 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.AudioMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.DeleteMessage;
-import ch.threema.domain.protocol.csp.messages.EditMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage;
@@ -200,6 +200,7 @@ import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
 import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
+import static ch.threema.app.utils.MessageUtilKt.canBeEdited;
 import static ch.threema.app.utils.StreamUtilKt.getFromUri;
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_STICKER;
 
@@ -225,7 +226,7 @@ public class MessageServiceImpl implements MessageService {
     private final GroupService groupService;
     private final ApiService apiService;
     private final DownloadService downloadService;
-    private final DeadlineListService hiddenChatsListService;
+    private final ConversationCategoryService conversationCategoryService;
     @NonNull
     private final BlockedIdentitiesService blockedIdentitiesService;
     private final SymmetricEncryptionService symmetricEncryptionService;
@@ -259,7 +260,7 @@ public class MessageServiceImpl implements MessageService {
         GroupService groupService,
         ApiService apiService,
         DownloadService downloadService,
-        DeadlineListService hiddenChatsListService,
+        @NonNull ConversationCategoryService conversationCategoryService,
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
         MultiDeviceManager multiDeviceManager,
         EditHistoryRepository editHistoryRepository,
@@ -277,7 +278,7 @@ public class MessageServiceImpl implements MessageService {
         this.groupService = groupService;
         this.apiService = apiService;
         this.downloadService = downloadService;
-        this.hiddenChatsListService = hiddenChatsListService;
+        this.conversationCategoryService = conversationCategoryService;
         this.blockedIdentitiesService = blockedIdentitiesService;
 
         contactMessageCache = cacheService.getMessageModelCache();
@@ -373,7 +374,7 @@ public class MessageServiceImpl implements MessageService {
         model.setOutbox(isOutbox);
         model.setGroupCallStatusData(data);
         model.setSaved(true);
-        model.setIsStatusMessage(true);
+        model.setStatusMessage(true);
         model.setRead(data.getStatus() != GroupCallStatusDataModel.STATUS_STARTED);
         receiver.saveLocalModel(model);
         fireOnCreatedMessage(model);
@@ -396,7 +397,7 @@ public class MessageServiceImpl implements MessageService {
         model.setOutbox(false);
         model.setForwardSecurityStatusData(ForwardSecurityStatusDataModel.create(type, quantity, staticText));
         model.setSaved(true);
-        model.setIsStatusMessage(true);
+        model.setStatusMessage(true);
         model.setRead(true);
         receiver.saveLocalModel(model);
         fireOnCreatedMessage(model);
@@ -421,7 +422,7 @@ public class MessageServiceImpl implements MessageService {
         model.setOutbox(false);
         model.setGroupStatusData(GroupStatusDataModel.create(type, identity, ballotName, newGroupName));
         model.setSaved(true);
-        model.setIsStatusMessage(true);
+        model.setStatusMessage(true);
         model.setRead(true);
         receiver.saveLocalModel(model);
         fireOnCreatedMessage(model);
@@ -522,13 +523,8 @@ public class MessageServiceImpl implements MessageService {
             return;
         }
 
-        // Let `created-at` be the current timestamp to be applied to the edit
-        //  message.
-        long deltaTime = editedAt.getTime() - message.getPostedAt().getTime();
-        // If the referred message has been sent (`sent-at`) more than 6 hours ago,
-        //  prevent creation and abort these steps.
-        if (deltaTime > EditMessage.EDIT_MESSAGES_MAX_AGE) {
-            logger.error("Cannot edit message older than {}ms", EditMessage.EDIT_MESSAGES_MAX_AGE);
+        if (!canBeEdited(message, isNotesGroup(receiver), editedAt, AbstractMessageModel::getPostedAt)) {
+            logger.error("Message can not be edited");
             return;
         }
 
@@ -549,6 +545,13 @@ public class MessageServiceImpl implements MessageService {
         }
 
         saveEditedMessageText(message, newText, editedAt);
+    }
+
+    private boolean isNotesGroup(@NonNull MessageReceiver receiver) {
+        if (receiver instanceof GroupMessageReceiver) {
+            return groupService.isNotesGroup(((GroupMessageReceiver) receiver).getGroup());
+        }
+        return false;
     }
 
     @Override
@@ -584,28 +587,34 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void saveEmojiReactionMessage(@NonNull AbstractMessageModel targetMessage, @NonNull String senderIdentity, Reaction.ActionCase actionCase, @NonNull String emojiSequence) {
+    public boolean saveEmojiReactionMessage(
+        @NonNull AbstractMessageModel targetMessage,
+        @NonNull String senderIdentity,
+        @Nullable Reaction.ActionCase actionCase,
+        @NonNull String emojiSequence
+    ) {
         logger.debug("saving emoji reaction of type {} to message {}", actionCase, targetMessage.getApiMessageId());
 
         if (actionCase == Reaction.ActionCase.APPLY) {
             try {
                 emojiReactionsRepository.createEntry(targetMessage, senderIdentity, emojiSequence);
             } catch (EmojiReactionEntryCreateException | IllegalStateException e) {
-                logger.error("Unable to create emoji reaction.");
-                return;
+                logger.error("Unable to create emoji reaction.", e);
+                return false;
             }
         } else if (actionCase == Reaction.ActionCase.WITHDRAW) {
             try {
                 emojiReactionsRepository.removeEntry(targetMessage, senderIdentity, emojiSequence);
             } catch (EmojiReactionEntryRemoveException | IllegalStateException e) {
-                logger.error("Unable to remove emoji reaction.");
-                return;
+                logger.error("Unable to remove emoji reaction.", e);
+                return false;
             }
         } else {
-            logger.debug("Unsupported emoji reaction action case {}. ignoring.", actionCase);
-            return;
+            logger.warn("Unsupported emoji reaction action case {}. Ignoring message.", actionCase);
+            return false;
         }
         fireOnModifiedMessage(targetMessage);
+        return true;
     }
 
     @Override
@@ -653,76 +662,56 @@ public class MessageServiceImpl implements MessageService {
 
         @MessageReceiver.EmojiReactionsSupport final int reactionSupport = receiver.getEmojiReactionSupport();
 
-        if (reactionSupport != MessageReceiver.Reactions_NONE) {
-
-            if (markAsRead) {
-                markAsRead(
-                    /* message */ message,
-                    /* silent */ true
-                );
-            }
-
-            final String myIdentity = identityStore.getIdentity();
-            List<EmojiReactionData> emojiReactionData = emojiReactionsRepository.safeGetReactionsByMessage(message);
-
-            Reaction.ActionCase actionCase = Reaction.ActionCase.APPLY;
-
-            // check if there's already an identical reaction with us as the sender. if yes, withdraw it.
-            if (containsEmojiSequence(emojiReactionData, emojiSequence, identityStore.getIdentity())) {
-                actionCase = Reaction.ActionCase.WITHDRAW;
-            }
-
-            if (receiver instanceof ContactMessageReceiver) {
-                ((ContactMessageReceiver) receiver).sendReactionMessage(
-                    message,
-                    actionCase,
-                    emojiSequence,
-                    new Date() // use current timestamp for reaction message
-                );
-            } else if (receiver instanceof GroupMessageReceiver) {
-                ((GroupMessageReceiver) receiver).sendReactionMessage(
-                    message,
-                    actionCase,
-                    emojiSequence,
-                    new Date() // use current timestamp for reaction message
-                );
-            } else {
-                throw new ThreemaException("Unsupported receiver type of: " + receiver.getClass());
-            }
-
-            if (actionCase == Reaction.ActionCase.APPLY) {
-                emojiReactionsRepository.createEntry(message, myIdentity, emojiSequence);
-            } else {
-                emojiReactionsRepository.removeEntry(message, myIdentity, emojiSequence);
-            }
-
-            showToastOnPartialReactionSupport(
-                reactionSupport,
-                actionCase,
-                emojiSequence
+        if (markAsRead) {
+            markAsRead(
+                /* message */ message,
+                /* silent */ true
             );
-
-            fireOnModifiedMessage(message);
-        } else {
-            // fallback to ack/dec
-            if (EmojiUtil.isThumbsUpEmoji(emojiSequence)) {
-                if (MessageUtil.canSendUserAcknowledge(message)) {
-                    sendDeliveryReceiptAckDec(message, markAsRead, ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK, MessageState.USERACK);
-                } else {
-                    logger.error("Unable to send ack message.");
-                }
-            } else if (EmojiUtil.isThumbsDownEmoji(emojiSequence)) {
-                if (MessageUtil.canSendUserDecline(message)) {
-                    sendDeliveryReceiptAckDec(message, markAsRead, ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC, MessageState.USERDEC);
-                } else {
-                    logger.error("Unable to send dec message");
-                }
-            } else {
-                // TODO(ANDR-3585): Remove else branch and probably set method's return type to `void`
-                // unsupported emoji sequence (V1 to V2)
-                return false;
-            }
         }
+
+        final String myIdentity = identityStore.getIdentity();
+        List<EmojiReactionData> emojiReactionData =
+            emojiReactionsRepository.safeGetReactionsByMessage(message);
+
+        Reaction.ActionCase actionCase = Reaction.ActionCase.APPLY;
+
+        // check if there's already an identical reaction with us as the sender. if yes, withdraw
+        // it.
+        if (containsEmojiSequence(emojiReactionData, emojiSequence, identityStore.getIdentity())) {
+            actionCase = Reaction.ActionCase.WITHDRAW;
+        }
+
+        if (receiver instanceof ContactMessageReceiver) {
+            ((ContactMessageReceiver) receiver).sendReaction(
+                message,
+                actionCase,
+                emojiSequence,
+                new Date() // use current timestamp for reaction message
+            );
+        } else if (receiver instanceof GroupMessageReceiver) {
+            ((GroupMessageReceiver) receiver).sendReaction(
+                message,
+                actionCase,
+                emojiSequence,
+                new Date() // use current timestamp for reaction message
+            );
+        } else {
+            throw new ThreemaException("Unsupported receiver type of: " + receiver.getClass());
+        }
+
+        if (actionCase == Reaction.ActionCase.APPLY) {
+            emojiReactionsRepository.createEntry(message, myIdentity, emojiSequence);
+        } else {
+            emojiReactionsRepository.removeEntry(message, myIdentity, emojiSequence);
+        }
+
+        showToastOnPartialReactionSupport(
+            reactionSupport,
+            actionCase,
+            emojiSequence
+        );
+
+        fireOnModifiedMessage(message);
         return true;
     }
 
@@ -1176,91 +1165,6 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
-    private boolean sendDeliveryReceipts(@NonNull AbstractMessageModel messageModel, int type) throws ThreemaException {
-        if (messageModel instanceof GroupMessageModel) {
-            return sendGroupDeliveryReceipt((GroupMessageModel) messageModel, type);
-        } else {
-            return sendDeliveryReceipt(messageModel, type);
-        }
-    }
-
-    private boolean sendDeliveryReceipt(@NonNull AbstractMessageModel messageModel, int type) throws ThreemaException {
-        ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
-        if (contactModel == null) {
-            logger.error("Cannot get contact {} for sending the delivery receipt", messageModel.getIdentity());
-            return false;
-        }
-
-        contactService.createReceiver(contactModel).sendDeliveryReceipt(
-            type,
-            new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())},
-            new Date().getTime()
-        );
-        return true;
-    }
-
-    /**
-     * Send a delivery receipt to all members of a group
-     *
-     * @param messageModel GroupMessageModel for which a receipt should be sent
-     * @param receiptType  Type of receipt (currently only ACK and DEC are supported for groups)
-     */
-    private boolean sendGroupDeliveryReceipt(@NonNull GroupMessageModel messageModel, int receiptType) {
-        GroupModel group = groupService.getById(messageModel.getGroupId());
-        if (group == null) {
-            logger.warn("Cannot send group delivery receipt for unknown group");
-            return false;
-        }
-        return sendGroupDeliveryReceipt(Set.of(groupService.getGroupIdentities(group)), messageModel, receiptType);
-    }
-
-    /**
-     * Send a delivery receipt to the identities specified
-     *
-     * @param identities   Identities to send the receipt to
-     * @param messageModel GroupMessageModel for which a receipt should be sent
-     * @param receiptType  Type of receipt (currently only ACK and DEC are supported for groups)
-     */
-    @Override
-    public boolean sendGroupDeliveryReceipt(@NonNull Set<String> identities, GroupMessageModel messageModel, int receiptType) {
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null) {
-            logger.warn("Service manager is null: cannot send group delivery receipt");
-            return false;
-        }
-        serviceManager.getTaskManager().schedule(
-            new OutgoingGroupDeliveryReceiptMessageTask(
-                messageModel.getId(),
-                receiptType,
-                identities,
-                serviceManager
-            )
-        );
-        return true;
-    }
-
-    private void sendDeliveryReceiptAckDec(@NonNull AbstractMessageModel messageModel, boolean markAsRead, int receiptType, @NonNull MessageState newMessageState) {
-        try {
-            if (markAsRead) {
-                markAsRead(messageModel, true);
-            }
-
-            if (!sendDeliveryReceipts(messageModel, receiptType)) {
-                logger.error("Failed to send delivery receipt");
-                return;
-            }
-
-            // clear any existing ack/dec message state
-            clearMessageState(messageModel); // TODO(ANDR-3325): Remove ACK/DEC compatibility
-
-            updateAckDecState(messageModel, newMessageState, identityStore.getIdentity());
-
-            fireOnModifiedMessage(messageModel);
-        } catch (ThreemaException e) {
-            logger.error("Exception", e);
-        }
-    }
-
     @Nullable
     @Override
     public MessageModel getContactMessageModel(
@@ -1634,7 +1538,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public boolean processIncomingContactMessage(final AbstractMessage message) throws Exception {
+    public boolean processIncomingContactMessage(final AbstractMessage message, @NonNull TriggerSource triggerSource) throws Exception {
         logger.info("processIncomingContactMessage: {}", message.getMessageId());
 
         final String senderIdentity = message.getFromIdentity();
@@ -1666,7 +1570,6 @@ public class MessageServiceImpl implements MessageService {
 
             if (savedMessageModel.isSaved()) {
                 //do nothing!
-                // TODO don't we need to send a delivery receipt here as well?
                 return true;
             } else {
                 messageModel = savedMessageModel;
@@ -1685,7 +1588,7 @@ public class MessageServiceImpl implements MessageService {
 
         // As soon as we get a direct message, unhide and unarchive the contact
         contactService.setAcquaintanceLevel(senderIdentity, ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(senderIdentity, false);
+        contactService.setIsArchived(senderIdentity, false, triggerSource);
 
         // Bump "lastUpdate" if necessary, depending on the message type. Note that due to the
         // listeners, we should bump the last update before saving the box message. Saving the box
@@ -1706,7 +1609,7 @@ public class MessageServiceImpl implements MessageService {
                 preferenceService != null
                     && preferenceService.isSaveMedia()
                     && messageModel.getImageData().isDownloaded()
-                    && !hiddenChatsListService.has(ContactUtil.getUniqueIdString(messageModel.getIdentity()))
+                    && !conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(messageModel.getIdentity()))
             ) {
                 fileService.saveMedia(null, null, new CopyOnWriteArrayList<>(Collections.singletonList(messageModel)), true);
             }
@@ -1730,7 +1633,10 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public boolean processIncomingGroupMessage(@NonNull AbstractGroupMessage message) throws Exception {
+    public boolean processIncomingGroupMessage(
+        @NonNull AbstractGroupMessage message,
+        @NonNull TriggerSource triggerSource
+    ) throws Exception {
         logger.info("processIncomingGroupMessage: {}", message.getMessageId());
         GroupMessageModel messageModel = null;
 
@@ -1760,7 +1666,12 @@ public class MessageServiceImpl implements MessageService {
         }
 
         // reset archived status
-        groupService.setIsArchived(groupModel, false);
+        groupService.setIsArchived(
+            groupModel.getCreatorIdentity(),
+            groupModel.getApiGroupId(),
+            false,
+            triggerSource
+        );
 
         // Bump "lastUpdate" if necessary, depending on the message type
         //
@@ -1797,7 +1708,7 @@ public class MessageServiceImpl implements MessageService {
                 && preferenceService != null
                 && preferenceService.isSaveMedia()
                 && messageModel.getImageData().isDownloaded()
-                && !hiddenChatsListService.has(groupService.getUniqueIdString(groupModel))) {
+                && !conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(groupModel))) {
                 fileService.saveMedia(null, null, new CopyOnWriteArrayList<>(Collections.singletonList(messageModel)), true);
             }
         } else if (message.getClass().equals(GroupVideoMessage.class)) {
@@ -1945,9 +1856,9 @@ public class MessageServiceImpl implements MessageService {
             encryptionKey = ((GroupAudioMessage) message).getEncryptionKey();
             audioBlobId = ((GroupAudioMessage) message).getAudioBlobId();
         } else if (message instanceof AudioMessage) {
-            duration = ((AudioMessage) message).getDuration();
-            encryptionKey = ((AudioMessage) message).getEncryptionKey();
-            audioBlobId = ((AudioMessage) message).getAudioBlobId();
+            duration = ((AudioMessage) message).durationInSeconds;
+            encryptionKey = ((AudioMessage) message).encryptionKey;
+            audioBlobId = ((AudioMessage) message).audioBlobId;
         } else {
             return null;
         }
@@ -2005,11 +1916,11 @@ public class MessageServiceImpl implements MessageService {
             videoBlobId = ((GroupVideoMessage) message).getVideoBlobId();
             thumbnailBlobId = ((GroupVideoMessage) message).getThumbnailBlobId();
         } else if (message instanceof VideoMessage) {
-            duration = ((VideoMessage) message).getDuration();
-            videoSize = ((VideoMessage) message).getVideoSize();
-            encryptionKey = ((VideoMessage) message).getEncryptionKey();
-            videoBlobId = ((VideoMessage) message).getVideoBlobId();
-            thumbnailBlobId = ((VideoMessage) message).getThumbnailBlobId();
+            duration = ((VideoMessage) message).durationInSeconds;
+            videoSize = ((VideoMessage) message).videoSizeInBytes;
+            encryptionKey = ((VideoMessage) message).encryptionKey;
+            videoBlobId = ((VideoMessage) message).videoBlobId;
+            thumbnailBlobId = ((VideoMessage) message).thumbnailBlobId;
         } else {
             return null;
         }
@@ -2501,7 +2412,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel.setOutbox(false);
             messageModel.setIdentity(contactModel.getIdentity());
             // Do not set an encryption key (asymmetric style)
-            messageModel.setImageData(new ImageDataModel(message.getBlobId(), contactModel.getPublicKey(), message.getNonce()));
+            messageModel.setImageData(new ImageDataModel(message.blobId, contactModel.getPublicKey(), message.nonce));
             messageModel.setForwardSecurityMode(message.getForwardSecurityMode());
 
             // Mark as saved to show message without image e.g.
@@ -2525,13 +2436,13 @@ public class MessageServiceImpl implements MessageService {
             // Use download class to handle failures after downloads
             byte[] imageBlob = downloadService.download(
                 messageModel.getId(),
-                message.getBlobId(),
+                message.blobId,
                 messageModel.getBlobScopeForDownload(),
                 messageModel.getBlobScopeForMarkAsDone(),
                 null
             );
             if (imageBlob != null) {
-                byte[] image = identityStore.decryptData(imageBlob, message.getNonce(), contactModel.getPublicKey());
+                byte[] image = identityStore.decryptData(imageBlob, message.nonce, contactModel.getPublicKey());
                 if (image != null) {
                     try {
                         if (saveStrippedImage(image, messageModel)) {
@@ -2545,7 +2456,7 @@ public class MessageServiceImpl implements MessageService {
                             fireOnModifiedMessage(messageModel);
 
                             // remove blob
-                            downloadService.complete(messageModel.getId(), message.getBlobId());
+                            downloadService.complete(messageModel.getId(), message.blobId);
 
                             return messageModel;
                         }
@@ -3017,7 +2928,7 @@ public class MessageServiceImpl implements MessageService {
     @NonNull
     @Override
     public MessageString getMessageString(AbstractMessageModel messageModel, int maxLength, boolean withPrefix) {
-        boolean isHidden;
+        boolean isPrivate;
         String prefix = "";
 
         if (messageModel instanceof GroupMessageModel) {
@@ -3026,13 +2937,18 @@ public class MessageServiceImpl implements MessageService {
                 prefix = NameUtil.getShortName(context, messageModel, contactService) + ": ";
             }
             final GroupModel groupModel = groupService.getById(((GroupMessageModel) messageModel).getGroupId());
-            isHidden = hiddenChatsListService.has(groupService.getUniqueIdString(groupModel));
+            isPrivate = conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(groupModel));
         } else {
-            final ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
-            isHidden = hiddenChatsListService.has(ContactUtil.getUniqueIdString(messageModel.getIdentity()));
+            final String identity = messageModel.getIdentity();
+            if (identity != null) {
+                isPrivate = conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(messageModel.getIdentity()));
+            } else {
+                logger.error("The identity of the message model is null");
+                isPrivate = false;
+            }
         }
 
-        if (isHidden) {
+        if (isPrivate) {
             return new MessageString(context.getString(R.string.new_messages_locked));
         }
 
@@ -3125,7 +3041,6 @@ public class MessageServiceImpl implements MessageService {
         @Nullable AbstractMessageModel mediaMessageModel,
         @Nullable ProgressListener progressListener
     ) throws Exception {
-        //TODO: create messageutil can download file method and unit test
         if (!MessageUtil.hasDataFile(mediaMessageModel)) {
             throw new ThreemaException("message is not a media message");
         }
@@ -3247,11 +3162,11 @@ public class MessageServiceImpl implements MessageService {
         if (preferenceService != null
             && preferenceService.isSaveMedia()
             && isImageOrVideoFile(mediaMessageModel, data)) {
-            boolean isHidden = mediaMessageModel instanceof GroupMessageModel
-                ? hiddenChatsListService.has(groupService.getUniqueIdString(((GroupMessageModel) mediaMessageModel).getGroupId()))
-                : hiddenChatsListService.has(ContactUtil.getUniqueIdString(mediaMessageModel.getIdentity()));
+            boolean isPrivate = mediaMessageModel instanceof GroupMessageModel
+                ? conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(((GroupMessageModel) mediaMessageModel).getGroupId()))
+                : conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(mediaMessageModel.getIdentity()));
 
-            if (!isHidden) {
+            if (!isPrivate) {
                 fileService.saveMedia(null, null, new CopyOnWriteArrayList<>(Collections.singletonList(mediaMessageModel)), true);
             }
         }
@@ -3653,10 +3568,8 @@ public class MessageServiceImpl implements MessageService {
             }
         });
 
-        if (unreadMessages != null && unreadMessages.size() > 0) {
-            //do not run on a own thread, create a new thread outside!
-            new ReadMessagesRoutine(unreadMessages, this, notificationService).run();
-        }
+        new MarkAsReadRoutine(this, notificationService)
+                .run(unreadMessages,  messageReceiver);
         notificationService.cancel(messageReceiver);
     }
 
@@ -3703,8 +3616,7 @@ public class MessageServiceImpl implements MessageService {
 
 
     /**
-     * create a new AbstractMessageModel uploader
-     * a existing uploader will be canceled
+     * Create a new BlobUploader. An existing uploader will be canceled.
      */
     @NonNull
     private BlobUploader initUploader(
@@ -3713,47 +3625,60 @@ public class MessageServiceImpl implements MessageService {
         @NonNull MessageReceiver<?> messageReceiver
     ) throws ThreemaException {
         synchronized (uploaders) {
-            String key = cancelUploader(messageModel);
+            final @NonNull String key = cancelUploader(messageModel);
 
-            boolean shouldPersist = shouldPersistUploadForMessage(messageModel);
+            final boolean isNotesGroup =
+                messageReceiver instanceof GroupMessageReceiver &&
+                    groupService.isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup());
 
-            @NonNull BlobScope blobScope = BlobScope.Public.INSTANCE;
+            boolean shouldPersist = shouldPersistUploadForMessage(messageModel, isNotesGroup);
 
-            // If the message is send to a notes group, the blob scope must not be "public"
-            if (messageReceiver instanceof GroupMessageReceiver) {
-                if (groupService.isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup())) {
-                    blobScope = BlobScope.Local.INSTANCE;
-                }
-            }
+            // If the message is sent to a notes group, the blob scope must not be "public"
+            @NonNull BlobScope blobScope = isNotesGroup ? BlobScope.Local.INSTANCE : BlobScope.Public.INSTANCE;
 
-            BlobUploader up = apiService.createUploader(
+            BlobUploader uploader = apiService.createUploader(
                 data,
                 shouldPersist,
                 blobScope
             );
-            uploaders.put(key, up);
+            uploaders.put(key, uploader);
 
-            logger.debug("create new uploader for message {}, persist={}", key, shouldPersist);
-            return up;
+            logger.debug("Created new uploader for message {}, persist={}", key, shouldPersist);
+            return uploader;
         }
     }
 
-    private boolean shouldPersistUploadForMessage(AbstractMessageModel messageModel) {
-        return messageModel instanceof DistributionListMessageModel;
+    private boolean shouldPersistUploadForMessage(@NonNull AbstractMessageModel messageModel, boolean isNotesGroup) {
+        if (messageModel instanceof MessageModel) {
+            // 1:1 messages do not need to be persisted
+            return false;
+        } else if (messageModel instanceof GroupMessageModel) {
+            // Messages in groups need to be persisted if it is not a notes group
+            return !isNotesGroup;
+        } else if (messageModel instanceof DistributionListMessageModel) {
+            // Messages in distribution lists must be persisted
+            return true;
+        } else {
+            // This cannot happen
+            logger.error("Unexpected message model. Cannot determine whether it should be persisted or not");
+            return false;
+        }
     }
 
-    private String getLoaderKey(AbstractMessageModel messageModel) {
+    @NonNull
+    private String getLoaderKey(@NonNull AbstractMessageModel messageModel) {
         return messageModel.getClass() + "-" + messageModel.getUid();
     }
 
     /**
-     * cancel an existing AbstractMessageModel uploader
+     * Cancel an existing BlobUploader for the same {@code messageModel}
      */
-    private String cancelUploader(AbstractMessageModel messageModel) {
+    @NonNull
+    private String cancelUploader(@NonNull AbstractMessageModel messageModel) {
         synchronized (uploaders) {
             String key = getLoaderKey(messageModel);
 
-            BlobUploader blobUploader = uploaders.get(key);
+            final @Nullable BlobUploader blobUploader = uploaders.get(key);
             if (blobUploader != null) {
                 logger.debug("cancel upload of message {}", key);
                 blobUploader.cancel();
@@ -4468,7 +4393,7 @@ public class MessageServiceImpl implements MessageService {
                                 save(messageModel);
                             }
                             fileDataModel.setFileSize(contentData.length - NaCl.BOXOVERHEAD);
-                            messageModel.setFileDataModel(fileDataModel);
+                            messageModel.setFileData(fileDataModel);
                             fireOnModifiedMessage(messageModel);
                         })
                         .next(() -> {
@@ -4539,7 +4464,7 @@ public class MessageServiceImpl implements MessageService {
                                     MessageState.SENDING :
                                     MessageState.SENT, new Date());
 
-                            messageModel.setFileDataModel(fileDataModel);
+                            messageModel.setFileData(fileDataModel);
                             // save updated model
                             save(messageModel);
                         })
@@ -4588,7 +4513,7 @@ public class MessageServiceImpl implements MessageService {
 
             messageModel.setOutbox(true);
             messageModel.setState(MessageState.PENDING); // shows a progress bar
-            messageModel.setFileDataModel(fileDataModel);
+            messageModel.setFileData(fileDataModel);
             messageModel.setCorrelationId(correlationId);
             String trimmedCaption = mediaItem.getTrimmedCaption();
             if (trimmedCaption != null && !trimmedCaption.isBlank()) {
@@ -4796,7 +4721,7 @@ public class MessageServiceImpl implements MessageService {
                 transcoderBuilder.maxFrameWidth(maxSize);
                 transcoderBuilder.videoBitRate(targetBitrate);
                 transcoderBuilder.iFrameInterval(2);
-                transcoderBuilder.frameRate(25); // TODO: variable frame rate
+                transcoderBuilder.frameRate(25);
             }
 
             final VideoTranscoder videoTranscoder = transcoderBuilder.build(context);
@@ -4915,7 +4840,7 @@ public class MessageServiceImpl implements MessageService {
      */
     private boolean allChatsArePrivate(MessageReceiver[] messageReceivers) {
         for (MessageReceiver messageReceiver : messageReceivers) {
-            if (!hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
+            if (!conversationCategoryService.isPrivateChat(messageReceiver.getUniqueIdString())) {
                 return false;
             }
         }

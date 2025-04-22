@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 import ch.threema.app.R;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationPreferenceService;
@@ -77,7 +77,7 @@ public class AudioMessagePlayer extends MessagePlayer {
     @NonNull
     private final NotificationPreferenceService notificationPreferenceService;
     private final FileService fileService;
-    private final DeadlineListService hiddenChatsListService;
+    private final ConversationCategoryService conversationCategoryService;
     private final ListenableFuture<MediaController> mediaControllerFuture;
 
     protected AudioMessagePlayer(
@@ -86,7 +86,7 @@ public class AudioMessagePlayer extends MessagePlayer {
         @NonNull FileService fileService,
         @NonNull PreferenceService preferenceService,
         @NonNull NotificationPreferenceService notificationPreferenceService,
-        @NonNull DeadlineListService hiddenChatsListService,
+        @NonNull ConversationCategoryService conversationCategoryService,
         @NonNull MessageReceiver<?> messageReceiver,
         @NonNull ListenableFuture<MediaController> mediaControllerFuture,
         @NonNull AbstractMessageModel messageModel
@@ -96,7 +96,7 @@ public class AudioMessagePlayer extends MessagePlayer {
         this.preferenceService = preferenceService;
         this.notificationPreferenceService = notificationPreferenceService;
         this.fileService = fileService;
-        this.hiddenChatsListService = hiddenChatsListService;
+        this.conversationCategoryService = conversationCategoryService;
         this.mediaControllerFuture = mediaControllerFuture;
 
         logger.info("New AudioMediaPlayer instance: {}", messageModel.getId());
@@ -168,7 +168,7 @@ public class AudioMessagePlayer extends MessagePlayer {
         if (messageModel.getType() == MessageType.VOICEMESSAGE) {
             messageModel.setAudioData((AudioDataModel) data);
         } else {
-            messageModel.setFileDataModel((FileDataModel) data);
+            messageModel.setFileData((FileDataModel) data);
         }
         return messageModel;
     }
@@ -186,7 +186,7 @@ public class AudioMessagePlayer extends MessagePlayer {
         if (mediaController != null) {
             String displayName;
             Bitmap artworkBitmap = null;
-            if (!this.notificationPreferenceService.isShowMessagePreview() || this.hiddenChatsListService.has(currentMessageReceiver.getUniqueIdString())) {
+            if (!this.notificationPreferenceService.isShowMessagePreview() || this.conversationCategoryService.isPrivateChat(currentMessageReceiver.getUniqueIdString())) {
                 displayName = getContext().getString(R.string.notification_channel_voice_message_player);
             } else {
                 displayName = currentMessageReceiver.getDisplayName();

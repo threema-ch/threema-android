@@ -51,6 +51,7 @@ import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;
@@ -229,7 +230,8 @@ public class DistributionListServiceImpl implements DistributionListService {
 
         // Remove conversation tags
         conversationTagService.removeAll(
-            ConversationUtil.getDistributionListConversationUid(distributionListModel.getId())
+            ConversationUtil.getDistributionListConversationUid(distributionListModel.getId()),
+            TriggerSource.LOCAL
         );
 
         // Delete distribution list fully from database

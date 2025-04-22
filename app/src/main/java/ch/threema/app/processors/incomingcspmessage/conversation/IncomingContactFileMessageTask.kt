@@ -27,6 +27,7 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.utils.MimeUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.FileMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -35,9 +36,8 @@ import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
-import org.slf4j.Logger
-import java.util.Date
 import java.util.UUID
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingContactFileMessageTask")
 
@@ -48,7 +48,7 @@ class IncomingContactFileMessageTask(
 ) : IncomingCspMessageSubTask<FileMessage>(
     fileMessage,
     triggerSource,
-    serviceManager
+    serviceManager,
 ) {
     private val messageService = serviceManager.messageService
     private val contactService = serviceManager.contactService
@@ -56,15 +56,14 @@ class IncomingContactFileMessageTask(
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec) =
         processIncomingMessage(
-            triggerSource = TriggerSource.REMOTE
+            triggerSource = TriggerSource.REMOTE,
         )
 
     override suspend fun executeMessageStepsFromSync() = processIncomingMessage(
-        triggerSource = TriggerSource.SYNC
+        triggerSource = TriggerSource.SYNC,
     )
 
     private fun processIncomingMessage(triggerSource: TriggerSource): ReceiveStepsResult {
-
         // 0: Contact must exist locally at this point
         if (!contactRepository.existsByIdentity(message.fromIdentity)) {
             logger.error("Discarding message ${message.messageId}: Sender contact with identity ${message.fromIdentity} does not exist locally.")
@@ -75,7 +74,7 @@ class IncomingContactFileMessageTask(
         //    If so, cancel and accept that the download for the content(s) might not be complete.
         messageService.getContactMessageModel(
             message.messageId,
-            message.fromIdentity
+            message.fromIdentity,
         )?.run { return ReceiveStepsResult.DISCARD }
 
         val fileData: FileData = message.fileData ?: run {
@@ -90,15 +89,15 @@ class IncomingContactFileMessageTask(
         val messageModel: MessageModel = createMessageModelFromFileMessage(
             fileMessage = message,
             fileDataModel = fileDataModel,
-            fileData = fileData
+            fileData = fileData,
         )
 
         // 4. Un-archive the contact and set the the acquaintance level to "direct" because it is a 1:1 chat now
         if (triggerSource == TriggerSource.REMOTE) {
-            contactService.setIsArchived(message.fromIdentity, false)
+            contactService.setIsArchived(message.fromIdentity, false, triggerSource)
             contactService.setAcquaintanceLevel(
                 message.fromIdentity,
-                ContactModel.AcquaintanceLevel.DIRECT
+                ContactModel.AcquaintanceLevel.DIRECT,
             )
         }
 
@@ -111,7 +110,7 @@ class IncomingContactFileMessageTask(
         messageService.save(messageModel)
         ListenerManager.messageListeners.handle { messageListener ->
             messageListener.onNew(
-                messageModel
+                messageModel,
             )
         }
 
@@ -129,30 +128,27 @@ class IncomingContactFileMessageTask(
     private fun createMessageModelFromFileMessage(
         fileMessage: FileMessage,
         fileDataModel: FileDataModel,
-        fileData: FileData
+        fileData: FileData,
     ): MessageModel {
         return MessageModel().apply {
+            uid = UUID.randomUUID().toString()
+            apiMessageId = message.messageId.toString()
 
-            setUid(UUID.randomUUID().toString())
-            setApiMessageId(message.messageId.toString())
+            identity = fileMessage.fromIdentity
 
-            setIdentity(fileMessage.fromIdentity)
+            this.fileData = fileDataModel
+            messageContentsType = MimeUtil.getContentTypeFromFileData(fileDataModel)
 
-            setType(MessageType.FILE)
-            setMessageContentsType(MimeUtil.getContentTypeFromFileData(fileDataModel))
+            postedAt = message.date
+            createdAt = now()
 
-            setPostedAt(message.date)
-            setCreatedAt(Date())
+            messageFlags = message.messageFlags
 
-            setMessageFlags(message.messageFlags)
+            isOutbox = false
+            isSaved = true
 
-            setOutbox(false)
-            setSaved(true)
-
-            setCorrelationId(fileData.correlationId)
-            setForwardSecurityMode(message.forwardSecurityMode)
-
-            setFileDataModel(fileDataModel)
+            correlationId = fileData.correlationId
+            forwardSecurityMode = message.forwardSecurityMode
         }
     }
 
@@ -169,7 +165,7 @@ class IncomingContactFileMessageTask(
             if (thumbnailWasDownloaded) {
                 ListenerManager.messageListeners.handle { messageListener ->
                     messageListener.onModified(
-                        listOf(messageModel)
+                        listOf(messageModel),
                     )
                 }
             }

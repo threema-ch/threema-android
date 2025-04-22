@@ -30,30 +30,25 @@ import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
+import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
-import ch.threema.storage.models.GroupModel
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
  * Tests that incoming group leave messages are handled correctly.
  */
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
 class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
-
     /**
      * Test that contact A leaving my group works as expected.
      */
@@ -131,27 +126,27 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
 
     override fun createMessageForGroup() = GroupLeaveMessage()
 
-    override fun testCommonGroupReceiveStep2_1() {
+    override fun testCommonGroupReceiveStepUnknownGroupUserCreator() {
         // The common group receive steps are not executed for group leave messages
     }
 
-    override fun testCommonGroupReceiveStep2_2() {
+    override fun testCommonGroupReceiveStepUnknownGroupUserNotCreator() {
         // The common group receive steps are not executed for group leave messages
     }
 
-    override fun testCommonGroupReceiveStep3_1() {
+    override fun testCommonGroupReceiveStepLeftGroupUserCreator() {
         // The common group receive steps are not executed for group leave messages
     }
 
-    override fun testCommonGroupReceiveStep3_2() {
+    override fun testCommonGroupReceiveStepLeftGroupUserNotCreator() {
         // The common group receive steps are not executed for group leave messages
     }
 
-    override fun testCommonGroupReceiveStep4_1() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserCreator() {
         // The common group receive steps are not executed for group leave messages
     }
 
-    override fun testCommonGroupReceiveStep4_2() {
+    override fun testCommonGroupReceiveStepSenderNotMemberUserNotCreator() {
         // The common group receive steps are not executed for group leave messages
     }
 
@@ -166,7 +161,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
 
         assertEquals(
             group.members.map { it.identity },
-            serviceManager.groupService.getGroupIdentities(group.groupModel).toList()
+            serviceManager.groupService.getGroupMemberIdentities(group.groupModel).toList(),
         )
 
         val leaveTracker = GroupLeaveTracker(group, contact.identity, expectStateChange)
@@ -183,11 +178,11 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
 
         assertEquals(
             group.members.size - 1,
-            serviceManager.groupService.countMembers(group.groupModel)
+            serviceManager.groupService.countMembers(group.groupModel),
         )
         assertEquals(
             group.members.map { it.identity }.filter { it != contact.identity },
-            serviceManager.groupService.getGroupIdentities(group.groupModel).toList()
+            serviceManager.groupService.getGroupMemberIdentities(group.groupModel).toList(),
         )
 
         // Assert that no message has been sent as a response to a group leave
@@ -247,7 +242,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
 
     private fun assertGroupIdentities(expectedMemberList: List<String>, group: TestGroup) {
         if (serviceManager.groupService.getByApiGroupIdAndCreator(
-                group.apiGroupId, group.groupCreator.identity
+                group.apiGroupId, group.groupCreator.identity,
             ) != null
         ) {
             // We check the expected members if the group is available in the database. If there is
@@ -255,7 +250,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
             // retrieve a group model.
             assertEquals(
                 expectedMemberList,
-                serviceManager.groupService.getGroupIdentities(group.groupModel).toList()
+                serviceManager.groupService.getGroupMemberIdentities(group.groupModel).toList(),
             )
         }
     }
@@ -263,7 +258,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
     private fun assertMemberCount(expectedMemberCount: Int, group: TestGroup) {
         if (serviceManager.groupService.getByApiGroupIdAndCreator(
                 group.apiGroupId,
-                group.groupCreator.identity
+                group.groupCreator.identity,
             ) != null
         ) {
             // We only check the expected members if the group is available in the database.
@@ -271,7 +266,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
             // model.
             assertEquals(
                 expectedMemberCount,
-                serviceManager.groupService.countMembers(group.groupModel)
+                serviceManager.groupService.countMembers(group.groupModel),
             )
         }
     }
@@ -284,43 +279,43 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
         private var memberHasLeft = false
 
         private val groupListener = object : GroupListener {
-            override fun onCreate(newGroupModel: GroupModel?) = fail()
+            override fun onCreate(groupIdentity: GroupIdentity) = fail()
 
-            override fun onRename(groupModel: GroupModel?) = fail()
+            override fun onRename(groupIdentity: GroupIdentity) = fail()
 
-            override fun onUpdatePhoto(groupModel: GroupModel?) = fail()
+            override fun onUpdatePhoto(groupIdentity: GroupIdentity) = fail()
 
-            override fun onRemove(groupModel: GroupModel?) = fail()
+            override fun onRemove(groupDbId: Long) = fail()
 
             override fun onNewMember(
-                group: GroupModel?,
-                newIdentity: String?,
+                groupIdentity: GroupIdentity,
+                identityNew: String,
             ) = fail()
 
             override fun onMemberLeave(
-                groupModel: GroupModel?,
-                identity: String?,
+                groupIdentity: GroupIdentity,
+                identityLeft: String,
             ) {
                 assertFalse(memberHasLeft)
                 group?.let {
-                    assertArrayEquals(it.apiGroupId.groupId, groupModel?.apiGroupId?.groupId)
-                    assertEquals(it.groupCreator.identity, groupModel?.creatorIdentity)
-                    assertEquals(leavingIdentity, identity)
+                    assertEquals(it.apiGroupId.toLong(), groupIdentity.groupId)
+                    assertEquals(it.groupCreator.identity, groupIdentity.creatorIdentity)
+                    assertEquals(leavingIdentity, identityLeft)
                 }
                 memberHasLeft = true
             }
 
             override fun onMemberKicked(
-                group: GroupModel?,
-                identity: String?,
+                groupIdentity: GroupIdentity,
+                identityKicked: String,
             ) = fail()
 
-            override fun onUpdate(groupModel: GroupModel?) = fail()
+            override fun onUpdate(groupIdentity: GroupIdentity) = fail()
 
-            override fun onLeave(groupModel: GroupModel?) = fail()
+            override fun onLeave(groupIdentity: GroupIdentity) = fail()
 
             override fun onGroupStateChanged(
-                groupModel: GroupModel?,
+                groupIdentity: GroupIdentity,
                 oldState: Int,
                 newState: Int,
             ) {
@@ -359,5 +354,4 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
             groupListeners.remove(groupListener)
         }
     }
-
 }

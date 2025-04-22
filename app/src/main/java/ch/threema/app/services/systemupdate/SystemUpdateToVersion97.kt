@@ -37,7 +37,7 @@ internal class SystemUpdateToVersion97(
         for (table in arrayOf(
             "message",
             "m_group_message",
-            "distribution_list_message"
+            "distribution_list_message",
         )) {
             if (!fieldExists(sqLiteDatabase, table, "deletedAtUtc")) {
                 sqLiteDatabase.rawExecSQL("ALTER TABLE `$table` ADD COLUMN `deletedAtUtc` DATETIME")

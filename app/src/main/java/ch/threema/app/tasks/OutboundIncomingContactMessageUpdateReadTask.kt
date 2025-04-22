@@ -54,7 +54,7 @@ class OutboundIncomingContactMessageUpdateReadTask(
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
             storeD2dNonce = true,
-            nonceFactory = nonceFactory
+            nonceFactory = nonceFactory,
         )
     }
 

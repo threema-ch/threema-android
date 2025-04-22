@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Névjegyek</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
     <string name="title_section1">Csevegések</string>
     <string name="title_compose_message">Csevegés indítása</string>
     <string name="title_choose_recipient">Címzett kiválasztása</string>
     <string name="title_keyfingerprint">Kulcs ujjlenyomat</string>
-    <string name="title_mythreemaid">Az én Threema ID-m</string>
-    <string name="title_threemaid">Threema-ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">Az én ${app_name_short} ID-m</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short}-ID</string>
     <string name="title_adduser">Névjegy hozzáadása</string>
     <string name="title_enter_id">Adja meg az ID-d</string>
     <string name="title_invite_friend">Barátok meghívása</string>
     <string name="invite_via">Meghívás…</string>
-    <string name="invite_email_body">Szia!\n\nA %1$s-t használom, a biztonságos messengert, amely védi a privátszférát.\n\nA Threema azonosítóm: https://threema.id/%2$s\n\nBeszélgessünk a %1$s-n keresztül!\n\nÜdv!\n</string>
-    <string name="invite_sms_body">Szia! Beszéljünk biztonságosan és az adatvédelemnek megfelelően a %1$s-n keresztül! A Threema ID-m: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema. A biztonságos messenger, amely védi az én és a te privátszférádat.</string>
-    <string name="enter_id_hint">Threema-ID megadása</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">Szia!\n\nA %1$s-t használom, a biztonságos messengert, amely védi a privátszférát.\n\nA ${app_name_short} azonosítóm: https://threema.id/%2$s\n\nBeszélgessünk a %1$s-n keresztül!\n\nÜdv!\n</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">Szia! Beszéljünk biztonságosan és az adatvédelemnek megfelelően a %1$s-n keresztül! A ${app_name_short} ID-m: https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}. A biztonságos messenger, amely védi az én és a te privátszférádat.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">${app_name_short}-ID megadása</string>
     <string name="account_links">Csatlakozások</string>
     <string name="menu_settings">Beállítások</string>
-    <string name="menu_about">A Threema-ról</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">A ${app_name}-ról</string>
     <string name="menu_add_contact">Új névjegy</string>
     <string name="menu_done">Kész</string>
     <string name="compose_message_and_enter">Üzenet beírása</string>
@@ -49,6 +57,8 @@
     <string name="prefs_sum_notification_sound">Rendszer alapértelmezett</string>
     <string name="prefs_vibrate">Rezgés</string>
     <string name="prefs_sum_vibrate">Rezgés bejövő üzenetre</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
     <string name="prefs_sum_light">Fehér</string>
     <string name="prefs_title_wallpaper">Háttérkép kiválasztása</string>
     <string name="prefs_sum_wallpaper">Kép kiválasztása a háttérhez</string>
@@ -64,6 +74,8 @@
     <string name="prefs_inapp_vibrate">Alkalmazáson belüli rezgés</string>
     <string name="prefs_inapp_vibrate_on">Rezgés üzenetek fogadásakor</string>
     <string name="prefs_inapp_vibrate_off">Nincs rezgés az üzenetek fogadásakor</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_logging">Naplózás</string>
     <string name="prefs_title_message_log_switch">Fájlba naplózás</string>
     <string name="prefs_title_sum_message_log_on">Az események és a hálózati információk a debug_log.txt fájlba lesznek naplózva</string>
@@ -78,18 +90,10 @@
     <string name="image_size_large">Nagy (1600x1600)</string>
     <string name="image_size_xlarge">Óriási (2592x2592)</string>
     <string name="image_size_original">Eredeti méret</string>
-    <string name="color_none">Nincs</string>
-    <string name="color_orange">Narancssárga</string>
-    <string name="color_red">Piros</string>
-    <string name="color_green">Zöld</string>
-    <string name="color_blue">Kék</string>
-    <string name="color_cyan">Cián</string>
-    <string name="color_magenta">Magenta</string>
-    <string name="color_yellow">Sárga</string>
-    <string name="color_white">Fehér</string>
     <string name="next">Tovább</string>
     <string name="finish">Befejezés</string>
     <string name="please_wait">Kérjük, várjon…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">A kulcspár generálása…</string>
     <string name="wizard1_sync_contacts">A névjegyek szinkronizálása…</string>
     <string name="wizard2_email_hint">Az Ön e-mail címe</string>
@@ -116,20 +120,24 @@
     <string name="share_via">Megosztás…</string>
     <string name="share_subject">%s-csevegés</string>
     <string name="message_delete_undo">Visszavonás</string>
-    <string name="mobile_already_linked">Az Ön Threema ID-je már társítva van ehhez a mobilszámhoz.</string>
-    <string name="email_already_linked">Az Ön Threema ID-je már társítva van ehhez az e-mail címhez.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">Az Ön ${app_name_short} ID-je már társítva van ehhez a mobilszámhoz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">Az Ön ${app_name_short} ID-je már társítva van ehhez az e-mail címhez.</string>
     <string name="whoaaa">Megjegyzés</string>
     <string name="really_delete_message_title">Üzenet(ek) törlése</string>
     <string name="really_delete_thread">Csevegés törlése</string>
     <string name="really_delete_contact">Tényleg törölni szeretné ezt a névjegyet és az összes kapcsolódó csevegést?</string>
     <string name="image_placeholder">Kép</string>
-    <string name="invalid_threema_id">Érvénytelen Threema-ID</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">Érvénytelen ${app_name_short}-ID</string>
     <string name="contact_already_exists">A névjegy már létezik</string>
     <string name="close">Bezárás</string>
     <string name="creating_contact">Új névjegy hozzáadása</string>
     <string name="creating_contact_successful">Névjegy sikeresen hozzáadva</string>
     <string name="invalid_threema_qr_code">Érvénytelen QR-kód</string>
-    <string name="threema_contact">Threema-Névjegy</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short}-Névjegy</string>
     <string name="first_name">Keresztnév</string>
     <string name="last_name">Vezetéknév</string>
     <string name="os_licenses">Szoftverlicencek</string>
@@ -141,14 +149,15 @@
     <string name="verify_failed_not_linked">A mobilszám ellenőrzése nem lehetséges, mert a folyamatot megszakította.</string>
     <string name="check_incoming_sms">Bejövő SMS-re várás</string>
     <string name="backup_title">ID exportálása</string>
-    <string name="backup_sum">Exportálja a Threema ID-t</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">Exportálja a ${app_name_short} ID-t</string>
     <string name="backup_and_delete">Mentés és törlés</string>
     <string name="delete_id_title">ID törlése</string>
     <string name="delete_id_message">Hacsak nem készített biztonsági másolatot az azonosítóról, akkor soha többé nem lesz
 		képes üzenetek küldése vagy fogadása ezzel az azonosítóval.\n\nHa nem kívánja tovább használni ezt az azonosítót,
 		törlés előtt távolítsa el a hivatkozásokat (e-mail/telefonszám).</string>
     <string name="delete_id_message2">Utolsó figyelmeztetés: valóban törölni szeretné az azonosítóját erről az eszközről?</string>
-    <string name="delete_id_sum">A Threema ID és a csevegések törlése ezen az eszközön.</string>
+    <string name="delete_id_sum">A ${app_name_short} ID és a csevegések törlése ezen az eszközön.</string>
     <string name="backup_password_summary">Az Ön azonosítója jelszóval lesz titkosítva. Használjon betűk, számok és szimbólumok kombinációját. Ne feledje el mit írt be ide!</string>
     <string name="backup_password_again_summary">Jelszó megismétlése</string>
     <string name="password_hint">Jelszó</string>
@@ -159,9 +168,11 @@
 		ki, küldje el magának e-mailben a Megosztás funkció segítségével, vagy olvassa be a QR-kódot egy másik eszközzel.</string>
     <string name="support">Súgó</string>
     <string name="support_url">https://threema.ch/android/support/</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">A következő karakterláncot a kiválasztott jelszóval együtt használja a
-		Threema azonosító visszaszerzéséhez.</string>
-    <string name="backup_share_subject">Threema ID export a következőkhöz</string>
+		${app_name_short} azonosító visszaszerzéséhez.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">${app_name_short} ID export a következőkhöz</string>
     <string name="add_attachment">Beillesztés</string>
     <string name="invalid_passphrase">Érvénytelen jelszó</string>
     <string name="master_key_locked">A főkulcs zárolva van</string>
@@ -183,10 +194,14 @@
     <string name="video_placeholder">Videó</string>
     <string name="audio_placeholder">Hang</string>
     <string name="restoring_backup">Biztonsági mentés visszaállítása</string>
-    <string name="server_message_title">Üzenet a Threema szerverről</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">Üzenet a ${company_name} szerverről</string>
     <string name="error">Hiba</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
     <string name="no_contacts"><![CDATA[Önnek még nincsenek kapcsolatai. Szinkronizálás bekapcsolása (Beállítások -
 		Adatvédelem), vagy adjon hozzá manuálisan névjegyeket.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="masterkey_title">Jelszó megadása</string>
     <string name="masterkey_body">A főkulcsot egy jelszó védi. A feloldáshoz adja meg a jelszót.</string>
     <string name="masterkey_unlocking">A főkulcs kinyitása</string>
@@ -205,6 +220,7 @@
     <string name="unlinking_email">Az összekapcsolás bontása</string>
     <string name="unlink">Bontás</string>
     <string name="threema_version">Verzió</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
     <string name="wrong_backupid_or_password_or_no_internet_connection">Nincs internetkapcsolat, érvénytelen azonosító exportálási karakterlánc
 		vagy rossz jelszó</string>
     <string name="prefs_header_other">További</string>
@@ -227,10 +243,17 @@
     <string name="deleting_thread">A csevegés törlődik</string>
     <string name="enter_serial_body"><![CDATA[Kérjük, adja meg a boltban kapott licenckulcsát. Ha elfelejtette, kattintson ide:
 		https://shop.threema.ch/retrieve_keys]]></string>
-    <string name="enter_serial_title">Threema feloldása</string>
-    <string name="serial_required_want_exit">A licenckulcs érvénytelen. Újra akarod próbálni, vagy kilépsz a Threemából?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">${app_name} feloldása</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">A licenckulcs érvénytelen. Újra akarod próbálni, vagy kilépsz a ${app_name}?</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Az licenc ellenőrzése</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
     <string name="update_available">Frissítés elérhető</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
     <string name="no_update_available">Nincs frissítés</string>
     <string name="download">Letöltés</string>
     <string name="not_now">Emlékeztess később</string>
@@ -337,8 +360,9 @@
     <string name="prefs_title_blocked_contacts">Blokkolt névjegyek</string>
     <string name="prefs_sum_blocked_contacts">Az itt felsorolt ID-k üzeneteit a rendszer figyelmen kívül hagyja.</string>
     <string name="verified">Ellenőrizve</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="want_to_add_to_exclude_list">Ez a kapcsolat egy a telefonos címjegyzék bejegyzéséhez kapcsolódik.
-		Ha törli a Threema rendszerben, akkor kapcsolat szinkronizálás után újra megjelenik.\nKívánja a jövőben
+		Ha törli a ${app_name_short} rendszerben, akkor kapcsolat szinkronizálás után újra megjelenik.\nKívánja a jövőben
 		ezt az azonosítót kizárni a szinkronizálásból?</string>
     <string name="no">Nem</string>
     <string name="yes">Igen</string>
@@ -352,8 +376,10 @@
     <string name="prefs_show_inactive_contacts">Inaktív azonosítók megjelenítése</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Különböző színű helytartók megjelenítése, ha nincs kapcsolati kép.</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Szürke helytartók megjelenítése, ha nincs kapcsolati kép.</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Az összes Threema azonosító megjelenítése a névjegyzékben.</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Inaktív/visszavont Threema azonosítók elrejtése</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">Az összes ${app_name_short} azonosító megjelenítése a névjegyzékben.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">Inaktív/visszavont ${app_name_short} azonosítók elrejtése</string>
     <string name="contact_sorting_first_name">Keresztnév - Vezetéknév</string>
     <string name="contact_sorting_last_name">Vezetéknév - Keresztnév</string>
     <string name="contact_format_first_name_last_name">Keresztnév Vezetéknév</string>
@@ -371,7 +397,8 @@
     <string name="prefs_title_fullscreen_ime">Teljes képernyős billentyűzet</string>
     <string name="prefs_sum_fullscreen_ime_on">A billentyűzet a teljes képernyőt kitölti fekvő módban</string>
     <string name="prefs_sum_fullscreen_ime_off">A billentyűzet felett megjelenik a csevegés egy szakasza</string>
-    <string name="add_acount_from_within_threema">Hozzon létre egy új ID-t a Threema alkalmazásból.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">Hozzon létre egy új ID-t a ${app_name_short} alkalmazásból.</string>
     <string name="save_image">Kép mentése</string>
     <string name="share_image">Kép megosztása</string>
     <string name="view_in_gallery">Megtekintés a galériában</string>
@@ -391,7 +418,8 @@
     <string name="push_not_available_title">Push szolgáltatás nem elérhető</string>
     <string name="backup_in_progress">Biztonsági mentés készítése</string>
     <string name="backup_or_restore_success_body">Sikeresen létrehozott biztonsági mentés</string>
-    <string name="backup_or_restore_error">Threema biztonsági mentés</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short} biztonsági mentés</string>
     <string name="backup_or_restore_error_body">A biztonsági mentés sikertelen</string>
     <string name="could_not_download_message">Az üzenetet nem lehetett letölteni</string>
     <string name="info">Információk</string>
@@ -418,8 +446,8 @@
     <string name="num_items_sected">%s kiválasztott</string>
     <string name="really_delete_media">Tényleg törölni szeretné ezt a(z) %d médiaüzenetet?</string>
     <string name="check_updates">Frissítések keresése</string>
-    <string name="masterkey_lock_explain">A Threema a jelszót a RAM memóriában tartja. Ha gyakran kéri a jelszót,
-		az lehet, hogy egy taskkiller vagy akkumulátorkímélő alkalmazás miatt van, amely eltávolítja a jelszót a memóriából.</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">A ${app_name} a jelszót a RAM memóriában tartja. Ha gyakran kéri a jelszót, az lehet, hogy egy taskkiller vagy akkumulátorkímélő alkalmazás miatt van, amely eltávolítja a jelszót a memóriából.</string>
     <string name="identity_already_exists">Ez az ID már szerepel a névjegyzékében</string>
     <string name="share_contact">Kapcsolat megosztása</string>
     <string name="add_shortcut">Parancsikon létrehozása</string>
@@ -454,7 +482,8 @@
     <string name="ballot_subject_hint">Szavazás címének megadása</string>
     <string name="ballot_no_ballots_yet">Még nincsenek szavazások.</string>
     <string name="print">Nyomtatás</string>
-    <string name="ballot_wizard0_explain">Gyorsan és egyszerűen hozhat létre szavazást közvetlenül a Threema programban.
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">Gyorsan és egyszerűen hozhat létre szavazást közvetlenül a ${app_name_short} programban.
 		Szervezzen időpontot, vagy végezzen szavazást barátai körében.</string>
     <string name="ballot_add_choices">Válaszlehetőségek megadása</string>
     <string name="blocked_cannot_send">Nem küldhet üzeneteket blokkolt névjegytől</string>
@@ -469,8 +498,9 @@
     <string name="back">Vissza</string>
     <string name="wearable_reply">Válasz</string>
     <string name="wearable_reply_label">Válasz %s-nak</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="push_disable_text">Ha folytatja, a push üzenetek letiltásra kerülnek, és
-		a Threema 15 percenként ellenőrzi az új üzeneteket.</string>
+		a ${app_name_short} 15 percenként ellenőrzi az új üzeneteket.</string>
     <string name="ballot_intermediate_results_show">Közbenső eredmények megjelenítése</string>
     <string name="converting_video">A videó feldolgozása folyamatban van</string>
     <string name="video_size_small">Magas (kis mennyiségű adat)</string>
@@ -482,6 +512,7 @@
     <string name="kick_user_from_group">%1$s eltávolítása a csoportból</string>
     <string name="show_as_qrcode">QR-kódként megjeleníteni</string>
     <string name="qr_code">QR-kód</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="really_leave_id_export">Győződjön meg róla, hogy az ID exportálási karakterláncot vagy
 		a QR-kódot elmentette egy biztonságos helyre vagy kinyomtatta.</string>
     <string name="revocation_key_title">ID visszavonása</string>
@@ -561,9 +592,11 @@
     <string name="invalid_data">Érvénytelen adat. Küldés nem lehetséges.</string>
     <string name="prefs_emoji_style">Emoji stílus</string>
     <string name="prefs_android_emojis">Rendszer emojik</string>
-    <string name="prefs_default_emojis">Threema-emojik (alapértelmezett)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short}-emojik (alapértelmezett)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="android_emojis_warning">Megjegyzés: Előfordulhat, hogy a rendszer karakterkészlete nem képes
-		megjeleníteni a Threema által támogatott összes emojit.</string>
+		megjeleníteni a ${app_name_short} által támogatott összes emojit.</string>
     <string name="crop">Kivágás</string>
     <string name="scan_id_mismatch_title">Az ID nem egyezik</string>
     <string name="scan_id_mismatch_message">A beolvasott ID nem egyezik a mentett névjeggyel.</string>
@@ -579,9 +612,13 @@
     <string name="fontsize_xlarge">Nagyon nagy</string>
     <string name="no_app_for_location">Ezen a készüléken nem található térképalkalmazás.</string>
     <string name="prefs_sendlog">Naplófájl küldése</string>
-    <string name="prefs_sendlog_summary">Naplófájl elküldése a Threema számára a problémaelemzéshez.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">Naplófájl elküldése a ${company_name} számára a problémaelemzéshez.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_storage_required">Aktiválja a mentési engedélyt a média mentéséhez vagy küldéséhez.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_location_required">Aktiválja a helymeghatározási engedélyt a tartózkodási helye elküldéséhez.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_contacts_required">Aktiválja a kapcsolatok engedélyt egy névjegy elküldéséhez.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
@@ -599,46 +636,56 @@
     <string name="new_wizard_select_country">Válasszon országot</string>
     <string name="new_wizard_lets_get_started">Gyerünk!</string>
     <string name="new_wizard_setup_threema">Beállítás</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_restore_id_backup">Exportált ID visszaállítása</string>
-    <string name="new_wizard_welcome">Üdvözöljük a Threema-nál</string>
-    <string name="new_wizard_move_finger">Mozgassa az ujját a mezőben, hogy új Threema ID-t hozzon létre.</string>
-    <string name="new_wizard_this_is_your_id">Ez az Ön Threema ID-ja:</string>
-    <string name="new_wizard_works_like_phone_number">A Threema ID úgy működik, mint egy telefonszám. Barátai ezen az ID-n keresztül érhetik el Önt.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">Üdvözöljük a ${app_name}-nál</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">Mozgassa az ujját a mezőben, hogy új ${app_name_short} ID-t hozzon létre.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">Ez az Ön ${app_name_short} ID-ja:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">A ${app_name_short} ID úgy működik, mint egy telefonszám. Barátai ezen az ID-n keresztül érhetik el Önt.</string>
     <string name="new_wizard_choose_nickname">Válasszon becenevet</string>
     <string name="new_wizard_nickname_explain">A becenév megjelenik a barátainak, amikor üzenetet kapnak.</string>
     <string name="new_wizard_hint_enter_nickname">Becenév megadása</string>
     <string name="new_wizard_help_your_friends_find_you">Hogy az emberek könnyebben megtalálják Önt</string>
-    <string name="new_wizard_link_mobile">Csatolja össze mobilszámát és/vagy e-mail címét a Threema ID-jával.</string>
-    <string name="new_wizard_link_mobile_only">Csatolja \u00f6ssze mobilsz\u00e1m\u00e1t a Threema ID-j\u00e1val.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">Csatolja össze mobilszámát és/vagy e-mail címét a ${app_name_short} ID-jával.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">Csatolja \u00f6ssze mobilsz\u00e1m\u00e1t a ${app_name_short} ID-j\u00e1val.</string>
     <string name="new_wizard_hint_mobile_number">Mobilszám (nem kötelező)</string>
     <string name="new_wizard_hint_email">Email (nem kötelező)</string>
-    <string name="new_wizard_find_friends">Találd meg barátaidat Threema-n</string>
-    <string name="new_wizard_sync_contacts_explain">Kapcsolja be, hogy lássa, mely barátai használják a Threema-t.</string>
     <string name="new_wizard_done_title">Minden rendben?</string>
     <string name="new_wizard_linked_to">Összecsatolva:</string>
-    <string name="new_wizard_need_internet">Az egyedi Threema ID létrehozásához stabil internetkapcsolat szükséges. Kérjük, próbálja meg újra.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">Az egyedi ${app_name_short} ID létrehozásához stabil internetkapcsolat szükséges. Kérjük, próbálja meg újra.</string>
     <string name="new_wizard_more_information">További információ</string>
-    <string name="new_wizard_use_id_as_nickname">Szeretné becenévként használni a Threema ID-t?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">Szeretné becenévként használni a ${app_name_short} ID-t?</string>
     <string name="new_wizard_phone_email_invalid">A megadott mobilszám vagy e-mail cím érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
     <string name="new_wizard_phone_invalid">Az Ön által megadott mobilszám érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_fingerprint">Az ujjad mozgatásával véletlenszerű adatokat (úgynevezett entrópiát) generálsz, amelyekből a
-		kulcspár generálódik. Ez a kulcspár az új Threema ID-hez lesz társítva.	Ez egy <b>nyilvános kulcsból</b> áll, amelyet barátaid
+		kulcspár generálódik. Ez a kulcspár az új ${app_name_short} ID-hez lesz társítva.	Ez egy <b>nyilvános kulcsból</b> áll, amelyet barátaid
 		kapnak meg, és egy <b>titkos kulcsból</b>, amely a készülékeden marad! A barátaid a nyilvános kulcsot használják a neked szóló
 		üzenetek titkosítására. Csak a privát kulcs tulajdonosa és senki más nem tudja újra visszafejteni az üzeneteket.</string>
-    <string name="new_wizard_info_id">A Threema ID-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre.
+    <string name="new_wizard_info_id">A ${app_name_short} ID-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre.
 		A privát kulcs soha nem hagyja el a készülékét. Ez biztosítja, hogy senki más ne tudja elolvasni az üzeneteit.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_sync_contacts">Ha engedélyezi ezt a beállítást, a címjegyzékből származó e-mail címek és telefonszámok
 		egyirányú titkosításra (hash-elve) kerülnek, mielőtt elküldjük őket a kiszolgálónak a kapcsolattartás céljából.
 		Nem tárolunk semmilyen címjegyzékadatot.</string>
-    <string name="new_wizard_info_link">Ha megadja saját mobilszámát és/vagy e-mail címét, a Threema segítségével barátai automatikusan
-		megtalálják Önt, ha szerepel a címjegyzékükben. Az információkat egyirányú titkosítással (hash-elve) tároljuk a szerverünkön.
-		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.</string>
-    <string name="new_wizard_info_link_phone_only">Ha megadja a saját mobilszámát, a Threema segítségével barátai automatikusan
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">Ha megadja saját mobilszámát és/vagy e-mail címét, a ${app_name_short} segítségével barátai automatikusan megtalálják Önt, ha szerepel a címjegyzékükben. Az információkat egyirányú titkosítással (hash-elve) tároljuk a szerverünkön. Ha névtelenül szeretné használni a ${app_name}, akkor ezt a lépést egyszerűen kihagyhatja.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">Ha megadja a saját mobilszámát, a ${app_name_short} segítségével barátai automatikusan
 		megtalálják önt, ha benne vagy a címjegyzékükben. A számot egyirányú titkosítással (hash-elve) tároljuk a szerverünkön.
-		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.</string>
+		Ha névtelenül szeretné használni a ${app_name}, akkor ezt a lépést egyszerűen kihagyhatja.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_nickname">A becenév egyes eszközökön megjelenik az értesítésekben, és további azonosító jelként
 		szolgál a névjegyzékben azon csevegőpartnerek számára, akik nem szerepelnek a névjegyzékben. Javasoljuk, hogy csak keresztnevet
-		vagy álnevet használjon. Ha nem állít be becenevet, a Threema ID lesz használva.</string>
+		vagy álnevet használjon. Ha nem állít be becenevet, a ${app_name_short} ID lesz használva.</string>
     <string name="not_linked">nem összecsatolt</string>
     <string name="linked">összecsatolt</string>
     <string name="pending_sms_verification_notice">A mobilszámodat még nem ellenőriztük.</string>
@@ -650,8 +697,10 @@
     <string name="status_ballot_user_modified_vote">«%1$s» megváltoztatta szavazatát «%2$s»-hoz</string>
     <string name="status_ballot_all_votes">Szavazás «%1$s» befejeződött</string>
     <string name="restore">Visszaállítás</string>
-    <string name="new_wizard_anonymous_confirm">Nem adtál meg mobiltelefonszámot vagy e-mail címet összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a Threemát?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Ön nem adott meg mobiltelefonszámot összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a Threemát?</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">Nem adtál meg mobiltelefonszámot vagy e-mail címet összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a ${app_name}?</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">Ön nem adott meg mobiltelefonszámot összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a ${app_name}?</string>
     <string name="new_wizard_scan_id_backup">Vagy szkennelje be az ID export QR-kódját.</string>
     <string name="error_saving_file">Hiba mentés közben. Nincs engedélye?</string>
     <string name="wait_one_minute">Kérjük, várjon legalább 10 percet az SMS-re, mielőtt visszahívást kérne.</string>
@@ -692,6 +741,7 @@
     <string name="lock_option_none">Nincs</string>
     <string name="lock_option_pin">PIN-kód</string>
     <string name="lock_option_screenlock">Rendszer-zárolás</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="hide_chat_message_explain">Bizonyos csevegésekhez való hozzáférést PIN-kóddal védheti, és átmenetileg elrejtheti a csevegéseket a csevegési listában. A funkció használatához először állítson be egy hozzáférési védelmet.</string>
     <string name="set_lock">Aktiválás</string>
     <string name="prefs_title_access_protection">Hozzáférésvédelem</string>
@@ -704,7 +754,6 @@
     <string name="grace_thirty_minutes">30 perc</string>
     <string name="grace_never">Soha (kézi)</string>
     <string name="never">Soha</string>
-    <string name="unhide_chats_confirm">Ha eltávolítja a hozzáférés-védelmet, a privát beszélgetések ismét láthatóvá válnak.</string>
     <string name="verification_started">Ellenőrzés elkezdve</string>
     <string name="cannot_open_file">A fájlt nem lehetett megnyitni</string>
     <string name="prefs_title_image_attach_previews">Média gyorsválasztó</string>
@@ -714,13 +763,14 @@
     <string name="restore_disable_energy_saving">A folytatás előtt csatlakoztassa készülékét a töltőhöz. Győződjön meg róla, hogy a telefon összes energiatakarékos üzemmódja ki van kapcsolva, hogy a biztonsági mentés/visszaállítás ne szakadjon meg.</string>
     <string name="draft">Vázlat</string>
     <string name="prefs_bigger_single_emojis">Önálló emojik nagyítása</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard1_sync_work">Szinkronizálás folyamatban…</string>
     <string name="notification_hidden_text">Tartalom elrejtve</string>
     <string name="really_reset_ringtones">Értesítési hangok visszaállítása a gyári beállításokra?</string>
     <string name="reset_ringtones_confirm">Értesítési hangok visszaállítva</string>
     <string name="prefs_language_override">Nyelv</string>
-    <string name="threema_channel_intro">A Threema Channel a Threema-ról szóló hírekkel látja el Önt. Szeretne feliratkozni a
-		Threema Channelre és hozzáadni a névjegyzékbe? Ingyenes, és bármikor leiratkozhatsz róla.</string>
+    <string name="threema_channel_intro">A ${app_name_short} Channel a ${app_name_short}-ról szóló hírekkel látja el Önt. Szeretne feliratkozni a
+		${app_name_short} Channelre és hozzáadni a névjegyzékbe? Ingyenes, és bármikor leiratkozhatsz róla.</string>
     <string name="quote">Idéz</string>
     <string name="contacts_deleted">A névjegyek törölve lettek</string>
     <string name="take_photo">Fotózás</string>
@@ -739,7 +789,8 @@
     <string name="battery_optimizations_disable_guide_ctd">Keresse a %s-t a listában és kikapcsolja ki az optimalizálást</string>
     <string name="battery_optimizations_disable_confirm">Tényleg engedélyezve akarja hagyni az akkumulátor teljesítményének optimalizálását %1$s esetében? Ezáltal a %2$s használhatatlanná válhat.</string>
     <string name="enter_text_hint">Írja be</string>
-    <string name="backup_explain_text">Ha lecseréli vagy elveszíti a készülékét, senki sem tudja visszaállítani a Threema azonosítóját és a csevegéseket biztonsági mentés nélkül. Ezért készítsen biztonsági másolatot az adatokról a rendelkezésre álló biztonsági mentési lehetőségekkel.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">Ha lecseréli vagy elveszíti a készülékét, senki sem tudja visszaállítani a ${app_name_short} azonosítóját és a csevegéseket biztonsági mentés nélkül. Ezért készítsen biztonsági másolatot az adatokról a rendelkezésre álló biztonsági mentési lehetőségekkel.</string>
     <string name="data_backup_explain">Az adatmentés a következőket menti:\n\n&#9679; ID és kulcspár\n&#9679; névjegyzék és bizalmi státusz\n&#9679; csoporttagságok\n&#9679; csevegések\n&#9679; médiák és fájlok (opcionális)\n\nAz adatok titkosított ZIP-ben kerülnek mentésre. A biztonsági másolatot ezután a készüléken kívül, megfelelő helyen kell tárolni.</string>
     <string name="draw">Rajzolás</string>
     <string name="edit">Szerkesztés</string>
@@ -749,6 +800,8 @@
     <string name="prefs_ipv6_preferred_off">Csak IPv4 kapcsolatokat használjon</string>
     <string name="prefs_ipv6_preferred_on">IPv6 előnyben részesítése</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 hívásokhoz és webhez</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="ipv6_requires_restart">Ez a módosítás az alkalmazás újraindítását igényli.</string>
     <string name="ipv6_restart_now">Újraindítás most</string>
     <string name="on_cap">Be</string>
@@ -775,37 +828,50 @@
     <string name="menu_send_profilpic_now">Profilkép küldése most</string>
     <string name="profile_picture_sent">A profilkép elküldve</string>
     <string name="sending_messages">Küldés…</string>
-    <string name="backup_data_media_confirm">A nagyméretű médiafájlok ZIP biztonsági mentése hosszú időt vehet igénybe, és meghaladhatja a készülék processzor- és memóriakapacitását. A biztonsági mentés során nem fogadhatók Threema üzenetek. Biztos, hogy folytatni akarod?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">A nagyméretű médiafájlok ZIP biztonsági mentése hosszú időt vehet igénybe, és meghaladhatja a készülék processzor- és memóriakapacitását. A biztonsági mentés során nem fogadhatók ${app_name} üzenetek. Biztos, hogy folytatni akarod?</string>
     <string name="backup_data_cancelled">A biztonsági mentés leállítása</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="service_manager_not_available">Az alkalmazás nem indítható. Kérjük, kapcsolja ki teljesen a készüléket, majd kapcsolja be újra.</string>
     <string name="message_sent">Üzenetet elküldve</string>
-    <string name="threema_call">Threema hívás</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">${app_name_short} hívás</string>
     <string name="threema_message_to">Üzenet %s-nek</string>
     <string name="threema_call_with">%s hívása</string>
-    <string name="prefs_title_voip">Threema hívások</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">${app_name_short} hívások</string>
     <string name="prefs_title_force_turn">Hívások mindig a szerveren keresztül</string>
-    <string name="prefs_summary_force_turn_off">Ha lehetséges, használjon közvetlen kapcsolatot, és csak nem ellenőrzött névjegyek hívásait irányítsa a Threema szerverein keresztül. Feltárhatja az IP-címét.</string>
-    <string name="prefs_summary_force_turn_on">Minden hívást a Threema szervereken keresztül irányít. Védi az IP-címet, de rosszabb hívásminőséget eredményezhet.</string>
-    <string name="permission_record_audio_required">Engedélyezze a mikrofon használatát titkosított Threema-hívások kezdeményezéséhez és hangüzenetek rögzítéséhez.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">Ha lehetséges, használjon közvetlen kapcsolatot, és csak nem ellenőrzött névjegyek hívásait irányítsa a ${company_name} szerverein keresztül. Feltárhatja az IP-címét.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">Minden hívást a ${company_name} szervereken keresztül irányít. Védi az IP-címet, de rosszabb hívásminőséget eredményezhet.</string>
+    <string name="permission_record_audio_required">Engedélyezze a mikrofon használatát titkosított ${app_name_short}-hívások kezdeményezéséhez és hangüzenetek rögzítéséhez.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_voice_call_notifications">Hanghívások</string>
     <string name="prefs_voice_call_sound">Csengőhang</string>
-    <string name="prefs_sum_voice_call_sound">Csengőhang kiválasztása Threema hanghívásokhoz</string>
-    <string name="prefs_sum_voice_call_vibrate">Rezgés a bejövő Threema hanghívásoknál</string>
-    <string name="prefs_title_voip_enable">Threema-hívások engedélyezése</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">Csengőhang kiválasztása ${app_name_short} hanghívásokhoz</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">Rezgés a bejövő ${app_name_short} hanghívásoknál</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">${app_name_short}-hívások engedélyezése</string>
     <string name="webclient_invalid_push_token_message">Kézi indítás szükséges</string>
     <string name="threema_work_contact">Threema Work névjegy</string>
-    <string name="permission_phone_required">A Threema-hívás közbeni hívások kezeléséhez kapcsolja be ezt az engedélyt.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">A ${app_name}-hívás közbeni hívások kezeléséhez kapcsolja be ezt az engedélyt.</string>
     <string name="strikethrough">Áthúzott</string>
     <string name="italic">Kurzív</string>
     <string name="bold">Vastag</string>
     <string name="shortcut_choice_title">Parancsikon készítése…</string>
     <string name="prefs_title_device_info">Eszköz információ</string>
     <string name="notifications_disabled_title">Értesítések letiltva</string>
-    <string name="notifications_disabled_text">A Threema értesítéseit teljesen letiltották a rendszerben. Nem kap értesítést, ha új üzenetek érkeznek.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">A ${app_name} értesítéseit teljesen letiltották a rendszerben. Nem kap értesítést, ha új üzenetek érkeznek.</string>
     <string name="notifications_disabled_settings">Rendszerbeállítások módosítása</string>
     <string name="error_attaching_files">Hiba fájlok hozzáadásakor.</string>
     <string name="prefs_fix_powermanager_problems">A háttérben való futás engedélyezése</string>
-    <string name="prefs_fix_powermanager_problems_desc">Problémák javítása a telefonon, amelyek megakadályozzák, hogy a Threema a háttérben fusson és üzeneteket fogadjon</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">Problémák javítása a telefonon, amelyek megakadályozzák, hogy a ${app_name} a háttérben fusson és üzeneteket fogadjon</string>
     <string name="disable_powermanager_explain">A következő képernyőn győződjön meg arról, hogy a «%s» védve van mindenféle korlátozás alól, és aktív lehet a háttérben. Kattintson a vissza gombra, ha végzett.</string>
     <string name="disable_autostart_explain">A következő képernyőn kérjük, aktiválja az automatikus indítást a «%s» számára! Kattintson a \"Vissza\" gombra, ha végzett.</string>
     <string name="notification_priority_default">Alacsony</string>
@@ -825,10 +891,12 @@
     <string name="prefs_auto_download_title">Médiák automatikus letöltése</string>
     <string name="prefs_auto_download_wifi">WLAN-on</string>
     <string name="prefs_auto_download_mobile">A mobilhálózatokon</string>
-    <string name="rate_intro">Hogy tetszik a Threema?</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">Hogy tetszik a ${app_name}?</string>
     <string name="rate_feedback_intro">Kérjük, mondja el, mit tehetnénk jobban (nem kötelező).</string>
     <string name="rate_positive">Értékelés küldése</string>
-    <string name="rate_title">Threema értékelése</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">${app_name} értékelése</string>
     <string name="rate_thank_you">Köszönjük értékelését!</string>
     <string name="disabled_by_policy_short">A funkciót a rendszergazda letiltotta</string>
     <string name="rate_forward_to_play_store">Ön is szeretne értékelni minket a Google Play-en?</string>
@@ -839,15 +907,18 @@
     <string name="plus">Plusz</string>
     <string name="switched_off">Ki</string>
     <string name="switched_on">Be</string>
-    <string name="title_tab_work_users">Threema Work felhasználók</string>
-    <string name="no_matching_work_contacts">Nem találtunk olyan Threema Work névjegyet, amelyet a rendszergazda ellenőrzött.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">${app_name} felhasználók</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">Nem találtunk olyan ${app_name} névjegyet, amelyet a rendszergazda ellenőrzött.</string>
     <string name="all">Mind</string>
     <string name="webclient_session_stop_all">Mind leállítása</string>
     <string name="passphrase_service_name">Jelszó szolgáltatás</string>
     <string name="passphrase_service_description">Értesítés ha a jelszó feloldva</string>
     <string name="webclient_service_description">Értesítés, ha egy webes/asztalos munkamenet aktív</string>
     <string name="prefs_title_accept_privacy_policy">Adatvédelmi irányelvek elfogadása</string>
-    <string name="privacy_policy_explain">%1$s következetesebben védi az Ön privátszféráját, mint bármely más messenger. Nézze meg az %2$s-ot, hogy többet tudjon meg.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name} következetesebben védi az Ön privátszféráját, mint bármely más messenger. Nézze meg az %1$s-ot, hogy többet tudjon meg.</string>
     <string name="privacy_policy_check_confirm">Kérjük, fogadja el az adatvédelmi nyilatkozatot, hogy használni tudja a %s-t.\n\n(Az EU 2016/679 rendelet szerinti követelmény)</string>
     <string name="prefs_title_incognito_keyboard">Inkognitó billentyűzet kérése</string>
     <string name="prefs_sum_incognito_keyboard">Az adatok gyűjtésének letiltása a személyre szabott javaslatokhoz (ha a billentyűzet támogatja)</string>
@@ -860,41 +931,58 @@
     <string name="password_too_short_generic">A jelszó túl rövid</string>
     <string name="passwords_dont_match">Nem azonos</string>
     <string name="test_unsuccessful">A teszt sikertelen</string>
-    <string name="preparing_threema_safe">Threema Safe előkészítése</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">${app_name_short} Safe előkészítése</string>
     <string name="disable_powermanager_title">Akku-korlátozások</string>
     <string name="disable_autostart_title">Autom. indulás</string>
     <string name="unchanged">változatlan</string>
     <string name="safe_learn_more_button">További információ</string>
-    <string name="safe_enable_explain">A Threema-nál nincs központi felhasználói fiókja. Az Ön adatai csak az adott eszközön léteznek, és így a legjobban védettek a külső hozzáféréstől.\n\nA Threema Safe rendszeresen készít titkosított, anonim biztonsági másolatot az Ön <b>kulcsairól, névjegyeiről, csoportjairól és beállításairól</b> (de az üzenetek tartalmáról nem) egy Ön által választott szerveren. Az Ön azonosítója és a kiválasztott jelszó elegendő ahhoz, hogy visszaállítsa ezeket az adatokat egy másik eszközön.</string>
-    <string name="safe_disable_confirm">A Threema Safe aktiválása nélkül szeretne folytatni? A Threema Safe lehetővé teszi a Threema ID, a névjegyek és a csoportok visszaállítását, ha elveszíti a készülékét.</string>
-    <string name="safe_configure_choose_password">Válasszon egy biztonságos jelszót. Erre a jelszóra szüksége lesz a Threema Safe biztonsági mentés visszaállításához.</string>
+    <string name="safe_enable_explain">A ${app_name_short}-nál nincs központi felhasználói fiókja. Az Ön adatai csak az adott eszközön léteznek, és így a legjobban védettek a külső hozzáféréstől.\n\nA ${app_name_short} Safe rendszeresen készít titkosított, anonim biztonsági másolatot az Ön <b>kulcsairól, névjegyeiről, csoportjairól és beállításairól</b> (de az üzenetek tartalmáról nem) egy Ön által választott szerveren. Az Ön azonosítója és a kiválasztott jelszó elegendő ahhoz, hogy visszaállítsa ezeket az adatokat egy másik eszközön.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">A ${app_name_short} Safe aktiválása nélkül szeretne folytatni? A ${app_name_short} Safe lehetővé teszi a ${app_name_short} ID, a névjegyek és a csoportok visszaállítását, ha elveszíti a készülékét.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">Válasszon egy biztonságos jelszót. Erre a jelszóra szüksége lesz a ${app_name_short} Safe biztonsági mentés visszaállításához.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_choose_server">Kiszolgáló kiválasztása</string>
-    <string name="safe_configure_server_explain">Threema Safe biztonsági másolatának tárolása a Threema-nál vagy az Ön által választott szerveren.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">${app_name_short} Safe biztonsági másolatának tárolása a ${company_name}-nál vagy az Ön által választott szerveren.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_use_default_server">Alapkiszolgáló</string>
     <string name="safe_test_server">Kiszolgáló tesztelése</string>
     <string name="safe_advanced_options">Szakértői beállítások</string>
-    <string name="safe_enter_password">Kérjük, adja meg a Threema Safe jelszavát</string>
-    <string name="safe_threema_id">Az ön Threema ID-ja</string>
-    <string name="safe_restore_enter_id">Kérjük, adja meg a helyreállítani kívánt Threema ID-t</string>
-    <string name="safe_search_id_title">Kérjük, adja meg a Threema ID-hoz csatolt mobilszámot vagy e-mail címet.</string>
-    <string name="safe_id_lookup">Threema-ID keresése</string>
-    <string name="safe_no_id_found">Nem találtunk Threema-ID-t</string>
+    <string name="safe_enter_password">Kérjük, adja meg a ${app_name_short} Safe jelszavát</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">Az ön ${app_name_short} ID-ja</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">Kérjük, adja meg a helyreállítani kívánt ${app_name_short} ID-t</string>
+    <string name="safe_search_id_title">Kérjük, adja meg a ${app_name_short} ID-hoz csatolt mobilszámot vagy e-mail címet.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">${app_name_short}-ID keresése</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">Nem találtunk ${app_name_short}-ID-t</string>
     <string name="safe_no_backup_found">Nincs biztonsági mentés a kiszolgálón. Ellenőrizze az ID-t és a jelszót.</string>
-    <string name="safe_select_id">Több Threema ID-t találtunk. Válassza ki a kívánt ID-t:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">Több ${app_name_short} ID-t találtunk. Válassza ki a kívánt ID-t:</string>
     <string name="safe_backup_now">Biztonsági mentés most</string>
-    <string name="safe_enable_explain_short">Aktiválja a Threema Safe szolgáltatást a legfontosabb adatok automatikus, biztonságos és anonim mentéséhez</string>
-    <string name="safe_deleting">A Threema Safe biztonsági mentés törlődik</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">Aktiválja a ${app_name_short} Safe szolgáltatást a legfontosabb adatok automatikus, biztonságos és anonim mentéséhez</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">A ${app_name_short} Safe biztonsági mentés törlődik</string>
     <string name="safe_delete_error">Törlési hiba: %s</string>
     <string name="safe_delete_success">A biztonsági másolat sikeresen törlődött a kiszolgálóról</string>
-    <string name="safe_error_preparing">Hiba a Threema Safe biztonsági mentés elkészítése közben</string>
-    <string name="safe_configure_choose_password_force">Állítson be egy erős jelszót, hogy a Threema Safe segítségével megvédje ID-jét. Ne felejtse el, hogy mit ír be ide!</string>
-    <string name="safe_deactivate">Threema Safe kikapcsolása</string>
-    <string name="safe_deactivate_explain">A meglévő Threema Safe biztonsági mentések visszavonhatatlanul törlődnek a kiszolgálón. Akarod folytatni?</string>
+    <string name="safe_error_preparing">Hiba a ${app_name_short} Safe biztonsági mentés elkészítése közben</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">Állítson be egy erős jelszót, hogy a ${app_name_short} Safe segítségével megvédje ID-jét. Ne felejtse el, hogy mit ír be ide!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">${app_name_short} Safe kikapcsolása</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">A meglévő ${app_name_short} Safe biztonsági mentések visszavonhatatlanul törlődnek a kiszolgálón. Akarod folytatni?</string>
     <string name="add_group_members">Új tag</string>
     <string name="contact_add_confirm">Szeretné felvenni az új névjegyet «%1$s» a névjegyzékébe?</string>
     <string name="password_bad">Nem biztonságos jelszó</string>
     <string name="prefs_fix_background_data">Háttéradatok engedélyezése</string>
-    <string name="prefs_fix_background_data_desc">Ha engedélyezni szeretné, hogy a Threema a háttérben fogadjon üzeneteket, engedélyezze a Háttéradatok és a Korlátlan adatforgalom funkciót</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">Ha engedélyezni szeretné, hogy a ${app_name} a háttérben fogadjon üzeneteket, engedélyezze a Háttéradatok és a Korlátlan adatforgalom funkciót</string>
     <string name="prefs_fix_device">Az eszköz konfigurációs problémáinak javítása</string>
     <string name="safe_successful">Sikeres</string>
     <string name="safe_unsuccessful">Sikertelen</string>
@@ -910,8 +998,10 @@
     <string name="safe_size">A mentés mérete</string>
     <string name="backup_version_mismatch">A biztonsági mentés verziója magasabb az alkalmazás által támogatottnál. Kérjük, frissítse az alkalmazást.</string>
     <string name="safe_restore_failed">A visszaállítás sikertelen</string>
-    <string name="safe_failed_notification">A Threema Safe %d napja nem tud biztonsági mentést készíteni. Kérjük, kattintson ide az ellenőrzéshez.</string>
-    <string name="safe_restore">Threema Safe visszaállítása</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">A ${app_name_short} Safe %d napja nem tud biztonsági mentést készíteni. Kérjük, kattintson ide az ellenőrzéshez.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">${app_name_short} Safe visszaállítása</string>
     <string name="backup_restore_in_progress">Biztonsági mentés vagy visszaállítás folyamatban. További információkért nézze meg az értesítést.</string>
     <string name="restore_error_body">A visszaállítás sikertelen</string>
     <string name="forgot_your_id">Elfelejtette az ID-ját?</string>
@@ -919,8 +1009,10 @@
     <string name="work_data_sync">Adatok szinkronizálása</string>
     <string name="private_contact">Privát névjegy</string>
     <string name="ringtone_selection_default">Alapértelmezett (%s)</string>
-    <string name="work_data_sync_desc">Threema Work szinkronizálás</string>
-    <string name="ballot_not_connected">Kérjük, a szavazás kitöltése előtt győződjön meg arról, hogy a Threema online van.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">${app_name} szinkronizálás</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">Kérjük, a szavazás kitöltése előtt győződjön meg arról, hogy a ${app_name} online van.</string>
     <string name="empty_chat_title">Csevegés kiürítése</string>
     <string name="empty_chat_confirm">Ebben a csevegésben minden üzenet törlésre kerül. Folytassuk?</string>
     <string name="emptying_chat">Csevegés ürítése</string>
@@ -934,29 +1026,35 @@
     <string name="notification_channel_notices">Megjegyzések</string>
     <string name="chat_updates">Csevegés frissítések</string>
     <string name="backup_or_restore_progress">Biztonsági mentés/visszaállítás állapota</string>
-    <string name="tooltip_export_id">Kattintson ide a titkosított Threema ID megosztásához vagy kinyomtatásához.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">Kattintson ide a titkosított ${app_name_short} ID megosztásához vagy kinyomtatásához.</string>
     <string name="downloading">Letöltés</string>
     <string name="today">Ma</string>
     <string name="restore_data_cancelled">Visszaállítás megszakítva</string>
     <string name="safe_change_password">Jelszó módosítása</string>
     <string name="safe_configure_choose_password_title">Jelszó választása</string>
-    <string name="password_bad_explain">Az Ön által választott Threema Safe jelszó nagyon gyenge, ezért a támadók könnyen kitalálhatják. Kérjük, válasszon biztonságos jelszót. Tipp: Használjon több kifejezésből álló összetett szót.</string>
-    <string name="safe_password_updated">A Threema Safe jelszó frissítve lett.</string>
-    <string name="safe_activated">A Threema Safe aktiválódott.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">Az Ön által választott ${app_name_short} Safe jelszó nagyon gyenge, ezért a támadók könnyen kitalálhatják. Kérjük, válasszon biztonságos jelszót. Tipp: Használjon több kifejezésből álló összetett szót.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">A ${app_name_short} Safe jelszó frissítve lett.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">A ${app_name_short} Safe aktiválódott.</string>
     <string name="restore_zip_invalid_file">A biztonsági mentési fájl érvénytelen.</string>
     <string name="push_token_cleared">A push token eltávolításra került</string>
     <string name="insert_date">Dátum beillesztése</string>
     <string name="add_answer">Válasz hozzáadása</string>
     <string name="title_cannot_be_empty">A szavazás címe nem lehet üres</string>
-    <string name="voip_disabled">Threema-hívások letiltva</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short}-hívások letiltva</string>
     <string name="hide_chat_enter_message_explain">Ez a csevegés privátnak van jelölve. A megtekintéshez először állítson be egy hozzáférés védelmet.</string>
     <string name="unknown">Ismeretlen</string>
     <string name="miui_notification_title">Fontos megjegyzés a MIUI felhasználók számára</string>
-    <string name="miui_notification_body">A MIUI 10 alapértelmezetten letiltja a hangokat, a LED-et és a felugró ablakokat az újonnan létrehozott értesítési csatornákhoz (kivéve néhány, a Xiaomi által «fontosnak» tartott alkalmazás esetében). Ezért ezeket a paramétereket a telefon Threema-specifikus értesítési beállításaiban kell engedélyeznie az egyes csatornákhoz. További információért forduljon a telefon gyártójához.</string>
-    <string name="miui12_notification_body">A MIUI alapértelmezetten kikapcsolja a hangokat, a LED-et és a felugró ablakokat (kivéve néhány nagyon népszerű alkalmazást, amelyeket a Xiaomi «fontosnak» tart). Ezért sajnos manuálisan kell aktiválnia ezeket a beállításokat a telefon Threema-specifikus értesítési beállításaiban, és minden alkalmazásfrissítés után meg kell ismételnie az eljárást. További információért forduljon a telefon gyártójához.</string>
+    <string name="miui_notification_body">A MIUI 10 alapértelmezetten letiltja a hangokat, a LED-et és a felugró ablakokat az újonnan létrehozott értesítési csatornákhoz (kivéve néhány, a Xiaomi által «fontosnak» tartott alkalmazás esetében). Ezért ezeket a paramétereket a telefon ${app_name_short}-specifikus értesítési beállításaiban kell engedélyeznie az egyes csatornákhoz. További információért forduljon a telefon gyártójához.</string>
+    <string name="miui12_notification_body">A MIUI alapértelmezetten kikapcsolja a hangokat, a LED-et és a felugró ablakokat (kivéve néhány nagyon népszerű alkalmazást, amelyeket a Xiaomi «fontosnak» tart). Ezért sajnos manuálisan kell aktiválnia ezeket a beállításokat a telefon ${app_name_short}-specifikus értesítési beállításaiban, és minden alkalmazásfrissítés után meg kell ismételnie az eljárást. További információért forduljon a telefon gyártójához.</string>
     <string name="dont_show_again">Ne mutassa újra</string>
     <string name="miui_notification_prefs">MIUI beállítások</string>
-    <string name="threema_safe_upload_successful">Threema-Safe biztonsági mentés sikeresen feltöltve</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">${app_name_short}-Safe biztonsági mentés sikeresen feltöltve</string>
     <string name="time_remaining">még %s</string>
     <string name="safe_configure_server_credentials_title">Hitelesítés (opcionális)</string>
     <string name="username_hint">Felhasználónév</string>
@@ -964,7 +1062,8 @@
     <string name="biometric_enter_authentication">Kérjük, hitelesítse magát a feloldáshoz</string>
     <string name="biometric_authentication_failed">A hitelesítés sikertelen</string>
     <string name="biometric_authentication_successful">Önt sikeresen hitelesítették</string>
-    <string name="work_safe_forced_explain">A rendszergazda engedélyezte a Threema Safe szolgáltatást az Ön készülékén.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">A rendszergazda engedélyezte a ${app_name_short} Safe szolgáltatást az Ön készülékén.</string>
     <string name="pin_locked_cannot_send">Alkalmazás zárolva. Küldés nem lehetséges.</string>
     <string name="prefs_summary_hide_screenshots_notice">Adatvédelmi okokból a miniatűrök és a képernyőképek mindig le vannak tiltva, ha az alkalmazászár engedélyezve van.</string>
     <string name="work_select_categories">Kategóriák kiválasztása</string>
@@ -974,6 +1073,7 @@
     <string name="advanced_options">További lehetőségek</string>
     <string name="url_warning_body">A megnyitni kívánt weboldal gyanús:\n\nMegjelenített hostnév: <b>%s</b>\nValódi hostnév: <b>%s</b>\n\nLehet, hogy egy hamis weboldalra próbálják átirányítani Önt.\n\nMégis folytatni akarja?</string>
     <string name="url_warning_title">Adathalászat figyelmeztetés</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_camera_qr_required">A QR-kódok beolvasásához kamerához való hozzáférés szükséges</string>
     <string name="voice_action_title">Hangparancsok</string>
     <string name="voice_action_body">A hangparancs feldolgozása</string>
@@ -995,17 +1095,22 @@
     <string name="archived">Archív</string>
     <string name="to_archive">Archiválás</string>
     <string name="archived_chats">Archivált csevegések</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
     <string name="unarchive">Archívból törlés</string>
     <string name="no_archived_chats">Nincsenek archivált csevegések.\nHúzzon balra egy csevegést a csevegési listában az archiválásához.</string>
-    <string name="add_contact_enter_id_hint">Kérjük, adja meg a hozzáadni kívánt kapcsolat Threema ID-ját.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">Kérjük, adja meg a hozzáadni kívánt kapcsolat ${app_name_short} ID-ját.</string>
     <string name="notification_channel_new_contact">Új névjegyek</string>
     <string name="notification_channel_new_contact_desc">Értesítés új névjegyekről</string>
-    <string name="notification_contact_has_joined">%1$s most %2$s-nél van. Kattintson ide egy üzenet elküldéséhez.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d kapcsolata most %2$s: %3$s-nél van. Kattintson ide egy üzenet küldéséhez.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s most ${app_name_short}-nél van. Kattintson ide egy üzenet elküldéséhez.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d kapcsolata most ${app_name_short}: %2$s-nél van. Kattintson ide egy üzenet küldéséhez.</string>
     <string name="system_default">Rendszer alapértelmezett</string>
     <string name="open_in_maps_app">Megnyitás a Térképalkalmazásban</string>
     <string name="delete">Törlés</string>
     <string name="continue_recording">Felvétel folytatása</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="tap_to_start">Kattintson ide a %s indításához.</string>
     <string name="two_years">2 év</string>
     <string name="invalid_backup_path">Érvénytelen mentési útvonal</string>
@@ -1013,7 +1118,8 @@
     <string name="prefs_sum_show_unread_badge">Jelvények megjelenítése a navigációs fülön</string>
     <string name="prefs_title_show_unread_badge">Jelvények</string>
     <string name="pinning_not_trusted">A tanúsítvány nem ellenőrizhető. Győződjön meg róla, hogy az «Entrust Root Certification Authority - G2» biztonsági tanúsítvány telepítve és aktiválva van a telefon tanúsítványtárolójában..</string>
-    <string name="pinning_failed">A tanúsítvány nem ellenőrizhető. Lehetséges man-in-the-middle támadás. Ha telepítve van egy reklámblokkoló, tartalomszűrő vagy tűzfal alkalmazás, mint például az \"AdGuard\", tiltsa le a Threema számára.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">A tanúsítvány nem ellenőrizhető. Lehetséges man-in-the-middle támadás. Ha telepítve van egy reklámblokkoló, tartalomszűrő vagy tűzfal alkalmazás, mint például az \"AdGuard\", tiltsa le a ${app_name} számára.</string>
     <string name="open_myid_popup">Felugró ablak megnyitása a gyorsválasztóhoz</string>
     <string name="logo">Logó / Görgessen a tetejére</string>
     <string name="quote_subj_end">Idézet vége</string>
@@ -1036,7 +1142,8 @@
     <string name="mime_type">MIME-Típus</string>
     <string name="password_does_not_comply">A megadott jelszó nem felel meg az irányelveknek.</string>
     <string name="audio_mute_due_to_focus_loss">A hangfókusz elvesztése miatt átmenetileg elnémult a hang</string>
-    <string name="restore_data_backup_explain">Az adatmentés visszaállításához először törölje Threema ID-ját a «saját profil» oldalon.\n\nAmikor az alkalmazás újraindul, válassza a «Biztonsági mentés visszaállítása», «További visszaállítási lehetőségek», «Adatmentés» lehetőséget, és a fájlkeresőben kattintson a visszaállítani kívánt adatmentésre.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">Az adatmentés visszaállításához először törölje ${app_name_short} ID-ját a «saját profil» oldalon.\n\nAmikor az alkalmazás újraindul, válassza a «Biztonsági mentés visszaállítása», «További visszaállítási lehetőségek», «Adatmentés» lehetőséget, és a fájlkeresőben kattintson a visszaállítani kívánt adatmentésre.</string>
     <string name="audio_focus_loss_complete">A hívás a hangfókusz teljes elvesztése miatt véget ért.</string>
     <string name="tap_for_picture_hold_for_video">Fényképhez megérintés, videóhoz nyomva tartás</string>
     <string name="sending_media">Médiá(k) elküldése</string>
@@ -1053,12 +1160,13 @@
     <string name="prefs_work_time_end">Munka vége</string>
     <string name="prefs_work_time_end_sum">Állítsa be a munka végét</string>
     <string name="prefs_working_days_enable_title">Pihenőidő-politika</string>
-    <string name="prefs_working_days_enable_sum">Ne jelenítsen meg értesítéseket és utasítsa el a Threema hívásokat munkaidőn kívül</string>
+    <string name="prefs_working_days_enable_sum">Ne jelenítsen meg értesítéseket és utasítsa el a ${app_name_short} hívásokat munkaidőn kívül</string>
     <string name="work_life_dnd_active">Pihenőidő aktív</string>
     <string name="warning">Figyelmeztetés</string>
     <string name="password_remember_warning">Ne feledje, mit ír be ide! Mivel a %s nem tárolja a jelszavakat a kiszolgálón, nem tudunk segíteni, ha elfelejtette a PIN-kódot vagy a jelszót.</string>
     <string name="safe_backup_tap_to_restart">Kattintson a megjelenő rendszerértesítésre az alkalmazás újraindításához. Ha nem látja az értesítést, kérjük húzza le a telefonján az értesítési sávot.</string>
-    <string name="send_to_support">Küldés a Threema ügyfélszolgálatnak</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">Küldés a ${company_name} ügyfélszolgálatnak</string>
     <string name="menu_legal">Jogi</string>
     <string name="tooltip_work_hint">Ez a névjegy a Threema Work-ot használja.</string>
     <string name="video_camera_on">Videokamera be</string>
@@ -1212,25 +1320,29 @@
     <string name="group_link_rename">Hivatkozás átnevezése</string>
     <string name="group_link_rename_tag">Új név</string>
     <string name="tap_here_for_more">További információért kattintson ide</string>
-    <string name="another_connection_instructions"><![CDATA[A kiszolgáló két vagy több különböző eszközről származó, azonos Threema ID-vel rendelkező kapcsolatot észlelt.
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[A kiszolgáló két vagy több különböző eszközről származó, azonos ${app_name_short} ID-vel rendelkező kapcsolatot észlelt.
 
-Egy Threema ID-t nem lehet egyszerre több eszközön használni. Az új üzenetek csak arra az eszközre kézbesülnek, amelyik legutóbb bejelentkezett a kiszolgálóra.
+Egy ${app_name_short} ID-t nem lehet egyszerre több eszközön használni. Az új üzenetek csak arra az eszközre kézbesülnek, amelyik legutóbb bejelentkezett a kiszolgálóra.
 
 Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a régi eszközön, majd indítsa újra az új eszközt.]]></string>
     <string name="app_store_error_code">App Store hibakód: %d</string>
-    <string name="backup_restore_type"><![CDATA[Milyen típusú másolatot szeretne visszaállítani? <br/><br/> <a href=%s>Tudjon meg többet a Threema biztonsági mentésekről</a>]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[Milyen típusú másolatot szeretne visszaállítani? <br/><br/> <a href=%s>Tudjon meg többet a ${app_name_short} biztonsági mentésekről</a>]]></string>
     <string name="data_backup_info">Mindent visszaállít, csevegésekkel</string>
     <string name="new_to_threema">Új a %s-nál?</string>
     <string name="back_to_threema">Visszatért a %s-hoz?</string>
     <string name="id_backup_info">Csak az ID helyreállítása</string>
     <string name="restore_your_id_contacts_and_groups">ID, kapcsolatok és csoportok visszaállítása</string>
-    <string name="threema_safe_backup">Threema Safe biztonsági mentés</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">${app_name_short} Safe biztonsági mentés</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Elfelejtette a jelszót?</a>]]></string>
     <string name="download_failed">Letöltés sikertelen. Hibakód: %d</string>
     <string name="share_media">Megosztás más alkalmazással…</string>
     <string name="group_link_administered">Adminisztrált</string>
     <string name="group_link_open">Nyílt</string>
-    <string name="group_link_share_message">Csatlakozz a Threema csoportomhoz az alábbi hivatkozáson keresztül: %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">Csatlakozz a ${app_name_short} csoportomhoz az alábbi hivatkozáson keresztül: %s</string>
     <string name="group_link_bottom_sheet_title">Csoporthivatkozás</string>
     <string name="group_link_bottom_sheet_desc">Ossza meg ezt a hivatkozást azokkal, akiket meg szeretne meghívni. Vegye figyelembe az alábbi beállításokat</string>
     <string name="group_link_bottom_sheet_link_title">Hivatkozás</string>
@@ -1264,13 +1376,15 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="really_delete_group_link_title">Csoporthivatkozások törlése</string>
     <string name="qr_scan_result_dialog_title">QR beolvasás eredmény</string>
     <string name="scan_failure_dialog_title">Sikertelen beolvasás</string>
-    <string name="no_threema_qr_info">Ez nem egy Threema QR-kód, a dekódolt tartalma:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">Ez nem egy ${app_name_short} QR-kód, a dekódolt tartalma:</string>
     <string name="default_group_link">Alapértelmezett csoporthivatkozás</string>
     <string name="default_link_name">Alapértelmezett hivatkozás</string>
     <string name="reset_default_group_link">Csoporthivatkozás visszaállítása</string>
     <string name="resend">Újra elküldeni</string>
     <string name="group_request_already_sent_title">Csoportkérelem már elküldve</string>
-    <string name="qr_scanner_id_hint">Egy másik névjegy QR-kódjának beolvasásával ellenőrizheti őt. A QR-kód a Threema főképernyő bal felső sarkában lévő profilképre kattintva tekinthető meg.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">Egy másik névjegy QR-kódjának beolvasásával ellenőrizheti őt. A QR-kód a ${app_name_short} főképernyő bal felső sarkában lévő profilképre kattintva tekinthető meg.</string>
     <string name="enable_storage_access_for_media">Aktiválja a tárhelyelérést a képek és videók megtekintéséhez</string>
     <string name="take_me_there">Aktiváld most…</string>
     <string name="notification_channel_group_join_request">Értesítések a csoportkérelmekről</string>
@@ -1283,8 +1397,12 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="no_votes_yet">Még nem adtak le szavazatot.</string>
     <string name="permission_contacts_sync_required">A szinkronizáláshoz engedélyezze a névjegyekhez való hozzáférést.</string>
     <string name="not_voted_user_list">Ezek a résztvevők nem szavaztak: %s</string>
-    <string name="invalid_onprem_id">Nincs érvényes Threema OnPrem-ID</string>
+    <string name="invalid_onprem_id">Nincs érvényes ${app_name_short} OnPrem-ID</string>
     <string name="enable_unknown_sources">Telepítés nem lehetséges. Kérjük, engedélyezze a \"Ismeretlen alkalmazások telepítése\" opciót a %s-hoz.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="name_given">Utónév</string>
     <string name="name_family">Vezetéknév</string>
     <string name="name_prefix">Név előtagja</string>
@@ -1319,11 +1437,44 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="contact_property_key">"Kulcs"</string>
     <string name="header_nickname_entry">"Becenév"</string>
     <string name="organization_type">Szervezet</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="messages_cannot_be_recovered">Az üzeneteket nem lehet visszaállítani.</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Instruction text for the user directory search -->
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d névjegyek</item>
         <item quantity="other">%d névjegyek</item>

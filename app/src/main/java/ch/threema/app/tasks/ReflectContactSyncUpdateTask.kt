@@ -24,11 +24,16 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ApiService
+import ch.threema.app.services.ConversationCategoryService
+import ch.threema.app.services.ConversationTagService
 import ch.threema.app.services.FileService
+import ch.threema.app.utils.ContactUtil
+import ch.threema.app.utils.ConversationUtil
 import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.SymmetricEncryptionService
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.IdentityState
@@ -47,15 +52,19 @@ import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.getEncryptedContactSyncUpdate
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.blob
+import ch.threema.protobuf.d2d.sync.ContactKt.NotificationTriggerPolicyOverrideKt.policy
+import ch.threema.protobuf.d2d.sync.ContactKt.notificationTriggerPolicyOverride
 import ch.threema.protobuf.d2d.sync.ContactKt.readReceiptPolicyOverride
 import ch.threema.protobuf.d2d.sync.ContactKt.typingIndicatorPolicyOverride
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact
+import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.NotificationTriggerPolicyOverride.Policy
 import ch.threema.protobuf.d2d.sync.contact
 import ch.threema.protobuf.deltaImage
 import ch.threema.protobuf.image
 import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
+import ch.threema.storage.models.ConversationTag
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
 
@@ -67,7 +76,6 @@ abstract class ReflectContactSyncUpdateBaseTask(
     multiDeviceManager: MultiDeviceManager,
     private val nonceFactory: NonceFactory,
 ) : ReflectContactSyncTask<Unit, Unit>(multiDeviceManager) {
-
     /**
      * The task type. This is just used for debugging.
      */
@@ -111,14 +119,13 @@ abstract class ReflectContactSyncUpdateBaseTask(
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
             storeD2dNonce = true,
-            nonceFactory = nonceFactory
+            nonceFactory = nonceFactory,
         )
     }
 
     override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> Unit = {
         // Nothing to do
     }
-
 }
 
 /**
@@ -136,7 +143,6 @@ abstract class ReflectContactSyncUpdateImmediateTask(
     multiDeviceManager,
     nonceFactory,
 ) {
-
     /**
      * Check whether the data has changed. Note that immediate tasks are executed before the update
      * has been persisted. In this case, we reflect only if the current data is different to the new
@@ -174,7 +180,6 @@ abstract class ReflectContactSyncUpdateImmediateTask(
         multiDeviceManager,
         nonceFactory,
     ) {
-
         override val type = "ReflectContactNickname"
 
         override fun hasDataChanged(currentData: ContactModelData): Boolean {
@@ -244,7 +249,6 @@ abstract class ReflectContactSyncUpdateImmediateTask(
             }
         }
     }
-
 }
 
 /**
@@ -260,9 +264,10 @@ abstract class ReflectContactSyncUpdateTask(
     contactIdentity,
     contactModelRepository,
     multiDeviceManager,
-    nonceFactory
-), ActiveTask<Unit>, PersistableTask {
-
+    nonceFactory,
+),
+    ActiveTask<Unit>,
+    PersistableTask {
     /**
      * Return true if the change that should be reflected still matches the current data. Note that
      * if a task performs several changes, then *all* of the new values must be equal to
@@ -308,8 +313,8 @@ abstract class ReflectContactSyncUpdateTask(
         override val type: String = "ReflectNameUpdate"
 
         override fun isChangeValid(currentData: ContactModelData): Boolean =
-            currentData.firstName == newFirstName
-                && currentData.lastName == newLastName
+            currentData.firstName == newFirstName &&
+                currentData.lastName == newLastName
 
         override fun getContactSync(): Contact = contact {
             identity = contactIdentity
@@ -367,8 +372,7 @@ abstract class ReflectContactSyncUpdateTask(
                 when (readReceiptPolicy) {
                     ReadReceiptPolicy.DEFAULT -> default = unit {}
                     ReadReceiptPolicy.SEND -> policy = MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
-                    ReadReceiptPolicy.DONT_SEND -> policy =
-                        MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
+                    ReadReceiptPolicy.DONT_SEND -> policy = MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
                 }
             }
         }
@@ -420,11 +424,9 @@ abstract class ReflectContactSyncUpdateTask(
                 when (typingIndicatorPolicy) {
                     TypingIndicatorPolicy.DEFAULT -> default = unit {}
 
-                    TypingIndicatorPolicy.SEND -> policy =
-                        MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
+                    TypingIndicatorPolicy.SEND -> policy = MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
 
-                    TypingIndicatorPolicy.DONT_SEND -> policy =
-                        MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
+                    TypingIndicatorPolicy.DONT_SEND -> policy = MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
                 }
             }
         }
@@ -779,7 +781,7 @@ abstract class ReflectContactSyncUpdateTask(
                 val encryptionResult = symmetricEncryptionService.encrypt(
                     userDefinedProfilePictureBytes,
                     symmetricEncryptionService.generateSymmetricKey(),
-                    ProtocolDefines.CONTACT_PHOTO_NONCE
+                    ProtocolDefines.CONTACT_PHOTO_NONCE,
                 )
                 val blobId = apiService.createUploader(
                     data = encryptionResult.data,
@@ -829,6 +831,234 @@ abstract class ReflectContactSyncUpdateTask(
                     serviceManager.fileService,
                     serviceManager.symmetricEncryptionService,
                     serviceManager.apiService,
+                )
+        }
+    }
+
+    /**
+     * Reflect a new notification-trigger-policy-override
+     */
+    class ReflectNotificationTriggerPolicyOverrideUpdate(
+        private val newNotificationTriggerPolicyOverride: NotificationTriggerPolicyOverride,
+        contactIdentity: String,
+        contactModelRepository: ContactModelRepository,
+        multiDeviceManager: MultiDeviceManager,
+        nonceFactory: NonceFactory,
+    ) : ReflectContactSyncUpdateTask(
+        contactIdentity,
+        contactModelRepository,
+        multiDeviceManager,
+        nonceFactory,
+    ) {
+        override val type = "ReflectNotificationTriggerPolicyOverrideUpdate"
+
+        override fun isChangeValid(currentData: ContactModelData) =
+            currentData.notificationTriggerPolicyOverride == newNotificationTriggerPolicyOverride.dbValue
+
+        override fun getContactSync(): Contact = contact {
+            identity = contactIdentity
+
+            notificationTriggerPolicyOverride = notificationTriggerPolicyOverride {
+                when (newNotificationTriggerPolicyOverride) {
+                    NotificationTriggerPolicyOverride.NotMuted -> default = unit {}
+
+                    NotificationTriggerPolicyOverride.MutedIndefinite -> policy = policy {
+                        policy = Policy.NotificationTriggerPolicy.NEVER
+                    }
+
+                    NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions -> throw IllegalStateException(
+                        "Contact receivers can never have this setting",
+                    )
+
+                    is NotificationTriggerPolicyOverride.MutedUntil -> policy = policy {
+                        policy = Policy.NotificationTriggerPolicy.NEVER
+                        expiresAt = newNotificationTriggerPolicyOverride.utcMillis
+                    }
+                }
+            }
+        }
+
+        override fun serialize(): SerializableTaskData = ReflectNotificationTriggerPolicyOverrideUpdateData(
+            notificationTriggerPolicyOverride = newNotificationTriggerPolicyOverride.dbValue,
+            contactIdentity = contactIdentity,
+        )
+
+        @Serializable
+        data class ReflectNotificationTriggerPolicyOverrideUpdateData(
+            private val notificationTriggerPolicyOverride: Long?,
+            private val contactIdentity: String,
+        ) : SerializableTaskData {
+            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+                ReflectNotificationTriggerPolicyOverrideUpdate(
+                    newNotificationTriggerPolicyOverride = NotificationTriggerPolicyOverride.fromDbValueContact(
+                        notificationTriggerPolicyOverride,
+                    ),
+                    contactIdentity = contactIdentity,
+                    contactModelRepository = serviceManager.modelRepositories.contacts,
+                    multiDeviceManager = serviceManager.multiDeviceManager,
+                    nonceFactory = serviceManager.nonceFactory,
+                )
+        }
+    }
+
+    /**
+     * Note that this task currently just reflects the current conversation category state of the contact as the conversation category is not part of
+     * the contact model.
+     */
+    class ReflectConversationCategoryUpdate(
+        contactIdentity: String,
+        private val isPrivateChat: Boolean,
+        contactModelRepository: ContactModelRepository,
+        multiDeviceManager: MultiDeviceManager,
+        nonceFactory: NonceFactory,
+        private val conversationCategoryService: ConversationCategoryService,
+    ) : ReflectContactSyncUpdateTask(
+        contactIdentity,
+        contactModelRepository,
+        multiDeviceManager,
+        nonceFactory,
+    ) {
+        override val type = "ReflectConversationCategoryUpdate"
+
+        override fun isChangeValid(currentData: ContactModelData): Boolean {
+            return conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(contactIdentity)) == isPrivateChat
+        }
+
+        override fun getContactSync(): Contact = contact {
+            identity = contactIdentity
+
+            conversationCategory = if (isPrivateChat) {
+                MdD2DSync.ConversationCategory.PROTECTED
+            } else {
+                MdD2DSync.ConversationCategory.DEFAULT
+            }
+        }
+
+        override fun serialize(): SerializableTaskData = ReflectContactConversationCategoryUpdateData(
+            contactIdentity = contactIdentity,
+            isPrivateChat = isPrivateChat,
+        )
+
+        @Serializable
+        data class ReflectContactConversationCategoryUpdateData(
+            private val contactIdentity: String,
+            private val isPrivateChat: Boolean,
+        ) : SerializableTaskData {
+            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+                ReflectConversationCategoryUpdate(
+                    isPrivateChat = isPrivateChat,
+                    contactIdentity = contactIdentity,
+                    contactModelRepository = serviceManager.modelRepositories.contacts,
+                    multiDeviceManager = serviceManager.multiDeviceManager,
+                    nonceFactory = serviceManager.nonceFactory,
+                    conversationCategoryService = serviceManager.conversationCategoryService,
+                )
+        }
+    }
+
+    /**
+     * Reflect a new conversation visibility regarding the archive option.
+     *
+     * TODO(ANDR-3721): There should only be one task that reflects the conversation visibility.
+     */
+    class ReflectConversationVisibilityArchiveUpdate(
+        private val isArchived: Boolean,
+        contactIdentity: String,
+        contactModelRepository: ContactModelRepository,
+        multiDeviceManager: MultiDeviceManager,
+        nonceFactory: NonceFactory,
+    ) : ReflectContactSyncUpdateTask(
+        contactIdentity,
+        contactModelRepository,
+        multiDeviceManager,
+        nonceFactory,
+    ) {
+        override val type = "ReflectConversationVisibilityArchiveUpdate"
+
+        override fun isChangeValid(currentData: ContactModelData) = currentData.isArchived == isArchived
+
+        override fun getContactSync(): Contact = contact {
+            identity = contactIdentity
+
+            conversationVisibility = if (isArchived) {
+                MdD2DSync.ConversationVisibility.ARCHIVED
+            } else {
+                MdD2DSync.ConversationVisibility.NORMAL
+            }
+        }
+
+        override fun serialize(): SerializableTaskData = ReflectConversationVisibilityArchiveUpdateData(
+            isArchived = isArchived,
+            contactIdentity = contactIdentity,
+        )
+
+        @Serializable
+        data class ReflectConversationVisibilityArchiveUpdateData(
+            private val isArchived: Boolean,
+            private val contactIdentity: String,
+        ) : SerializableTaskData {
+            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+                ReflectConversationVisibilityArchiveUpdate(
+                    isArchived = isArchived,
+                    contactIdentity = contactIdentity,
+                    contactModelRepository = serviceManager.modelRepositories.contacts,
+                    multiDeviceManager = serviceManager.multiDeviceManager,
+                    nonceFactory = serviceManager.nonceFactory,
+                )
+        }
+    }
+
+    /**
+     * Reflect a new conversation visibility regarding the pin option.
+     *
+     * TODO(ANDR-3721): There should only be one task that reflects the conversation visibility.
+     */
+    class ReflectConversationVisibilityPinnedUpdate(
+        private val isPinned: Boolean,
+        contactIdentity: String,
+        private val conversationTagService: ConversationTagService,
+        contactModelRepository: ContactModelRepository,
+        multiDeviceManager: MultiDeviceManager,
+        nonceFactory: NonceFactory,
+    ) : ReflectContactSyncUpdateTask(
+        contactIdentity,
+        contactModelRepository,
+        multiDeviceManager,
+        nonceFactory,
+    ) {
+        override val type = "ReflectConversationVisibilityPinnedUpdate"
+
+        override fun isChangeValid(currentData: ContactModelData) =
+            conversationTagService.isTaggedWith(ConversationUtil.getIdentityConversationUid(contactIdentity), ConversationTag.PINNED) == isPinned
+
+        override fun getContactSync(): Contact = contact {
+            identity = contactIdentity
+
+            conversationVisibility = if (isPinned) {
+                MdD2DSync.ConversationVisibility.PINNED
+            } else {
+                MdD2DSync.ConversationVisibility.NORMAL
+            }
+        }
+
+        override fun serialize(): SerializableTaskData = ReflectConversationVisibilityPinnedUpdateData(
+            isPinned = isPinned,
+            contactIdentity = contactIdentity,
+        )
+
+        @Serializable
+        data class ReflectConversationVisibilityPinnedUpdateData(
+            private val isPinned: Boolean,
+            private val contactIdentity: String,
+        ) : SerializableTaskData {
+            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+                ReflectConversationVisibilityPinnedUpdate(
+                    isPinned = isPinned,
+                    contactIdentity = contactIdentity,
+                    conversationTagService = serviceManager.conversationTagService,
+                    contactModelRepository = serviceManager.modelRepositories.contacts,
+                    multiDeviceManager = serviceManager.multiDeviceManager,
+                    nonceFactory = serviceManager.nonceFactory,
                 )
         }
     }

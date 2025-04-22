@@ -23,12 +23,10 @@ package ch.threema.app.activities.wizard;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -37,10 +35,11 @@ import org.slf4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
@@ -65,10 +64,12 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
 
-public class WizardSafeRestoreActivity extends WizardBackgroundActivity implements PasswordEntryDialog.PasswordEntryDialogClickListener,
+public class WizardSafeRestoreActivity extends WizardBackgroundActivity implements
+    PasswordEntryDialog.PasswordEntryDialogClickListener,
     WizardSafeSearchPhoneDialog.WizardSafeSearchPhoneDialogCallback,
     WizardDialog.WizardDialogCallback,
     ThreemaSafeAdvancedDialog.WizardDialogCallback {
+
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardSafeRestoreActivity");
 
     private static final String DIALOG_TAG_PASSWORD = "tpw";
@@ -87,13 +88,6 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     ThreemaSafeMDMConfig safeMDMConfig;
     ThreemaSafeServerInfo serverInfo = new ThreemaSafeServerInfo();
 
-    private final ActivityResultLauncher<String> notificationPermissionLauncher =
-        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-            // Restore backup even if permission is not granted as we do not strictly require the
-            // notification permission.
-            doSafeRestore();
-        });
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +95,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
         setContentView(R.layout.activity_wizard_restore_safe);
 
         try {
-            threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
+            threemaSafeService = ThreemaApplication.requireServiceManager().getThreemaSafeService();
         } catch (Exception e) {
             finish();
             return;
@@ -120,7 +114,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
                 findViewById(R.id.forgot_id).setVisibility(View.GONE);
 
                 if (safeMDMConfig.isSkipRestorePasswordEntryDialog()) {
-                    reallySafeRestore(safeMDMConfig.getPassword());
+                    restoreSafeBackup(safeMDMConfig.getPassword());
                 }
             }
         }
@@ -128,50 +122,33 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
         this.identityEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         this.identityEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
 
-        findViewById(R.id.forgot_id).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WizardSafeSearchPhoneDialog.newInstance().show(getSupportFragmentManager(), DIALOG_TAG_FORGOT_ID);
-            }
-        });
+        findViewById(R.id.forgot_id).setOnClickListener(v ->
+            WizardSafeSearchPhoneDialog.newInstance().show(getSupportFragmentManager(), DIALOG_TAG_FORGOT_ID)
+        );
 
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        final @NonNull WizardButtonXml advancedOptionsButtonCompose = findViewById(R.id.advanced_options_compose);
+        if (ConfigUtils.isWorkRestricted() && safeMDMConfig.isRestoreExpertSettingsDisabled()) {
+            advancedOptionsButtonCompose.setVisibility(View.GONE);
+        } else {
+            advancedOptionsButtonCompose.setOnClickListener(v -> {
+                ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(serverInfo, false);
+                dialog.show(getSupportFragmentManager(), DIALOG_TAG_ADVANCED);
+            });
+        }
 
-        findViewById(R.id.safe_restore_button).setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                // Ask for notification permission
-                if (!ConfigUtils.requestNotificationPermission(WizardSafeRestoreActivity.this, notificationPermissionLauncher, preferenceService)) {
-                    return;
-                }
-            }
+        findViewById(R.id.cancel_compose).setOnClickListener(v -> finish());
 
-            if (identityEditText != null && identityEditText.getText() != null && identityEditText.getText().toString().length() == ProtocolDefines.IDENTITY_LEN) {
-                doSafeRestore();
+        findViewById(R.id.safe_restore_button_compose).setOnClickListener(v -> {
+            if (
+                identityEditText != null &&
+                    identityEditText.getText() != null &&
+                    identityEditText.getText().toString().length() == ProtocolDefines.IDENTITY_LEN
+            ) {
+                showPasswordPrompt();
             } else {
                 SimpleStringAlertDialog.newInstance(R.string.safe_restore, R.string.invalid_threema_id).show(getSupportFragmentManager(), "");
             }
         });
-
-        Button advancedOptions = findViewById(R.id.advanced_options);
-        advancedOptions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(serverInfo, false);
-                dialog.show(getSupportFragmentManager(), DIALOG_TAG_ADVANCED);
-            }
-        });
-
-        if (ConfigUtils.isWorkRestricted()) {
-            if (safeMDMConfig.isRestoreExpertSettingsDisabled()) {
-                advancedOptions.setEnabled(false);
-                advancedOptions.setVisibility(View.GONE);
-            }
-        }
     }
 
     @Override
@@ -192,7 +169,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
         super.onUserInteraction();
     }
 
-    private void doSafeRestore() {
+    private void showPasswordPrompt() {
         PasswordEntryDialog dialogFragment = PasswordEntryDialog.newInstance(
             R.string.safe_enter_password,
             R.string.restore_data_password_msg,
@@ -201,12 +178,16 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
             R.string.cancel,
             ThreemaSafeServiceImpl.MIN_PW_LENGTH,
             ThreemaSafeServiceImpl.MAX_PW_LENGTH,
-            0, 0, 0, PasswordEntryDialog.ForgotHintType.SAFE);
+            0,
+            0,
+            0,
+            PasswordEntryDialog.ForgotHintType.SAFE
+        );
         dialogFragment.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD);
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void reallySafeRestore(String password) {
+    private void restoreSafeBackup(@Nullable String password) {
         final String identity;
 
         if (safeMDMConfig.isRestoreForced()) {
@@ -279,7 +260,11 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
                 if (failureMessage == null) {
                     runApplicationSetupStepsAndFinish();
                 } else {
-                    LongToast.makeText(WizardSafeRestoreActivity.this, getString(R.string.safe_restore_failed) + ". " + failureMessage, Toast.LENGTH_LONG).show();
+                    LongToast.makeText(
+                        WizardSafeRestoreActivity.this,
+                        getString(R.string.safe_restore_failed) + ". " + failureMessage,
+                        Toast.LENGTH_LONG
+                    ).show();
                     if (safeMDMConfig.isRestoreForced()) {
                         finish();
                     }
@@ -314,8 +299,10 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 
     private void finishSuccessfully() {
         if (ConfigUtils.isWorkBuild()) {
-            GenericProgressDialog.newInstance(R.string.work_data_sync_desc,
-                R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC);
+            GenericProgressDialog.newInstance(
+                R.string.work_data_sync_desc,
+                R.string.please_wait
+            ).show(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC);
 
             WorkSyncWorker.Companion.performOneTimeWorkSync(
                 WizardSafeRestoreActivity.this,
@@ -327,7 +314,9 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
                 () -> {
                     // On fail
                     DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
-                    RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
+                    RuntimeUtil.runOnUiThread(
+                        () -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show()
+                    );
                     logger.warn("Unable to post work request for fetch2 or preset password was denied");
                     removeIdentity();
                 });
@@ -347,7 +336,12 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 
     private void onSuccessfulRestore() {
         if (safeMDMConfig.isBackupPasswordPreset()) {
-            WizardDialog wizardDialog = WizardDialog.newInstance(R.string.safe_managed_password_confirm, R.string.accept, R.string.real_not_now, WizardDialog.Highlight.NONE);
+            WizardDialog wizardDialog = WizardDialog.newInstance(
+                R.string.safe_managed_password_confirm,
+                R.string.accept,
+                R.string.real_not_now,
+                WizardDialog.Highlight.NONE
+            );
             wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD_PRESET_CONFIRM);
         } else {
             scheduleAppRestart();
@@ -355,8 +349,11 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     }
 
     private void scheduleAppRestart() {
-        SimpleStringAlertDialog.newInstance(R.string.restore_success_body, R.string.android_backup_restart_threema,
-            true).show(getSupportFragmentManager(), "d");
+        SimpleStringAlertDialog.newInstance(
+            R.string.restore_success_body,
+            R.string.android_backup_restart_threema,
+            true
+        ).show(getSupportFragmentManager(), "d");
         try {
             serviceManager.startConnection();
         } catch (ThreemaException e) {
@@ -375,7 +372,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     public void onYes(String tag, String text, boolean isChecked, Object data) {
         // safe backup restore
         if (!TestUtil.isEmptyOrNull(text)) {
-            reallySafeRestore(text);
+            restoreSafeBackup(text);
         }
     }
 

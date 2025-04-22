@@ -21,14 +21,13 @@
 
 package ch.threema.app.utils
 
-import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class StreamUtilTest {
-
     @Test
     fun testEqual() {
         val bytes = byteArrayOf(0, 1, 2, 3)
@@ -87,5 +86,4 @@ class StreamUtilTest {
         assertFalse(inputStream.contentEquals(byteArrayOf(0)))
         assertFalse(inputStream.contentEquals(null))
     }
-
 }

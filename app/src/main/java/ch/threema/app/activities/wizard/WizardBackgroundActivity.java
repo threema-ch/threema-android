@@ -63,12 +63,7 @@ public abstract class WizardBackgroundActivity extends ThreemaAppCompatActivity 
         HorizontalScrollView hsv = findViewById(R.id.background_image);
         // disable scrolling
         if (hsv != null) {
-            hsv.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    return true;
-                }
-            });
+            hsv.setOnTouchListener((v, event) -> true);
         }
     }
 

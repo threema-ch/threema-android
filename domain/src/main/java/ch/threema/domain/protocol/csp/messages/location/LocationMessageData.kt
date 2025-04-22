@@ -29,9 +29,8 @@ data class LocationMessageData(
     val latitude: Double,
     val longitude: Double,
     val accuracy: Double?,
-    val poi: Poi?
+    val poi: Poi?,
 ) {
-
     fun toBodyString(): String {
         val stringBuilder = StringBuilder().apply {
             append(String.format(Locale.US, "%f,%f", latitude, longitude))
@@ -49,7 +48,6 @@ data class LocationMessageData(
     }
 
     companion object {
-
         const val MINIMUM_REQUIRED_BYTES = 3
 
         /**
@@ -69,11 +67,12 @@ data class LocationMessageData(
          */
         @Throws(BadMessageException::class)
         fun parse(data: ByteArray, offset: Int, length: Int): LocationMessageData {
-
             when {
                 length < MINIMUM_REQUIRED_BYTES -> throw BadMessageException("Bad length ($length) for location message")
                 offset < 0 -> throw BadMessageException("Bad offset ($offset) for location message")
-                offset + length > data.size -> throw BadMessageException("Passed offset $offset and length $length exceed the actual data size of ${data.size}")
+                offset + length > data.size -> throw BadMessageException(
+                    "Passed offset $offset and length $length exceed the actual data size of ${data.size}",
+                )
             }
 
             val locationString = String(data, offset, length, StandardCharsets.UTF_8)
@@ -89,7 +88,7 @@ data class LocationMessageData(
                     }.getOrElse { throwable ->
                         throw BadMessageException(
                             "Location message has bad number format for specific location value at index $index",
-                            throwable
+                            throwable,
                         )
                     }
                 }
@@ -126,7 +125,7 @@ data class LocationMessageData(
             val poi: Poi? = when {
                 !poiName.isNullOrBlank() && !poiAddress.isNullOrBlank() -> Poi.Named(
                     name = poiName,
-                    address = poiAddress
+                    address = poiAddress,
                 )
 
                 !poiAddress.isNullOrBlank() -> Poi.Unnamed(address = poiAddress)
@@ -137,7 +136,7 @@ data class LocationMessageData(
                 latitude = latitude,
                 longitude = longitude,
                 accuracy = accuracy,
-                poi = poi
+                poi = poi,
             )
         }
     }
@@ -148,7 +147,6 @@ data class LocationMessageData(
  *  If `location.name` is defined but `location.address` is not defined, discard location
  */
 sealed interface Poi {
-
     val name: String?
 
     val address: String?
@@ -161,7 +159,6 @@ sealed interface Poi {
         override val name: String,
         override val address: String,
     ) : Poi {
-
         override fun getCaptionOrNull(): String? = when {
             name.isBlank() -> address.takeIf(String::isNotBlank)
             address.isNotBlank() -> "*$name*\n$address"
@@ -198,4 +195,3 @@ sealed interface Poi {
         override fun getSnippetForSearchOrNull(): String? = address.takeIf(String::isNotBlank)
     }
 }
-

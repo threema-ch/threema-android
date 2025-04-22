@@ -31,6 +31,8 @@ import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.getDefaultAudioDevice
 import ch.threema.app.utils.hasEarpiece
 import ch.threema.base.utils.LoggingUtil
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -39,14 +41,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 private val logger = LoggingUtil.getThreemaLogger("CallAudioManager")
 
 class CallAudioManager(private val context: Context) {
     enum class State {
-        UNINITIALIZED, STOPPED, RUNNING
+        UNINITIALIZED,
+        STOPPED,
+        RUNNING,
     }
 
     private val audioManager: AudioManager by lazy { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
@@ -68,7 +70,7 @@ class CallAudioManager(private val context: Context) {
             field = value
         }
     private val audioDevices: MutableSet<AudioDevice> = mutableSetOf()
-    private val mutableAudioDevices: MutableStateFlow<Set<AudioDevice>> = MutableStateFlow(setOf())
+    private val mutableAudioDevices: MutableStateFlow<Set<AudioDevice>> = MutableStateFlow(emptySet())
     private val headsetManager = HeadsetManager(context, audioManager)
 
     private var wiredHeadsetJob: Job? = null
@@ -79,7 +81,7 @@ class CallAudioManager(private val context: Context) {
             .setAudioAttributes(
                 AudioAttributesCompat.Builder()
                     .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
-                    .build()
+                    .build(),
             ).setOnAudioFocusChangeListener { logger.info("Audio focus changed: {}", it) }
             .build()
 

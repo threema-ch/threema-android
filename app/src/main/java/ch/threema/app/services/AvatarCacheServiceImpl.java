@@ -53,6 +53,8 @@ import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupIdentity;
+import ch.threema.domain.models.GroupId;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -75,6 +77,8 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     /**
      * The mapping of group IDs to "states". If the number is changed, the next time the group avatar is accessed, it will be loaded
      * from the database. To invalidate all group caches clear this map.
+     * TODO(ANDR-3439): Use combination of group id and creator identity to uniquely identify a
+     *  group.
      */
     private final Map<Integer, Long> groupAvatarStates = new HashMap<>();
 
@@ -184,6 +188,14 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     public void reset(@NonNull GroupModel groupModel) {
         synchronized (this.groupAvatarStates) {
             this.groupAvatarStates.put(groupModel.getApiGroupId().hashCode(), System.currentTimeMillis());
+        }
+    }
+
+    @AnyThread
+    @Override
+    public void reset(@NonNull GroupIdentity groupIdentity) {
+        synchronized (this.groupAvatarStates) {
+            this.groupAvatarStates.put(new GroupId(groupIdentity.getGroupId()).hashCode(), System.currentTimeMillis());
         }
     }
 

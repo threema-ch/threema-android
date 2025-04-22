@@ -240,8 +240,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="colorPrimary">@color/md_theme_dark_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorPrimary">@color/color_wizard_primary</item>
+        <item name="colorOnPrimary">@color/color_wizard_on_primary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
         <item name="colorSecondary">@color/md_theme_dark_secondary</item>
@@ -312,6 +312,14 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
         <item name="android:statusBarColor">@color/md_theme_dark_background</item>
         <item name="android:navigationBarColor">@color/md_theme_dark_background</item>
+    </style>
+
+    <style name="Theme.Threema.Wizard.Translucent" parent="Theme.Threema.Wizard">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/Threema.Animation.None</item>
     </style>
 
     <!-- a theme that is always dark -->

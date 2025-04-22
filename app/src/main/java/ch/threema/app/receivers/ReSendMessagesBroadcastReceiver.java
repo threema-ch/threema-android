@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import androidx.core.app.NotificationManagerCompat;
@@ -83,7 +82,7 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
                                 logger.warn("Group model not found for failed message {}", failedGroupMessage.getApiMessageId());
                                 continue;
                             }
-                            receiverIdentities.addAll(Arrays.asList(groupService.getGroupIdentities(group)));
+                            receiverIdentities.addAll(Arrays.asList(groupService.getGroupMemberIdentities(group)));
                         } else {
                             receiverIdentities.add(failedMessage.getIdentity());
                         }

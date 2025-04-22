@@ -38,7 +38,6 @@ private val logger = LoggingUtil.getThreemaLogger("SendProfilePictureTask")
  */
 class SendProfilePictureTask(private val toIdentity: String, serviceManager: ServiceManager) :
     OutgoingProfilePictureTask(serviceManager) {
-
     override val type: String = "SendProfilePictureTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {

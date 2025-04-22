@@ -40,14 +40,14 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
 ) : ReflectedOutgoingContactMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_DELIVERY_RECEIPT,
-    serviceManager
+    serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
     private val myIdentity by lazy { serviceManager.identityStore.identity }
 
     private val groupDeliveryReceiptMessage by lazy {
         GroupDeliveryReceiptMessage.fromReflected(
-            message
+            message,
         )
     }
 
@@ -59,7 +59,7 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
     override fun processOutgoingMessage() {
         logger.info(
             "Processing message {}: reflected outgoing group delivery receipt",
-            message.messageId
+            message.messageId,
         )
 
         val messageState: MessageState? =
@@ -68,7 +68,7 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
             logger.warn(
                 "Message {} error: unknown or unsupported delivery receipt type: {}",
                 groupDeliveryReceiptMessage.messageId,
-                groupDeliveryReceiptMessage.receiptType
+                groupDeliveryReceiptMessage.receiptType,
             )
             return
         }
@@ -78,25 +78,26 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
                 "Processing message {}: group delivery receipt for {} (state = {})",
                 message.messageId,
                 receiptMessageId,
-                messageState
+                messageState,
             )
             val groupMessageModel: GroupMessageModel? = messageService.getGroupMessageModel(
                 receiptMessageId,
                 groupDeliveryReceiptMessage.groupCreator,
-                groupDeliveryReceiptMessage.apiGroupId
+                groupDeliveryReceiptMessage.apiGroupId,
             )
             if (groupMessageModel == null) {
                 logger.warn(
                     "Group message model ({}) for reflected outgoing group delivery receipt is null",
-                    receiptMessageId
+                    receiptMessageId,
                 )
                 continue
             }
             messageService.addMessageReaction(
                 groupMessageModel,
                 messageState,
-                myIdentity, // the identity that reacted (this is us => reflected outgoing message)
-                Date(message.createdAt)
+                // the identity that reacted (this is us => reflected outgoing message)
+                myIdentity,
+                Date(message.createdAt),
             )
         }
     }

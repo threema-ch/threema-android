@@ -162,7 +162,7 @@ public class VoipCallAnswerDataTest {
     @Test
     public void parseValidAcceptAnswer() throws BadMessageException {
         final VoipCallAnswerData answer = VoipCallAnswerData.parse(
-                "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
+            "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
         );
         Assert.assertEquals((Byte) VoipCallAnswerData.Action.ACCEPT, answer.getAction());
         Assert.assertNull(answer.getRejectReason());
@@ -178,7 +178,7 @@ public class VoipCallAnswerDataTest {
     @Test
     public void parseValidRejectAnswer() throws BadMessageException {
         final VoipCallAnswerData answer = VoipCallAnswerData.parse(
-                "{\"rejectReason\":1,\"action\":0}"
+            "{\"rejectReason\":1,\"action\":0}"
         );
         Assert.assertEquals((Byte) VoipCallAnswerData.Action.REJECT, answer.getAction());
         Assert.assertEquals(null, answer.getAnswerData());
@@ -192,7 +192,7 @@ public class VoipCallAnswerDataTest {
     public void parseAcceptAnswerTypeOffer() throws BadMessageException {
         try {
             VoipCallAnswerData.parse(
-                    "{\"answer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
+                "{\"answer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
             );
             Assert.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
@@ -205,7 +205,7 @@ public class VoipCallAnswerDataTest {
     public void parseAcceptAnswerTypeAnswerSdpNull() throws BadMessageException {
         try {
             VoipCallAnswerData.parse(
-                    "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":null},\"action\":1}"
+                "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":null},\"action\":1}"
             );
             Assert.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
@@ -217,20 +217,20 @@ public class VoipCallAnswerDataTest {
     @Test
     public void parseAcceptAnswerTypeRollbackSdpNull() throws BadMessageException {
         VoipCallAnswerData.parse(
-                "{\"answer\":{\"sdpType\":\"rollback\",\"sdp\":null},\"action\":1}"
+            "{\"answer\":{\"sdpType\":\"rollback\",\"sdp\":null},\"action\":1}"
         );
     }
 
     @Test
     public void createAnswerWithFeatures() throws Exception {
         final VoipCallAnswerData.AnswerData answerData = new VoipCallAnswerData.AnswerData()
-                .setSdpType("answer")
-                .setSdp("sdpsdp");
+            .setSdpType("answer")
+            .setSdp("sdpsdp");
 
         final VoipCallAnswerData msg = new VoipCallAnswerData()
-                .setAction(VoipCallAnswerData.Action.ACCEPT)
-                .setAnswerData(answerData)
-                .addFeature(new VideoFeature());
+            .setAction(VoipCallAnswerData.Action.ACCEPT)
+            .setAnswerData(answerData)
+            .addFeature(new VideoFeature());
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         msg.write(bos);
@@ -244,7 +244,7 @@ public class VoipCallAnswerDataTest {
     @Test
     public void parseAnswerWithoutFeatures() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
-                "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
+            "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
         );
         Assert.assertNotNull(parsed.getAnswerData());
         Assert.assertEquals("answer", parsed.getAnswerData().getSdpType());
@@ -254,14 +254,14 @@ public class VoipCallAnswerDataTest {
     @Test
     public void parseAnswerWithFeatures() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
-                "{" +
-                        "\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}," +
-                        "\"features\":{" +
-                        "\"video\":null," +
-                        "\"superextension\":{\"a\":1}" +
-                        "}," +
-                        "\"action\":1" +
-                        "}"
+            "{" +
+                "\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}," +
+                "\"features\":{" +
+                "\"video\":null," +
+                "\"superextension\":{\"a\":1}" +
+                "}," +
+                "\"action\":1" +
+                "}"
         );
         Assert.assertNotNull(parsed.getAnswerData());
         Assert.assertEquals("answer", parsed.getAnswerData().getSdpType());
@@ -269,11 +269,11 @@ public class VoipCallAnswerDataTest {
         Assert.assertEquals(2, features.size());
 
         final List<String> names = features
-                .getList()
-                .stream()
-                .map(CallFeature::getName)
-                .sorted()
-                .collect(Collectors.toList());
+            .getList()
+            .stream()
+            .map(CallFeature::getName)
+            .sorted()
+            .collect(Collectors.toList());
         Assert.assertEquals(names.get(0), "superextension");
         Assert.assertEquals(names.get(1), "video");
     }
@@ -281,9 +281,9 @@ public class VoipCallAnswerDataTest {
     @Test
     public void createAnswerWithCallId() throws Exception {
         final VoipCallAnswerData msg = new VoipCallAnswerData()
-                .setCallId(42)
-                .setAction(VoipCallAnswerData.Action.REJECT)
-                .setRejectReason(VoipCallAnswerData.RejectReason.BUSY);
+            .setCallId(42)
+            .setAction(VoipCallAnswerData.Action.REJECT)
+            .setRejectReason(VoipCallAnswerData.RejectReason.BUSY);
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         msg.write(bos);
@@ -297,7 +297,7 @@ public class VoipCallAnswerDataTest {
     @Test
     public void parseAnswerWithCallId() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
-                "{\"rejectReason\":1,\"action\":0,\"callId\":1337}"
+            "{\"rejectReason\":1,\"action\":0,\"callId\":1337}"
         );
         Assert.assertEquals(Long.valueOf(1337), parsed.getCallId());
     }
@@ -305,7 +305,7 @@ public class VoipCallAnswerDataTest {
     @Test
     public void parseAnswerWithoutCallId() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
-                "{\"rejectReason\":1,\"action\":0}"
+            "{\"rejectReason\":1,\"action\":0}"
         );
         Assert.assertNull(parsed.getCallId());
     }

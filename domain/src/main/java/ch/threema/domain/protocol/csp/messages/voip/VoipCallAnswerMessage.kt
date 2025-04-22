@@ -25,9 +25,9 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.MdD2D
-import org.slf4j.Logger
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("VoipCallAnswerMessage")
 
@@ -71,7 +71,6 @@ class VoipCallAnswerMessage : VoipMessage() {
     override fun bumpLastUpdate(): Boolean = false
 
     companion object {
-
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
          *  So we set the offset in [fromByteArray] to zero.

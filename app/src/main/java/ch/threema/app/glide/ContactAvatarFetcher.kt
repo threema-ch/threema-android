@@ -43,21 +43,20 @@ class ContactAvatarFetcher(
     context: Context,
     private val contactService: ContactService?,
     private val contactAvatarConfig: AvatarCacheServiceImpl.ContactAvatarConfig,
-    private val preferenceService: PreferenceService?
+    private val preferenceService: PreferenceService?,
 ) : AvatarFetcher(context) {
-
     private val contactDefaultAvatar: VectorDrawableCompat? by lazy {
         VectorDrawableCompat.create(
             context.resources,
             R.drawable.ic_contact,
-            null
+            null,
         )
     }
     private val contactBusinessAvatar: VectorDrawableCompat? by lazy {
         VectorDrawableCompat.create(
             context.resources,
             R.drawable.ic_business,
-            null
+            null,
         )
     }
 
@@ -99,7 +98,7 @@ class ContactAvatarFetcher(
                 highRes,
                 profilePicReceive,
                 returnDefaultIfNone,
-                backgroundColor
+                backgroundColor,
             )
         }
 
@@ -111,7 +110,7 @@ class ContactAvatarFetcher(
         highRes: Boolean,
         profilePicReceive: Boolean,
         returnDefaultIfNone: Boolean,
-        backgroundColor: Int
+        backgroundColor: Int,
     ): Bitmap? {
         if (contactModel == null) {
             return buildDefaultAvatar(null, highRes, backgroundColor)
@@ -134,16 +133,16 @@ class ContactAvatarFetcher(
             return it
         }
 
-        return if (returnDefaultIfNone) buildDefaultAvatar(
-            contactModel,
-            highRes,
-            backgroundColor
-        ) else null
+        return if (returnDefaultIfNone) {
+            buildDefaultAvatar(contactModel, highRes, backgroundColor)
+        } else {
+            null
+        }
     }
 
     private fun getContactDefinedProfilePicture(
         contactModel: ContactModel,
-        highRes: Boolean
+        highRes: Boolean,
     ): Bitmap? {
         try {
             val result = fileService?.getContactDefinedProfilePicture(contactModel.identity)
@@ -158,7 +157,7 @@ class ContactAvatarFetcher(
 
     private fun getUserDefinedProfilePicture(
         contactModel: ContactModel,
-        highRes: Boolean
+        highRes: Boolean,
     ): Bitmap? {
         return try {
             var result = fileService?.getUserDefinedProfilePicture(contactModel.identity)
@@ -173,7 +172,7 @@ class ContactAvatarFetcher(
 
     private fun getAndroidDefinedProfilePicture(
         contactModel: ContactModel,
-        highRes: Boolean
+        highRes: Boolean,
     ): Bitmap? {
         if (ContactUtil.isGatewayContact(contactModel) || AndroidContactUtil.getInstance()
                 .getAndroidContactUri(contactModel) == null
@@ -195,7 +194,7 @@ class ContactAvatarFetcher(
     private fun buildDefaultAvatar(
         contactModel: ContactModel?,
         highRes: Boolean,
-        backgroundColor: Int
+        backgroundColor: Int,
     ): Bitmap {
         val color = contactService?.getAvatarColor(contactModel)
             ?: ColorUtil.getInstance().getCurrentThemeGray(context)
@@ -207,5 +206,4 @@ class ContactAvatarFetcher(
             buildDefaultAvatarLowRes(drawable, color)
         }
     }
-
 }

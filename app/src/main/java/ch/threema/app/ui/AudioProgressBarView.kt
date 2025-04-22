@@ -53,9 +53,9 @@ import kotlin.math.roundToInt
 
 private val logger = LoggingUtil.getThreemaLogger("AudioProgressBarView")
 
-class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
+class AudioProgressBarView :
+    androidx.appcompat.widget.AppCompatSeekBar,
     AudioWaveformGeneratorTask.AudioWaveformGeneratorListener {
-
     private var barHeight = 20
     private var barWidth = 5
     private var spaceWidth: Int = 3
@@ -92,7 +92,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init(attrs)
     }
@@ -133,7 +133,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
             val checkedColor: Int = if (Build.VERSION.SDK_INT >= 23) {
                 barColor.getColorForState(
                     intArrayOf(android.R.attr.state_activated),
-                    barColor.defaultColor
+                    barColor.defaultColor,
                 )
             } else {
                 ConfigUtils.getColorFromAttribute(context, R.attr.colorOnPrimary)
@@ -189,7 +189,6 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
                     drawBitmap(drawBitmap, 0F, 0F, barPaintChecked)
                     restore()
                 }
-
             } else {
                 canvas.apply {
                     save()
@@ -230,11 +229,11 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
                         halfSpace + (i * (barWidth + spaceWidth)),
                         unusedHeight,
                         halfSpace + (i * (barWidth + spaceWidth)) + barWidth,
-                        barHeight - unusedHeight
+                        barHeight - unusedHeight,
                     ),
                     radius,
                     radius,
-                    barPaint
+                    barPaint,
                 )
             }
         }
@@ -247,7 +246,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
             logger.warn(
                 "Insufficient amount of calculated samples: {} < {}",
                 samplesData.size,
-                numSamples
+                numSamples,
             )
             return tmpBitmap
         }
@@ -266,11 +265,11 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
                         halfSpace + (i * (barWidth + spaceWidth)),
                         unusedHeight,
                         halfSpace + (i * (barWidth + spaceWidth)) + barWidth,
-                        barHeight - unusedHeight
+                        barHeight - unusedHeight,
                     ),
                     radius,
                     radius,
-                    barPaint
+                    barPaint,
                 )
             }
         }
@@ -312,7 +311,6 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
         super.onDetachedFromWindow()
     }
 
-
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
         val drawableState = super.onCreateDrawableState(extraSpace)
 
@@ -324,7 +322,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
 
     fun setMessageModel(
         newMessageModel: AbstractMessageModel?,
-        thumbnailCache: ThumbnailCache<Any>?
+        thumbnailCache: ThumbnailCache<Any>?,
     ) {
         if (newMessageModel == null) {
             return
@@ -366,14 +364,14 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
             waveFormTask = AudioWaveformGeneratorTask(
                 newMessageModel,
                 numPreCalculatedSamples,
-                this@AudioProgressBarView
+                this@AudioProgressBarView,
             )
 
             ThreemaApplication.voiceMessageThumbnailExecutorService.execute(
                 Thread(
                     waveFormTask,
-                    "WaveformGenerator"
-                )
+                    "WaveformGenerator",
+                ),
             )
         }
     }
@@ -390,7 +388,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
                         0,
                         ((viewHeight / 2F) - halfBarMinHeight).toInt(),
                         viewWidth,
-                        ((viewHeight / 2F) + halfBarMinHeight).toInt()
+                        ((viewHeight / 2F) + halfBarMinHeight).toInt(),
                     )
                     TransitionManager.beginDelayedTransition(parent as ViewGroup, changeBounds)
                 }

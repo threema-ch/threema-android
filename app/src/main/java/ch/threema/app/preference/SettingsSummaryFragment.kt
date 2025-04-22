@@ -33,16 +33,15 @@ import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.activities.WorkExplainActivity
-import ch.threema.app.utils.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils.*
 
 class SettingsSummaryFragment : ThreemaPreferenceFragment() {
-    private var preferencePairs: List<Pair<Preference, String>> = listOf()
+    private var preferencePairs: List<Pair<Preference, String>> = emptyList()
     private var selectedPrefView: View? = null
     private val preferenceService = requirePreferenceService()
 
     override fun initializePreferences() {
-
         val preferenceScreen = getPrefOrNull<PreferenceScreen>("pref_screen_header") ?: return
 
         var voipDisabled = false
@@ -123,8 +122,8 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             selectedPrefView?.setBackgroundColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    android.R.color.transparent
-                )
+                    android.R.color.transparent,
+                ),
             )
 
             val index = preferencePairs.map { it.first.key }.indexOf(prefKey)
@@ -138,8 +137,8 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             selectedPrefView?.setBackgroundColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.list_item_background_checked
-                )
+                    R.color.list_item_background_checked,
+                ),
             )
 
             return selectedPrefView != null
@@ -162,12 +161,12 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             intArrayOf(
                 R.string.prefs_header_contacts,
                 R.string.prefs_header_chat,
-                R.string.prefs_header_lists
-            ).reduce()
+                R.string.prefs_header_lists,
+            ).reduce(),
         ),
         Pair(
             getPref("pref_key_security"),
-            intArrayOf(R.string.prefs_title_access_protection, R.string.prefs_masterkey).reduce()
+            intArrayOf(R.string.prefs_title_access_protection, R.string.prefs_masterkey).reduce(),
         ),
         Pair(
             getPref("pref_key_appearance"),
@@ -176,24 +175,24 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
                 R.string.prefs_emoji_style,
                 R.string.prefs_language_override,
                 R.string.prefs_title_fontsize,
-                R.string.prefs_contact_list_title
-            ).reduce()
+                R.string.prefs_contact_list_title,
+            ).reduce(),
         ),
         Pair(
             getPref("pref_key_notifications"),
-            intArrayOf(R.string.prefs_voice_call_sound, R.string.prefs_vibrate).reduce()
+            intArrayOf(R.string.prefs_voice_call_sound, R.string.prefs_vibrate).reduce(),
         ),
         Pair(
             getPref("pref_key_chatdisplay"),
-            intArrayOf(R.string.prefs_header_keyboard, R.string.media).reduce()
+            intArrayOf(R.string.prefs_header_keyboard, R.string.media).reduce(),
         ),
         Pair(
             getPref("pref_key_particular_settings"),
             intArrayOf(
                 R.string.prefs_image_size,
                 R.string.prefs_auto_download_title,
-                R.string.prefs_storage_mgmt_title
-            ).reduce()
+                R.string.prefs_storage_mgmt_title,
+            ).reduce(),
         ),
         getPrefOrNull<Preference>("pref_key_calls")?.let {
             Pair(
@@ -201,15 +200,14 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
                 intArrayOf(
                     R.string.prefs_title_voip,
                     R.string.video_calls,
-                    R.string.group_calls
-                ).reduce()
+                    R.string.group_calls,
+                ).reduce(),
             )
         },
         Pair(getPref("pref_key_rate"), ""),
         Pair(getPref("pref_key_about"), ""),
-        Pair(getPref("pref_key_developers"), "")
+        Pair(getPref("pref_key_developers"), ""),
     )
 
     private fun IntArray.reduce(): String = joinToString(", ", transform = ::getString)
-
 }

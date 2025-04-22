@@ -33,9 +33,8 @@ internal class ReflectedOutgoingDeleteMessageTask(
 ) : ReflectedOutgoingContactMessageTask(
     message,
     Common.CspE2eMessageType.DELETE_MESSAGE,
-    serviceManager
+    serviceManager,
 ) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     private val deleteMessage: DeleteMessage by lazy { DeleteMessage.fromReflected(message) }
@@ -50,11 +49,11 @@ internal class ReflectedOutgoingDeleteMessageTask(
         runCommonDeleteMessageReceiveSteps(
             deleteMessage = deleteMessage,
             receiver = messageReceiver,
-            messageService = messageService
+            messageService = messageService,
         )?.let { validatedMessageModelToDelete ->
             messageService.deleteMessageContentsAndRelatedData(
                 validatedMessageModelToDelete,
-                deleteMessage.date
+                deleteMessage.date,
             )
         }
     }

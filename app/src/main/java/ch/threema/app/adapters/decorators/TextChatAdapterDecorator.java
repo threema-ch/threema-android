@@ -179,13 +179,8 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
                 holder.quoteBar.setVisibility(View.GONE);
             }
 
-            if (content.bodyText != null) {
-                holder.bodyTextView.setText(formatTextString(content.bodyText, this.filterString, helper.getMaxBubbleTextLength() + 8));
-                holder.bodyTextView.setVisibility(View.VISIBLE);
-            } else {
-                holder.bodyTextView.setText("");
-                holder.bodyTextView.setVisibility(View.GONE);
-            }
+            holder.bodyTextView.setText(formatTextString(content.bodyText, this.filterString, helper.getMaxBubbleTextLength() + 8));
+            holder.bodyTextView.setVisibility(View.VISIBLE);
 
             if (holder.quoteThumbnail != null) {
                 if (content.thumbnail != null) {

@@ -32,13 +32,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.storage.models.ContactModel;
@@ -77,6 +78,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     }
 
     @Override
+    @StringRes
     protected int getNotice() {
         return 0;
     }
@@ -106,9 +108,9 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
         }
 
         if (appendMembers) {
-            updateToolbarTitle(R.string.add_group_members, R.string.title_select_contacts);
+            updateToolbarSubtitle(R.string.title_select_contacts);
         } else {
-            updateToolbarTitle(R.string.title_addgroup, R.string.title_select_contacts);
+            updateToolbarSubtitle(R.string.title_select_contacts);
         }
 
         initList();

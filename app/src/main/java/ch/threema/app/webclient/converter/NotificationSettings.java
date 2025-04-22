@@ -24,16 +24,17 @@ package ch.threema.app.webclient.converter;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.storage.models.ConversationModel;
 
 @AnyThread
 public class NotificationSettings extends Converter {
-    // Constants
+
     private final static String SOUND = "sound";
     private final static String DND = "dnd";
     private final static String MODE = "mode";
@@ -45,8 +46,8 @@ public class NotificationSettings extends Converter {
     private final static String MODE_OFF = "off";
     private final static String MODE_UNTIL = "until";
 
-    public static MsgpackObjectBuilder convert(@NonNull ConversationModel conversation)
-        throws ConversionException {
+    @NonNull
+    public static MsgpackObjectBuilder convert(@NonNull ConversationModel conversation) throws ConversionException {
         // Prepare objects
         final MsgpackObjectBuilder data = new MsgpackObjectBuilder();
         final MsgpackObjectBuilder sound = new MsgpackObjectBuilder();
@@ -57,8 +58,6 @@ public class NotificationSettings extends Converter {
         if (serviceManager == null) {
             throw new ConversionException("Could not get service manager");
         }
-        final DeadlineListService mutedChats = serviceManager.getMutedChatsListService();
-        final DeadlineListService mentionOnlyChats = serviceManager.getMentionOnlyChatsListService();
         final RingtoneService ringtoneService = serviceManager.getRingtoneService();
 
         // Conversation UID
@@ -73,20 +72,22 @@ public class NotificationSettings extends Converter {
         }
 
         // DND settings
-        if (mutedChats.has(uid)) {
-            long deadline = mutedChats.getDeadline(uid);
-            if (deadline == 0) {
-                throw new ConversionException("Deadline is 0 even though the chat is muted");
-            } else if (deadline == DeadlineListService.DEADLINE_INDEFINITE) {
+        final @Nullable NotificationTriggerPolicyOverride notificationTriggerPolicyOverride = conversation.getReceiver().getNotificationTriggerPolicyOverrideOrNull();
+        if (notificationTriggerPolicyOverride != null) {
+            if (notificationTriggerPolicyOverride instanceof NotificationTriggerPolicyOverride.NotMuted) {
+                dnd.put(MODE, MODE_OFF);
+                dnd.put(MENTION_ONLY, false);
+            } else if (notificationTriggerPolicyOverride instanceof NotificationTriggerPolicyOverride.MutedIndefinite) {
                 dnd.put(MODE, MODE_ON);
-            } else {
+                dnd.put(MENTION_ONLY, false);
+            } else if (notificationTriggerPolicyOverride instanceof NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions) {
+                dnd.put(MODE, MODE_ON);
+                dnd.put(MENTION_ONLY, true);
+            } else if (notificationTriggerPolicyOverride instanceof NotificationTriggerPolicyOverride.MutedUntil) {
                 dnd.put(MODE, MODE_UNTIL);
-                dnd.put(UNTIL, deadline);
+                dnd.put(UNTIL, ((NotificationTriggerPolicyOverride.MutedUntil) notificationTriggerPolicyOverride).getUtcMillis());
+                dnd.put(MENTION_ONLY, false);
             }
-            dnd.put(MENTION_ONLY, false);
-        } else if (mentionOnlyChats.has(uid)) {
-            dnd.put(MODE, MODE_ON);
-            dnd.put(MENTION_ONLY, true);
         } else {
             dnd.put(MODE, MODE_OFF);
         }

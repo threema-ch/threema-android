@@ -31,7 +31,7 @@ class ExcludedSyncIdentitiesActivity : IdentityListActivity() {
 
         object : IdentityList {
             override fun getAll(): Set<String> {
-                return listService.all?.toSet() ?: setOf()
+                return listService.all?.toSet() ?: emptySet()
             }
 
             override fun addIdentity(identity: String) {

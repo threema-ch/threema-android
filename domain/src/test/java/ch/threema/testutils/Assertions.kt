@@ -21,11 +21,17 @@
 
 package ch.threema.testutils
 
-import org.junit.Assert
 import kotlin.reflect.KClass
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
-infix fun (() -> Any?).willThrow(throwableClass: KClass<out Throwable>) {
-    Assert.assertThrows(throwableClass.java) {
+/**
+ * @return The thrown exception from the receiver lambda, or [AssertionError] if the exception was actually not thrown.
+ */
+infix fun (() -> Any?).willThrow(throwableClass: KClass<out Throwable>): Throwable =
+    assertFailsWith(throwableClass) {
         try {
             this()
         } catch (throwable: Throwable) {
@@ -35,4 +41,22 @@ infix fun (() -> Any?).willThrow(throwableClass: KClass<out Throwable>) {
             throw throwable
         }
     }
+
+/**
+ *  Asserts that [regex] has **at least** one match in the message of this [Throwable].
+ *
+ *  - If the [regex] is `null` this will assert this message to be also `null`.
+ */
+infix fun Throwable.withMessage(regex: Regex?) {
+    if (regex == null) {
+        assertNull(message)
+        return
+    }
+    val messageNotNull: String = message ?: run {
+        fail("Expected message to match '$regex' but it was actually null.")
+    }
+    assertTrue(
+        actual = messageNotNull.contains(regex),
+        message = "Throwable message of value '$messageNotNull' has no match from '$regex'.",
+    )
 }

@@ -32,8 +32,8 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ballot.BallotModel
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("OutgoingPollVoteGroupMessageTask")
 
@@ -48,7 +48,6 @@ class OutgoingPollVoteGroupMessageTask(
     private val groupCreator: String,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingPollVoteGroupMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -66,7 +65,7 @@ class OutgoingPollVoteGroupMessageTask(
             logger.error(
                 "Cannot find group model for id {} with creator {}",
                 apiGroupId,
-                groupCreator
+                groupCreator,
             )
             return
         }
@@ -78,7 +77,7 @@ class OutgoingPollVoteGroupMessageTask(
             Date(),
             messageId,
             { createMessage() },
-            handle
+            handle,
         )
     }
 
@@ -96,7 +95,7 @@ class OutgoingPollVoteGroupMessageTask(
         ballotVotes.map { Pair(it.id, it.value) },
         ballotType,
         apiGroupId.toString(),
-        groupCreator
+        groupCreator,
     )
 
     @Serializable
@@ -122,7 +121,7 @@ class OutgoingPollVoteGroupMessageTask(
                 ballotType,
                 GroupId(apiGroupId),
                 groupCreator,
-                serviceManager
+                serviceManager,
             )
     }
 }

@@ -24,6 +24,8 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import org.slf4j.Logger;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.services.BlockedIdentitiesService;
@@ -59,13 +62,17 @@ import ch.threema.app.tasks.OutgoingVoipCallRingingMessageTask;
 import ch.threema.app.tasks.OutgoingVoipICECandidateMessageTask;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
@@ -83,30 +90,37 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
+import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
-    private final ContactModel contactModel;
+
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactMessageReceiver");
+
+    private final ContactModel contact;
+    private final @Nullable ch.threema.data.models.ContactModel contactModel;
+    private final @NonNull ContactModelRepository contactModelRepository;
     private final ContactService contactService;
-    @NonNull
-    private final ServiceManager serviceManager;
+    private final @NonNull ServiceManager serviceManager;
     private final DatabaseServiceNew databaseServiceNew;
     private final IdentityStore identityStore;
     private final BlockedIdentitiesService blockedIdentitiesService;
     private final @NonNull TaskManager taskManager;
     private final @NonNull MultiDeviceManager multiDeviceManager;
 
-    public ContactMessageReceiver(ContactModel contactModel,
-                                  ContactService contactService,
-                                  @NonNull ServiceManager serviceManager,
-                                  DatabaseServiceNew databaseServiceNew,
-                                  IdentityStore identityStore,
-                                  @NonNull BlockedIdentitiesService blockedIdentitiesService
+    public ContactMessageReceiver(
+        ContactModel contact,
+        ContactService contactService,
+        @NonNull ServiceManager serviceManager,
+        DatabaseServiceNew databaseServiceNew,
+        IdentityStore identityStore,
+        @NonNull BlockedIdentitiesService blockedIdentitiesService,
+        @NonNull ContactModelRepository contactModelRepository
     ) {
-        this.contactModel = contactModel;
+        this.contact = contact;
         this.contactService = contactService;
         this.serviceManager = serviceManager;
         this.databaseServiceNew = databaseServiceNew;
@@ -114,16 +128,20 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         this.blockedIdentitiesService = blockedIdentitiesService;
         this.taskManager = serviceManager.getTaskManager();
         this.multiDeviceManager = serviceManager.getMultiDeviceManager();
+        this.contactModelRepository = contactModelRepository;
+
+        contactModel = (contact != null) ? contactModelRepository.getByIdentity(contact.getIdentity()) : null;
     }
 
-    protected ContactMessageReceiver(ContactMessageReceiver contactMessageReceiver) {
+    protected ContactMessageReceiver(@NonNull ContactMessageReceiver contactMessageReceiver) {
         this(
-            contactMessageReceiver.contactModel,
+            contactMessageReceiver.contact,
             contactMessageReceiver.contactService,
             contactMessageReceiver.serviceManager,
             contactMessageReceiver.databaseServiceNew,
             contactMessageReceiver.identityStore,
-            contactMessageReceiver.blockedIdentitiesService
+            contactMessageReceiver.blockedIdentitiesService,
+            contactMessageReceiver.contactModelRepository
         );
     }
 
@@ -136,7 +154,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         m.setCreatedAt(new Date());
         m.setSaved(false);
         m.setUid(UUID.randomUUID().toString());
-        m.setIdentity(contactModel.getIdentity());
+        m.setIdentity(contact.getIdentity());
         return m;
     }
 
@@ -152,7 +170,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         m.setCreatedAt(new Date());
         m.setSaved(true);
         m.setUid(UUID.randomUUID().toString());
-        m.setIdentity(contactModel.getIdentity());
+        m.setIdentity(contact.getIdentity());
         m.setBody(statusBody);
 
         saveLocalModel(m);
@@ -172,8 +190,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         saveLocalModel(messageModel);
 
         // Mark the contact as non-hidden and unarchived
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(contactModel.getIdentity(), false);
+        contactService.setAcquaintanceLevel(contact.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        contactService.setIsArchived(contact.getIdentity(), false, TriggerSource.LOCAL);
 
         bumpLastUpdate();
 
@@ -187,8 +205,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     }
 
     public void resendTextMessage(@NonNull MessageModel messageModel) {
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(contactModel.getIdentity(), false);
+        contactService.setAcquaintanceLevel(contact.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        contactService.setIsArchived(contact.getIdentity(), false, TriggerSource.LOCAL);
 
         scheduleTask(new OutgoingTextMessageTask(
             messageModel.getId(),
@@ -205,8 +223,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         saveLocalModel(messageModel);
 
         // Mark the contact as non-hidden and unarchived
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(contactModel.getIdentity(), false);
+        contactService.setAcquaintanceLevel(contact.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        contactService.setIsArchived(contact.getIdentity(), false, TriggerSource.LOCAL);
 
         bumpLastUpdate();
 
@@ -221,8 +239,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
     public void resendLocationMessage(@NonNull MessageModel messageModel) {
         // Mark the contact as non-hidden and unarchived
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(contactModel.getIdentity(), false);
+        contactService.setAcquaintanceLevel(contact.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        contactService.setIsArchived(contact.getIdentity(), false, TriggerSource.LOCAL);
 
         // Schedule outgoing text message task
         scheduleTask(new OutgoingLocationMessageTask(
@@ -251,15 +269,15 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
         // Set file data model again explicitly to enforce that the body of the message is rewritten
         // and therefore updated.
-        messageModel.setFileDataModel(modelFileData);
+        messageModel.setFileData(modelFileData);
 
         // Create a new message id if the given message id is null
         messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
         saveLocalModel(messageModel);
 
         // Mark the contact as non-hidden and unarchived
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(contactModel.getIdentity(), false);
+        contactService.setAcquaintanceLevel(contact.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        contactService.setIsArchived(contact.getIdentity(), false, TriggerSource.LOCAL);
 
         // Note that lastUpdate lastUpdate was bumped when the file message was created
 
@@ -289,8 +307,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
         // Mark the contact as non-hidden and unarchived
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(contactModel.getIdentity(), false);
+        contactService.setAcquaintanceLevel(contact.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        contactService.setIsArchived(contact.getIdentity(), false, TriggerSource.LOCAL);
 
         bumpLastUpdate();
 
@@ -310,7 +328,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     @Override
     public void createAndSendBallotVoteMessage(
         BallotVote[] votes,
-        BallotModel ballotModel,
+        @NonNull BallotModel ballotModel,
         @NonNull TriggerSource triggerSource
     ) throws ThreemaException {
         final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
@@ -323,8 +341,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         }
 
         // Mark the contact as non-hidden and unarchived
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
-        contactService.setIsArchived(contactModel.getIdentity(), false);
+        contactService.setAcquaintanceLevel(contact.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        contactService.setIsArchived(contact.getIdentity(), false, TriggerSource.LOCAL);
 
 
         if (triggerSource == TriggerSource.LOCAL) {
@@ -337,7 +355,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 ballotId,
                 ballotModel.getCreatorIdentity(),
                 votes,
-                contactModel.getIdentity(),
+                contact.getIdentity(),
                 serviceManager
             ));
         }
@@ -350,7 +368,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
      * @throws ThreemaException if enqueuing the message fails
      */
     public void sendTypingIndicatorMessage(boolean isTyping) throws ThreemaException {
-        scheduleTask(new OutgoingTypingIndicatorMessageTask(isTyping, contactModel.getIdentity(), serviceManager));
+        scheduleTask(new OutgoingTypingIndicatorMessageTask(isTyping, contact.getIdentity(), serviceManager));
     }
 
     /**
@@ -362,7 +380,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendDeliveryReceipt(int receiptType, @NonNull MessageId[] messageIds, long time) {
         scheduleTask(
             new OutgoingContactDeliveryReceiptMessageTask(
-                receiptType, messageIds, time, contactModel.getIdentity(), serviceManager
+                receiptType, messageIds, time, contact.getIdentity(), serviceManager
             )
         );
     }
@@ -379,7 +397,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 new OutboundIncomingContactMessageUpdateReadTask(
                     messageIds,
                     timestamp,
-                    contactModel.getIdentity(),
+                    contact.getIdentity(),
                     serviceManager
                 )
             );
@@ -394,7 +412,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallOfferMessage(@NonNull VoipCallOfferData callOfferData) {
         scheduleTask(
             new OutgoingVoipCallOfferMessageTask(
-                callOfferData, contactModel.getIdentity(), serviceManager
+                callOfferData, contact.getIdentity(), serviceManager
             )
         );
     }
@@ -407,7 +425,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallAnswerMessage(@NonNull VoipCallAnswerData callAnswerData) {
         scheduleTask(
             new OutgoingVoipCallAnswerMessageTask(
-                callAnswerData, contactModel.getIdentity(), serviceManager
+                callAnswerData, contact.getIdentity(), serviceManager
             )
         );
     }
@@ -420,7 +438,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipICECandidateMessage(@NonNull VoipICECandidatesData voipICECandidatesData) {
         scheduleTask(
             new OutgoingVoipICECandidateMessageTask(
-                voipICECandidatesData, contactModel.getIdentity(), serviceManager
+                voipICECandidatesData, contact.getIdentity(), serviceManager
             )
         );
     }
@@ -433,7 +451,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallHangupMessage(@NonNull VoipCallHangupData callHangupData) {
         scheduleTask(
             new OutgoingVoipCallHangupMessageTask(
-                callHangupData, contactModel.getIdentity(), serviceManager
+                callHangupData, contact.getIdentity(), serviceManager
             )
         );
     }
@@ -446,7 +464,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallRingingMessage(@NonNull VoipCallRingingData callRingingData) {
         scheduleTask(
             new OutgoingVoipCallRingingMessageTask(
-                callRingingData, contactModel.getIdentity(), serviceManager
+                callRingingData, contact.getIdentity(), serviceManager
             )
         );
     }
@@ -454,7 +472,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendEditMessage(int messageModelId, @NonNull String newText, @NonNull Date editedAt) {
         scheduleTask(
             new OutgoingContactEditMessageTask(
-                contactModel.getIdentity(),
+                contact.getIdentity(),
                 messageModelId,
                 new MessageId(),
                 newText,
@@ -467,7 +485,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendDeleteMessage(int messageModelId, @NonNull Date deletedAt) {
         scheduleTask(
             new OutgoingContactDeleteMessageTask(
-                contactModel.getIdentity(),
+                contact.getIdentity(),
                 messageModelId,
                 new MessageId(),
                 deletedAt,
@@ -476,24 +494,73 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         );
     }
 
-    public void sendReactionMessage(AbstractMessageModel messageModel, Reaction.ActionCase actionCase, @NonNull String emojiSequence, @NonNull Date reactedAt) {
-        scheduleTask(
-            new OutgoingContactReactionMessageTask(
-                contactModel.getIdentity(),
-                messageModel.getId(),
-                new MessageId(),
-                actionCase,
-                emojiSequence,
-                reactedAt,
-                serviceManager
-            )
-        );
+    public void sendReaction(AbstractMessageModel messageModel, Reaction.ActionCase actionCase, @NonNull String emojiSequence, @NonNull Date reactedAt) {
+        if (getEmojiReactionSupport() == MessageReceiver.Reactions_NONE) {
+            sendLegacyReaction(messageModel, actionCase, emojiSequence, reactedAt);
+        } else {
+            scheduleTask(
+                new OutgoingContactReactionMessageTask(
+                    contact.getIdentity(),
+                    messageModel.getId(),
+                    new MessageId(),
+                    actionCase,
+                    emojiSequence,
+                    reactedAt,
+                    serviceManager
+                )
+            );
+        }
+    }
+
+    private void sendLegacyReaction(
+        AbstractMessageModel messageModel,
+        Reaction.ActionCase actionCase,
+        @NonNull String emojiSequence,
+        @NonNull Date reactedAt
+    ) {
+        if (actionCase == Reaction.ActionCase.WITHDRAW) {
+            // In case we withdraw the reaction we do not send a delivery receipt because
+            // withdrawing is not supported with delivery receipts.
+            logger.info("Cannot withdraw legacy reaction");
+            return;
+        }
+
+        // fallback to ack/dec
+        if (EmojiUtil.isThumbsUpEmoji(emojiSequence)) {
+            if (MessageUtil.canSendUserAcknowledge(messageModel)) {
+                try {
+                    sendDeliveryReceipt(
+                        ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK,
+                        new MessageId[] {MessageId.fromString(messageModel.getApiMessageId())},
+                        reactedAt.getTime()
+                    );
+                } catch (ThreemaException e) {
+                    logger.error("Could not sent ack message", e);
+                }
+            } else {
+                logger.error("Unable to send ack message.");
+            }
+        } else if (EmojiUtil.isThumbsDownEmoji(emojiSequence)) {
+            if (MessageUtil.canSendUserDecline(messageModel)) {
+                try {
+                    sendDeliveryReceipt(
+                        ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK,
+                        new MessageId[] {MessageId.fromString(messageModel.getApiMessageId())},
+                        reactedAt.getTime()
+                    );
+                } catch (ThreemaException e) {
+                    logger.error("Could not sent ack message", e);
+                }
+            } else {
+                logger.error("Unable to send dec message");
+            }
+        }
     }
 
     @Override
     public List<MessageModel> loadMessages(MessageService.MessageFilter filter) {
         return databaseServiceNew.getMessageModelFactory().find(
-            contactModel.getIdentity(),
+            contact.getIdentity(),
             filter);
     }
 
@@ -505,33 +572,39 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
      * @return {@code true} if there is a call with the given id within the latest calls, {@code false} otherwise
      */
     public boolean hasVoipCallStatus(long callId, int limit) {
-        return databaseServiceNew.getMessageModelFactory().hasVoipStatusForCallId(contactModel.getIdentity(), callId, limit);
+        return databaseServiceNew.getMessageModelFactory().hasVoipStatusForCallId(contact.getIdentity(), callId, limit);
     }
 
     @Override
     public long getMessagesCount() {
         return databaseServiceNew.getMessageModelFactory().countMessages(
-            contactModel.getIdentity());
+            contact.getIdentity());
     }
 
     @Override
     public long getUnreadMessagesCount() {
         return databaseServiceNew.getMessageModelFactory().countUnreadMessages(
-            contactModel.getIdentity());
+            contact.getIdentity());
     }
 
+    @NonNull
     @Override
     public List<MessageModel> getUnreadMessages() {
         return databaseServiceNew.getMessageModelFactory().getUnreadMessages(
-            contactModel.getIdentity());
+            contact.getIdentity());
     }
 
     public MessageModel getLastMessage() {
         return databaseServiceNew.getMessageModelFactory().getLastMessage(
-            contactModel.getIdentity());
+            contact.getIdentity());
     }
 
     public ContactModel getContact() {
+        return contact;
+    }
+
+    @Nullable
+    public ch.threema.data.models.ContactModel getContactModel() {
         return contactModel;
     }
 
@@ -542,50 +615,50 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
     @Override
     public String getDisplayName() {
-        return NameUtil.getDisplayNameOrNickname(contactModel, true);
+        return NameUtil.getDisplayNameOrNickname(contact, true);
     }
 
     @Override
     public String getShortName() {
-        return NameUtil.getShortName(contactModel);
+        return NameUtil.getShortName(contact);
     }
 
     @Override
     public void prepareIntent(Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, contactModel.getIdentity());
+        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, contact.getIdentity());
     }
 
     @Override
     @Nullable
     public Bitmap getNotificationAvatar() {
-        return contactService.getAvatar(contactModel, false);
+        return contactService.getAvatar(contact, false);
     }
 
     @Override
     @Nullable
     public Bitmap getAvatar() {
-        return contactService.getAvatar(contactModel, true, true);
+        return contactService.getAvatar(contact, true, true);
     }
 
     @Deprecated
     @Override
     public int getUniqueId() {
-        return contactModel != null
-            ? ContactUtil.getUniqueId(contactModel.getIdentity())
+        return contact != null
+            ? ContactUtil.getUniqueId(contact.getIdentity())
             : 0;
     }
 
     @Override
     public String getUniqueIdString() {
-        return contactModel != null
-            ? ContactUtil.getUniqueIdString(contactModel.getIdentity())
+        return contact != null
+            ? ContactUtil.getUniqueIdString(contact.getIdentity())
             : "";
     }
 
     @Override
     public boolean isMessageBelongsToMe(AbstractMessageModel message) {
         return message instanceof MessageModel
-            && message.getIdentity().equals(contactModel.getIdentity());
+            && message.getIdentity().equals(contact.getIdentity());
     }
 
     @Override
@@ -602,11 +675,11 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     @Override
     public SendingPermissionValidationResult validateSendingPermission() {
         int cannotSendResId = 0;
-        if (blockedIdentitiesService.isBlocked(contactModel.getIdentity())) {
+        if (blockedIdentitiesService.isBlocked(contact.getIdentity())) {
             cannotSendResId = R.string.blocked_cannot_send;
         } else {
-            if (contactModel.getState() != null) {
-                switch (contactModel.getState()) {
+            if (contact.getState() != null) {
+                switch (contact.getState()) {
                     case INVALID:
                         cannotSendResId = R.string.invalid_cannot_send;
                         break;
@@ -632,12 +705,12 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
     @Override
     public String[] getIdentities() {
-        return new String[]{contactModel.getIdentity()};
+        return new String[]{contact.getIdentity()};
     }
 
     @Override
     public void bumpLastUpdate() {
-        contactService.bumpLastUpdate(contactModel.getIdentity());
+        contactService.bumpLastUpdate(contact.getIdentity());
     }
 
     /**
@@ -659,7 +732,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
     @Override
     public @NonNull String toString() {
-        return "ContactMessageReceiver (identity = " + contactModel.getIdentity() + ")";
+        return "ContactMessageReceiver (identity = " + contact.getIdentity() + ")";
     }
 
     @Override
@@ -667,12 +740,12 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         if (this == o) return true;
         if (!(o instanceof ContactMessageReceiver)) return false;
         ContactMessageReceiver that = (ContactMessageReceiver) o;
-        return Objects.equals(contactModel, that.contactModel);
+        return Objects.equals(contact, that.contact);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contactModel);
+        return Objects.hash(contact);
     }
 
     private void scheduleTask(@NonNull Task<?, ActiveTaskCodec> task) {

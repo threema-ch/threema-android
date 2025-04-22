@@ -25,14 +25,18 @@ import ch.threema.base.crypto.NonceCounter
 import ch.threema.base.crypto.ThreemaKDF
 import ch.threema.domain.protocol.ServerAddressProvider
 import com.neilalexander.jnacl.NaCl
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import ove.crypto.digest.Blake2b
 import java.io.ByteArrayInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.security.SecureRandom
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.test.runTest
+import ove.crypto.digest.Blake2b
 
 internal abstract class ServerConnectionTest {
     private companion object {
@@ -72,7 +76,7 @@ internal abstract class ServerConnectionTest {
      */
     abstract fun createChatServerConnection(): ServerConnection
 
-    @Before
+    @BeforeTest
     @Throws(Exception::class)
     fun setUp() {
         testSocket = TestSocket()
@@ -81,11 +85,11 @@ internal abstract class ServerConnectionTest {
     @Test
     fun `test initial connection state is DISCONNECTED`() {
         val connection = createChatServerConnection()
-        Assert.assertEquals(ConnectionState.DISCONNECTED, connection.connectionState)
+        assertEquals(ConnectionState.DISCONNECTED, connection.connectionState)
     }
 
-    @Test(timeout = 1000L)
-    fun testChatServerConnection() {
+    @Test
+    fun testChatServerConnection() = runTest(timeout = 1.seconds) {
         prepareServerKeys(skPublicPrimary, skSecretPrimary)
 
         val connection = createChatServerConnection()
@@ -98,13 +102,13 @@ internal abstract class ServerConnectionTest {
         connection.stop()
 
         // assert expected states
-        Assert.assertEquals(1, serverAddressProvider.keyFetchCount)
-        Assert.assertEquals(0, serverAddressProvider.altKeyFetchCount)
-        Assert.assertEquals(4, connectionStates.size)
-        Assert.assertEquals(ConnectionState.CONNECTING, connectionStates[0])
-        Assert.assertEquals(ConnectionState.CONNECTED, connectionStates[1])
-        Assert.assertEquals(ConnectionState.LOGGEDIN, connectionStates[2])
-        Assert.assertEquals(ConnectionState.DISCONNECTED, connectionStates[3])
+        assertEquals(1, serverAddressProvider.keyFetchCount)
+        assertEquals(0, serverAddressProvider.altKeyFetchCount)
+        assertEquals(4, connectionStates.size)
+        assertEquals(ConnectionState.CONNECTING, connectionStates[0])
+        assertEquals(ConnectionState.CONNECTED, connectionStates[1])
+        assertEquals(ConnectionState.LOGGEDIN, connectionStates[2])
+        assertEquals(ConnectionState.DISCONNECTED, connectionStates[3])
     }
 
     @Test
@@ -121,13 +125,13 @@ internal abstract class ServerConnectionTest {
         connection.stop()
 
         // assert expected states
-        Assert.assertEquals(1, serverAddressProvider.keyFetchCount)
-        Assert.assertEquals(1, serverAddressProvider.altKeyFetchCount)
-        Assert.assertEquals(4, connectionStates.size)
-        Assert.assertEquals(ConnectionState.CONNECTING, connectionStates[0])
-        Assert.assertEquals(ConnectionState.CONNECTED, connectionStates[1])
-        Assert.assertEquals(ConnectionState.LOGGEDIN, connectionStates[2])
-        Assert.assertEquals(ConnectionState.DISCONNECTED, connectionStates[3])
+        assertEquals(1, serverAddressProvider.keyFetchCount)
+        assertEquals(1, serverAddressProvider.altKeyFetchCount)
+        assertEquals(4, connectionStates.size)
+        assertEquals(ConnectionState.CONNECTING, connectionStates[0])
+        assertEquals(ConnectionState.CONNECTED, connectionStates[1])
+        assertEquals(ConnectionState.LOGGEDIN, connectionStates[2])
+        assertEquals(ConnectionState.DISCONNECTED, connectionStates[3])
     }
 
     private fun assertHandshake() {
@@ -163,27 +167,27 @@ internal abstract class ServerConnectionTest {
         // expect `login`
         val loginBox = testSocket.read(144)
         val loginBoxDecrypted = kClientServer.decrypt(loginBox, clientNonce.nextNonce())
-        Assert.assertNotNull(loginBoxDecrypted)
+        assertNotNull(loginBoxDecrypted)
         val decryptedLoginStream = ByteArrayInputStream(loginBoxDecrypted)
 
         // read identity
         val clientIdentity = decryptedLoginStream.readNBytes(8).decodeToString()
-        Assert.assertEquals(TestIdentityStore.CLIENT_IDENTITY, clientIdentity)
+        assertEquals(TestIdentityStore.CLIENT_IDENTITY, clientIdentity)
 
         // read extension-indicator
         val extensionIndicator = decryptedLoginStream.readNBytes(30).decodeToString()
-        Assert.assertEquals("threema-clever-extension-field", extensionIndicator)
+        assertEquals("threema-clever-extension-field", extensionIndicator)
         val bb = ByteBuffer.wrap(decryptedLoginStream.readNBytes(2))
         bb.order(ByteOrder.LITTLE_ENDIAN)
         val extensionLength = bb.short.toUShort().toInt()
 
         // read repeated sck
         val repeatedSck = decryptedLoginStream.readNBytes(16)
-        Assert.assertArrayEquals(sck, repeatedSck)
+        assertContentEquals(sck, repeatedSck)
 
         // read reserved1
         val reserved1 = decryptedLoginStream.readNBytes(24)
-        Assert.assertArrayEquals(ByteArray(24), reserved1)
+        assertContentEquals(ByteArray(24), reserved1)
 
         // read vouch
         val ss1 = NaCl(skSecret, TestIdentityStore.ckPublic).precomputed
@@ -191,14 +195,14 @@ internal abstract class ServerConnectionTest {
         val vouchKey = ThreemaKDF("3ma-csp").deriveKey("v2", ss1 + ss2)
         val expectedVouch = Blake2b.Mac.newInstance(vouchKey, 32).digest(sck + tckPublic)
         val vouch = decryptedLoginStream.readNBytes(32)
-        Assert.assertArrayEquals(expectedVouch, vouch)
+        assertContentEquals(expectedVouch, vouch)
 
         // read reserved2
         val reserved2 = decryptedLoginStream.readNBytes(16)
-        Assert.assertArrayEquals(ByteArray(16), reserved2)
+        assertContentEquals(ByteArray(16), reserved2)
 
         // assert login data consumed
-        Assert.assertEquals(0, decryptedLoginStream.available())
+        assertEquals(0, decryptedLoginStream.available())
 
         return extensionLength
     }
@@ -207,7 +211,7 @@ internal abstract class ServerConnectionTest {
         // read extension box
         val extensionBox = testSocket.read(length)
         val extensionBoxDecrypted = kClientServer.decrypt(extensionBox, clientNonce.nextNonce())
-        Assert.assertNotNull(extensionBoxDecrypted)
+        assertNotNull(extensionBoxDecrypted)
     }
 
     private fun sendLoginAck() {
@@ -234,7 +238,7 @@ internal abstract class ServerConnectionTest {
         val connectionStates = mutableListOf<ConnectionState>()
         connection.addConnectionStateListener { connectionState ->
             connectionStates.add(
-                connectionState
+                connectionState,
             )
         }
         return connectionStates

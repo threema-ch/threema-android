@@ -58,7 +58,7 @@ interface NormalParticipantDescription : ParticipantDescription {
 data class SimpleNormalParticipantDescription(
     override val id: ParticipantId,
     override val identity: String,
-    override val nickname: String
+    override val nickname: String,
 ) : NormalParticipantDescription {
     override fun toString(): String {
         return "SimpleNormalParticipantDescription(id=$id)"
@@ -71,11 +71,10 @@ interface GuestParticipantDescription : ParticipantDescription {
 
 data class SimpleGuestParticipantDescription(
     override val id: ParticipantId,
-    override val name: String
+    override val name: String,
 ) : GuestParticipantDescription
 
 abstract class Participant(override val id: ParticipantId) : ParticipantDescription {
-
     open val mirrorRenderer: Boolean = false
 
     abstract val type: String
@@ -91,7 +90,7 @@ abstract class Participant(override val id: ParticipantId) : ParticipantDescript
         renderer: SurfaceViewRenderer,
         width: Int,
         height: Int,
-        fps: Int = 30
+        fps: Int = 30,
     ): DetachSinkFn
 
     @UiThread
@@ -117,9 +116,8 @@ private interface RemoteParticipant {
 
 abstract class NormalParticipant(
     id: ParticipantId,
-    val contactModel: ContactModel
+    val contactModel: ContactModel,
 ) : Participant(id), NormalParticipantDescription {
-
     override val identity: String = contactModel.identity
     override val nickname: String = contactModel.publicNickName ?: contactModel.identity
 
@@ -130,7 +128,7 @@ abstract class NormalParticipant(
 
 abstract class NormalRemoteParticipant(
     id: ParticipantId,
-    contactModel: ContactModel
+    contactModel: ContactModel,
 ) : NormalParticipant(id, contactModel), RemoteParticipant {
     override var remoteCtx: RemoteCtx? = null
 }
@@ -138,9 +136,8 @@ abstract class NormalRemoteParticipant(
 class LocalParticipant internal constructor(
     id: ParticipantId,
     contactModel: ContactModel,
-    private val localCtx: LocalCtx
+    private val localCtx: LocalCtx,
 ) : NormalParticipant(id, contactModel) {
-
     override val type = "LocalParticipant"
 
     override val mirrorRenderer: Boolean
@@ -171,7 +168,7 @@ class LocalParticipant internal constructor(
         renderer: SurfaceViewRenderer,
         width: Int,
         height: Int,
-        fps: Int
+        fps: Int,
     ): DetachSinkFn {
         logger.trace("Subscribe local camera")
         return localCtx.cameraVideoContext.renderTo(renderer)

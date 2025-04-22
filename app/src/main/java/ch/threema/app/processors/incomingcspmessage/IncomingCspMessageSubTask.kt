@@ -22,8 +22,6 @@
 package ch.threema.app.processors.incomingcspmessage
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactReactionMessageTask
-import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupReactionMessageTask
 import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallAnswerTask
 import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallHangupTask
 import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallIceCandidateTask
@@ -32,13 +30,17 @@ import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallRingingTas
 import ch.threema.app.processors.incomingcspmessage.contactcontrol.IncomingContactRequestProfilePictureTask
 import ch.threema.app.processors.incomingcspmessage.contactcontrol.IncomingDeleteProfilePictureTask
 import ch.threema.app.processors.incomingcspmessage.contactcontrol.IncomingSetProfilePictureTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactAudioMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactConversationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactDeleteMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactEditMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactFileMessageTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactImageMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactLocationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactPollSetupTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactPollVoteTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactReactionMessageTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactVideoMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupConversationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupDeleteMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupEditMessageTask
@@ -46,6 +48,7 @@ import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupFi
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupLocationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupPollSetupTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupPollVoteTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupReactionMessageTask
 import ch.threema.app.processors.incomingcspmessage.fs.IncomingEmptyTask
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupCallControlTask
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupDeleteProfilePictureTask
@@ -62,6 +65,7 @@ import ch.threema.app.processors.incomingcspmessage.statusupdates.IncomingTyping
 import ch.threema.app.tasks.ActiveComposableTask
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
+import ch.threema.domain.protocol.csp.messages.AudioMessage
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
@@ -78,10 +82,11 @@ import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
-import ch.threema.domain.protocol.csp.messages.location.LocationMessage
+import ch.threema.domain.protocol.csp.messages.ImageMessage
 import ch.threema.domain.protocol.csp.messages.ReactionMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
+import ch.threema.domain.protocol.csp.messages.VideoMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollVoteMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
@@ -92,6 +97,7 @@ import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage
@@ -117,7 +123,9 @@ abstract class IncomingCspMessageSubTask<T : AbstractMessage?>(
     final override suspend fun run(handle: ActiveTaskCodec): ReceiveStepsResult {
         // Check that the message and the trigger source is a valid combination
         if (message != null && !message.reflectIncoming() && triggerSource == TriggerSource.SYNC) {
-            throw IllegalStateException("An incoming message of type ${message.type.toHexString()} has been received as reflected that should not have been reflected")
+            throw IllegalStateException(
+                "An incoming message of type ${message.type.toHexString()} has been received as reflected that should not have been reflected",
+            )
         }
 
         // Choose the right message steps depending on the trigger source
@@ -157,13 +165,18 @@ fun getSubTaskFromMessage(
     // checked for a group control message to prevent processing it as a group conversation
     // message.
 
+    // Check if deprecated message
+    is ImageMessage -> IncomingContactImageMessageTask(message, triggerSource, serviceManager)
+    is VideoMessage -> IncomingContactVideoMessageTask(message, triggerSource, serviceManager)
+    is AudioMessage -> IncomingContactAudioMessageTask(message, triggerSource, serviceManager)
+
     // Check if message is a status update
     is TypingIndicatorMessage -> IncomingTypingIndicatorTask(message, triggerSource, serviceManager)
     is DeliveryReceiptMessage -> IncomingDeliveryReceiptTask(message, triggerSource, serviceManager)
     is GroupDeliveryReceiptMessage -> IncomingGroupDeliveryReceiptTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     // Check if message is a location message
@@ -171,7 +184,7 @@ fun getSubTaskFromMessage(
     is GroupLocationMessage -> IncomingGroupLocationMessageTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     // Check if message is a group control message
@@ -180,45 +193,45 @@ fun getSubTaskFromMessage(
     is GroupSetProfilePictureMessage -> IncomingGroupSetProfilePictureTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     is GroupDeleteProfilePictureMessage -> IncomingGroupDeleteProfilePictureTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     is GroupLeaveMessage -> IncomingGroupLeaveTask(message, triggerSource, serviceManager)
     is GroupSyncRequestMessage -> IncomingGroupSyncRequestTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     is GroupCallControlMessage -> IncomingGroupCallControlTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     // Check if message is a contact control message
     is SetProfilePictureMessage -> IncomingSetProfilePictureTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     is DeleteProfilePictureMessage -> IncomingDeleteProfilePictureTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     is ContactRequestProfilePictureMessage -> IncomingContactRequestProfilePictureTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     // Check if message is a ballot message
@@ -231,13 +244,13 @@ fun getSubTaskFromMessage(
     is GroupJoinRequestMessage -> IncomingGroupJoinRequestTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     is GroupJoinResponseMessage -> IncomingGroupJoinResponseMessage(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     // Check if message is a call message
@@ -246,7 +259,7 @@ fun getSubTaskFromMessage(
     is VoipICECandidatesMessage -> IncomingCallIceCandidateTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     is VoipCallRingingMessage -> IncomingCallRingingTask(message, triggerSource, serviceManager)
@@ -265,7 +278,7 @@ fun getSubTaskFromMessage(
     is GroupReactionMessage -> IncomingGroupReactionMessageTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     // Check if message is a file message
@@ -276,7 +289,7 @@ fun getSubTaskFromMessage(
     is AbstractGroupMessage -> IncomingGroupConversationMessageTask(
         message,
         triggerSource,
-        serviceManager
+        serviceManager,
     )
 
     // Process the empty message in its corresponding task

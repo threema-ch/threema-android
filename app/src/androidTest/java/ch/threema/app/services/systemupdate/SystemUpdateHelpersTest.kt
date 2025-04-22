@@ -21,11 +21,11 @@
 
 package ch.threema.app.services.systemupdate
 
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class SystemUpdateHelpersTest {
     private var inMemoryDatabase: SQLiteDatabase = SQLiteDatabase.create(null)

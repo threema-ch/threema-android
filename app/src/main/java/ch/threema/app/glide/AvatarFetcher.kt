@@ -37,7 +37,6 @@ import com.bumptech.glide.load.data.DataFetcher
  * This class provides the basic functionality to build default avatars. It must be overridden by specific avatar fetchers.
  */
 abstract class AvatarFetcher(protected val context: Context) : DataFetcher<Bitmap> {
-
     protected val fileService: FileService? by lazy { ThreemaApplication.getServiceManager()?.fileService }
     private val avatarSizeSmall: Int by lazy { context.resources.getDimensionPixelSize(R.dimen.avatar_size_small) }
     private val avatarSizeHiRes: Int by lazy { context.resources.getDimensionPixelSize(R.dimen.avatar_size_hires) }
@@ -55,10 +54,11 @@ abstract class AvatarFetcher(protected val context: Context) : DataFetcher<Bitma
     override fun getDataSource(): DataSource = DataSource.LOCAL
 
     protected fun getBackgroundColor(options: AvatarOptions): Int {
-        return if (options.darkerBackground)
+        return if (options.darkerBackground) {
             ContextCompat.getColor(context, R.color.material_grey_300)
-        else
+        } else {
             Color.WHITE
+        }
     }
 
     /**
@@ -68,13 +68,13 @@ abstract class AvatarFetcher(protected val context: Context) : DataFetcher<Bitma
     protected fun buildDefaultAvatarHighRes(
         drawable: VectorDrawableCompat?,
         color: Int,
-        backgroundColor: Int
+        backgroundColor: Int,
     ): Bitmap {
         return AvatarConverterUtil.buildDefaultAvatarHighRes(
             drawable,
             avatarSizeHiRes,
             color,
-            backgroundColor
+            backgroundColor,
         )
     }
 
@@ -85,5 +85,4 @@ abstract class AvatarFetcher(protected val context: Context) : DataFetcher<Bitma
     protected fun buildDefaultAvatarLowRes(drawable: VectorDrawableCompat?, color: Int): Bitmap {
         return AvatarConverterUtil.getAvatarBitmap(drawable, color, avatarSizeSmall)
     }
-
 }

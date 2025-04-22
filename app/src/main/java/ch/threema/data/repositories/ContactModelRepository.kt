@@ -33,13 +33,16 @@ import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelDataFactory
 import ch.threema.data.storage.DatabaseBackend
+import ch.threema.data.storage.DbContact
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 
 private val logger = LoggingUtil.getThreemaLogger("data.ContactModelRepository")
 
 class ContactModelRepository(
-    private val cache: ModelTypeCache<String, ContactModel>, // Note: Synchronize access
+    // Note: Synchronize access
+    private val cache: ModelTypeCache<String, ContactModel>,
     private val databaseBackend: DatabaseBackend,
     private val coreServiceManager: CoreServiceManager,
 ) {
@@ -47,13 +50,15 @@ class ContactModelRepository(
 
     init {
         // Register an "old" contact listener that updates the "new" models
-        ListenerManager.contactListeners.add(object : ContactListener {
-            override fun onModified(identity: String) {
-                synchronized(this@ContactModelRepository) {
-                    cache.get(identity)?.refreshFromDb(ContactModelRepositoryToken)
+        ListenerManager.contactListeners.add(
+            object : ContactListener {
+                override fun onModified(identity: String) {
+                    synchronized(this@ContactModelRepository) {
+                        cache.get(identity)?.refreshFromDb(ContactModelRepositoryToken)
+                    }
                 }
-            }
-        })
+            },
+        )
     }
 
     /**
@@ -76,7 +81,7 @@ class ContactModelRepository(
                         coreServiceManager.nonceFactory,
                         createContactLocally,
                         coreServiceManager.multiDeviceManager,
-                    )
+                    ),
                 ).await()
             } catch (e: TransactionScope.TransactionException) {
                 logger.error("Could not reflect the contact")
@@ -120,6 +125,20 @@ class ContactModelRepository(
     }
 
     /**
+     * Create a new group contact. Note that this does *not* reflect the changes.
+     *
+     * @throws ContactStoreException if inserting the contact in the database failed
+     * @throws UnexpectedContactException if the provided contact has [AcquaintanceLevel.DIRECT]
+     */
+    fun persistGroupContactFromRemote(contactModelData: ContactModelData) {
+        if (contactModelData.acquaintanceLevel == AcquaintanceLevel.DIRECT) {
+            throw UnexpectedContactException("A contact with acquaintance level group was expected")
+        }
+
+        createContactLocally(contactModelData)
+    }
+
+    /**
      * Create a new contact from sync.
      *
      * @throws ContactStoreException if the contact could not be stored in the database
@@ -132,7 +151,7 @@ class ContactModelRepository(
             throw ContactStoreException(e)
         }
 
-        notifyDeprecatedListenersNew(contactModelData.identity)
+        notifyDeprecatedListenersOnNew(contactModelData.identity)
 
         return getByIdentity(contactModelData.identity)
             ?: throw IllegalStateException("Contact must exist at this point")
@@ -158,7 +177,7 @@ class ContactModelRepository(
                 ?: throw IllegalStateException("Contact must exist at this point")
         }
 
-        notifyDeprecatedListenersNew(contactModelData.identity)
+        notifyDeprecatedListenersOnNew(contactModelData.identity)
 
         return contactModel
     }
@@ -167,17 +186,17 @@ class ContactModelRepository(
      * Return the contact model for the specified identity.
      */
     @Synchronized
-    fun getByIdentity(identity: String): ContactModel? {
-        return cache.getOrCreate(identity) {
-            val dbContact =
-                databaseBackend.getContactByIdentity(identity) ?: return@getOrCreate null
-            ContactModel(
-                identity = identity,
-                data = ContactModelDataFactory.toDataType(dbContact),
-                databaseBackend = databaseBackend,
-                contactModelRepository = this,
-                coreServiceManager = coreServiceManager
-            )
+    fun getByIdentity(identity: String): ContactModel? = cache.getOrCreate(identity) {
+        databaseBackend.getContactByIdentity(identity)?.toModel()
+    }
+
+    /**
+     * Returns all contact models either from database or cached.
+     */
+    @Synchronized
+    fun getAll(): List<ContactModel> = databaseBackend.getAllContacts().mapNotNull { dbContact ->
+        cache.getOrCreate(dbContact.identity) {
+            dbContact.toModel()
         }
     }
 
@@ -185,16 +204,25 @@ class ContactModelRepository(
     fun existsByIdentity(identity: String): Boolean =
         (cache.get(identity) ?: databaseBackend.getContactByIdentity(identity)) != null
 
-    private fun notifyDeprecatedListenersNew(identity: String) {
+    private fun notifyDeprecatedListenersOnNew(identity: String) {
         ListenerManager.contactListeners.handle { it.onNew(identity) }
     }
+
+    private fun DbContact.toModel(): ContactModel = ContactModel(
+        identity = this.identity,
+        data = ContactModelDataFactory.toDataType(this),
+        databaseBackend = databaseBackend,
+        contactModelRepository = this@ContactModelRepository,
+        coreServiceManager = coreServiceManager,
+    )
 }
 
 /**
  * This exception is thrown if the contact could not be added. This is either due to a failure
- * reflecting ([ContactReflectException]) or storing ([ContactStoreException]) the contact.
+ * reflecting ([ContactReflectException]), storing ([ContactStoreException]), or validating
+ * ([UnexpectedContactException]) the contact.
  */
-sealed class ContactCreateException(msg: String, e: Exception) : ThreemaException(msg, e)
+sealed class ContactCreateException(msg: String, e: Exception? = null) : ThreemaException(msg, e)
 
 /**
  * This exception is thrown if the contact could not be added because reflecting it failed.
@@ -207,4 +235,9 @@ class ContactReflectException(e: TransactionScope.TransactionException) :
  * the same identity already exists.
  */
 class ContactStoreException(e: SQLiteException) :
-    ContactCreateException("Failed to create the contact", e)
+    ContactCreateException("Failed to store the contact", e)
+
+/**
+ * This exception is thrown if an unexpected contact should have been added.
+ */
+class UnexpectedContactException(msg: String) : ContactCreateException(msg)

@@ -44,6 +44,7 @@ import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.exceptions.FileSystemNotPresentException
 import ch.threema.app.listeners.SynchronizeContactsListener
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.routines.SynchronizeContactsRoutine
 import ch.threema.app.services.SynchronizeContactsService
 import ch.threema.app.utils.*
@@ -55,7 +56,8 @@ import com.google.android.material.snackbar.Snackbar
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsPrivacyFragment")
 
-class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
+class SettingsPrivacyFragment :
+    ThreemaPreferenceFragment(),
     GenericAlertDialog.DialogClickListener {
     private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
     private val preferenceService by lazy { serviceManager.preferenceService }
@@ -78,7 +80,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
                     updateView()
                     GenericProgressDialog.newInstance(
                         R.string.wizard1_sync_contacts,
-                        R.string.please_wait
+                        R.string.please_wait,
                     ).show(parentFragmentManager, DIALOG_TAG_SYNC_CONTACTS)
                 }
             }
@@ -90,7 +92,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
                         DialogUtil.dismissDialog(
                             parentFragmentManager,
                             DIALOG_TAG_SYNC_CONTACTS,
-                            true
+                            true,
                         )
                     }
                 }
@@ -103,7 +105,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
                         DialogUtil.dismissDialog(
                             parentFragmentManager,
                             DIALOG_TAG_SYNC_CONTACTS,
-                            true
+                            true,
                         )
                     }
                 }
@@ -147,7 +149,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         ListenerManager.synchronizeContactsListeners.add(synchronizeContactsListener)
         return super.onCreateView(inflater, container, savedInstanceState)
@@ -176,8 +178,8 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
     }
 
     private fun updateView() {
-        if (AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync)) == null && !SynchronizeContactsUtil.isRestrictedProfile(
-                activity
+        if (!AppRestrictionUtil.hasBooleanRestriction(getString(R.string.restriction__contact_sync)) && !SynchronizeContactsUtil.isRestrictedProfile(
+                activity,
             )
         ) {
             contactSyncPreference.apply {
@@ -199,22 +201,17 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
             contactSyncPreference.isEnabled = false
             contactSyncPreference.isSelectable = false
         } else {
-            contactSyncPreference.onPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
-                    val newCheckedValue = newValue == true
-                    if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
-                        preferenceService.emailSyncHashCode = 0
-                        preferenceService.phoneNumberSyncHashCode = 0
-                        preferenceService.timeOfLastContactSync = 0L
+            contactSyncPreference.onChange<Boolean> { enabled ->
+                preferenceService.emailSyncHashCode = 0
+                preferenceService.phoneNumberSyncHashCode = 0
+                preferenceService.timeOfLastContactSync = 0L
 
-                        if (newCheckedValue) {
-                            enableSync()
-                        } else {
-                            disableSync()
-                        }
-                    }
-                    true
+                if (enabled) {
+                    enableSync()
+                } else {
+                    disableSync()
                 }
+            }
         }
     }
 
@@ -244,50 +241,40 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
     }
 
     private fun initExcludedSyncIdentitiesPref() {
-        getPref<Preference>("pref_excluded_sync_identities").setOnPreferenceClickListener {
+        getPref<Preference>("pref_excluded_sync_identities").onClick {
             startActivity(Intent(activity, ExcludedSyncIdentitiesActivity::class.java))
-            false
         }
     }
 
     private fun initBlockedContactsPref() {
-        getPref<Preference>("pref_blocked_contacts").setOnPreferenceClickListener {
+        getPref<Preference>("pref_blocked_contacts").onClick {
             startActivity(Intent(activity, BlockedIdentitiesActivity::class.java))
-            false
         }
     }
 
     private fun initResetReceiptsPref() {
-        getPref<Preference>("pref_reset_receipts").onPreferenceClickListener =
-            Preference.OnPreferenceClickListener {
-                val dialog = GenericAlertDialog.newInstance(
-                    R.string.prefs_title_reset_receipts,
-                    getString(R.string.prefs_sum_reset_receipts) + "?",
-                    R.string.yes,
-                    R.string.no
-                )
-                dialog.targetFragment = this@SettingsPrivacyFragment
-                dialog.show(parentFragmentManager, DIALOG_TAG_RESET_RECEIPTS)
-                false
-            }
+        getPref<Preference>("pref_reset_receipts").onClick {
+            val dialog = GenericAlertDialog.newInstance(
+                R.string.prefs_title_reset_receipts,
+                // TODO(ANDR-3686)
+                getString(R.string.prefs_sum_reset_receipts) + "?",
+                R.string.yes,
+                R.string.no,
+            )
+            dialog.targetFragment = this@SettingsPrivacyFragment
+            dialog.show(parentFragmentManager, DIALOG_TAG_RESET_RECEIPTS)
+        }
     }
 
     private fun initDirectSharePref() {
-        getPrefOrNull<Preference>(resources.getString(R.string.preferences__direct_share))?.apply {
-            onPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
-                    val newCheckedValue = newValue == true
-                    if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
-                        if (newCheckedValue) {
-                            ThreemaApplication.scheduleShareTargetShortcutUpdate()
-                        } else {
-                            WorkManager.getInstance(context)
-                                .cancelUniqueWork(ThreemaApplication.WORKER_SHARE_TARGET_UPDATE)
-                            ShortcutUtil.deleteAllShareTargetShortcuts()
-                        }
-                    }
-                    true
-                }
+        getPrefOrNull<TwoStatePreference>(R.string.preferences__direct_share)?.onChange<Boolean> { enabled ->
+            if (enabled) {
+                ThreemaApplication.scheduleShareTargetShortcutUpdate()
+            } else {
+                WorkManager.getInstance(requireContext())
+                    .cancelUniqueWork(ThreemaApplication.WORKER_SHARE_TARGET_UPDATE)
+                ShortcutUtil.deleteAllShareTargetShortcuts()
+            }
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -303,7 +290,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String?>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         when (requestCode) {
             PERMISSION_REQUEST_CONTACTS -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -314,7 +301,8 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
                     context,
                     fragmentView,
                     R.string.permission_contacts_sync_required,
-                    object : BaseCallback<Snackbar?>() {})
+                    object : BaseCallback<Snackbar?>() {},
+                )
             } else {
                 disableSync()
             }
@@ -322,7 +310,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
     }
 
     private fun launchContactsSync() {
-        //start a Sync
+        // start a Sync
         synchronizeContactsService?.instantiateSynchronizationAndRun()
     }
 
@@ -332,7 +320,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
                 if (enableSync() && ConfigUtils.requestContactPermissions(
                         requireActivity(),
                         this@SettingsPrivacyFragment,
-                        PERMISSION_REQUEST_CONTACTS
+                        PERMISSION_REQUEST_CONTACTS,
                     )
                 ) {
                     launchContactsSync()
@@ -355,7 +343,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
                         DialogUtil.dismissDialog(
                             parentFragmentManager,
                             DIALOG_TAG_DISABLE_SYNC,
-                            true
+                            true,
                         )
                         contactSyncPreference.isChecked = false
                     }
@@ -372,7 +360,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
                     Toast.makeText(
                         context,
                         R.string.reset_successful,
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_SHORT,
                     ).show()
                 }
             }, "ResetReceiptSettings").start()
@@ -380,29 +368,20 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
     }
 
     private fun subscribeToMdRelevantSettings() {
-        getPref<CheckBoxPreference>(R.string.preferences__block_unknown)
-            .setOnPreferenceChangeListener { _, newValue ->
-                // Note that it is necessary that the preference is already persisted before it is
-                // reflected.
-                preferenceService.setBlockUnknown(newValue as Boolean, TriggerSource.LOCAL)
-                true
-            }
+        getPref<CheckBoxPreference>(R.string.preferences__block_unknown).onChange<Boolean> { enabled ->
+            // Note that it is necessary that the preference is already persisted before it is reflected.
+            preferenceService.setBlockUnknown(enabled, TriggerSource.LOCAL)
+        }
 
-        getPref<CheckBoxPreference>(R.string.preferences__read_receipts)
-            .setOnPreferenceChangeListener { _, newValue ->
-                // Note that it is necessary that the preference is already persisted before it is
-                // reflected.
-                preferenceService.setReadReceipts(newValue as Boolean, TriggerSource.LOCAL)
-                true
-            }
+        getPref<CheckBoxPreference>(R.string.preferences__read_receipts).onChange<Boolean> { enabled ->
+            // Note that it is necessary that the preference is already persisted before it is reflected.
+            preferenceService.setReadReceipts(enabled, TriggerSource.LOCAL)
+        }
 
-        getPref<CheckBoxPreference>(R.string.preferences__typing_indicator)
-            .setOnPreferenceChangeListener { _, newValue ->
-                // Note that it is necessary that the preference is already persisted before it is
-                // reflected.
-                preferenceService.setTypingIndicator(newValue as Boolean, TriggerSource.LOCAL)
-                true
-            }
+        getPref<CheckBoxPreference>(R.string.preferences__typing_indicator).onChange<Boolean> { enabled ->
+            // Note that it is necessary that the preference is already persisted before it is reflected.
+            preferenceService.setTypingIndicator(enabled, TriggerSource.LOCAL)
+        }
     }
 
     companion object {

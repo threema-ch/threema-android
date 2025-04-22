@@ -30,21 +30,21 @@ import ch.threema.base.crypto.NonceStore
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.toHexString
 import ch.threema.domain.stores.IdentityStoreInterface
-import net.zetetic.database.sqlcipher.SQLiteConnection
-import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import net.zetetic.database.sqlcipher.SQLiteConnection
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 private val logger = LoggingUtil.getThreemaLogger("DatabaseNonceStore")
 
 class DatabaseNonceStore(
     context: Context,
     private val identityStore: IdentityStoreInterface,
-    databaseName: String
+    databaseName: String,
 ) : NonceStore, SQLiteOpenHelper(
     context,
     databaseName,
@@ -60,14 +60,14 @@ class DatabaseNonceStore(
 
         override fun postKey(connection: SQLiteConnection?) {
             // turn off memory wiping for now due to https://github.com/sqlcipher/android-database-sqlcipher/issues/411
-            connection!!.execute("PRAGMA cipher_memory_security = OFF;", arrayOf(), null)
+            connection!!.execute("PRAGMA cipher_memory_security = OFF;", emptyArray(), null)
         }
     },
-    false
+    false,
 ) {
     constructor(
         context: Context,
-        identityStore: IdentityStoreInterface
+        identityStore: IdentityStoreInterface,
     ) : this(context, identityStore, DATABASE_NAME_V4)
 
     companion object {
@@ -87,12 +87,12 @@ class DatabaseNonceStore(
     override fun onCreate(db: SQLiteDatabase?) {
         db!!.execSQL(
             "CREATE TABLE `$TABLE_NAME_CSP` (" +
-                "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);"
+                "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);",
         )
 
         db.execSQL(
             "CREATE TABLE `$TABLE_NAME_D2D` (" +
-                "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);"
+                "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);",
         )
     }
 
@@ -116,7 +116,7 @@ class DatabaseNonceStore(
         return readableDatabase.rawQuery(
             "SELECT COUNT(*) FROM `$tableName` WHERE nonce=? OR nonce=?;",
             nonce.bytes,
-            nonce.hashNonce().bytes
+            nonce.hashNonce().bytes,
         ).use {
             if (it.moveToFirst()) {
                 it.getInt(0) > 0
@@ -158,14 +158,14 @@ class DatabaseNonceStore(
         scope: NonceScope,
         chunkSize: Int,
         offset: Int,
-        nonces: MutableList<HashedNonce>
+        nonces: MutableList<HashedNonce>,
     ) {
         val tableName = scope.getTableName()
         readableDatabase
             .rawQuery(
                 "SELECT `$COLUMN_NONCE` FROM `$tableName` LIMIT ? OFFSET ?",
                 chunkSize,
-                offset
+                offset,
             )
             .use {
                 while (it.moveToNext()) {
@@ -176,7 +176,7 @@ class DatabaseNonceStore(
 
     private fun createInsertNonce(
         scope: NonceScope,
-        database: SQLiteDatabase
+        database: SQLiteDatabase,
     ): (nonce: HashedNonce) -> Boolean {
         val tableName = scope.getTableName()
         val stmt = database.compileStatement("INSERT INTO $tableName VALUES (?)")

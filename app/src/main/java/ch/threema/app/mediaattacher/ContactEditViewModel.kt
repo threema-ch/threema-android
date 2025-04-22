@@ -36,12 +36,12 @@ import ezvcard.VCard
 import ezvcard.property.FormattedName
 import ezvcard.property.StructuredName
 import ezvcard.property.VCardProperty
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val logger = LoggingUtil.getThreemaLogger("ContactEditViewModel")
 
@@ -49,7 +49,6 @@ private val logger = LoggingUtil.getThreemaLogger("ContactEditViewModel")
  * Contains the data needed in the EditSendContactActivity.
  */
 class ContactEditViewModel : ViewModel() {
-
     /* The currently shown formatted name in the edit texts */
     private val formattedName: MutableLiveData<FormattedName> = MutableLiveData()
 
@@ -93,7 +92,7 @@ class ContactEditViewModel : ViewModel() {
     fun initializeContact(
         contactUri: Uri,
         contentResolver: ContentResolver,
-        extractor: VCardExtractor
+        extractor: VCardExtractor,
     ) {
         if (properties.value != null) {
             return
@@ -108,7 +107,7 @@ class ContactEditViewModel : ViewModel() {
 
             if (createFormattedName(
                     vCard,
-                    extractor
+                    extractor,
                 ) == "" && vCard.formattedName?.value ?: "" != ""
             ) {
                 formattedName.postValue(vCard.formattedName)
@@ -133,9 +132,9 @@ class ContactEditViewModel : ViewModel() {
                     FormattedName(
                         createFormattedName(
                             vCard,
-                            VCardExtractor(DateFormat.getDateFormat(context), context.resources)
-                        )
-                    )
+                            VCardExtractor(DateFormat.getDateFormat(context), context.resources),
+                        ),
+                    ),
                 )
             } else if (formattedName.value != null) {
                 vCard.setProperty(formattedName.value)
@@ -171,5 +170,4 @@ class ContactEditViewModel : ViewModel() {
         }
         return ""
     }
-
 }

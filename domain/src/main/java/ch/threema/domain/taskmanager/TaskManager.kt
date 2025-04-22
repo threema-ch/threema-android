@@ -22,7 +22,7 @@
 package ch.threema.domain.taskmanager
 
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.domain.protocol.connection.PayloadProcessingException
+import ch.threema.domain.protocol.connection.ConnectionLock
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
@@ -41,7 +41,6 @@ private val logger = LoggingUtil.getThreemaLogger("TaskManager")
  * This is the public task manager interface. It can be used by the client to schedule new tasks.
  */
 interface TaskManager {
-
     /**
      * Schedule a new task asynchronously. The task is executed when all prior tasks have finished
      * and when a connection to the server is available. If the task is not persisted by the
@@ -74,8 +73,10 @@ internal interface InternalTaskManager {
     /**
      * Process an inbound message. Depending on the message type, the message is processed
      * immediately or it is scheduled to run in the task manager context.
+     *
+     * IMPORTANT: The `lock` MUST be released when the message has been processed.
      */
-    fun processInboundMessage(message: InboundMessage)
+    fun processInboundMessage(message: InboundMessage, lock: ConnectionLock)
 
     /**
      * Start the task runner with the given layer 5 codec.
@@ -161,57 +162,73 @@ internal class TaskManagerImpl(
         }
     }
 
-    override fun processInboundMessage(message: InboundMessage) {
+    override fun processInboundMessage(message: InboundMessage, lock: ConnectionLock) {
         when (message) {
-            is CspMessage -> processInboundCspMessage(message)
-            is InboundD2mMessage -> processInboundD2mMessage(message)
+            is CspMessage -> processInboundCspMessage(message, lock)
+            is InboundD2mMessage -> processInboundD2mMessage(message, lock)
         }
     }
 
-    private fun processInboundD2mMessage(message: InboundD2mMessage) {
+    private fun processInboundD2mMessage(message: InboundD2mMessage, lock: ConnectionLock) {
         logger.debug(
             "Processing inbound d2m message with payload type `{}`",
-            message.payloadType.toHex()
+            message.payloadType.toHex(),
         )
-        schedule(message)
+        schedule(message, lock)
     }
 
-    private fun processInboundCspMessage(message: CspMessage) {
+    private fun processInboundCspMessage(message: CspMessage, lock: ConnectionLock) {
         logger.debug(
             "Processing inbound csp message with payload type `{}`",
-            message.payloadType.toHex()
+            message.payloadType.toHex(),
         )
 
+        // IMPORTANT: Make sure to release the `lock` in all match arms (directly or indirectly)
         when (message.payloadType.toInt()) {
-            ProtocolDefines.PLTYPE_ERROR -> incomingMessageProcessor.get {
-                logger.error("Got inbound server error before task manager has been started")
-            }.processIncomingServerError(
-                message.toServerErrorData()
-            )
+            ProtocolDefines.PLTYPE_ERROR -> {
+                incomingMessageProcessor.get {
+                    logger.error("Got inbound server error before task manager has been started")
+                }.processIncomingServerError(
+                    message.toServerErrorData(),
+                )
+                lock.release()
+            }
 
-            ProtocolDefines.PLTYPE_ALERT -> incomingMessageProcessor.get {
-                logger.error("Got inbound server alert before task manager has been started")
-            }.processIncomingServerAlert(
-                message.toServerAlertData()
-            )
+            ProtocolDefines.PLTYPE_ALERT -> {
+                incomingMessageProcessor.get {
+                    logger.error("Got inbound server alert before task manager has been started")
+                }.processIncomingServerAlert(
+                    message.toServerAlertData(),
+                )
+                lock.release()
+            }
 
-            ProtocolDefines.PLTYPE_OUTGOING_MESSAGE_ACK -> schedule(message)
-            ProtocolDefines.PLTYPE_INCOMING_MESSAGE -> schedule(message)
-            ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE -> notifyQueueSendComplete()
-            ProtocolDefines.PLTYPE_DEVICE_COOKIE_CHANGE_INDICATION -> processDeviceCookieChangeIndication()
-            else -> throw PayloadProcessingException("Unknown payload type ${message.payloadType}")
+            ProtocolDefines.PLTYPE_OUTGOING_MESSAGE_ACK -> schedule(message, lock)
+            ProtocolDefines.PLTYPE_INCOMING_MESSAGE -> schedule(message, lock)
+            ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE -> {
+                notifyQueueSendComplete()
+                lock.release()
+            }
+            ProtocolDefines.PLTYPE_DEVICE_COOKIE_CHANGE_INDICATION -> {
+                processDeviceCookieChangeIndication()
+                lock.release()
+            }
+            else -> {
+                logger.warn("Ignoring unknown payload with type ${message.payloadType}")
+                lock.release()
+            }
         }
     }
 
-    private fun schedule(inboundMessage: InboundMessage) {
+    private fun schedule(inboundMessage: InboundMessage, lock: ConnectionLock) {
         logger.info(
             "Scheduling inbound message with payload type {}",
-            inboundMessage.payloadType.toHex()
+            inboundMessage.payloadType.toHex(),
         )
 
         CoroutineScope(dispatchers.scheduleDispatcher.coroutineContext).launch {
             // Enqueue the message
-            taskQueue.enqueueInboundMessage(inboundMessage)
+            taskQueue.enqueueInboundMessage(inboundMessage, lock)
         }
     }
 
@@ -240,8 +257,8 @@ internal class TaskManagerImpl(
         taskRunner.value.sendImmediately(
             CspMessage(
                 ProtocolDefines.PLTYPE_CLEAR_DEVICE_COOKIE_CHANGE_INDICATION.toUByte(),
-                byteArrayOf()
-            )
+                byteArrayOf(),
+            ),
         )
     }
 

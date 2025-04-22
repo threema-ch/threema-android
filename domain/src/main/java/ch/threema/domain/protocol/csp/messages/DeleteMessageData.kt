@@ -27,16 +27,15 @@ import com.google.protobuf.InvalidProtocolBufferException
 import java.util.Objects
 
 class DeleteMessageData(
-    val messageId: Long
+    val messageId: Long,
 ) : ProtobufDataInterface<DeleteMessage> {
-
     companion object {
         @JvmStatic
         fun fromProtobuf(rawProtobufMessage: ByteArray): DeleteMessageData {
             try {
                 val protobufMessage = DeleteMessage.parseFrom(rawProtobufMessage)
                 return DeleteMessageData(
-                    protobufMessage.messageId
+                    protobufMessage.messageId,
                 )
             } catch (e: InvalidProtocolBufferException) {
                 throw BadMessageException("Invalid DeleteMessage protobuf data")

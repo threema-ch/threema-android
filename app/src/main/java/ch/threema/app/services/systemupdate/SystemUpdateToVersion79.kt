@@ -25,7 +25,7 @@ import ch.threema.app.services.UpdateSystemService
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion79(
-    private val sqLiteDatabase: SQLiteDatabase
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : UpdateSystemService.SystemUpdate {
     companion object {
         const val VERSION = 79
@@ -44,13 +44,13 @@ internal class SystemUpdateToVersion79(
                 "`sfuBaseUrl` TEXT NOT NULL, " +
                 "`gck` TEXT NOT NULL, " +
                 "`protocolVersion` INTEGER NOT NULL, " +
-                "`startedAt` BIGINT NOT NULL)"
+                "`startedAt` BIGINT NOT NULL)",
         )
 
         sqLiteDatabase.execSQL(
             "INSERT INTO `group_call` " +
                 "SELECT callId, groupId, sfuBaseUrl, gck, protocolVersion, CURRENT_TIMESTAMP as startedAt " +
-                "FROM `$tmpTableName`"
+                "FROM `$tmpTableName`",
         )
 
         sqLiteDatabase.execSQL("DROP TABLE `$tmpTableName`")

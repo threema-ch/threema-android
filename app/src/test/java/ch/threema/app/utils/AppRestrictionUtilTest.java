@@ -37,6 +37,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 @RunWith(PowerMockRunner.class)

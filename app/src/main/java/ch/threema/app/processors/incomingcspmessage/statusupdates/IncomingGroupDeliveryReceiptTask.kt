@@ -27,12 +27,12 @@ import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.app.utils.MessageUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageState
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupDeliveryReceiptTask")
@@ -48,13 +48,13 @@ class IncomingGroupDeliveryReceiptTask(
         executeMessageSteps(
             runCommonGroupReceiveSteps = {
                 runCommonGroupReceiveSteps(message, handle, serviceManager)
-            }
+            },
         )
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = executeMessageSteps()
 
     private suspend fun executeMessageSteps(
-        runCommonGroupReceiveSteps: (suspend () -> GroupModel?)? = null
+        runCommonGroupReceiveSteps: (suspend () -> GroupModel?)? = null,
     ): ReceiveStepsResult {
         logger.info("Processing message {}: incoming group delivery receipt", message.messageId)
 
@@ -63,7 +63,7 @@ class IncomingGroupDeliveryReceiptTask(
             logger.warn(
                 "Message {} error: unknown or unsupported delivery receipt type: {}",
                 message.messageId,
-                message.receiptType
+                message.receiptType,
             )
             return ReceiveStepsResult.DISCARD
         }
@@ -78,17 +78,17 @@ class IncomingGroupDeliveryReceiptTask(
                 "Processing message {}: group delivery receipt for {} (state = {})",
                 message.messageId,
                 receiptMessageId,
-                messageState
+                messageState,
             )
             val groupMessageModel: GroupMessageModel? = messageService.getGroupMessageModel(
                 receiptMessageId,
                 message.groupCreator,
-                message.apiGroupId
+                message.apiGroupId,
             )
             if (groupMessageModel == null) {
                 logger.warn(
                     "Group message model ({}) for incoming group delivery receipt is null",
-                    receiptMessageId
+                    receiptMessageId,
                 )
                 continue
             }
@@ -96,7 +96,7 @@ class IncomingGroupDeliveryReceiptTask(
                 groupMessageModel,
                 messageState,
                 message.fromIdentity,
-                message.date
+                message.date,
             )
         }
 

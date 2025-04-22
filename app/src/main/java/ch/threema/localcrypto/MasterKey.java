@@ -38,7 +38,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -482,7 +481,7 @@ public class MasterKey {
 
                 /* verify now */
                 byte[] myVerification = calcVerification(masterKey);
-                if (!Arrays.equals(myVerification, verification))
+                if (!MessageDigest.isEqual(myVerification, verification))
                     throw new IOException("Corrupt key");
             }
         }

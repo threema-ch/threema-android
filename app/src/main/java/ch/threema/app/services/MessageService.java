@@ -233,8 +233,9 @@ public interface MessageService {
      * @param senderIdentity Identity of the sender of this message
      * @param actionCase     The action to take
      * @param emojiSequence  The emoji for the reaction
+     * @return True if the reaction message was saved successfully
      */
-    void saveEmojiReactionMessage(@NonNull AbstractMessageModel targetMessage, @NonNull String senderIdentity, Reaction.ActionCase actionCase, @NonNull String emojiSequence);
+    boolean saveEmojiReactionMessage(@NonNull AbstractMessageModel targetMessage, @NonNull String senderIdentity, @Nullable Reaction.ActionCase actionCase, @NonNull String emojiSequence);
 
     /**
      * Clear the MessageState of the supplied message if the current state is either USERACK or USERDEC
@@ -306,8 +307,6 @@ public interface MessageService {
         @NonNull TriggerSource triggerSource
     ) throws MessageTooLongException;
 
-    boolean sendGroupDeliveryReceipt(@NonNull Set<String> identities, GroupMessageModel messageModel, int receiptType);
-
     /**
      * Update message state of an outgoing message. Note that the state is only changed if it is a
      * legal transition. E.g. a message's state won't be changed from read to delivered. See
@@ -368,10 +367,11 @@ public interface MessageService {
      * vote messages.
      *
      * @param message the received contact message
+     * @param triggerSource the trigger source
      * @return true if processing the message was successful, false if the message should be discarded
      * @throws Exception if processing the message failed
      */
-    boolean processIncomingContactMessage(AbstractMessage message) throws Exception;
+    boolean processIncomingContactMessage(AbstractMessage message, @NonNull TriggerSource triggerSource) throws Exception;
 
     /**
      * Process an incoming group message. Note that this method must not be used for group control
@@ -379,10 +379,14 @@ public interface MessageService {
      * method.
      *
      * @param message the received group message
+     * @param triggerSource the trigger source of the incoming message
      * @return true if processing the message was successful, false if the message should be discarded
      * @throws Exception if processing the message failed
      */
-    boolean processIncomingGroupMessage(AbstractGroupMessage message) throws Exception;
+    boolean processIncomingGroupMessage(
+        @NonNull AbstractGroupMessage message,
+        @NonNull TriggerSource triggerSource
+    ) throws Exception;
 
     @WorkerThread
     List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter, boolean appendUnreadMessage);

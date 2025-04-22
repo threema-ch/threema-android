@@ -21,8 +21,9 @@
 
 package ch.threema.base.utils
 
-import org.junit.Assert.*
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 class Base64UrlSafeTest {
     // encodes to
@@ -40,11 +41,11 @@ class Base64UrlSafeTest {
 
     @Test
     fun testDecode() {
-        assertArrayEquals(decoded, Base64UrlSafe.decode(encoded))
+        assertContentEquals(decoded, Base64UrlSafe.decode(encoded))
     }
 
     @Test
     fun testDecodePadded() {
-        assertArrayEquals(decoded, Base64UrlSafe.decode("$encoded=="))
+        assertContentEquals(decoded, Base64UrlSafe.decode("$encoded=="))
     }
 }

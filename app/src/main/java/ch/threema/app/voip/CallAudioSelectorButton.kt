@@ -22,10 +22,10 @@
 package ch.threema.app.voip
 
 import android.content.Context
-import androidx.appcompat.widget.AppCompatImageView
 import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
 import android.view.View
+import androidx.appcompat.widget.AppCompatImageView
 import ch.threema.app.R
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.RuntimeUtil
@@ -34,7 +34,7 @@ import ch.threema.base.utils.LoggingUtil
 private val logger = LoggingUtil.getThreemaLogger("CallAudioSelectorButton")
 
 class CallAudioSelectorButton : AppCompatImageView, View.OnClickListener {
-    var audioDevices: Set<AudioDevice> = setOf()
+    var audioDevices: Set<AudioDevice> = emptySet()
         set(value) {
             logger.trace("Set audio devices: {}", value)
             if (field != value) {
@@ -66,7 +66,7 @@ class CallAudioSelectorButton : AppCompatImageView, View.OnClickListener {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context!!,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init()
     }

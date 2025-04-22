@@ -149,58 +149,45 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         findPreference(string) ?: preferenceNotFound(string)
 
     protected fun requirePreferenceService(): PreferenceService {
-        ThreemaApplication.getServiceManager()?.preferenceService?.let {
-            return it
+        return checkNotNull(ThreemaApplication.getServiceManager()?.preferenceService) {
+            "Could not get preference service"
         }
-        logger.error("Could not get preference service")
-        throw IllegalStateException("Could not get preference service")
     }
 
     protected fun requireLicenceService(): LicenseService<*> {
-        ThreemaApplication.getServiceManager()?.licenseService?.let {
-            return it
+        return checkNotNull(ThreemaApplication.getServiceManager()?.licenseService) {
+            "Could not get license service"
         }
-        logger.error("Could not get license service")
-        throw IllegalStateException("Could not get license service")
     }
 
     protected fun requireWallpaperService(): WallpaperService {
-        ThreemaApplication.getServiceManager()?.wallpaperService?.let {
-            return it
+        return checkNotNull(ThreemaApplication.getServiceManager()?.wallpaperService) {
+            "Could not get wallpaper service"
         }
-        logger.error("Could not get wallpaper service")
-        throw IllegalStateException("Could not get wallpaper service")
     }
 
     protected fun requireSynchronizeContactsService(): SynchronizeContactsService {
-        ThreemaApplication.getServiceManager()?.synchronizeContactsService?.let {
-            return it
+        return checkNotNull(ThreemaApplication.getServiceManager()?.synchronizeContactsService) {
+            "Could not get synchronize contacts service"
         }
-        logger.error("Could not get synchronize contacts service")
-        throw IllegalStateException("Could not get synchronize contacts service")
     }
 
     protected fun requireContactService(): ContactService {
-        ThreemaApplication.getServiceManager()?.contactService?.let {
-            return it
+        return checkNotNull(ThreemaApplication.getServiceManager()?.contactService) {
+            "Could not get contact service"
         }
-        logger.error("Could not get contact service")
-        throw IllegalStateException("Could not get contact service")
     }
 
-    protected fun requireHiddenChatListService(): DeadlineListService {
-        ThreemaApplication.getServiceManager()?.hiddenChatsListService?.let {
-            return it
+    protected fun requireConversationCategoryService(): ConversationCategoryService {
+        return checkNotNull(ThreemaApplication.getServiceManager()?.conversationCategoryService) {
+            "Could not get conversation category service"
         }
-        logger.error("Could not get hidden chat list service")
-        throw IllegalStateException("Could not get hidden chat list service")
     }
 
     protected fun requireScreenLockService(): SystemScreenLockService {
-        ThreemaApplication.getServiceManager()?.screenLockService?.let {
-            return it
+        return checkNotNull(ThreemaApplication.getServiceManager()?.screenLockService) {
+            "Could not get screen lock service"
         }
-        throw IllegalStateException("Could not get screen lock service")
     }
 
     /**
@@ -253,7 +240,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
                     if (requireActivity().supportFragmentManager.backStackEntryCount > 0) {
                         requireActivity().supportFragmentManager.popBackStack()
                     } else {
-                        requireActivity().finish();
+                        requireActivity().finish()
                     }
                 }
             } else {
@@ -285,10 +272,10 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
                     TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         48F,
-                        context?.resources?.displayMetrics
-                    ).toInt()
+                        context?.resources?.displayMetrics,
+                    ).toInt(),
             )
-            it.clipToPadding = false;
+            it.clipToPadding = false
         }
     }
 
@@ -299,10 +286,10 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
             val toolbarLocation = IntArray(2)
             toolbar?.let { materialToolbar ->
                 materialToolbar.getLocationInWindow(toolbarLocation)
-                val currentTitleTop = titleLocation[1] + it.paddingTop;
+                val currentTitleTop = titleLocation[1] + it.paddingTop
 
                 val titleFadeOutStart =
-                    toolbarLocation[1] + materialToolbar.height + (it.paddingTop / 2);
+                    toolbarLocation[1] + materialToolbar.height + (it.paddingTop / 2)
                 val titleFadeOutEnd =
                     toolbarLocation[1] + materialToolbar.height - it.height + it.paddingTop + it.paddingBottom + (it.paddingTop / 4)
 
@@ -343,7 +330,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
             dialogFragment.setTargetFragment(this, 0)
             dialogFragment.show(
                 parentFragmentManager,
-                "androidx.preference.PreferenceFragment.DIALOG"
+                "androidx.preference.PreferenceFragment.DIALOG",
             )
         } else {
             super.onDisplayPreferenceDialog(preference)

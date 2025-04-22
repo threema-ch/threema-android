@@ -51,11 +51,10 @@ class ContactRequestProfilePictureMessage : AbstractMessage() {
     override fun getBody(): ByteArray = ByteArray(0)
 
     companion object {
-
         @JvmStatic
         fun fromReflected(message: MdD2D.IncomingMessage): ContactRequestProfilePictureMessage =
             fromByteArray(
-                data = message.body.toByteArray()
+                data = message.body.toByteArray(),
             ).apply {
                 initializeCommonProperties(message)
             }
@@ -63,18 +62,18 @@ class ContactRequestProfilePictureMessage : AbstractMessage() {
         @JvmStatic
         fun fromReflected(message: MdD2D.OutgoingMessage): ContactRequestProfilePictureMessage =
             fromByteArray(
-                data = message.body.toByteArray()
+                data = message.body.toByteArray(),
             ).apply {
                 initializeCommonProperties(message)
             }
 
         @JvmStatic
-        fun fromByteArray(data: ByteArray): ContactRequestProfilePictureMessage =
-            fromByteArray(
-                data = data,
-                offset = 0,
-                length = data.size
-            )
+        @Throws(BadMessageException::class)
+        fun fromByteArray(data: ByteArray): ContactRequestProfilePictureMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Get the request contact profile picture message from the given array.

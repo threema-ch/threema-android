@@ -107,12 +107,13 @@ import ch.threema.app.push.PushService;
 import ch.threema.app.receivers.ConnectivityChangeReceiver;
 import ch.threema.app.receivers.PinningFailureReportBroadcastReceiver;
 import ch.threema.app.receivers.ShortcutAddedReceiver;
+import ch.threema.app.restrictions.ApplyAppRestrictionsWorker;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.services.AppRestrictionService;
+import ch.threema.app.restrictions.AppRestrictionService;
 import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
@@ -158,11 +159,13 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceScope;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.domain.models.AppVersion;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.stores.DHSessionStoreInterface;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.libthreema.LibthreemaKt;
 import ch.threema.libthreema.LogLevel;
 import ch.threema.localcrypto.MasterKey;
@@ -204,10 +207,10 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
     public static final String INTENT_DATA_IS_FORWARD = "is_forward";
     public static final String INTENT_DATA_TIMESTAMP = "timestamp";
     public static final String INTENT_DATA_EDITFOCUS = "editfocus";
-    public static final String INTENT_DATA_GROUP = "group";
+    public static final String INTENT_DATA_GROUP_DATABASE_ID = "group";
     public static final String INTENT_DATA_GROUP_API = "group_api";
     public static final String INTENT_DATA_GROUP_LINK = "group_link";
-    public static final String INTENT_DATA_DISTRIBUTION_LIST = "distribution_list";
+    public static final String INTENT_DATA_DISTRIBUTION_LIST_ID = "distribution_list";
     public static final String INTENT_DATA_ARCHIVE_FILTER = "archiveFilter";
     public static final String INTENT_DATA_QRCODE = "qrcodestring";
     public static final String INTENT_DATA_QRCODE_TYPE_OK = "qrcodetypeok";
@@ -386,9 +389,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
         }
 
         // Initialize TrustKit for CA pinning
-        if (!ConfigUtils.isOnPremBuild()) {
-            TrustKit.initializeWithNetworkSecurityConfiguration(this);
-        }
+        TrustKit.initializeWithNetworkSecurityConfiguration(this);
 
         // Set unhandled exception logger
         Thread.setDefaultUncaughtExceptionHandler(new LoggingUEH());
@@ -562,20 +563,9 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                     getAppContext().registerReceiver(new BroadcastReceiver() {
                         @Override
                         public void onReceive(Context context, Intent intent) {
-                            logger.info("Restrictions have changed. Updating workers");
+                            logger.info("Restrictions have changed. Updating restrictions");
 
                             AppRestrictionService.getInstance().reload();
-                            try {
-                                WorkSyncWorker.Companion.performOneTimeWorkSync(
-                                    ThreemaApplication.getAppContext(),
-                                    true,
-                                    true,
-                                    null
-                                );
-                            } catch (IllegalStateException e) {
-                                logger.error("Unable to schedule work sync one time work", e);
-                            }
-                            AutoDeleteWorker.Companion.scheduleAutoDelete(getAppContext());
                         }
                     }, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
                 }
@@ -628,6 +618,12 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
         if (serviceManager != null) {
             serviceManager.getLifetimeService().acquireConnection(ACTIVITY_CONNECTION_TAG);
             logger.info("Connection now acquired");
+
+            // Check app restrictions when the app resumes
+            if (ConfigUtils.isWorkBuild()) {
+                // TODO(ANDR-3790): This method does not need to be run on the UI thread
+                AppRestrictionService.getInstance().reload();
+            }
         } else {
             logger.info("Service manager is null");
         }
@@ -978,6 +974,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 
             // get application restrictions
             if (ConfigUtils.isWorkBuild()) {
+                // TODO(ANDR-3790): This method does not need to be run on the UI thread
                 AppRestrictionService.getInstance()
                     .reload();
             }
@@ -1108,7 +1105,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                 NotificationService notificationService = serviceManager.getNotificationService();
                 ContactService contactService = serviceManager.getContactService();
                 GroupService groupService = serviceManager.getGroupService();
-                DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
+                ConversationCategoryService conversationCategoryService = serviceManager.getConversationCategoryService();
 
                 if (TestUtil.required(notificationService, contactService, groupService)) {
                     if (newMessage.getType() != MessageType.GROUP_CALL_STATUS) {
@@ -1117,7 +1114,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                                 newMessage,
                                 contactService,
                                 groupService,
-                                hiddenChatsListService),
+                                conversationCategoryService),
                             updateExisting);
                     }
 
@@ -1133,11 +1130,15 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
     private static void configureListeners() {
         ListenerManager.groupListeners.add(new GroupListener() {
             @Override
-            public void onCreate(GroupModel newGroupModel) {
+            public void onCreate(@NonNull GroupIdentity groupIdentity) {
                 try {
-                    serviceManager.getConversationService().refresh(newGroupModel);
+                    GroupModel groupModel = getGroupModel(groupIdentity);
+                    if (groupModel == null) {
+                        return;
+                    }
+                    serviceManager.getConversationService().refresh(groupModel);
                     serviceManager.getMessageService().createGroupStatus(
-                        serviceManager.getGroupService().createReceiver(newGroupModel),
+                        serviceManager.getGroupService().createReceiver(groupModel),
                         GroupStatusDataModel.GroupStatusType.CREATED,
                         null,
                         null,
@@ -1149,9 +1150,13 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
 
             @Override
-            public void onRename(GroupModel groupModel) {
+            public void onRename(@NonNull GroupIdentity groupIdentity) {
                 new Thread(() -> {
                     try {
+                        GroupModel groupModel = getGroupModel(groupIdentity);
+                        if (groupModel == null) {
+                            return;
+                        }
                         GroupMessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
                         serviceManager.getConversationService().refresh(groupModel);
                         String groupName = groupModel.getName();
@@ -1173,9 +1178,13 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
 
             @Override
-            public void onUpdatePhoto(GroupModel groupModel) {
+            public void onUpdatePhoto(@NonNull GroupIdentity groupIdentity) {
                 new Thread(() -> {
                     try {
+                        GroupModel groupModel = getGroupModel(groupIdentity);
+                        if (groupModel == null) {
+                            return;
+                        }
                         GroupMessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
                         serviceManager.getConversationService().refresh(groupModel);
                         serviceManager.getMessageService().createGroupStatus(
@@ -1193,30 +1202,21 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
 
             @Override
-            public void onRemove(GroupModel groupModel) {
-                new Thread(() -> {
-                    try {
-                        final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(groupModel);
-                        serviceManager.getBallotService().remove(receiver);
-                        serviceManager.getConversationService().empty(groupModel);
-                        serviceManager.getNotificationService().cancel(new GroupMessageReceiver(groupModel, null, null, serviceManager));
-                    } catch (ThreemaException e) {
-                        logger.error("Exception", e);
-                    }
-                }).start();
-            }
-
-            @Override
-            public void onNewMember(GroupModel group, String newIdentity) {
+            public void onNewMember(@NonNull GroupIdentity groupIdentity, String identityNew) {
+                GroupModel groupModel = getGroupModel(groupIdentity);
+                if (groupModel == null) {
+                    return;
+                }
                 try {
-                    final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
+                    final GroupMessageReceiver receiver = serviceManager.getGroupService()
+                        .createReceiver(groupModel);
                     final String myIdentity = serviceManager.getUserService().getIdentity();
 
                     if (!TestUtil.isEmptyOrNull(myIdentity)) {
                         serviceManager.getMessageService().createGroupStatus(
                             receiver,
                             GroupStatusDataModel.GroupStatusType.MEMBER_ADDED,
-                            newIdentity,
+                            identityNew,
                             null,
                             null
                         );
@@ -1227,68 +1227,80 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 
                 //reset avatar to recreate it!
                 try {
-                    serviceManager.getAvatarCacheService()
-                        .reset(group);
+                    serviceManager.getAvatarCacheService().reset(groupModel);
                 } catch (FileSystemNotPresentException e) {
                     logger.error("Could not reset avatar cache", e);
                 }
             }
 
             @Override
-            public void onMemberLeave(GroupModel group, String identity) {
+            public void onMemberLeave(@NonNull GroupIdentity groupIdentity, @NonNull String identityLeft) {
+                GroupModel groupModel = getGroupModel(groupIdentity);
+                if (groupModel == null) {
+                    return;
+                }
                 try {
-                    GroupService groupService = serviceManager.getGroupService();
-                    final GroupMessageReceiver receiver = groupService.createReceiver(group);
+                    final GroupMessageReceiver receiver = serviceManager.getGroupService()
+                        .createReceiver(groupModel);
 
                     serviceManager.getMessageService().createGroupStatus(
                         receiver,
                         GroupStatusDataModel.GroupStatusType.MEMBER_LEFT,
-                        identity,
+                        identityLeft,
                         null,
                         null
                     );
 
                     BallotService ballotService = serviceManager.getBallotService();
-                    ballotService.removeVotes(receiver, identity);
+                    ballotService.removeVotes(receiver, identityLeft);
                 } catch (ThreemaException e) {
                     logger.error("Exception", e);
                 }
             }
 
             @Override
-            public void onMemberKicked(GroupModel group, String identity) {
+            public void onMemberKicked(@NonNull GroupIdentity groupIdentity, String identityKicked) {
                 final String myIdentity = serviceManager.getUserService().getIdentity();
 
-                if (myIdentity != null && myIdentity.equals(identity)) {
+                GroupModel groupModel = getGroupModel(groupIdentity);
+                if (groupModel == null) {
+                    return;
+                }
+
+                if (myIdentity != null && myIdentity.equals(identityKicked)) {
                     // my own member status has changed
                     try {
-                        serviceManager.getNotificationService().cancelGroupCallNotification(group.getId());
-                        serviceManager.getConversationService().refresh(group);
+                        serviceManager.getNotificationService().cancelGroupCallNotification(groupModel.getId());
+                        serviceManager.getConversationService().refresh(groupModel);
                     } catch (Exception e) {
                         logger.error("Exception", e);
                     }
                 }
                 try {
-                    final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
+                    final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(groupModel);
 
                     serviceManager.getMessageService().createGroupStatus(
                         receiver,
                         GroupStatusDataModel.GroupStatusType.MEMBER_KICKED,
-                        identity,
+		                    identityKicked,
                         null,
                         null
                     );
 
                     BallotService ballotService = serviceManager.getBallotService();
-                    ballotService.removeVotes(receiver, identity);
+                    ballotService.removeVotes(receiver, identityKicked);
                 } catch (ThreemaException e) {
                     logger.error("Exception", e);
                 }
             }
 
             @Override
-            public void onUpdate(GroupModel groupModel) {
+            public void onUpdate(@NonNull GroupIdentity groupIdentity) {
                 try {
+                    GroupModel groupModel = getGroupModel(groupIdentity);
+                    if (groupModel == null) {
+                        return;
+                    }
                     serviceManager.getConversationService().refresh(groupModel);
                 } catch (ThreemaException e) {
                     logger.error("Exception", e);
@@ -1296,9 +1308,13 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
 
             @Override
-            public void onLeave(GroupModel groupModel) {
+            public void onLeave(@NonNull GroupIdentity groupIdentity) {
                 new Thread(() -> {
                     try {
+                        GroupModel groupModel = getGroupModel(groupIdentity);
+                        if (groupModel == null) {
+                            return;
+                        }
                         serviceManager.getConversationService().refresh(groupModel);
                     } catch (ThreemaException e) {
                         logger.error("Exception", e);
@@ -1307,10 +1323,30 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
 
             @Override
-            public void onGroupStateChanged(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
+            public void onGroupStateChanged(@NonNull GroupIdentity groupIdentity, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
                 logger.debug("onGroupStateChanged: {} -> {}", oldState, newState);
+                GroupModel groupModel = getGroupModel(groupIdentity);
+                if (groupModel == null) {
+                    return;
+                }
 
                 showNotesGroupNotice(groupModel, oldState, newState);
+            }
+
+            @Nullable
+            private GroupModel getGroupModel(@NonNull GroupIdentity groupIdentity) {
+                try {
+                    GroupService groupService = serviceManager.getGroupService();
+                    groupService.removeFromCache(groupIdentity);
+                    GroupModel groupModel = groupService.getByGroupIdentity(groupIdentity);
+                    if (groupModel == null) {
+                        logger.error("Group model is null");
+                    }
+                    return groupModel;
+                } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                    logger.error("Could not get group service", e);
+                    return null;
+                }
             }
         }, THREEMA_APPLICATION_LISTENER_TAG);
 
@@ -1593,7 +1629,12 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                                     // its a group ballot,write status
                                     receiver = groupService.createReceiver(groupModel);
                                     // reset archived status
-                                    groupService.setIsArchived(groupModel, false);
+                                    groupService.setIsArchived(
+                                        groupModel.getCreatorIdentity(),
+                                        groupModel.getApiGroupId(),
+                                        false,
+                                        TriggerSource.LOCAL
+                                    );
 
                                 } else if (linkBallotModel instanceof IdentityBallotModel) {
                                     String identity = ((IdentityBallotModel) linkBallotModel).getIdentity();
@@ -1601,7 +1642,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                                     // not implemented
                                     receiver = contactService.createReceiver(contactService.getByIdentity(identity));
                                     // reset archived status
-                                    contactService.setIsArchived(identity, false);
+                                    contactService.setIsArchived(identity, false, TriggerSource.LOCAL);
                                 }
 
                                 if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {

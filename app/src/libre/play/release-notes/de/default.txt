@@ -1,2 +1,5 @@
-- Emoji-Reaktionen sind nun im Daten-Backup enthalten
-- Behebung eines Fehlers, wodurch eigene Klingeltöne beim Öffnen der App zurückgesetzt wurden
+- Die Android-App lässt sich nun mit der Beta-Version von Threema 2.0 für Desktop nutzen («Hauptmenü > Threema 2.0 für Desktop (Beta)»)
+- Behebung verschiedener Fehler bei der Suche innerhalb eines Chats
+- Korrekte Anzeige des Dateinamens bei PDFs
+- Verbesserungen in Zusammenhang mit der Benachrichtigung bei Einzelanrufen
+- Verbesserung des Speicherverbrauchs bei der Wiederherstellung von grossen Daten-Backups

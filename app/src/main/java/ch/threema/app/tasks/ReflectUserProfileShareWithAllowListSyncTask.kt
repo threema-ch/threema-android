@@ -40,11 +40,11 @@ import kotlinx.serialization.Serializable
  * Any empty list can be passed here as specified by the protocol.
  */
 class ReflectUserProfileShareWithAllowListSyncTask(
-    private val allowedIdentities: List<String>,
-    serviceManager: ServiceManager
+    private val allowedIdentities: Set<String>,
+    serviceManager: ServiceManager,
 ) : ReflectUserProfileShareWithPolicySyncTaskBase(
     newPolicy = Policy.ALLOW_LIST,
-    serviceManager = serviceManager
+    serviceManager = serviceManager,
 ) {
     override val type = "ReflectUserProfileShareWithAllowListSyncTask"
 
@@ -64,16 +64,16 @@ class ReflectUserProfileShareWithAllowListSyncTask(
     }
 
     override fun serialize(): SerializableTaskData =
-        ReflectUserProfileShareWithAllowListSyncTaskData(allowedIdentities)
+        ReflectUserProfileShareWithAllowListSyncTaskData(allowedIdentities.toList())
 
     @Serializable
     data class ReflectUserProfileShareWithAllowListSyncTaskData(
-        val allowedIdentities: List<String>
+        val allowedIdentities: List<String>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
             return ReflectUserProfileShareWithAllowListSyncTask(
-                allowedIdentities = allowedIdentities,
-                serviceManager = serviceManager
+                allowedIdentities = allowedIdentities.toSet(),
+                serviceManager = serviceManager,
             )
         }
     }

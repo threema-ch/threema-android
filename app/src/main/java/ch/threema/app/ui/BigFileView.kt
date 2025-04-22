@@ -33,7 +33,6 @@ import ch.threema.app.utils.IconUtil
 import ch.threema.app.utils.MimeUtil
 
 class BigFileView : FrameLayout {
-
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -59,5 +58,4 @@ class BigFileView : FrameLayout {
     fun setFilename(filename: String?) {
         filenameView.text = filename
     }
-
 }

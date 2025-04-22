@@ -84,20 +84,15 @@ internal interface GroupCall : GroupCallController {
 
     // TODO(ANDR-1951): Should be Collections of type RemoteParticipant (resolve inheritance problems...)
     data class ParticipantsUpdate(
-        val add: Set<NormalRemoteParticipant>,
-        val remove: Set<NormalRemoteParticipant>
+        val add: Set<NormalRemoteParticipant> = emptySet(),
+        val remove: Set<NormalRemoteParticipant> = emptySet(),
     ) {
         companion object {
-            fun empty() = ParticipantsUpdate(setOf(), setOf())
+            fun empty() = ParticipantsUpdate()
 
-            fun addParticipant(participant: NormalRemoteParticipant): ParticipantsUpdate =
-                ParticipantsUpdate(
-                    add = setOf(participant), remove = setOf()
-                )
+            fun addParticipant(participant: NormalRemoteParticipant) = ParticipantsUpdate(add = setOf(participant))
 
-            fun removeParticipant(participant: NormalRemoteParticipant) = ParticipantsUpdate(
-                add = setOf(), remove = setOf(participant)
-            )
+            fun removeParticipant(participant: NormalRemoteParticipant) = ParticipantsUpdate(remove = setOf(participant))
         }
     }
 }

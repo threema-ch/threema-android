@@ -27,18 +27,13 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import org.slf4j.Logger
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("FileMessage")
 
-/**
- *  This class is not final as a workaround to test it using Mockito.
- *  Another solution would be to use the mock-maker-inline mockito plugin.
- */
-open class FileMessage : AbstractMessage(), FileMessageInterface {
-
+class FileMessage : AbstractMessage(), FileMessageInterface {
     override var fileData: FileData? = null
 
     override fun flagSendPush(): Boolean = true
@@ -77,7 +72,6 @@ open class FileMessage : AbstractMessage(), FileMessageInterface {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_FILE
 
     companion object {
-
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
          *  So we set the offset in [fromByteArray] to zero.
@@ -96,7 +90,12 @@ open class FileMessage : AbstractMessage(), FileMessageInterface {
         }
 
         @JvmStatic
-        fun fromByteArray(data: ByteArray): FileMessage = fromByteArray(data, 0, data.size)
+        @Throws(BadMessageException::class)
+        fun fromByteArray(data: ByteArray): FileMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Build an instance of [FileMessage] from the given [data] bytes. Note that

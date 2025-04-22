@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Message;
@@ -52,7 +53,8 @@ public class MessageRequestHandler extends MessageReceiver {
 
     private final MessageDispatcher dispatcher;
     private final MessageService messageService;
-    private final DeadlineListService hiddenChatService;
+    @NonNull
+    private final ConversationCategoryService conversationCategoryService;
     private final Listener listener;
 
     @WorkerThread
@@ -61,16 +63,17 @@ public class MessageRequestHandler extends MessageReceiver {
     }
 
     @AnyThread
-    public MessageRequestHandler(MessageDispatcher dispatcher,
-                                 MessageService messageService,
-                                 DeadlineListService hiddenChatService,
-                                 Listener listener
+    public MessageRequestHandler(
+        MessageDispatcher dispatcher,
+        MessageService messageService,
+        @NonNull ConversationCategoryService conversationCategoryService,
+        Listener listener
     ) {
         super(Protocol.SUB_TYPE_MESSAGES);
 
         this.dispatcher = dispatcher;
         this.messageService = messageService;
-        this.hiddenChatService = hiddenChatService;
+        this.conversationCategoryService = conversationCategoryService;
         this.listener = listener;
     }
 
@@ -91,11 +94,11 @@ public class MessageRequestHandler extends MessageReceiver {
         }
 
         try {
-            ch.threema.app.messagereceiver.MessageReceiver receiver = this.getReceiver(args);
+            ch.threema.app.messagereceiver.MessageReceiver<?> receiver = this.getReceiver(args);
 
-            if (this.hiddenChatService.has(receiver.getUniqueIdString())) {
+            if (this.conversationCategoryService.isPrivateChat(receiver.getUniqueIdString())) {
                 //ignore it
-                logger.debug("do not reply with messages on hidden chat");
+                logger.debug("do not reply with messages on private chat");
                 return;
             }
             if (this.listener != null) {

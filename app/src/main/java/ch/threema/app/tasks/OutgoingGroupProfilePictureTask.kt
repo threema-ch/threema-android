@@ -57,18 +57,19 @@ class OutgoingGroupProfilePictureTask(
             return
         }
 
-        val group = groupService.getByApiGroupIdAndCreator(groupId, creatorIdentity)
+        val group = groupModelRepository.getByCreatorIdentityAndId(creatorIdentity, groupId)
         if (group == null) {
             logger.error(
                 "Could not find group {} with creator {} to send the profile picture",
                 groupId,
-                creatorIdentity
+                creatorIdentity,
             )
             return
         }
 
-        if (fileService.hasGroupAvatarFile(group)) {
-            sendGroupPhoto(fileService.getGroupAvatar(group), handle)
+        val groupPhoto = fileService.getGroupAvatar(group)
+        if (groupPhoto != null) {
+            sendGroupPhoto(groupPhoto, handle)
         } else {
             sendGroupDeletePhoto(handle)
         }
@@ -81,7 +82,7 @@ class OutgoingGroupProfilePictureTask(
             receiverIdentities,
             groupPhoto,
             null,
-            serviceManager
+            serviceManager,
         ).invoke(handle)
     }
 
@@ -91,7 +92,7 @@ class OutgoingGroupProfilePictureTask(
             creatorIdentity,
             receiverIdentities,
             null,
-            serviceManager
+            serviceManager,
         ).invoke(handle)
     }
 
@@ -99,7 +100,7 @@ class OutgoingGroupProfilePictureTask(
         groupId.groupId,
         creatorIdentity,
         receiverIdentities,
-        messageId.messageId
+        messageId.messageId,
     )
 
     @Serializable
@@ -115,7 +116,7 @@ class OutgoingGroupProfilePictureTask(
                 creatorIdentity,
                 receiverIdentities,
                 MessageId(messageId),
-                serviceManager
+                serviceManager,
             )
     }
 }

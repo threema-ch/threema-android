@@ -37,12 +37,12 @@ import androidx.compose.ui.unit.dp
 fun DeliveryIndicator(
     @DrawableRes deliveryIconRes: Int,
     @StringRes deliveryIconContentDescriptionRes: Int,
-    tintColor: Color?
+    tintColor: Color?,
 ) {
     Icon(
         modifier = Modifier.size(18.dp),
         painter = painterResource(deliveryIconRes),
         tint = tintColor ?: MaterialTheme.colorScheme.onSurface,
-        contentDescription = stringResource(deliveryIconContentDescriptionRes)
+        contentDescription = stringResource(deliveryIconContentDescriptionRes),
     )
 }

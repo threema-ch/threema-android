@@ -32,7 +32,6 @@ import androidx.annotation.WorkerThread
  * on the implementation.
  */
 interface ServerConnection {
-
     val isRunning: Boolean
 
     val connectionState: ConnectionState

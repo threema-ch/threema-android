@@ -68,7 +68,9 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
+class VoiceMessagePlayerService :
+    MediaSessionService(),
+    SensorListener,
     OnAudioFocusChangeListener {
     private val audioBecomingNoisyFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     private val audioBecomingNoisyReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -109,7 +111,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
             AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT)
                 .setAudioAttributes(
                     AudioAttributesCompat.Builder()
-                        .setLegacyStreamType(AudioManager.STREAM_MUSIC).build()
+                        .setLegacyStreamType(AudioManager.STREAM_MUSIC).build(),
                 )
                 .setOnAudioFocusChangeListener(this)
                 .build()
@@ -174,9 +176,9 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
                         Integer.MAX_VALUE,
                         Integer.MAX_VALUE,
                         Integer.MAX_VALUE,
-                        Integer.MAX_VALUE
+                        Integer.MAX_VALUE,
                     )
-                    .build()
+                    .build(),
             )
             .build()
 
@@ -201,24 +203,22 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
             })
         }
 
-        val mediaSessionCallback = (object : Callback {
+        val mediaSessionCallback = object : Callback {
             override fun onAddMediaItems(
                 mediaSession: MediaSession,
                 controller: MediaSession.ControllerInfo,
-                mediaItems: MutableList<MediaItem>
-            ): ListenableFuture<MutableList<MediaItem>> {
-                val resolvedMediaItems = mutableListOf<MediaItem>()
-                for (mediaItem in mediaItems) {
-                    val resolvedMediaItem = MediaItem.Builder()
+                mediaItems: MutableList<MediaItem>,
+            ): ListenableFuture<List<MediaItem>> {
+                val resolvedMediaItems = mediaItems.map { mediaItem ->
+                    MediaItem.Builder()
                         .setUri(Uri.parse(mediaItem.mediaId))
                         .setMediaId(mediaItem.mediaId)
                         .setMediaMetadata(mediaItem.mediaMetadata)
                         .build()
-                    resolvedMediaItems.add(resolvedMediaItem)
                 }
                 return Futures.immediateFuture(resolvedMediaItems)
             }
-        })
+        }
 
         val mediaSessionBuilder = MediaSession
             .Builder(this, player)
@@ -235,7 +235,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
                 // https://github.com/androidx/media/issues/1730
                 logger.error(
                     "Caught IllegalArgumentException on a motorola device when attempting to set the media button broadcast receiver.",
-                    exception
+                    exception,
                 )
             } else {
                 logger.error("Failed to create a media session.", exception)
@@ -258,7 +258,6 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
     }
 
     private inner class MediaSessionServiceListener : Listener {
-
         /**
          * This method is only required to be implemented on Android 12 or above when an attempt is made
          * by a media controller to resume playback when the {@link MediaSessionService} is in the
@@ -268,7 +267,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
             @SuppressLint("MissingPermission")
             if (ConfigUtils.isPermissionGranted(
                     this@VoiceMessagePlayerService,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS,
                 )
             ) {
                 val notificationManagerCompat =
@@ -276,7 +275,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
                 val builder =
                     NotificationCompat.Builder(
                         this@VoiceMessagePlayerService,
-                        NotificationChannels.NOTIFICATION_CHANNEL_ALERT
+                        NotificationChannels.NOTIFICATION_CHANNEL_ALERT,
                     )
                         .setContentIntent(getSessionActivityPendingIntent())
                         .setSmallIcon(R.drawable.ic_notification_small)
@@ -284,13 +283,13 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
                             ResourcesCompat.getColor(
                                 resources,
                                 R.color.md_theme_light_primary,
-                                theme
-                            )
+                                theme,
+                            ),
                         )
                         .setContentTitle(getString(R.string.vm_fg_service_not_allowed))
                         .setStyle(
                             NotificationCompat.BigTextStyle()
-                                .bigText(getString(R.string.vm_fg_service_not_allowed_explain))
+                                .bigText(getString(R.string.vm_fg_service_not_allowed_explain)),
                         )
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setAutoCancel(true)
@@ -300,7 +299,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
                 Toast.makeText(
                     this@VoiceMessagePlayerService,
                     R.string.notifications_disabled_title,
-                    LENGTH_LONG
+                    LENGTH_LONG,
                 ).show()
             }
         }
@@ -321,7 +320,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
             if (
                 AudioManagerCompat.requestAudioFocus(
                     audioManager,
-                    audioFocusRequestCompat
+                    audioFocusRequestCompat,
                 )
                 == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
             ) {
@@ -383,7 +382,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
         override fun buildAudioSink(
             context: Context,
             enableFloatOutput: Boolean,
-            enableAudioTrackPlaybackParams: Boolean
+            enableAudioTrackPlaybackParams: Boolean,
         ): AudioSink {
             return SamsungQuirkAudioSink(context, enableFloatOutput, enableAudioTrackPlaybackParams)
         }

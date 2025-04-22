@@ -22,7 +22,6 @@
 package ch.threema.storage.factories;
 
 import android.content.ContentValues;
-
 import android.database.Cursor;
 
 import java.util.ArrayList;
@@ -81,32 +80,27 @@ public class GroupMemberModelFactory extends ModelFactory {
     private GroupMemberModel convert(Cursor cursor) {
         if (cursor != null && cursor.getPosition() >= 0) {
             final GroupMemberModel groupMemberModel = new GroupMemberModel();
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
-                @Override
-                public boolean next(CursorHelper cursorHelper) {
+            new CursorHelper(cursor, columnIndexCache).current(
+                (CursorHelper.Callback) cursorHelper -> {
                     groupMemberModel
                         .setId(cursorHelper.getInt(GroupMemberModel.COLUMN_ID))
                         .setGroupId(cursorHelper.getInt(GroupMemberModel.COLUMN_GROUP_ID))
                         .setIdentity(cursorHelper.getString(GroupMemberModel.COLUMN_IDENTITY));
                     return false;
                 }
-            });
-
+            );
             return groupMemberModel;
         }
-
         return null;
     }
 
-    public List<GroupMemberModel> convertList(Cursor c) {
+    public List<GroupMemberModel> convertList(Cursor cursor) {
         List<GroupMemberModel> result = new ArrayList<>();
-        if (c != null) {
-            try {
-                while (c.moveToNext()) {
-                    result.add(convert(c));
+        if (cursor != null) {
+            try (cursor) {
+                while (cursor.moveToNext()) {
+                    result.add(convert(cursor));
                 }
-            } finally {
-                c.close();
             }
         }
         return result;
@@ -195,7 +189,7 @@ public class GroupMemberModelFactory extends ModelFactory {
         return null;
     }
 
-    public Map<String, Integer> getIDColorIndices(int groupId) {
+    public Map<String, Integer> getIDColorIndices(long groupId) {
         Cursor c = this.databaseService.getReadableDatabase().rawQuery("SELECT c." + ContactModel.COLUMN_IDENTITY + ", c." + ContactModel.COLUMN_ID_COLOR_INDEX +
             " FROM " + GroupMemberModel.TABLE + " gm " +
             "INNER JOIN " + ContactModel.TABLE + " c " +
@@ -242,7 +236,7 @@ public class GroupMemberModelFactory extends ModelFactory {
         return result;
     }
 
-    public int deleteByGroupId(int groupId) {
+    public int deleteByGroupId(long groupId) {
         return this.databaseService.getWritableDatabase().delete(this.getTableName(),
             GroupMemberModel.COLUMN_GROUP_ID + "=?",
             new String[]{

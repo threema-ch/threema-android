@@ -25,8 +25,8 @@ import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.ThreemaKDF
 import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
 import ch.threema.domain.protocol.connection.data.D2dMessage
-import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.D2mProtocolException
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.DeviceInfo
 import ch.threema.protobuf.d2d.MdD2D.Envelope
@@ -57,7 +57,7 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
     }
 
     internal val dgpk: ByteArray by lazy { KDF.deriveKey(SALT_DGPK, dgk) }
-    internal val dgid: ByteArray by lazy { NaCl.derivePublicKey(dgpk) }
+    val dgid: ByteArray by lazy { NaCl.derivePublicKey(dgpk) }
 
     internal val dgrk: ByteArray by lazy { KDF.deriveKey(SALT_DGRK, dgk) }
     internal val dgdik: ByteArray by lazy { KDF.deriveKey(SALT_DGDIK, dgk) }
@@ -107,8 +107,8 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
             nonce = Nonce(nonceBytes),
             debugInfo = EncryptedEnvelopeResult.DebugInfo(
                 protoContentCaseName = envelope.contentCase.name,
-                rawEnvelopeContent = envelope.toString()
-            )
+                rawEnvelopeContent = envelope.toString(),
+            ),
         )
     }
 
@@ -143,9 +143,8 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
     data class EncryptedEnvelopeResult(
         val encryptedEnvelope: ByteArray,
         val nonce: Nonce,
-        val debugInfo: DebugInfo
+        val debugInfo: DebugInfo,
     ) {
-
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -174,9 +173,8 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
          */
         data class DebugInfo(
             val protoContentCaseName: String,
-            val rawEnvelopeContent: String
+            val rawEnvelopeContent: String,
         ) {
-
             override fun toString(): String {
                 return "EncryptedEnvelopeResult(protoContentCaseName: $protoContentCaseName, rawEnvelopeContent: ***)"
             }

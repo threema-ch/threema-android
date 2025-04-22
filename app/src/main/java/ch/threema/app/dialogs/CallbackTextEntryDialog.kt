@@ -30,7 +30,6 @@ import ch.threema.app.utils.EditTextUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class CallbackTextEntryDialog : ThreemaDialogFragment() {
-
     private var title: String? = null
     private var initialText: String? = null
     private var callback: OnButtonClickedCallback? = null
@@ -77,7 +76,7 @@ class CallbackTextEntryDialog : ThreemaDialogFragment() {
         fun getInstance(
             title: String?,
             initialText: String?,
-            onButtonClickedCallback: OnButtonClickedCallback
+            onButtonClickedCallback: OnButtonClickedCallback,
         ): CallbackTextEntryDialog {
             return CallbackTextEntryDialog().also {
                 it.title = title
@@ -91,5 +90,4 @@ class CallbackTextEntryDialog : ThreemaDialogFragment() {
         fun onPositiveClicked(text: String)
         fun onNegativeClicked()
     }
-
 }

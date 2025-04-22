@@ -39,6 +39,7 @@ import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.ListFragment;
@@ -65,11 +66,10 @@ import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.CheckableConstraintLayout;
 import ch.threema.app.ui.CheckableRelativeLayout;
@@ -97,7 +97,8 @@ public abstract class RecipientListFragment extends ListFragment implements List
     protected ConversationService conversationService;
     protected PreferenceService preferenceService;
     protected BlockedIdentitiesService blockedIdentitiesService;
-    protected DeadlineListService hiddenChatsListService;
+    @Nullable
+    protected ConversationCategoryService conversationCategoryService;
     protected FragmentActivity activity;
     protected Parcelable listInstanceState;
     protected ExtendedFloatingActionButton floatingActionButton;
@@ -123,7 +124,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
             blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
             conversationService = serviceManager.getConversationService();
             preferenceService = serviceManager.getPreferenceService();
-            hiddenChatsListService = serviceManager.getHiddenChatsListService();
+            conversationCategoryService = serviceManager.getConversationCategoryService();
         } catch (ThreemaException e) {
             LogUtil.exception(e, activity);
             return null;
@@ -457,7 +458,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
         }
     }
 
-    protected abstract void createListAdapter(ArrayList<Integer> checkedItems);
+    protected abstract void createListAdapter(@Nullable ArrayList<Integer> checkedItems);
 
     protected abstract String getBundleName();
 

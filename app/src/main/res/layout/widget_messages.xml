@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_title"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eaeaea">
+    android:background="#eaeaea"
+    android:orientation="vertical">
 
     <!-- absolutely do not use attr references for colors in this file! -->
     <RelativeLayout
@@ -42,20 +42,20 @@
         android:layout_height="match_parent">
 
         <ListView
+            android:id="@+id/widget_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/widget_list" />
+            android:layout_height="match_parent" />
 
         <TextView
-            style="@style/Threema.TextAppearance.Emptyview"
             android:id="@+id/empty_view"
+            style="@style/Threema.TextAppearance.Emptyview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:gravity="center"
-            android:textColor="@color/md_theme_light_onSurface"
-            android:text="@string/no_unread_messages" />
+            android:text="@string/no_unread_messages"
+            android:textColor="@color/md_theme_light_onSurface" />
 
     </FrameLayout>
 

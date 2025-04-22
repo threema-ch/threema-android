@@ -23,18 +23,18 @@ package ch.threema.app.logging
 
 import ch.threema.logging.ThreemaLogger
 import ch.threema.logging.backend.LogBackend
-import org.junit.Assert
-import org.junit.Test
 import java.lang.reflect.Constructor
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class ThreemaLoggerTest {
-
     private val expectedThrowable = IllegalStateException()
     private val throwableExpectingBackend = object : LogBackend {
         override fun isEnabled(level: Int) = true
 
         override fun print(level: Int, tag: String, throwable: Throwable?, message: String?) {
-            Assert.assertEquals(expectedThrowable, throwable)
+            assertEquals(expectedThrowable, throwable)
         }
 
         override fun print(
@@ -44,14 +44,14 @@ class ThreemaLoggerTest {
             messageFormat: String,
             vararg args: Any?,
         ) {
-            Assert.assertEquals(expectedThrowable, throwable)
+            assertEquals(expectedThrowable, throwable)
         }
     }
     private val noThrowableExpectingBackend = object : LogBackend {
         override fun isEnabled(level: Int) = true
 
         override fun print(level: Int, tag: String, throwable: Throwable?, message: String?) {
-            Assert.assertNull(throwable)
+            assertNull(throwable)
         }
 
         override fun print(
@@ -61,7 +61,7 @@ class ThreemaLoggerTest {
             messageFormat: String,
             vararg args: Any?,
         ) {
-            Assert.assertNull(throwable)
+            assertNull(throwable)
         }
     }
 
@@ -69,7 +69,7 @@ class ThreemaLoggerTest {
         val loggerConstructor: Constructor<ThreemaLogger> =
             ThreemaLogger::class.java.getDeclaredConstructor(
                 String::class.java,
-                LogBackend::class.java
+                LogBackend::class.java,
             )
         loggerConstructor.isAccessible = true
         loggerConstructor.newInstance("ThreemaLoggerTest", throwableExpectingBackend)
@@ -79,7 +79,7 @@ class ThreemaLoggerTest {
         val loggerConstructor: Constructor<ThreemaLogger> =
             ThreemaLogger::class.java.getDeclaredConstructor(
                 String::class.java,
-                LogBackend::class.java
+                LogBackend::class.java,
             )
         loggerConstructor.isAccessible = true
         loggerConstructor.newInstance("ThreemaLoggerTest", noThrowableExpectingBackend)
@@ -148,5 +148,4 @@ class ThreemaLoggerTest {
         throwableExpectingLogger.warn("Warn {}", unexpectedThrowable, expectedThrowable)
         throwableExpectingLogger.error("Error {}", unexpectedThrowable, expectedThrowable)
     }
-
 }

@@ -34,19 +34,21 @@ import java.nio.ByteBuffer
  */
 @UnstableApi
 class SamsungQuirkAudioSink(
-    context: Context, enableFloatOutput: Boolean, enableAudioTrackPlaybackParams: Boolean,
+    context: Context,
+    enableFloatOutput: Boolean,
+    enableAudioTrackPlaybackParams: Boolean,
     private val delegate: AudioSink = DefaultAudioSink.Builder()
         .setAudioCapabilities(AudioCapabilities.getCapabilities(context))
         .setEnableFloatOutput(enableFloatOutput)
         .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-        .build()
+        .build(),
 ) : AudioSink by delegate {
     private val logger = LoggingUtil.getThreemaLogger("SamsungQuirkAudioSink")
 
     override fun handleBuffer(
         buffer: ByteBuffer,
         presentationTimeUs: Long,
-        encodedAccessUnitCount: Int
+        encodedAccessUnitCount: Int,
     ): Boolean {
         for (i in 0..4) {
             try {

@@ -28,6 +28,11 @@ import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.csp.coders.MessageBox
+import ch.threema.domain.protocol.urls.AppRatingUrl
+import ch.threema.domain.protocol.urls.BlobUrl
+import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiNamesUrl
+import ch.threema.domain.protocol.urls.MapPoiUrl
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 import com.neilalexander.jnacl.NaCl
@@ -54,7 +59,7 @@ internal class TestIdentityStore : IdentityStoreInterface {
     override fun encryptData(
         plaintext: ByteArray,
         nonce: ByteArray,
-        receiverPublicKey: ByteArray
+        receiverPublicKey: ByteArray,
     ): ByteArray {
         return getFromCache(receiverPublicKey).encrypt(plaintext, nonce)
     }
@@ -62,7 +67,7 @@ internal class TestIdentityStore : IdentityStoreInterface {
     override fun decryptData(
         ciphertext: ByteArray,
         nonce: ByteArray,
-        senderPublicKey: ByteArray
+        senderPublicKey: ByteArray,
     ): ByteArray {
         return getFromCache(senderPublicKey).decrypt(ciphertext, nonce)
     }
@@ -89,7 +94,7 @@ internal class TestIdentityStore : IdentityStoreInterface {
         identity: String,
         serverGroup: String,
         publicKey: ByteArray,
-        privateKey: ByteArray
+        privateKey: ByteArray,
     ) {
         MUST_NOT_BE_CALLED()
     }
@@ -98,7 +103,7 @@ internal class TestIdentityStore : IdentityStoreInterface {
 internal class TestServerAddressProvider(
     private val skPublic: ByteArray,
     private val skPublicAlt: ByteArray,
-    private val mediatorUrl: String? = null
+    private val mediatorUrl: String? = null,
 ) : ServerAddressProvider {
     var keyFetchCount = 0
     var altKeyFetchCount = 0
@@ -121,11 +126,11 @@ internal class TestServerAddressProvider(
         return skPublicAlt
     }
 
-    override fun getMediatorUrl(): String {
-        return mediatorUrl ?: MUST_NOT_BE_CALLED()
+    override fun getMediatorUrl(): DeviceGroupUrl {
+        return DeviceGroupUrl(mediatorUrl ?: MUST_NOT_BE_CALLED())
     }
 
-    override fun getAppRatingUrl(): String {
+    override fun getAppRatingUrl(): AppRatingUrl {
         MUST_NOT_BE_CALLED()
     }
 
@@ -138,11 +143,7 @@ internal class TestServerAddressProvider(
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getBlobBaseUrlMirrorServer(multiDevicePropertyProvider: MultiDevicePropertyProvider): String {
-        MUST_NOT_BE_CALLED()
-    }
-
-    override fun getBlobServerDownloadUrl(useIpV6: Boolean, blobId: ByteArray): String {
+    override fun getBlobServerDownloadUrl(useIpV6: Boolean): BlobUrl {
         MUST_NOT_BE_CALLED()
     }
 
@@ -150,14 +151,11 @@ internal class TestServerAddressProvider(
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getBlobServerDoneUrl(useIpV6: Boolean, blobId: ByteArray): String {
+    override fun getBlobServerDoneUrl(useIpV6: Boolean): BlobUrl {
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getBlobMirrorServerDownloadUrl(
-        multiDevicePropertyProvider: MultiDevicePropertyProvider,
-        blobId: ByteArray
-    ): String {
+    override fun getBlobMirrorServerDownloadUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider): BlobUrl {
         MUST_NOT_BE_CALLED()
     }
 
@@ -165,10 +163,7 @@ internal class TestServerAddressProvider(
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getBlobMirrorServerDoneUrl(
-        multiDevicePropertyProvider: MultiDevicePropertyProvider,
-        blobId: ByteArray
-    ): String {
+    override fun getBlobMirrorServerDoneUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider): BlobUrl {
         MUST_NOT_BE_CALLED()
     }
 
@@ -196,6 +191,17 @@ internal class TestServerAddressProvider(
         MUST_NOT_BE_CALLED()
     }
 
+    override fun getMapStyleUrl(): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getMapPOINamesUrl(): MapPoiNamesUrl {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getMapPOIUrl(): MapPoiUrl {
+        MUST_NOT_BE_CALLED()
+    }
 }
 
 internal class TestSocket : Socket() {

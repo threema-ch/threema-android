@@ -27,7 +27,7 @@ import java.util.Date
 data class ReactionBucket(
     val reaction: String,
     val mostRecentReactedAt: Date,
-    val identities: List<String>
+    val identities: List<String>,
 ) {
     companion object {
         @JvmStatic
@@ -38,7 +38,7 @@ data class ReactionBucket(
                     ReactionBucket(
                         reactionSequence,
                         reactionsForSequence.maxOf { it.reactedAt },
-                        reactionsForSequence.map { it.senderIdentity }
+                        reactionsForSequence.map { it.senderIdentity },
                     )
                 }
                 .sortedByDescending(ReactionBucket::mostRecentReactedAt)

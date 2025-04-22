@@ -81,6 +81,7 @@ public class PushRegistrationWorker extends Worker {
 
                     String token = task.getResult();
                     logger.info("Received FCM registration token");
+                    logger.debug("FCM push token: {}", token);
                     String error = null;
                     try {
                         PushUtil.sendTokenToServer(token, ProtocolDefines.PUSHTOKEN_TYPE_FCM);

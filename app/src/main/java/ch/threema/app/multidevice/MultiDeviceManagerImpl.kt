@@ -24,20 +24,24 @@ package ch.threema.app.multidevice
 import android.os.Build
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
-import ch.threema.app.BuildConfig
+import ch.threema.app.ThreemaApplication
+import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingCancelledException
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
-import ch.threema.app.multidevice.linking.Failed
+import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ServerMessageService
 import ch.threema.app.services.UserService
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask
+import ch.threema.app.tasks.DeleteDeviceGroupTask
+import ch.threema.app.tasks.DeviceLinkingController
+import ch.threema.app.tasks.FSRefreshStepsTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
-import ch.threema.base.utils.SecureRandomUtil.generateRandomU64
 import ch.threema.base.utils.toHexString
+import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.D2mProtocolDefines
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.ReconnectableServerConnection
@@ -53,43 +57,48 @@ import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.protocol.multidevice.MultiDeviceProperties
+import ch.threema.domain.protocol.rendezvous.RendezvousConnection
+import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.csp.e2e.fs.Terminate
 import ch.threema.storage.models.ServerMessageModel
+import java.util.Date
+import kotlin.time.Duration
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.util.Date
+import kotlinx.coroutines.withTimeout
 
 private val logger = LoggingUtil.getThreemaLogger("MultiDeviceManagerImpl")
 
-/** ONLY SET THIS TO `false` WHEN D2D IS IMPLEMENTED AND DOES NOT SUPPORT PFS!!
+/**
+ * ONLY SET THIS TO `false` WHEN D2D IS IMPLEMENTED AND DOES NOT SUPPORT PFS!!
  * NOTE: If set to `false` the backup version should be incremented, as
  * `ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED` cannot be restored on older versions.
  */
-private const val IS_FS_SUPPORTED_WITH_MD = false // TODO(ANDR-2519): Remove when md supports fs
+const val IS_FS_SUPPORTED_WITH_MD = false // TODO(ANDR-2519): Remove when md supports fs
 
 class MultiDeviceManagerImpl(
     private val preferenceStore: PreferenceStoreInterface,
     private val serverMessageService: ServerMessageService,
     private val version: Version,
 ) : MultiDeviceManager {
-
     private var reconnectHandle: ReconnectableServerConnection? = null
 
     private var _persistedProperties: PersistedMultiDeviceProperties? = null
-    private var _properties =
-        MutableSharedFlow<MultiDeviceProperties?>(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private var _properties = MutableSharedFlow<MultiDeviceProperties?>(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
@@ -112,7 +121,7 @@ class MultiDeviceManagerImpl(
     private var persistedProperties: PersistedMultiDeviceProperties?
         set(value) {
             _persistedProperties = value
-            storeProperties(value)
+            saveProperties(value)
             _properties.tryEmit(value?.let(::mapPersistedProperties))
         }
         get() = _persistedProperties
@@ -134,67 +143,21 @@ class MultiDeviceManagerImpl(
     override val isMultiDeviceActive: Boolean
         get() = properties != null
 
-    override val latestSocketCloseReason =
-        MutableSharedFlow<D2mSocketCloseReason?>(1, 0, BufferOverflow.DROP_OLDEST)
-
     private var serverInfo: InboundD2mMessage.ServerInfo? = null
 
-    @AnyThread
-    override suspend fun activate(
-        deviceLabel: String,
-        contactService: ContactService,
-        userService: UserService,
-        fsMessageProcessor: ForwardSecurityMessageProcessor,
-        taskCreator: TaskCreator,
-    ) {
-        logger.info("Activate multi device")
-        if (!BuildConfig.MD_ENABLED) {
-            logger.warn("Md is disabled in build configuration")
-            return
-        }
+    /**
+     * TODO(ANDR-3763): This will probably also need to start a transaction.
+     */
+    @WorkerThread
+    override suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec) {
+        logger.info("Deactivating multi device ...")
 
-        if (isMultiDeviceActive) {
-            logger.info("MD is already activated")
-            return
-        }
-
-        persistedProperties = generateProperties(deviceLabel)
-
-        // TODO(ANDR-2519): Remove when md allows fs by default `activate` could then be non-suspending
-        if (!IS_FS_SUPPORTED_WITH_MD) {
-            disableForwardSecurity(contactService, userService, fsMessageProcessor, taskCreator)
-        }
-        latestSocketCloseReason.tryEmit(null)
-        reconnect()
-    }
-
-    @AnyThread
-    override suspend fun deactivate(
-        userService: UserService,
-        fsMessageProcessor: ForwardSecurityMessageProcessor,
-        taskCreator: TaskCreator,
-    ) {
-        logger.info("Deactivate multi device")
-
-        // 1. Delete device group
+        // Delete device group
         logger.info("Delete device group")
-        taskCreator.scheduleDeleteDeviceGroupTask().await()
+        DeleteDeviceGroupTask(serviceManager).invoke(handle)
 
-        // 2. Delete dgk
-        logger.info("Delete multi device properties")
-        persistedProperties = null
-
-        // TODO(ANDR-2519): Remove when md allows fs by default
-        // 3. Enable FS
-        if (!IS_FS_SUPPORTED_WITH_MD) {
-            enableForwardSecurity(userService, fsMessageProcessor)
-        }
-
-        // 4. Cleanup
-        serverInfo = null
-
-        // 5. Reconnect
-        reconnect()
+        // Remove local properties and enable forward security again
+        removeMultiDeviceLocally(serviceManager)
     }
 
     override suspend fun setDeviceLabel(deviceLabel: String) {
@@ -203,90 +166,147 @@ class MultiDeviceManagerImpl(
 
     @WorkerThread
     override suspend fun linkDevice(
+        serviceManager: ServiceManager,
         deviceJoinOfferUri: String,
         taskCreator: TaskCreator,
-    ): Flow<DeviceLinkingStatus> {
-        logger.debug("Link device: {}", deviceJoinOfferUri)
+    ): Flow<DeviceLinkingStatus> = channelFlow {
+        logger.debug("Linking device started with uri: {}", deviceJoinOfferUri)
 
-        return channelFlow {
-            try {
-                val linkingCancelledSignal = CompletableDeferred<Unit>()
+        val deviceLinkingController = DeviceLinkingController()
 
-                val (controller, linkingCompleted) = taskCreator.scheduleDeviceLinkingTask(
-                    deviceJoinOfferUri,
-                    linkingCancelledSignal
+        try {
+            launch {
+                deviceLinkingController.linkingStatus.collect { deviceLinkingStatus ->
+                    send(deviceLinkingStatus)
+                }
+            }
+
+            val taskOneCancelledSignal = CompletableDeferred<Unit>()
+            val linkingPartOneResult: Result<RendezvousConnection> = try {
+                taskCreator.scheduleDeviceLinkingPartOneTask(
+                    deviceLinkingController = deviceLinkingController,
+                    deviceJoinOfferUri = deviceJoinOfferUri,
+                    taskCancelledSignal = taskOneCancelledSignal,
+                ).await()
+            } catch (cancellationException: CancellationException) {
+                logger.warn("Linking step one task got cancelled, sending internal cancel signal")
+                taskOneCancelledSignal.complete(Unit)
+                Result.failure(
+                    DeviceLinkingCancelledException(cause = cancellationException),
                 )
+            }
 
-                launch {
-                    controller.linkingStatus.collect { send(it) }
-                }
-
-                val result = try {
-                    linkingCompleted.await()
-                } catch (e: CancellationException) {
-                    linkingCancelledSignal.complete(Unit)
-                    Result.failure(DeviceLinkingCancelledException())
-                }
-                if (result.isFailure) {
+            linkingPartOneResult.fold(
+                onSuccess = {
+                    logger.debug("Linking device step one success")
+                },
+                onFailure = { exception ->
                     // Cause could for example be a MasterKeyLockedException since the data collector
                     // initialises some dependencies when data is collected (e.g. ContactService)
                     // or any other exception that can occur during device join 😉
-                    logger.error("Linking failed due to an exception")
-                    send(Failed(result.exceptionOrNull()))
-                }
-            } catch (e: Exception) {
-                send(Failed(e))
+                    when (exception) {
+                        is CancellationException -> logger.warn("Device linking step one was cancelled", exception)
+                        else -> logger.error("Device linking step one failed with exception", exception)
+                    }
+                    deviceLinkingController.onFailed(exception)
+                    return@channelFlow
+                },
+            )
+
+            val taskTwoCancelledSignal = CompletableDeferred<Unit>()
+            val linkingPartTwoResult: Result<Unit> = try {
+                taskCreator.scheduleDeviceLinkingPartTwoTask(
+                    rendezvousConnection = linkingPartOneResult.getOrThrow(),
+                    serviceManager = serviceManager,
+                    taskCancelledSignal = taskTwoCancelledSignal,
+                ).await()
+            } catch (cancellationException: CancellationException) {
+                logger.warn("Linking step two task got cancelled, sending internal cancel signal")
+                taskTwoCancelledSignal.complete(Unit)
+                Result.failure(
+                    DeviceLinkingCancelledException(cause = cancellationException),
+                )
             }
+
+            linkingPartTwoResult.fold(
+                onSuccess = {
+                    logger.debug("Linking device step two success")
+                    deviceLinkingController.onCompleted()
+                },
+                onFailure = { exception ->
+                    when (exception) {
+                        is CancellationException -> logger.warn("Device linking was cancelled in step two", exception)
+                        else -> logger.error("Device linking failed with exception for step two", exception)
+                    }
+                    deviceLinkingController.onFailed(exception)
+                },
+            )
+        } catch (exception: Exception) {
+            logger.error("Device linking failed with exception", exception)
+            deviceLinkingController.onFailed(exception)
         }
     }
 
-    // TODO(ANDR-2717): Remove
-    override suspend fun purge(taskCreator: TaskCreator) {
-        val myDeviceId = (properties
-            ?: throw MultiDeviceException("Multi device properties are missing")).mediatorDeviceId
-        loadLinkedDevicesMediatorIds(taskCreator)
-            .filter { it != myDeviceId }
-            .forEach {
-                taskCreator.scheduleDropDeviceTask(it).await()
-            }
-    }
-
-    // TODO(ANDR-2717): Use a Proper model (probably `List<DeviceInfo>`) `List<String>` is only used
-    //  for the sake of simplicity during development
-    @AnyThread
-    override suspend fun loadLinkedDevicesInfo(taskCreator: TaskCreator): List<String> {
+    @WorkerThread
+    override suspend fun dropDevice(
+        deviceId: DeviceId,
+        taskCreator: TaskCreator,
+        timeout: Duration,
+    ): DropDeviceResult {
         if (!isMultiDeviceActive) {
-            return listOf()
+            return DropDeviceResult.Failure.Internal
         }
-        val keys = _properties.filterNotNull().first().keys
-        return withContext(Dispatchers.Default) {
-            val devicesInfo = taskCreator.scheduleGetDevicesInfoTask().await()
-            devicesInfo.augmentedDeviceInfo.values.map { augmentedDeviceInfo ->
-                val deviceInfo = try {
-                    keys.decryptDeviceInfo(augmentedDeviceInfo.encryptedDeviceInfo)
-                } catch (e: Exception) {
-                    logger.error("Could not decrypt device info", e)
-                    // TODO(ANDR-2717): Display as invalid device in devices list
-                    D2dMessage.DeviceInfo.INVALID_DEVICE_INFO
-                }
-                val activityInfo =
-                    augmentedDeviceInfo.connectedSince?.let { "Connected since ${Date(it.toLong())}" }
-                        ?: augmentedDeviceInfo.lastDisconnectAt?.let { "Last disconnect: ${Date(it.toLong())}" }
-                listOfNotNull(
-                    deviceInfo.label,
-                    deviceInfo.platform,
-                    "${deviceInfo.platformDetails} (${deviceInfo.appVersion})",
-                    activityInfo
-                ).joinToString("\n")
+
+        logger.debug("Drop device: {}", deviceId.id)
+
+        // drop the device from the current group with a timeout
+        try {
+            withTimeout(timeout) {
+                taskCreator.scheduleDropDeviceTask(deviceId).await()
             }
+        } catch (timeoutCancellationException: TimeoutCancellationException) {
+            timeoutCancellationException.printStackTrace()
+            return DropDeviceResult.Failure.Timeout
         }
+
+        // re-load all remaining devices in the current group
+        val remainingLinkedDevicesResult: Result<List<LinkedDevice>> = loadLinkedDevices(taskCreator)
+
+        return DropDeviceResult.Success(
+            remainingLinkedDevicesResult = remainingLinkedDevicesResult,
+        )
     }
 
     @AnyThread
-    private suspend fun loadLinkedDevicesMediatorIds(taskCreator: TaskCreator): Set<DeviceId> {
-        return withContext(Dispatchers.Default) {
-            taskCreator.scheduleGetDevicesInfoTask().await().augmentedDeviceInfo.keys
+    override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>> = withContext(Dispatchers.Default) {
+        if (isMultiDeviceActive) {
+            taskCreator.scheduleGetLinkedDevicesTask().await().toResult()
+        } else {
+            Result.failure(IllegalStateException("MD is not active anymore"))
         }
+    }
+
+    override suspend fun setProperties(persistedProperties: PersistedMultiDeviceProperties?) {
+        this.persistedProperties = persistedProperties
+    }
+
+    private fun removeMultiDeviceLocally(serviceManager: ServiceManager) {
+        // Delete dgk
+        logger.info("Delete multi device properties")
+        persistedProperties = null
+
+        // Enable FS
+        if (!IS_FS_SUPPORTED_WITH_MD) {
+            enableForwardSecurity(serviceManager)
+        }
+
+        // Cleanup
+        serverInfo = null
+
+        logger.info("Deactivated multi device")
+
+        // Reconnect
+        reconnect()
     }
 
     private fun onSocketClosed(reason: ServerSocketCloseReason) {
@@ -297,7 +317,7 @@ class MultiDeviceManagerImpl(
     }
 
     private fun handleD2mSocketClose(reason: D2mSocketCloseReason) {
-        latestSocketCloseReason.tryEmit(reason)
+        logger.debug("Latest close reason: {}", reason.closeCode.toString())
 
         // Handle close codes which do not allow a reconnect
         when (reason.closeCode.code) {
@@ -331,7 +351,14 @@ class MultiDeviceManagerImpl(
     private fun handleDeviceSlotMismatch() {
         // TODO(ANDR-2604): The dialog should offer the possibility to use threema without server connection
         //  (no messages can be sent or received) or to reset the App (see SE-137)
-        displayConnectionError("Device slot mismatch")
+        logger.error("Device slot mismatch")
+        // In this case we just connect to the chat server to allow continuing using the device
+        val serviceManager = ThreemaApplication.getServiceManager()
+        if (serviceManager != null) {
+            removeMultiDeviceLocally(serviceManager)
+        } else {
+            logger.error("Could not disable multi device locally because the service manager is null")
+        }
     }
 
     /**
@@ -347,55 +374,72 @@ class MultiDeviceManagerImpl(
         serverMessageService.saveIncomingServerMessage(message)
     }
 
-    private fun reconnect() {
-        CoroutineScope(Dispatchers.Default).launch {
-            logger.info("Reconnect server connection")
-            reconnectHandle?.reconnect() ?: logger.error("Reconnect handle is null")
-        }
+    override fun reconnect() {
+        logger.info("Reconnect server connection")
+        reconnectHandle?.reconnect() ?: logger.error("Reconnect handle is null")
     }
 
-    // TODO(ANDR-2519): Remove when md allows fs
-    @AnyThread
-    private suspend fun disableForwardSecurity(
+    @WorkerThread
+    override suspend fun disableForwardSecurity(
+        handle: ActiveTaskCodec,
         contactService: ContactService,
         userService: UserService,
         fsMessageProcessor: ForwardSecurityMessageProcessor,
         taskCreator: TaskCreator,
     ) {
-        withContext(Dispatchers.IO) {
-            updateFeatureMask(userService, false)
-            terminateAllForwardSecuritySessions(contactService, taskCreator)
-            fsMessageProcessor.setForwardSecurityEnabled(false)
+        updateFeatureMask(
+            userService = userService,
+            isFsAllowed = false,
+        )
+        contactService.all.forEach { contactModel ->
+            DeleteAndTerminateFSSessionsTask(
+                fsmp = fsMessageProcessor,
+                contact = contactModel,
+                cause = Terminate.Cause.DISABLED_BY_LOCAL,
+            ).invoke(handle)
         }
+        fsMessageProcessor.setForwardSecurityEnabled(false)
     }
 
-    // TODO(ANDR-2519): Remove when md allows fs
-    @AnyThread
-    private suspend fun enableForwardSecurity(
-        userService: UserService,
-        fsMessageProcessor: ForwardSecurityMessageProcessor
-    ) {
-        withContext(Dispatchers.IO) {
-            updateFeatureMask(userService, true)
-            fsMessageProcessor.setForwardSecurityEnabled(true)
-            // TODO(ANDR-2872): Run FS Refresh Steps
-        }
-    }
-
-    /**
-     * This terminates and deletes all forward security sessions that exist with other contacts.
-     */
     // TODO(ANDR-2519): Remove when md allows fs
     @WorkerThread
-    private suspend fun terminateAllForwardSecuritySessions(
-        contactService: ContactService,
-        taskCreator: TaskCreator,
-    ) {
-        contactService.all.map {
-            taskCreator.scheduleDeleteAndTerminateFSSessionsTaskAsync(
-                it, Terminate.Cause.DISABLED_BY_LOCAL
-            )
-        }.awaitAll()
+    private fun enableForwardSecurity(serviceManager: ServiceManager) {
+        val userService = serviceManager.userService
+        val contactService = serviceManager.contactService
+        val groupService = serviceManager.groupService
+        val fsMessageProcessor = serviceManager.forwardSecurityMessageProcessor
+
+        // First update the user's feature mask
+        updateFeatureMask(userService, true)
+
+        // Then enable forward security again
+        fsMessageProcessor.setForwardSecurityEnabled(true)
+
+        // TODO(ANDR-3583) Logic for FS Refresh Steps is duplicated
+        // And afterwards determine the solicited contacts to
+        // Find group contacts of groups that are not left
+        val groups = groupService.all.filter { groupService.isGroupMember(it) }
+        val groupContacts = groups.flatMap(groupService::getMembers).toSet()
+
+        // Find valid contacts with defined last-update flag
+        val contactsWithConversation = contactService.all
+            .filter { it.lastUpdate != null }
+            .toSet()
+
+        // Determine the solicited contacts defined by group contacts and conversation contacts and
+        // remove invalid contacts
+        val myIdentity = userService.identity
+        val solicitedContacts = (groupContacts + contactsWithConversation)
+            .filter { it.state != IdentityState.INVALID }
+            .filter { it.identity != myIdentity }
+            .toSet()
+
+        serviceManager.taskManager.schedule(
+            FSRefreshStepsTask(
+                solicitedContacts,
+                serviceManager,
+            ),
+        )
     }
 
     // TODO(ANDR-2519): Do not update feature mask when md supports fs
@@ -403,20 +447,6 @@ class MultiDeviceManagerImpl(
     private fun updateFeatureMask(userService: UserService, isFsAllowed: Boolean) {
         userService.setForwardSecurityEnabled(isFsAllowed)
         userService.sendFeatureMask()
-    }
-
-    /**
-     * Generate the properties required to activate multi device.
-     * This includes device ids and md key material.
-     */
-    private fun generateProperties(deviceLabel: String): PersistedMultiDeviceProperties {
-        return PersistedMultiDeviceProperties(
-            null,
-            deviceLabel,
-            DeviceId(generateRandomU64()),
-            DeviceId(generateRandomU64()),
-            generateRandomBytes(D2mProtocolDefines.DGK_LENGTH_BYTES)
-        )
     }
 
     private fun mapPersistedProperties(persistedProperties: PersistedMultiDeviceProperties): MultiDeviceProperties {
@@ -428,9 +458,9 @@ class MultiDeviceManagerImpl(
             createDeviceInfo(persistedProperties.deviceLabel),
             D2mProtocolVersion(
                 D2mProtocolDefines.D2M_PROTOCOL_VERSION_MIN,
-                D2mProtocolDefines.D2M_PROTOCOL_VERSION_MAX
+                D2mProtocolDefines.D2M_PROTOCOL_VERSION_MAX,
             ),
-            ::updateServerInfo
+            ::updateServerInfo,
         )
     }
 
@@ -442,7 +472,7 @@ class MultiDeviceManagerImpl(
             D2dMessage.DeviceInfo.Platform.ANDROID,
             platformDetails,
             version.versionNumber,
-            deviceLabel
+            deviceLabel,
         ).also { logger.trace("Device info created: {}", it) }
     }
 
@@ -457,7 +487,7 @@ class MultiDeviceManagerImpl(
                         logger.trace(
                             "Deserialized persisted md properties: {} -> {}",
                             bytes.toHexString(5),
-                            it
+                            it,
                         )
                     }
                 } catch (e: PersistedMultiDeviceProperties.DeserializeException) {
@@ -466,7 +496,6 @@ class MultiDeviceManagerImpl(
                     // return:
                     null
                 }
-
             } else {
                 // return:
                 null
@@ -479,7 +508,7 @@ class MultiDeviceManagerImpl(
      * any persisted property will be removed.
      */
     @AnyThread
-    private fun storeProperties(properties: PersistedMultiDeviceProperties?) {
+    private fun saveProperties(properties: PersistedMultiDeviceProperties?) {
         CoroutineScope(Dispatchers.IO).launch {
             if (properties == null) {
                 logger.info("Delete md properties")
@@ -490,7 +519,7 @@ class MultiDeviceManagerImpl(
                 preferenceStore.save(
                     PreferenceStore.PREFS_MD_PROPERTIES,
                     properties.serialize(),
-                    true
+                    true,
                 )
             }
         }
@@ -501,10 +530,13 @@ class MultiDeviceManagerImpl(
         this.serverInfo = serverInfo
         // TODO(ANDR-2580): Trigger whatever is required based on the server info
         CoroutineScope(Dispatchers.Default).launch {
+            preferenceStore.save(
+                PreferenceStore.PREFS_MD_MEDIATOR_MAX_SLOTS,
+                serverInfo.maxDeviceSlots.toLong(),
+            )
             updateRegistrationTime()
         }
     }
-
 
     @AnyThread
     private fun updateRegistrationTime() {

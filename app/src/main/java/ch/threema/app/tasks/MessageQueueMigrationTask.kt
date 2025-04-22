@@ -38,10 +38,6 @@ import ch.threema.storage.factories.GroupMessageModelFactory
 import ch.threema.storage.factories.MessageModelFactory
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import java.io.EOFException
 import java.io.File
 import java.io.FileInputStream
@@ -49,13 +45,18 @@ import java.io.InputStream
 import java.io.ObjectInputStream
 import java.io.ObjectStreamClass
 import java.util.Date
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 private val logger = LoggingUtil.getThreemaLogger("MessageQueueMigrationTask")
 
-// TODO(ANDR-2626): Remove this task as soon as the file has been deleted for most users
 /**
  * This task reads the legacy message queue and sends the messages if there are some. Afterwards,
  * the message queue file is deleted.
+ *
+ * TODO(ANDR-2626): Remove this task as soon as the file has been deleted for most users
  */
 class MessageQueueMigrationTask(
     private val context: Context,
@@ -110,9 +111,9 @@ class MessageQueueMigrationTask(
             return@withContext MessageBoxInputStream(
                 masterKey.getCipherInputStream(
                     FileInputStream(
-                        file
-                    )
-                )
+                        file,
+                    ),
+                ),
             ).use {
                 val messages = mutableListOf<MessageBox>()
                 while (true) {
@@ -126,14 +127,14 @@ class MessageQueueMigrationTask(
                         if (myIdentity != messageBox.fromIdentity) {
                             logger.warn(
                                 "Skipping outgoing message from wrong identity ({}) in queue",
-                                messageBox.fromIdentity
+                                messageBox.fromIdentity,
                             )
                             continue
                         }
 
                         logger.info(
                             "Sending message {} from message queue file",
-                            messageBox.messageId
+                            messageBox.messageId,
                         )
 
                         messages.add(messageBox)
@@ -180,7 +181,7 @@ class MessageQueueMigrationTask(
             messageService.updateOutgoingMessageState(
                 it,
                 MessageState.SENT,
-                Date()
+                Date(),
             )
         }
     }
@@ -193,7 +194,6 @@ class MessageQueueMigrationTask(
             groupMessageModelFactory.getByApiMessageIdAndGroupId(messageId, it.id)
         } + messageModelFactory.getByApiMessageIdAndIdentity(messageId, identity)
     }
-
 }
 
 private class MessageBoxInputStream(input: InputStream) : ObjectInputStream(input) {

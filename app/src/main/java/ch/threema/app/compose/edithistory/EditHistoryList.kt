@@ -75,8 +75,10 @@ fun EditHistoryList(
 
     val isItemExpandableMap = remember { mutableStateMapOf<Int, Boolean>() }
     LaunchedEffect(editHistoryUiState.editHistoryEntries) {
-        isItemExpandableMap.keys.retainAll(editHistoryUiState.editHistoryEntries.map { it.uid }
-            .toSet())
+        isItemExpandableMap.keys.retainAll(
+            editHistoryUiState.editHistoryEntries.map { it.uid }
+                .toSet(),
+        )
     }
 
     LazyColumn(modifier = modifier) {
@@ -84,7 +86,6 @@ fun EditHistoryList(
             headerContent?.invoke()
         }
         if (editHistoryUiState.editHistoryEntries.isNotEmpty()) {
-
             item {
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -103,7 +104,7 @@ fun EditHistoryList(
             // edit history
             items(
                 count = editHistoryUiState.editHistoryEntries.size,
-                key = { index -> editHistoryUiState.editHistoryEntries[index].uid }
+                key = { index -> editHistoryUiState.editHistoryEntries[index].uid },
             ) { index ->
                 val entry = editHistoryUiState.editHistoryEntries[index]
                 val isExpandable by remember {
@@ -113,16 +114,18 @@ fun EditHistoryList(
                 }
 
                 ExpandingBox(
-                    collapsedMaxHeight = if (isExpandable) ITEM_MAX_HEIGHT else null
+                    collapsedMaxHeight = if (isExpandable) ITEM_MAX_HEIGHT else null,
                 ) { isExpanded, toggleExpanded ->
                     val itemModifier = Modifier
                         .padding(start = 8.dp)
-                        .then(stringResource(R.string.cd_index_in_edit_history).let {
-                            Modifier.semantics {
-                                contentDescription =
-                                    it.format(editHistoryUiState.editHistoryEntries.size - index)
-                            }
-                        })
+                        .then(
+                            stringResource(R.string.cd_index_in_edit_history).let {
+                                Modifier.semantics {
+                                    contentDescription =
+                                        it.format(editHistoryUiState.editHistoryEntries.size - index)
+                                }
+                            },
+                        )
                     val bubbleModifier = Modifier.onGloballyPositioned { coordinates ->
                         // measure bubble height to initialize whether it is expandable
                         if (!isItemExpandableMap.containsKey(entry.uid)) {

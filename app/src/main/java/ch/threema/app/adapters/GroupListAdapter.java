@@ -45,7 +45,7 @@ import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.TextUtil;
+import ch.threema.app.utils.TextExtensionsKt;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupListAdapter extends FilterableListAdapter {
@@ -122,7 +122,15 @@ public class GroupListAdapter extends FilterableListAdapter {
             filterString = groupListFilter.getFilterString();
         }
 
-        holder.nameView.setText(TextUtil.highlightMatches(context, NameUtil.getDisplayName(groupModel, this.groupService), filterString, false, false));
+        holder.nameView.setText(
+            TextExtensionsKt.highlightMatches(
+                NameUtil.getDisplayName(groupModel, this.groupService),
+                context,
+                filterString,
+                false,
+                false
+            )
+        );
         AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
 
         holder.subjectView.setText(this.groupService.getMembersString(groupModel));

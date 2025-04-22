@@ -41,7 +41,10 @@ class IncomingForwardSecurityTerminateTask(
         // Note that in this case we should not send a terminate if we do not support fs. Sending a
         // terminate could trigger the sender to respond with a terminate again.
         if (!forwardSecurityMessageProcessor.canForwardSecurityMessageBeProcessed(
-                contact, data.sessionId, false, handle
+                sender = contact,
+                sessionId = data.sessionId,
+                sendTerminate = false,
+                handle = handle,
             )
         ) {
             return ForwardSecurityDecryptionResult.NONE

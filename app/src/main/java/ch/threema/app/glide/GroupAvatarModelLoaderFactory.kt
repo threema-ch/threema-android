@@ -30,12 +30,10 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory
 
 class GroupAvatarModelLoaderFactory(private val context: Context) :
     ModelLoaderFactory<AvatarCacheServiceImpl.GroupAvatarConfig, Bitmap> {
-
     override fun build(unused: MultiModelLoaderFactory): ModelLoader<AvatarCacheServiceImpl.GroupAvatarConfig, Bitmap> =
         GroupAvatarLoader(context)
 
     override fun teardown() {
         // Nothing to do here
     }
-
 }

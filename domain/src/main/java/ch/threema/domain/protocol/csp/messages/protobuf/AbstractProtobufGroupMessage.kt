@@ -35,9 +35,8 @@ private val logger = LoggingUtil.getThreemaLogger("AbstractProtobufGroupMessage"
  */
 abstract class AbstractProtobufGroupMessage<D : ProtobufDataInterface<*>?>(
     private val type: Int,
-    val data: D
+    val data: D,
 ) : AbstractGroupMessage() {
-
     override fun getBody(): ByteArray? {
         return try {
             val bos = ByteArrayOutputStream()

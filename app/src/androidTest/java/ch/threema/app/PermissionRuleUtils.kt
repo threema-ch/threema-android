@@ -48,7 +48,7 @@ fun getReadWriteExternalStoragePermissionRule(): GrantPermissionRule {
     } else {
         GrantPermissionRule.grant(
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
         )
     }
 }
@@ -61,12 +61,12 @@ fun getReadImagesVideosPermissionRule(): GrantPermissionRule {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         GrantPermissionRule.grant(
             Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_MEDIA_VIDEO
+            Manifest.permission.READ_MEDIA_VIDEO,
         )
     } else {
         GrantPermissionRule.grant(
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
         )
     }
 }
@@ -87,7 +87,7 @@ fun getBluetoothPermissionRule(): GrantPermissionRule {
             Manifest.permission.BLUETOOTH_CONNECT
         } else {
             Manifest.permission.BLUETOOTH
-        }
+        },
     )
 }
 

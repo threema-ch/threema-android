@@ -24,6 +24,7 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.base.ThreemaException
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.ReactionMessage
 import ch.threema.domain.protocol.csp.messages.ReactionMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -31,8 +32,8 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.protobuf.csp.e2e.Reaction.ActionCase
 import com.google.protobuf.ByteString
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 class OutgoingContactReactionMessageTask(
     private val toIdentity: String,
@@ -43,28 +44,31 @@ class OutgoingContactReactionMessageTask(
     private val createdAt: Date,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingContactReactionMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val messageModel = getContactMessageModel(messageModelId)
             ?: throw ThreemaException("No contact message model found for messageModelId=$messageModelId")
 
-        val reactionMessage = ReactionMessage(
-            ReactionMessageData(
-                messageId = MessageId.fromString(messageModel.apiMessageId).messageIdLong,
+        val reactionMessageData = try {
+            ReactionMessageData.forActionCase(
                 actionCase = actionCase,
-                emojiSequenceBytes = ByteString.copyFromUtf8(emojiSequence)
+                messageId = MessageId.fromString(messageModel.apiMessageId).messageIdLong,
+                emojiSequenceBytes = ByteString.copyFromUtf8(emojiSequence),
             )
-        )
+        } catch (e: BadMessageException) {
+            throw ThreemaException("Failed to create reaction message data", e)
+        }
+
+        val reactionMessage = ReactionMessage(reactionMessageData)
 
         sendContactMessage(
-            reactionMessage,
-            null,
-            toIdentity,
-            messageId,
-            createdAt,
-            handle
+            message = reactionMessage,
+            messageModel = null,
+            toIdentity = toIdentity,
+            messageId = messageId,
+            createdAt = createdAt,
+            handle = handle,
         )
     }
 
@@ -74,7 +78,7 @@ class OutgoingContactReactionMessageTask(
         messageId.messageId,
         actionCase,
         emojiSequence,
-        createdAt.time
+        createdAt.time,
     )
 
     @Serializable
@@ -84,7 +88,7 @@ class OutgoingContactReactionMessageTask(
         private val messageId: ByteArray,
         private val actionCase: ActionCase,
         private val emojiSequence: String,
-        private val createdAt: Long
+        private val createdAt: Long,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingContactReactionMessageTask(
@@ -94,7 +98,7 @@ class OutgoingContactReactionMessageTask(
                 actionCase,
                 emojiSequence,
                 Date(createdAt),
-                serviceManager
+                serviceManager,
             )
     }
 }

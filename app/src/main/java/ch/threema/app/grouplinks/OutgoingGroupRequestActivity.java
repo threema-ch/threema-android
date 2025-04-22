@@ -399,7 +399,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 
     private void forwardToGroup(int groupId) {
         Intent intent = new Intent(this, ComposeMessageActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
         startActivity(intent);
     }
 

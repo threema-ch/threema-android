@@ -42,9 +42,8 @@ interface D2mConnection
 
 internal class D2mConnectionImpl(
     dependencyProvider: ServerConnectionDependencyProvider,
-    private val closeListener: D2mSocketCloseListener
+    private val closeListener: D2mSocketCloseListener,
 ) : D2mConnection, BaseServerConnection(dependencyProvider) {
-
     override fun onSocketClosed(reason: ServerSocketCloseReason) {
         closeListener.onSocketClosed(reason)
     }
@@ -64,5 +63,5 @@ data class D2mConnectionConfiguration(
     override val taskManager: TaskManager,
     val multiDevicePropertyProvider: MultiDevicePropertyProvider,
     val closeListener: D2mSocketCloseListener,
-    val okHttpClient: OkHttpClient
+    val okHttpClient: OkHttpClient,
 ) : BaseServerConnectionConfiguration

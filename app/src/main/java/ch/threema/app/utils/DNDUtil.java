@@ -21,17 +21,8 @@
 
 package ch.threema.app.utils;
 
-import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.ContactsContract;
 
 import org.slf4j.Logger;
 
@@ -39,27 +30,15 @@ import java.util.Calendar;
 import java.util.Set;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationChannelCompat;
-import androidx.core.app.NotificationChannelGroupCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.messagereceiver.GroupMessageReceiver;
-import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.ContactModel;
 
 public class DNDUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DNDUtil");
-    private final DeadlineListService mutedChatsListService;
-    private final DeadlineListService mentionOnlyChatsListService;
     private final IdentityStore identityStore;
     private final Context context;
 
@@ -75,58 +54,7 @@ public class DNDUtil {
 
     private DNDUtil() {
         this.context = ThreemaApplication.getAppContext();
-
-        this.mutedChatsListService = ThreemaApplication.getServiceManager().getMutedChatsListService();
-        this.mentionOnlyChatsListService = ThreemaApplication.getServiceManager().getMentionOnlyChatsListService();
         this.identityStore = ThreemaApplication.getServiceManager().getIdentityStore();
-    }
-
-    /**
-     * Returns true if the user is mentioned in the provided message text or the text contains an "@All" mention
-     *
-     * @param rawMessageText Raw message text without san substitutions for mentions
-     * @return true if the user is addressed by a mention, false otherwise
-     */
-    private boolean isUserMentioned(@Nullable CharSequence rawMessageText) {
-        if (rawMessageText != null) {
-            if (rawMessageText.length() > 10) {
-                return rawMessageText.toString().contains("@[" + ContactService.ALL_USERS_PLACEHOLDER_ID + "]") ||
-                    rawMessageText.toString().contains("@[" + identityStore.getIdentity() + "]");
-            }
-            // message text can't possibly contain a mention - too short
-        }
-        // no message text - no mention
-        return false;
-    }
-
-    /**
-     * Returns true if the chat for the provided MessageReceiver is set to mention only at this time.
-     *
-     * @param messageReceiver MessageReceiver to check for DND status
-     * @return true if the chat is muted
-     */
-    public boolean isMentionOnlyChat(@Nullable MessageReceiver<?> messageReceiver) {
-        if (messageReceiver instanceof GroupMessageReceiver) {
-            String uniqueId = messageReceiver.getUniqueIdString();
-            return mentionOnlyChatsListService != null && mentionOnlyChatsListService.has(uniqueId);
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if the chat for the provided MessageReceiver is muted at this time. This does
-     * NOT check for work hours (use {@link #isMutedWork()} for this) or mention-only chats (use
-     * {@link #isMentionOnlyChat(MessageReceiver)} to check this).
-     *
-     * @param messageReceiver MessageReceiver to check for DND status
-     * @return true if the chat is muted
-     */
-    public boolean isMutedChat(@Nullable MessageReceiver<?> messageReceiver) {
-        if (messageReceiver != null) {
-            String uniqueId = messageReceiver.getUniqueIdString();
-            return mutedChatsListService != null && mutedChatsListService.has(uniqueId);
-        }
-        return false;
     }
 
     /**
@@ -134,30 +62,19 @@ public class DNDUtil {
      * no intrusive notification should be shown for an incoming message
      * If a message text is provided it is checked for possible mentions - group messages only
      *
-     * @param messageReceiver MessageReceiver to check for DND status
-     * @param rawMessageText  Text of the incoming message (optional, group messages only)
-     * @return true if chat is muted
+     * @param rawMessageText Text of the incoming message (optional, group messages only)
      */
-    public boolean isMuted(MessageReceiver messageReceiver, CharSequence rawMessageText) {
-        // ok, it's muted
-        return isMutedPrivate(messageReceiver, rawMessageText) || isMutedWork();
-    }
-
-    public boolean isMutedPrivate(MessageReceiver messageReceiver, CharSequence rawMessageText) {
-        String uniqueId = messageReceiver.getUniqueIdString();
-
-        if (isMutedChat(messageReceiver)) {
-            // user has set DND option on this chat
-            logger.info("Chat is muted");
-            return true;
+    public boolean isMessageMuted(
+        @Nullable NotificationTriggerPolicyOverride notificationTriggerPolicyOverride,
+        @Nullable CharSequence rawMessageText
+    ) {
+        if (notificationTriggerPolicyOverride == null) {
+            return false;
         }
-        if (isMentionOnlyChat(messageReceiver)) {
-            // user has "DND except when mentioned" option enabled on this chat
-            logger.info("Chat is mention only");
-            // user is not mentioned => mute
-            return !isUserMentioned(rawMessageText);
-        }
-        return false;
+        boolean isMutedByOverrideSetting = rawMessageText != null
+            ? notificationTriggerPolicyOverride.muteAppliesRightNowToMessage(rawMessageText.toString(), identityStore.getIdentity())
+            : notificationTriggerPolicyOverride.getMuteAppliesRightNow();
+        return isMutedByOverrideSetting || isMutedWork();
     }
 
     /**
@@ -199,116 +116,5 @@ public class DNDUtil {
             }
         }
         return false;
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    public boolean isStarredContact(MessageReceiver messageReceiver) {
-        if (!(messageReceiver instanceof ContactMessageReceiver)) {
-            return false;
-        }
-
-        ContactModel contactModel = ((ContactMessageReceiver) messageReceiver).getContact();
-
-        PreferenceService preferenceService;
-        try {
-            preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-        } catch (NullPointerException e) {
-            return false;
-        }
-
-        if (!preferenceService.isSyncContacts()) {
-            return false;
-        }
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-
-        Uri contactUri;
-
-        if (contactModel.isLinkedToAndroidContact()) {
-            try {
-                contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contactModel);
-            } catch (Exception e) {
-                logger.error("Could not get Android contact URI", e);
-                return false;
-            }
-
-            if (contactUri != null) {
-                String[] projection = {ContactsContract.Contacts._ID};
-                String selection = ContactsContract.Contacts.STARRED + "=1";
-                try (Cursor cursor = context.getContentResolver().query(contactUri, projection, selection, null, null)) {
-
-                    if (cursor != null && cursor.getCount() > 0) {
-                        logger.info("Contact is starred");
-                        return true;
-                    }
-                } catch (Exception e) {
-                    logger.error("Contact lookup failed", e);
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Check if the contact specified in messageReceiver is muted in the system.
-     * <p>
-     * Notifications in Android are one big mess!
-     * <p>
-     * "Starred" contacts may override the global DND setting in "priority" mode
-     * and should be signalled (needless to say this applies to contacts that are linked with a system contact only).
-     * Also, notification channels can be configured to override the system's DND setting. Accordingly we should signal them too.
-     * Additionally, notifications may be blocked on a notification channel group level. In that case, ignore any DND override settings
-     * <p>
-     * I dare not imagine if this will work on Xiaomi devices with their hideous tinkering on top of the normal Android notification system...
-     *
-     * @param messageReceiver           A MessageReceiver representing a ContactModel
-     * @param notification              The notification
-     * @param notificationManagerCompat
-     * @return true if no ringtone should ne played, false otherwise
-     */
-    public boolean isSystemMuted(MessageReceiver messageReceiver, @Nullable Notification notification, NotificationManagerCompat notificationManagerCompat) {
-        boolean isSystemMuted = !notificationManagerCompat.areNotificationsEnabled();
-        boolean canBypassDND = false;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notification != null) {
-            NotificationChannelCompat notificationChannelCompat = notificationManagerCompat.getNotificationChannelCompat(notification.getChannelId());
-            if (notificationChannelCompat != null) {
-                String groupName = notificationChannelCompat.getGroup();
-                if (groupName != null) {
-                    NotificationChannelGroupCompat notificationChannelGroupCompat = notificationManagerCompat.getNotificationChannelGroupCompat(groupName);
-                    if (notificationChannelGroupCompat != null) {
-                        if (notificationChannelGroupCompat.isBlocked()) {
-                            logger.info("Notification channel group is blocked");
-                            return true;
-                        }
-                    }
-                }
-                canBypassDND = notificationChannelCompat.canBypassDnd();
-                logger.info("Notification channel can bypass DND = {}", canBypassDND);
-            }
-        }
-
-        if (messageReceiver instanceof ContactMessageReceiver) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                /* we do not play a ringtone sound if system-wide DND is enabled - except for starred contacts */
-                switch (notificationManagerCompat.getCurrentInterruptionFilter()) {
-                    case NotificationManagerCompat.INTERRUPTION_FILTER_NONE:
-                        logger.info("Interruption filter set to NONE");
-                        isSystemMuted = true;
-                        break;
-                    case NotificationManagerCompat.INTERRUPTION_FILTER_PRIORITY:
-                        logger.info("Interruption filter set to PRIORITY");
-                        isSystemMuted = !isStarredContact(messageReceiver);
-                        logger.info("Contact is starred = {}", !isSystemMuted);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        return isSystemMuted && !canBypassDND;
     }
 }

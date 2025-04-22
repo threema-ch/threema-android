@@ -60,7 +60,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
+import java.security.MessageDigest;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,6 +83,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -147,7 +148,7 @@ import ch.threema.app.ui.IdentityPopup;
 import ch.threema.app.ui.OngoingCallNoticeMode;
 import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
@@ -171,15 +172,14 @@ import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
 import ch.threema.domain.protocol.connection.ServerConnection;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.MessageState;
-import ch.threema.storage.models.TagModel;
-
-import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
 
 public class HomeActivity extends ThreemaAppCompatActivity implements
     SMSVerificationDialog.SMSVerificationDialogCallback,
@@ -214,6 +214,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     private static final int REQUEST_CODE_WHATSNEW = 41912;
 
     public static final String EXTRA_SHOW_CONTACTS = "show_contacts";
+
+    private @Nullable HomeViewModel viewModel = null;
 
     private ActionBar actionBar;
     private boolean isLicenseCheckStarted = false, isInitialized = false, isWhatsNewShown = false, isUpdating = false;
@@ -345,16 +347,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             }
 
             if (conversationTagService != null) {
-                TagModel unreadTagModel = conversationTagService.getTagModel(FIXED_TAG_UNREAD);
-                if (unreadTagModel == null) {
-                    logger.error("Unread tag model is null");
-                    return unread;
-                }
-
                 // First check whether there are some conversations that are marked as unread. This
                 // check is expected to be fast, as usually there are not many chats that are marked
                 // as unread.
-                if (conversationTagService.getCount(unreadTagModel) > 0) {
+                if (conversationTagService.getCount(ConversationTag.MARKED_AS_UNREAD) > 0) {
                     // In case there is at least one unread tag, we create a set of all possible
                     // conversation uids to efficiently check that the unread tags are valid.
                     Set<String> shownConversationUids = conversationService.getAll(false)
@@ -362,13 +358,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                         .map(ConversationModel::getUid)
                         .collect(Collectors.toSet());
 
-                    List<String> unreadUids = conversationTagService.getConversationUidsByTag(unreadTagModel);
+                    List<String> unreadUids = conversationTagService.getConversationUidsByTag(ConversationTag.MARKED_AS_UNREAD);
                     for (String unreadUid : unreadUids) {
                         if (shownConversationUids.contains(unreadUid)) {
                             unread++;
                         } else {
                             logger.warn("Conversation '{}' is marked as unread but not shown. Deleting the unread flag.", unreadUid);
-                            conversationTagService.removeTag(unreadUid, unreadTagModel);
+                            conversationTagService.removeTag(unreadUid, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
                         }
                     }
                 }
@@ -424,7 +420,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
     private final ConnectionStateListener connectionStateListener = this::updateConnectionIndicator;
 
-    private void updateUnsentMessagesList(AbstractMessageModel modifiedMessageModel, UnsentMessageAction action) {
+    private void updateUnsentMessagesList(@NonNull AbstractMessageModel modifiedMessageModel, UnsentMessageAction action) {
         int numCurrentUnsent = unsentMessages.size();
 
         synchronized (unsentMessages) {
@@ -527,7 +523,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         }
 
         @Override
-        public void onModified(List<AbstractMessageModel> modifiedMessageModels) {
+        public void onModified(@NonNull List<AbstractMessageModel> modifiedMessageModels) {
             for (AbstractMessageModel modifiedMessageModel : modifiedMessageModels) {
 
                 if (!modifiedMessageModel.isStatusMessage()
@@ -672,7 +668,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                                             byte[] oldMasterKey = preferenceService.getThreemaSafeMasterKey();
 
                                             // show warning dialog only when password was changed
-                                            if (Arrays.equals(newMasterKey, oldMasterKey)) {
+                                            if (MessageDigest.isEqual(newMasterKey, oldMasterKey)) {
                                                 reconfigureSafe(threemaSafeService, newConfig);
                                                 enableSafe(threemaSafeService, newConfig, null);
                                             } else {
@@ -716,6 +712,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 }
             }
         }
+
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
     }
 
     private boolean hasIdentity() {
@@ -754,8 +752,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     protected void onStart() {
         super.onStart();
 
-        // Check if there are any server messages to display
         if (serviceManager != null) {
+
+            // Check if there are any server messages to display
             DatabaseServiceNew databaseService = serviceManager.getDatabaseServiceNew();
             try {
                 if (databaseService.getServerMessageModelFactory().count() > 0) {
@@ -764,6 +763,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 }
             } catch (SQLiteException e) {
                 logger.error("Could not get server message model count", e);
+            }
+
+            if (viewModel != null) {
+                viewModel.checkMultiDeviceGroup(serviceManager);
             }
         }
     }
@@ -789,12 +792,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             ConfigUtils.isBackgroundRestricted(ThreemaApplication.getAppContext()) ||
                 ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false) ||
                 ConfigUtils.isNotificationsDisabled(ThreemaApplication.getAppContext()) ||
-                (preferenceService.isCallsEnabled() && ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext())) ||
+                (preferenceService.isVoipEnabled() && ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext())) ||
                 ((preferenceService.useThreemaPush() || BuildFlavor.getCurrent().getForceThreemaPush()) && !PowermanagerUtil.isIgnoringBatteryOptimizations(ThreemaApplication.getAppContext()));
     }
 
     private void showWhatsNew() {
-        final boolean skipWhatsNew = true; // set this to false if you want to show a What's New screen
+        final boolean skipWhatsNew = false; // set this to false if you want to show a What's New screen
 
         if (preferenceService != null) {
             if (!preferenceService.isLatestVersion(this)) {
@@ -814,7 +817,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                         // To not show the same dialog twice, it is only shown if the previous version
                         // is prior to the first version that used this dialog.
                         // Use the version code of the first version where this dialog should be shown.
-                        if (previous < 1010) {
+                        if (previous < 1069) {
                             isWhatsNewShown = true;
 
                             Intent intent = new Intent(this, WhatsNewActivity.class);
@@ -1476,7 +1479,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    userService.unlinkMobileNumber();
+                    userService.unlinkMobileNumber(TriggerSource.LOCAL);
                 } catch (Exception e) {
                     logger.error("Exception", e);
                 }
@@ -1652,8 +1655,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 webclientMenuItem.setVisible(!webDisabled);
             }
 
-            boolean mdMenuItemVisible = serviceManager.getMultiDeviceManager().isMultiDeviceActive()
-                || ConfigUtils.isMultiDeviceEnabled();
+            // Id MD is currently locked, but was activated before, we still have to give access to the menu item
+            boolean mdMenuItemVisible = serviceManager.getMultiDeviceManager().isMultiDeviceActive() || ConfigUtils.isMultiDeviceEnabled(this);
             MenuItem mdMenuItem = menu.findItem(R.id.multi_device);
             if (mdMenuItem != null) {
                 mdMenuItem.setVisible(mdMenuItemVisible);
@@ -1684,7 +1687,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    userService.verifyMobileNumber(code);
+                    userService.verifyMobileNumber(code, TriggerSource.LOCAL);
                 } catch (LinkMobileNoException e) {
                     logger.error("Exception", e);
                     return getString(R.string.code_invalid);

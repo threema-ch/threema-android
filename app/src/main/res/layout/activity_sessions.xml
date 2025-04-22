@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,66 +9,19 @@
 
     <include layout="@layout/toolbar_view" />
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/switch_frame">
-
-            <ch.threema.app.ui.EmptyRecyclerView
-                android:id="@+id/recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-                android:layout_marginRight="@dimen/tablet_additional_padding_left_right" />
-
-            <LinearLayout
-                android:id="@+id/empty_frame"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="24dp"
-                    app:srcCompat="@drawable/ic_phonelink_white_128dp"
-                    app:tint="?attr/colorOnBackground" />
-
-                <TextView
-                    style="@style/Threema.TextAppearance.Emptyview"
-                    android:id="@+id/empty_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/tablet_standard_padding_left_right"
-                    android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
-                    android:fontFamily="sans-serif-light"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center_horizontal"
-                    android:text="@string/webclient_no_sessions_found"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
-
-        </FrameLayout>
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/switch_frame"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/web_sessions_switch_frame_height"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/web_sessions_switch_frame_height"
+            android:outlineProvider="none"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="0dp"
             app:cardElevation="4dp"
@@ -75,27 +29,86 @@
             app:contentPaddingLeft="16dp"
             app:contentPaddingRight="16dp"
             app:contentPaddingTop="8dp"
-            app:strokeWidth="0dp"
-            android:outlineProvider="none">
+            app:strokeWidth="0dp">
 
             <TextView
-                style="@style/Threema.TextAppearance.SwitchHeader"
                 android:id="@+id/switch_text"
+                style="@style/Threema.TextAppearance.SwitchHeader"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|left"
-                android:gravity="center_vertical" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:gravity="center_vertical"
+                tools:text="An" />
 
             <ch.threema.app.ui.SilentSwitchCompat
                 android:id="@+id/switch_button"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|right"
-                android:contentDescription="@string/webclient_enable" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
+                android:contentDescription="@string/webclient_enable"
+                tools:checked="true" />
 
         </com.google.android.material.card.MaterialCardView>
 
-    </RelativeLayout>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/multi_device_banner_compose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ch.threema.app.ui.EmptyRecyclerView
+                        android:id="@+id/sessions_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+                        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+                        android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingTop="@dimen/spacing_two_grid_unit"
+                        android:paddingBottom="@dimen/scroll_spacing_extra_floating_action_button"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/item_webclient_session_list" />
+
+                    <TextView
+                        android:id="@+id/no_sessions_text"
+                        style="@style/Threema.TextAppearance.Emptyview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/spacing_four_grid_unit"
+                        android:layout_marginBottom="@dimen/scroll_spacing_extra_floating_action_button"
+                        android:alpha="0.75"
+                        android:drawablePadding="@dimen/spacing_three_grid_unit"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center_horizontal"
+                        android:paddingHorizontal="@dimen/spacing_three_grid_unit"
+                        android:paddingVertical="@dimen/spacing_three_grid_unit"
+                        android:text="@string/webclient_no_sessions_found"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="14sp"
+                        app:drawableTint="?attr/colorOnBackground"
+                        app:drawableTopCompat="@drawable/ic_phonelink_white_128dp" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/floating"
@@ -105,10 +118,10 @@
         android:layout_margin="@dimen/floating_button_margin"
         android:contentDescription="@string/webclient_init_session"
         android:text="@string/webclient_init_session"
-        app:icon="@drawable/ic_qr_code_scan"
         android:tint="@android:color/white"
         android:visibility="visible"
-        app:layout_anchor="@+id/recycler"
+        app:icon="@drawable/ic_qr_code_scan"
+        app:layout_anchor="@+id/content"
         app:layout_anchorGravity="bottom|right|end" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

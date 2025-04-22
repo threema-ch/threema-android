@@ -21,8 +21,10 @@
 
 package ch.threema.base.utils
 
-import org.junit.Assert.*
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ByteArrayUtilsKtTest {
     @Test
@@ -35,28 +37,28 @@ class ByteArrayUtilsKtTest {
         val chunks = byteArrayOf(1, 2, 3, 4, 5, 6).chunked(3)
 
         assertEquals(2, chunks.size)
-        assertArrayEquals(byteArrayOf(1, 2, 3), chunks[0])
-        assertArrayEquals(byteArrayOf(4, 5, 6), chunks[1])
+        assertContentEquals(byteArrayOf(1, 2, 3), chunks[0])
+        assertContentEquals(byteArrayOf(4, 5, 6), chunks[1])
     }
 
     @Test
     fun testChunkedWithDifferentSizedParts() {
         val a = byteArrayOf(1).chunked(3)
         assertEquals(1, a.size)
-        assertArrayEquals(byteArrayOf(1), a[0])
+        assertContentEquals(byteArrayOf(1), a[0])
 
         val b = byteArrayOf(1, 2).chunked(3)
         assertEquals(1, b.size)
-        assertArrayEquals(byteArrayOf(1, 2), b[0])
+        assertContentEquals(byteArrayOf(1, 2), b[0])
 
         val c = byteArrayOf(1, 2, 3, 4).chunked(3)
         assertEquals(2, c.size)
-        assertArrayEquals(byteArrayOf(1, 2, 3), c[0])
-        assertArrayEquals(byteArrayOf(4), c[1])
+        assertContentEquals(byteArrayOf(1, 2, 3), c[0])
+        assertContentEquals(byteArrayOf(4), c[1])
 
         val d = byteArrayOf(1, 2, 3, 4, 5).chunked(3)
         assertEquals(2, d.size)
-        assertArrayEquals(byteArrayOf(1, 2, 3), d[0])
-        assertArrayEquals(byteArrayOf(4, 5), d[1])
+        assertContentEquals(byteArrayOf(1, 2, 3), d[0])
+        assertContentEquals(byteArrayOf(4, 5), d[1])
     }
 }

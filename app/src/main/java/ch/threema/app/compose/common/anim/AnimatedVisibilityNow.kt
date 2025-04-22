@@ -36,7 +36,7 @@ fun AnimatedVisibilityNow(
     modifier: Modifier = Modifier,
     enter: EnterTransition = fadeIn(),
     exit: ExitTransition = fadeOut(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val state = remember {
         MutableTransitionState(false).apply {
@@ -48,6 +48,6 @@ fun AnimatedVisibilityNow(
         modifier = modifier,
         visibleState = state,
         enter = enter,
-        exit = exit
+        exit = exit,
     ) { content() }
 }

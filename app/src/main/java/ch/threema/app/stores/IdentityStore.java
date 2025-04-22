@@ -25,6 +25,7 @@ import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
 
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -204,8 +205,8 @@ public class IdentityStore implements IdentityStoreInterface {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             KeyPair keyPair = (KeyPair) o;
-            return Arrays.equals(privateKey, keyPair.privateKey) &&
-                Arrays.equals(publicKey, keyPair.publicKey);
+            return MessageDigest.isEqual(privateKey, keyPair.privateKey) &&
+                MessageDigest.isEqual(publicKey, keyPair.publicKey);
         }
 
         @Override

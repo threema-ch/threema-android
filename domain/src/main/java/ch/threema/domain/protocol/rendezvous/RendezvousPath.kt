@@ -48,4 +48,3 @@ internal interface RendezvousPath {
      */
     suspend fun read(): ByteArray
 }
-

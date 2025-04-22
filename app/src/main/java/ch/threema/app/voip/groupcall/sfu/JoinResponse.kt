@@ -36,7 +36,7 @@ data class JoinResponseBody(
     val iceUsernameFragment: String,
     val icePassword: String,
     val dtlsFingerprint: ByteArray,
-    val addresses: List<Address>
+    val addresses: List<Address>,
 ) {
     companion object {
         fun fromSfuResponseBytes(bytes: ByteArray): JoinResponseBody {
@@ -55,7 +55,7 @@ data class JoinResponseBody(
                     it.iceUsernameFragment,
                     it.icePassword,
                     it.dtlsFingerprint.toByteArray(),
-                    addresses
+                    addresses,
                 )
             }
         }
@@ -64,10 +64,11 @@ data class JoinResponseBody(
     data class Address(
         val port: Int,
         val ip: String,
-        val protocol: Protocol
+        val protocol: Protocol,
     ) {
         enum class Protocol {
-            UDP, UNRECOGNIZED
+            UDP,
+            UNRECOGNIZED,
         }
 
         val isIpv6: Boolean by lazy {
@@ -79,7 +80,7 @@ data class JoinResponseBody(
         get() = SessionParameters(
             participantId,
             IceParameters(iceUsernameFragment, icePassword),
-            DtlsParameters(dtlsFingerprint)
+            DtlsParameters(dtlsFingerprint),
         )
 
     override fun equals(other: Any?): Boolean {
@@ -106,7 +107,8 @@ data class JoinResponseBody(
         return result
     }
 
-    override fun toString(): String {
-        return "JoinResponseBody(startedAt=$startedAt, maxParticipants=$maxParticipants, participantId=$participantId, iceUsernameFragment='$iceUsernameFragment', icePassword='$icePassword', dtlsFingerprint=${dtlsFingerprint.toHexString()}, addresses=$addresses)"
-    }
+    override fun toString() =
+        "JoinResponseBody(startedAt=$startedAt, maxParticipants=$maxParticipants, participantId=$participantId, " +
+            "iceUsernameFragment='$iceUsernameFragment', icePassword='$icePassword', " +
+            "dtlsFingerprint=${dtlsFingerprint.toHexString()}, addresses=$addresses)"
 }

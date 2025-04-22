@@ -55,6 +55,7 @@ public class PushService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         logger.info("New FCM token received");
+        logger.debug("FCM push token: {}", token);
         try {
             PushUtil.sendTokenToServer(token, ProtocolDefines.PUSHTOKEN_TYPE_FCM);
         } catch (ThreemaException e) {

@@ -77,6 +77,6 @@ fun ThemedText(
         softWrap = softWrap,
         maxLines = maxLines,
         minLines = minLines,
-        onTextLayout = onTextLayout
+        onTextLayout = onTextLayout,
     )
 }

@@ -21,8 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;

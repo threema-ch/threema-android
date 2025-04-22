@@ -25,6 +25,7 @@
             style="@style/WizardEditTextIcon"
             android:layout_width="@dimen/wizard_default_view_height"
             android:layout_height="@dimen/wizard_default_view_height"
+            android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_call_outline" />
 
         <ch.threema.app.emojis.EmojiEditText
@@ -48,6 +49,7 @@
             style="@style/WizardEditTextIcon"
             android:layout_width="@dimen/wizard_default_view_height"
             android:layout_height="@dimen/wizard_default_view_height"
+            android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_email_outline" />
 
         <ch.threema.app.emojis.EmojiEditText
@@ -56,6 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/wizard_default_view_height"
             android:hint="@string/linked_email"
+            android:imeOptions="actionDone"
             android:inputType="textEmailAddress" />
 
     </LinearLayout>
@@ -66,21 +69,22 @@
         android:layout_marginTop="32dp"
         android:orientation="horizontal">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/cancel"
-            style="@style/WizardButtonInverse"
-            android:layout_width="wrap_content"
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/cancel_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginRight="4dp"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            app:wizardButton_style="wizardButton_inverse"
+            app:wizardButton_text="@string/cancel" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/ok"
-            style="@style/WizardButtonRegular"
-            android:layout_width="wrap_content"
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/ok_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:layout_weight="1"
-            android:text="@string/ok" />
+            app:wizardButton_text="@string/ok" />
 
     </LinearLayout>
 

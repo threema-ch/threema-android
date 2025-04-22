@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Overrides for Work -->
+    <string name="flavored__new_wizard_setup_threema" translatable="false">@string/work_new_wizard_setup_threema</string>
+    <string name="flavored__enter_serial_body" translatable="false">@string/work_enter_serial_body</string>
+    <string name="flavored__checking_serial" translatable="false">@string/work_checking_credentials</string>
+</resources>

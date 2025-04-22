@@ -179,6 +179,12 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
         if (this.diverseEmojiPopup != null && this.diverseEmojiPopup.isShowing()) {
             this.diverseEmojiPopup.dismiss();
         }
+        if (this.emojiDetailPopup != null && this.emojiDetailPopup.isShowing()) {
+            this.emojiDetailPopup.dismiss();
+        }
+        if (this.recentRemovePopup != null && this.recentRemovePopup.isShowing()) {
+            this.recentRemovePopup.dismiss();
+        }
         setVisibility(GONE);
 
         for (EmojiPickerListener listener : this.emojiPickerListeners) {

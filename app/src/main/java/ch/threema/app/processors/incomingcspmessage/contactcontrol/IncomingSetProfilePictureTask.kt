@@ -70,7 +70,8 @@ class IncomingSetProfilePictureTask(
         // Download blob and throw exception if there is no blob
         val encryptedBlob: ByteArray = {
             blobLoader.load(
-                BlobScope.Public // since its an incoming message, always use the public scope
+                // since its an incoming message, always use the public scope
+                BlobScope.Public,
             )
         }.catchAllExceptNetworkException {
             logger.error("Could not download profile picture", it)
@@ -81,7 +82,7 @@ class IncomingSetProfilePictureTask(
         NaCl.symmetricDecryptDataInplace(
             encryptedBlob,
             message.encryptionKey,
-            ProtocolDefines.CONTACT_PHOTO_NONCE
+            ProtocolDefines.CONTACT_PHOTO_NONCE,
         )
 
         // Note that we do reflect the profile picture even if it did not change. This allows the

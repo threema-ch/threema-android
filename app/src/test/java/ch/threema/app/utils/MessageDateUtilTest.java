@@ -44,6 +44,6 @@ public class MessageDateUtilTest {
 
         assertTrue(messageModel.isOutbox());
 
-//		Date displayDate = MessageUtil.getDisplayDate()
+//        Date displayDate = MessageUtil.getDisplayDate()
     }
 }

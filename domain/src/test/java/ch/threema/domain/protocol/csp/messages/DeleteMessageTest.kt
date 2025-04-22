@@ -27,12 +27,11 @@ import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
 import kotlin.random.Random.Default.nextBytes
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DeleteMessageTest {
-
     /**
      *  A delete message in the raw form consists of bytes in the following order:
      *
@@ -46,15 +45,13 @@ class DeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenLengthIsTooLow() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             DeleteMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = 0,
-                length = ProtocolDefines.MESSAGE_ID_LEN - 1
+                length = ProtocolDefines.MESSAGE_ID_LEN - 1,
             )
         }
 
@@ -64,15 +61,13 @@ class DeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenOffsetIsBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             DeleteMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = -1,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -82,15 +77,13 @@ class DeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset1() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             DeleteMessage.fromByteArray(
                 data = bytesMessageData,
                 offset = 1,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -100,15 +93,13 @@ class DeleteMessageTest {
 
     @Test
     fun shouldThrowBadMessageWhenDataIsSmallerThanLengthAndOffset2() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             DeleteMessage.fromByteArray(
                 data = bytesMessageData.copyOfRange(0, bytesMessageData.size - 1),
                 offset = 0,
-                length = bytesMessageData.size
+                length = bytesMessageData.size,
             )
         }
 
@@ -118,12 +109,11 @@ class DeleteMessageTest {
 
     @Test
     fun shouldParseValuesCorrectly() {
-
         // act
         val deleteMessage = DeleteMessage.fromByteArray(
             data = bytesMessageData,
             offset = 0,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
@@ -132,7 +122,6 @@ class DeleteMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffset() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffset = nextBytes(offset) + bytesMessageData
@@ -141,7 +130,7 @@ class DeleteMessageTest {
         val deleteMessage = DeleteMessage.fromByteArray(
             data = bytesMessageDataContainingOffset,
             offset = offset,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
@@ -150,7 +139,6 @@ class DeleteMessageTest {
 
     @Test
     fun shouldParseValuesCorrectlyWithOffsetAndTooMuchData() {
-
         // arrange
         val offset = 5
         val bytesMessageDataContainingOffsetAndJunk =
@@ -160,7 +148,7 @@ class DeleteMessageTest {
         val deleteMessage = DeleteMessage.fromByteArray(
             data = bytesMessageDataContainingOffsetAndJunk,
             offset = offset,
-            length = bytesMessageData.size
+            length = bytesMessageData.size,
         )
 
         // assert
@@ -169,7 +157,6 @@ class DeleteMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -193,7 +180,6 @@ class DeleteMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldAlsoSetDefaultMessageValues() {
-
         // arrange
         val outgoingMessageId = 12345678L
         val outgoingMessageCreatedAt: Long = System.currentTimeMillis()

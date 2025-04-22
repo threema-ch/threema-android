@@ -28,17 +28,17 @@ import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.app.utils.MimeUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
-import org.slf4j.Logger
-import java.util.Date
 import java.util.UUID
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingGroupFileMessageTask")
 
@@ -49,10 +49,11 @@ class IncomingGroupFileMessageTask(
 ) : IncomingCspMessageSubTask<GroupFileMessage>(
     groupFileMessage,
     triggerSource,
-    serviceManager
+    serviceManager,
 ) {
     private val messageService = serviceManager.messageService
     private val groupService = serviceManager.groupService
+    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         val groupModel: GroupModel = runCommonGroupReceiveSteps(message, handle, serviceManager)
@@ -62,36 +63,35 @@ class IncomingGroupFileMessageTask(
             }
         return processIncomingMessage(
             preCheckedGroupModel = groupModel,
-            triggerSource = TriggerSource.REMOTE
+            triggerSource = TriggerSource.REMOTE,
         )
     }
 
     override suspend fun executeMessageStepsFromSync() = processIncomingMessage(
         preCheckedGroupModel = null,
-        triggerSource = TriggerSource.SYNC
+        triggerSource = TriggerSource.SYNC,
     )
 
     private fun processIncomingMessage(
         preCheckedGroupModel: GroupModel?,
-        triggerSource: TriggerSource
+        triggerSource: TriggerSource,
     ): ReceiveStepsResult {
-
         // 0: Group model must exist locally at this point
         val groupModel: GroupModel = preCheckedGroupModel
-            ?: groupService.getByApiGroupIdAndCreator(
+            ?: groupModelRepository.getByCreatorIdentityAndId(
+                message.groupCreator,
                 message.apiGroupId,
-                message.groupCreator
             ) ?: run {
-                logger.error("Discarding message ${message.messageId}: Could not find group model with api id ${message.apiGroupId}")
-                return ReceiveStepsResult.DISCARD
-            }
+            logger.error("Discarding message ${message.messageId}: Could not find group model with api id ${message.apiGroupId}")
+            return ReceiveStepsResult.DISCARD
+        }
 
         // 1: Check if the group message already exists locally (from previous run(s) of this task).
         //    If so, cancel and accept that the download for the content(s) might not be complete.
         messageService.getGroupMessageModel(
             message.messageId,
             message.groupCreator,
-            message.apiGroupId
+            message.apiGroupId,
         )?.run { return ReceiveStepsResult.DISCARD }
 
         val fileData: FileData = message.fileData ?: run {
@@ -107,24 +107,29 @@ class IncomingGroupFileMessageTask(
             groupFileMessage = message,
             fileDataModel = fileDataModel,
             fileData = fileData,
-            groupModel = groupModel
+            groupModel = groupModel,
         )
+
+        val oldGroupModel = groupService.getByGroupMessage(message) ?: run {
+            logger.error("Old group model is null")
+            return ReceiveStepsResult.DISCARD
+        }
 
         // 4. Un-archive group if currently archived
         if (triggerSource == TriggerSource.REMOTE) {
-            groupService.setIsArchived(groupModel, false)
+            groupModel.setIsArchivedFromLocalOrRemote(false)
         }
 
         // 5. Bump last updated timestamp if necessary to move conversation up in list
         if (message.bumpLastUpdate()) {
-            groupService.bumpLastUpdate(groupModel)
+            groupService.bumpLastUpdate(oldGroupModel)
         }
 
         // 6. Save message model and inform listeners about new message
         messageService.save(messageModel)
         ListenerManager.messageListeners.handle { messageListener ->
             messageListener.onNew(
-                messageModel
+                messageModel,
             )
         }
 
@@ -143,31 +148,28 @@ class IncomingGroupFileMessageTask(
         groupFileMessage: GroupFileMessage,
         fileDataModel: FileDataModel,
         fileData: FileData,
-        groupModel: GroupModel
+        groupModel: GroupModel,
     ): GroupMessageModel {
         return GroupMessageModel().apply {
+            uid = UUID.randomUUID().toString()
+            apiMessageId = message.messageId.toString()
 
-            setUid(UUID.randomUUID().toString())
-            setApiMessageId(message.messageId.toString())
+            identity = groupFileMessage.fromIdentity
+            groupId = groupModel.getDatabaseId().toInt()
 
-            setIdentity(groupFileMessage.fromIdentity)
-            groupId = groupModel.id
+            this.fileData = fileDataModel
+            messageContentsType = MimeUtil.getContentTypeFromFileData(fileDataModel)
 
-            setType(MessageType.FILE)
-            setMessageContentsType(MimeUtil.getContentTypeFromFileData(fileDataModel))
+            postedAt = message.date
+            createdAt = now()
 
-            setPostedAt(message.date)
-            setCreatedAt(Date())
+            messageFlags = message.messageFlags
 
-            setMessageFlags(message.messageFlags)
+            isOutbox = false
+            isSaved = true
 
-            setOutbox(false)
-            setSaved(true)
-
-            setCorrelationId(fileData.correlationId)
-            setForwardSecurityMode(message.forwardSecurityMode)
-
-            setFileDataModel(fileDataModel)
+            correlationId = fileData.correlationId
+            forwardSecurityMode = message.forwardSecurityMode
         }
     }
 
@@ -184,7 +186,7 @@ class IncomingGroupFileMessageTask(
             if (thumbnailWasDownloaded) {
                 ListenerManager.messageListeners.handle { messageListener ->
                     messageListener.onModified(
-                        listOf(messageModel)
+                        listOf(messageModel),
                     )
                 }
             }

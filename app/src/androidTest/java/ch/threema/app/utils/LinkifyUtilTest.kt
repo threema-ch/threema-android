@@ -29,14 +29,13 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class LinkifyUtilTest {
-
     /**
      * Get the spannable and a list of the URL spans as a pair. If there is no spannable, a pair
      * containing of null and an empty list is returned.
      */
     private fun getSpanPair(
         text: String,
-        includePhoneNumbers: Boolean = true
+        includePhoneNumbers: Boolean = true,
     ): Pair<Spanned?, List<URLSpan>> {
         val textView = TextView(InstrumentationRegistry.getInstrumentation().context)
         textView.text = text
@@ -45,7 +44,7 @@ class LinkifyUtilTest {
         }
         val spannableText = textView.text
         if (spannableText !is Spanned) {
-            return null to listOf()
+            return null to emptyList()
         }
         val spans = spannableText.getSpans(0, text.length + 1, URLSpan::class.java).toList()
         return spannableText to spans
@@ -57,7 +56,7 @@ class LinkifyUtilTest {
     private fun assertSpans(
         text: String,
         spanPoints: Set<Pair<Int, Int>>,
-        includePhoneNumbers: Boolean = true
+        includePhoneNumbers: Boolean = true,
     ) {
         val (spannable, spans) = getSpanPair(text, includePhoneNumbers)
         assert(spannable != null || spans.isEmpty())
@@ -85,7 +84,7 @@ class LinkifyUtilTest {
      * Expects that there are no spans in the given string.
      */
     private fun assertNoSpan(text: String, includePhoneNumbers: Boolean = true) {
-        assertSpans(text, setOf(), includePhoneNumbers)
+        assertSpans(text, emptySet(), includePhoneNumbers)
     }
 
     @Test
@@ -168,5 +167,4 @@ class LinkifyUtilTest {
         assertSpans("geo:0,0?z=3.1", setOf(0 to 11))
         assertSpans("geo:0,0?z=12(Label+not+allowed+here)", setOf(0 to 12))
     }
-
 }

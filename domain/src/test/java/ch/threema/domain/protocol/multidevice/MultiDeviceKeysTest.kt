@@ -26,8 +26,9 @@ import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.protobuf.d2d.MdD2D.TransactionScope
 import ch.threema.protobuf.d2d.transactionScope
 import com.neilalexander.jnacl.NaCl
-import org.junit.Assert.*
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 /**
  * Test vectors according to the `multidevice-kdf` repository
@@ -78,33 +79,33 @@ class MultiDeviceKeysTest {
     fun testKeyDerivationDgk1() {
         val keys = MultiDeviceKeys(DGK1)
 
-        assertArrayEquals(DGPK1, keys.dgpk)
-        assertArrayEquals(DGRK1, keys.dgrk)
-        assertArrayEquals(DGDIK1, keys.dgdik)
-        assertArrayEquals(DGSDDK1, keys.dgsddk)
-        assertArrayEquals(DGTSK1, keys.dgtsk)
+        assertContentEquals(DGPK1, keys.dgpk)
+        assertContentEquals(DGRK1, keys.dgrk)
+        assertContentEquals(DGDIK1, keys.dgdik)
+        assertContentEquals(DGSDDK1, keys.dgsddk)
+        assertContentEquals(DGTSK1, keys.dgtsk)
     }
 
     @Test
     fun testKeyDerivationDgk2() {
         val keys = MultiDeviceKeys(DGK2)
 
-        assertArrayEquals(DGPK2, keys.dgpk)
-        assertArrayEquals(DGRK2, keys.dgrk)
-        assertArrayEquals(DGDIK2, keys.dgdik)
-        assertArrayEquals(DGSDDK2, keys.dgsddk)
-        assertArrayEquals(DGTSK2, keys.dgtsk)
+        assertContentEquals(DGPK2, keys.dgpk)
+        assertContentEquals(DGRK2, keys.dgrk)
+        assertContentEquals(DGDIK2, keys.dgdik)
+        assertContentEquals(DGSDDK2, keys.dgsddk)
+        assertContentEquals(DGTSK2, keys.dgtsk)
     }
 
     @Test
     fun testKeyDerivationDgk3() {
         val keys = MultiDeviceKeys(DGK3)
 
-        assertArrayEquals(DGPK3, keys.dgpk)
-        assertArrayEquals(DGRK3, keys.dgrk)
-        assertArrayEquals(DGDIK3, keys.dgdik)
-        assertArrayEquals(DGSDDK3, keys.dgsddk)
-        assertArrayEquals(DGTSK3, keys.dgtsk)
+        assertContentEquals(DGPK3, keys.dgpk)
+        assertContentEquals(DGRK3, keys.dgrk)
+        assertContentEquals(DGDIK3, keys.dgdik)
+        assertContentEquals(DGSDDK3, keys.dgsddk)
+        assertContentEquals(DGTSK3, keys.dgtsk)
     }
 
     @Test
@@ -114,7 +115,7 @@ class MultiDeviceKeysTest {
             D2dMessage.DeviceInfo.Platform.ANDROID,
             "Unit Test",
             "1.2.3",
-            "Test Client"
+            "Test Client",
         )
 
         val encrypted = keys.encryptDeviceInfo(deviceInfo)
@@ -134,7 +135,7 @@ class MultiDeviceKeysTest {
             TransactionScope.Scope.DISTRIBUTION_LIST_SYNC,
             TransactionScope.Scope.SETTINGS_SYNC,
             TransactionScope.Scope.MDM_PARAMETER_SYNC,
-            TransactionScope.Scope.NEW_DEVICE_SYNC
+            TransactionScope.Scope.NEW_DEVICE_SYNC,
         ).forEach {
             val expected = transactionScope {
                 scope = it
@@ -159,7 +160,7 @@ class MultiDeviceKeysTest {
             TransactionScope.Scope.DISTRIBUTION_LIST_SYNC,
             TransactionScope.Scope.SETTINGS_SYNC,
             TransactionScope.Scope.MDM_PARAMETER_SYNC,
-            TransactionScope.Scope.NEW_DEVICE_SYNC
+            TransactionScope.Scope.NEW_DEVICE_SYNC,
         ).forEach { expectedScope ->
             val bytes = transactionScope {
                 scope = expectedScope

@@ -22,24 +22,20 @@
 package ch.threema.app.utils
 
 import android.graphics.Color
-import ch.threema.testhelpers.nonSecureRandomArray
 import ch.threema.domain.models.GroupId
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
 import ch.threema.storage.models.GroupModel
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.MockitoAnnotations
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import ch.threema.testhelpers.nonSecureRandomArray
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(Color::class)
 class IDColorTest {
-
     private val echo = ContactModel("ECHOECHO", nonSecureRandomArray(32))
     private val abcd1234 = ContactModel("ABCD1234", nonSecureRandomArray(32))
     private val abcd0123 = ContactModel("ABCD0123", nonSecureRandomArray(32))
@@ -59,24 +55,33 @@ class IDColorTest {
     private val lightBlueLight = 13
     private val lightBlueDark = 14
 
-    @Before
+    @BeforeTest
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-        PowerMockito.mockStatic(Color::class.java)
-        PowerMockito.`when`(Color.parseColor("#2e7d32")).thenReturn(greenLight)
-        PowerMockito.`when`(Color.parseColor("#66bb6a")).thenReturn(greenDark)
-        PowerMockito.`when`(Color.parseColor("#ef6c00")).thenReturn(orangeLight)
-        PowerMockito.`when`(Color.parseColor("#ffa726")).thenReturn(orangeDark)
-        PowerMockito.`when`(Color.parseColor("#eb9c00")).thenReturn(yellowLight)
-        PowerMockito.`when`(Color.parseColor("#fff176")).thenReturn(yellowDark)
-        PowerMockito.`when`(Color.parseColor("#283593")).thenReturn(indigoLight)
-        PowerMockito.`when`(Color.parseColor("#8a93ff")).thenReturn(indigoDark)
-        PowerMockito.`when`(Color.parseColor("#c62828")).thenReturn(redLight)
-        PowerMockito.`when`(Color.parseColor("#f2706e")).thenReturn(redDark)
-        PowerMockito.`when`(Color.parseColor("#7b3ab7")).thenReturn(deepPurpleLight)
-        PowerMockito.`when`(Color.parseColor("#a88ce3")).thenReturn(deepPurpleDark)
-        PowerMockito.`when`(Color.parseColor("#0288d1")).thenReturn(lightBlueLight)
-        PowerMockito.`when`(Color.parseColor("#4fc3f7")).thenReturn(lightBlueDark)
+        mockkStatic(Color::class)
+        every { Color.parseColor(any()) } answers {
+            when (firstArg<String>()) {
+                "#2e7d32" -> greenLight
+                "#66bb6a" -> greenDark
+                "#ef6c00" -> orangeLight
+                "#ffa726" -> orangeDark
+                "#eb9c00" -> yellowLight
+                "#fff176" -> yellowDark
+                "#283593" -> indigoLight
+                "#8a93ff" -> indigoDark
+                "#c62828" -> redLight
+                "#f2706e" -> redDark
+                "#7b3ab7" -> deepPurpleLight
+                "#a88ce3" -> deepPurpleDark
+                "#0288d1" -> lightBlueLight
+                "#4fc3f7" -> lightBlueDark
+                else -> error("Unexpected color string")
+            }
+        }
+    }
+
+    @AfterTest
+    fun tearDown() {
+        unmockkStatic(Color::class)
     }
 
     @Test
@@ -104,8 +109,8 @@ class IDColorTest {
                     0xb0.toByte(),
                     0x1f.toByte(),
                     0x72.toByte(),
-                    0x85.toByte()
-                )
+                    0x85.toByte(),
+                ),
             )
         }
         assertEquals(yellowLight, echoGroup1.colorLight)
@@ -122,8 +127,8 @@ class IDColorTest {
                     0x39.toByte(),
                     0xa1.toByte(),
                     0x9b.toByte(),
-                    0xe7.toByte()
-                )
+                    0xe7.toByte(),
+                ),
             )
         }
         assertEquals(indigoLight, echoGroup2.colorLight)
@@ -140,8 +145,8 @@ class IDColorTest {
                     0xb0.toByte(),
                     0x1f.toByte(),
                     0x72.toByte(),
-                    0x85.toByte()
-                )
+                    0x85.toByte(),
+                ),
             )
         }
         assertEquals(redLight, abcdGroup1.colorLight)
@@ -158,8 +163,8 @@ class IDColorTest {
                     0x39.toByte(),
                     0xa1.toByte(),
                     0x9b.toByte(),
-                    0xe7.toByte()
-                )
+                    0xe7.toByte(),
+                ),
             )
         }
         assertEquals(deepPurpleLight, abcdGroup2.colorLight)

@@ -41,11 +41,10 @@ import org.slf4j.Logger;
 
 import ch.threema.app.R;
 import ch.threema.app.fragments.BackupDataFragment;
-import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.threemasafe.BackupThreemaSafeFragment;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.TestUtil;
@@ -56,7 +55,6 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
 
     private static final String BUNDLE_IS_UNLOCKED = "biu";
 
-    private DeadlineListService hiddenChatsListService;
     private boolean isUnlocked;
     private ThreemaSafeMDMConfig safeConfig;
 
@@ -157,20 +155,8 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     protected boolean checkInstances() {
         return TestUtil.required(
             this.serviceManager,
-            this.preferenceService,
-            this.hiddenChatsListService
+            this.preferenceService
         );
-    }
-
-    @Override
-    protected void instantiate() {
-        if (this.serviceManager != null) {
-            try {
-                this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();
-            } catch (Exception e) {
-                logger.debug("Master Key locked!");
-            }
-        }
     }
 
     private boolean threemaSafeUIDisabled() {

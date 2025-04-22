@@ -38,7 +38,6 @@ internal class SystemUpdateToVersion104(
     override fun runAsync() = true
 
     override fun runDirectly(): Boolean {
-
         addUserStateColumn()
 
         val myIdentity = PreferenceManager.getDefaultSharedPreferences(context)
@@ -76,7 +75,8 @@ internal class SystemUpdateToVersion104(
                     FROM group_member
                     WHERE identity = ?
                 );
-        """, arrayOf(myIdentity)
+        """,
+            arrayOf(myIdentity),
         )
     }
 
@@ -89,10 +89,10 @@ internal class SystemUpdateToVersion104(
             """
             DELETE FROM group_member
             WHERE identity = ?
-        """, arrayOf(myIdentity)
+        """,
+            arrayOf(myIdentity),
         )
     }
 
     override fun getText() = "version $VERSION (add group user state)"
-
 }

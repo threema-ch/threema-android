@@ -35,24 +35,26 @@ class SelectEmojiButton : MaterialCardView {
     var onSelectEmojiButtonClickListener: OnSelectEmojiButtonClickListener? = null
 
     private val gestureDetector =
-        GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapUp(e: MotionEvent): Boolean {
-                onSelectEmojiButtonClickListener?.onSelectButtonClick()
-                performClick()
-                return true
-            }
-        })
-
+        GestureDetector(
+            context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    onSelectEmojiButtonClickListener?.onSelectButtonClick()
+                    performClick()
+                    return true
+                }
+            },
+        )
 
     constructor(context: Context) : super(
-        context
+        context,
     ) {
         init()
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(
         context,
-        attrs
+        attrs,
     ) {
         init()
     }
@@ -60,7 +62,7 @@ class SelectEmojiButton : MaterialCardView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     ) {
         init()
     }
@@ -68,7 +70,7 @@ class SelectEmojiButton : MaterialCardView {
     private fun init() {
         layoutParams = LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.MATCH_PARENT,
         )
         isClickable = true
         isFocusable = true

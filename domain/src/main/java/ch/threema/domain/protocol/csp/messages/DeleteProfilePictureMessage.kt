@@ -51,11 +51,10 @@ class DeleteProfilePictureMessage : AbstractMessage() {
     override fun getBody(): ByteArray = ByteArray(0)
 
     companion object {
-
         @JvmStatic
         fun fromReflected(message: MdD2D.IncomingMessage): DeleteProfilePictureMessage =
             fromByteArray(
-                data = message.body.toByteArray()
+                data = message.body.toByteArray(),
             ).apply {
                 initializeCommonProperties(message)
             }
@@ -63,18 +62,18 @@ class DeleteProfilePictureMessage : AbstractMessage() {
         @JvmStatic
         fun fromReflected(message: MdD2D.OutgoingMessage): DeleteProfilePictureMessage =
             fromByteArray(
-                data = message.body.toByteArray()
+                data = message.body.toByteArray(),
             ).apply {
                 initializeCommonProperties(message)
             }
 
         @JvmStatic
-        fun fromByteArray(data: ByteArray): DeleteProfilePictureMessage =
-            fromByteArray(
-                data = data,
-                offset = 0,
-                length = data.size
-            )
+        @Throws(BadMessageException::class)
+        fun fromByteArray(data: ByteArray): DeleteProfilePictureMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Get the delete profile picture message from the given array.

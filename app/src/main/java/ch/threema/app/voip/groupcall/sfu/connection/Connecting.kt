@@ -43,7 +43,7 @@ class Connecting internal constructor(
     private val me: ContactModel,
     private val context: Context,
     private val certificate: RtcCertificatePem,
-    private val joinResponse: JoinResponseBody
+    private val joinResponse: JoinResponseBody,
 ) : GroupCallConnectionState(StateName.CONNECTING, call) {
     private companion object {
         // If there are fewer than this amount of remote participants in a call when joining
@@ -54,7 +54,7 @@ class Connecting internal constructor(
     @WorkerThread
     override fun getStateProviders() = listOf(
         this::observeCallEnd,
-        this::startWebRtcConnection
+        this::startWebRtcConnection,
     )
 
     @WorkerThread
@@ -67,7 +67,7 @@ class Connecting internal constructor(
             call,
             joinResponse.sessionParameters,
             certificate,
-            connectedSignal
+            connectedSignal,
         )
 
         call.addTeardownRoutine { ctx.teardown() }
@@ -75,22 +75,22 @@ class Connecting internal constructor(
         ctx.pc.observer.replace(
             PeerConnectionObserver(
                 addTransceiver = ctx.pc::addTransceiverFromEvent,
-                failedSignal = connectedSignal
-            )
+                failedSignal = connectedSignal,
+            ),
         )
 
-        ctx.createAndApplyOffer(setOf())
+        ctx.createAndApplyOffer(emptySet())
 
         // Init participant with local audio / video context
         logger.info("Create local participant with {}", joinResponse.participantId)
         val participant = LocalParticipant(
             joinResponse.participantId,
             me,
-            ctx.localAudioVideoContext
+            ctx.localAudioVideoContext,
         )
 
         call.context = GroupCallContext(
-            ctx, participant
+            ctx, participant,
         )
 
         call.setParticipant(participant)

@@ -36,7 +36,7 @@ private val logger = LoggingUtil.getThreemaLogger("EmojiSearchIndex")
 
 class EmojiSearchIndex(
     private val context: Context,
-    private val preferenceService: PreferenceService
+    private val preferenceService: PreferenceService,
 ) {
     private val db by lazy { buildDatabase() }
     private val brokenSearchTermLanguages = mutableSetOf<String>()
@@ -62,7 +62,7 @@ class EmojiSearchIndex(
         if (!languageSupport.containsKey(language)) {
             logger.debug("Evaluate emoji search support for language '{}'", language)
             val searchTermsFileName = getSearchTermsFileName(language)
-            val indexFiles = context.assets.list(ASSETS_PATH) ?: arrayOf()
+            val indexFiles = context.assets.list(ASSETS_PATH) ?: emptyArray()
             languageSupport[language] = searchTermsFileName in indexFiles
         }
         return languageSupport[language] == true
@@ -107,7 +107,7 @@ class EmojiSearchIndex(
             logger.info(
                 "Prepare emoji search terms for language '{}' and version {}",
                 language,
-                SEARCH_INDEX_VERSION
+                SEARCH_INDEX_VERSION,
             )
             dao.deleteSearchTermsForLanguage(language)
             val terms = readSearchTermsFromAssets(language)
@@ -170,7 +170,7 @@ class EmojiSearchIndex(
             CSVReader(reader, CSV_SEPARATOR).readAll().map { it.asList() }
         } catch (e: IOException) {
             logger.warn("Could not read search terms", e)
-            listOf()
+            emptyList()
         }
     }
 }

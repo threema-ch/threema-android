@@ -31,6 +31,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
@@ -38,7 +39,9 @@ import ch.threema.app.ui.AvatarView;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
+
+import static ch.threema.app.glide.AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK;
 
 public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel, RecyclerView.ViewHolder> {
     private final UserService userService;
@@ -88,7 +91,14 @@ public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel
         itemHolder.nameView.setText(name);
 
         if (contactModel.getIdentity().equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {
-            avatar = this.groupService.getAvatar(groupModel, false);
+            avatar = this.groupService.getAvatar(
+                groupModel,
+                new AvatarOptions.Builder()
+                    .setHighRes(false)
+                    .setReturnPolicy(DEFAULT_FALLBACK)
+                    .setDarkerBackground(false)
+                    .toOptions()
+            );
             itemHolder.idView.setText("");
             if (avatar != null) {
                 itemHolder.avatarView.setImageBitmap(avatar);

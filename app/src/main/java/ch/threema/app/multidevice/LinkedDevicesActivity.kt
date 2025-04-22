@@ -22,30 +22,45 @@
 package ch.threema.app.multidevice
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import ch.threema.app.BuildFlavor
 import ch.threema.app.R
+import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.activities.ThreemaToolbarActivity
+import ch.threema.app.listeners.PreferenceListener
+import ch.threema.app.managers.ListenerManager
 import ch.threema.app.multidevice.wizard.LinkNewDeviceWizardActivity
+import ch.threema.app.ui.DebouncedOnClickListener
 import ch.threema.app.ui.EmptyRecyclerView
-import ch.threema.app.ui.SilentSwitchCompat
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.HiddenChatUtil
+import ch.threema.app.utils.linkifyWeb
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import kotlinx.coroutines.launch
 
@@ -58,34 +73,32 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
 
     private val viewModel: LinkedDevicesViewModel by viewModels()
 
-    private lateinit var devicesList: EmptyRecyclerView
-    private lateinit var devicesAdapter: LinkedDevicesAdapter
+    private val devicesAdapter: LinkedDevicesAdapter by lazy {
+        LinkedDevicesAdapter(viewModel::onClickedDevice)
+    }
 
-    private lateinit var onOffButton: SilentSwitchCompat
     private lateinit var linkDeviceButton: ExtendedFloatingActionButton
+    private lateinit var deviceListContainer: FrameLayout
+    private lateinit var devicesListRefreshLayout: SwipeRefreshLayout
+    private lateinit var emptyHintContainer: FrameLayout
+    private lateinit var emptyHintTextView: TextView
 
-    private var wizardLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                logger.debug("Device linking success")
-                viewModel.refreshLinkedDevices()
-            } else {
-                // TODO(ANDR-2758): proper error handling
-                if (result.data?.getStringExtra(LinkNewDeviceWizardActivity.ACTIVITY_RESULT_EXTRA_FAILURE_REASON) != null) {
-                    logger.debug("Device linking failed")
-                } else {
-                    logger.debug("Device linking cancelled (not started)")
-                }
-            }
-        }
+    private val linkingWizardLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        ::onLinkingWizardResult,
+    )
+
+    private val onPreferenceChangedListener = PreferenceListener { key, value ->
+        viewModel.onPreferenceChanged(key, value)
+    }
 
     override fun getLayoutResource(): Int = R.layout.activity_linked_devices
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!ConfigUtils.isMultiDeviceEnabled() && !serviceManager.multiDeviceManager.isMultiDeviceActive) {
-            logger.warn("Leave activity: MD is not enabled")
+        if (!ConfigUtils.isMultiDeviceEnabled(this) && !serviceManager.multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Leave activity: MD is restricted by mdm and not active")
             finish()
             return
         }
@@ -95,30 +108,48 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
             setTitle(R.string.md_linked_devices)
         }
 
-        onOffButton = findViewById(R.id.on_off_button)
-        onOffButton.setOnOffLabel(findViewById(R.id.on_off_button_text))
-        onOffButton.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setMultiDeviceState(isChecked)
-        }
-
         linkDeviceButton = findViewById(R.id.link_device_button)
-        linkDeviceButton.setOnClickListener { initiateLinking() }
-        // TODO(ANDR-2717): Remove
-        linkDeviceButton.setOnLongClickListener {
-            viewModel.dropOtherDevices()
-            true
-        }
+        linkDeviceButton.setOnClickListener(
+            object : DebouncedOnClickListener(1000L) {
+                override fun onDebouncedClick(v: View?) {
+                    if (ConfigUtils.hasProtection(preferenceService)) {
+                        HiddenChatUtil.launchLockCheckDialog(
+                            this@LinkedDevicesActivity,
+                            preferenceService,
+                        )
+                    } else {
+                        initiateLinking()
+                    }
+                }
+            },
+        )
 
+        devicesListRefreshLayout = findViewById(R.id.devices_list_refresh)
+        devicesListRefreshLayout.setColorSchemeColors(
+            ConfigUtils.getColorFromAttribute(this, R.attr.colorPrimary),
+        )
+        deviceListContainer = findViewById(R.id.device_list_container)
+        emptyHintContainer = findViewById(R.id.empty_text_container)
+        emptyHintTextView = findViewById(R.id.empty_text)
         initDevicesList()
 
         startObservers()
+        startPreferenceListener()
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ThreemaActivity.ACTIVITY_ID_CHECK_LOCK && resultCode == RESULT_OK) {
+            initiateLinking()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CAMERA) {
@@ -128,7 +159,7 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
                 ConfigUtils.showPermissionRationale(
                     this,
                     findViewById(R.id.parent_layout),
-                    R.string.permission_camera_qr_required
+                    R.string.permission_camera_qr_required,
                 )
             }
         }
@@ -136,27 +167,28 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
 
     private fun initDevicesList() {
         val layoutManager = LinearLayoutManager(this)
-        devicesList = findViewById(R.id.devices_list)
-        devicesList.setHasFixedSize(true)
-        devicesList.layoutManager = layoutManager
-        devicesList.itemAnimator = DefaultItemAnimator()
-        devicesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
+        val devicesListRv: EmptyRecyclerView = findViewById(R.id.devices_list)
+        devicesListRv.setHasFixedSize(true)
+        devicesListRv.layoutManager = layoutManager
+        devicesListRv.itemAnimator = DefaultItemAnimator()
 
-                if (layoutManager.findFirstVisibleItemPosition() == 0) {
-                    linkDeviceButton.extend()
-                } else {
-                    linkDeviceButton.shrink()
-                }
-            }
-        })
+        val desktopClientFlavour = BuildFlavor.current.desktopClientFlavor
+        emptyHintTextView.text = getString(R.string.md_linked_devices_empty)
+            .linkifyWeb(
+                url = getString(desktopClientFlavour.downloadLink),
+                onClickLink = { downloadLinkUri ->
+                    if (downloadLinkUri.host == "three.ma") {
+                        startActivity(Intent(Intent.ACTION_VIEW, downloadLinkUri))
+                    }
+                },
+            )
+        emptyHintTextView.movementMethod = LinkMovementMethod.getInstance()
 
-        val emptyTextView = findViewById<TextView>(R.id.empty_text)
-        devicesList.emptyView = emptyTextView
-        devicesAdapter = LinkedDevicesAdapter()
-        devicesList.adapter = devicesAdapter
+        devicesListRv.adapter = devicesAdapter
 
+        devicesListRefreshLayout.setOnRefreshListener {
+            viewModel.updateDeviceList()
+        }
     }
 
     private fun initiateLinking() {
@@ -168,37 +200,95 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
 
     private fun startLinkingWizard() {
         logger.info("Start linking wizard")
-        wizardLauncher.launch(Intent(this, LinkNewDeviceWizardActivity::class.java))
+        linkingWizardLauncher.launch(Intent(this, LinkNewDeviceWizardActivity::class.java))
     }
 
     private fun startObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.isMdActive.collect(::setMdEnabled) }
-                launch { viewModel.linkedDevices.collect(::updateLinkedDevices) }
-                launch { viewModel.latestCloseReason.collect(::updateLatestCloseReason) }
+                launch { viewModel.state.collect(::setState) }
+                launch { viewModel.isLoading.collect(::setIsLoading) }
+                launch { viewModel.isLinkDeviceButtonEnabled.collect(::setIsLinkDeviceButtonEnabled) }
+                launch { viewModel.onDropDeviceFailed.collect { showDropDeviceFailedDialog() } }
+                launch { viewModel.onShowDeviceDetailDialog.collect(::showDeviceDetailDialog) }
+                viewModel.initState()
             }
         }
     }
 
-    private fun setMdEnabled(enabled: Boolean) {
-        onOffButton.isEnabled = enabled || ConfigUtils.isMultiDeviceEnabled()
-        onOffButton.setCheckedSilent(enabled)
-        linkDeviceButton.isEnabled = enabled
+    private fun startPreferenceListener() {
+        ListenerManager.preferenceListeners.add(onPreferenceChangedListener)
     }
 
-    private fun updateLinkedDevices(linkedDevices: List<String>) {
-        devicesAdapter.setDevices(linkedDevices)
+    private fun setIsLoading(isLoading: Boolean) {
+        devicesListRefreshLayout.isRefreshing = isLoading
     }
 
-    // TODO(ANDR-2604): Remove
-    private fun updateLatestCloseReason(reason: D2mSocketCloseReason?) {
-        val latestCloseCode: TextView = findViewById(R.id.latest_close_code)
-        if (reason != null) {
-            latestCloseCode.text = reason.closeCode.toString()
-            latestCloseCode.visibility = View.VISIBLE
-        } else {
-            latestCloseCode.visibility = View.GONE
+    private fun setIsLinkDeviceButtonEnabled(isEnabled: Boolean) {
+        linkDeviceButton.isEnabled = isEnabled
+    }
+
+    private fun setState(state: LinkedDevicesUiState) {
+        emptyHintContainer.isVisible = state is LinkedDevicesUiState.NoDevices
+        if (state is LinkedDevicesUiState.Devices) {
+            devicesAdapter.submitList(state.deviceListItems)
+        } else if (state is LinkedDevicesUiState.NoDevices) {
+            devicesAdapter.submitList(emptyList())
         }
+    }
+
+    private fun onLinkingWizardResult(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_OK) {
+            logger.debug("Device linking success")
+            viewModel.updateDeviceList()
+        }
+    }
+
+    private fun showDeviceDetailDialog(deviceInfo: LinkedDeviceInfoUiModel) {
+        val dropDeviceDialogView: View = LayoutInflater.from(this)
+            .inflate(R.layout.dialog_drop_linked_device, null, false)
+
+        val dropDeviceDialog: AlertDialog = MaterialAlertDialogBuilder(this)
+            .setView(dropDeviceDialogView)
+            .show()
+
+        val platformIconImageView = dropDeviceDialogView.findViewById<ImageView>(R.id.platform_icon_Iv)
+        platformIconImageView.setImageResource(deviceInfo.getPlatformDrawable())
+        platformIconImageView.imageTintList = ColorStateList.valueOf(
+            ConfigUtils.getColorFromAttribute(this, deviceInfo.getListItemStrokeColor()),
+        )
+
+        val deviceLabelTextView = dropDeviceDialogView.findViewById<TextView>(R.id.device_label_Tv)
+        deviceLabelTextView.text = deviceInfo.getLabelTextOrDefault(this)
+
+        val deviceVersionTextView = dropDeviceDialogView.findViewById<TextView>(R.id.device_version_Tv)
+        deviceVersionTextView.text = deviceInfo.getPlatformDetailsTextOrDefault(this)
+
+        val deviceTimestampTextView = dropDeviceDialogView.findViewById<TextView>(R.id.device_timestamp_Tv)
+        deviceTimestampTextView.text = deviceInfo.getFormattedTimeInfo(this)
+
+        val dropDeviceButton = dropDeviceDialogView.findViewById<MaterialButton>(R.id.drop_device_Btn)
+        dropDeviceButton.setOnClickListener {
+            viewModel.dropDevice(deviceId = deviceInfo.deviceId)
+            dropDeviceDialog.dismiss()
+        }
+
+        val closeButton = dropDeviceDialogView.findViewById<MaterialButton>(R.id.close_dialog_Btn)
+        closeButton.setOnClickListener {
+            dropDeviceDialog.dismiss()
+        }
+    }
+
+    private fun showDropDeviceFailedDialog() {
+        MaterialAlertDialogBuilder(this).apply {
+            setTitle(R.string.md_drop_device_failed_dialog_title)
+            setMessage(R.string.md_drop_device_failed_dialog_message)
+            setPositiveButton(R.string.md_drop_device_failed_dialog_button_close) { _, _ -> }
+        }.show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ListenerManager.preferenceListeners.remove(onPreferenceChangedListener)
     }
 }

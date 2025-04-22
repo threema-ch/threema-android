@@ -28,10 +28,10 @@ import ch.threema.app.activities.toUiModel
 import ch.threema.app.compose.message.CombinedMessageDetailsList
 import ch.threema.app.compose.message.MessageBubble
 import ch.threema.app.compose.theme.ThreemaTheme
+import ch.threema.app.webclient.activities.MultiDeviceBanner
 import ch.threema.storage.models.AbstractMessageModel
 
 object ComposeJavaBridge {
-
     fun setContentMessageDetails(
         composeView: ComposeView,
         messageTimestampsUiModel: MessageTimestampsUiModel,
@@ -41,7 +41,7 @@ object ComposeJavaBridge {
             ThreemaTheme {
                 CombinedMessageDetailsList(
                     messageTimestampsUiModel,
-                    messageDetailsUiModel
+                    messageDetailsUiModel,
                 )
             }
         }
@@ -57,6 +57,21 @@ object ComposeJavaBridge {
                 MessageBubble(
                     text = messageBubbleUiState.text,
                     isOutbox = messageBubbleUiState.isOutbox,
+                )
+            }
+        }
+    }
+
+    fun setMultiDeviceBanner(
+        composeView: ComposeView,
+        onClick: () -> Unit,
+        onClickDismiss: () -> Unit,
+    ) {
+        composeView.setContent {
+            ThreemaTheme {
+                MultiDeviceBanner(
+                    onClick = onClick,
+                    onClickDismiss = onClickDismiss,
                 )
             }
         }

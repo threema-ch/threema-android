@@ -40,16 +40,15 @@ private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsDaoImpl")
 class EmojiReactionsDaoImpl(
     private val sqlite: SupportSQLiteOpenHelper,
 ) : EmojiReactionsDao {
-
     override fun create(entry: DbEmojiReaction, messageModel: AbstractMessageModel) {
         val table =
             getReactionTableForMessage(messageModel) ?: throw EmojiReactionEntryCreateException(
-                IllegalArgumentException("Cannot create reaction entry for message of class ${messageModel.javaClass.name}")
+                IllegalArgumentException("Cannot create reaction entry for message of class ${messageModel.javaClass.name}"),
             )
         sqlite.writableDatabase.insert(
             table,
             SQLiteDatabase.CONFLICT_ROLLBACK,
-            entry.getContentValues()
+            entry.getContentValues(),
         )
     }
 
@@ -58,8 +57,9 @@ class EmojiReactionsDaoImpl(
 
         val removedEntries = sqlite.writableDatabase.delete(
             table = table,
-            whereClause = "${DbEmojiReaction.COLUMN_MESSAGE_ID} = ? AND ${DbEmojiReaction.COLUMN_EMOJI_SEQUENCE} = ? AND ${DbEmojiReaction.COLUMN_SENDER_IDENTITY} = ?",
-            whereArgs = arrayOf(entry.messageId, entry.emojiSequence, entry.senderIdentity)
+            whereClause = "${DbEmojiReaction.COLUMN_MESSAGE_ID} = ? AND ${DbEmojiReaction.COLUMN_EMOJI_SEQUENCE} = ? AND " +
+                "${DbEmojiReaction.COLUMN_SENDER_IDENTITY} = ?",
+            whereArgs = arrayOf(entry.messageId, entry.emojiSequence, entry.senderIdentity),
         )
         logger.debug("{} entries removed for reaction {}", removedEntries, entry)
     }
@@ -70,13 +70,13 @@ class EmojiReactionsDaoImpl(
         val deletedEntries = sqlite.writableDatabase.delete(
             table = table,
             whereClause = "${DbEmojiReaction.COLUMN_MESSAGE_ID} = ?",
-            whereArgs = arrayOf(messageModel.id)
+            whereArgs = arrayOf(messageModel.id),
         )
         logger.debug(
             "{} reaction entries deleted for message {} ({})",
             deletedEntries,
             messageModel.id,
-            table
+            table,
         )
     }
 
@@ -89,7 +89,7 @@ class EmojiReactionsDaoImpl(
         val cursor = (sqlite.readableDatabase as SQLiteDatabase)
             .rawQuery(
                 query,
-                messageModel.id
+                messageModel.id,
             )
 
         return cursor.use { getResult(it) }
@@ -137,19 +137,18 @@ class EmojiReactionsDaoImpl(
 
         val query = """
             SELECT
-                m.${MessageModel.COLUMN_IDENTITY} as $resultColumnContactIdentity,
-                m.${MessageModel.COLUMN_API_MESSAGE_ID} as $resultColumnApiMessageId,
+                m.${AbstractMessageModel.COLUMN_IDENTITY} as $resultColumnContactIdentity,
+                m.${AbstractMessageModel.COLUMN_API_MESSAGE_ID} as $resultColumnApiMessageId,
                 r.${DbEmojiReaction.COLUMN_SENDER_IDENTITY} as $resultColumnSenderIdentity,
                 r.${DbEmojiReaction.COLUMN_EMOJI_SEQUENCE} as $resultColumnEmojiSequence,
                 r.${DbEmojiReaction.COLUMN_REACTED_AT} as $resultColumnReactedAt
             FROM ${ContactEmojiReactionModelFactory.TABLE} r JOIN ${MessageModel.TABLE} m
-            ON r.${DbEmojiReaction.COLUMN_MESSAGE_ID} = m.${MessageModel.COLUMN_ID}
+            ON r.${DbEmojiReaction.COLUMN_MESSAGE_ID} = m.${AbstractMessageModel.COLUMN_ID}
             ORDER BY r.${DbEmojiReaction.COLUMN_MESSAGE_ID}
         """.trimIndent()
 
         sqlite.readableDatabase.query(query).use { cursor ->
-            val columnIndexContactIdentity =
-                cursor.getColumnIndexOrThrow(resultColumnContactIdentity)
+            val columnIndexContactIdentity = cursor.getColumnIndexOrThrow(resultColumnContactIdentity)
             val columnIndexApiMessageId = cursor.getColumnIndexOrThrow(resultColumnApiMessageId)
             val columnIndexSenderIdentity = cursor.getColumnIndexOrThrow(resultColumnSenderIdentity)
             val columnIndexEmojiSequence = cursor.getColumnIndexOrThrow(resultColumnEmojiSequence)
@@ -163,8 +162,8 @@ class EmojiReactionsDaoImpl(
                             apiMessageId = cursor.getString(columnIndexApiMessageId),
                             senderIdentity = cursor.getString(columnIndexSenderIdentity),
                             emojiSequence = cursor.getString(columnIndexEmojiSequence),
-                            reactedAt = cursor.getLong(columnIndexReactedAt)
-                        )
+                            reactedAt = cursor.getLong(columnIndexReactedAt),
+                        ),
                     )
                 }
             }
@@ -186,7 +185,7 @@ class EmojiReactionsDaoImpl(
             SELECT
                 g.${GroupModel.COLUMN_API_GROUP_ID} as $resultColumnGroupId,
                 g.${GroupModel.COLUMN_CREATOR_IDENTITY} as $resultColumnGroupCreatorIdentity,
-                m.${GroupMessageModel.COLUMN_API_MESSAGE_ID} as $resultColumnApiMessageId,
+                m.${AbstractMessageModel.COLUMN_API_MESSAGE_ID} as $resultColumnApiMessageId,
                 r.${DbEmojiReaction.COLUMN_SENDER_IDENTITY} as $resultColumnSenderIdentity,
                 r.${DbEmojiReaction.COLUMN_EMOJI_SEQUENCE} as $resultColumnEmojiSequence,
                 r.${DbEmojiReaction.COLUMN_REACTED_AT} as $resultColumnReactedAt
@@ -195,15 +194,14 @@ class EmojiReactionsDaoImpl(
                 ${GroupMessageModel.TABLE} m,
                 ${GroupModel.TABLE} g
             WHERE
-                r.${DbEmojiReaction.COLUMN_MESSAGE_ID} = m.${MessageModel.COLUMN_ID}
+                r.${DbEmojiReaction.COLUMN_MESSAGE_ID} = m.${AbstractMessageModel.COLUMN_ID}
                 AND m.${GroupMessageModel.COLUMN_GROUP_ID} = g.${GroupModel.COLUMN_ID}
             ORDER BY r.${DbEmojiReaction.COLUMN_MESSAGE_ID}
         """.trimIndent()
 
         sqlite.readableDatabase.query(query).use { cursor ->
             val columnIndexGroupId = cursor.getColumnIndexOrThrow(resultColumnGroupId)
-            val columnIndexGroupCreatorIdentity =
-                cursor.getColumnIndexOrThrow(resultColumnGroupCreatorIdentity)
+            val columnIndexGroupCreatorIdentity = cursor.getColumnIndexOrThrow(resultColumnGroupCreatorIdentity)
             val columnIndexApiMessageId = cursor.getColumnIndexOrThrow(resultColumnApiMessageId)
             val columnIndexSenderIdentity = cursor.getColumnIndexOrThrow(resultColumnSenderIdentity)
             val columnIndexEmojiSequence = cursor.getColumnIndexOrThrow(resultColumnEmojiSequence)
@@ -218,8 +216,8 @@ class EmojiReactionsDaoImpl(
                             apiMessageId = cursor.getString(columnIndexApiMessageId),
                             senderIdentity = cursor.getString(columnIndexSenderIdentity),
                             emojiSequence = cursor.getString(columnIndexEmojiSequence),
-                            reactedAt = cursor.getLong(columnIndexReactedAt)
-                        )
+                            reactedAt = cursor.getLong(columnIndexReactedAt),
+                        ),
                     )
                 }
             }
@@ -248,26 +246,26 @@ class EmojiReactionsDaoImpl(
             val messageId = cursor.getInt(
                 getColumnIndexOrThrow(
                     cursor,
-                    DbEmojiReaction.COLUMN_MESSAGE_ID
-                )
+                    DbEmojiReaction.COLUMN_MESSAGE_ID,
+                ),
             )
             val senderIdentity = cursor.getString(
                 getColumnIndexOrThrow(
                     cursor,
-                    DbEmojiReaction.COLUMN_SENDER_IDENTITY
-                )
+                    DbEmojiReaction.COLUMN_SENDER_IDENTITY,
+                ),
             )
             val emojiSequence = cursor.getString(
                 getColumnIndexOrThrow(
                     cursor,
-                    DbEmojiReaction.COLUMN_EMOJI_SEQUENCE
-                )
+                    DbEmojiReaction.COLUMN_EMOJI_SEQUENCE,
+                ),
             )
             val reactedAt = cursor.getDate(
                 getColumnIndexOrThrow(
                     cursor,
-                    DbEmojiReaction.COLUMN_REACTED_AT
-                )
+                    DbEmojiReaction.COLUMN_REACTED_AT,
+                ),
             )
 
             result.add(
@@ -275,8 +273,8 @@ class EmojiReactionsDaoImpl(
                     messageId = messageId,
                     senderIdentity = senderIdentity,
                     emojiSequence = emojiSequence,
-                    reactedAt = reactedAt
-                )
+                    reactedAt = reactedAt,
+                ),
             )
         }
 
@@ -286,20 +284,20 @@ class EmojiReactionsDaoImpl(
     override fun insertContactReactionsInTransaction(block: EmojiReactionsDao.TransactionalReactionInsertScope) {
         insertReactionsInTransaction(
             ContactEmojiReactionModelFactory.TABLE,
-            block
+            block,
         )
     }
 
     override fun insertGroupReactionsInTransaction(block: EmojiReactionsDao.TransactionalReactionInsertScope) {
         insertReactionsInTransaction(
             GroupEmojiReactionModelFactory.TABLE,
-            block
+            block,
         )
     }
 
     private fun insertReactionsInTransaction(
         table: String,
-        block: EmojiReactionsDao.TransactionalReactionInsertScope
+        block: EmojiReactionsDao.TransactionalReactionInsertScope,
     ) {
         val database = sqlite.writableDatabase
         database.beginTransaction()
@@ -308,7 +306,7 @@ class EmojiReactionsDaoImpl(
                 val success = database.insert(
                     table,
                     SQLiteDatabase.CONFLICT_IGNORE,
-                    entry.getContentValues()
+                    entry.getContentValues(),
                 ) >= 0
                 if (logger.isDebugEnabled) {
                     logger.debug("Insert reaction {}, success={}", entry, success)

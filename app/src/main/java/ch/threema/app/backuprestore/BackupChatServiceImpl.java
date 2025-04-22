@@ -68,7 +68,12 @@ public class BackupChatServiceImpl implements BackupChatService {
         this.contactService = contactService;
     }
 
-    private boolean buildThread(ConversationModel conversationModel, FileHandlingZipOutputStream zipOutputStream, StringBuilder messageBody, boolean includeMedia) {
+    private boolean buildThread(
+        ConversationModel conversationModel,
+        FileHandlingZipOutputStream zipOutputStream,
+        StringBuilder messageBody,
+        boolean includeMedia
+    ) {
         AbstractMessageModel m;
 
         isCanceled = false;

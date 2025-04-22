@@ -80,7 +80,7 @@ public class MessageTest {
             new HashMap<>()
         );
         final AbstractMessageModel messageModel = new MessageModel();
-        messageModel.setFileDataModel(fileDataModel);
+        messageModel.setFileData(fileDataModel);
         messageModel.setCreatedAt(createdAt);
         messageModel.setApiMessageId(messageId);
         Message.maybePutFile(builder, "file", messageModel, fileDataModel);

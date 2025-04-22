@@ -22,6 +22,7 @@
 package ch.threema.app.activities
 
 import android.os.Bundle
+import androidx.annotation.StringRes
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.IdListService
@@ -32,7 +33,6 @@ import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel
 
 class ProfilePicRecipientsActivity : MemberChooseActivity() {
-
     private lateinit var profilePicRecipientsService: IdListService
     private lateinit var taskManager: TaskManager
 
@@ -65,15 +65,15 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
                 preselectedIdentities = ArrayList(listOf(*selectedIdentities))
             }
         }
-        updateToolbarTitle(R.string.profile_picture, R.string.title_choose_recipient)
+        updateToolbarSubtitle(R.string.title_choose_recipient)
         initList()
     }
 
     override fun menuNext(selectedContacts: List<ContactModel?>) {
         val oldAllowedIdentities: Array<String> = profilePicRecipientsService.all
-        val newAllowedIdentities: Array<String> =
-            selectedContacts.mapNotNull { contactModel -> contactModel?.identity }
-                .toTypedArray<String>()
+        val newAllowedIdentities: Array<String> = selectedContacts
+            .mapNotNull { contactModel -> contactModel?.identity }
+            .toTypedArray<String>()
         profilePicRecipientsService.replaceAll(newAllowedIdentities)
 
         // If data changed:
@@ -81,14 +81,15 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
         if (!oldAllowedIdentities.equalsIgnoreOrder(newAllowedIdentities)) {
             taskManager.schedule(
                 ReflectUserProfileShareWithAllowListSyncTask(
-                    allowedIdentities = newAllowedIdentities.toList(),
-                    serviceManager = ThreemaApplication.requireServiceManager()
-                )
+                    allowedIdentities = newAllowedIdentities.toSet(),
+                    serviceManager = ThreemaApplication.requireServiceManager(),
+                ),
             )
         }
         finish()
     }
 
+    @StringRes
     override fun getNotice(): Int = R.string.prefs_sum_receive_profilepics_recipients_list
 
     override fun getMode(): Int = MODE_PROFILE_PIC_RECIPIENTS

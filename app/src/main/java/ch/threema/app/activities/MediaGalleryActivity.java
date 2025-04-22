@@ -87,7 +87,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.MediaGridItemDecoration;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
@@ -398,13 +398,13 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     private @Nullable String processIntent(Intent intent) {
         String actionBarTitle;
 
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP)) {
-            int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
+        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID)) {
+            int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
             GroupModel groupModel = groupService.getById(groupId);
             messageReceiver = groupService.createReceiver(groupModel);
             actionBarTitle = groupModel.getName();
-        } else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-            DistributionListModel distributionListModel = distributionListService.getById(intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0));
+        } else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
+            DistributionListModel distributionListModel = distributionListService.getById(intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0));
             try {
                 messageReceiver = distributionListService.createReceiver(distributionListModel);
             } catch (Exception e) {

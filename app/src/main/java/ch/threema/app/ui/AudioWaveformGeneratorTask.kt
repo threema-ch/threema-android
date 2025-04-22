@@ -43,7 +43,7 @@ import kotlin.math.sqrt
 class AudioWaveformGeneratorTask(
     private val messageModel: AbstractMessageModel,
     private val requestedSamplesCount: Int,
-    private val listener: AudioWaveformGeneratorListener
+    private val listener: AudioWaveformGeneratorListener,
 ) : Runnable {
     private val logger = LoggingUtil.getThreemaLogger("AudioWaveFormGenerator")
 
@@ -68,7 +68,7 @@ class AudioWaveformGeneratorTask(
         var inputAudioComponent: MediaComponent? = null
         try {
             val file = ThreemaApplication.getServiceManager()?.fileService?.getDecryptedMessageFile(
-                messageModel
+                messageModel,
             )
             if (file == null || !file.exists()) {
                 listener.onError(messageModel, "Unable to open audio file")
@@ -78,7 +78,7 @@ class AudioWaveformGeneratorTask(
             inputAudioComponent = MediaComponent(
                 ThreemaApplication.getAppContext(),
                 Uri.fromFile(file),
-                MediaComponent.COMPONENT_TYPE_AUDIO
+                MediaComponent.COMPONENT_TYPE_AUDIO,
             )
             if (inputAudioComponent.mimeType != null) {
                 val mediaFormat = inputAudioComponent.trackFormat
@@ -94,7 +94,7 @@ class AudioWaveformGeneratorTask(
                         extractSamples(
                             inputAudioComponent.mediaExtractor,
                             decoder,
-                            inputAudioComponent.durationUs
+                            inputAudioComponent.durationUs,
                         )
 
                         if (!canceled.get()) {
@@ -137,7 +137,7 @@ class AudioWaveformGeneratorTask(
                 if (decoderInputBufferIndex >= 0) {
                     val chunkSize = extractor.readSampleData(
                         decoder.getInputBuffer(decoderInputBufferIndex)!!,
-                        0
+                        0,
                     )
                     if (chunkSize < 0 || samplesExtracted >= requestedSamplesCount) {
                         decoder.queueInputBuffer(
@@ -145,7 +145,7 @@ class AudioWaveformGeneratorTask(
                             0,
                             0,
                             0L,
-                            MediaCodec.BUFFER_FLAG_END_OF_STREAM
+                            MediaCodec.BUFFER_FLAG_END_OF_STREAM,
                         )
                         inputDone = true
                     } else {
@@ -154,12 +154,12 @@ class AudioWaveformGeneratorTask(
                             0,
                             chunkSize,
                             extractor.sampleTime,
-                            0
+                            0,
                         )
                         samplesExtracted++
                         extractor.seekTo(
                             duration * samplesExtracted / requestedSamplesCount,
-                            MediaExtractor.SEEK_TO_CLOSEST_SYNC
+                            MediaExtractor.SEEK_TO_CLOSEST_SYNC,
                         )
                     }
                 }

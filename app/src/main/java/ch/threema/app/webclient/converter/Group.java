@@ -27,6 +27,7 @@ import java.util.List;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.storage.models.ContactModel;
@@ -62,8 +63,8 @@ public class Group extends Converter {
         MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
         try {
             final boolean isDisabled = !getGroupService().isGroupMember(group);
-            final boolean isSecretChat = getHiddenChatListService().has(getGroupService().getUniqueIdString(group));
-            final boolean isVisible = !isSecretChat || !getPreferenceService().isPrivateChatsHidden();
+            final boolean isPrivateChat = getConversationCategoryService().isPrivateChat(GroupUtil.getUniqueIdString(group));
+            final boolean isVisible = !isPrivateChat || !getPreferenceService().isPrivateChatsHidden();
 
             builder.put(Receiver.ID, String.valueOf(group.getId()));
             builder.put(Receiver.DISPLAY_NAME, getDisplayName(group));
@@ -73,7 +74,7 @@ public class Group extends Converter {
                 builder.put(Receiver.DISABLED, true);
             }
             builder.put(CREATED_AT, group.getCreatedAt() != null ? group.getCreatedAt().getTime() / 1000 : 0);
-            if (isSecretChat) {
+            if (isPrivateChat) {
                 builder.put(Receiver.LOCKED, true);
             }
             if (!isVisible) {
@@ -92,7 +93,7 @@ public class Group extends Converter {
             //create util class or use access object
             boolean admin = getGroupService().isGroupCreator(group);
             boolean left = !getGroupService().isGroupMember(group);
-            boolean enabled = !(group.isDeleted() || isDisabled);
+            boolean enabled = !isDisabled;
             //define access
             builder.put(Receiver.ACCESS, (new MsgpackObjectBuilder())
                 .put(Receiver.CAN_DELETE, admin || left)
@@ -133,11 +134,6 @@ public class Group extends Converter {
 
             @Override
             public boolean sortByName() {
-                return false;
-            }
-
-            @Override
-            public boolean includeDeletedGroups() {
                 return false;
             }
 

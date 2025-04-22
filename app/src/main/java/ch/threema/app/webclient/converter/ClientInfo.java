@@ -36,7 +36,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.push.PushService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.base.utils.LoggingUtil;

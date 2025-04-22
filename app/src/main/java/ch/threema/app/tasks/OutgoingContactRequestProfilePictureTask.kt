@@ -39,7 +39,6 @@ class OutgoingContactRequestProfilePictureTask(
     private val toIdentity: String,
     serviceManager: ServiceManager,
 ) : OutgoingProfilePictureTask(serviceManager) {
-
     override val type = "OutgoingContactRequestProfilePictureTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -48,7 +47,7 @@ class OutgoingContactRequestProfilePictureTask(
         if (contactModel == null) {
             logger.warn(
                 "Contact {} is unknown, even though a profile picture request should be sent",
-                toIdentity
+                toIdentity,
             )
             return
         }
@@ -65,7 +64,7 @@ class OutgoingContactRequestProfilePictureTask(
         if (!contactModelData.isRestored) {
             logger.warn(
                 "Contact {} is not restored; sending profile picture request is skipped",
-                toIdentity
+                toIdentity,
             )
             return
         }

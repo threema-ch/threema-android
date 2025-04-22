@@ -303,9 +303,11 @@ public class SynchronizeContactsRoutine implements Runnable {
                         ContactSyncState.IMPORTED,
                         ReadReceiptPolicy.DEFAULT,
                         TypingIndicatorPolicy.DEFAULT,
+                        false,
                         null,
                         null,
                         false,
+                        null,
                         null,
                         null,
                         null

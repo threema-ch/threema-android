@@ -44,7 +44,7 @@ data class GroupCallDescription(
     val gck: ByteArray,
     var startedAt: ULong,
     val processedAt: ULong = startedAt,
-    var maxParticipants: UInt? = null
+    var maxParticipants: UInt? = null,
 ) {
     private val gchk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCHK) }
     private val gcsk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCSK) }
@@ -120,7 +120,7 @@ data class GroupCallDescription(
             sfuBaseUrl,
             Utils.byteArrayToHexString(gck),
             startedAt.toLong(),
-            processedAt.toLong()
+            processedAt.toLong(),
         )
     }
 
@@ -194,9 +194,9 @@ data class GroupCallDescription(
         return result
     }
 
-    override fun toString(): String {
-        return "GroupCallDescription(protocolVersion=$protocolVersion, groupId=$groupId, sfuBaseUrl='$sfuBaseUrl', startedAt=$startedAt, maxParticipants=$maxParticipants, callId=$callId, callState=$callState)"
-    }
+    override fun toString() =
+        "GroupCallDescription(protocolVersion=$protocolVersion, groupId=$groupId, sfuBaseUrl='$sfuBaseUrl', startedAt=$startedAt, " +
+            "maxParticipants=$maxParticipants, callId=$callId, callState=$callState)"
 }
 
 fun GroupCallModel.toGroupCallDescription(): GroupCallDescription {
@@ -208,6 +208,6 @@ fun GroupCallModel.toGroupCallDescription(): GroupCallDescription {
         Utils.hexStringToByteArray(gck),
         getStartedAtUnsigned(),
         getProcessedAtUnsigned(),
-        null
+        null,
     )
 }

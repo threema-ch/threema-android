@@ -3,6 +3,7 @@
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">色を選択</string>
     <!-- Content description for a color square. -->
+    <string name="color_swatch_description">色<xliff:g id="color_index" example="14">%1$d</xliff:g></string>
     <!-- Content description for a selected color square. -->
     <string name="color_swatch_description_selected" tools:ignore="PluralsCandidate">色<xliff:g id="color_index" example="14">%1$d</xliff:g>選択済</string>
 </resources>

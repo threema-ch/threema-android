@@ -38,7 +38,6 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
@@ -64,6 +63,7 @@ import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.TextMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
@@ -93,7 +93,6 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
             return;
         }
 
-        initMdSetting();
         initConversationSetting();
 
         // Reset reaction tooltip
@@ -296,7 +295,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
                     messageRecursive.setDate(new Date());
                     messageRecursive.setMessageId(messageIdRecursive);
                     messageRecursive.setText("> quote #" + messageIdRecursive + "\n\na quote that references itself");
-                    messageService.processIncomingContactMessage(messageRecursive);
+                    messageService.processIncomingContactMessage(messageRecursive, TriggerSource.LOCAL);
 
                     // Create cross-chat quote
                     final MessageId messageIdCrossChat1 = new MessageId();
@@ -307,14 +306,14 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
                     messageChat2.setDate(new Date());
                     messageChat2.setMessageId(messageIdCrossChat2);
                     messageChat2.setText("hello, this is a secret message");
-                    messageService.processIncomingContactMessage(messageChat2);
+                    messageService.processIncomingContactMessage(messageChat2, TriggerSource.LOCAL);
                     TextMessage messageChat1 = new TextMessage();
                     messageChat1.setFromIdentity(contact1.getIdentity());
                     messageChat1.setToIdentity(userService.getIdentity());
                     messageChat1.setDate(new Date());
                     messageChat1.setMessageId(messageIdCrossChat1);
                     messageChat1.setText("> quote #" + messageIdCrossChat2 + "\n\nOMG!");
-                    messageService.processIncomingContactMessage(messageChat1);
+                    messageService.processIncomingContactMessage(messageChat1, TriggerSource.LOCAL);
 
                     messageService.createStatusMessage("Done creating test quotes", receiver1);
 
@@ -346,15 +345,6 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
             activity.finish();
         }
         return true;
-    }
-
-    private void initMdSetting() {
-        CheckBoxPreference preference = getPref(R.string.preferences__md_unlocked);
-        preference.setEnabled(multiDeviceManager.isMultiDeviceActive() || preferenceService.isMdUnlocked() || BuildConfig.MD_ENABLED);
-        preference.setOnPreferenceChangeListener((p, v) -> {
-            p.setEnabled((boolean) v || BuildConfig.MD_ENABLED);
-            return true;
-        });
     }
 
     private void initConversationSetting() {

@@ -60,7 +60,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiImageSpan;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.AvatarListItemUtil;
@@ -70,14 +70,14 @@ import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.TextUtil;
+import ch.threema.app.utils.TextExtensionsKt;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -88,6 +88,8 @@ import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.BallotDataModel;
 
+import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
+
 public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchAdapter");
     private static final String FLOW_CHARACTER = "\u25BA\uFE0E";
@@ -95,7 +97,8 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private GroupService groupService;
     private ContactService contactService;
     private BallotService ballotService;
-    private DeadlineListService hiddenChatsListService;
+    @Nullable
+    private ConversationCategoryService conversationCategoryService;
 
     private final Context context;
     private OnClickItemListener onClickItemListener;
@@ -154,7 +157,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             this.groupService = ThreemaApplication.requireServiceManager().getGroupService();
             this.contactService = ThreemaApplication.requireServiceManager().getContactService();
             this.ballotService = ThreemaApplication.requireServiceManager().getBallotService();
-            this.hiddenChatsListService = ThreemaApplication.requireServiceManager().getHiddenChatsListService();
+            this.conversationCategoryService = ThreemaApplication.requireServiceManager().getConversationCategoryService();
         } catch (Exception e) {
             logger.error("Unable to get Services", e);
         }
@@ -187,9 +190,10 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     viewHolder.messageBlock.setCardBackgroundColor(colorStateListReceive);
                 }
 
-                viewHolder.titleView.setTextColor(messageModel.getUiContentColor(context));
-                viewHolder.snippetView.setTextColor(messageModel.getUiContentColor(context));
-                viewHolder.dateView.setTextColor(messageModel.getUiContentColor(context));
+                var uiContentColor = getUiContentColor(messageModel, context);
+                viewHolder.titleView.setTextColor(uiContentColor);
+                viewHolder.snippetView.setTextColor(uiContentColor);
+                viewHolder.dateView.setTextColor(uiContentColor);
             }
 
             viewHolder.snippetView.setVisibility(View.VISIBLE);
@@ -198,9 +202,9 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
 
             final @NonNull String uid = messageModel instanceof GroupMessageModel
-                ? groupService.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId())
+                ? GroupUtil.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId())
                 : ContactUtil.getUniqueIdString(messageModel.getIdentity());
-            if (hiddenChatsListService.has(uid)) {
+            if (conversationCategoryService == null || conversationCategoryService.isPrivateChat(uid)) {
                 viewHolder.dateView.setText("");
                 viewHolder.thumbnailView.setVisibility(View.GONE);
                 viewHolder.titleView.setText("");
@@ -282,7 +286,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             viewHolder.deletedPlaceholder.setText(R.string.message_was_deleted);
             if (viewHolder.getHasBubbleBackground()) {
                 assert viewHolder.deletedPlaceholder != null;
-                viewHolder.deletedPlaceholder.setTextColor(message.getUiContentColor(viewHolder.deletedPlaceholder.getContext()));
+                viewHolder.deletedPlaceholder.setTextColor(getUiContentColor(message, viewHolder.deletedPlaceholder.getContext()));
             }
         }
 
@@ -460,7 +464,15 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         if (snippetText != null) {
-            viewHolder.snippetView.setText(TextUtil.highlightMatches(context, snippetText, this.queryString, true, false));
+            viewHolder.snippetView.setText(
+                TextExtensionsKt.highlightMatches(
+                    snippetText,
+                    context,
+                    this.queryString,
+                    true,
+                    false
+                )
+            );
         } else {
             viewHolder.snippetView.setText(null);
         }

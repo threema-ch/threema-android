@@ -93,7 +93,13 @@ public class GroupDeliveryReceiptMessage extends AbstractGroupMessage {
 
     @Override
     public boolean reflectOutgoing() {
-        return true;
+        // There is currently no situation where the user intent is to send a delivery receipt
+        // message in a group. If there was such a case, we would have to return true here, as this
+        // intent of sending it should probably also be reflected.
+        // There is the case that a reaction (only thumbs up or down) is sent using a group delivery
+        // receipt message. In this case however, we reflect a reaction message instead of a
+        // delivery receipt and therefore it is correct to not reflect this message.
+        return false;
     }
 
     @Override

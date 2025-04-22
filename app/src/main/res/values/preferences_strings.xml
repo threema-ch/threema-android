@@ -7,6 +7,8 @@
     <string name="preferences__typing_indicator" translatable="false">pref_typing_indicator</string>
     <string name="preferences__notification_sound" translatable="false">pref_notification_sound</string>
     <string name="preferences__vibrate" translatable="false">pref_key_vibrate</string>
+    <string name="preferences__notification_light_single" translatable="false">pref_key_notification_light_single</string>
+    <string name="preferences__notification_light_group" translatable="false">pref_key_notification_light_group</string>
     <string name="preferences__group_notification_sound" translatable="false">pref_group_notification_sound</string>
     <string name="preferences__group_vibrate" translatable="false">pref_group_vibrate</string>
     <string name="preferences__wallpaper" translatable="false">pref_key_wallpaper</string>
@@ -80,6 +82,7 @@
     <string name="preferences__app_language" translatable="false">pref_app_language</string>
     <string name="preferences__web_client_enabled" translatable="false">pref_web_client_enabled</string>
     <string name="preferences__about" translatable="false">pref_about</string>
+    <string name="preferences__server_config" translatable="false">pref_server_config</string>
     <string name="preferences__work_license_name" translatable="false">pref_work_license_name</string>
     <string name="preferences__licenses" translatable="false">pref_licenses</string>
     <string name="preferences__privacy_policy" translatable="false">pref_privacy_policy</string>
@@ -110,6 +113,16 @@
     <string name="preferences__webclient_debug" translatable="false">pref_webclient_debug</string>
     <string name="preferences__powermanager_workarounds" translatable="false">pref_pm_workarounds</string>
     <string name="preferences__notification_priority" translatable="false">pref_notification_priority</string>
+    <string name="preferences__notification_channels" translatable="false">pref_notification_channels</string>
+    <!-- only used on Android 7 and older -->
+    <string name="preferences__single_chat_notifications_legacy" translatable="false">pref_single_chat_notifications</string>
+    <!-- only used on Android 7 and older -->
+    <string name="preferences__group_chat_notifications_legacy" translatable="false">pref_group_chat_notifications</string>
+    <!-- only used on Android 7 and older -->
+    <string name="preferences__voip_call_notifications_legacy" translatable="false">pref_voip_call_notifications</string>
+    <!-- only used on Android 7 and older -->
+    <string name="preferences__group_call_notifications_legacy" translatable="false">pref_group_call_notifications</string>
+    <string name="preferences__work_life_balance" translatable="false">pref_work_life_balance</string>
     <string name="preferences__auto_download_wifi" translatable="false">pref_auto_download_wifi</string>
     <string name="preferences__auto_download_mobile" translatable="false">pref_auto_download_mobile</string>
     <string name="preferences__rate_ref" translatable="false">pref_rate_ref</string>
@@ -179,7 +192,6 @@
     <string name="preferences__video_call_tooltip_shown" translatable="false">pref_video_call_tooltip_shown</string>
     <string name="preferences__camera_permission_request_shown" translatable="false">pref_camera_permission_request_shown</string>
     <string name="preferences__disable_smart_replies" translatable="false">pref_disable_smart_replies</string>
-    <string name="preferences__poi_host" translatable="false">pref_poi_host</string>
     <string name="preferences__labels_delete" translatable="false">pref_labels_delete</string>
     <string name="preferences__image_resolution_tooltip_shown" translatable="false">pref_image_resolution_tooltip_shown</string>
     <string name="preferences__tooltip_face_blur_shown" translatable="false">pref_tooltip_face_blur_shown</string>
@@ -214,7 +226,6 @@
     <string name="preferences__email_sync_hash" translatable="false">pref_email_sync_hash</string>
     <string name="preferences__phone_number_sync_hash" translatable="false">pref_phone_number_sync_hash</string>
     <string name="preferences__contact_sync_time" translatable="false">pref_contact_sync_time</string>
-    <string name="preferences__md_unlocked" translatable="false">pref_md_unlocked</string>
     <string name="preferences__show_last_update_prefix" translatable="false">pref_show_last_update_prefix</string>
     <string name="preferences__chat_notification_settings" translatable="false">pref_chat_notification_settings</string>
     <string name="preferences__group_notification_settings" translatable="false">pref_group_notification_settings</string>
@@ -226,4 +237,5 @@
     <string name="preferences__dev_reset_reaction_tooltip_shown" translatable="false">pref_dev_reset_reaction_tooltip_shown</string>
     <string name="preferences__dev_create_messages_with_reactions" translatable="false">pref_dev_create_create_messages_with_reactions</string>
     <string name="preferences__dev_create_nonces" translatable="false">pref_dev_create_nonces</string>
+    <string name="preferences__last_multi_device_group_check_timestamp" translatable="false">pref_last_multi_device_group_check_timestamp</string>
 </resources>

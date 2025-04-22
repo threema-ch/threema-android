@@ -29,8 +29,8 @@ import ch.threema.domain.protocol.csp.messages.EditMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import kotlinx.serialization.Serializable
 import java.util.Date
+import kotlinx.serialization.Serializable
 
 class OutgoingContactEditMessageTask(
     private val toIdentity: String,
@@ -40,7 +40,6 @@ class OutgoingContactEditMessageTask(
     private val editedAt: Date,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-
     override val type: String = "OutgoingContactEditMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -50,8 +49,8 @@ class OutgoingContactEditMessageTask(
         val editMessage = EditMessage(
             EditMessageData(
                 messageId = MessageId.fromString(messageModel.apiMessageId).messageIdLong,
-                text = editedText
-            )
+                text = editedText,
+            ),
         )
 
         sendContactMessage(
@@ -60,7 +59,7 @@ class OutgoingContactEditMessageTask(
             toIdentity,
             messageId,
             editedAt,
-            handle
+            handle,
         )
     }
 
@@ -69,7 +68,7 @@ class OutgoingContactEditMessageTask(
         messageModelId,
         messageId.messageId,
         editedText,
-        editedAt.time
+        editedAt.time,
     )
 
     @Serializable
@@ -78,7 +77,7 @@ class OutgoingContactEditMessageTask(
         private val messageModelId: Int,
         private val messageId: ByteArray,
         private val editedText: String,
-        private val editedAt: Long
+        private val editedAt: Long,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingContactEditMessageTask(
@@ -87,7 +86,7 @@ class OutgoingContactEditMessageTask(
                 MessageId(messageId),
                 editedText,
                 Date(editedAt),
-                serviceManager
+                serviceManager,
             )
     }
 }

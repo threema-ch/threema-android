@@ -21,17 +21,19 @@
 
 package ch.threema.app.adapters
 
+import androidx.annotation.DrawableRes
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.messagereceiver.ContactMessageReceiver
+import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.services.ContactService
-import ch.threema.app.services.DeadlineListService
-import ch.threema.app.services.GroupService
+import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.utils.MessageUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.TestUtil
+import ch.threema.data.models.GroupModel
 import ch.threema.storage.models.ConversationModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageType
 
 /**
@@ -42,25 +44,22 @@ import ch.threema.storage.models.MessageType
 class MessageListAdapterItem(
     val conversationModel: ConversationModel,
     contactService: ContactService,
-    groupService: GroupService,
-    private val mutedChatsListService: DeadlineListService,
-    private val mentionOnlyChatsListService: DeadlineListService,
     private val ringtoneService: RingtoneService,
-    private val hiddenChatsListService: DeadlineListService
+    private val conversationCategoryService: ConversationCategoryService,
 ) {
-    val group: GroupModel? = conversationModel.group
+    val groupModel: GroupModel? = conversationModel.groupModel
 
     val isContactConversation = conversationModel.isContactConversation
     val isGroupConversation = conversationModel.isGroupConversation
     private val isDistributionListConversation = conversationModel.isDistributionListConversation
-    val isNotesGroup = group?.let { groupService.isNotesGroup(it) } ?: false
-    val isGroupMember = group?.let { groupService.isGroupMember(it) } ?: false
+    fun isNotesGroup() = groupModel?.isNotesGroup() ?: false
+    fun isGroupMember() = groupModel?.data?.value?.isMember ?: false
 
     private val uniqueId = conversationModel.receiver?.uniqueIdString ?: ""
     val uid: String = conversationModel.uid
 
-    val isHidden: Boolean
-        get() = hiddenChatsListService.has(uniqueId)
+    val isPrivateChat: Boolean
+        get() = conversationCategoryService.isPrivateChat(uniqueId)
     val isPinTagged = conversationModel.isPinTagged
     val isTyping = conversationModel.isTyping
 
@@ -122,12 +121,12 @@ class MessageListAdapterItem(
 
     val latestMessageGroupMemberName =
         if (isGroupConversation && latestMessage != null && latestMessage.type != MessageType.GROUP_CALL_STATUS && TestUtil.isBlankOrNull(
-                getDraft()
+                getDraft(),
             )
         ) {
             String.format(
                 "%s: ",
-                NameUtil.getShortName(conversationModel.context, latestMessage, contactService)
+                NameUtil.getShortName(conversationModel.context, latestMessage, contactService),
             )
         } else {
             ""
@@ -151,7 +150,7 @@ class MessageListAdapterItem(
                 ConversationModel.NO_RESOURCE
             }
         } else if (isGroupConversation) {
-            if (isNotesGroup) {
+            if (isNotesGroup()) {
                 R.drawable.ic_spiral_bound_booklet_outline
             } else {
                 R.drawable.ic_group_filled
@@ -163,20 +162,19 @@ class MessageListAdapterItem(
         }
     }
 
-    val muteStatusResource = run {
-        if (mutedChatsListService.has(uniqueId)) {
-            R.drawable.ic_do_not_disturb_filled
-        } else if (mentionOnlyChatsListService.has(uniqueId)) {
-            R.drawable.ic_dnd_mention_black_18dp
-        } else if (ringtoneService.hasCustomRingtone(uniqueId) && ringtoneService.isSilent(
-                uniqueId,
-                isGroupConversation
-            )
-        ) {
-            R.drawable.ic_notifications_off_filled
-        } else {
-            ConversationModel.NO_RESOURCE
+    val muteStatusDrawableRes: Int?
+        @DrawableRes
+        get() {
+            var iconRes: Int? = null
+            val messageReceiver = conversationModel.receiver
+            if (messageReceiver is ContactMessageReceiver) {
+                iconRes = messageReceiver.contact.currentNotificationTriggerPolicyOverride().iconResRightNow
+            } else if (messageReceiver is GroupMessageReceiver) {
+                iconRes = messageReceiver.group.currentNotificationTriggerPolicyOverride().iconResRightNow
+            }
+            if (iconRes == null && ringtoneService.hasCustomRingtone(uniqueId) && ringtoneService.isSilent(uniqueId, isGroupConversation)) {
+                iconRes = R.drawable.ic_notifications_off_filled
+            }
+            return iconRes
         }
-    }
 }
-

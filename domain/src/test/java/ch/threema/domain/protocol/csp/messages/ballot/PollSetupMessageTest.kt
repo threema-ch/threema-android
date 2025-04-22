@@ -27,13 +27,12 @@ import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
 open class PollSetupMessageTest {
-
     private val fromIdentity = "01234567"
 
     private val pollSetupMessage = PollSetupMessage().apply {
@@ -50,21 +49,21 @@ open class PollSetupMessageTest {
                     .setId(0)
                     .setSortKey(0)
                     .setDescription("Coice 1")
-                    .build()
+                    .build(),
             )
             addChoice(
                 BallotDataChoiceBuilder()
                     .setId(1)
                     .setSortKey(1)
                     .setDescription("Coice 2")
-                    .build()
+                    .build(),
             )
             addChoice(
                 BallotDataChoiceBuilder()
                     .setId(2)
                     .setSortKey(2)
                     .setDescription("Coice 3")
-                    .build()
+                    .build(),
             )
             addParticipant("01234567")
             setDisplayType(BallotData.DisplayType.LIST_MODE)
@@ -77,13 +76,12 @@ open class PollSetupMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthTooShort() {
         // arrange
         val testBlockLazy = {
-
             // act
             PollSetupMessage.fromByteArray(
                 data = pollSetupMessageBody,
                 offset = 0,
                 length = 0,
-                ballotCreatorIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity,
             )
         }
 
@@ -93,16 +91,14 @@ open class PollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             PollSetupMessage.fromByteArray(
                 data = pollSetupMessageBody,
                 offset = -1,
                 length = 64,
-                ballotCreatorIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity,
             )
         }
 
@@ -112,16 +108,14 @@ open class PollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLength() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             PollSetupMessage.fromByteArray(
                 data = pollSetupMessageBody,
                 offset = 0,
                 length = pollSetupMessageBody.size + 1,
-                ballotCreatorIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity,
             )
         }
 
@@ -131,16 +125,14 @@ open class PollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLengthWithOffset() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             PollSetupMessage.fromByteArray(
                 data = pollSetupMessageBody,
                 offset = 1,
                 length = pollSetupMessageBody.size,
-                ballotCreatorIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity,
             )
         }
 
@@ -150,13 +142,12 @@ open class PollSetupMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithoutOffset() {
-
         // act
         val resultPollSetupMessage = PollSetupMessage.fromByteArray(
             data = pollSetupMessageBody,
             offset = 0,
             length = pollSetupMessageBody.size,
-            ballotCreatorIdentity = fromIdentity
+            ballotCreatorIdentity = fromIdentity,
         )
 
         // assert
@@ -165,7 +156,6 @@ open class PollSetupMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithOffset() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + pollSetupMessageBody
 
@@ -174,7 +164,7 @@ open class PollSetupMessageTest {
             data = dataWithOffsetByte,
             offset = 1,
             length = pollSetupMessageBody.size,
-            ballotCreatorIdentity = fromIdentity
+            ballotCreatorIdentity = fromIdentity,
         )
 
         // assert
@@ -183,7 +173,6 @@ open class PollSetupMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldParseBodyAndSetCommonFields() {
-
         // act
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -197,7 +186,7 @@ open class PollSetupMessageTest {
         // act
         val resultPollSetupMessage: PollSetupMessage = PollSetupMessage.fromReflected(
             message = incomingD2DMessage,
-            ballotCreatorIdentity = fromIdentity
+            ballotCreatorIdentity = fromIdentity,
         )
 
         // assert
@@ -209,7 +198,6 @@ open class PollSetupMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
-
         // act
         val outgoingMessageId = MessageId()
         val outgoingMessageCreatedAt: Long = 42424242
@@ -222,7 +210,7 @@ open class PollSetupMessageTest {
         // act
         val resultPollSetupMessage: PollSetupMessage = PollSetupMessage.fromReflected(
             message = outgoingD2DMessage,
-            ballotCreatorIdentity = fromIdentity
+            ballotCreatorIdentity = fromIdentity,
         )
 
         // assert
@@ -233,18 +221,16 @@ open class PollSetupMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetNotPassedCorrectly() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + pollSetupMessageBody
 
         val testBlockLazy = {
-
             // act
             PollSetupMessage.fromByteArray(
                 data = dataWithOffsetByte,
                 offset = 0,
                 length = pollSetupMessageBody.size,
-                ballotCreatorIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity,
             )
         }
 
@@ -262,18 +248,18 @@ open class PollSetupMessageTest {
         assertEquals(pollSetupMessage.ballotData!!.state, actual.ballotData!!.state)
         assertEquals(
             pollSetupMessage.ballotData!!.assessmentType,
-            actual.ballotData!!.assessmentType
+            actual.ballotData!!.assessmentType,
         )
         assertEquals(pollSetupMessage.ballotData!!.type, actual.ballotData!!.type)
         assertEquals(pollSetupMessage.ballotData!!.choiceType, actual.ballotData!!.choiceType)
         assertContentEquals(
             pollSetupMessage.ballotData!!.participants,
-            actual.ballotData!!.participants
+            actual.ballotData!!.participants,
         )
         assertEquals(pollSetupMessage.ballotData!!.displayType, actual.ballotData!!.displayType)
         assertEquals(
             pollSetupMessage.ballotData!!.choiceList.size,
-            actual.ballotData!!.choiceList.size
+            actual.ballotData!!.choiceList.size,
         )
         pollSetupMessage.ballotData!!.choiceList.forEachIndexed { index, value ->
             assertEquals(value.id, actual.ballotData!!.choiceList[index].id)
@@ -281,7 +267,7 @@ open class PollSetupMessageTest {
             assertEquals(value.order, actual.ballotData!!.choiceList[index].order)
             assertContentEquals(
                 value.ballotDataChoiceResults,
-                actual.ballotData!!.choiceList[index].ballotDataChoiceResults
+                actual.ballotData!!.choiceList[index].ballotDataChoiceResults,
             )
             assertEquals(value.totalVotes, actual.ballotData!!.choiceList[index].totalVotes)
         }

@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -81,11 +82,10 @@ import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
-import ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask;
-import ch.threema.app.tasks.ReflectUserProfileShareWithPolicySyncTask;
+import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.QRCodePopup;
-import ch.threema.app.utils.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.HiddenChatUtil;
@@ -98,7 +98,6 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
@@ -125,7 +124,7 @@ public class MyIDFragment extends MainFragment
     private ContactService contactService;
     private FileService fileService;
     private IdListService profilePicRecipientsService;
-    private TaskManager taskManager;
+    private TaskCreator taskCreator;
 
     private AvatarEditView avatarView;
     private EmojiTextView nicknameTextView;
@@ -173,6 +172,10 @@ public class MyIDFragment extends MainFragment
             if (!isDisabledProfilePicReleaseSettings) {
                 if (preferenceService != null && preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_NOBODY) {
                     preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_EVERYONE);
+                    // Sync new policy setting to device group (if md is active)
+                    if (serviceManager.getMultiDeviceManager().isMultiDeviceActive()) {
+                        taskCreator.scheduleReflectUserProfileShareWithPolicySyncTask(ProfilePictureSharePolicy.Policy.EVERYONE);
+                    }
                     RuntimeUtil.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -344,21 +347,17 @@ public class MyIDFragment extends MainFragment
 
         if (sharePolicy == ProfilePictureSharePolicy.Policy.ALLOW_LIST) {
             launchProfilePictureRecipientsSelector(view);
-            // sync new policy setting with currently set allow list values into device group (if md is active)
-            taskManager.schedule(
-                new ReflectUserProfileShareWithAllowListSyncTask(
-                    Arrays.asList(profilePicRecipientsService.getAll()),
-                    this.serviceManager
-                )
-            );
+            if (serviceManager.getMultiDeviceManager().isMultiDeviceActive()) {
+                // Sync new policy setting with currently set allow list values into device group (if md is active)
+                taskCreator.scheduleReflectUserProfileShareWithAllowListSyncTask(
+                    new HashSet<>(Arrays.asList(profilePicRecipientsService.getAll()))
+                );
+            }
         } else {
-            // sync new policy setting to device group (if md is active)
-            taskManager.schedule(
-                new ReflectUserProfileShareWithPolicySyncTask(
-                    sharePolicy,
-                    this.serviceManager
-                )
-            );
+            if (serviceManager.getMultiDeviceManager().isMultiDeviceActive()) {
+                // Sync new policy setting to device group (if md is active)
+                taskCreator.scheduleReflectUserProfileShareWithPolicySyncTask(sharePolicy);
+            }
         }
     }
 
@@ -398,7 +397,9 @@ public class MyIDFragment extends MainFragment
                                 updatePendingStateTexts(fragmentView);
                             }
                         });
-                    })
+                    },
+                    TriggerSource.LOCAL
+                )
             ).start();
         }
     }
@@ -676,7 +677,7 @@ public class MyIDFragment extends MainFragment
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    userService.linkWithMobileNumber(normalizedPhoneNumber);
+                    userService.linkWithMobileNumber(normalizedPhoneNumber, TriggerSource.LOCAL);
                 } catch (LinkMobileNoException e) {
                     return e.getMessage();
                 } catch (Exception e) {
@@ -812,7 +813,7 @@ public class MyIDFragment extends MainFragment
             case DIALOG_TAG_LINKED_MOBILE:
                 new Thread(() -> {
                     try {
-                        userService.unlinkMobileNumber();
+                        userService.unlinkMobileNumber(TriggerSource.LOCAL);
                     } catch (Exception e) {
                         LogUtil.exception(e, getActivity());
                     } finally {
@@ -854,7 +855,7 @@ public class MyIDFragment extends MainFragment
                 this.fileService = this.serviceManager.getFileService();
                 this.preferenceService = this.serviceManager.getPreferenceService();
                 this.localeService = this.serviceManager.getLocaleService();
-                this.taskManager = this.serviceManager.getTaskManager();
+                this.taskCreator = this.serviceManager.getTaskCreator();
                 this.profilePicRecipientsService = this.serviceManager.getProfilePicRecipientsService();
             } catch (MasterKeyLockedException e) {
                 logger.debug("Master Key locked!");

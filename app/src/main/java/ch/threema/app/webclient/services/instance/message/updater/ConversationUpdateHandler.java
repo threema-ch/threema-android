@@ -31,10 +31,11 @@ import org.slf4j.Logger;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.Protocol;
@@ -69,7 +70,8 @@ public class ConversationUpdateHandler extends MessageUpdater {
     private final ContactService contactService;
     private final GroupService groupService;
     private final DistributionListService distributionListService;
-    private final DeadlineListService hiddenChatsListService;
+    @NonNull
+    private final ConversationCategoryService conversationCategoryService;
 
     private final int sessionId;
 
@@ -80,7 +82,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
         ContactService contactService,
         GroupService groupService,
         DistributionListService distributionListService,
-        DeadlineListService hiddenChatsListService,
+        @NonNull ConversationCategoryService conversationCategoryService,
         int sessionId
     ) {
         super(Protocol.SUB_TYPE_CONVERSATION);
@@ -89,7 +91,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
         this.contactService = contactService;
         this.groupService = groupService;
         this.distributionListService = distributionListService;
-        this.hiddenChatsListService = hiddenChatsListService;
+        this.conversationCategoryService = conversationCategoryService;
         this.listener = new Listener();
         this.sessionId = sessionId;
     }
@@ -113,7 +115,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
         // Respond only if the conversation is not a private chat
         String uniqueId = null;
         if (model.isGroupConversation()) {
-            uniqueId = this.groupService.getUniqueIdString(model.getGroup());
+            uniqueId = GroupUtil.getUniqueIdString(model.getGroup());
         } else if (model.isContactConversation()) {
             String identity = null;
             if (model.getContact() != null) {
@@ -127,7 +129,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
         if (TestUtil.isEmptyOrNull(uniqueId)) {
             logger.warn("Cannot send updates, unique ID is null");
             return;
-        } else if (this.hiddenChatsListService.has(uniqueId)) {
+        } else if (this.conversationCategoryService.isPrivateChat(uniqueId)) {
             logger.debug("Don't send updates for a private conversation");
             return;
         }
@@ -173,7 +175,6 @@ public class ConversationUpdateHandler extends MessageUpdater {
         @Override
         @AnyThread
         public void onModifiedAll() {
-            // TODO: Do we need to implement this?
             logger.info("onModifiedAll");
         }
     }

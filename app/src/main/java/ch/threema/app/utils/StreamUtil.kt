@@ -26,10 +26,10 @@ import android.content.Context
 import android.net.Uri
 import ch.threema.app.ThreemaApplication
 import ch.threema.base.utils.LoggingUtil
-import org.slf4j.Logger
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("StreamUtil")
 
@@ -69,7 +69,7 @@ fun getFromUri(context: Context, uri: Uri?): InputStream? {
         inputStream = if (TestUtil.required(filePath, appPath, tmpPath)) {
             // do not allow sending of files from local directories - but allow tmp dir
             if (!filePath!!.startsWith(appPath) || filePath.startsWith(tmpPath) || filePath.startsWith(
-                    intTmpPath
+                    intTmpPath,
                 )
             ) {
                 FileInputStream(filePath)
@@ -116,3 +116,8 @@ fun InputStream?.toByteArray(): ByteArray? {
 
     return buffered().use(InputStream::readBytes)
 }
+
+fun InputStream?.orEmpty(): InputStream =
+    this ?: emptyInputStream()
+
+fun emptyInputStream(): InputStream = byteArrayOf().inputStream()

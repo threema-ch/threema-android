@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file should contain all strings which differ between build flavors, e.g., because different terminology needs to be used in Threema Work.
+All strings here must be marked as translatable="false", must use the `flavored__` prefix, and must reference a string from the regular
+strings.xml file. Flavor-specific overrides are defined in the respective build flavor directories.
+-->
+<resources>
+    <string name="flavored__safe_configure_server_explain" translatable="false">@string/safe_configure_server_explain</string>
+    <string name="flavored__new_wizard_setup_threema" translatable="false">@string/new_wizard_setup_threema</string>
+    <string name="flavored__enter_serial_body" translatable="false">@string/enter_serial_body</string>
+    <string name="flavored__checking_serial" translatable="false">@string/checking_serial</string>
+</resources>

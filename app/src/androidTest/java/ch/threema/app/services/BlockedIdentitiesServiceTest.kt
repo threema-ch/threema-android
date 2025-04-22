@@ -32,15 +32,13 @@ import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.helpers.ServerAckTaskCodec
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class BlockedIdentitiesServiceTest {
-
     private val multiDeviceManager = TestMultiDeviceManager(
-        isMultiDeviceActive = false
+        isMultiDeviceActive = false,
     )
 
     private val taskManager = TestTaskManager(ServerAckTaskCodec())
@@ -49,7 +47,7 @@ class BlockedIdentitiesServiceTest {
         ThreemaApplication.getAppContext(),
         PreferenceStore(
             ThreemaApplication.getAppContext(),
-            ThreemaApplication.getMasterKey()
+            ThreemaApplication.getMasterKey(),
         ),
         taskManager,
         multiDeviceManager,
@@ -112,14 +110,14 @@ class BlockedIdentitiesServiceTest {
 
         assertEquals(
             setOf("ABCDEFGH", "12345678"),
-            setOf(onModified.removeFirst(), onModified.removeFirst())
+            setOf(onModified.removeFirst(), onModified.removeFirst()),
         )
 
         blockedIdentitiesService.persistBlockedIdentities(setOf("ABCDEFGH", "TESTTEST"))
 
         assertEquals(
             setOf("12345678", "TESTTEST"),
-            setOf(onModified.removeFirst(), onModified.removeFirst())
+            setOf(onModified.removeFirst(), onModified.removeFirst()),
         )
         assertTrue { onModified.isEmpty() }
     }
@@ -138,5 +136,4 @@ class BlockedIdentitiesServiceTest {
 
         assertTrue { onModified.isEmpty() }
     }
-
 }

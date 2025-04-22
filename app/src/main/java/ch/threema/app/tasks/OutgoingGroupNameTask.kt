@@ -48,7 +48,7 @@ class OutgoingGroupNameTask(
         creatorIdentity,
         groupName,
         recipientIdentities,
-        messageId.messageId
+        messageId.messageId,
     )
 
     @Serializable
@@ -66,7 +66,7 @@ class OutgoingGroupNameTask(
                 groupName,
                 receiverIdentities,
                 MessageId(messageId),
-                serviceManager
+                serviceManager,
             )
     }
 }

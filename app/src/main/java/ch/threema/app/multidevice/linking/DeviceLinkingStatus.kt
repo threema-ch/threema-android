@@ -25,34 +25,40 @@ import ch.threema.base.utils.toHexString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
-sealed interface DeviceLinkingStatus
+sealed interface DeviceLinkingStatus {
+    class Connected(
+        private val rph: ByteArray,
+    ) : DeviceLinkingStatus {
+        /**
+         *  This [Deferred] will complete when the emoji verification was successful
+         */
+        private val rphConfirmedSignal = CompletableDeferred<Unit>()
 
-class Connected(
-    private val rph: ByteArray
-) : DeviceLinkingStatus {
-    private val _rphConfirmedSignal = CompletableDeferred<Unit>()
-    val rendezvousPathConfirmedSignal: Deferred<Unit> = _rphConfirmedSignal
+        val emojiIndices: Triple<Int, Int, Int> by lazy {
+            Triple(
+                (rph[0].toUByte() % 128U).toInt(),
+                (rph[1].toUByte() % 128U).toInt(),
+                (rph[2].toUByte() % 128U).toInt(),
+            )
+        }
 
-    val emojiIndices: Triple<Int, Int, Int> by lazy {
-        Triple(
-            (rph[0].toUByte() % 128U).toInt(),
-            (rph[1].toUByte() % 128U).toInt(),
-            (rph[2].toUByte() % 128U).toInt()
-        )
+        suspend fun awaitRendezvousPathConfirmation() {
+            rphConfirmedSignal.await()
+        }
+
+        fun confirmRendezvousPath() {
+            rphConfirmedSignal.complete(Unit)
+        }
+
+        // TODO(ANDR-2487): Remove if not needed
+        fun declineRendezvousPath() {
+            rphConfirmedSignal.completeExceptionally(
+                DeviceLinkingException("Rendezvous path declined (rph=${rph.toHexString()})"),
+            )
+        }
     }
 
-    fun confirmRendezvousPath() {
-        _rphConfirmedSignal.complete(Unit)
-    }
+    data class Failed(val throwable: Throwable?) : DeviceLinkingStatus
 
-    // TODO(ANDR-2487): Remove if not needed
-    fun declineRendezvousPath() {
-        _rphConfirmedSignal.completeExceptionally(
-            DeviceLinkingException("Rendezvous path declined (rph=${rph.toHexString()})")
-        )
-    }
+    data object Completed : DeviceLinkingStatus
 }
-
-data class Failed(val t: Throwable?) : DeviceLinkingStatus
-
-class Completed : DeviceLinkingStatus

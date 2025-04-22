@@ -141,11 +141,11 @@ class P2PHandshake private constructor(
                 when (handshakeState) {
                     HandshakeState.INIT -> handleUnexpectedMessage(message)
                     HandshakeState.AWAIT_EXISTING_PARTICIPANT_HELLO -> handleMessageInAwaitEpHelloState(
-                        message
+                        message,
                     )
 
                     HandshakeState.AWAIT_NEW_PARTICIPANT_HELLO -> handleMessageInAwaitNpHelloState(
-                        message
+                        message,
                     )
 
                     HandshakeState.AWAIT_AUTH -> handleMessageInAwaitAuthState(message)
@@ -157,7 +157,10 @@ class P2PHandshake private constructor(
         } else {
             logger.warn(
                 "Ignore unexpected message to {} from {} (Handshake between {} and {})",
-                message.senderId, message.receiverId, sender.id, receiverId
+                message.senderId,
+                message.receiverId,
+                sender.id,
+                receiverId,
             )
         }
     }
@@ -179,7 +182,7 @@ class P2PHandshake private constructor(
             call.dependencies.identityStore.publicNickname
                 ?: call.dependencies.identityStore.identity,
             senderP2PContext.pckPublic,
-            senderP2PContext.pcck
+            senderP2PContext.pcck,
         )
         val encryptedData = call.description.encryptWithGchk(hello.getEnvelopeBytes())
         return P2POuterEnvelope(sender.id, receiverId, encryptedData)
@@ -200,7 +203,7 @@ class P2PHandshake private constructor(
             NaCl.symmetricEncryptData(auth.getEnvelopeBytes(), gcnhak, innerNonce)
         val encryptedAuthData = pck.encrypt(
             innerNonce + encryptedInnerData,
-            senderP2PContext.nextPcckNonce()
+            senderP2PContext.nextPcckNonce(),
         )
         return P2POuterEnvelope(sender.id, receiverId, encryptedAuthData)
     }
@@ -224,7 +227,7 @@ class P2PHandshake private constructor(
                         participantId,
                         width,
                         height,
-                        fps
+                        fps,
                     )
                 }
 
@@ -241,7 +244,7 @@ class P2PHandshake private constructor(
                 participantLogger.trace("Unsubscribe camera participant={}", participantId.id)
                 call.context.sendMessageToSfu {
                     P2SMessage.UnsubscribeParticipantCamera(
-                        participantId
+                        participantId,
                     )
                 }
             }
@@ -253,7 +256,7 @@ class P2PHandshake private constructor(
         logger.warn(
             "Received unexpected message from {} while in handshake state '{}'",
             message.senderId,
-            handshakeState
+            handshakeState,
         )
     }
 
@@ -294,11 +297,11 @@ class P2PHandshake private constructor(
 
     @WorkerThread
     private fun isValidHello(hello: Handshake.Hello): Boolean {
-        return isGroupMember(hello.identity)
-            && hello.pck.size == NaCl.PUBLICKEYBYTES
-            && hello.pcck.size == ProtocolDefines.COOKIE_LEN
-            && !hello.pck.contentEquals(senderP2PContext.pckPublic)
-            && !hello.pcck.contentEquals(senderP2PContext.pcck)
+        return isGroupMember(hello.identity) &&
+            hello.pck.size == NaCl.PUBLICKEYBYTES &&
+            hello.pcck.size == ProtocolDefines.COOKIE_LEN &&
+            !hello.pck.contentEquals(senderP2PContext.pckPublic) &&
+            !hello.pcck.contentEquals(senderP2PContext.pcck)
     }
 
     @WorkerThread
@@ -362,7 +365,7 @@ class P2PHandshake private constructor(
             call.dependencies.contactModelRepository,
             AddContactRestrictionPolicy.CHECK,
             context = ThreemaApplication.getAppContext(),
-            null
+            null,
         ).runSynchronously()
 
         when (result) {
@@ -395,7 +398,7 @@ class P2PHandshake private constructor(
     @WorkerThread
     private fun hasValidRepeatedAuthFeatures(auth: Handshake.Auth): Boolean {
         return auth.pck.contentEquals(senderP2PContext.pckPublic) && auth.pcck.contentEquals(
-            senderP2PContext.pcck
+            senderP2PContext.pcck,
         )
     }
 
@@ -417,7 +420,8 @@ class P2PHandshake private constructor(
 
         return try {
             val decryptedOuterData = pck.decrypt(
-                encryptedData, receiverP2PContext.nextPcckNonce()
+                encryptedData,
+                receiverP2PContext.nextPcckNonce(),
             )
             decryptedOuterData?.let { decryptAuthMessageInnerData(it) }
         } catch (e: Exception) {
@@ -488,7 +492,7 @@ class P2PHandshake private constructor(
                 sender,
                 receiverId,
                 call,
-                HandshakeState.INIT
+                HandshakeState.INIT,
             )
         }
 
@@ -501,7 +505,7 @@ class P2PHandshake private constructor(
                 sender,
                 receiverId,
                 call,
-                HandshakeState.AWAIT_NEW_PARTICIPANT_HELLO
+                HandshakeState.AWAIT_NEW_PARTICIPANT_HELLO,
             )
         }
     }
@@ -512,6 +516,6 @@ class P2PHandshake private constructor(
         AWAIT_EXISTING_PARTICIPANT_HELLO,
         AWAIT_AUTH,
         DONE,
-        CANCELLED
+        CANCELLED,
     }
 }

@@ -41,4 +41,5 @@
     <string name="webclient_diagnostics_start">開始</string>
     <string name="webclient_diagnostics_intro">テストを開始するために«開始»をタップしてください</string>
     <string name="webclient_diagnostics_done">完了しました。Threema Webの接続構築に問題が発生した場合は、このログをThreemaサポートに送ってください。</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
 </resources>

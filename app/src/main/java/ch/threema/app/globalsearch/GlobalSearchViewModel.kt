@@ -48,7 +48,7 @@ class GlobalSearchViewModel : ViewModel() {
         query: String?,
         filterFlags: Int,
         allowEmpty: Boolean,
-        sortAscending: Boolean
+        sortAscending: Boolean,
     ) {
         repository.onQueryChanged(query, filterFlags, allowEmpty, sortAscending)
     }

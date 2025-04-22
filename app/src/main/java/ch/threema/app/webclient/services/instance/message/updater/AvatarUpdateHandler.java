@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
@@ -37,6 +38,7 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -59,15 +61,19 @@ public class AvatarUpdateHandler extends MessageUpdater {
 
     // Services
     private final @NonNull ContactService contactService;
+    private final @NonNull GroupService groupService;
 
     @AnyThread
     public AvatarUpdateHandler(
         @NonNull HandlerExecutor handler,
         @NonNull MessageDispatcher updateDispatcher,
-        @NonNull ContactService contactService
+        @NonNull ContactService contactService,
+        @NonNull GroupService groupService
     ) {
         super(Protocol.SUB_TYPE_AVATAR);
         this.handler = handler;
+
+        this.groupService = groupService;
 
         // Dispatchers
         this.updateDispatcher = updateDispatcher;
@@ -149,8 +155,14 @@ public class AvatarUpdateHandler extends MessageUpdater {
     @AnyThread
     private class GroupListener implements ch.threema.app.listeners.GroupListener {
         @Override
-        public void onUpdatePhoto(GroupModel groupModel) {
+        public void onUpdatePhoto(@NonNull GroupIdentity groupIdentity) {
             logger.debug("Group Listener: onUpdatePhoto");
+            GroupModel groupModel = groupService.getByGroupIdentity(groupIdentity);
+            if (groupModel == null) {
+                logger.error("Group model is null");
+                return;
+            }
+
             handler.post(() -> AvatarUpdateHandler.this.update(groupModel));
         }
     }

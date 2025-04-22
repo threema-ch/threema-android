@@ -27,7 +27,7 @@ import ch.threema.base.utils.Utils
 data class SessionParameters(
     val participantId: ParticipantId,
     val iceParameters: IceParameters,
-    val dtlsParameters: DtlsParameters
+    val dtlsParameters: DtlsParameters,
 )
 
 data class IceParameters(val usernameFragment: String, val password: String)

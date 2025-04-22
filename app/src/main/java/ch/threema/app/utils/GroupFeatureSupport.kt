@@ -26,7 +26,7 @@ import ch.threema.storage.models.ContactModel
 
 class GroupFeatureSupport(
     @ThreemaFeature.Feature feature: Long,
-    groupMembers: List<ContactModel>
+    groupMembers: List<ContactModel>,
 ) {
     @SuppressWarnings("WeakerAccess")
     val contactsWithFeatureSupport: List<ContactModel>
@@ -43,9 +43,11 @@ class GroupFeatureSupport(
         // deduct adoption rate
         if (contactsWithFeatureSupport.isNotEmpty() && contactsWithoutFeatureSupport.isNotEmpty()) {
             GroupFeatureAdoptionRate.PARTIAL
-        } else if (contactsWithFeatureSupport.isNotEmpty() /*implies that contactsWithoutFeatureSupport is empty*/) {
+        } else if (contactsWithFeatureSupport.isNotEmpty()) {
+            // implies that contactsWithoutFeatureSupport is empty
             GroupFeatureAdoptionRate.ALL
-        } else /*implies that there are no contacts with feature support*/ {
+        } else {
+            // implies that there are no contacts with feature support
             GroupFeatureAdoptionRate.NONE
         }
 }
@@ -64,5 +66,5 @@ enum class GroupFeatureAdoptionRate {
     /**
      * all group members support a feature
      */
-    ALL
+    ALL,
 }

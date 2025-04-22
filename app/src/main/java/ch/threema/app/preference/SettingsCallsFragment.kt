@@ -30,7 +30,7 @@ import androidx.preference.DropDownPreference
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ListenerManager
-import ch.threema.app.utils.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.services.VoipStateService
@@ -41,7 +41,6 @@ private val logger = LoggingUtil.getThreemaLogger("SettingsCallsFragment")
 
 @Suppress("unused")
 class SettingsCallsFragment : ThreemaPreferenceFragment() {
-
     private var fragmentView: View? = null
     private var enableCallReject: CheckBoxPreference? = null
     private lateinit var callEnable: CheckBoxPreference
@@ -73,20 +72,18 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
 
     private fun initCallPrefListeners() {
         callEnable = getPref(R.string.preferences__voip_enable)
-        callEnable.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue == false && voipStateService?.callState?.isIdle != true) {
+        callEnable.onChange<Boolean> { enabled ->
+            if (!enabled && voipStateService?.callState?.isIdle != true) {
                 VoipUtil.sendOneToOneCallHangupCommand(requireActivity())
             }
-            true
         }
 
         groupCallsEnable = getPref(R.string.preferences__group_calls_enable)
-        groupCallsEnable.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue == false) {
+        groupCallsEnable.onChange<Boolean> { enabled ->
+            if (!enabled) {
                 groupCallManager?.abortCurrentCall()
             }
             ListenerManager.conversationListeners.handle { it.onModifiedAll() }
-            true
         }
     }
 
@@ -157,9 +154,11 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
                 ConfigUtils.requestPhonePermissions(
                     requireActivity(),
                     this@SettingsCallsFragment,
-                    PERMISSION_REQUEST_READ_PHONE_STATE
+                    PERMISSION_REQUEST_READ_PHONE_STATE,
                 )
-            } else true
+            } else {
+                true
+            }
         }
     }
 
@@ -172,7 +171,7 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String?>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         when (requestCode) {
             PERMISSION_REQUEST_READ_PHONE_STATE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -181,7 +180,7 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
                 ConfigUtils.showPermissionRationale(
                     context,
                     fragmentView,
-                    R.string.permission_phone_required
+                    R.string.permission_phone_required,
                 )
             }
         }
@@ -190,5 +189,4 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
     companion object {
         private const val PERMISSION_REQUEST_READ_PHONE_STATE = 3
     }
-
 }

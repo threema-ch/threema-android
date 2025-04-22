@@ -28,12 +28,11 @@ import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
 open class GroupPollVoteMessageTest {
-
     private val groupPollVoteMessage = GroupPollVoteMessage().apply {
 
         groupCreator = "01234567"
@@ -45,8 +44,8 @@ open class GroupPollVoteMessageTest {
             listOf(
                 BallotVote(2, 8),
                 BallotVote(3, 5),
-                BallotVote(4, 1)
-            )
+                BallotVote(4, 1),
+            ),
         )
     }
 
@@ -56,7 +55,6 @@ open class GroupPollVoteMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthTooShort() {
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollVoteMessage.fromByteArray(
                 data = groupPollVoteMessageBody,
@@ -71,10 +69,8 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollVoteMessage.fromByteArray(
                 data = groupPollVoteMessageBody,
@@ -89,15 +85,13 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLength() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollVoteMessage.fromByteArray(
                 data = groupPollVoteMessageBody,
                 offset = 0,
-                length = groupPollVoteMessageBody.size + 1
+                length = groupPollVoteMessageBody.size + 1,
             )
         }
 
@@ -107,15 +101,13 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLengthWithOffset() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupPollVoteMessage.fromByteArray(
                 data = groupPollVoteMessageBody,
                 offset = 1,
-                length = groupPollVoteMessageBody.size
+                length = groupPollVoteMessageBody.size,
             )
         }
 
@@ -125,12 +117,11 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithoutOffset() {
-
         // act
         val resultGroupPollVoteMessage = GroupPollVoteMessage.fromByteArray(
             data = groupPollVoteMessageBody,
             offset = 0,
-            length = groupPollVoteMessageBody.size
+            length = groupPollVoteMessageBody.size,
         )
 
         // assert
@@ -139,7 +130,6 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithOffset() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + groupPollVoteMessageBody
 
@@ -147,7 +137,7 @@ open class GroupPollVoteMessageTest {
         val resultGroupPollVoteMessage: GroupPollVoteMessage = GroupPollVoteMessage.fromByteArray(
             data = dataWithOffsetByte,
             offset = 1,
-            length = groupPollVoteMessageBody.size
+            length = groupPollVoteMessageBody.size,
         )
 
         // assert
@@ -156,17 +146,15 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetNotPassedCorrectly() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + groupPollVoteMessageBody
 
         val testBlockLazy = {
-
             // act
             GroupPollVoteMessage.fromByteArray(
                 data = dataWithOffsetByte,
                 offset = 0,
-                length = groupPollVoteMessageBody.size
+                length = groupPollVoteMessageBody.size,
             )
         }
 
@@ -176,7 +164,6 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
-
         // act
         val outgoingMessageId = MessageId()
         val outgoingMessageCreatedAt: Long = 42424242
@@ -198,7 +185,6 @@ open class GroupPollVoteMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldParseBodyAndSetCommonFields() {
-
         // act
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()

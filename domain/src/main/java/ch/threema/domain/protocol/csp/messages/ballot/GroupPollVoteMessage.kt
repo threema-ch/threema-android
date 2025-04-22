@@ -28,11 +28,11 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
+import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets
 import org.json.JSONArray
 import org.json.JSONException
 import org.slf4j.Logger
-import java.io.ByteArrayOutputStream
-import java.nio.charset.StandardCharsets
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("GroupPollVoteMessage")
 
@@ -40,7 +40,6 @@ private val logger: Logger = LoggingUtil.getThreemaLogger("GroupPollVoteMessage"
  * A group poll vote message.
  */
 class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
-
     override var ballotId: BallotId? = null
     override var ballotCreatorIdentity: String? = null
     override val votes: MutableList<BallotVote> = mutableListOf()
@@ -108,30 +107,27 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_GROUP_BALLOT_VOTE
 
     companion object {
+        @JvmStatic
+        fun fromReflected(message: MdD2D.IncomingMessage): GroupPollVoteMessage = fromByteArray(
+            data = message.body.toByteArray(),
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): GroupPollVoteMessage =
-            fromByteArray(
-                data = message.body.toByteArray()
-            ).apply {
-                initializeCommonProperties(message)
-            }
+        fun fromReflected(message: MdD2D.OutgoingMessage): GroupPollVoteMessage = fromByteArray(
+            data = message.body.toByteArray(),
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): GroupPollVoteMessage =
-            fromByteArray(
-                data = message.body.toByteArray()
-            ).apply {
-                initializeCommonProperties(message)
-            }
-
-        @JvmStatic
-        fun fromByteArray(data: ByteArray): GroupPollVoteMessage =
-            fromByteArray(
-                data = data,
-                offset = 0,
-                length = data.size
-            )
+        @Throws(BadMessageException::class)
+        fun fromByteArray(data: ByteArray): GroupPollVoteMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Get the group poll-vote message from the given array.
@@ -154,13 +150,12 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
             }
 
             return GroupPollVoteMessage().apply {
-
                 var positionIndex = offset
                 groupCreator = String(
                     data,
                     positionIndex,
                     ProtocolDefines.IDENTITY_LEN,
-                    StandardCharsets.US_ASCII
+                    StandardCharsets.US_ASCII,
                 )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
@@ -171,7 +166,7 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
                     data,
                     positionIndex,
                     ProtocolDefines.IDENTITY_LEN,
-                    StandardCharsets.US_ASCII
+                    StandardCharsets.US_ASCII,
                 )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
@@ -183,8 +178,8 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
                         data,
                         positionIndex,
                         length + offset - positionIndex,
-                        StandardCharsets.UTF_8
-                    )
+                        StandardCharsets.UTF_8,
+                    ),
                 )
             }
         }

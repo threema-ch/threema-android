@@ -23,6 +23,7 @@ package ch.threema.app.managers;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.PowerManager;
 
 import com.datatheorem.android.trustkit.pinning.OkHttp3Helper;
 
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
@@ -46,6 +48,7 @@ import ch.threema.app.emojis.search.EmojiSearchIndex;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.multidevice.MultiDeviceManager;
+import ch.threema.app.onprem.OnPremCertPinning;
 import ch.threema.app.processors.IncomingMessageProcessorImpl;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ApiService;
@@ -59,12 +62,13 @@ import ch.threema.app.services.BrowserDetectionServiceImpl;
 import ch.threema.app.services.CacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ContactServiceImpl;
+import ch.threema.app.services.ConversationCategoryService;
+import ch.threema.app.services.ConversationCategoryServiceImpl;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationServiceImpl;
 import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.services.ConversationTagServiceImpl;
 import ch.threema.app.services.DeadlineListService;
-import ch.threema.app.services.DeadlineListServiceImpl;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.DeviceServiceImpl;
 import ch.threema.app.services.DistributionListService;
@@ -73,6 +77,7 @@ import ch.threema.app.services.DownloadService;
 import ch.threema.app.services.DownloadServiceImpl;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.FileServiceImpl;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.GroupServiceImpl;
 import ch.threema.app.services.IdListService;
@@ -86,6 +91,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.NotificationPreferenceServiceImpl;
+import ch.threema.app.services.OnPremConfigFetcherProvider;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PinLockService;
@@ -161,6 +167,7 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
 import java8.util.function.Supplier;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class ServiceManager {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ServiceManager");
@@ -233,7 +240,9 @@ public class ServiceManager {
     @Nullable
     private IdListService excludedSyncIdentitiesService, profilePicRecipientsService;
     @Nullable
-    private DeadlineListService mutedChatsListService, hiddenChatListService, mentionOnlyChatsListService;
+    private DeadlineListService hiddenChatListService;
+    @Nullable
+    private ConversationCategoryService conversationCategoryService;
     @Nullable
     private DistributionListService distributionListService;
     @Nullable
@@ -288,8 +297,16 @@ public class ServiceManager {
     @Nullable
     private TaskCreator taskCreator;
 
+    @Nullable
+    private GroupFlowDispatcher groupFlowDispatcher;
+
     @NonNull
     private final ConvertibleServerConnection connection;
+    @Nullable
+    private OnPremConfigFetcherProvider onPremConfigFetcherProvider = null;
+
+    @NonNull
+    private final LazyProperty<OkHttpClient> baseOkHttpClient = new LazyProperty<>(this::createBaseOkHttpClient);
 
     @NonNull
     private final LazyProperty<OkHttpClient> okHttpClient = new LazyProperty<>(this::createOkHttpClient);
@@ -337,10 +354,10 @@ public class ServiceManager {
                     isIpv6Preferred.get(),
                     this.getServerAddressProviderService().getServerAddressProvider(),
                     ConfigUtils.isWorkBuild(),
-                    ConfigUtils::getSSLSocketFactory
+                    ConfigUtils::getSSLSocketFactory,
+                    ThreemaApplication.getAppVersion(),
+                    Locale.getDefault().getLanguage()
                 );
-                this.apiConnector.setVersion(ThreemaApplication.getAppVersion());
-                this.apiConnector.setLanguage(Locale.getDefault().getLanguage());
 
                 if (BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
                     // On Premise always requires Basic authentication
@@ -482,7 +499,7 @@ public class ServiceManager {
                 this.getGroupService(),
                 this.getApiService(),
                 this.getDownloadService(),
-                this.getHiddenChatsListService(),
+                this.getConversationCategoryService(),
                 this.getBlockedIdentitiesService(),
                 this.getMultiDeviceManager(),
                 this.getModelRepositories().getEditHistory(),
@@ -533,6 +550,7 @@ public class ServiceManager {
                 this.getContext(),
                 this.masterKey,
                 this.getPreferenceService(),
+                this.getNotificationPreferenceService(),
                 this.getAvatarCacheService()
             );
         }
@@ -669,10 +687,11 @@ public class ServiceManager {
                 this.getAvatarCacheService(),
                 this.getFileService(),
                 this.getWallpaperService(),
-                this.getMutedChatsListService(),
-                this.getHiddenChatsListService(),
+                this.getConversationCategoryService(),
                 this.getRingtoneService(),
                 this.getConversationTagService(),
+                this.getModelRepositories().getContacts(),
+                this.getModelRepositories().getGroups(),
                 this
             );
         }
@@ -758,7 +777,10 @@ public class ServiceManager {
     @NonNull
     public ConversationTagService getConversationTagService() {
         if (this.conversationTagService == null) {
-            this.conversationTagService = new ConversationTagServiceImpl(this.databaseServiceNew);
+            this.conversationTagService = new ConversationTagServiceImpl(
+                this.databaseServiceNew,
+                this.getTaskCreator()
+            );
         }
 
         return this.conversationTagService;
@@ -775,7 +797,7 @@ public class ServiceManager {
                 this.getGroupService(),
                 this.getDistributionListService(),
                 this.getMessageService(),
-                this.getHiddenChatsListService(),
+                this.getConversationCategoryService(),
                 this.getBlockedIdentitiesService(),
                 this.getConversationTagService()
             );
@@ -785,9 +807,23 @@ public class ServiceManager {
     }
 
     @NonNull
+    public OnPremConfigFetcherProvider getOnPremConfigFetcherProvider() {
+        if (onPremConfigFetcherProvider == null) {
+            onPremConfigFetcherProvider = new OnPremConfigFetcherProvider(
+                getPreferenceService(),
+                baseOkHttpClient.get(),
+                BuildConfig.ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS
+            );
+        }
+        return onPremConfigFetcherProvider;
+    }
+
+    @NonNull
     public ServerAddressProviderService getServerAddressProviderService() {
-        if (null == this.serverAddressProviderService) {
-            this.serverAddressProviderService = new ServerAddressProviderServiceImpl(this.getPreferenceService());
+        if (serverAddressProviderService == null) {
+            this.serverAddressProviderService = new ServerAddressProviderServiceImpl(
+                getOnPremConfigFetcherProvider()
+            );
         }
 
         return this.serverAddressProviderService;
@@ -799,7 +835,7 @@ public class ServiceManager {
             this.notificationService = new NotificationServiceImpl(
                 this.getContext(),
                 this.getLockAppService(),
-                this.getHiddenChatsListService(),
+                this.getConversationCategoryService(),
                 this.getNotificationPreferenceService(),
                 this.getRingtoneService()
             );
@@ -843,27 +879,16 @@ public class ServiceManager {
     }
 
     @NonNull
-    public DeadlineListService getMutedChatsListService() {
-        if (this.mutedChatsListService == null) {
-            this.mutedChatsListService = new DeadlineListServiceImpl("list_muted_chats", this.getPreferenceService());
+    public ConversationCategoryService getConversationCategoryService() {
+        if (this.conversationCategoryService == null) {
+            this.conversationCategoryService = new ConversationCategoryServiceImpl(
+                this.getPreferenceService(),
+                this.getPreferenceStore(),
+                this.getMultiDeviceManager(),
+                this.getTaskCreator()
+            );
         }
-        return this.mutedChatsListService;
-    }
-
-    @NonNull
-    public DeadlineListService getHiddenChatsListService() {
-        if (this.hiddenChatListService == null) {
-            this.hiddenChatListService = new DeadlineListServiceImpl("list_hidden_chats", this.getPreferenceService());
-        }
-        return this.hiddenChatListService;
-    }
-
-    @NonNull
-    public DeadlineListService getMentionOnlyChatsListService() {
-        if (this.mentionOnlyChatsListService == null) {
-            this.mentionOnlyChatsListService = new DeadlineListServiceImpl("list_mention_only", this.getPreferenceService());
-        }
-        return this.mentionOnlyChatsListService;
+        return this.conversationCategoryService;
     }
 
     @NonNull
@@ -888,7 +913,7 @@ public class ServiceManager {
                 this.getFileService(),
                 this.getPreferenceService(),
                 this.getNotificationPreferenceService(),
-                this.getHiddenChatsListService()
+                this.getConversationCategoryService()
             );
         }
         return this.messagePlayerService;
@@ -952,7 +977,7 @@ public class ServiceManager {
                 this.getIdentityStore(),
                 this.getApiService(),
                 this.getAPIConnector(),
-                this.getHiddenChatsListService(),
+                this.getConversationCategoryService(),
                 this.getServerAddressProviderService().getServerAddressProvider(),
                 this.getPreferenceStore(),
                 this.getModelRepositories().getContacts()
@@ -975,7 +1000,6 @@ public class ServiceManager {
     public RingtoneService getRingtoneService() {
         if (this.ringtoneService == null) {
             this.ringtoneService = new RingtoneServiceImpl(
-                this.getPreferenceService(),
                 this.getNotificationPreferenceService()
             );
         }
@@ -1034,12 +1058,14 @@ public class ServiceManager {
                 this.getBlockedIdentitiesService(),
                 this.getPreferenceService(),
                 this.getUserService(),
-                this.getHiddenChatsListService(),
+                this.getConversationCategoryService(),
                 this.getFileService(),
                 this.getSynchronizeContactsService(),
                 this.getLicenseService(),
                 this.getAPIConnector(),
-                this.getModelRepositories().getContacts()
+                this.getModelRepositories().getContacts(),
+                this.getModelRepositories().getGroups(),
+                this.getGroupFlowDispatcher()
             ));
         }
         return this.webClientServiceManager;
@@ -1065,11 +1091,10 @@ public class ServiceManager {
     public VoipStateService getVoipStateService() throws ThreemaException {
         if (this.voipStateService == null) {
             this.voipStateService = new VoipStateService(
-                this.getContactService(),
-                this.getRingtoneService(),
-                this.getPreferenceService(),
-                this.getLifetimeService(),
-                this.getContext()
+                getContactService(),
+                getNotificationPreferenceService(),
+                getLifetimeService(),
+                getContext()
             );
         }
         return this.voipStateService;
@@ -1194,6 +1219,33 @@ public class ServiceManager {
     }
 
     @NonNull
+    public GroupFlowDispatcher getGroupFlowDispatcher() throws ThreemaException {
+        if (this.groupFlowDispatcher == null) {
+            this.groupFlowDispatcher = new GroupFlowDispatcher(
+                getModelRepositories().getContacts(),
+                getModelRepositories().getGroups(),
+                getContactService(),
+                getGroupService(),
+                getGroupCallManager(),
+                getUserService(),
+                getContactStore(),
+                getIdentityStore(),
+                getForwardSecurityMessageProcessor(),
+                getNonceFactory(),
+                getBlockedIdentitiesService(),
+                getPreferenceService(),
+                getMultiDeviceManager(),
+                getApiService(),
+                getAPIConnector(),
+                getFileService(),
+                getDatabaseServiceNew(),
+                getTaskManager()
+            );
+        }
+        return this.groupFlowDispatcher;
+    }
+
+    @NonNull
     public OkHttpClient getOkHttpClient() {
         return okHttpClient.get();
     }
@@ -1201,6 +1253,7 @@ public class ServiceManager {
     @NonNull
     private ConvertibleServerConnection createServerConnection() throws ThreemaException {
         Supplier<ServerConnection> connectionSupplier = new CspD2mDualConnectionSupplier(
+            (PowerManager) getContext().getSystemService(Context.POWER_SERVICE),
             getMultiDeviceManager(),
             getIncomingMessageProcessor(),
             getTaskManager(),
@@ -1221,23 +1274,41 @@ public class ServiceManager {
     }
 
     @NonNull
-    private OkHttpClient createOkHttpClient() {
-        logger.debug("Create OkHttpClient");
+    private OkHttpClient createBaseOkHttpClient() {
+        logger.debug("Create Base OkHttpClient");
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
             .connectTimeout(ProtocolDefines.CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(ProtocolDefines.WRITE_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(ProtocolDefines.READ_TIMEOUT, TimeUnit.SECONDS);
 
+        if (ConfigUtils.isDevBuild()) {
+            var okHttpLogger = LoggingUtil.getThreemaLogger("OkHttp");
+            var interceptor = new HttpLoggingInterceptor(okHttpLogger::debug);
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            builder.addNetworkInterceptor(interceptor);
+        }
+
         /*
          * For android versions < 7.0 we have to explicitly configure the okhttp client
          * to use certificate pinning via TrustKit.
-         * In on-prem builds we never pin.
          */
-        if (!ConfigUtils.isOnPremBuild() && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             builder.sslSocketFactory(OkHttp3Helper.getSSLSocketFactory(), OkHttp3Helper.getTrustManager());
             builder.addInterceptor(OkHttp3Helper.getPinningInterceptor());
         }
 
         return builder.build();
+    }
+
+    @NonNull
+    private OkHttpClient createOkHttpClient() {
+        if (ConfigUtils.isOnPremBuild()) {
+            return OnPremCertPinning.INSTANCE.createClientWithCertPinning(
+                baseOkHttpClient.get(),
+                getOnPremConfigFetcherProvider()
+            );
+        } else {
+            return baseOkHttpClient.get();
+        }
     }
 }

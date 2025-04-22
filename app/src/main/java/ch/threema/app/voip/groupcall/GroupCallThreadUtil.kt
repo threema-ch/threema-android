@@ -23,9 +23,9 @@ package ch.threema.app.voip.groupcall
 
 import ch.threema.app.BuildConfig
 import ch.threema.base.concurrent.TrulySingleThreadExecutorThreadFactory
-import kotlinx.coroutines.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.*
 
 class GroupCallThreadUtil {
     interface ExceptionHandler {
@@ -34,25 +34,24 @@ class GroupCallThreadUtil {
 
     companion object {
         var exceptionHandler: ExceptionHandler? = null
-        val DISPATCHER: CoroutineContext
-        lateinit var THREAD: Thread
+        val dispatcher: CoroutineContext
+        lateinit var thread: Thread
 
         init {
             val factory = TrulySingleThreadExecutorThreadFactory("GroupCallWorker") {
-                THREAD = it
+                thread = it
             }
             val handler = CoroutineExceptionHandler { _, exception ->
                 exceptionHandler?.handle(exception) ?: throw exception
             }
-            DISPATCHER =
-                Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher().plus(handler)
+            dispatcher = Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher().plus(handler)
         }
 
         fun assertDispatcherThread() {
             if (BuildConfig.DEBUG) {
                 val actual = Thread.currentThread()
-                if (actual !== THREAD) {
-                    throw Error("Thread mismatch, expected '${THREAD.name}', got '${actual.name}'")
+                if (actual !== thread) {
+                    throw Error("Thread mismatch, expected '${thread.name}', got '${actual.name}'")
                 }
             }
         }

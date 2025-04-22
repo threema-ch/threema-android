@@ -40,7 +40,7 @@ internal class SystemUpdateToVersion87(
                 "`rejectedIdentity` VARCHAR NOT NULL," +
                 "`groupId` INTEGER NOT NULL," +
                 "PRIMARY KEY (`messageId`, `rejectedIdentity`, `groupId`) ON CONFLICT IGNORE " +
-                ")"
+                ")",
         )
 
         return true

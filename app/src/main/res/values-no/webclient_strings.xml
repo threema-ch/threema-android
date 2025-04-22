@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Start</string>
     <string name="webclient_diagnostics_intro">Trykk på «Start» for å starte test.</string>
     <string name="webclient_diagnostics_done">Ferdig. Om du opplever problemer med tilkoblingen til skrivebordsapp eller webklient, vennligst send denne loggen til Threema brukerstøtte.</string>
+    <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
 </resources>

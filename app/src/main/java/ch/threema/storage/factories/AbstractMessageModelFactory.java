@@ -70,31 +70,30 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
                     forwardSecurityMode = ForwardSecurityMode.getByValue(fsmValue);
                 }
 
-                messageModel
-                    .setId(cursorFactory.getInt(AbstractMessageModel.COLUMN_ID))
-                    .setUid(cursorFactory.getString(AbstractMessageModel.COLUMN_UID))
-                    .setApiMessageId(cursorFactory.getString(AbstractMessageModel.COLUMN_API_MESSAGE_ID))
-                    .setIdentity(cursorFactory.getString(AbstractMessageModel.COLUMN_IDENTITY))
-                    .setOutbox(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_OUTBOX))
-                    .setCorrelationId(cursorFactory.getString(AbstractMessageModel.COLUMN_CORRELATION_ID))
-                    .setBody(cursorFactory.getString(AbstractMessageModel.COLUMN_BODY))
-                    .setRead(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_READ))
-                    .setSaved(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_SAVED))
-                    .setPostedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_POSTED_AT))
-                    .setCreatedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_CREATED_AT))
-                    .setModifiedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_MODIFIED_AT))
-                    .setIsStatusMessage(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_STATUS_MESSAGE))
-                    .setCaption(cursorFactory.getString(AbstractMessageModel.COLUMN_CAPTION))
-                    .setQuotedMessageId(cursorFactory.getString(AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID))
-                    .setMessageContentsType(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE))
-                    .setMessageFlags(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_FLAGS))
-                    .setDeliveredAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELIVERED_AT))
-                    .setReadAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_READ_AT))
-                    .setEditedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_EDITED_AT))
-                    .setDeletedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELETED_AT))
-                    .setForwardSecurityMode(forwardSecurityMode)
-                    .setDisplayTags(cursorFactory.getInt(AbstractMessageModel.COLUMN_DISPLAY_TAGS))
-                ;
+                messageModel.setId(cursorFactory.getInt(AbstractMessageModel.COLUMN_ID));
+                messageModel.setUid(cursorFactory.getString(AbstractMessageModel.COLUMN_UID));
+                messageModel.setApiMessageId(cursorFactory.getString(AbstractMessageModel.COLUMN_API_MESSAGE_ID));
+                messageModel.setIdentity(cursorFactory.getString(AbstractMessageModel.COLUMN_IDENTITY));
+                messageModel.setOutbox(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_OUTBOX));
+                messageModel.setCorrelationId(cursorFactory.getString(AbstractMessageModel.COLUMN_CORRELATION_ID));
+                messageModel.setBody(cursorFactory.getString(AbstractMessageModel.COLUMN_BODY));
+                messageModel.setRead(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_READ));
+                messageModel.setSaved(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_SAVED));
+                messageModel.setPostedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_POSTED_AT));
+                messageModel.setCreatedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_CREATED_AT));
+                messageModel.setModifiedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_MODIFIED_AT));
+                messageModel.setStatusMessage(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_STATUS_MESSAGE));
+                messageModel.setCaption(cursorFactory.getString(AbstractMessageModel.COLUMN_CAPTION));
+                messageModel.setQuotedMessageId(cursorFactory.getString(AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID));
+                messageModel.setMessageContentsType(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE));
+                messageModel.setMessageFlags(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_FLAGS));
+                messageModel.setDeliveredAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELIVERED_AT));
+                messageModel.setReadAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_READ_AT));
+                messageModel.setEditedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_EDITED_AT));
+                messageModel.setDeletedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELETED_AT));
+                messageModel.setForwardSecurityMode(forwardSecurityMode);
+                messageModel.setDisplayTags(cursorFactory.getInt(AbstractMessageModel.COLUMN_DISPLAY_TAGS));
+
                 String stateString = cursorFactory.getString(AbstractMessageModel.COLUMN_STATE);
                 if (!TestUtil.isEmptyOrNull(stateString)) {
                     try {

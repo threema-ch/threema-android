@@ -21,22 +21,20 @@
 
 package ch.threema.domain.protocol.csp.messages.location
 
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class LocationMessageTest {
-
     @Test
     fun getBodyReturnsCorrectWithLatLong1() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
                 latitude = 30.876578,
                 longitude = 120.461526,
                 accuracy = null,
-                poi = null
-            )
+                poi = null,
+            ),
         )
 
         // act
@@ -49,15 +47,14 @@ class LocationMessageTest {
 
     @Test
     fun getBodyReturnsCorrectWithLatLong2() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
                 latitude = -30.876578,
                 longitude = -120.461526,
                 accuracy = null,
-                poi = null
-            )
+                poi = null,
+            ),
         )
 
         // act
@@ -70,15 +67,14 @@ class LocationMessageTest {
 
     @Test
     fun getBodyReturnsCorrectWithLatLongRounded() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
                 latitude = 30.0,
                 longitude = 120.46152687654568,
                 accuracy = null,
-                poi = null
-            )
+                poi = null,
+            ),
         )
 
         // act
@@ -91,15 +87,14 @@ class LocationMessageTest {
 
     @Test
     fun getBodyReturnsCorrectWithLatLongAccuracy() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
                 latitude = 30.876578,
                 longitude = 120.461526,
                 accuracy = 20.34,
-                poi = null
-            )
+                poi = null,
+            ),
         )
 
         // act
@@ -112,15 +107,14 @@ class LocationMessageTest {
 
     @Test
     fun getBodyReturnsCorrectWithLatLongAccuracyRounded() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
                 latitude = 30.876578,
                 longitude = 120.461526,
                 accuracy = 20.3434367,
-                poi = null
-            )
+                poi = null,
+            ),
         )
 
         // act
@@ -133,7 +127,6 @@ class LocationMessageTest {
 
     @Test
     fun getBodyReturnsCorrectWithLatLongAccuracyPoiAddress() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
@@ -142,8 +135,8 @@ class LocationMessageTest {
                 accuracy = 20.34,
                 poi = Poi.Unnamed(
                     address = "Cool Street, Cool City, 50",
-                )
-            )
+                ),
+            ),
         )
 
         // act
@@ -156,7 +149,6 @@ class LocationMessageTest {
 
     @Test
     fun getBodyReturnsCorrectWithLatLongAccuracyPoiAddressLineBreaks() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
@@ -166,7 +158,7 @@ class LocationMessageTest {
                 poi = Poi.Unnamed(
                     address = "Cool Street\nCool City\n50",
                 ),
-            )
+            ),
         )
 
         // act
@@ -179,7 +171,6 @@ class LocationMessageTest {
 
     @Test
     fun getBodyReturnsCorrectWithLatLongAccuracyPoiAddressPoiName() {
-
         // arrange
         val locationMessage = LocationMessage(
             LocationMessageData(
@@ -189,8 +180,8 @@ class LocationMessageTest {
                 poi = Poi.Named(
                     name = "Pizza Place",
                     address = "Cool Street, Cool City, 50",
-                )
-            )
+                ),
+            ),
         )
 
         // act

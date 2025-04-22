@@ -43,10 +43,10 @@ import ch.threema.storage.models.AbstractMessageModel
 
 class EmojiReactionsOverviewListAdapter(
     val messageModel: AbstractMessageModel?,
-    val onItemClickListener: OnItemClickListener?
+    val onItemClickListener: OnItemClickListener?,
 ) :
     ListAdapter<EmojiReactionData, EmojiReactionsOverviewListAdapter.EmojiReactionViewHolder>(
-        EmojiReactionDiffCallback()
+        EmojiReactionDiffCallback(),
     ) {
     val contactService: ContactService = ThreemaApplication.requireServiceManager().contactService
     val messageService = ThreemaApplication.requireServiceManager().messageService
@@ -66,7 +66,7 @@ class EmojiReactionsOverviewListAdapter(
     class EmojiReactionDiffCallback : DiffUtil.ItemCallback<EmojiReactionData>() {
         override fun areItemsTheSame(
             oldItem: EmojiReactionData,
-            newItem: EmojiReactionData
+            newItem: EmojiReactionData,
         ): Boolean {
             return oldItem.emojiSequence == newItem.emojiSequence &&
                 oldItem.senderIdentity == newItem.senderIdentity &&
@@ -75,7 +75,7 @@ class EmojiReactionsOverviewListAdapter(
 
         override fun areContentsTheSame(
             oldItem: EmojiReactionData,
-            newItem: EmojiReactionData
+            newItem: EmojiReactionData,
         ): Boolean {
             return oldItem == newItem
         }
@@ -83,9 +83,8 @@ class EmojiReactionsOverviewListAdapter(
 
     inner class EmojiReactionViewHolder(
         itemView: View,
-        private val getItem: (Int) -> EmojiReactionData?
+        private val getItem: (Int) -> EmojiReactionData?,
     ) : RecyclerView.ViewHolder(itemView) {
-
         private val contactAvatarView: AvatarView = itemView.findViewById(R.id.contact_avatar)
         private val contactNameTextView: TextView = itemView.findViewById(R.id.contact_name)
         private val removeIconView: ImageView = itemView.findViewById(R.id.remove_icon)
@@ -108,9 +107,9 @@ class EmojiReactionsOverviewListAdapter(
                     }
                 }
             }
-            removeIconView.isVisible = data.senderIdentity == contactService.me.identity
-                && messageReceiver.emojiReactionSupport != MessageReceiver.Reactions_NONE
-                && MessageUtil.canEmojiReact(messageModel)
+            removeIconView.isVisible = data.senderIdentity == contactService.me.identity &&
+                messageReceiver.emojiReactionSupport != MessageReceiver.Reactions_NONE &&
+                MessageUtil.canEmojiReact(messageModel)
         }
     }
 

@@ -64,13 +64,13 @@ class ForwardSecurityMessageProcessorWrapper(
             innerMessage,
             Nonce(nonce),
             nonceFactory,
-            handle
+            handle,
         )
     }
 
     @Throws(
         DHSessionStoreException::class,
-        ForwardSecurityData.InvalidEphemeralPublicKeyException::class
+        ForwardSecurityData.InvalidEphemeralPublicKeyException::class,
     )
     fun runFsRefreshSteps(contact: Contact, handle: ActiveTaskCodec) {
         runBlocking {
@@ -98,7 +98,7 @@ class ForwardSecurityMessageProcessorWrapper(
     fun processAccept(
         contact: Contact,
         accept: ForwardSecurityDataAccept,
-        handle: ActiveTaskCodec
+        handle: ActiveTaskCodec,
     ) {
         runBlocking {
             fsmp.processAccept(contact, accept, handle)
@@ -109,7 +109,7 @@ class ForwardSecurityMessageProcessorWrapper(
     fun processReject(
         contact: Contact,
         reject: ForwardSecurityDataReject,
-        handle: ActiveTaskCodec
+        handle: ActiveTaskCodec,
     ) {
         runBlocking {
             fsmp.processReject(contact, reject, handle)
@@ -120,7 +120,7 @@ class ForwardSecurityMessageProcessorWrapper(
     fun processMessage(
         contact: Contact,
         envelopeMessage: ForwardSecurityEnvelopeMessage,
-        handle: ActiveTaskCodec
+        handle: ActiveTaskCodec,
     ): ForwardSecurityDecryptionResult {
         return runBlocking {
             fsmp.processMessage(contact, envelopeMessage, handle)

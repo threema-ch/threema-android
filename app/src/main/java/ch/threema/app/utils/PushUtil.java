@@ -49,22 +49,23 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.jobs.ReConnectJobService;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.push.PushRegistrationWorker;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.NotificationPreferenceServiceImpl;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PollingHelper;
-import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.PreferenceServiceImpl;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModel;
+import ch.threema.protobuf.d2d.sync.MdD2DSync;
 
 public class PushUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("PushUtil");
@@ -261,40 +262,76 @@ public class PushUtil {
                         //not needed in this context
                     }
                 },
-                new DeadlineListService() {
+                new ConversationCategoryService() {
                     @Override
-                    public void add(String uid, long timeout) {
-                        //not needed in this context
+                    public void markContactChatAsPrivate(@NonNull ContactModel contactModel) {
+                        // Nothing to do
                     }
 
                     @Override
-                    public void init() {
-                        //not needed in this context
+                    public void removePrivateMarkFromContactChat(@NonNull ContactModel contactModel) {
+                        // Nothing to do
                     }
 
                     @Override
-                    public boolean has(String uid) {
+                    public void removePrivateMarkFromContactChat(@NonNull ch.threema.storage.models.ContactModel contactModel) {
+                        // Nothing to do
+                    }
+
+                    @Override
+                    public void markGroupChatAsPrivate(long groupDatabaseId) {
+                        // Nothing to do
+                    }
+
+                    @Override
+                    public void removePrivateMarkFromGroupChat(long groupDatabaseId) {
+                        // Nothing to do
+                    }
+
+                    @Override
+                    public boolean isPrivateGroupChat(long groupDatabaseId) {
                         return false;
                     }
 
                     @Override
-                    public void remove(String uid) {
-                        //not needed in this context
+                    public boolean isPrivateChat(@NonNull String uniqueIdString) {
+                        return false;
+                    }
+
+                    @NonNull
+                    @Override
+                    public MdD2DSync.ConversationCategory getConversationCategory(@NonNull String uniqueIdString) {
+                        return MdD2DSync.ConversationCategory.DEFAULT;
                     }
 
                     @Override
-                    public long getDeadline(String uid) {
-                        return 0;
+                    public boolean markAsPrivate(@NonNull MessageReceiver<?> messageReceiver) {
+                        return false;
                     }
 
                     @Override
-                    public int getSize() {
-                        return 0;
+                    public boolean removePrivateMark(@NonNull MessageReceiver<?> messageReceiver) {
+                        return false;
                     }
 
                     @Override
-                    public void clear() {
-                        //not needed in this context
+                    public void persistPrivateChat(@NonNull String uniqueIdString) {
+                        // Nothing to do
+                    }
+
+                    @Override
+                    public void persistDefaultChat(@NonNull String uniqueIdString) {
+                        // Nothing to do
+                    }
+
+                    @Override
+                    public boolean hasPrivateChats() {
+                        return false;
+                    }
+
+                    @Override
+                    public void invalidateCache() {
+                        // Nothing to do
                     }
                 },
                 p,
@@ -336,11 +373,6 @@ public class PushUtil {
 
                     @Override
                     public Uri getGroupRingtone(String uniqueId) {
-                        return null;
-                    }
-
-                    @Override
-                    public Uri getVoiceCallRingtone(String uniqueId) {
                         return null;
                     }
 

@@ -38,11 +38,11 @@ class DistributionListAvatarLoader(val context: Context) :
         config: AvatarCacheServiceImpl.DistributionListAvatarConfig,
         width: Int,
         height: Int,
-        options: Options
+        options: Options,
     ): ModelLoader.LoadData<Bitmap> {
         return ModelLoader.LoadData(
             ObjectKey(config),
-            DistributionListAvatarFetcher(context, distributionListService, config)
+            DistributionListAvatarFetcher(context, distributionListService, config),
         )
     }
 

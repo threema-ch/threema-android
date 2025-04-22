@@ -24,14 +24,13 @@ package ch.threema.app.processors.reflectedd2dsync
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.services.ConversationTagServiceImpl
-import ch.threema.app.services.DeadlineListService
-import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.contentEquals
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactCreateException
@@ -46,6 +45,7 @@ import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.blob.BlobLoader
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.Common.Blob
@@ -60,6 +60,7 @@ import ch.threema.protobuf.d2d.sync.contactDefinedProfilePictureOrNull
 import ch.threema.protobuf.d2d.sync.userDefinedProfilePictureOrNull
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.ConversationModel
+import ch.threema.storage.models.ConversationTag
 import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("ReflectedContactSyncTask")
@@ -69,8 +70,7 @@ class ReflectedContactSyncTask(
     private val contactModelRepository: ContactModelRepository,
     private val serviceManager: ServiceManager,
 ) {
-    private val hiddenChatListService by lazy { serviceManager.hiddenChatsListService }
-    private val mutedChatsService by lazy { serviceManager.mutedChatsListService }
+    private val conversationCategoryService by lazy { serviceManager.conversationCategoryService }
     private val ringtoneService by lazy { serviceManager.ringtoneService }
     private val symmetricEncryptionService by lazy { serviceManager.symmetricEncryptionService }
     private val fileService by lazy { serviceManager.fileService }
@@ -103,7 +103,7 @@ class ReflectedContactSyncTask(
         if (contactModelRepository.getByIdentity(contactCreate.contact.identity) != null) {
             logger.error(
                 "Discarding 'create' message, contact {} already exists.",
-                contactCreate.contact.identity
+                contactCreate.contact.identity,
             )
             return
         }
@@ -114,7 +114,7 @@ class ReflectedContactSyncTask(
         } catch (e: MissingPropertyException) {
             logger.error(
                 "Property {} is missing for a new contact. Discarding contact sync create message.",
-                e.propertyName
+                e.propertyName,
             )
             return
         }
@@ -164,7 +164,7 @@ class ReflectedContactSyncTask(
 
         applyTypingIndicatorPolicyOverride(contactModel, contact)
 
-        applyNotificationTriggerPolicy(contact)
+        applyNotificationTriggerPolicy(contactModel, contact)
 
         applyNotificationSoundPolicy(contact)
 
@@ -239,49 +239,56 @@ class ReflectedContactSyncTask(
     }
 
     private fun applyConversationCategory(contact: Contact) {
-        if (contact.hasConversationCategory()) {
-            when (contact.conversationCategory) {
-                MdD2DSync.ConversationCategory.DEFAULT -> false
-                MdD2DSync.ConversationCategory.PROTECTED -> true
-                MdD2DSync.ConversationCategory.UNRECOGNIZED -> unrecognizedValue("conversation category")
-                null -> nullValue("conversation category")
-            }?.let { isPrivateChat ->
-                val uid = ContactUtil.getUniqueIdString(contact.identity)
-                val hiddenChatListContainsUid = hiddenChatListService.has(uid)
-                if (isPrivateChat) {
-                    if (!hiddenChatListContainsUid) {
-                        hiddenChatListService.add(uid, DeadlineListService.DEADLINE_INDEFINITE)
-                    }
-                } else {
-                    if (hiddenChatListContainsUid) {
-                        hiddenChatListService.remove(uid)
-                    }
-                }
+        if (!contact.hasConversationCategory()) {
+            return
+        }
+        when (contact.conversationCategory) {
+            MdD2DSync.ConversationCategory.DEFAULT -> false
+            MdD2DSync.ConversationCategory.PROTECTED -> true
+            MdD2DSync.ConversationCategory.UNRECOGNIZED -> unrecognizedValue("conversation category")
+            null -> nullValue("conversation category")
+        }?.let { isPrivateChat ->
+            val uid = ContactUtil.getUniqueIdString(contact.identity)
+            if (isPrivateChat) {
+                conversationCategoryService.persistPrivateChat(uid)
+            } else {
+                conversationCategoryService.persistDefaultChat(uid)
             }
         }
     }
 
-    private fun applyNotificationTriggerPolicy(contact: Contact) {
-        val uid = ContactUtil.getUniqueIdString(contact.identity)
-
-        if (contact.hasNotificationTriggerPolicyOverride()) {
-            if (contact.notificationTriggerPolicyOverride.hasDefault()) {
-                mutedChatsService.remove(uid)
-            } else if (contact.notificationTriggerPolicyOverride.hasPolicy()) {
+    private fun applyNotificationTriggerPolicy(contactModel: ContactModel, contact: Contact) {
+        if (!contact.hasNotificationTriggerPolicyOverride()) {
+            return
+        }
+        val newNotificationTriggerPolicyOverride: NotificationTriggerPolicyOverride? = when {
+            contact.notificationTriggerPolicyOverride.hasDefault() -> NotificationTriggerPolicyOverride.NotMuted
+            contact.notificationTriggerPolicyOverride.hasPolicy() -> {
                 val policy = contact.notificationTriggerPolicyOverride.policy
-                val expiresAt = if (policy.hasExpiresAt()) {
-                    policy.expiresAt
-                } else {
-                    DeadlineListService.DEADLINE_INDEFINITE
-                }
                 when (policy.policy) {
-                    NotificationTriggerPolicy.NEVER -> mutedChatsService.add(uid, expiresAt)
-                    NotificationTriggerPolicy.UNRECOGNIZED -> unrecognizedValue("notification trigger policy")
-                    null -> nullValue("notification trigger policy")
+                    NotificationTriggerPolicy.NEVER -> {
+                        if (policy.hasExpiresAt()) {
+                            NotificationTriggerPolicyOverride.MutedUntil(policy.expiresAt)
+                        } else {
+                            NotificationTriggerPolicyOverride.MutedIndefinite
+                        }
+                    }
+
+                    NotificationTriggerPolicy.UNRECOGNIZED -> unrecognizedValue("notification trigger policy override")
+                    null -> nullValue("notification trigger policy override")
                 }
-            } else {
-                logger.warn("Notification trigger policy does not contain default or policy")
             }
+
+            else -> {
+                logger.warn("Notification trigger policy does not contain default or policy")
+                null
+            }
+        }
+
+        newNotificationTriggerPolicyOverride?.let {
+            contactModel.setNotificationTriggerPolicyOverrideFromSync(
+                newNotificationTriggerPolicyOverride.dbValue,
+            )
         }
     }
 
@@ -388,7 +395,7 @@ class ReflectedContactSyncTask(
                     } else {
                         nonceBytes
                     }
-                }
+                },
             )
         }.catchAllExceptNetworkException { e ->
             logger.error("Could not decrypt blob", e)
@@ -410,7 +417,6 @@ class ReflectedContactSyncTask(
         baseOkHttpClient = serviceManager.okHttpClient,
         blobId = id.toByteArray(),
         version = ThreemaApplication.getAppVersion(),
-        shouldLogHttp = ConfigUtils.isDevBuild(),
         serverAddressProvider = serviceManager.serverAddressProviderService.serverAddressProvider,
         progressListener = null,
         multiDevicePropertyProvider = multiDeviceProperties,
@@ -423,21 +429,26 @@ class ReflectedContactSyncTask(
                     // TODO(ANDR-3010): Use new conversation model
                     val archivedConversationModel = getArchivedConversationModel(contact.identity)
                     if (archivedConversationModel != null) {
-                        conversationService.unarchive(listOf(archivedConversationModel))
+                        conversationService.unarchive(listOf(archivedConversationModel), TriggerSource.SYNC)
                     } else {
                         unPinConversation(contact.identity)
                     }
                 }
 
                 MdD2DSync.ConversationVisibility.ARCHIVED -> {
-                    getConversationModel(contact.identity)?.let {
-                        conversationService.archive(it)
+                    val conversationModel = getConversationModel(contact.identity)
+                    if (conversationModel != null) {
+                        conversationService.archive(conversationModel, TriggerSource.SYNC)
+                    } else if (getArchivedConversationModel(contact.identity) != null) {
+                        logger.warn("Cannot archive conversation with {} as it is already archived", contact.identity)
+                    } else {
+                        logger.error("Could not archive conversation with {} as it couldn't be found", contact.identity)
                     }
                 }
 
                 MdD2DSync.ConversationVisibility.PINNED -> {
                     getArchivedConversationModel(contact.identity)?.let {
-                        conversationService.unarchive(listOf(it))
+                        conversationService.unarchive(listOf(it), TriggerSource.SYNC)
                     }
                     pinConversation(contact.identity)
                 }
@@ -451,22 +462,28 @@ class ReflectedContactSyncTask(
 
     private fun pinConversation(identity: String) {
         // TODO(ANDR-3010): Use new conversation model
-        val conversationModel = getConversationModel(identity) ?: return
-        val tagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN)
-        conversationTagService.addTagAndNotify(conversationModel, tagModel)
+        val conversationModel = getConversationModel(identity) ?: run {
+            logger.error("Could not pin conversation with {} as it couldn't be found", identity)
+            return
+        }
+        conversationTagService.addTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
         conversationModel.setIsPinTagged(true)
     }
 
     private fun unPinConversation(identity: String) {
         // TODO(ANDR-3010): Use new conversation model
-        val conversationModel = getConversationModel(identity) ?: return
-        val tagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN)
-        conversationTagService.removeTagAndNotify(conversationModel, tagModel)
+        val conversationModel = getConversationModel(identity) ?: run {
+            logger.error("Could not unpin conversation with {} as it couldn't be found", identity)
+            return
+        }
+        conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
         conversationModel.setIsPinTagged(false)
     }
 
     private fun getConversationModel(identity: String): ConversationModel? {
-        return conversationService.getAll(false)
+        // We need load the conversations from the database. This is due to a race condition in the conversation service when the user pins an
+        // archived contact.
+        return conversationService.getAll(true)
             .find { it.contact?.identity == identity }.also {
                 if (it == null) {
                     logger.warn("Could not find conversation model for contact {}", identity)
@@ -480,7 +497,7 @@ class ReflectedContactSyncTask(
                 if (it == null) {
                     logger.warn(
                         "Could not find archived conversation model for contact {}",
-                        identity
+                        identity,
                     )
                 }
             }
@@ -651,6 +668,19 @@ class ReflectedContactSyncTask(
         }
     }
 
+    private fun Contact.getConversationVisibilityArchiveOrNull(): Boolean? {
+        return if (hasConversationVisibility()) {
+            when (conversationVisibility) {
+                MdD2DSync.ConversationVisibility.NORMAL, MdD2DSync.ConversationVisibility.PINNED -> false
+                MdD2DSync.ConversationVisibility.ARCHIVED -> true
+                MdD2DSync.ConversationVisibility.UNRECOGNIZED -> unrecognizedValue("conversation visibility")
+                null -> nullValue("conversation visibility")
+            }
+        } else {
+            null
+        }
+    }
+
     private fun Contact.getPublicKeyOrNull(): ByteArray? {
         return if (hasPublicKey()) {
             publicKey.toByteArray()
@@ -690,13 +720,30 @@ class ReflectedContactSyncTask(
         featureMask = getFeatureMaskOrNull() ?: missingProperty("featureMask"),
         readReceiptPolicy = getReadReceiptPolicyOrNull() ?: ReadReceiptPolicy.DEFAULT,
         typingIndicatorPolicy = getTypingIndicatorPolicyOrNull() ?: TypingIndicatorPolicy.DEFAULT,
+        isArchived = getConversationVisibilityArchiveOrNull() ?: false,
         androidContactLookupKey = null,
         localAvatarExpires = null,
         isRestored = false,
         profilePictureBlobId = null,
         jobTitle = null,
         department = null,
+        notificationTriggerPolicyOverride = notificationTriggerPolicyOverride.toInternalMutedOverrideUntilValue(),
     )
+
+    private fun Contact.NotificationTriggerPolicyOverride.toInternalMutedOverrideUntilValue(): Long? =
+        when (overrideCase) {
+            Contact.NotificationTriggerPolicyOverride.OverrideCase.DEFAULT -> null
+            Contact.NotificationTriggerPolicyOverride.OverrideCase.POLICY -> {
+                if (policy.hasExpiresAt()) {
+                    policy.expiresAt
+                } else {
+                    DEADLINE_INDEFINITE
+                }
+            }
+
+            Contact.NotificationTriggerPolicyOverride.OverrideCase.OVERRIDE_NOT_SET -> null
+            null -> null
+        }
 
     private fun missingProperty(propertyName: String): Nothing =
         throw MissingPropertyException(propertyName)

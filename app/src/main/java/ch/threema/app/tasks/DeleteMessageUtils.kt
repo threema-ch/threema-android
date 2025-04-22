@@ -32,32 +32,31 @@ import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.storage.models.AbstractMessageModel
 import org.slf4j.Logger
 
-
 private val logger: Logger = LoggingUtil.getThreemaLogger("DeleteMessageUtils")
 
 fun runCommonDeleteMessageReceiveSteps(
     deleteMessage: DeleteMessage,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
+    messageService: MessageService,
 ): AbstractMessageModel? {
     return runCommonDeleteMessageReceiveSteps(
         deleteMessage,
         deleteMessage.data.messageId,
         receiver,
-        messageService
+        messageService,
     )
 }
 
 fun runCommonDeleteMessageReceiveSteps(
     deleteMessage: GroupDeleteMessage,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
+    messageService: MessageService,
 ): AbstractMessageModel? {
     return runCommonDeleteMessageReceiveSteps(
         deleteMessage,
         deleteMessage.data.messageId,
         receiver,
-        messageService
+        messageService,
     )
 }
 
@@ -65,7 +64,7 @@ private fun runCommonDeleteMessageReceiveSteps(
     deleteMessage: AbstractMessage,
     messageId: Long,
     receiver: MessageReceiver<*>,
-    messageService: MessageService
+    messageService: MessageService,
 ): AbstractMessageModel? {
     // Lookup the message with `message_id` originally sent by the sender within
     //  the associated conversation and let `message` be the result.
@@ -83,7 +82,7 @@ private fun runCommonDeleteMessageReceiveSteps(
         logger.warn(
             "Delete Message: original message's sender {} does not equal deleted message's sender {}",
             message.identity,
-            deleteMessage.fromIdentity
+            deleteMessage.fromIdentity,
         )
         return null
     }

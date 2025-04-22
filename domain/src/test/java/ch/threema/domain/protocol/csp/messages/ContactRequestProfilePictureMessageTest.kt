@@ -26,13 +26,12 @@ import kotlin.test.Test
 import kotlin.test.assertIs
 
 class ContactRequestProfilePictureMessageTest {
-
     @Test
     fun testValid() {
         assertIs<ContactRequestProfilePictureMessage>(
             ContactRequestProfilePictureMessage.fromByteArray(
-                ByteArray(0)
-            )
+                ByteArray(0),
+            ),
         )
     }
 
@@ -43,7 +42,7 @@ class ContactRequestProfilePictureMessageTest {
                 data = ByteArray(0),
                 offset = 0,
                 length = 0,
-            )
+            ),
         )
     }
 
@@ -80,7 +79,7 @@ class ContactRequestProfilePictureMessageTest {
                 data = ByteArray(1),
                 offset = 1,
                 length = 0,
-            )
+            ),
         )
     }
 }

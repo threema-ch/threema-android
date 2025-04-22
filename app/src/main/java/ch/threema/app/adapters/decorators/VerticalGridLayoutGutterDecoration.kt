@@ -37,7 +37,7 @@ class VerticalGridLayoutGutterDecoration(gutterPx: Int) : RecyclerView.ItemDecor
         outRect: Rect,
         view: View,
         parent: RecyclerView,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         outRect.top = gutterPx
         outRect.left = gutterPx

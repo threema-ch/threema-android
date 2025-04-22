@@ -108,7 +108,6 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.AvatarCacheService;
-import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
@@ -193,6 +192,7 @@ public class ContactsSectionFragment
 
     private SynchronizeContactsService synchronizeContactsService;
     private ContactService contactService;
+    @Nullable
     private PreferenceService preferenceService;
     private LockAppService lockAppService;
 
@@ -274,7 +274,6 @@ public class ContactsSectionFragment
         @Override
         public void runOnUiThread() {
             if (synchronizeContactsService != null && !synchronizeContactsService.isSynchronizationInProgress()) {
-
                 stopSwipeRefresh();
 
                 if (serviceManager != null) {
@@ -412,6 +411,7 @@ public class ContactsSectionFragment
                     if (resumePauseHandler != null) {
                         resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_PULL_TO_REFRESH, runIfActiveUpdatePullToRefresh);
                     }
+                    updateEmptyView();
                 }
             }
         }
@@ -645,7 +645,7 @@ public class ContactsSectionFragment
                 final FetchResults counts = result.second;
                 if (contactModels != null) {
                     updateContactsCounter(contactModels.size(), counts);
-                    if (contactModels.size() > 0) {
+                    if (!contactModels.isEmpty()) {
                         ((EmptyView) listView.getEmptyView()).setup(R.string.no_matching_contacts);
                     }
 
@@ -911,12 +911,10 @@ public class ContactsSectionFragment
         logger.debug("onViewCreated");
 
         if (getActivity() != null && listView != null) {
-            // add text view if contact list is empty
             EmptyView emptyView = new EmptyView(getActivity());
-            emptyView.setup(R.string.no_contacts);
-
             ((ViewGroup) listView.getParent()).addView(emptyView);
             listView.setEmptyView(emptyView);
+            updateEmptyView();
             listView.setOnScrollListener(new AbsListView.OnScrollListener() {
                 private int previousFirstVisibleItem = -1;
 
@@ -1010,6 +1008,17 @@ public class ContactsSectionFragment
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(contactsChangedReceiver, filter);
     }
 
+    private void updateEmptyView() {
+        if (listView == null) {
+            return;
+        }
+        EmptyView emptyView = (EmptyView) listView.getEmptyView();
+        emptyView.setup(
+            preferenceService != null && preferenceService.isSyncContacts()
+                ? R.string.no_contacts_sync_on
+                : R.string.no_contacts
+        );
+    }
 
     @Override
     public void onDestroyView() {
@@ -1064,7 +1073,6 @@ public class ContactsSectionFragment
             try {
                 WorkSyncWorker.Companion.performOneTimeWorkSync(
                     ThreemaApplication.getAppContext(),
-                    false,
                     true,
                     "WorkContactSync"
                 );
@@ -1147,7 +1155,10 @@ public class ContactsSectionFragment
             return;
         }
 
-        openContact(view, contactListAdapter.getClickedItem(listItemView).getIdentity());
+        final @Nullable ContactModel clickedContactModel = contactListAdapter.getClickedItem(listItemView);
+        if (clickedContactModel != null) {
+            openContact(view, clickedContactModel.getIdentity());
+        }
     }
 
     @Override
@@ -1157,7 +1168,6 @@ public class ContactsSectionFragment
 
     @Override
     public void onRecentlyAddedClick(ContactModel contactModel) {
-
         String contactName = NameUtil.getDisplayNameOrNickname(contactModel, true);
 
         ArrayList<SelectorDialogItem> items = new ArrayList<>();
@@ -1297,8 +1307,7 @@ public class ContactsSectionFragment
             contactService,
             serviceManager.getConversationService(),
             serviceManager.getRingtoneService(),
-            serviceManager.getMutedChatsListService(),
-            serviceManager.getHiddenChatsListService(),
+            serviceManager.getConversationCategoryService(),
             serviceManager.getProfilePicRecipientsService(),
             serviceManager.getWallpaperService(),
             serviceManager.getFileService(),
@@ -1476,9 +1485,11 @@ public class ContactsSectionFragment
                                 new EmptyOrDeleteConversationsAsyncTask(
                                     EmptyOrDeleteConversationsAsyncTask.Mode.DELETE,
                                     new MessageReceiver[]{contactService.createReceiver(contactModel)},
-                                    ThreemaApplication.requireServiceManager().getConversationService(),
-                                    ThreemaApplication.requireServiceManager().getGroupService(),
-                                    ThreemaApplication.requireServiceManager().getDistributionListService(),
+                                    serviceManager.getConversationService(),
+                                    serviceManager.getDistributionListService(),
+                                    serviceManager.getModelRepositories().getGroups(),
+                                    serviceManager.getGroupFlowDispatcher(),
+                                    serviceManager.getUserService().getIdentity(),
                                     null,
                                     null,
                                     () -> {

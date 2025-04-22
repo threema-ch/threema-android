@@ -42,9 +42,8 @@ class DeleteAndTerminateFSSessionsTask(
         fsmp.clearAndTerminateAllSessions(contact, cause, handle)
     }
 
-    override fun serialize(): SerializableTaskData = DeleteAndTerminateFSSessionsTaskData(
-        contact.identity, cause
-    )
+    override fun serialize(): SerializableTaskData =
+        DeleteAndTerminateFSSessionsTaskData(contact.identity, cause)
 
     @Serializable
     class DeleteAndTerminateFSSessionsTaskData(
@@ -58,7 +57,7 @@ class DeleteAndTerminateFSSessionsTask(
             return DeleteAndTerminateFSSessionsTask(
                 serviceManager.forwardSecurityMessageProcessor,
                 contact,
-                cause
+                cause,
             )
         }
     }

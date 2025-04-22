@@ -38,19 +38,17 @@ import ch.threema.storage.models.DistributionListMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
+import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import java.util.Date
 
 class MessageDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     messageService: MessageService,
     private val emojiReactionsRepository: EmojiReactionsRepository,
 ) : StateFlowViewModel() {
-
     companion object {
-
         private const val MESSAGE_ID = "messageId"
         private const val MESSAGE_TYPE = "messageType"
 
@@ -81,7 +79,7 @@ class MessageDetailsViewModel(
                 message = message.toUiModel(),
                 hasReactions = message.hasReactions(),
                 shouldMarkupText = true,
-            )
+            ),
         )
     }
     val uiState: StateFlow<ChatMessageDetailsUiState> =
@@ -128,17 +126,17 @@ data class MessageTimestampsUiModel(
     val readAt: Date? = null,
     val modifiedAt: Date? = null,
     val editedAt: Date? = null,
-    val deletedAt: Date? = null
+    val deletedAt: Date? = null,
 ) {
     fun hasProperties(): Boolean {
-        return createdAt != null
-                || sentAt != null
-                || receivedAt != null
-                || deliveredAt != null
-                || readAt != null
-                || modifiedAt != null
-                || editedAt != null
-                || deletedAt != null
+        return createdAt != null ||
+            sentAt != null ||
+            receivedAt != null ||
+            deliveredAt != null ||
+            readAt != null ||
+            modifiedAt != null ||
+            editedAt != null ||
+            deletedAt != null
     }
 }
 
@@ -149,17 +147,17 @@ data class MessageDetailsUiModel(
     val pfsState: ForwardSecurityMode? = null,
 ) {
     fun hasProperties(): Boolean {
-        return messageId != null
-                || mimeType != null
-                || fileSizeInBytes != null
-                || pfsState != null
+        return messageId != null ||
+            mimeType != null ||
+            fileSizeInBytes != null ||
+            pfsState != null
     }
 }
 
 fun AbstractMessageModel.toUiModel() = MessageUiModel(
-    uid = this.uid,
+    uid = this.uid!!,
     text = QuoteUtil.getMessageBody(this, false) ?: "",
-    createdAt = this.createdAt,
+    createdAt = this.createdAt!!,
     editedAt = this.editedAt,
     isDeleted = this.isDeleted,
     isOutbox = this.isOutbox,
@@ -180,7 +178,7 @@ fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel
     } else if (this.type == MessageType.GROUP_CALL_STATUS) {
         return MessageTimestampsUiModel(
             sentAt = this.createdAt,
-            deliveredAt = if (!this.isOutbox) this.deliveredAt else null
+            deliveredAt = if (!this.isOutbox) this.deliveredAt else null,
         )
     }
 
@@ -189,12 +187,16 @@ fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel
             this.state != MessageState.SENT && !(this.type == MessageType.BALLOT && this is GroupMessageModel)
 
         val shouldShowPostedAt =
-            (this.state != MessageState.SENDING && this.state != MessageState.SENDFAILED && this.state != MessageState.FS_KEY_MISMATCH && this.state != MessageState.PENDING)
-                    || this.type == MessageType.BALLOT
+            (
+                state != MessageState.SENDING && state != MessageState.SENDFAILED &&
+                    state != MessageState.FS_KEY_MISMATCH && state != MessageState.PENDING
+                ) ||
+                type == MessageType.BALLOT
 
         val shouldShowModifiedAt =
-            !(this.state == MessageState.READ && this.modifiedAt == this.readAt)
-                    && !(this.state == MessageState.DELIVERED && this.modifiedAt == this.deliveredAt)
+            !(this.state == MessageState.READ && this.modifiedAt == this.readAt) &&
+                !(this.state == MessageState.DELIVERED && this.modifiedAt == this.deliveredAt) &&
+                !this.isDeleted
 
         MessageTimestampsUiModel(
             createdAt = this.createdAt,
@@ -203,7 +205,7 @@ fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel
             readAt = if (shouldShowAdditionalTimestamps) this.readAt else null,
             modifiedAt = if (shouldShowAdditionalTimestamps && shouldShowModifiedAt) this.modifiedAt else null,
             editedAt = this.editedAt,
-            deletedAt = this.deletedAt
+            deletedAt = this.deletedAt,
         )
     } else {
         MessageTimestampsUiModel(
@@ -211,7 +213,7 @@ fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel
             receivedAt = this.createdAt,
             readAt = if (this.state != MessageState.READ) this.modifiedAt else null,
             editedAt = this.editedAt,
-            deletedAt = this.deletedAt
+            deletedAt = this.deletedAt,
         )
     }
 }
@@ -238,6 +240,6 @@ fun AbstractMessageModel?.toMessageDetailsUiModel(): MessageDetailsUiModel {
         mimeType = mimeType,
         fileSizeInBytes = fileSize,
         messageId = messageId,
-        pfsState = pfsState
+        pfsState = pfsState,
     )
 }

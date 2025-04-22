@@ -66,7 +66,7 @@ class ReflectedOutgoingMessageUpdateTask(
 
             DISTRIBUTION_LIST -> updateDistributionListMessageState(
                 messageId,
-                conversation.distributionList
+                conversation.distributionList,
             )
 
             ID_NOT_SET -> logger.warn("Received outgoing message update where id is not set")
@@ -85,7 +85,7 @@ class ReflectedOutgoingMessageUpdateTask(
             logger.warn(
                 "Message model for message {} to {} not found",
                 messageId,
-                recipientIdentity
+                recipientIdentity,
             )
             return
         }
@@ -100,7 +100,7 @@ class ReflectedOutgoingMessageUpdateTask(
         val messageModel = messageService.getGroupMessageModel(
             messageId,
             groupIdentity.creatorIdentity,
-            GroupId(groupIdentity.groupId)
+            GroupId(groupIdentity.groupId),
         )
 
         if (messageModel == null) {
@@ -122,7 +122,7 @@ class ReflectedOutgoingMessageUpdateTask(
         messageService.updateOutgoingMessageState(
             messageModel,
             MessageState.SENT,
-            Date(timestamp.toLong())
+            Date(timestamp.toLong()),
         )
         ListenerManager.messageListeners.handle {
             it.onModified(listOf(messageModel))

@@ -37,7 +37,6 @@ import ch.threema.storage.DatabaseServiceNew
  * be used.
  */
 interface CoreServiceManager {
-
     /**
      * The app version.
      */
@@ -85,5 +84,4 @@ interface CoreServiceManager {
      * The nonce factory.
      */
     val nonceFactory: NonceFactory
-
 }

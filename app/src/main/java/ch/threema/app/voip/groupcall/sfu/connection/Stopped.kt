@@ -31,11 +31,13 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Stop
 class Stopped internal constructor(call: GroupCall) :
     GroupCallConnectionState(StateName.STOPPED, call) {
     @WorkerThread
-    override fun getStateProviders() = listOf(suspend {
-        GroupCallThreadUtil.assertDispatcherThread()
+    override fun getStateProviders() = listOf(
+        suspend {
+            GroupCallThreadUtil.assertDispatcherThread()
 
-        logger.info("Call stopped, tearing down")
-        call.teardown()
-        null
-    })
+            logger.info("Call stopped, tearing down")
+            call.teardown()
+            null
+        },
+    )
 }

@@ -34,11 +34,11 @@ interface SfuConnection {
      * @param forceRefresh Force a reload of the token, even if the token is cached and still valid
      *
      * @throws {@link SfuException} When the sfu cannot be reached, a timeout or another exception occurred
+     *
+     * TODO(ANDR-2090): add an option for a timeout
      */
     @AnyThread
-    // TODO(ANDR-2090): add an option for a timeout
     suspend fun obtainSfuToken(forceRefresh: Boolean = false): SfuToken
-
 
     /**
      * @throws {@link SfuException} When the sfu cannot be reached, a timeout or another exception occurred
@@ -54,6 +54,6 @@ interface SfuConnection {
         token: SfuToken,
         sfuBaseUrl: String,
         callDescription: GroupCallDescription,
-        dtlsFingerprint: ByteArray
+        dtlsFingerprint: ByteArray,
     ): JoinResponse
 }

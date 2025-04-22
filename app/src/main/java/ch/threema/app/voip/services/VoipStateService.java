@@ -24,23 +24,16 @@ package ch.threema.app.voip.services;
 import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.os.VibrationAttributes;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -74,21 +67,17 @@ import androidx.work.WorkManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.notifications.NotificationGroups;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
-import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.RingtoneService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DNDUtil;
 import ch.threema.app.utils.IdUtil;
-import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.voip.CallState;
 import ch.threema.app.voip.CallStateSnapshot;
 import ch.threema.app.voip.Config;
@@ -146,13 +135,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
     // system managers
     private final AudioManager audioManager;
-    private final Vibrator vibrator;
     private final NotificationManagerCompat notificationManagerCompat;
 
     // Threema services
     private final ContactService contactService;
-    private final RingtoneService ringtoneService;
-    private final PreferenceService preferenceService;
+    private final NotificationPreferenceService notificationPreferenceService;
     private final LifetimeService lifetimeService;
 
     // App context
@@ -179,8 +166,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
     // Notifications
     private final List<String> callNotificationTags = new ArrayList<>();
-    private MediaPlayerStateWrapper ringtonePlayer;
-    private @NonNull CompletableFuture<Void> ringtoneAudioFocusAbandoned = CompletableFuture.completedFuture(null);
 
     // Video
     private @Nullable VideoContext videoContext;
@@ -199,29 +184,19 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
     private final AtomicBoolean timeoutReject = new AtomicBoolean(true);
 
-    private ScreenOffReceiver screenOffReceiver;
-
-    private class ScreenOffReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            muteRingtone();
-        }
-    }
-
-    public VoipStateService(ContactService contactService,
-                            RingtoneService ringtoneService,
-                            PreferenceService preferenceService,
-                            LifetimeService lifetimeService,
-                            final Context appContext) {
+    public VoipStateService(
+            ContactService contactService,
+            NotificationPreferenceService notificationPreferenceService,
+            LifetimeService lifetimeService,
+            final Context appContext
+    ) {
         this.contactService = contactService;
-        this.ringtoneService = ringtoneService;
-        this.preferenceService = preferenceService;
+        this.notificationPreferenceService = notificationPreferenceService;
         this.lifetimeService = lifetimeService;
         this.appContext = appContext;
         this.candidatesCache = new HashMap<>();
         this.notificationManagerCompat = NotificationManagerCompat.from(appContext);
         this.audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
-        this.vibrator = (Vibrator) appContext.getSystemService(Context.VIBRATOR_SERVICE);
 
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setClass(appContext, VoipMediaButtonReceiver.class);
@@ -321,7 +296,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         // Clear pending accept intent
         if (!newState.isRinging()) {
             this.acceptIntent = null;
-            this.stopRingtone();
         }
 
         // Ensure bluetooth media button receiver is registered when a call starts
@@ -361,8 +335,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         if (this.callState.isRinging()) {
             return;
         }
-
-        this.ringtoneAudioFocusAbandoned = new CompletableFuture<>();
 
         // Transition call state
         final CallStateSnapshot prevState = this.callState.getStateSnapshot();
@@ -737,20 +709,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         this.setStateRinging(callId);
 
         // Show call notification
-        final Notification notification = this.showNotification(contact, accept, reject, voipCallOfferMessage);
-
-        DNDUtil dndUtil = DNDUtil.getInstance();
-        boolean isReceiverMuted = dndUtil.isMutedPrivate(messageReceiver, null);
-        boolean isSystemMuted = dndUtil.isSystemMuted(
-            messageReceiver, notification, notificationManagerCompat
-        );
-        boolean isMuted = isReceiverMuted || isSystemMuted;
-
-        // Play ringtone
-        this.playRingtone(messageReceiver, isMuted);
-
-        // Vibrate if necessary
-        this.startVibration(notification, isMuted);
+        showNotification(contact, accept, reject, voipCallOfferMessage);
 
         // Update conversation timestamp
         if (voipCallOfferMessage.bumpLastUpdate()) {
@@ -1405,22 +1364,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     }
 
     /**
-     * Mute ringtone if call is in ringing state
-     */
-    public boolean muteRingtone() {
-        final CallStateSnapshot currentCallState = this.getCallState();
-        final boolean incoming = this.isInitiator() != Boolean.TRUE;
-
-        if (incoming && currentCallState.isRinging()) {
-            this.stopRingtone();
-            this.stopVibration();
-            logger.info("Muting ringtone as requested by user");
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Cancel a pending call notification for the specified identity.
      *
      * @param cancelReason Either CallActivity.ACTION_CANCELLED (if a call was cancelled before
@@ -1431,9 +1374,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         // Cancel fullscreen activity launched by notification first
         VoipUtil.sendVoipBroadcast(appContext, cancelReason);
         appContext.stopService(new Intent(ThreemaApplication.getAppContext(), VoipCallService.class));
-
-        this.stopRingtone();
-        this.stopVibration();
 
         synchronized (this.callNotificationTags) {
             if (this.callNotificationTags.contains(identity)) {
@@ -1446,9 +1386,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                     this.notificationManagerCompat.cancel(identity, INCOMING_CALL_NOTIFICATION_ID);
                 }
             }
-            if (this.callNotificationTags.isEmpty()) {
-                unregisterScreenOffReceiver();
-            }
         }
     }
 
@@ -1456,30 +1393,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
      * Cancel all pending call notifications.
      */
     public void cancelCallNotificationsForNewCall() {
-        this.stopRingtone();
-        this.stopVibration();
-
         synchronized (this.callNotificationTags) {
             logger.info("Cancelling all {} call notifications", this.callNotificationTags.size());
             for (String tag : this.callNotificationTags) {
                 this.notificationManagerCompat.cancel(tag, INCOMING_CALL_NOTIFICATION_ID);
             }
             this.callNotificationTags.clear();
-        }
-        unregisterScreenOffReceiver();
-    }
-
-    private void registerScreenOffReceiver() {
-        if (screenOffReceiver == null) {
-            screenOffReceiver = new ScreenOffReceiver();
-            appContext.registerReceiver(screenOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
-        }
-    }
-
-    private void unregisterScreenOffReceiver() {
-        if (screenOffReceiver != null) {
-            appContext.unregisterReceiver(screenOffReceiver);
-            screenOffReceiver = null;
         }
     }
 
@@ -1554,6 +1473,15 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                 .setGroup(NotificationGroups.CALLS)
                 .setGroupSummary(false);
 
+            if (!ConfigUtils.supportsNotificationChannels()) {
+                // If notification channels are not supported, we fall back to explicitly setting sound and vibration on the notification.
+                // On devices that do support notification channels, this would have no effect, so we can skip it there.
+                nbuilder.setSound(notificationPreferenceService.getLegacyVoipCallRingtone(), AudioManager.STREAM_RING);
+                if (notificationPreferenceService.isLegacyVoipCallVibrate()) {
+                    nbuilder.setVibrate(NotificationChannels.VIBRATE_PATTERN_GROUP_CALL);
+                }
+            }
+
             // We want a full screen notification
             // Set up the main intent to send the user to the incoming call screen
             nbuilder.setFullScreenIntent(inCallPendingIntent, true);
@@ -1623,110 +1551,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
             }
         }
 
-        // register screen off receiver
-        registerScreenOffReceiver();
-
         return notification;
-    }
-
-    private void playRingtone(MessageReceiver<?> messageReceiver, boolean isMuted) {
-        final Uri ringtoneUri = this.ringtoneService.getVoiceCallRingtone(messageReceiver.getUniqueIdString());
-
-        if (ringtoneUri != null) {
-            logger.info("Ringtone Uri = {}", ringtoneUri);
-            if (ringtonePlayer != null) {
-                stopRingtone();
-            }
-
-            if (!isMuted) {
-                audioManager.requestAudioFocus(this, AudioManager.STREAM_RING, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-                ringtonePlayer = new MediaPlayerStateWrapper();
-                ringtonePlayer.setStateListener(new MediaPlayerStateWrapper.StateListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                    }
-
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        if (ringtonePlayer != null) {
-                            try {
-                                ringtonePlayer.start();
-                                logger.info("Ringtone player playing {}", ringtoneUri);
-                            } catch (IllegalStateException e) {
-                                logger.error("Unable to play ringtone", e);
-                            }
-                        }
-                    }
-                });
-                ringtonePlayer.setLooping(true);
-                if (Build.VERSION.SDK_INT <= 21) {
-                    ringtonePlayer.setAudioStreamType(AudioManager.STREAM_RING);
-                } else {
-                    ringtonePlayer.setAudioAttributes(SoundUtil.getAudioAttributesForCallNotification());
-                }
-
-                try {
-                    ringtonePlayer.setDataSource(appContext, ringtoneUri);
-                    ringtonePlayer.prepareAsync();
-                } catch (Exception e) {
-                    logger.error("Exception preparing ringtone player", e);
-                    stopRingtone();
-                }
-            } else {
-                logger.info("Not playing ringtone. isMuted = {}", isMuted);
-            }
-        } else {
-            logger.info("No ringtone selected");
-        }
-    }
-
-    private synchronized void stopRingtone() {
-        if (ringtonePlayer != null) {
-            logger.info("Stopping ringtone player");
-
-            ringtonePlayer.stop();
-            ringtonePlayer.reset();
-            ringtonePlayer.release();
-            ringtonePlayer = null;
-        }
-
-        try {
-            audioManager.abandonAudioFocus(this);
-        } catch (Exception e) {
-            logger.info("Failed to abandon audio focus");
-        } finally {
-            this.ringtoneAudioFocusAbandoned.complete(null);
-        }
-    }
-
-    private void startVibration(@Nullable Notification notification, boolean isMuted) {
-        if (notification == null) {
-            return;
-        }
-
-        if (!preferenceService.isVoiceCallVibrate() || isMuted) {
-            return;
-        }
-
-        if (vibrator != null && vibrator.hasVibrator()) {
-            if (Build.VERSION.SDK_INT >= 33) {
-                vibrator.vibrate(
-                    VibrationEffect.createWaveform(NotificationChannels.VIBRATE_PATTERN_INCOMING_CALL, 1),
-                    VibrationAttributes.createForUsage(VibrationAttributes.USAGE_RINGTONE)
-                );
-            } else {
-                final AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                    .build();
-                vibrator.vibrate(NotificationChannels.VIBRATE_PATTERN_INCOMING_CALL, 1, audioAttributes);
-            }
-        }
-    }
-
-    private synchronized void stopVibration() {
-        if (vibrator != null && vibrator.hasVibrator()) {
-            vibrator.cancel();
-        }
     }
 
     private PendingIntent createLaunchPendingIntent(
@@ -1824,9 +1649,5 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     @Override
     public void onAudioFocusChange(int focusChange) {
         logger.info("Audio Focus change: " + focusChange);
-    }
-
-    public synchronized CompletableFuture<Void> getRingtoneAudioFocusAbandoned() {
-        return this.ringtoneAudioFocusAbandoned;
     }
 }

@@ -30,7 +30,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class SetProfilePictureMessageTest {
-
     private val validBlobId = ByteArray(ProtocolDefines.BLOB_ID_LEN).apply { fill(1) }
     private val validSize = ByteArray(4).apply { fill(2) }
     private val validEncryptionKey = ByteArray(ProtocolDefines.BLOB_KEY_LEN).apply { fill(3) }
@@ -43,7 +42,7 @@ class SetProfilePictureMessageTest {
         assertContentEquals(validBlobId, message.blobId)
         assertEquals(
             ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(),
-            message.size
+            message.size,
         )
         assertContentEquals(validEncryptionKey, message.encryptionKey)
     }
@@ -58,7 +57,7 @@ class SetProfilePictureMessageTest {
         assertContentEquals(validBlobId, message.blobId)
         assertEquals(
             ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(),
-            message.size
+            message.size,
         )
         assertContentEquals(validEncryptionKey, message.encryptionKey)
     }
@@ -75,7 +74,7 @@ class SetProfilePictureMessageTest {
         assertContentEquals(validBlobId, message.blobId)
         assertEquals(
             ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(),
-            message.size
+            message.size,
         )
         assertContentEquals(validEncryptionKey, message.encryptionKey)
     }
@@ -84,7 +83,7 @@ class SetProfilePictureMessageTest {
     fun shouldThrowBadMessageExceptionWhenTooSmall() {
         val testBlockLazy = {
             SetProfilePictureMessage.fromByteArray(
-                ByteArray(ProtocolDefines.BLOB_ID_LEN)
+                ByteArray(ProtocolDefines.BLOB_ID_LEN),
             )
         }
         testBlockLazy willThrow BadMessageException::class
@@ -94,7 +93,7 @@ class SetProfilePictureMessageTest {
     fun shouldThrowBadMessageExceptionWhenTooBig() {
         val testBlockLazy = {
             SetProfilePictureMessage.fromByteArray(
-                ByteArray(ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN + 10)
+                ByteArray(ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN + 10),
             )
         }
         testBlockLazy willThrow BadMessageException::class

@@ -25,11 +25,11 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import org.apache.commons.io.EndianUtils
-import org.slf4j.Logger
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import org.apache.commons.io.EndianUtils
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("ContactSetPhotoMessage")
 
@@ -47,7 +47,6 @@ class SetProfilePictureMessage(
     @JvmField
     val encryptionKey: ByteArray,
 ) : AbstractMessage() {
-
     override fun getType(): Int {
         return ProtocolDefines.MSGTYPE_CONTACT_SET_PHOTO
     }
@@ -86,30 +85,27 @@ class SetProfilePictureMessage(
     }
 
     companion object {
+        @JvmStatic
+        fun fromReflected(message: MdD2D.IncomingMessage): SetProfilePictureMessage = fromByteArray(
+            data = message.body.toByteArray(),
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): SetProfilePictureMessage =
-            fromByteArray(
-                data = message.body.toByteArray()
-            ).apply {
-                initializeCommonProperties(message)
-            }
+        fun fromReflected(message: MdD2D.OutgoingMessage): SetProfilePictureMessage = fromByteArray(
+            data = message.body.toByteArray(),
+        ).apply {
+            initializeCommonProperties(message)
+        }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): SetProfilePictureMessage =
-            fromByteArray(
-                data = message.body.toByteArray()
-            ).apply {
-                initializeCommonProperties(message)
-            }
-
-        @JvmStatic
-        fun fromByteArray(data: ByteArray): SetProfilePictureMessage =
-            fromByteArray(
-                data = data,
-                offset = 0,
-                length = data.size
-            )
+        @Throws(BadMessageException::class)
+        fun fromByteArray(data: ByteArray): SetProfilePictureMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Get the set profile picture message from the given array.

@@ -204,12 +204,12 @@ public class GroupInviteServiceTest {
             }
 
             @Override
-            public void linkWithEmail(String email) throws Exception {
+            public void linkWithEmail(String email, @NonNull TriggerSource triggerSource) throws Exception {
 
             }
 
             @Override
-            public void unlinkEmail() throws Exception {
+            public void unlinkEmail(@NonNull TriggerSource triggerSource) throws Exception {
 
             }
 
@@ -219,12 +219,12 @@ public class GroupInviteServiceTest {
             }
 
             @Override
-            public void checkEmailLinkState() {
+            public void checkEmailLinkState(@NonNull TriggerSource triggerSource) {
 
             }
 
             @Override
-            public Date linkWithMobileNumber(String number) throws Exception {
+            public Date linkWithMobileNumber(String number, @NonNull TriggerSource triggerSource) throws Exception {
                 return null;
             }
 
@@ -234,12 +234,12 @@ public class GroupInviteServiceTest {
             }
 
             @Override
-            public void unlinkMobileNumber() throws Exception {
+            public void unlinkMobileNumber(@NonNull TriggerSource triggerSource) throws Exception {
 
             }
 
             @Override
-            public boolean verifyMobileNumber(String code) throws Exception {
+            public boolean verifyMobileNumber(String code, @NonNull TriggerSource triggerSource) throws Exception {
                 return false;
             }
 

@@ -52,7 +52,7 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
 
 public class ComposeEditText extends EmojiEditText implements MentionSelectorPopup.MentionSelectorListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeEditText");

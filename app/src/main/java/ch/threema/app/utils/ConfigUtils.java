@@ -77,8 +77,8 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -120,7 +120,9 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationChannels;
-import ch.threema.app.services.AppRestrictionService;
+import ch.threema.app.onprem.OnPremSSLSocketFactoryProvider;
+import ch.threema.app.restrictions.AppRestrictionService;
+import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
@@ -317,15 +319,18 @@ public class ConfigUtils {
         return false;
     }
 
-    public static boolean isMultiDeviceEnabled() {
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-        return ConfigUtils.isDevBuild()
-            && BuildConfig.MD_ENABLED
-            && serviceManager != null
-            && serviceManager.getPreferenceService().isMdUnlocked()
-            // If web is disabled by restriction, multi device is also not allowed
-            && !AppRestrictionUtil.isWebDisabled(ThreemaApplication.getAppContext());
+    /**
+     * Check if multi-device is enabled. This checks the restriction th_disable_multidevice. If not
+     * set, then check th_disable_web which is used as fallback when th_disable_multidevice is not
+     * set.
+     */
+    public static boolean isMultiDeviceEnabled(@NonNull Context context) {
+        Boolean isMultiDeviceDisabled = AppRestrictionUtil.isMultiDeviceDisabled(context);
+        if (isMultiDeviceDisabled != null) {
+            return !isMultiDeviceDisabled;
+        } else {
+            return !AppRestrictionUtil.isWebDisabled(context);
+        }
     }
 
     public static boolean isEditMessagesEnabled() {
@@ -340,11 +345,10 @@ public class ConfigUtils {
      * Get a Socket Factory for certificate pinning and forced TLS version upgrade.
      */
     public static @NonNull SSLSocketFactory getSSLSocketFactory(String host) {
-        return new TLSUpgradeSocketFactoryWrapper(
-            ConfigUtils.isOnPremBuild()
-                ? HttpsURLConnection.getDefaultSSLSocketFactory()
-                : TrustKit.getInstance().getSSLSocketFactory(host)
-        );
+        final var sslSocketFactory = ConfigUtils.isOnPremBuild()
+            ? OnPremSSLSocketFactoryProvider.getInstance().getSslSocketFactory(host)
+            : TrustKit.getInstance().getSSLSocketFactory(host);
+        return new TLSUpgradeSocketFactoryWrapper(sslSocketFactory);
     }
 
     public static boolean isXiaomiDevice() {
@@ -468,7 +472,7 @@ public class ConfigUtils {
         currentDayNightMode = dayNightMode;
     }
 
-    public static @ColorInt int getColorFromAttribute(Context context, @AttrRes int attr) {
+    public static @ColorInt int getColorFromAttribute(@NonNull Context context, @AttrRes int attr) {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{attr});
         @ColorInt int color = typedArray.getColor(0, -1);
 
@@ -657,45 +661,51 @@ public class ConfigUtils {
         activity.startActivity(intent);
     }
 
-    @SuppressLint("MissingPermission")
-    public static void scheduleAppRestart(Context context, int delayMs, String eventTriggerTitle) {
-        // Android Q does not allow restart in the background
-        // https://developer.android.com/preview/privacy/background-activity-starts
-        Intent restartIntent = context.getPackageManager()
-            .getLaunchIntentForPackage(context.getPackageName());
-        restartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    /**
+     * Android Q and newer does not allow restart in the background:
+     * <a href="https://developer.android.com/preview/privacy/background-activity-starts">Restrictions on starting activities from the background</a>
+     *
+     * @param eventTriggerTitle Will have no effect on Android versions below Q or if we do not own the POST_NOTIFICATIONS
+     *                          permission on newer Android versions.
+     */
+    public static void scheduleAppRestart(@NonNull Context context, int delayMs, @Nullable String eventTriggerTitle) {
+        Intent restartIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        Objects.requireNonNull(restartIntent).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-            context, 0,
-            restartIntent, PendingIntent.FLAG_CANCEL_CURRENT | PENDING_INTENT_FLAG_MUTABLE);
-
+            context,
+            0,
+            restartIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT | PENDING_INTENT_FLAG_MUTABLE
+        );
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             // on older android version we restart directly after delayMs
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             manager.set(AlarmManager.RTC, System.currentTimeMillis() + delayMs, pendingIntent);
+        } else if (
+            eventTriggerTitle == null ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // use WorkManager to restart the app in the background
+            final WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
+            final OneTimeWorkRequest workRequest = RestartWorker.Companion.buildOneTimeWorkRequest(delayMs);
+            workManager.enqueueUniqueWork(WORKER_RESTART_AFTER_RESTORE, ExistingWorkPolicy.REPLACE, workRequest);
         } else {
-            if (eventTriggerTitle == null) {
-                // use WorkManager to restart the app in the background
-                final WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
-                final OneTimeWorkRequest workRequest = RestartWorker.Companion.buildOneTimeWorkRequest(delayMs);
-                workManager.enqueueUniqueWork(WORKER_RESTART_AFTER_RESTORE, ExistingWorkPolicy.REPLACE, workRequest);
-            } else {
-                // use a notification to trigger restart (app in background can no longer start activities in Android 12+)
-                String text = context.getString(R.string.tap_to_start, context.getString(R.string.app_name));
+            // use a notification to trigger restart (app in background can no longer start activities in Android 12+)
+            String text = context.getString(R.string.tap_to_start, context.getString(R.string.app_name));
 
-                NotificationCompat.Builder builder =
-                    new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
-                        .setSmallIcon(R.drawable.ic_notification_small)
-                        .setContentTitle(eventTriggerTitle)
-                        .setContentText(eventTriggerTitle)
-                        .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-                        .setPriority(NotificationCompat.PRIORITY_MAX)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
-                        .setContentIntent(pendingIntent)
-                        .setAutoCancel(false);
+            NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
+                    .setSmallIcon(R.drawable.ic_notification_small)
+                    .setContentTitle(eventTriggerTitle)
+                    .setContentText(eventTriggerTitle)
+                    .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(false);
 
-                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-                notificationManagerCompat.notify(APP_RESTART_NOTIFICATION_ID, builder.build());
-            }
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            notificationManagerCompat.notify(APP_RESTART_NOTIFICATION_ID, builder.build());
         }
     }
 
@@ -940,10 +950,13 @@ public class ConfigUtils {
         public int height;
     }
 
-    public static int getActionBarSize(Context context) {
-        TypedValue tv = new TypedValue();
-        if (context.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-            return TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
+    /**
+     * @return The resolved height of attribute {@code R.attr.actionBarSize} in pixels.
+     */
+    public static int getActionBarSize(@NonNull Context context) {
+        TypedValue typedValue = new TypedValue();
+        if (context.getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
+            return TypedValue.complexToDimensionPixelSize(typedValue.data, context.getResources().getDisplayMetrics());
         }
         return 0;
     }

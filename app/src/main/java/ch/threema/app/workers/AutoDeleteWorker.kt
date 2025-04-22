@@ -22,7 +22,6 @@
 package ch.threema.app.workers
 
 import android.content.Context
-import android.text.format.DateUtils
 import androidx.work.BackoffPolicy
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -33,13 +32,13 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.services.ConversationService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.ballot.BallotService
-import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.AutoDeleteUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.WorkManagerUtil
@@ -51,12 +50,13 @@ import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.DisplayTag
 import ch.threema.storage.models.data.media.BallotDataModel
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
-import java.util.concurrent.TimeUnit
 
 class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
     Worker(context, workerParameters) {
@@ -71,7 +71,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
         private val logger = LoggingUtil.getThreemaLogger("AutoDeleteWorker")
 
         const val EXTRA_GRACE_DAYS = "grace_days"
-        private const val schedulePeriodMs = DateUtils.DAY_IN_MILLIS / 2
+        private val schedulePeriod = 0.5.days
 
         /**
          * Schedule the auto delete worker to run periodically. If auto delete is not configured
@@ -86,13 +86,14 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
                         val operation = WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                             ThreemaApplication.WORKER_AUTO_DELETE,
                             ExistingPeriodicWorkPolicy.UPDATE,
-                            buildPeriodicWorkRequest(graceDays)
+                            buildPeriodicWorkRequest(graceDays),
                         )
                         logger.info(
                             "Schedule result = {}",
                             withContext(Dispatchers.IO) {
                                 operation.result.get()
-                            })
+                            },
+                        )
                     } catch (e: IllegalStateException) {
                         logger.error("Exception scheduling auto delete", e)
                     }
@@ -111,8 +112,8 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
                 .build()
 
             return PeriodicWorkRequestBuilder<AutoDeleteWorker>(
-                schedulePeriodMs,
-                TimeUnit.MILLISECONDS
+                schedulePeriod.inWholeMilliseconds,
+                TimeUnit.MILLISECONDS,
             )
                 .setInitialDelay(5, TimeUnit.MINUTES)
                 .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.HOURS)
@@ -168,7 +169,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
 
         val graceDays: Int = inputData.getInt(
             EXTRA_GRACE_DAYS,
-            ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE
+            ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE,
         )
         if (graceDays <= ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE) {
             logger.info("Stopping auto delete with graceDays = {}", graceDays)
@@ -193,15 +194,15 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
 
     private fun deleteMessagesThatExceededGraceTime(
         conversationModel: ConversationModel,
-        graceDays: Int
+        graceDays: Int,
     ): Int {
         var numDeletedMessages = 0
         val today = Date()
 
         // do not delete messages in note groups
         if (conversationModel.isGroupConversation) {
-            val groupModel = conversationModel.group
-            if (groupModel == null || groupService.isNotesGroup(groupModel)) {
+            val groupModel = conversationModel.groupModel
+            if (groupModel == null || groupModel.isNotesGroup() != false) {
                 return 0
             }
         }
@@ -229,7 +230,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
             }
             if (createdDate != null && AutoDeleteUtil.getDifferenceDays(
                     createdDate,
-                    today
+                    today,
                 ) >= graceDays
             ) {
                 if (messageModel.type == MessageType.BALLOT) {
@@ -237,7 +238,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
                     if (messageModel.ballotData.type == BallotDataModel.Type.BALLOT_CLOSED) {
                         logger.info(
                             "Removing ballot message {}",
-                            messageModel.apiMessageId ?: messageModel.id
+                            messageModel.apiMessageId ?: messageModel.id,
                         )
                         if (ballotModel != null) {
                             ballotService.remove(ballotModel)
@@ -250,7 +251,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
                         logger.info(
                             "Skipping ballot message {} of type {}.",
                             messageModel.apiMessageId ?: messageModel.id,
-                            messageModel.ballotData.type
+                            messageModel.ballotData.type,
                         )
                     }
                 } else {

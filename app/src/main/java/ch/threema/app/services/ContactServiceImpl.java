@@ -44,9 +44,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -107,6 +109,7 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
+import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
@@ -449,13 +452,13 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @NonNull
     public List<ContactModel> getAllDisplayedWork(@NonNull ContactSelection selection) {
-        return Functional.filter(this.getAllDisplayed(selection), (IPredicateNonNull<ContactModel>) ContactModel::isWork);
+        return Functional.filter(this.getAllDisplayed(selection), (IPredicateNonNull<ContactModel>) ContactModel::isWorkVerified);
     }
 
     @Override
     @NonNull
     public List<ContactModel> getAllWork() {
-        return Functional.filter(this.getAll(), (IPredicateNonNull<ContactModel>) ContactModel::isWork);
+        return Functional.filter(this.getAll(), (IPredicateNonNull<ContactModel>) ContactModel::isWorkVerified);
     }
 
     @Override
@@ -477,46 +480,43 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public List<ContactModel> getCanReceiveProfilePics() {
-        return Functional.filter(this.find(new Filter() {
-            @Override
-            public IdentityState[] states() {
-                if (preferenceService.showInactiveContacts()) {
+        return Functional.filter(
+            this.find(new Filter() {
+                @Override
+                public IdentityState[] states() {
+                    if (preferenceService.showInactiveContacts()) {
+                        return null;
+                    }
+                    return new IdentityState[]{IdentityState.ACTIVE};
+                }
+
+                @Override
+                public Long requiredFeature() {
                     return null;
                 }
-                return new IdentityState[]{IdentityState.ACTIVE};
-            }
 
-            @Override
-            public Long requiredFeature() {
-                return null;
-            }
+                @Override
+                public Boolean fetchMissingFeatureLevel() {
+                    return null;
+                }
 
-            @Override
-            public Boolean fetchMissingFeatureLevel() {
-                return null;
-            }
+                @Override
+                public Boolean includeMyself() {
+                    return false;
+                }
 
-            @Override
-            public Boolean includeMyself() {
-                return false;
-            }
+                @Override
+                public Boolean includeHidden() {
+                    return false;
+                }
 
-            @Override
-            public Boolean includeHidden() {
-                return false;
-            }
-
-            @Override
-            public Boolean onlyWithReceiptSettings() {
-                return false;
-            }
-        }), new IPredicateNonNull<ContactModel>() {
-
-            @Override
-            public boolean apply(@NonNull ContactModel type) {
-                return !ContactUtil.isEchoEchoOrGatewayContact(type);
-            }
-        });
+                @Override
+                public Boolean onlyWithReceiptSettings() {
+                    return false;
+                }
+            }),
+            (IPredicateNonNull<ContactModel>) type -> !ContactUtil.isEchoEchoOrGatewayContact(type)
+        );
     }
 
     @Override
@@ -684,12 +684,34 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void setIsArchived(String identity, boolean archived) {
-        final ContactModel contact = this.getByIdentity(identity);
-        if (contact != null && contact.isArchived() != archived) {
-            contact.setArchived(archived);
-            invalidateCache(identity);
-            save(contact); // listeners will be fired by save()
+    public void setIsArchived(
+        @NonNull String identity,
+        boolean isArchived,
+        @NonNull TriggerSource triggerSource
+    ) {
+        final ch.threema.data.models.ContactModel contactModel =
+            contactModelRepository.getByIdentity(identity);
+        if (contactModel == null) {
+            logger.warn(
+                "Cannot set isArchived={} for identity '{}' because contact model is null",
+                isArchived,
+                identity
+            );
+            return;
+        }
+
+        try {
+            switch (triggerSource) {
+                case LOCAL:
+                case REMOTE:
+                    contactModel.setIsArchivedFromLocalOrRemote(isArchived);
+                    break;
+                case SYNC:
+                    contactModel.setIsArchivedFromSync(isArchived);
+                    break;
+            }
+        } catch (ModelDeletedException e) {
+            logger.warn("Could not set isArchived={} because model has been deleted", isArchived, e);
         }
     }
 
@@ -873,7 +895,8 @@ public class ContactServiceImpl implements ContactService {
             serviceManager,
             this.databaseServiceNew,
             this.identityStore,
-            this.blockedIdentitiesService
+            this.blockedIdentitiesService,
+            serviceManager.getModelRepositories().getContacts()
         );
     }
 
@@ -1335,5 +1358,41 @@ public class ContactServiceImpl implements ContactService {
             identityState,
             identityType
         );
+    }
+
+    @Override
+    public void resetAllNotificationTriggerPolicyOverrideFromLocal() {
+        contactModelRepository.getAll().stream().forEach(
+            contactModel -> contactModel.setNotificationTriggerPolicyOverrideFromLocal(null)
+        );
+    }
+
+    @NonNull
+    public Set<String> getRemovedContacts() {
+        /*
+            SELECT identity FROM contacts AS co WHERE acquaintanceLevel = 1 AND NOT EXISTS (
+                SELECT 1 FROM group_member AS gm WHERE gm.identity = co.identity
+            );
+         */
+        final @NonNull String query = "SELECT " + ContactModel.COLUMN_IDENTITY + " FROM " + ContactModel.TABLE + " AS co WHERE "
+            + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + " = " + AcquaintanceLevel.GROUP.ordinal() + " AND NOT EXISTS ("
+            + "SELECT 1 FROM " + GroupMemberModel.TABLE + " AS gm WHERE gm." + GroupMemberModel.COLUMN_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY + ");";
+        final @Nullable Cursor cursor = this.databaseServiceNew
+            .getReadableDatabase()
+            .rawQuery(query);
+        if (cursor == null) {
+            logger.error("Failed to query for deleted contacts");
+            return new HashSet<>();
+        }
+        try (cursor) {
+            final @NonNull Set<String> identities = new HashSet<>();
+            while (cursor.moveToNext()) {
+                identities.add(cursor.getString(cursor.getColumnIndexOrThrow(ContactModel.COLUMN_IDENTITY)));
+            }
+            return identities;
+        } catch (Exception exception) {
+            logger.error("Failed to query for deleted contacts", exception);
+            return new HashSet<>();
+        }
     }
 }

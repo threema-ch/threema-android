@@ -21,13 +21,6 @@
 
 package ch.threema.app.webclient.services.instance.message.receiver;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import androidx.annotation.AnyThread;
-import androidx.annotation.StringDef;
-import androidx.annotation.WorkerThread;
-
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -35,12 +28,21 @@ import org.slf4j.Logger;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import ch.threema.app.dialogs.ContactEditDialog;
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
+import androidx.annotation.WorkerThread;
+import ch.threema.app.groupflows.GroupChanges;
+import ch.threema.app.protocol.ProfilePictureChange;
+import ch.threema.app.protocol.SetProfilePicture;
+import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.utils.BitmapUtil;
+import ch.threema.app.services.UserService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Group;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
@@ -49,14 +51,20 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
+import ch.threema.data.models.GroupModelData;
+import ch.threema.data.repositories.GroupModelRepository;
+import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class ModifyGroupHandler extends MessageReceiver {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyGroupHandler");
 
-    private final MessageDispatcher dispatcher;
-    private final GroupService groupService;
+    private final @NonNull MessageDispatcher dispatcher;
+    private final @NonNull UserService userService;
+    private final @NonNull GroupFlowDispatcher groupFlowDispatcher;
+    private final @NonNull GroupModelRepository groupModelRepository;
+    private final @NonNull GroupService groupService;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({
@@ -76,16 +84,24 @@ public class ModifyGroupHandler extends MessageReceiver {
     }
 
     @AnyThread
-    public ModifyGroupHandler(MessageDispatcher dispatcher,
-                              GroupService groupService) {
+    public ModifyGroupHandler(
+        @NonNull MessageDispatcher dispatcher,
+        @NonNull UserService userService,
+        @NonNull GroupFlowDispatcher groupFlowDispatcher,
+        @NonNull GroupModelRepository groupModelRepository,
+        @NonNull GroupService groupService
+    ) {
         super(Protocol.SUB_TYPE_GROUP);
         this.dispatcher = dispatcher;
+        this.userService = userService;
+        this.groupFlowDispatcher = groupFlowDispatcher;
+        this.groupModelRepository = groupModelRepository;
         this.groupService = groupService;
     }
 
     @Override
     protected void receive(Map<String, Value> message) throws MessagePackException {
-        logger.debug("Received update group message");
+        logger.info("Received update group message");
         final Map<String, Value> args = this.getArguments(message, false, new String[]{
             Protocol.ARGUMENT_TEMPORARY_ID,
         });
@@ -100,14 +116,15 @@ public class ModifyGroupHandler extends MessageReceiver {
         final Integer groupId = Integer.parseInt(args.get(Receiver.ID).asStringValue().toString());
 
         // Get group
-        final GroupModel groupModel = this.groupService.getById(groupId);
+        final GroupModel groupModel = this.groupModelRepository.getByLocalGroupDbId(groupId);
         if (groupModel == null) {
             this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
             return;
         }
-        if (!this.groupService.isGroupCreator(groupModel)) {
-            logger.error("Not allowed to change a foreign group");
-            this.failed(temporaryId, Protocol.ERROR_NOT_ALLOWED);
+        final GroupModelData groupModelData = groupModel.getData().getValue();
+        if (groupModelData == null) {
+            logger.error("Group model data is null");
+            this.failed("Group model data is null", Protocol.ERROR_INVALID_GROUP);
             return;
         }
 
@@ -120,13 +137,18 @@ public class ModifyGroupHandler extends MessageReceiver {
 
         // Update members
         final List<Value> members = data.get(Protocol.ARGUMENT_MEMBERS).asArrayValue().list();
-        final String[] identities = new String[members.size()];
-        for (int n = 0; n < members.size(); n++) {
-            identities[n] = members.get(n).asStringValue().toString();
+        String myIdentity = userService.getIdentity();
+        final Set<String> updatedIdentities = new HashSet<>();
+        for (Value member : members) {
+            String identity = member.asStringValue().toString();
+            // Add all provided new members except the user's identity
+            if (!myIdentity.equals(identity)) {
+                updatedIdentities.add(identity);
+            }
         }
 
         // Update name
-        String name = groupModel.getName();
+        String name = groupModelData.name;
         if (data.containsKey(Protocol.ARGUMENT_NAME)) {
             name = this.getValueString(data.get(Protocol.ARGUMENT_NAME));
             if (name.getBytes(StandardCharsets.UTF_8).length > Protocol.LIMIT_BYTES_GROUP_NAME) {
@@ -135,20 +157,15 @@ public class ModifyGroupHandler extends MessageReceiver {
             }
         }
 
-        // Update avatar
-        Bitmap avatar = null;
+        // Update avatar (note that it is not possible to remove the avatar via webclient)
+        ProfilePictureChange profilePictureChange = null;
         if (data.containsKey(Protocol.ARGUMENT_AVATAR)) {
             try {
                 final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
                 if (avatarValue != null && !avatarValue.isNilValue()) {
                     // Set avatar
-                    final byte[] bmp = avatarValue.asBinaryValue().asByteArray();
-                    if (bmp.length > 0) {
-                        final Bitmap tmpAvatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
-                        // Resize to max allowed size
-                        avatar = BitmapUtil.resizeBitmap(tmpAvatar, ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-                            ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
-                    }
+                    byte[] avatar = avatarValue.asBinaryValue().asByteArray();
+                    profilePictureChange = new SetProfilePicture(avatar, null);
                 }
             } catch (Exception e) {
                 logger.error("Failed to save avatar", e);
@@ -159,8 +176,27 @@ public class ModifyGroupHandler extends MessageReceiver {
 
         // Save changes
         try {
-            this.groupService.updateGroup(groupModel, name, null, identities, avatar, false);
-            this.success(temporaryId, groupModel);
+            Deferred<Boolean> updateGroupResult = groupFlowDispatcher.runUpdateGroupFlow(
+                null,
+                new GroupChanges(
+                    name,
+                    profilePictureChange,
+                    updatedIdentities,
+                    groupModelData
+                ),
+                groupModel
+            );
+
+            updateGroupResult.invokeOnCompletion(throwable -> {
+                Boolean result = updateGroupResult.getCompleted();
+                if (result == Boolean.TRUE) {
+                    this.success(temporaryId, groupModel);
+                } else {
+                    this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+                }
+                return null;
+            });
+
         } catch (Exception e1) {
             this.failed(temporaryId, Protocol.ERROR_INTERNAL);
         }
@@ -169,12 +205,21 @@ public class ModifyGroupHandler extends MessageReceiver {
     /**
      * Respond with the modified group model.
      */
-    private void success(String temporaryId, GroupModel group) {
+    private void success(String temporaryId, @NonNull GroupModel groupModel) {
         logger.debug("Respond modify group success");
+
+        ch.threema.storage.models.GroupModel oldGroupModel =
+            groupService.getByGroupIdentity(groupModel.getGroupIdentity());
+
+        if (oldGroupModel == null) {
+            logger.error("Old group model is null");
+            return;
+        }
+
         try {
             this.send(this.dispatcher,
                 new MsgpackObjectBuilder()
-                    .put(Protocol.SUB_TYPE_RECEIVER, Group.convert(group)),
+                    .put(Protocol.SUB_TYPE_RECEIVER, Group.convert(oldGroupModel)),
                 new MsgpackObjectBuilder()
                     .put(Protocol.ARGUMENT_SUCCESS, true)
                     .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)

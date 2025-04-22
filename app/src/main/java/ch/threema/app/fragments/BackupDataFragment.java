@@ -270,8 +270,8 @@ public class BackupDataFragment extends Fragment implements
                 .setBackupAvatars(true)
                 .setBackupMedia(includeMedia)
                 .setBackupThumbnails(includeMedia)
-                .setBackupNonces(true)
-                .setBackupReactions(true);
+
+                .setBackupNonces(true).setBackupReactions(true);
 
             Intent intent = new Intent(getActivity(), BackupService.class);
             intent.putExtra(BackupService.EXTRA_BACKUP_RESTORE_DATA_CONFIG, backupRestoreDataConfig);

@@ -27,6 +27,7 @@ import ch.threema.app.services.license.UserCredentials
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
@@ -44,7 +45,6 @@ import ch.threema.domain.protocol.api.work.WorkContact
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.neilalexander.jnacl.NaCl
 import kotlinx.coroutines.runBlocking
-import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("AddOrUpdateWorkContactBackgroundTask")
 
@@ -68,7 +68,6 @@ open class AddOrUpdateWorkContactBackgroundTask(
      */
     private val contactModelRepository: ContactModelRepository,
 ) : BackgroundTask<ContactModel?> {
-
     /**
      * Add the work contact if the identity belongs to a work contact.
      *
@@ -94,7 +93,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
             // Ignore work contact with invalid public key
             logger.warn(
                 "Work contact has invalid public key of size {}",
-                workContact.publicKey.size
+                workContact.publicKey.size,
             )
             return null
         }
@@ -123,27 +122,32 @@ open class AddOrUpdateWorkContactBackgroundTask(
                     ContactModelData(
                         identity = workContact.threemaId,
                         publicKey = workContact.publicKey,
-                        createdAt = Date(),
+                        createdAt = now(),
                         firstName = workContact.firstName ?: "",
                         lastName = workContact.lastName ?: "",
                         nickname = null,
                         colorIndex = getIdColorIndex(workContact.threemaId),
                         verificationLevel = VerificationLevel.SERVER_VERIFIED,
                         workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-                        identityType = IdentityType.WORK, // TODO(ANDR-3159): Fetch identity type
+                        // TODO(ANDR-3159): Fetch identity type
+                        identityType = IdentityType.WORK,
                         acquaintanceLevel = AcquaintanceLevel.DIRECT,
-                        activityState = IdentityState.ACTIVE, // TODO(ANDR-3159): Fetch identity state
+                        // TODO(ANDR-3159): Fetch identity state
+                        activityState = IdentityState.ACTIVE,
                         syncState = ContactSyncState.INITIAL,
-                        featureMask = 0u, // TODO(ANDR-3159): Fetch feature mask
+                        // TODO(ANDR-3159): Fetch feature mask
+                        featureMask = 0u,
                         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
                         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                        isArchived = false,
                         androidContactLookupKey = null,
                         localAvatarExpires = null,
                         isRestored = false,
                         profilePictureBlobId = null,
                         jobTitle = workContact.jobTitle,
                         department = workContact.department,
-                    )
+                        notificationTriggerPolicyOverride = null,
+                    ),
                 )
             } catch (e: ContactCreateException) {
                 logger.error("Could not create work contact", e)
@@ -160,8 +164,8 @@ open class AddOrUpdateWorkContactBackgroundTask(
 
         // Update first and last name if the contact is not synchronized
         if (
-            currentContactModelData.androidContactLookupKey == null
-            && (workContact.firstName != null || workContact.lastName != null)
+            currentContactModelData.androidContactLookupKey == null &&
+            (workContact.firstName != null || workContact.lastName != null)
         ) {
             contactModel.setNameFromLocal(workContact.firstName ?: "", workContact.lastName ?: "")
         }
@@ -202,7 +206,6 @@ class AddOrUpdateWorkIdentityBackgroundTask(
     private val apiConnector: APIConnector,
     private val contactModelRepository: ContactModelRepository,
 ) : BackgroundTask<ContactModel?> {
-
     /**
      * Add the work contact if the identity belongs to a work contact.
      *
@@ -244,7 +247,7 @@ class AddOrUpdateWorkIdentityBackgroundTask(
             logger.error(
                 "Received different identity from server: {} instead of {}",
                 workContact.threemaId,
-                identity
+                identity,
             )
             return null
         }

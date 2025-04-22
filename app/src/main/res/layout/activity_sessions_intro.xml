@@ -18,8 +18,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/tablet_standard_padding_left_right"
-            android:paddingRight="@dimen/tablet_standard_padding_left_right"
+            android:paddingLeft="@dimen/spacing_two_grid_unit"
+            android:paddingRight="@dimen/spacing_two_grid_unit"
             android:paddingBottom="@dimen/wizard_contents_padding"
             android:paddingTop="@dimen/wizard_contents_padding"
             android:orientation="vertical">

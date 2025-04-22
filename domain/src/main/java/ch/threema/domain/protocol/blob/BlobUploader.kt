@@ -32,17 +32,6 @@ import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.data.leBytes
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.internal.closeQuietly
-import okhttp3.logging.HttpLoggingInterceptor
-import okio.BufferedSink
-import okio.source
-import org.apache.commons.io.IOUtils
-import org.slf4j.Logger
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -50,17 +39,28 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.Volatile
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.internal.closeQuietly
+import okio.BufferedSink
+import okio.source
+import org.apache.commons.io.IOUtils
+import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("BlobUploader")
 
 private const val PROGRESS_UPDATE_STEP_SIZE = 10
 
-// TODO (ANDR-2869): Rework exception handling (and maybe return types)
 /**
  * Helper class that uploads a blob (image, video) to the blob server and returns the assigned blob
  * ID. No processing is done on the data; any encryption must happen separately.
  *
  * It can target both the default blob server and the mirror blob server for multi-device sessions.
+ *
+ * TODO(ANDR-2869): Rework exception handling (and maybe return types)
  */
 class BlobUploader private constructor(
     private val baseOkhttpClient: OkHttpClient,
@@ -69,22 +69,19 @@ class BlobUploader private constructor(
     private val blobLength: Int,
     private val version: Version,
     private val useMirror: Boolean,
-    private val shouldLogHttp: Boolean,
     private val serverAddressProvider: ServerAddressProvider,
     @JvmField var progressListener: ProgressListener?,
+    private val shouldPersist: Boolean,
     // used for usual blob server request:
     private val useIpv6: Boolean?,
-    private val shouldPersist: Boolean?,
     // used for mirror blob server request:
     private val multiDevicePropertyProvider: MultiDevicePropertyProvider?,
-    private val blobScope: BlobScope?
+    private val blobScope: BlobScope?,
 ) {
-
     @Volatile
     private var isCancelled = false
 
     companion object {
-
         private const val MULTIPART_BOUNDARY = "---------------------------Boundary_Line"
 
         /**
@@ -97,11 +94,10 @@ class BlobUploader private constructor(
             authToken: String?,
             blobData: ByteArray,
             version: Version,
-            shouldLogHttp: Boolean,
             serverAddressProvider: ServerAddressProvider,
             progressListener: ProgressListener?,
             useIpv6: Boolean,
-            shouldPersist: Boolean
+            shouldPersist: Boolean,
         ): BlobUploader = BlobUploader(
             baseOkhttpClient = baseOkhttpClient,
             authToken = authToken,
@@ -109,13 +105,12 @@ class BlobUploader private constructor(
             blobLength = blobData.size,
             version = version,
             useMirror = false,
-            shouldLogHttp = shouldLogHttp,
             serverAddressProvider = serverAddressProvider,
             progressListener = progressListener,
-            useIpv6 = useIpv6,
             shouldPersist = shouldPersist,
+            useIpv6 = useIpv6,
             multiDevicePropertyProvider = null,
-            blobScope = null
+            blobScope = null,
         )
 
         /**
@@ -128,25 +123,24 @@ class BlobUploader private constructor(
             authToken: String?,
             blobData: ByteArray,
             version: Version,
-            shouldLogHttp: Boolean,
             serverAddressProvider: ServerAddressProvider,
             progressListener: ProgressListener?,
+            shouldPersist: Boolean,
             multiDevicePropertyProvider: MultiDevicePropertyProvider,
-            blobScope: BlobScope
+            blobScope: BlobScope,
         ): BlobUploader = BlobUploader(
             baseOkhttpClient = baseOkhttpClient,
             authToken = authToken,
             blobInputStream = ByteArrayInputStream(blobData),
             blobLength = blobData.size,
             version = version,
-            shouldLogHttp = shouldLogHttp,
             useMirror = true,
             serverAddressProvider = serverAddressProvider,
+            shouldPersist = shouldPersist,
             progressListener = progressListener,
             useIpv6 = null,
-            shouldPersist = null,
             multiDevicePropertyProvider = multiDevicePropertyProvider,
-            blobScope = blobScope
+            blobScope = blobScope,
         )
     }
 
@@ -164,13 +158,6 @@ class BlobUploader private constructor(
         val okHttpClientUpload: OkHttpClient = baseOkhttpClient.newBuilder().apply {
             connectTimeout(ProtocolDefines.BLOB_CONNECT_TIMEOUT.toLong(), TimeUnit.SECONDS)
             readTimeout(ProtocolDefines.BLOB_LOAD_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            if (shouldLogHttp) {
-                addInterceptor(
-                    HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BASIC
-                    }
-                )
-            }
         }.build()
 
         val uploadRequest: Request = Request.Builder().apply {
@@ -244,10 +231,11 @@ class BlobUploader private constructor(
                 serverAddressProvider.getBlobMirrorServerUploadUrl(multiDevicePropertyProvider)
             return URL(
                 appendQueryParametersForMirrorServer(
-                    blobMirrorServerUploadUrl,
-                    multiDevicePropertyProvider,
-                    blobScope
-                )
+                    rawUrl = blobMirrorServerUploadUrl,
+                    shouldPersist = shouldPersist,
+                    multiDevicePropertyProvider = multiDevicePropertyProvider,
+                    scope = blobScope,
+                ),
             )
         } else {
             if (useIpv6 == null) {
@@ -262,7 +250,7 @@ class BlobUploader private constructor(
      * @param rawUrl An url string **without** any query parameters. The value of this will not be mutated.
      */
     private fun appendQueryParametersForUsualServer(rawUrl: String): String {
-        if (shouldPersist != null && shouldPersist) {
+        if (shouldPersist) {
             return "$rawUrl?persist=1"
         }
         return rawUrl
@@ -274,26 +262,34 @@ class BlobUploader private constructor(
     @Throws(ThreemaException::class)
     private fun appendQueryParametersForMirrorServer(
         rawUrl: String,
+        shouldPersist: Boolean,
         multiDevicePropertyProvider: MultiDevicePropertyProvider,
-        scope: BlobScope
+        scope: BlobScope,
     ): String {
+        val persistParam = if (shouldPersist) {
+            "&persist=1"
+        } else {
+            ""
+        }
+
         val deviceGroupIdHex: String =
             Utils.byteArrayToHexString(multiDevicePropertyProvider.get().keys.dgid)
                 ?: throw ThreemaException("Could not read device group id")
         val deviceIdHex: String =
             multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
-        return "$rawUrl?deviceId=${deviceIdHex}&deviceGroupId=${deviceGroupIdHex}&scope=${scope.name}"
+        return "$rawUrl?deviceId=$deviceIdHex&deviceGroupId=$deviceGroupIdHex&scope=${scope.name}$persistParam"
     }
 
     private fun buildRequestBody(): RequestBody {
         val header =
-            "--$MULTIPART_BOUNDARY\r\nContent-Disposition: form-data; name=\"blob\"; filename=\"blob.bin\"\r\nContent-Type: application/octet-stream\r\n\r\n"
+            "--$MULTIPART_BOUNDARY\r\nContent-Disposition: form-data; name=\"blob\"; filename=\"blob.bin\"\r\n" +
+                "Content-Type: application/octet-stream\r\n\r\n"
         val footer = "\r\n--$MULTIPART_BOUNDARY--\r\n"
         return UploadBlobRequestBody(
             blobInputStream = blobInputStream,
             blobLength = blobLength.toLong(),
             bodyHeaderBytes = header.toByteArray(),
-            bodyFooterBytes = footer.toByteArray()
+            bodyFooterBytes = footer.toByteArray(),
         )
     }
 
@@ -308,9 +304,8 @@ class BlobUploader private constructor(
         private val blobInputStream: InputStream,
         private val blobLength: Long,
         private val bodyHeaderBytes: ByteArray,
-        private val bodyFooterBytes: ByteArray
+        private val bodyFooterBytes: ByteArray,
     ) : RequestBody() {
-
         override fun contentType(): MediaType =
             ("multipart/form-data; boundary=$MULTIPART_BOUNDARY").toMediaType()
 

@@ -43,7 +43,7 @@ abstract class MovingPopupWindow(context: Context?) : PopupWindow(context) {
             anchorView?.let {
                 val coordinates = ConfigUtils.getPopupWindowPositionAboveAnchor(
                     activity,
-                    it
+                    it,
                 )
                 if (coordinates[1] != lastY) {
                     update(coordinates[0], coordinates[1], -1, -1)
@@ -54,7 +54,7 @@ abstract class MovingPopupWindow(context: Context?) : PopupWindow(context) {
 
     protected var windowInsetsAnimationCallback: WindowInsetsAnimationCompat.Callback =
         object : WindowInsetsAnimationCompat.Callback(
-            DISPATCH_MODE_STOP
+            DISPATCH_MODE_STOP,
         ) {
             var startY = 0
             override fun onPrepare(animation: WindowInsetsAnimationCompat) {
@@ -62,7 +62,7 @@ abstract class MovingPopupWindow(context: Context?) : PopupWindow(context) {
                 anchorView?.let {
                     val coordinates = ConfigUtils.getPopupWindowPositionAboveAnchor(
                         activity,
-                        it
+                        it,
                     )
                     startY = coordinates[1]
                     lastY = 0
@@ -71,12 +71,12 @@ abstract class MovingPopupWindow(context: Context?) : PopupWindow(context) {
 
             override fun onProgress(
                 insets: WindowInsetsCompat,
-                runningAnimations: List<WindowInsetsAnimationCompat>
+                runningAnimations: List<WindowInsetsAnimationCompat>,
             ): WindowInsetsCompat {
                 anchorView?.let {
                     val coordinates = ConfigUtils.getPopupWindowPositionAboveAnchor(
                         activity,
-                        it
+                        it,
                     )
                     if (coordinates[1] != lastY &&
                         coordinates[1] != startY

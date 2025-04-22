@@ -21,39 +21,52 @@
 
 package ch.threema.app.processors.incomingcspmessage.groupcontrol
 
-import ch.threema.app.asynctasks.getIdentityState
-import ch.threema.app.asynctasks.getIdentityType
-import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
-import ch.threema.app.utils.OutgoingCspGroupMessageCreator
-import ch.threema.app.utils.OutgoingCspMessageHandle
-import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
-import ch.threema.app.utils.runBundledMessagesSendSteps
-import ch.threema.app.utils.toBasicContacts
+import ch.threema.app.protocol.Contact
+import ch.threema.app.protocol.Init
+import ch.threema.app.protocol.Invalid
+import ch.threema.app.protocol.SpecialContact
+import ch.threema.app.protocol.UserContact
+import ch.threema.app.protocol.runValidContactsLookupSteps
+import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
+import ch.threema.app.tasks.ReflectionFailed
+import ch.threema.app.tasks.ReflectionPreconditionFailed
+import ch.threema.app.tasks.ReflectionSuccess
+import ch.threema.app.tasks.toFullSyncContact
+import ch.threema.app.tasks.toGroupSync
 import ch.threema.app.voip.groupcall.localGroupId
-import ch.threema.base.ThreemaException
+import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.now
 import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
+import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModel
+import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.ContactCreateException
-import ch.threema.domain.models.ContactSyncState
-import ch.threema.domain.models.GroupId
-import ch.threema.domain.models.MessageId
-import ch.threema.domain.models.ReadReceiptPolicy
-import ch.threema.domain.models.TypingIndicatorPolicy
-import ch.threema.domain.models.VerificationLevel
-import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
+import ch.threema.data.repositories.ContactReflectException
+import ch.threema.data.repositories.ContactStoreException
+import ch.threema.data.repositories.GroupCreateException
+import ch.threema.data.repositories.UnexpectedContactException
+import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.taskmanager.NetworkException
-import ch.threema.domain.taskmanager.ProtocolException
+import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.taskmanager.awaitReflectAck
+import ch.threema.domain.taskmanager.createTransaction
+import ch.threema.domain.taskmanager.getEncryptedContactSyncCreate
+import ch.threema.domain.taskmanager.getEncryptedGroupSyncCreate
+import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
+import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
+import ch.threema.protobuf.d2d.sync.MdD2DSync
+import ch.threema.protobuf.d2d.sync.group
+import ch.threema.protobuf.groupIdentity
+import ch.threema.protobuf.identities
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel
-import java.util.Date
+import ch.threema.storage.models.GroupModel.UserState
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSetupTask")
 
@@ -62,256 +75,338 @@ class IncomingGroupSetupTask(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupSetupMessage>(message, triggerSource, serviceManager) {
+    // Services
     private val userService by lazy { serviceManager.userService }
-    private val contactService by lazy { serviceManager.contactService }
-    private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
     private val groupService by lazy { serviceManager.groupService }
-    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
     private val groupCallManager by lazy { serviceManager.groupCallManager }
-    private val databaseService by lazy { serviceManager.databaseServiceNew }
     private val contactStore by lazy { serviceManager.contactStore }
+    private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val apiConnector by lazy { serviceManager.apiConnector }
-    private val preferenceService by lazy { serviceManager.preferenceService }
+    private val licenseService by lazy { serviceManager.licenseService }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val conversationService by lazy { serviceManager.conversationService }
+    private val conversationCategoryService by lazy { serviceManager.conversationCategoryService }
+    private val ringtoneService by lazy { serviceManager.ringtoneService }
+
+    // Repositories
+    private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
+    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
+
+    // Properties
+    private val myIdentity by lazy { userService.identity }
+    private val groupIdentity by lazy {
+        GroupIdentity(
+            message.groupCreator,
+            message.apiGroupId.toLong(),
+        )
+    }
+
+    // Note that the properties are null if and only if MD is not active.
+    private val multiDeviceProperties by lazy {
+        if (multiDeviceManager.isMultiDeviceActive) {
+            multiDeviceManager.propertiesProvider.get()
+        } else {
+            null
+        }
+    }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
-        // 1. Let members be the given member list. Remove all duplicate entries from members.
+        // Let members be the given member list. Remove all duplicate entries from members.
         // Remove the sender from members if present.
-        val sender = message.fromIdentity
-        val members = message.members.filter { it != sender }.toSet()
-        val myIdentity = userService.identity
+        val senderIdentity = message.fromIdentity
+        val members = message.members.filter { it != senderIdentity }.toSet()
 
-        // 2. Look up the group
-        var group = groupService.getByGroupMessage(message)
+        // Look up the group
+        val group = groupModelRepository.getByGroupIdentity(groupIdentity)
 
-        val newGroup = group == null
-
-        // 3. If the group could not be found:
-        if (group == null) {
-            // 3.1 If the user is not present in members, abort these steps
-            if (!members.contains(myIdentity)) {
-                logger.info("Dismissing group setup message for unknown group without the user as member")
-                return ReceiveStepsResult.DISCARD
-            }
-            // 3.2 If the sender is blocked, send a group-leave message to the sender and all
-            // provided members (including those who are blocked) and abort these steps.
-            if (isBlocked(sender)) {
-                logger.info("Sending a leave message to the creator of a new group that is blocked")
-                sendLeave(handle, message.apiGroupId, sender, members)
-                return ReceiveStepsResult.SUCCESS
-            }
+        // Abort if there is no change
+        if (group != null && !hasChange(members, group)) {
+            logger.info("There is no change contained in the group-setup message")
+            return ReceiveStepsResult.DISCARD
         }
 
-        // 4. If the group could be found and members is empty or does not include the user:
-        if (group != null && !members.contains(myIdentity)) {
-            // 4.1 If the user is currently participating in a group call of this group, trigger
-            // leaving the call.
-            if (groupCallManager.hasJoinedCall(group.localGroupId)) {
-                logger.info("Group call is running in a group where the user just has been kicked")
-                groupCallManager.abortCurrentCall()
-            }
+        // Determine whether the user will be part of the group or not
+        return if (members.contains(myIdentity)) {
+            handleSetupContainingUser(senderIdentity, members, group, handle)
+        } else {
+            handleSetupWithoutUser(group, handle)
+        }
+    }
 
-            // If we are not a member anyway, we do not have to do anything. Especially, we should
-            // not call the listener as this would trigger a status message each time.
-            if (!groupService.isGroupMember(group)) {
-                return ReceiveStepsResult.SUCCESS
-            }
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
+        logger.info("Discarding group-setup from sync")
+        return ReceiveStepsResult.DISCARD
+    }
 
-            // 4.2 Mark the group as left and abort these steps.
-            // Note that we just set the user state to kicked as the user is not stored as a member
-            // in the database.
-            if (group.userState == GroupModel.UserState.MEMBER) {
-                group.userState = GroupModel.UserState.KICKED
-                groupService.save(group)
+    private fun hasChange(members: Set<String>, group: GroupModel): Boolean {
+        val data = group.data.value
+        if (data == null || !data.isMember) {
+            if (members.isEmpty()) {
+                return false
             }
-
-            ListenerManager.groupListeners.handle {
-                it.onMemberKicked(group, myIdentity)
+        } else {
+            val currentMembersIncludingUser = data.otherMembers + myIdentity
+            if (currentMembersIncludingUser == members) {
+                return false
             }
+        }
+        return true
+    }
 
-            return ReceiveStepsResult.SUCCESS
+    private suspend fun handleSetupContainingUser(
+        senderIdentity: String,
+        members: Set<String>,
+        group: GroupModel?,
+        handle: ActiveTaskCodec,
+    ): ReceiveStepsResult {
+        val detectedChanges = if (multiDeviceManager.isMultiDeviceActive) {
+            handle.createTransaction(
+                multiDeviceManager.propertiesProvider.get().keys,
+                MdD2D.TransactionScope.Scope.GROUP_SYNC,
+                TRANSACTION_TTL_MAX,
+            ) {
+                contactModelRepository.getByIdentity(senderIdentity)?.data?.value != null
+            }.execute {
+                detectAndReflectChangesIfMdEnabled(members, group, handle)
+            }
+        } else {
+            detectAndReflectChangesIfMdEnabled(members, group, handle)
         }
 
-        // 5. For each member of members, create a contact with acquaintance level group
-        // if not already present in the contact list.
-        val unknownContacts = members
-            .filter { contactModelRepository.getByIdentity(it) == null }
-            .filter { it != myIdentity }
-        createGroupMemberContacts(unknownContacts, handle)
-
-        // 6. Create or update the group with the given members plus the sender (creator).
-        val now = Date()
-        if (group == null) {
-            group = GroupModel().apply {
-                apiGroupId = message.apiGroupId
-                creatorIdentity = message.groupCreator
-                createdAt = now
-                lastUpdate = now
-            }
-            databaseService.groupModelFactory.create(group)
-        } else if (group.isDeleted || !groupService.isGroupMember(group)) {
-            group.isDeleted = false
-            group.lastUpdate = now
-            databaseService.groupModelFactory.update(group)
-        }
-        updateMembers(group, members)
-
-        // If the group is new, then fire the listener.
-        if (newGroup) {
-            ListenerManager.groupListeners.handle { it.onCreate(group) }
-        }
-
-        // 7. If the group was previously marked as left, remove the left mark.
-        if (group.userState != GroupModel.UserState.MEMBER) {
-            group.userState = GroupModel.UserState.MEMBER
-            databaseService.groupModelFactory.update(group)
-            ListenerManager.groupListeners.handle { it.onNewMember(group, myIdentity) }
-        }
-
-        // 8. Run the rejected messages refresh steps for the group
-        groupService.runRejectedMessagesRefreshSteps(group)
-
-        // 9. If the user is currently participating in a group call of this group and there are
-        // group call participants that are no longer members of the group, remove these
-        // participants from the group call (handle them as if they left the call).
-        groupCallManager.updateAllowedCallParticipants(group)
+        persistChanges(detectedChanges)
 
         return ReceiveStepsResult.SUCCESS
     }
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-        // TODO(ANDR-2741): Support group synchronization
-        return ReceiveStepsResult.DISCARD
-    }
-
-    private suspend fun sendLeave(
-        handle: ActiveTaskCodec,
-        apiGroupId: GroupId,
-        creatorIdentity: String,
+    private suspend fun detectAndReflectChangesIfMdEnabled(
         members: Set<String>,
-    ) {
-        val messageId = MessageId()
-        val myIdentity = userService.identity
+        group: GroupModel?,
+        handle: ActiveTaskCodec,
+    ): GroupChanges {
+        val validMembersLookupResult = runValidContactsLookupSteps(
+            members,
+            myIdentity,
+            contactStore,
+            contactModelRepository,
+            licenseService,
+            apiConnector,
+        ).filter { (_, contactOrInit) ->
+            when (contactOrInit) {
+                // Invalid contacts cannot be part of a group
+                is Invalid -> false
+                // The user itself is not added to the member list
+                is UserContact -> false
+                // Do not include contacts that are present but not valid
+                is Contact -> contactOrInit.contactModel.data.value?.activityState != IdentityState.INVALID
+                is Init -> true
+                is SpecialContact -> true
+            }
+        }
 
-        val recipients = (members + creatorIdentity - myIdentity)
-            .toBasicContacts(contactModelRepository, contactStore, apiConnector)
+        val newContactModelData = validMembersLookupResult.asSequence()
+            .filter { it.key != myIdentity }
+            .map { it.value }
+            .filterIsInstance<Init>()
+            .map { it.contactModelData }
+            .map { it.copy(acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP) }
             .toSet()
 
-        val messageCreator = OutgoingCspGroupMessageCreator(
-            messageId,
-            Date(),
-            apiGroupId,
-            creatorIdentity
-        ) { GroupLeaveMessage() }
+        newContactModelData.reflectAsNewContactsIfMdEnabled(handle)
 
-        val outgoingCspMessageHandle = OutgoingCspMessageHandle(
-            recipients,
-            messageCreator,
-        )
+        val validMembers = validMembersLookupResult.map { it.key }.toSet()
 
-        handle.runBundledMessagesSendSteps(
-            outgoingCspMessageHandle,
-            serviceManager.getOutgoingCspMessageServices(),
+        val groupModelData = group?.data?.value
+
+        return if (group == null || groupModelData == null) {
+            val now = now()
+            val newGroupModelData = GroupModelData(
+                groupIdentity = groupIdentity,
+                name = "",
+                createdAt = now,
+                synchronizedAt = null,
+                lastUpdate = now,
+                isArchived = false,
+                groupDescription = null,
+                groupDescriptionChangedAt = null,
+                otherMembers = validMembers + groupIdentity.creatorIdentity,
+                userState = UserState.MEMBER,
+                notificationTriggerPolicyOverride = null,
+            )
+            newGroupModelData.reflectAsNewGroupIfMdEnabled(handle)
+            NewGroup(newContactModelData, newGroupModelData)
+        } else {
+            val currentMembers =
+                groupModelData.otherMembers - groupModelData.groupIdentity.creatorIdentity
+            val addedMembers = validMembers - currentMembers
+            val removedMembers = currentMembers - validMembers
+
+            val memberStateChanges = addedMembers.associateWith { MemberStateChange.ADDED } +
+                removedMembers.associateWith { MemberStateChange.KICKED }
+
+            validMembers.reflectAsGroupUpdateIfMdEnabled(memberStateChanges, handle)
+            ModifiedGroup(newContactModelData, group, addedMembers, removedMembers)
+        }
+    }
+
+    private fun persistChanges(changes: GroupChanges) {
+        // Persist newly created contacts
+        changes.newContacts.forEach {
+            try {
+                contactModelRepository.persistGroupContactFromRemote(it)
+            } catch (e: ContactCreateException) {
+                when (e) {
+                    // The contact must not exists yet
+                    is ContactStoreException -> logger.error(
+                        "Contact {} already exists",
+                        it.identity,
+                    )
+                    // This should never happen
+                    is UnexpectedContactException -> throw e
+                    // This should never happen
+                    is ContactReflectException -> throw e
+                }
+            }
+        }
+
+        when (changes) {
+            is NewGroup -> {
+                try {
+                    groupModelRepository.persistNewGroup(changes.groupModelData)
+                } catch (e: GroupCreateException) {
+                    logger.error("Could not store the group", e)
+                }
+            }
+
+            is ModifiedGroup -> {
+                // TODO(ANDR-3262): Remove 'removed-members' from group call if a group call exists.
+                //  Note that according to the protocol, this should happen before persisting the
+                //  newly added contacts.
+
+                changes.groupModel.persistMemberChanges(changes.addedMembers, changes.removedMembers)
+
+                changes.groupModel.persistUserState(UserState.MEMBER)
+
+                if (changes.addedMembers.isNotEmpty() || changes.removedMembers.isNotEmpty()) {
+                    groupService.runRejectedMessagesRefreshSteps(changes.groupModel)
+                }
+            }
+        }
+    }
+
+    private suspend fun handleSetupWithoutUser(
+        group: GroupModel?,
+        handle: ActiveTaskCodec,
+    ): ReceiveStepsResult {
+        if (group == null) {
+            logger.info("User is not part of the unknown group")
+            return ReceiveStepsResult.DISCARD
+        }
+
+        if (multiDeviceManager.isMultiDeviceActive) {
+            val reflectionResult = ReflectGroupSyncUpdateImmediateTask.ReflectUserKicked(
+                group,
+                nonceFactory,
+                multiDeviceManager,
+            ).reflect(handle)
+            when (reflectionResult) {
+                is ReflectionFailed -> {
+                    logger.error("Reflection of group update failed", reflectionResult.exception)
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionPreconditionFailed -> {
+                    logger.error(
+                        "Group sync race: Transaction precondition failed",
+                        reflectionResult.transactionException,
+                    )
+                    return ReceiveStepsResult.DISCARD
+                }
+
+                is ReflectionSuccess -> logger.info("Reflected user kicked update")
+            }
+        }
+
+        // If the user is currently participating in a group call of this group, trigger leaving the
+        // call.
+        if (groupCallManager.hasJoinedCall(group.localGroupId)) {
+            logger.info("Group call is running in a group where the user just has been kicked")
+            groupCallManager.abortCurrentCall()
+        }
+
+        group.persistUserState(UserState.KICKED)
+
+        groupService.runRejectedMessagesRefreshSteps(group)
+
+        return ReceiveStepsResult.SUCCESS
+    }
+
+    private suspend fun Collection<ContactModelData>.reflectAsNewContactsIfMdEnabled(handle: ActiveTaskCodec) {
+        val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties ?: return
+        map {
+            val encryptedEnvelopeResult = getEncryptedContactSyncCreate(
+                it.toFullSyncContact(
+                    conversationService,
+                    conversationCategoryService,
+                    ringtoneService,
+                ),
+                multiDeviceProperties,
+            )
+
+            handle.reflect(encryptedEnvelopeResult) to encryptedEnvelopeResult.nonce
+        }.forEach { (reflectAck, nonce) ->
+            handle.awaitReflectAck(reflectAck)
+            nonceFactory.store(NonceScope.D2D, nonce)
+        }
+    }
+
+    private suspend fun GroupModelData.reflectAsNewGroupIfMdEnabled(handle: ActiveTaskCodec) {
+        val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties ?: return
+
+        val groupSync = toGroupSync(false, MdD2DSync.ConversationVisibility.NORMAL)
+        val encryptedEnvelopeResult = getEncryptedGroupSyncCreate(groupSync, multiDeviceProperties)
+        handle.reflectAndAwaitAck(
+            encryptedEnvelopeResult,
+            true,
+            nonceFactory,
         )
     }
 
-    private suspend fun createGroupMemberContacts(
-        unknownIdentities: List<String>,
+    private suspend fun Collection<String>.reflectAsGroupUpdateIfMdEnabled(
+        memberStateChanges: Map<String, MemberStateChange>,
         handle: ActiveTaskCodec,
     ) {
-        if (unknownIdentities.isEmpty()) {
-            return
-        }
+        val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties ?: return
 
-        val date = Date()
-        val fetchResults = try {
-            apiConnector.fetchIdentities(unknownIdentities)
-        } catch (e: Exception) {
-            when (e) {
-                is NetworkException -> throw ProtocolException(
-                    e.message ?: "Could not fetch identities"
-                )
-
-                is ThreemaException -> throw ProtocolException(
-                    e.message ?: "Could not fetch server url"
-                )
-
-                else -> throw e
+        val groupSync = group {
+            groupIdentity = groupIdentity {
+                creatorIdentity = this@IncomingGroupSetupTask.groupIdentity.creatorIdentity
+                groupId = this@IncomingGroupSetupTask.groupIdentity.groupId
+            }
+            userState = MdD2DSync.Group.UserState.MEMBER
+            memberIdentities = identities {
+                identities.addAll(this@reflectAsGroupUpdateIfMdEnabled)
             }
         }
-        fetchResults.forEach { fetchResult ->
-            try {
-                contactModelRepository.createFromRemote(
-                    ContactModelData(
-                        identity = fetchResult.identity,
-                        publicKey = fetchResult.publicKey,
-                        createdAt = date,
-                        firstName = "",
-                        lastName = "",
-                        nickname = null,
-                        colorIndex = getIdColorIndex(fetchResult.identity),
-                        verificationLevel = VerificationLevel.UNVERIFIED,
-                        workVerificationLevel = WorkVerificationLevel.NONE,
-                        identityType = fetchResult.getIdentityType(),
-                        acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
-                        activityState = fetchResult.getIdentityState(),
-                        syncState = ContactSyncState.INITIAL,
-                        featureMask = fetchResult.featureMask.toULong(),
-                        readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                        typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                        androidContactLookupKey = null,
-                        localAvatarExpires = null,
-                        isRestored = false,
-                        profilePictureBlobId = null,
-                        jobTitle = null,
-                        department = null,
-                    ),
-                    handle
-                )
-            } catch (e: ContactCreateException) {
-                logger.error("Could not create contact {}", fetchResult.identity)
-                // In case the contact could not be created because it already exists, we just
-                // continue. Otherwise, we throw a protocol exception to restart processing the
-                // incoming group setup message.
-                if (contactModelRepository.getByIdentity(fetchResult.identity) == null) {
-                    throw ProtocolException("Could not create contact ${fetchResult.identity}")
-                }
-            }
-        }
+        val encryptedEnvelopeResult =
+            getEncryptedGroupSyncUpdate(groupSync, memberStateChanges, multiDeviceProperties)
+        handle.reflectAndAwaitAck(
+            encryptedEnvelopeResult,
+            true,
+            nonceFactory,
+        )
     }
-
-    private fun updateMembers(group: GroupModel, members: Set<String>) {
-        // Delete all local group members that are not a member of the updated group. Don't delete
-        // the group creator.
-        val localMembersToDelete = groupService.getGroupIdentities(group)
-            .filter { group.creatorIdentity != it && !members.contains(it) }
-
-        localMembersToDelete.forEach { identity ->
-            // Remove member from group
-            groupService.removeMemberFromGroup(group, identity)
-
-            // Notify listeners that the member has been removed
-            ListenerManager.groupListeners.handle {
-                it.onMemberKicked(group, identity)
-            }
-        }
-
-        // All members that are already added (including the group creator and user)
-        val addedMembers = groupService.getGroupIdentities(group)
-
-        // All members including the creator that should be part of the group
-        val allMembers = (listOf(group.creatorIdentity) + members).toSet()
-
-        // Add all members to the group that are not already in the group
-        allMembers.filter { !addedMembers.contains(it) }.forEach { memberIdentity ->
-            if (groupService.addMemberToGroup(group, memberIdentity)) {
-                ListenerManager.groupListeners.handle {
-                    it.onNewMember(group, memberIdentity)
-                }
-            }
-        }
-    }
-
-    private fun isBlocked(identity: String): Boolean =
-        blockedIdentitiesService.isBlocked(identity) ||
-            (contactService.getByIdentity(identity) == null && preferenceService.isBlockUnknown)
 }
+
+private sealed class GroupChanges(val newContacts: Set<ContactModelData>)
+
+private class NewGroup(
+    newContacts: Set<ContactModelData>,
+    val groupModelData: GroupModelData,
+) : GroupChanges(newContacts)
+
+private class ModifiedGroup(
+    newContacts: Set<ContactModelData>,
+    val groupModel: GroupModel,
+    val addedMembers: Set<String>,
+    val removedMembers: Set<String>,
+) : GroupChanges(newContacts)

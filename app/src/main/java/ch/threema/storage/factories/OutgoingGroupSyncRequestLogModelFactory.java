@@ -25,6 +25,7 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import androidx.annotation.Nullable;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel;
@@ -34,6 +35,7 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
         super(databaseService, OutgoingGroupSyncRequestLogModel.TABLE);
     }
 
+    @Nullable
     public OutgoingGroupSyncRequestLogModel get(String apiGroupId, String groupCreator) {
         return getFirst(
             OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID + "=?"

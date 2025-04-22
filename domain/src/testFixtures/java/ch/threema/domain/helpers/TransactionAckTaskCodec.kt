@@ -48,6 +48,7 @@ class TransactionAckTaskCodec : ServerAckTaskCodec() {
 
                 else -> Unit
             }
+            outboundMessages.add(message)
         } else {
             super.write(message)
         }

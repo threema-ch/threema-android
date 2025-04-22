@@ -40,12 +40,17 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.ListReader;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
+import ch.threema.data.models.GroupModel;
 import ch.threema.logging.LoggerManager;
 import ch.threema.logging.backend.DebugLogFileBackend;
+import ch.threema.logging.backend.DebugToasterBackend;
 import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.BallotModelFactory;
+import ch.threema.storage.factories.GroupMessageModelFactory;
+import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -109,6 +114,16 @@ public class LayerDependenciesTest {
             nameMatching("ch\\.threema\\.data\\..*"),
             nameMatching("ch\\.threema\\.app\\.services\\..*")
         )
+        // TODO(ANDR-3400): This will not be necessary anymore if the listeners were removed
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\.models\\..*"),
+            nameMatching("ch\\.threema\\.app\\.stores\\.IdentityStore")
+        )
+        // TODO(ANDR-3400): This will not be necessary anymore if the listeners were removed
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\.repositories\\..*"),
+            nameMatching("ch\\.threema\\.app\\.stores\\.IdentityStore")
+        )
         // TODO(ANDR-3325): Remove
         .ignoreDependency(
             nameMatching("ch\\.threema\\.data\\.repositories\\.EmojiReactionsRepository.*"),
@@ -133,6 +148,8 @@ public class LayerDependenciesTest {
         .ignoreDependency(LoggerManager.class, BuildConfig.class)
         .ignoreDependency(LoggerManager.class, BuildFlavor.class)
         .ignoreDependency(LoggerManager.class, BuildFlavor.Companion.getClass())
+        .ignoreDependency(LoggerManager.class, ThreemaApplication.class)
+        .ignoreDependency(DebugToasterBackend.class, RuntimeUtil.class)
         .ignoreDependency(DebugLogFileBackend.class, FileService.class)
         .ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
         .ignoreDependency(DebugLogFileBackend.class, FileHandlingZipOutputStream.class)
@@ -140,7 +157,10 @@ public class LayerDependenciesTest {
 
     @ArchTest
     public static final ArchRule dataLayerAccess = getLayeredArchitecture()
-        .whereLayer(DATA).mayOnlyBeAccessedByLayers(APP);
+        .whereLayer(DATA).mayOnlyBeAccessedByLayers(APP, STORAGE)
+        .ignoreDependency(GroupMessageModelFactory.class, GroupModel.class)
+        .ignoreDependency(RejectedGroupMessageFactory.class, GroupModel.class)
+        .ignoreDependency(ConversationModel.class, GroupModel.class);
 
     @ArchTest
     public static final ArchRule storageLayerAccess = getLayeredArchitecture()

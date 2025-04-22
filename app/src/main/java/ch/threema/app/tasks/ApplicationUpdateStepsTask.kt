@@ -31,7 +31,8 @@ import kotlinx.serialization.Serializable
 /**
  * This task runs the _Application Update Steps_ as defined in the protocol.
  */
-class ApplicationUpdateStepsTask(serviceManager: ServiceManager) : ActiveTask<Unit>,
+class ApplicationUpdateStepsTask(serviceManager: ServiceManager) :
+    ActiveTask<Unit>,
     PersistableTask {
     private val contactService by lazy { serviceManager.contactService }
     private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }

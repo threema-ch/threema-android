@@ -29,12 +29,11 @@ import ch.threema.storage.models.AbstractMessageModel
 class DeletedChatAdapterDecorator(
     context: Context,
     messageModel: AbstractMessageModel,
-    helper: Helper
+    helper: Helper,
 ) : ChatAdapterDecorator(context, messageModel, helper) {
     override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
         holder.dateView.text = MessageUtil.getDisplayDate(context, messageModel, true)
         setOnClickListener({
-
         }, holder.messageBlockView)
     }
 }

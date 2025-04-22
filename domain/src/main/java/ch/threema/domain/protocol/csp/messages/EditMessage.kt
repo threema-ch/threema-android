@@ -25,12 +25,12 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
+import kotlin.time.Duration.Companion.hours
 
 class EditMessage(payloadData: EditMessageData) : AbstractProtobufMessage<EditMessageData>(
     ProtocolDefines.MSGTYPE_EDIT_MESSAGE,
-    payloadData
+    payloadData,
 ) {
-
     override fun getMinimumRequiredForwardSecurityVersion() = Version.V1_1
 
     override fun allowUserProfileDistribution() = false
@@ -54,8 +54,7 @@ class EditMessage(payloadData: EditMessageData) : AbstractProtobufMessage<EditMe
     override fun flagSendPush() = true
 
     companion object {
-
-        const val EDIT_MESSAGES_MAX_AGE: Long = 6L * 60L * 60L * 1000L
+        val EDIT_MESSAGES_MAX_AGE = 6.hours
 
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
@@ -82,7 +81,12 @@ class EditMessage(payloadData: EditMessageData) : AbstractProtobufMessage<EditMe
         }
 
         @JvmStatic
-        private fun fromByteArray(data: ByteArray): EditMessage = fromByteArray(data, 0, data.size)
+        @Throws(BadMessageException::class)
+        private fun fromByteArray(data: ByteArray): EditMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Build an instance of [EditMessage] from the given [data] bytes. Note that
@@ -104,7 +108,9 @@ class EditMessage(payloadData: EditMessageData) : AbstractProtobufMessage<EditMe
             when {
                 length < ProtocolDefines.MESSAGE_ID_LEN -> throw BadMessageException("Bad length ($length) for edit message")
                 offset < 0 -> throw BadMessageException("Bad offset ($offset) for edit message")
-                data.size < length + offset -> throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
+                data.size < length + offset -> throw BadMessageException(
+                    "Invalid byte array length (${data.size}) for offset $offset and length $length",
+                )
             }
             val protobufPayload: ByteArray = data.copyOfRange(offset, offset + length)
             val editMessageData: EditMessageData = EditMessageData.fromProtobuf(protobufPayload)

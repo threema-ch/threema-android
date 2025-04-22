@@ -25,11 +25,12 @@ import androidx.annotation.WorkerThread
 import ch.threema.domain.protocol.connection.PipeSink
 import ch.threema.domain.protocol.connection.PipeSource
 import ch.threema.domain.protocol.connection.ServerConnectionException
-import kotlinx.coroutines.Deferred
 import java.net.Socket
+import kotlinx.coroutines.Deferred
 
-internal interface ServerSocket : PipeSource<ByteArray>, PipeSink<ByteArray> {
-
+internal interface ServerSocket :
+    PipeSource<ByteArray, ServerSocketCloseReason>,
+    PipeSink<ByteArray, Unit> {
     val address: String?
 
     val closedSignal: Deferred<ServerSocketCloseReason>
@@ -41,7 +42,7 @@ internal interface ServerSocket : PipeSource<ByteArray>, PipeSink<ByteArray> {
      */
     @WorkerThread
     @Throws(Exception::class)
-    fun connect()
+    suspend fun connect()
 
     /**
      * Process io of the underlying socket.

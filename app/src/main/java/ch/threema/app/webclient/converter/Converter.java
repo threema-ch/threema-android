@@ -32,7 +32,7 @@ import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
@@ -69,9 +69,10 @@ public abstract class Converter {
         }
     }
 
-    protected static DeadlineListService getHiddenChatListService() throws ConversionException {
+    @NonNull
+    protected static ConversationCategoryService getConversationCategoryService() throws ConversionException {
         try {
-            return getServiceManager().getHiddenChatsListService();
+            return getServiceManager().getConversationCategoryService();
         } catch (NullPointerException e) {
             throw new ConversionException(e);
         }

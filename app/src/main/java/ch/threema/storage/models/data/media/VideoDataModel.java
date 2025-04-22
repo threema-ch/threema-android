@@ -162,4 +162,12 @@ public class VideoDataModel implements MediaMessageDataInterface {
         m.fromString(s);
         return m;
     }
+
+    /**
+     * Do not use this in new code. It only exists to handle places where a [VideoDataModel] needs to be returned and `null` is not allowed.
+     */
+    @Deprecated()
+    public static VideoDataModel createEmpty() {
+        return new VideoDataModel();
+    }
 }

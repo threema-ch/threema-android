@@ -33,7 +33,11 @@ import ch.threema.app.R
  * support.
  */
 enum class AudioDevice {
-    SPEAKER_PHONE, WIRED_HEADSET, EARPIECE, BLUETOOTH, NONE
+    SPEAKER_PHONE,
+    WIRED_HEADSET,
+    EARPIECE,
+    BLUETOOTH,
+    NONE,
 }
 
 /**
@@ -82,6 +86,6 @@ fun getDefaultAudioDevice(audioDevices: Set<AudioDevice>): AudioDevice {
     return listOf(
         AudioDevice.BLUETOOTH,
         AudioDevice.WIRED_HEADSET,
-        AudioDevice.EARPIECE
+        AudioDevice.EARPIECE,
     ).firstOrNull { it in audioDevices } ?: AudioDevice.SPEAKER_PHONE
 }

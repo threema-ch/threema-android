@@ -23,26 +23,23 @@ package ch.threema.domain.protocol.csp.messages.location
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.testutils.willThrow
-import org.junit.Test
 import kotlin.random.Random.Default.nextBytes
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LocationMessageDataTest {
-
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsEmpty() {
-
         // arrange
         val messageString = ""
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -52,18 +49,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsBlank() {
-
         // arrange
         val messageString = "          "
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -73,16 +68,14 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsTooShort() {
-
         // arrange
         val shortByteArray: ByteArray = nextBytes(4)
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = shortByteArray,
                 offset = 0,
-                length = shortByteArray.size
+                length = shortByteArray.size,
             )
         }
 
@@ -92,16 +85,14 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val locationMessageBytes: ByteArray = nextBytes(10)
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = -1,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -111,17 +102,15 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenLengthAndOffsetExceedLength() {
-
         // arrange
         val locationMessageBytes: ByteArray = nextBytes(10)
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 5,
-                length = 6
+                length = 6,
             )
         }
 
@@ -131,18 +120,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenFirstLineContainsNoNumberValues() {
-
         // arrange
         val messageString = "New York City"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -152,18 +139,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenFirstLineContainsFewNumberValues1() {
-
         // arrange
         val messageString = "40.741895"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -173,18 +158,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenFirstLineContainsFewNumberValues2() {
-
         // arrange
         val messageString = "40.741895,"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -194,18 +177,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenFirstLineContainsFewNumberValues3() {
-
         // arrange
         val messageString = "40.741895,,"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -215,18 +196,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenFirstLineContainsFewNumberValues4() {
-
         // arrange
         val messageString = "40.741895,Text"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -236,18 +215,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenFirstLineContainsTooManyNumberValues() {
-
         // arrange
         val messageString = "40.741895,-73.989308,0.000000,0.000000"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -257,18 +234,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenLatitudeIsTooSmall() {
-
         // arrange
         val messageString = "-91.000000,-73.989308,0.000000"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -278,18 +253,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenLatitudeIsTooLarge() {
-
         // arrange
         val messageString = "91.000000,-73.989308,0.000000"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -299,18 +272,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenLongitudeIsTooSmall() {
-
         // arrange
         val messageString = "41.000000,-181.000000,0.000000"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -320,18 +291,16 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenLongitudeIsTooLarge() {
-
         // arrange
         val messageString = "41.000000,181.000000,0.000000"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         val codeUnderTest = {
-
             // act
             LocationMessageData.parse(
                 data = locationMessageBytes,
                 offset = 0,
-                length = locationMessageBytes.size
+                length = locationMessageBytes.size,
             )
         }
 
@@ -341,17 +310,15 @@ class LocationMessageDataTest {
 
     @Test
     fun shouldSucceedWithLatLong1() {
-
         // arrange
         val messageString = "40.741895,-73.989308"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
-
 
         // act
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -360,15 +327,14 @@ class LocationMessageDataTest {
                 latitude = 40.741895,
                 longitude = -73.989308,
                 accuracy = null,
-                poi = null
+                poi = null,
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLong2() {
-
         // arrange
         val messageString = "40.74189,-73.98930"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -377,7 +343,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -386,15 +352,14 @@ class LocationMessageDataTest {
                 latitude = 40.74189,
                 longitude = -73.98930,
                 accuracy = null,
-                poi = null
+                poi = null,
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLong3() {
-
         // arrange
         val messageString = "40,-73"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -403,7 +368,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -412,15 +377,14 @@ class LocationMessageDataTest {
                 latitude = 40.0,
                 longitude = -73.0,
                 accuracy = null,
-                poi = null
+                poi = null,
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongAndAccuracy() {
-
         // arrange
         val messageString = "40.741895,-73.989308,1.000000"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -429,7 +393,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -438,15 +402,14 @@ class LocationMessageDataTest {
                 latitude = 40.741895,
                 longitude = -73.989308,
                 accuracy = 1.0,
-                poi = null
+                poi = null,
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongAccuracyAndPoiAddress() {
-
         // arrange
         val messageString = "40.741895,-73.989308,1.000000\nNew York City, Best Street, 1002"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -455,7 +418,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -465,16 +428,15 @@ class LocationMessageDataTest {
                 longitude = -73.989308,
                 accuracy = 1.0,
                 poi = Poi.Unnamed(
-                    address = "New York City, Best Street, 1002"
-                )
+                    address = "New York City, Best Street, 1002",
+                ),
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongAccuracyPoiAddressAndPoiName() {
-
         // arrange
         val messageString =
             "40.741895,-73.989308,1.000000\nGoogle NYC\nNew York City, Best Street, 1002"
@@ -484,7 +446,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -495,16 +457,15 @@ class LocationMessageDataTest {
                 accuracy = 1.0,
                 poi = Poi.Named(
                     name = "Google NYC",
-                    address = "New York City, Best Street, 1002"
-                )
+                    address = "New York City, Best Street, 1002",
+                ),
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongPoiAddressAndPoiName() {
-
         // arrange
         val messageString = "40.741895,-73.989308\nGoogle NYC\nNew York City, Best Street, 1002"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -513,7 +474,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -524,16 +485,15 @@ class LocationMessageDataTest {
                 accuracy = null,
                 poi = Poi.Named(
                     name = "Google NYC",
-                    address = "New York City, Best Street, 1002"
-                )
+                    address = "New York City, Best Street, 1002",
+                ),
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongAndPoiAddress() {
-
         // arrange
         val messageString = "40.741895,-73.989308\nNew York City, Best Street, 1002"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -542,7 +502,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -552,16 +512,15 @@ class LocationMessageDataTest {
                 longitude = -73.989308,
                 accuracy = null,
                 poi = Poi.Unnamed(
-                    address = "New York City, Best Street, 1002"
-                )
+                    address = "New York City, Best Street, 1002",
+                ),
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongAndPoiAddressBlank() {
-
         // arrange
         val messageString = "40.741895,-73.989308\n   "
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -570,7 +529,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -579,15 +538,14 @@ class LocationMessageDataTest {
                 latitude = 40.741895,
                 longitude = -73.989308,
                 accuracy = null,
-                poi = null
+                poi = null,
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongAndPoiNameBlankButAddressNot() {
-
         // arrange
         val messageString = "40.741895,-73.989308\n   \nCool City, Cool Street"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -596,7 +554,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -606,16 +564,15 @@ class LocationMessageDataTest {
                 longitude = -73.989308,
                 accuracy = null,
                 poi = Poi.Unnamed(
-                    address = "Cool City, Cool Street"
-                )
+                    address = "Cool City, Cool Street",
+                ),
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldSucceedWithLatLongAndPoiNameAndAddressBlank() {
-
         // arrange
         val messageString = "40.741895,-73.989308\n   \n     "
         val locationMessageBytes: ByteArray = messageString.toByteArray()
@@ -624,7 +581,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -633,15 +590,14 @@ class LocationMessageDataTest {
                 latitude = 40.741895,
                 longitude = -73.989308,
                 accuracy = null,
-                poi = null
+                poi = null,
             ),
-            result
+            result,
         )
     }
 
     @Test
     fun shouldIgnoreAnyLinesAfterTheThird() {
-
         // arrange
         val messageString =
             "40.741895,-73.989308,1.000000\nGoogle NYC\nNew York City, Best Street, 1002\nIgnored\nIgnored too"
@@ -651,7 +607,7 @@ class LocationMessageDataTest {
         val result = LocationMessageData.parse(
             data = locationMessageBytes,
             offset = 0,
-            length = locationMessageBytes.size
+            length = locationMessageBytes.size,
         )
 
         // assert
@@ -662,10 +618,10 @@ class LocationMessageDataTest {
                 accuracy = 1.0,
                 poi = Poi.Named(
                     name = "Google NYC",
-                    address = "New York City, Best Street, 1002"
-                )
+                    address = "New York City, Best Street, 1002",
+                ),
             ),
-            result
+            result,
         )
     }
 }

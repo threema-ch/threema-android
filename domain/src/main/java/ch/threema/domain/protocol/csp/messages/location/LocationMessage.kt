@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets
  * Coordinates are in WGS 84, accuracy is in meters.
  */
 class LocationMessage(private val locationMessageData: LocationMessageData) : AbstractMessage() {
-
     val latitude: Double
         get() = locationMessageData.latitude
 
@@ -75,7 +74,6 @@ class LocationMessage(private val locationMessageData: LocationMessageData) : Ab
         locationMessageData.toBodyString().toByteArray(StandardCharsets.UTF_8)
 
     companion object {
-
         /**
          *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
          *  So we set the offset in [fromByteArray] to zero.
@@ -101,8 +99,12 @@ class LocationMessage(private val locationMessageData: LocationMessageData) : Ab
         }
 
         @JvmStatic
-        private fun fromByteArray(data: ByteArray): LocationMessage =
-            fromByteArray(data, 0, data.size)
+        @Throws(BadMessageException::class)
+        private fun fromByteArray(data: ByteArray): LocationMessage = fromByteArray(
+            data = data,
+            offset = 0,
+            length = data.size,
+        )
 
         /**
          * Build an instance of [LocationMessage] from the given [data] bytes. Note that

@@ -27,15 +27,13 @@ import java.net.URLEncoder
 import java.util.regex.Pattern
 
 object UrlUtil {
-
     private val ascii: Pattern = Pattern.compile("^[\\x00-\\x7F]*$")
+    private val HYPHEN_MINUS_CHARACTER = Char(0x002D)
 
     /**
      * Characters that are excluded from the identifier check.
      */
-    private val nonIdentifierExceptions = setOf(
-        Char(0x002D),   // the hyphen-minus character '-'
-    )
+    private val nonIdentifierExceptions = setOf(HYPHEN_MINUS_CHARACTER)
 
     /**
      * Sets of scripts that may be mixed without a warning.
@@ -58,7 +56,7 @@ object UrlUtil {
             add(UnicodeUtil.UnicodeScript.LATIN)
             add(UnicodeUtil.UnicodeScript.HAN)
             add(UnicodeUtil.UnicodeScript.HANGUL)
-        }
+        },
     )
 
     /**
@@ -118,7 +116,8 @@ object UrlUtil {
 
         // Check that every character belongs to the allowed identifiers per UTS 39
         if (component.filter { !nonIdentifierExceptions.contains(it) }
-                .any { !Character.isUnicodeIdentifierPart(it) }) {
+                .any { !Character.isUnicodeIdentifierPart(it) }
+        ) {
             return false
         }
 

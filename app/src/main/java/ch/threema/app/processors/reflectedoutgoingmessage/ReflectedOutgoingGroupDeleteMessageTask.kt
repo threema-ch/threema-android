@@ -33,14 +33,13 @@ internal class ReflectedOutgoingGroupDeleteMessageTask(
 ) : ReflectedOutgoingGroupMessageTask(
     message,
     Common.CspE2eMessageType.GROUP_DELETE_MESSAGE,
-    serviceManager
+    serviceManager,
 ) {
-
     private val messageService by lazy { serviceManager.messageService }
 
     private val groupDeleteMessage: GroupDeleteMessage by lazy {
         GroupDeleteMessage.fromReflected(
-            message
+            message,
         )
     }
 
@@ -54,11 +53,11 @@ internal class ReflectedOutgoingGroupDeleteMessageTask(
         runCommonDeleteMessageReceiveSteps(
             deleteMessage = groupDeleteMessage,
             receiver = messageReceiver,
-            messageService = messageService
+            messageService = messageService,
         )?.let { validatedMessageModelToDelete ->
             messageService.deleteMessageContentsAndRelatedData(
                 validatedMessageModelToDelete,
-                groupDeleteMessage.date
+                groupDeleteMessage.date,
             )
         }
     }

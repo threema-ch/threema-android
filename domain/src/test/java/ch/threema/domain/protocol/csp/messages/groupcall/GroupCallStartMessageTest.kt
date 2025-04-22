@@ -29,14 +29,13 @@ import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
-import org.junit.Test
 import java.io.ByteArrayOutputStream
 import kotlin.random.Random.Default.nextBytes
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class GroupCallStartMessageTest {
-
     private val groupCreatorIdentityTest = "01234567"
     private val apiGroupIdTest = nextBytes(ProtocolDefines.GROUP_ID_LEN)
 
@@ -47,7 +46,7 @@ class GroupCallStartMessageTest {
     private val groupCallStartData = GroupCallStartData(
         protocolVersion = protocolVersionTest,
         gck = gckTest,
-        sfuBaseUrl = sfuBaseUrlTest
+        sfuBaseUrl = sfuBaseUrlTest,
     )
 
     private val groupCallStartMessage = GroupCallStartMessage(groupCallStartData).apply {
@@ -64,16 +63,13 @@ class GroupCallStartMessageTest {
      */
     @Test
     fun shouldThrowBadMessageExceptionWhenLengthBelowIdentityAndGroupIdLength() {
-
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupCallStartMessage.fromByteArray(
                 data = bytesGroupCallStartMessage,
                 offset = 0,
-                length = 10
+                length = 10,
             )
         }
 
@@ -88,12 +84,11 @@ class GroupCallStartMessageTest {
     fun shouldThrowBadMessageExceptionWhenLengthEqualsIdentityAndGroupIdLength() {
         // arrange
         val testBlockLazy = {
-
             // act
             GroupCallStartMessage.fromByteArray(
                 data = bytesGroupCallStartMessage,
                 offset = 0,
-                length = 16
+                length = 16,
             )
         }
 
@@ -103,15 +98,13 @@ class GroupCallStartMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetBelowZero() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupCallStartMessage.fromByteArray(
                 data = bytesGroupCallStartMessage,
                 offset = -1,
-                length = 64
+                length = 64,
             )
         }
 
@@ -121,15 +114,13 @@ class GroupCallStartMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLength() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupCallStartMessage.fromByteArray(
                 data = bytesGroupCallStartMessage,
                 offset = 0,
-                length = bytesGroupCallStartMessage.size + 1
+                length = bytesGroupCallStartMessage.size + 1,
             )
         }
 
@@ -139,15 +130,13 @@ class GroupCallStartMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenDataIsShorterThanPassedLengthWithOffset() {
-
         // arrange
         val testBlockLazy = {
-
             // act
             GroupCallStartMessage.fromByteArray(
                 data = bytesGroupCallStartMessage,
                 offset = 1,
-                length = bytesGroupCallStartMessage.size
+                length = bytesGroupCallStartMessage.size,
             )
         }
 
@@ -157,12 +146,11 @@ class GroupCallStartMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithoutOffset() {
-
         // act
         val resultGroupCallStartMessage = GroupCallStartMessage.fromByteArray(
             data = bytesGroupCallStartMessage,
             offset = 0,
-            length = bytesGroupCallStartMessage.size
+            length = bytesGroupCallStartMessage.size,
         )
 
         // assert
@@ -173,7 +161,6 @@ class GroupCallStartMessageTest {
 
     @Test
     fun shouldDecodeCorrectValuesWithOffset() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + bytesGroupCallStartMessage
 
@@ -181,7 +168,7 @@ class GroupCallStartMessageTest {
         val resultGroupCallStartMessage = GroupCallStartMessage.fromByteArray(
             data = dataWithOffsetByte,
             offset = 1,
-            length = dataWithOffsetByte.size - 1
+            length = dataWithOffsetByte.size - 1,
         )
 
         // assert
@@ -192,17 +179,15 @@ class GroupCallStartMessageTest {
 
     @Test
     fun shouldThrowBadMessageExceptionWhenOffsetNotPassedCorrectly() {
-
         // arrange
         val dataWithOffsetByte = byteArrayOf(0.toByte()) + bytesGroupCallStartMessage
 
         val testBlockLazy = {
-
             // act
             GroupFileMessage.fromByteArray(
                 data = dataWithOffsetByte,
                 offset = 0,
-                length = dataWithOffsetByte.size - 1
+                length = dataWithOffsetByte.size - 1,
             )
         }
 
@@ -212,7 +197,6 @@ class GroupCallStartMessageTest {
 
     @Test
     fun fromReflectedIncomingShouldParseBodyAndSetCommonMessageProperties() {
-
         // arrange
         val incomingMessageId = 12345678L
         val incomingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -238,7 +222,6 @@ class GroupCallStartMessageTest {
 
     @Test
     fun fromReflectedOutgoingShouldParseBodyAndSetCommonMessageProperties() {
-
         // arrange
         val outgoingMessageId = 12345678L
         val outgoingMessageCreatedAt: Long = System.currentTimeMillis()
@@ -252,7 +235,7 @@ class GroupCallStartMessageTest {
         // act
         val resultGroupCallStartMessage = GroupCallStartMessage.fromReflected(
             message = outgoingD2DMessage,
-            ownIdentity = outgoingMessageSenderIdentity
+            ownIdentity = outgoingMessageSenderIdentity,
         )
 
         // assert

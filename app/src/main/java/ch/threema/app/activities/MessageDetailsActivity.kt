@@ -65,7 +65,6 @@ import com.google.android.material.appbar.MaterialToolbar
 import org.slf4j.Logger
 
 class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
-
     private companion object {
         val logger: Logger = LoggingUtil.getThreemaLogger("MessageDetailsActivity")
 
@@ -112,7 +111,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                             CONTEXT_MENU_GROUP,
                             CONTEXT_MENU_FORWARD,
                             200,
-                            R.string.forward_text
+                            R.string.forward_text,
                         )
                     }
                 } catch (e: Exception) {
@@ -145,7 +144,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                     val body = text.subSequence(start, end).toString()
                     val intent = Intent(
                         this@MessageDetailsActivity,
-                        RecipientListBaseActivity::class.java
+                        RecipientListBaseActivity::class.java,
                     )
                     intent.setType("text/plain")
                     intent.setAction(Intent.ACTION_SEND)
@@ -186,7 +185,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                 val messageModel: MessageUiModel = uiState.message
                 val editHistoryViewModel: EditHistoryViewModel = viewModel(
                     key = messageModel.uid,
-                    factory = EditHistoryViewModel.provideFactory(messageModel.uid)
+                    factory = EditHistoryViewModel.provideFactory(messageModel.uid),
                 )
                 val editHistoryUiState by editHistoryViewModel.editHistoryUiState.collectAsStateWithLifecycle()
 
@@ -205,13 +204,13 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                             MessageType.IMAGE,
                             MessageType.VIDEO,
                             MessageType.VOICEMESSAGE,
-                                -> Column {
+                            -> Column {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 CompleteMessageBubble(
                                     message = messageModel,
                                     shouldMarkupText = uiState.shouldMarkupText,
                                     isTextSelectable = true,
-                                    textSelectionCallback = textSelectionCallback
+                                    textSelectionCallback = textSelectionCallback,
                                 )
                                 if (uiState.hasReactions) {
                                     Spacer(modifier = Modifier.height(2.dp))
@@ -230,19 +229,19 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 MessageTimestampsListBox(
                                     messageTimestampsUiModel = messageModel.messageTimestampsUiModel,
-                                    isOutbox = messageModel.isOutbox
+                                    isOutbox = messageModel.isOutbox,
                                 )
                             }
                             if (messageModel.messageDetailsUiModel.hasProperties()) {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 MessageDetailsListBox(
                                     messageDetailsUiModel = messageModel.messageDetailsUiModel,
-                                    isOutbox = messageModel.isOutbox
+                                    isOutbox = messageModel.isOutbox,
                                 )
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
                         }
-                    }
+                    },
                 )
             }
         }

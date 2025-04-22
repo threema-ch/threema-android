@@ -42,7 +42,7 @@ class VideoTimelineThumbnailTask(
     private val thumbnailCount: Int,
     private val targetWidth: Int,
     private val targetHeight: Int,
-    private val listener: VideoTimelineListener
+    private val listener: VideoTimelineListener,
 ) : Runnable {
     private val logger = LoggingUtil.getThreemaLogger("VideoTimelineThumbnailTask")
 
@@ -72,12 +72,12 @@ class VideoTimelineThumbnailTask(
                 val orientationHint = VideoTranscoderUtil.getOrientationHint(
                     context,
                     inputVideoComponent,
-                    mediaItem.uri
+                    mediaItem.uri,
                 )
                 val outputDimensions = VideoTranscoderUtil.calculateOutputDimensions(
                     inputVideoComponent,
                     targetWidth,
-                    targetHeight
+                    targetHeight,
                 )
                 if (outputDimensions != null) {
                     if (orientationHint % 180 == 90) {
@@ -96,7 +96,7 @@ class VideoTimelineThumbnailTask(
                         outputSurface,
                         outputDimensions.width,
                         outputDimensions.height,
-                        inputVideoComponent.durationUs
+                        inputVideoComponent.durationUs,
                     )
                 }
             }
@@ -124,7 +124,7 @@ class VideoTimelineThumbnailTask(
         outputSurface: OutputSurface,
         outputWidth: Int,
         outputHeight: Int,
-        duration: Long
+        duration: Long,
     ) {
         val info = MediaCodec.BufferInfo()
         val byteBuffer = ByteBuffer.allocateDirect(outputWidth * outputHeight * 4)
@@ -139,7 +139,10 @@ class VideoTimelineThumbnailTask(
                     decoder.dequeueInputBuffer(VideoTranscoder.TIMEOUT_USEC.toLong())
                 if (decoderInputBufferIndex >= 0) {
                     val chunkSize = extractor.readSampleData(
-                        decoder.getInputBuffer(decoderInputBufferIndex)!!, 0
+                        /* byteBuf = */
+                        decoder.getInputBuffer(decoderInputBufferIndex)!!,
+                        /* offset = */
+                        0,
                     )
                     if (chunkSize < 0 || samplesExtracted >= thumbnailCount) {
                         decoder.queueInputBuffer(
@@ -147,7 +150,7 @@ class VideoTimelineThumbnailTask(
                             0,
                             0,
                             0L,
-                            MediaCodec.BUFFER_FLAG_END_OF_STREAM
+                            MediaCodec.BUFFER_FLAG_END_OF_STREAM,
                         )
                         inputDone = true
                     } else {
@@ -156,12 +159,12 @@ class VideoTimelineThumbnailTask(
                             0,
                             chunkSize,
                             extractor.sampleTime,
-                            0
+                            0,
                         )
                         samplesExtracted++
                         extractor.seekTo(
                             duration * samplesExtracted / thumbnailCount,
-                            MediaExtractor.SEEK_TO_CLOSEST_SYNC
+                            MediaExtractor.SEEK_TO_CLOSEST_SYNC,
                         )
                     }
                 }
@@ -186,7 +189,7 @@ class VideoTimelineThumbnailTask(
                             outputHeight,
                             GLES20.GL_RGBA,
                             GLES20.GL_UNSIGNED_BYTE,
-                            byteBuffer
+                            byteBuffer,
                         )
                         val bitmap =
                             Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888)

@@ -69,10 +69,10 @@ class OutgoingPollSetupMessageTask(
         sendContactMessage(
             message,
             messageModel,
-            messageModel.identity,
+            messageModel.identity!!,
             ensureMessageId(messageModel),
-            messageModel.createdAt,
-            handle
+            messageModel.createdAt!!,
+            handle,
         )
     }
 
@@ -86,7 +86,7 @@ class OutgoingPollSetupMessageTask(
             group,
             recipientIdentities,
             messageModel,
-            messageModel.createdAt,
+            messageModel.createdAt!!,
             ensureMessageId(messageModel),
             {
                 GroupPollSetupMessage().also {
@@ -95,7 +95,7 @@ class OutgoingPollSetupMessageTask(
                     it.ballotData = ballotData
                 }
             },
-            handle
+            handle,
         )
     }
 
@@ -104,7 +104,7 @@ class OutgoingPollSetupMessageTask(
         receiverType,
         recipientIdentities,
         ballotId.ballotId,
-        ballotData.generateString()
+        ballotData.generateString(),
     )
 
     @Serializable
@@ -123,7 +123,7 @@ class OutgoingPollSetupMessageTask(
                 recipientIdentities,
                 BallotId(ballotId),
                 BallotData.parse(ballotData),
-                serviceManager
+                serviceManager,
             )
     }
 }
