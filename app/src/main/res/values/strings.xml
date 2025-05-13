@@ -835,7 +835,7 @@
     <string name="check_now">Check Now</string>
     <string name="discard">Discard</string>
     <string name="android_backup_restart_threema">Hold on. The app will be restarted in a few seconds.</string>
-    <string name="battery_optimizations_title">Disable Battery Optimizations</string>
+    <string name="battery_optimizations_title">Keep Battery Optimizations Disabled?</string>
     <string name="battery_optimizations_explain">Battery optimization prevents %1$s from working correctly when your phone falls into sleep mode. Please disable battery optimization for %2$s.</string>
     <string name="battery_optimizations_disable_guide">Select “All Apps” in the drop down menu</string>
     <string name="battery_optimizations_disable_guide_ctd">Search for %s in the list and deactivate the optimization</string>
