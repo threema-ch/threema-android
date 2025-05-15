@@ -62,6 +62,8 @@ import ch.threema.app.utils.StorageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class FilePickerActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("FilePickerActivity");
 
@@ -88,6 +90,7 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

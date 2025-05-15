@@ -75,6 +75,7 @@ import java8.util.stream.StreamSupport;
 
 import static ch.threema.app.managers.ListenerManager.conversationListeners;
 import static ch.threema.app.managers.ListenerManager.messageListeners;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, SearchView.OnQueryTextListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ArchiveActivity");
@@ -100,6 +101,7 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         conversationListeners.add(this.conversationListener);
         messageListeners.add(this.messageListener);

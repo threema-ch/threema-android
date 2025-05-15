@@ -67,6 +67,8 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 // this should NOT extend ThreemaToolbarActivity
 public class EnterSerialActivity extends ThreemaActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("EnterSerialActivity");
@@ -89,6 +91,7 @@ public class EnterSerialActivity extends ThreemaActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (!ConfigUtils.isSerialLicensed()) {
             finish();

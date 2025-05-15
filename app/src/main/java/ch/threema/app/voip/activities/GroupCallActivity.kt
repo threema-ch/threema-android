@@ -89,6 +89,10 @@ class GroupCallActivity :
     ThreemaActivity(),
     GenericAlertDialog.DialogClickListener,
     SensorListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     companion object {
         private const val EXTRA_GROUP_ID = "EXTRA_GROUP_ID"
         private const val EXTRA_MICROPHONE_ACTIVE = "EXTRA_MICROPHONE_ACTIVE"

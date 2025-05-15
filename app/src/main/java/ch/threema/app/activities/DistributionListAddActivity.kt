@@ -33,10 +33,18 @@ import ch.threema.app.services.DistributionListService
 import ch.threema.app.ui.SingleToast
 import ch.threema.app.utils.LogUtil
 import ch.threema.app.utils.RuntimeUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
 
+private val logger = LoggingUtil.getThreemaLogger("DistributionListAddActivity")
+
 class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClickListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private lateinit var distributionListService: DistributionListService
     private var distributionListModel: DistributionListModel? = null
     private var selectedContacts: List<ContactModel> = emptyList()

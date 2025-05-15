@@ -51,6 +51,7 @@ import ch.threema.app.multidevice.wizard.LinkingResult
 import ch.threema.app.ui.LongToast
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.getStatusBarHeightPxCompat
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.utils.withCurrentWindowInsets
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.ExecutorService
@@ -59,6 +60,10 @@ import java.util.concurrent.Executors
 private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceScanQrFragment")
 
 class LinkNewDeviceScanQrFragment : LinkNewDeviceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private lateinit var cameraExecutor: ExecutorService
 
     private lateinit var cameraPreview: PreviewView

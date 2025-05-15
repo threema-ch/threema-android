@@ -72,8 +72,16 @@ import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
 import ch.threema.app.multidevice.wizard.LinkingResult
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceResultFragment")
 
 class LinkNewDeviceResultFragment : LinkNewDeviceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)

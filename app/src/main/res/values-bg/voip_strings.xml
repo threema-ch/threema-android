@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voip_title">Обаждане чрез Threema</string>
+    <string name="voip_hangup">Затворете</string>
+    <string name="voip_toggle_mic">Включете/заглушете микрофона</string>
+    <string name="voip_toggle_speaker">Включете/спрете високоговорителя</string>
+    <string name="voip_switch_cam">Сменете камерата</string>
+    <string name="voip_switch_cam_front">Превключете на предната камера</string>
+    <string name="voip_switch_cam_rear">Превключете на задната камера</string>
+    <string name="voip_toggle_video">Превключете на режим видео</string>
+    <string name="voip_call_confirm">Искате ли да се обадите на %1$s?</string>
+    <string name="voip_error_call">Грешка по време на обаждане чрез Threema</string>
+    <string name="voip_error_init_call">Грешка при започване на разговора</string>
+    <string name="voip_notification_title">Входящо обаждане по Threema</string>
+    <string name="voip_notification_text">%1$s се обажда</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Стартирам</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Свързване</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Прекъсване</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Звъни</string>
+    <string name="voip_mic_enable">Включете микрофона</string>
+    <string name="voip_mic_disable">Изключете микрофона</string>
+    <string name="voip_checking_compatibility">Проверка дали този контакт може да получава обаждания по Threema</string>
+    <string name="voip_incompatible">Този контакт все още не може да получава обаждания по Threema.</string>
+    <string name="voip_call_status_unavailable">Контактът е недостъпен</string>
+    <string name="voip_call_status_rejected">Отхвърлено обаждане</string>
+    <string name="voip_call_status_busy">Контактът е зает</string>
+    <string name="voip_call_status_busy_short">Заето</string>
+    <string name="voip_call_status_disabled">Абонатът е деактивирал обажданията чрез Threema</string>
+    <string name="voip_call_status_missed">Пропуснато повикване</string>
+    <string name="voip_call_finished_outbox">Изходящо повикване</string>
+    <string name="voip_call_finished_inbox">Входящо повикване</string>
+    <string name="voip_call_status_aborted">Отхвърлено обаждане</string>
+    <string name="voip_return_call">Върнете обаждането</string>
+    <string name="voip_accept">Приемете</string>
+    <string name="voip_reject">Отклонете</string>
+    <string name="voip_speakerphone">Свободни ръце</string>
+    <string name="voip_wired_headset">Слушалки</string>
+    <string name="voip_earpiece">Телефон</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Недостъпен</string>
+    <string name="voip_call_finished">Обаждането по Threema приключи</string>
+    <string name="voip_another_call">Не можем да се свържем. Има друго текущо обаждане по Threema.</string>
+    <string name="voip_prefs_title_aec">Премахване на ехото</string>
+    <string name="voip_prefs_aec_sw">Софтуерно премахване на ехото</string>
+    <string name="voip_prefs_aec_hw">Хардуерно премахване на ехото</string>
+    <string name="voip_prefs_title_video_codec">Видео кодеци</string>
+    <string name="voip_prefs_video_aec_hw">Ускорен хардуер</string>
+    <string name="voip_prefs_video_codec_no_vp8">Деактивирайте VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Деактивирайте H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Софтуерни кодеци</string>
+    <string name="voip_connection_failed">Връзката не може да бъде осъществена</string>
+    <string name="voip_connection_lost">Връзката е прекратена</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Отклонете мобилните обаждания</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Отклонете мобилните обаждания докато има активно обаждане по Threema.</string>
+    <string name="voip_contact_not_found">Няма Threema контакт за този номер.</string>
+    <string name="voip_another_pstn_call">Не може да се осъществи обаждане. Има активно мобилно обаждане.</string>
+    <string name="voip_call_status_off_hours">Обаждане в неработно време</string>
+    <string name="voip_peer_video_disabled">Събеседникът деактивира видео разговора.</string>
+    <string name="voip_reject_channel_name">Промяна на състоянието на обаждането</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC Диагностика</string>
+    <string name="voip_prefs_webrtc_debug_summary">Стартирайте този инструмент, за да дебъгнете проблеми със започването на обаждане</string>
+    <string name="voip_webrtc_debug">WebRTC Диагностика</string>
+    <string name="voip_webrtc_debug_intro">Натиснете бутона „Старт“, за да стартирате теста.</string>
+    <string name="voip_webrtc_debug_start">Старт</string>
+    <string name="voip_webrtc_debug_done">Готово. Ако имате проблем със започването на разговора, изпратете този резултат към екипа по поддръжка на Threema.</string>
+    <string name="voip_webrtc_debug_copied">Копирането в буферната памет приключи.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Копирайте в буферната памет</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Всички членове на групата бяха уведомени</string>
+    <string name="voip_gc_notification_channel_description">Групови обаждания</string>
+    <string name="voip_gc_notification_title">Групово обаждане</string>
+    <string name="voip_gc_notification_call_started">%1$s започна групов разговор в %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s започна групово обаждане</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Вие започнахте групово обаждане</string>
+    <string name="voip_gc_dismiss_call">Отхвърлете</string>
+    <string name="voip_gc_join_call">Присъединете се</string>
+    <string name="voip_gc_ongoing_call">Текущо групово обаждане</string>
+    <string name="voip_gc_waiting_for_participants">Изчакване на участниците</string>
+    <string name="voip_gc_participant_avatar_description">Профилна снимка на участника</string>
+    <string name="voip_gc_participant_mute_status_description">Статус на звука на участника</string>
+    <string name="voip_gc_notification_new_call_public">Започна ново групово обаждане</string>
+    <string name="voip_gc_open_call">Отворете</string>
+    <string name="voip_gc_call_started">Груповото обаждане започна</string>
+    <string name="voip_gc_call_ended">Груповото обаждане приключи</string>
+    <string name="voip_gc_in_call">В групово обаждане</string>
+    <string name="voip_gc_sfu_not_available">Сървърът е недостъпен, опитайте по-късно</string>
+    <string name="voip_gc_call_error">Обаждането спря поради грешка</string>
+    <string name="voip_gc_call_start_error">Не може да се стартира групово обаждане</string>
+    <string name="voip_gc_call_already_ended">Груповото обаждане вече е приключило</string>
+    <string name="voip_gc_call_full_generic">Достигнат е максималният брой участници. Не могат да се присъединят повече хора към това групово обаждане.</string>
+    <string name="voip_gc_call_full_n">Достигнат е максималният брой участници - %1$d. Не можете да се присъедините в това групово обаждане.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d участник</item>
+        <item quantity="other">%d участници</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Внимание! Един от членовете не може да участва в групови обаждания.</item>
+        <item quantity="other">Внимание! %d не може да участва в групови обаждания.</item>
+    </plurals>
+</resources>

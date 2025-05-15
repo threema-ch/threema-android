@@ -1704,6 +1704,10 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="problemsolver_title_app_battery_usgae_optimized">Využití baterie aplikace nastaveno na „optimalizované“</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikaci není dovoleno udržovat trvalé připojení k serverům, které je nutné pro fungování ${app_name_short} Push. Když bude aplikace na pozadí, nebudete informováni o nových zprávách. Chcete‑li tento problém opravit, klepněte na „Využití baterie“ a vyberte „Neomezeno“.</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Tato verze Androidu brzy přijde o podporu</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Používáte zařízení s Androidem, které již nedostává aktualizace softwaru. Z bezpečnostních důvodů tato verze Androidu brzy přestane být aplikací Threema podporována.</string>
     <string name="problemsolver_to_settings">Do nastavení</string>
     <string name="prefs_advanced_options">Pokročilé možnosti</string>
     <string name="push_service">Služba push</string>
@@ -1771,16 +1775,13 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="select_emoji_content_description">Vyberte emoji, abyste ho přidali z výběru emoji</string>
     <string name="group_emoji_reactions_partially_supported">Někteří vaše reakce neuvidí z důvodu staré verze aplikace.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s reakcí s %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Obdrželi jste emoji reakce od kontaktu, který má novější verzi aplikace. Kromě 👍 a 👎 vaše aplikace zatím nepodporuje odesílání emoji reakcí.</string>
     <string name="reaction_cannot_be_displayed">Tuto reakci nelze zobrazit. Neznámé emoji.</string>
     <string name="emoji_reactions_unavailable_title">Emoji reakce nejsou dostupné</string>
-    <string name="emoji_reactions_sending_not_supported_body">Vaše verze aplikace prozatím nepodporuje odesílání emoji reakcí.</string>
     <string name="emoji_reactions_unavailable_body">Kontakt %1$s používá verzi aplikace, která prozatím tuto funkci nepodporuje.</string>
     <string name="emoji_reactions_unavailable_group_body">Na tuto zprávu nelze reagovat pomocí emoji, protože žádný člen skupiny nemá verzi aplikace, která tuto funkci podporuje.</string>
     <string name="emoji_reactions_cannot_remove_title">Odstranění reakcí není dostupné</string>
     <string name="emoji_reactions_cannot_remove_body">Kontakt %1$s používá verzi aplikace, která prozatím nepodporuje odstraňování emoji reakcí nebo odesílání více než jedné emoji reakce. Stále můžete nahradit 👍 za 👎 a naopak.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Žádný ze členů skupiny nepoužívá verzi aplikace, která podporuje odstraňování emoji reakcí nebo odesílání více než jedné emoji reakce. Stále však můžete nahradit 👍 za 👎 a naopak.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Verze vaší aplikace prozatím nepodporuje odstraňování emoji reakcí nebo odesílání více než jedné emoji reakce.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">Tato zpráva obsahuje emoji reakce. Chcete-li je zobrazit všechny, dlouze klepněte v konverzaci na jakoukoliv emoji bublinu.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1806,7 +1807,11 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="device_linking_error_unknown_qr_code_title">Neznámý QR kód</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Ujistěte se prosím, že používáte odpovídající aplikaci z [našeho webu].</string>
+    <string name="device_linking_error_unknown_qr_code_body">Toto nevypadá jako QR kód z aplikace ${app_name_desktop} 2.0 pro desktop (Beta). Stáhněte si prosím aktuální beta verzi aplikace pro desktop z [našeho webu] a naskenujte QR kód, který se zobrazí po spuštění této aplikace.</string>
+    <string name="device_linking_error_web_qr_code_title">Nesprávný QR kód</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Tento QR kód patří k webovému klientu aplikace ${app_name_short}.\nStáhněte si prosím aktuální verzi aplikace ${app_name_desktop} 2.0 pro desktop (Beta) z [našeho webu] a naskenujte QR kód, který se zobrazí po spuštění této aplikace.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Nekompatibilní verze</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Nainstalujte prosím aktuální verzi aplikace ${app_name} na obě zařízení.</string>

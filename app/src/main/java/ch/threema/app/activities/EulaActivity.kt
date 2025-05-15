@@ -23,8 +23,16 @@ package ch.threema.app.activities
 
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("EulaActivity")
 
 class EulaActivity : SimpleWebViewActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     override fun getWebViewTitle(): Int {
         return R.string.eula
     }

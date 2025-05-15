@@ -37,6 +37,7 @@ import ch.threema.app.ui.BigFileView
 import ch.threema.app.ui.MediaItem
 import ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL
 import ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.Rotate
@@ -47,6 +48,10 @@ private val logger = LoggingUtil.getThreemaLogger("BigMediaFragment")
 
 @UnstableApi
 class BigMediaFragment : Fragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var mediaItem: MediaItem? = null
     private var viewPager: ViewPager2? = null
     private lateinit var bigFileView: BigFileView

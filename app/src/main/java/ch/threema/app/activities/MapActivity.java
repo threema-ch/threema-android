@@ -91,6 +91,7 @@ import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_PROVIDER;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class MapActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("MapActivity");
@@ -122,6 +123,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ConfigUtils.configureSystemBars(this);
 
@@ -190,6 +192,10 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
         initUi();
         try {
             var mapStyleUrl = serverAddressProvider.getMapStyleUrl();
+            if (mapStyleUrl == null) {
+                finish();
+                return;
+            }
             initMap(mapStyleUrl);
         } catch (ThreemaException e) {
             logger.error("Failed to get map style url", e);

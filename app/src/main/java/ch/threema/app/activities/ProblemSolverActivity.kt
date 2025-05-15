@@ -33,14 +33,24 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.PowermanagerUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
+import java.time.Instant
+
+private val logger = LoggingUtil.getThreemaLogger("ProblemSolverActivity")
 
 class ProblemSolverActivity : ThreemaToolbarActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val settingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { _: ActivityResult? -> recreate() }
@@ -55,7 +65,7 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
         // explanation text used in problem solver box
         val explanation: Int,
         // the action to call for fixing the problem
-        val intentAction: String,
+        val intentAction: String?,
         // the check to determine if the problem exists
         val check: Boolean,
     )
@@ -63,36 +73,42 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
     @SuppressLint("InlinedApi")
     private val problems = arrayOf(
         Problem(
-            R.string.problemsolver_title_background,
-            R.string.problemsolver_explain_background,
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            ConfigUtils.isBackgroundRestricted(ThreemaApplication.getAppContext()),
+            title = R.string.problemsolver_title_background,
+            explanation = R.string.problemsolver_explain_background,
+            intentAction = Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            check = ConfigUtils.isBackgroundRestricted(ThreemaApplication.getAppContext()),
         ),
         Problem(
-            R.string.problemsolver_title_background_data,
-            R.string.problemsolver_explain_background_data,
-            Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
-            ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false),
+            title = R.string.problemsolver_title_background_data,
+            explanation = R.string.problemsolver_explain_background_data,
+            intentAction = Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
+            check = ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false),
         ),
         Problem(
-            R.string.problemsolver_title_notifications,
-            R.string.problemsolver_explain_notifications,
-            Settings.ACTION_APP_NOTIFICATION_SETTINGS,
-            ConfigUtils.isNotificationsDisabled(ThreemaApplication.getAppContext()),
+            title = R.string.problemsolver_title_notifications,
+            explanation = R.string.problemsolver_explain_notifications,
+            intentAction = Settings.ACTION_APP_NOTIFICATION_SETTINGS,
+            check = ConfigUtils.isNotificationsDisabled(ThreemaApplication.getAppContext()),
         ),
         Problem(
-            R.string.problemsolver_title_fullscreen_notifications,
-            R.string.problemsolver_explain_fullscreen_notifications,
-            Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
-            ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext()),
+            title = R.string.problemsolver_title_fullscreen_notifications,
+            explanation = R.string.problemsolver_explain_fullscreen_notifications,
+            intentAction = Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+            check = ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext()),
         ),
         Problem(
-            R.string.problemsolver_title_app_battery_usgae_optimized,
-            R.string.problemsolver_explain_app_battery_usgae_optimized,
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            ThreemaApplication.getServiceManager()?.preferenceService?.useThreemaPush() ?: false && !PowermanagerUtil.isIgnoringBatteryOptimizations(
-                ThreemaApplication.getAppContext(),
-            ),
+            title = R.string.problemsolver_title_app_battery_usgae_optimized,
+            explanation = R.string.problemsolver_explain_app_battery_usgae_optimized,
+            intentAction = Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            check = ThreemaApplication.getServiceManager()?.preferenceService?.useThreemaPush() ?: false &&
+                !PowermanagerUtil.isIgnoringBatteryOptimizations(ThreemaApplication.getAppContext()),
+        ),
+        Problem(
+            title = R.string.problemsolver_title_android_version_deprecated,
+            explanation = R.string.problemsolver_explain_android_version_deprecated,
+            intentAction = null,
+            check = Build.VERSION.SDK_INT < Build.VERSION_CODES.N &&
+                ThreemaApplication.getServiceManager()?.preferenceService?.lastDeprecatedAndroidVersionWarningDismissed == null,
         ),
     )
 
@@ -115,36 +131,49 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
     }
 
     private fun showProblems() {
-        var problemCount = 0
         val problemsParentLayout = findViewById<LinearLayout>(R.id.problems_parent)
+        val problems = problems.filter { it.check }
         for (problem in problems) {
-            if (problem.check) {
-                val itemLayout: View = LayoutInflater.from(this).inflate(
-                    /* resource = */
-                    R.layout.item_problemsolver,
-                    /* root = */
-                    problemsParentLayout,
-                    /* attachToRoot = */
-                    false,
-                )
-                itemLayout.findViewById<TextView>(R.id.item_title).text =
-                    getString(problem.title)
-                itemLayout.findViewById<TextView>(R.id.item_explain).text =
-                    getString(problem.explanation)
-                val settingsButton = itemLayout.findViewById<MaterialButton>(R.id.item_button)
-                settingsButton.setOnClickListener { onProblemClick(problem) }
-                problemsParentLayout.addView(itemLayout)
-                problemCount++
+            val itemLayout: View = LayoutInflater.from(this).inflate(
+                /* resource = */
+                R.layout.item_problemsolver,
+                /* root = */
+                problemsParentLayout,
+                /* attachToRoot = */
+                false,
+            )
+            itemLayout.findViewById<TextView>(R.id.item_title).text =
+                getString(problem.title)
+            itemLayout.findViewById<TextView>(R.id.item_explain).text =
+                getString(problem.explanation)
+            val settingsButton = itemLayout.findViewById<MaterialButton>(R.id.item_button)
+            settingsButton.setOnClickListener { onProblemClick(problem) }
+            if (problem.intentAction == null) {
+                settingsButton.setText(R.string.ok)
+                settingsButton.icon = null
             }
+            problemsParentLayout.addView(itemLayout)
         }
 
-        if (problemCount == 0) {
+        if (problems.singleOrNull()?.title == R.string.problemsolver_title_android_version_deprecated) {
+            findViewById<View>(R.id.intro_text).isVisible = false
+            findViewById<View>(R.id.info_icon).isVisible = false
+            findViewById<View>(R.id.info_text).isVisible = false
+        }
+
+        if (problems.isEmpty()) {
             finish()
         }
     }
 
     private fun onProblemClick(problem: Problem) {
-        val action = problem.intentAction
+        if (problem.title == R.string.problemsolver_title_android_version_deprecated) {
+            ThreemaApplication.requireServiceManager().preferenceService.setLastDeprecatedAndroidVersionWarningDismissed(Instant.now())
+            recreate()
+            return
+        }
+
+        val action = problem.intentAction!!
         val intent: Intent
 
         if (problem.title == R.string.problemsolver_title_app_battery_usgae_optimized &&

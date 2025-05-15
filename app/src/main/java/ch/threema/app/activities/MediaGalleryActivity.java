@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import static ch.threema.app.utils.RecyclerViewUtil.thumbScrollerPopupStyle;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.Manifest;
 import android.animation.LayoutTransition;
@@ -174,18 +175,23 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_message_discard) {
+                logger.info("Discard messages clicked");
                 discardMessages();
                 return true;
             } else if (itemId == R.id.menu_message_save) {
+                logger.info("Save messages clicked");
                 saveMessages();
                 return true;
             } else if (itemId == R.id.menu_share) {
+                logger.info("Share messages clicked");
                 shareMessages();
                 return true;
             } else if (itemId == R.id.menu_show_in_chat) {
+                logger.info("Show in chat clicked");
                 showInChat();
                 return true;
             } else if (itemId == R.id.menu_select_all) {
+                logger.info("Select all clicked");
                 selectAllMessages();
                 return true;
             }
@@ -257,6 +263,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override
@@ -731,12 +738,14 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     @Override
     public void onClick(@Nullable AbstractMessageModel messageModel, @Nullable View view, int position) {
         if (actionMode != null) {
+            logger.info("Message selection toggled");
             mediaGalleryAdapter.toggleChecked(position);
             if (mediaGalleryAdapter.getCheckedItemsCount() > 0) {
                 if (actionMode != null) {
                     actionMode.invalidate();
                 }
             } else {
+                logger.info("Deselected last message");
                 actionMode.finish();
             }
         } else {
@@ -754,8 +763,10 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
                             break;
                         case MessageContentsType.FILE:
                             if ((FileUtil.isImageFile(messageModel.getFileData()) || FileUtil.isVideoFile(messageModel.getFileData()) || FileUtil.isAudioFile(messageModel.getFileData()))) {
+                                logger.info("Media file clicked, showing");
                                 showInMediaFragment(messageModel, view);
                             } else {
+                                logger.info("File clicked, opening");
                                 decryptAndShow(messageModel, view, progressBar);
                             }
                             break;
@@ -770,10 +781,12 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     @Override
     public boolean onLongClick(@Nullable AbstractMessageModel messageModel, @Nullable View itemView, int position) {
         if (actionMode != null) {
+            logger.info("Long pressed message, leaving selection mode");
             actionMode.finish();
         }
         mediaGalleryAdapter.toggleChecked(position);
         if (mediaGalleryAdapter.getCheckedItemsCount() > 0) {
+            logger.info("Long pressed message, entering selection mode");
             actionMode = startSupportActionMode(new MediaGalleryAction());
         }
         return true;

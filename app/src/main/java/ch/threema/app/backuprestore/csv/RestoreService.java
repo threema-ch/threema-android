@@ -22,9 +22,11 @@
 package ch.threema.app.backuprestore.csv;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -34,6 +36,7 @@ import android.os.PowerManager;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.text.format.Formatter;
 import android.widget.Toast;
 
 import net.lingala.zip4j.ZipFile;
@@ -49,6 +52,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,6 +76,7 @@ import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
 import ch.threema.app.backuprestore.MessageIdCache;
+import ch.threema.app.backuprestore.ZipFileWrapper;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.exceptions.RestoreCanceledException;
@@ -140,7 +146,7 @@ import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 import static ch.threema.storage.models.GroupModel.UserState.LEFT;
 import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
-public class RestoreService extends Service {
+public class RestoreService extends Service implements ComponentCallbacks2 {
     private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
 
     public static final String RESTORE_PROGRESS_INTENT = "restore_progress_intent";
@@ -166,6 +172,7 @@ public class RestoreService extends Service {
     private NotificationPreferenceService notificationPreferenceService;
     private PowerManager.WakeLock wakeLock;
     private NotificationManagerCompat notificationManagerCompat;
+    private ActivityManager activityManager;
     private NonceFactory nonceFactory;
     private @NonNull GroupModelRepository groupModelRepository;
 
@@ -185,7 +192,7 @@ public class RestoreService extends Service {
 
     private static boolean restoreSuccess = false;
 
-    private ZipFile zipFile;
+    private ZipFileWrapper zipFileWrapper;
     private String password;
 
     private static final int STEP_SIZE_PREPARE = 100;
@@ -267,12 +274,10 @@ public class RestoreService extends Service {
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        zipFile = new ZipFile(file, password.toCharArray());
-                        if (!zipFile.isValidZipFile()) {
-                            showRestoreErrorNotification(getString(R.string.restore_zip_invalid_file));
-                            isRunning = false;
-
-                            return false;
+                        logger.info("Size of backup file: {}", formatFileSize(file.length()));
+                        zipFileWrapper = new ZipFileWrapper(file, password);
+                        if (!zipFileWrapper.isValidZipFile()) {
+                            logger.warn("ZIP file might be invalid, restore might fail");
                         }
                         return restore();
                     }
@@ -290,9 +295,11 @@ public class RestoreService extends Service {
                 Toast.makeText(this, R.string.restore_data_cancelled, Toast.LENGTH_LONG).show();
             }
         } else {
-            logger.debug("onStartCommand intent == null");
-
-            onFinished("Empty intent");
+            logger.warn("onStartCommand intent == null");
+            // The term "empty-intent" isn't meaningful to the user, but it is so infamous
+            // that it is known internally (to support and devs), which is why we keep it
+            // in the error message, allowing us to more easily identify it in bug reports.
+            onFinished(getString(R.string.restore_error_body) + " (error code: empty-intent)");
         }
         isRunning = false;
 
@@ -331,6 +338,7 @@ public class RestoreService extends Service {
         }
 
         notificationManagerCompat = NotificationManagerCompat.from(this);
+        activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
     }
 
     @Override
@@ -346,8 +354,27 @@ public class RestoreService extends Service {
 
     @Override
     public void onLowMemory() {
-        logger.info("onLowMemory");
-        super.onLowMemory();
+        logger.warn("onLowMemory");
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        logger.warn("onTrimMemory({})", level);
+        logMemoryStatus();
+    }
+
+    private void logMemoryStatus() {
+        if (activityManager != null) {
+            ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+            activityManager.getMemoryInfo(memoryInfo);
+            logger.info(
+                "Memory status: available={}, total={}, threshold={}, low={}",
+                formatFileSize(memoryInfo.availMem),
+                formatFileSize(memoryInfo.totalMem),
+                formatFileSize(memoryInfo.threshold),
+                memoryInfo.lowMemory
+            );
+        }
     }
 
     @Override
@@ -410,6 +437,7 @@ public class RestoreService extends Service {
             // but does not write to the database. In the second pass, the files are actually written.
             for (int nTry = 0; nTry < 2; nTry++) {
                 logger.info("Attempt {}", nTry + 1);
+                logMemoryStatus();
                 if (nTry > 0) {
                     this.writeToDb = true;
                     this.initProgress(stepSizeTotal);
@@ -447,7 +475,7 @@ public class RestoreService extends Service {
                     fileService.clearDirectory(fileService.getAppDataPath(), false);
                 }
 
-                List<FileHeader> fileHeaders = zipFile.getFileHeaders();
+                List<FileHeader> fileHeaders = zipFileWrapper.getFileHeaders();
 
                 // The restore settings file contains the data backup format version
                 this.restoreSettings = getRestoreSettings(fileHeaders);
@@ -469,7 +497,7 @@ public class RestoreService extends Service {
                 );
                 if (identityHeader != null && this.writeToDb) {
                     String identityContent;
-                    try (InputStream inputStream = zipFile.getInputStream(identityHeader)) {
+                    try (InputStream inputStream = getZipFileInputStream(identityHeader)) {
                         identityContent = IOUtils.toString(inputStream, Charset.defaultCharset());
                     }
 
@@ -520,6 +548,8 @@ public class RestoreService extends Service {
 
                 updateProgress(STEP_SIZE_GROUP_AVATARS);
 
+                // The media files are the most memory hungry, so we log the memory status before and after
+                logMemoryStatus();
                 logger.info("Restoring message media files");
                 long mediaCount = this.restoreMessageMediaFiles(fileHeaders);
                 if (mediaCount == 0) {
@@ -527,6 +557,9 @@ public class RestoreService extends Service {
                     //continue anyway!
                 } else {
                     logger.info("{} media files found", mediaCount);
+                }
+                if (writeToDb) {
+                    logMemoryStatus();
                 }
 
                 // restore all avatars
@@ -590,7 +623,7 @@ public class RestoreService extends Service {
             throw new ThreemaException(getString(R.string.invalid_backup));
         }
         try (
-            InputStream is = zipFile.getInputStream(settingsHeader);
+            InputStream is = getZipFileInputStream(settingsHeader);
             InputStreamReader inputStreamReader = new InputStreamReader(is);
             CSVReader csvReader = new CSVReader(inputStreamReader, false)
         ) {
@@ -701,7 +734,7 @@ public class RestoreService extends Service {
             logger.info("No nonce count file available in backup");
             return -1;
         }
-        try (ZipInputStream inputStream = this.zipFile.getInputStream(nonceCountFileHeader);
+        try (InputStream inputStream = getZipFileInputStream(nonceCountFileHeader);
              InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
              CSVReader csvReader = new CSVReader(inputStreamReader, true)
         ) {
@@ -747,7 +780,7 @@ public class RestoreService extends Service {
             return 0;
         }
 
-        try (ZipInputStream inputStream = this.zipFile.getInputStream(nonceFileHeader);
+        try (InputStream inputStream = getZipFileInputStream(nonceFileHeader);
              InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
              CSVReader csvReader = new CSVReader(inputStreamReader, true)
         ) {
@@ -771,13 +804,18 @@ public class RestoreService extends Service {
                             }
                         }
                     }
-                } catch (ThreemaException e) {
+                } catch (ThreemaException|NoSuchAlgorithmException|InvalidKeyException e) {
                     logger.error("Could not insert nonces", e);
                     return 0;
                 }
             }
             if (!nonceBytes.isEmpty()) {
-                success &= insertNonces(scope, nonceBytes);
+                try {
+                    success &= insertNonces(scope, nonceBytes);
+                } catch (NoSuchAlgorithmException|InvalidKeyException e) {
+                    logger.error("Could not insert remaining nonces", e);
+                    success = false;
+                }
             }
             if (success) {
                 logger.info("Restored {} {} nonces", nonceCount, scope);
@@ -792,9 +830,9 @@ public class RestoreService extends Service {
     private boolean insertNonces(
         @NonNull NonceScope scope,
         @NonNull List<byte[]> nonces
-    ) throws RestoreCanceledException {
+    ) throws RestoreCanceledException, NoSuchAlgorithmException, InvalidKeyException {
         logger.debug("Write {} nonces to database", nonces.size());
-        boolean success = nonceFactory.insertHashedNoncesJava(scope, nonces);
+        boolean success = nonceFactory.insertHashedNoncesJava(scope, nonces, userService.getIdentity());
         updateProgress(nonces.size() / NONCES_PER_STEP);
         return success;
     }
@@ -827,7 +865,7 @@ public class RestoreService extends Service {
      * progress calculation of the restore process.
      */
     private long getRestoreReactionsSteps(@NonNull FileHeader reactionCountFileHeader) throws IOException {
-        try (ZipInputStream inputStream = this.zipFile.getInputStream(reactionCountFileHeader);
+        try (InputStream inputStream = getZipFileInputStream(reactionCountFileHeader);
              InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
              CSVReader csvReader = new CSVReader(inputStreamReader, true)
         ) {
@@ -877,7 +915,7 @@ public class RestoreService extends Service {
     }
 
     private void iterateRows(@NonNull FileHeader fileHeader, ThrowingConsumer<CSVRow> rowConsumer) throws Exception {
-        try (ZipInputStream inputStream = this.zipFile.getInputStream(fileHeader);
+        try (InputStream inputStream = getZipFileInputStream(fileHeader);
              InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
              CSVReader csvReader = new CSVReader(inputStreamReader, true)
         ) {
@@ -1052,7 +1090,7 @@ public class RestoreService extends Service {
                 if (groupId != null) {
                     ch.threema.data.models.GroupModel m = groupModelRepository.getByLocalGroupDbId(groupId);
                     if (m != null) {
-                        try (InputStream inputStream = zipFile.getInputStream(fileHeader)) {
+                        try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
                             this.fileService.writeGroupAvatar(m, inputStream);
                         } catch (Exception e) {
                             //ignore, just the avatar :)
@@ -1110,12 +1148,12 @@ public class RestoreService extends Service {
 
         // process all thumbnails
         Map<String, FileHeader> thumbnailFileHeaders = new HashMap<>();
-
-        for (FileHeader fileHeader : fileHeaders) {
-            String fileName = fileHeader.getFileName();
-            if (!TestUtil.isEmptyOrNull(fileName)
-                && fileName.startsWith(thumbnailPrefix)) {
-                thumbnailFileHeaders.put(fileName, fileHeader);
+        if (writeToDb) {
+            for (FileHeader fileHeader : fileHeaders) {
+                String fileName = fileHeader.getFileName();
+                if (!TestUtil.isEmptyOrNull(fileName) && fileName.startsWith(thumbnailPrefix)) {
+                    thumbnailFileHeaders.put(fileName, fileHeader);
+                }
             }
         }
 
@@ -1140,31 +1178,34 @@ public class RestoreService extends Service {
                             // restore thumbnail
                             FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
                             if (thumbnailFileHeader != null) {
-                                logger.info("Restoring thumbnail from file");
                                 long fileSize = thumbnailFileHeader.getUncompressedSize();
+                                logger.info("Restoring thumbnail from file ({})", formatFileSize(fileSize));
                                 if (fileSize < MAX_THUMBNAIL_SIZE_BYTES) {
-                                    try (InputStream inputStream = zipFile.getInputStream(thumbnailFileHeader)) {
+                                    try (InputStream inputStream = getZipFileInputStream(thumbnailFileHeader)) {
                                         this.fileService.saveThumbnail(model, inputStream);
                                     }
                                 }
                             }
                         } else {
-                            logger.info("Restoring media from file, with message contents type = {}", model.getMessageContentsType());
-                            try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
+                            logger.info(
+                                "Restoring media from file, with message contents type = {}, {}",
+                                model.getMessageContentsType(),
+                                formatFileSize(fileHeader.getUncompressedSize())
+                            );
+                            try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
                                 this.fileService.writeConversationMedia(model, inputStream);
                             }
 
-                            // TODO(ANDR-3737): The following check is insufficient and leads to false positives,
-                            //  e.g. regular PDFs or text files are also passed through the thumbnail generation, even though that will
-                            //  always fails. It also does not handle video thumbnails properly.
-                            if (MessageUtil.canHaveThumbnailFile(model)) {
-                                // check if a thumbnail file is in backup
+                            // TODO(ANDR-3737): The following check is insufficient and leads to false positives and false negatives,
+                            //  e.g. video files are not handled properly
+                            if (MessageUtil.canHaveThumbnailFile(model) && model.getMessageContentsType() == MessageContentsType.IMAGE) {
+                                    // check if a thumbnail file is in backup
                                 FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
 
                                 // if no thumbnail file exist in backup, generate one
                                 if (thumbnailFileHeader == null) {
-                                    logger.info("Generating thumbnail for media file ");
-                                    try (ResettableInputStream inputStream = new ResettableInputStream(() -> zipFile.getInputStream(fileHeader))) {
+                                    logger.info("Generating thumbnail for media file");
+                                    try (ResettableInputStream inputStream = new ResettableInputStream(() -> getZipFileInputStream(fileHeader))) {
                                         fileService.writeConversationMediaThumbnail(model, inputStream);
                                     } catch (Exception e) {
                                         logger.warn("Failed to generate thumbnail for media file, skipping", e);
@@ -1228,7 +1269,7 @@ public class RestoreService extends Service {
         }
 
         // Set contact avatar
-        try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
+        try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
             return fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), inputStream);
         } catch (Exception e) {
             logger.error("Exception while writing contact avatar", e);
@@ -1254,7 +1295,7 @@ public class RestoreService extends Service {
         }
 
         // Set contact profile picture
-        try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
+        try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
             return fileService.writeContactDefinedProfilePicture(contactModel.getIdentity(), inputStream);
         } catch (Exception e) {
             logger.error("Exception while writing contact profile picture", e);
@@ -2100,7 +2141,7 @@ public class RestoreService extends Service {
         @NonNull FileHeader fileHeader,
         @NonNull ProcessCsvFile processCsvFile
     ) throws IOException, RestoreCanceledException {
-        try (ZipInputStream inputStream = this.zipFile.getInputStream(fileHeader);
+        try (InputStream inputStream = getZipFileInputStream(fileHeader);
              InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
              CSVReader csvReader = new CSVReader(inputStreamReader, true)) {
             CSVRow row;
@@ -2109,6 +2150,14 @@ public class RestoreService extends Service {
             }
         }
         return true;
+    }
+
+    private InputStream getZipFileInputStream(FileHeader fileHeader) {
+        return zipFileWrapper.getInputStream(fileHeader);
+    }
+
+    private String formatFileSize(long sizeBytes) {
+        return Formatter.formatFileSize(this, sizeBytes);
     }
 
     private void initProgress(long steps) {

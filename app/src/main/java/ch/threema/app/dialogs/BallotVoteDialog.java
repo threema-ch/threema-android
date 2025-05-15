@@ -60,6 +60,8 @@ import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class BallotVoteDialog extends ThreemaDialogFragment {
     private static final Logger logger = LoggingUtil.getThreemaLogger("BallotVoteDialog");
 
@@ -139,6 +141,7 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ListenerManager.ballotListeners.add(this.ballotListener);
         ListenerManager.ballotVoteListeners.add(this.ballotVoteListener);

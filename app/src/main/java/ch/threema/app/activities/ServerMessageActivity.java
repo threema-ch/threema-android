@@ -41,6 +41,8 @@ import ch.threema.app.ui.ServerMessageViewModel;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class ServerMessageActivity extends ThreemaActivity {
     private final static Logger logger = LoggingUtil.getThreemaLogger("ServerMessageActivity");
 
@@ -55,6 +57,7 @@ public class ServerMessageActivity extends ThreemaActivity {
         ConfigUtils.configureSystemBars(this);
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

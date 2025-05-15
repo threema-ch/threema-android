@@ -1713,6 +1713,10 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="problemsolver_title_app_battery_usgae_optimized">Zużycie baterii przez aplikację ustawione na \"zoptymalizowane\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikacja nie ma uprawnień do utrzymywania stałego połączenia z serwerami, które jest wymagane do działania ${app_name_short} Push. Nie będziesz informowany o nowych wiadomościach, gdy aplikacja działa w tle. Aby to naprawić, dotknij \"Wykorzystanie baterii przez aplikację\" i wybierz \"Bez ograniczeń\".</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Ta wersja Androida nie będzie wkrótce obsługiwana</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Używasz urządzenia z systemem Android, które nie otrzymuje aktualizacji oprogramowania. Ze względów bezpieczeństwa ta wersja Androida nie będzie już wkrótce obsługiwana przez Threema.</string>
     <string name="problemsolver_to_settings">Do ustawień</string>
     <string name="prefs_advanced_options">Opcje zaawansowane</string>
     <string name="push_service">Usługa push</string>
@@ -1780,16 +1784,13 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="select_emoji_content_description">Wybierz emoji do dodania z narzędzia do ich wybierania</string>
     <string name="group_emoji_reactions_partially_supported">Niektórzy nie zobaczą Twoich reakcji ze względu na używanie przestarzałej wersji.</string>
     <string name="tab_emoji_reactions_overview_content_description">Reakcje (%1$s) zawierające %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Osoba z listy kontaktów posiadająca nowszą wersję aplikacji wysłała Ci reakcje w formie emoji. Używana przez Ciebie wersja nie obsługuje na razie przesyłania takich reakcji, poza 👍 i 👎.</string>
     <string name="reaction_cannot_be_displayed">Nie można wyświetlić tej reakcji. Nieznane emoji.</string>
     <string name="emoji_reactions_unavailable_title">Reakcje w formie emoji są niedostępne</string>
-    <string name="emoji_reactions_sending_not_supported_body">Używana przez Ciebie wersja aplikacji nie obsługuje na razie przesyłania reakcji w formie emoji.</string>
     <string name="emoji_reactions_unavailable_body">%1$s używa wersji aplikacji, która na razie nie obsługuje tej funkcji.</string>
     <string name="emoji_reactions_unavailable_group_body">Nie możesz zareagować na tę wiadomość, używając emoji, ponieważ żaden z członków grupy nie posiada wersji aplikacji, która obsługuje tę funkcję.</string>
     <string name="emoji_reactions_cannot_remove_title">Usuwanie reakcji jest niedostępne</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s używa wersji aplikacji, która na razie nie obsługuje usuwania reakcji w formie emoji ani wysyłania więcej niż jednej takiej reakcji. Nadal możesz zastąpić 👍 emoji 👎 lub na odwrót.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Żaden z członków grupy nie używa wersji aplikacji, która obsługuje usuwanie reakcji w formie emoji lub wysyłanie więcej niż jednej takiej reakcji. Możesz zastąpić 👍 emoji 👎 lub na odwrót.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Używana przez Ciebie wersja aplikacji nie obsługuje na razie usuwania reakcji w formie emoji ani wysyłania więcej niż jednej takiej reakcji.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">Ta wiadomość zawiera reakcje w formie emoji. Aby wyświetlić wszystkie, na czacie stuknij i przytrzymaj dowolny dymek z emoji.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1815,7 +1816,11 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="device_linking_error_unknown_qr_code_title">Nieznany kod QR</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Upewnij się, że używasz odpowiedniej aplikacji z [naszej strony internetowej].</string>
+    <string name="device_linking_error_unknown_qr_code_body">To nie wygląda jak kod QR z aplikacji ${app_name_desktop} 2.0 na komputer (wersji beta). Pobierz z [naszej strony internetowej] najnowszą wersję beta desktopowej aplikacji i zeskanuj kod QR, który zostanie wyświetlony, gdy otworzysz aplikację.</string>
+    <string name="device_linking_error_web_qr_code_title">To nie jest prawidłowy kod QR</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Ten kod QR należy do klienta webowego aplikacji ${app_name_short}.\nPobierz z [naszej strony internetowej] najnowszą wersję aplikacji ${app_name_desktop} 2.0 na komputer (wersji beta) i zeskanuj kod QR, który zostanie wyświetlony, gdy otworzysz aplikację.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Niekompatybilna wersja</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Na obu urządzeniach zainstaluj najnowszą wersję aplikacji ${app_name}.</string>

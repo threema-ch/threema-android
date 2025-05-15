@@ -114,6 +114,7 @@ import ch.threema.logging.backend.DebugLogFileBackend;
 
 import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_AUTOSTART;
 import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_POWERMANAGER;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment implements GenericAlertDialog.DialogClickListener, SharedPreferences.OnSharedPreferenceChangeListener, TextEntryDialog.TextEntryDialogClickListener, CancelableHorizontalProgressDialog.ProgressDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsAdvancedOptionsFragment");
@@ -190,6 +191,12 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
             }
         }
     });
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     protected void initializePreferences() {

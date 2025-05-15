@@ -28,7 +28,6 @@ import ch.threema.app.R
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.crypto.HashedNonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
@@ -333,19 +332,19 @@ object ContentCreator {
                 return@launch
             }
             withGenericProgress(fragmentManager, "Generate random nonces") {
-                createNonces(NonceScope.CSP, serviceManager.nonceFactory)
-                createNonces(NonceScope.D2D, serviceManager.nonceFactory)
+                createNonces(NonceScope.CSP, serviceManager.nonceFactory, serviceManager.identityStore.identity)
+                createNonces(NonceScope.D2D, serviceManager.nonceFactory, serviceManager.identityStore.identity)
             }
         }
     }
 
     @WorkerThread
-    private fun createNonces(scope: NonceScope, nonceFactory: NonceFactory) {
+    private fun createNonces(scope: NonceScope, nonceFactory: NonceFactory, identity: String) {
         logger.info("Generate random nonces for scope {}", scope)
         val nonces = (0 until AMOUNT_OF_NONCES).asSequence()
             .map { nonceFactory.next(scope) }
-            // We skip hashing of nonces for faster generation of test data
-            .map { HashedNonce(it.bytes) }.toList()
+            .map { it.hashNonce(identity) }
+            .toList()
         val success = nonceFactory.insertHashedNonces(scope, nonces)
         logger.info("Generate {} nonces success={}", nonces.size, success)
     }

@@ -28,6 +28,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.R
+import ch.threema.app.ThreemaApplication
 import ch.threema.app.ThreemaApplication.requireServiceManager
 import ch.threema.app.activities.StateFlowViewModel
 import ch.threema.app.multidevice.unlinking.DropDeviceResult
@@ -35,6 +36,7 @@ import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.stores.PreferenceStoreInterface
 import ch.threema.app.tasks.DeactivateMultiDeviceIfAloneTask
 import ch.threema.app.tasks.TaskCreator
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.DeviceId
 import kotlinx.coroutines.Job
@@ -43,6 +45,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -55,19 +58,20 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
     private val preferenceStore: PreferenceStoreInterface by lazy { serviceManager.preferenceStore }
 
     private val _state = MutableStateFlow<LinkedDevicesUiState>(LinkedDevicesUiState.Initial)
-    val state: StateFlow<LinkedDevicesUiState> =
-        _state.stateInViewModel(initialValue = LinkedDevicesUiState.Initial)
+    val state: StateFlow<LinkedDevicesUiState> = _state.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.stateInViewModel(initialValue = false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val isMultiDeviceEnabled = MutableStateFlow(ConfigUtils.isMultiDeviceEnabled(ThreemaApplication.getAppContext()))
 
     val isLinkDeviceButtonEnabled: StateFlow<Boolean> =
-        combine(state, isLoading) { state: LinkedDevicesUiState, isLoading: Boolean ->
-            when {
-                isLoading -> false
-                else -> state is LinkedDevicesUiState.NoDevices || (state is LinkedDevicesUiState.Devices && state.hasFreeSlotsInDeviceGroup)
-            }
-        }.stateInViewModel(initialValue = false)
+        combine(isMultiDeviceEnabled, state, isLoading) { isMultiDeviceEnabled, state, isLoading ->
+            isMultiDeviceEnabled &&
+                !isLoading &&
+                (state is LinkedDevicesUiState.NoDevices || (state is LinkedDevicesUiState.Devices && state.hasFreeSlotsInDeviceGroup))
+        }
+            .stateInViewModel(initialValue = false)
 
     private val _onDropDeviceFailed: MutableSharedFlow<Unit> = MutableSharedFlow()
     val onDropDeviceFailed: SharedFlow<Unit> = _onDropDeviceFailed.asSharedFlow()
@@ -85,6 +89,10 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
         } else {
             _state.update { LinkedDevicesUiState.NoDevices }
         }
+    }
+
+    fun updateLinkDeviceButtonEnabled() {
+        isMultiDeviceEnabled.value = ConfigUtils.isMultiDeviceEnabled(ThreemaApplication.getAppContext())
     }
 
     // TODO(ANDR-2758): Handle the failure case better then emitting empty list

@@ -36,13 +36,24 @@ class NonceFactoryTest {
     fun testNext() {
         val nonceStoreMock = mockk<NonceStore>(relaxed = true)
 
+        val nonce = Nonce(
+            byteArrayOf(
+                0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                0x01, 0x01, 0x01, 0x01,
+            ),
+        )
+
+        val nonceProvider = TestNonceProvider()
+        nonceProvider.addNextNonces(listOf(nonce.bytes))
+
         // Store always return true
-        every { nonceStoreMock.store(any<NonceScope>(), any<Nonce>()) } returns true
-        val factory = NonceFactory(nonceStoreMock)
+        every { nonceStoreMock.store(any<NonceScope>(), nonce) } returns true
+        val factory = NonceFactory(nonceStoreMock, nonceProvider)
         val result: Nonce = factory.next(NonceScope.CSP)
 
         // Check if uniqueness is verified
-        verify(exactly = 1) { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) }
+        verify(exactly = 1) { nonceStoreMock.exists(any<NonceScope>(), nonce) }
 
         // Verify the result
         assertEquals(24, result.bytes.size)
@@ -65,16 +76,15 @@ class NonceFactoryTest {
         nonceProvider.addNextNonces(listOf(existingNonce, newNonce))
 
         val nonceStoreMock = mockk<NonceStore>()
-        every { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) } answers {
-            val nonce = secondArg<ByteArray>()
-            nonce.contentEquals(existingNonce)
-        }
+        every { nonceStoreMock.exists(any<NonceScope>(), Nonce(existingNonce)) } returns true
+        every { nonceStoreMock.exists(any<NonceScope>(), Nonce(newNonce)) } returns false
 
         val factory = NonceFactory(nonceStoreMock, nonceProvider)
         val result: Nonce = factory.next(NonceScope.CSP)
 
         // Check if uniqueness is verified twice (because the first nonce already existed)
-        verify(exactly = 2) { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) }
+        verify(exactly = 1) { nonceStoreMock.exists(any<NonceScope>(), Nonce(existingNonce)) }
+        verify(exactly = 1) { nonceStoreMock.exists(any<NonceScope>(), Nonce(newNonce)) }
 
         // Verify the result
         assertEquals(24, result.bytes.size)
@@ -85,9 +95,9 @@ class NonceFactoryTest {
         val nonceStoreMock = mockk<NonceStore>(relaxed = true)
 
         val factory = NonceFactory(nonceStoreMock)
-        factory.next(NonceScope.CSP)
+        val createdNonce = factory.next(NonceScope.CSP)
 
-        verify(exactly = 0) { nonceStoreMock.store(any<NonceScope>(), any<Nonce>()) }
+        verify(exactly = 0) { nonceStoreMock.store(any<NonceScope>(), createdNonce) }
     }
 
     @Test
@@ -102,7 +112,7 @@ class NonceFactoryTest {
 
         val nonceStoreMock = mockk<NonceStore>()
 
-        every { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) } answers {
+        every { nonceStoreMock.exists(any<NonceScope>(), existingNonce) } answers {
             val nonce = secondArg<ByteArray>()
             nonce.contentEquals(existingNonce.bytes)
         }
@@ -110,7 +120,7 @@ class NonceFactoryTest {
         val factory = NonceFactory(nonceStoreMock)
         assertTrue(factory.exists(NonceScope.CSP, existingNonce))
 
-        every { nonceStoreMock.exists(any<NonceScope>(), any<Nonce>()) } answers {
+        every { nonceStoreMock.exists(any<NonceScope>(), existingNonce) } answers {
             val nonce = secondArg<ByteArray>()
             !nonce.contentEquals(existingNonce.bytes)
         }

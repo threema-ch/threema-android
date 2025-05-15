@@ -34,6 +34,8 @@ import android.widget.TextView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import org.slf4j.Logger;
+
 import java.text.NumberFormat;
 
 import androidx.annotation.NonNull;
@@ -42,8 +44,12 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CancelableHorizontalProgressDialog");
     private ProgressDialogClickListener callback;
     private Activity activity;
     private DialogInterface.OnClickListener listener;
@@ -112,6 +118,7 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         this.mProgressPercentFormat = NumberFormat.getPercentInstance();
         this.mProgressPercentFormat.setMaximumFractionDigits(0);

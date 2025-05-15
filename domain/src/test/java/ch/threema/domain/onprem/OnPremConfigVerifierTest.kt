@@ -27,11 +27,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class OnPremConfigVerifierTest {
+
     @Test
     fun `verify valid config`() {
         val verifier = OnPremConfigVerifier(arrayOf(OnPremConfigTestData.PUBLIC_KEY))
 
-        val obj = verifier.verify(OnPremConfigTestData.TEST_GOOD_OPPF)
+        val obj = verifier.verify(OnPremConfigTestData.goodOppf)
 
         assertEquals("1.0", obj.getString("version"))
     }
@@ -39,11 +40,9 @@ class OnPremConfigVerifierTest {
     @Test
     fun `invalid signature`() {
         val verifier = OnPremConfigVerifier(arrayOf(OnPremConfigTestData.PUBLIC_KEY))
-        // Create a damaged signature by flipping a character
-        val badOppf = OnPremConfigTestData.TEST_GOOD_OPPF.replace("initrode", "injtrode")
 
         assertFailsWith<ThreemaException> {
-            verifier.verify(badOppf)
+            verifier.verify(OnPremConfigTestData.badOppf)
         }
     }
 
@@ -52,7 +51,7 @@ class OnPremConfigVerifierTest {
         val verifier = OnPremConfigVerifier(arrayOf(OnPremConfigTestData.WRONG_PUBLIC_KEY))
 
         assertFailsWith<ThreemaException> {
-            verifier.verify(OnPremConfigTestData.TEST_GOOD_OPPF)
+            verifier.verify(OnPremConfigTestData.goodOppf)
         }
     }
 

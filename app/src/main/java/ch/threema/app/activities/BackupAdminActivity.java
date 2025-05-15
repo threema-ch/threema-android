@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -61,6 +62,7 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         isUnlocked = false;
         safeConfig = ThreemaSafeMDMConfig.getInstance();

@@ -24,12 +24,12 @@ package ch.threema.domain.protocol.urls
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class MapPoiUrlTest {
+class MapPoiAroundUrlTest {
     @Test
     fun `placeholders are replaced`() {
-        val mapPoiUrl = MapPoiUrl("https://poi.threema.ch/around/{latitude}/{longitude}/{radius}/")
+        val mapPoiAroundUrl = MapPoiAroundUrl("https://poi.threema.ch/around/{latitude}/{longitude}/{radius}/")
 
-        val url = mapPoiUrl.get(latitude = 47.220087, longitude = 8.808609, radius = 100)
+        val url = mapPoiAroundUrl.get(latitude = 47.220087, longitude = 8.808609, radius = 100)
 
         assertEquals("https://poi.threema.ch/around/47.220087/8.808609/100/", url)
     }

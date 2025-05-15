@@ -23,6 +23,7 @@ package ch.threema.app.locationpicker;
 
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -107,9 +108,6 @@ public class LocationPickerActivity extends ThreemaActivity implements
     private static final int REQUEST_CODE_PLACES = 22228;
 
     private static final int APPBAR_HEIGHT_PERCENT = 68;
-
-    // URLs for Threema Map server
-    public static final String MAP_STYLE_URL = "https://map.threema.ch/styles/streets/style.json";
 
     public static final int POI_RADIUS = 750; // meters
     private static final int MAX_POI_COUNT = 30;
@@ -207,6 +205,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ConfigUtils.configureSystemBars(this);
 
@@ -335,9 +334,22 @@ public class LocationPickerActivity extends ThreemaActivity implements
     }
 
     private void initMap() {
+        String mapStyleUrl;
+        try {
+            var serviceManager = ThreemaApplication.requireServiceManager();
+            mapStyleUrl = serviceManager.getServerAddressProviderService().getServerAddressProvider().getMapStyleUrl();
+            if (mapStyleUrl == null) {
+                finish();
+                return;
+            }
+        } catch (Exception e) {
+            logger.info("Failed to load map style", e);
+            finish();
+            return;
+        }
         mapView.getMapAsync(MapLibreMap1 -> {
             MapLibreMap = MapLibreMap1;
-            MapLibreMap.setStyle(new Style.Builder().fromUri(MAP_STYLE_URL), style -> {
+            MapLibreMap.setStyle(new Style.Builder().fromUri(mapStyleUrl), style -> {
                 // Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
                 setupLocationComponent(style);
                 // Initialize map to world view (gets changed as soon as current location is available)

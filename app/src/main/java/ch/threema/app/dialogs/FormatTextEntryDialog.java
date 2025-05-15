@@ -32,6 +32,8 @@ import android.widget.Button;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
@@ -40,8 +42,12 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class FormatTextEntryDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("FormatTextEntryDialog");
 
     public static final String ARG_TITLE = "title";
     public static final String ARG_MESSAGE = "message";
@@ -77,6 +83,12 @@ public class FormatTextEntryDialog extends ThreemaDialogFragment {
         void onYes(String text);
 
         void onNo();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @NonNull

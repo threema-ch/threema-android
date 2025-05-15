@@ -35,6 +35,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.DropDownPreference;
@@ -65,6 +66,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SettingsSecurityFragment extends ThreemaPreferenceFragment implements PasswordEntryDialog.PasswordEntryDialogClickListener, GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsSecurityFragment");
@@ -87,6 +89,12 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     private static final String DIALOG_TAG_PASSWORD_REMINDER_PASSPHRASE = "eminpass";
 
     private static final int ID_ENABLE_SYSTEM_LOCK = 7780;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     protected void initializePreferences() {
@@ -157,7 +165,12 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                 switch ((String) newValue) {
                     case LockingMech_NONE:
                         if (conversationCategoryService.hasPrivateChats()) {
-                            GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.hide_chat, R.string.access_protection_cannot_be_removed, 0, R.string.cancel);
+                            GenericAlertDialog dialog = GenericAlertDialog.newInstance(
+                                R.string.hide_chat,
+                                R.string.access_protection_cannot_be_removed,
+                                R.string.cancel,
+                                0
+                            );
                             dialog.setTargetFragment(SettingsSecurityFragment.this, 0);
                             dialog.show(getFragmentManager(), ID_UNHIDE_CHATS_CONFIRM);
                         } else {

@@ -1674,6 +1674,8 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Выкарыстанне акумулятара усталявана як «аптымізаванае»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Праграме не дазваляецца падтрымліваць пастаяннае злучэнне з серверамі, якое патрабуецца для працы ${app_name_short} Push.  Вы не будзеце атрымліваць інфармацыю аб новых паведамленнях, калі праграма працуе ў фонавым рэжыме.  Каб выправіць гэта, націсніце «Выкарыстанне батарэі праграмы» і выберыце «Без абмежаванняў».</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
     <string name="problemsolver_to_settings">Да налад</string>
     <string name="prefs_advanced_options">Дадатковыя параметры</string>
     <string name="push_service">Паслуга Push</string>
@@ -1703,6 +1705,9 @@
     <string name="incoming_calls">Уваходны званкі</string>
     <string name="group_chats">Суполкі</string>
     <string name="edit_history_file_no_caption">Без подпісу</string>
+    <string name="device_linking_cancel_dialog_continue">Працягнуць</string>
+    <string name="md_drop_device_dialog_close_button">Закрыць</string>
+    <string name="md_drop_device_failed_dialog_button_close">Закрыць</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">згода адпраўлена</string>
     <string name="cd_dec_icon">нязгода адпраўлена</string>
@@ -1724,7 +1729,10 @@
     <!-- Screen reader text on a cross icon button to close a hint banner -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linking_error_screen_close">Закрыць</string>
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <plurals name="contacts_counter_label">

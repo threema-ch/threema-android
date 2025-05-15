@@ -1,0 +1,39 @@
+{
+  "license": {
+    "expires": "2099-12-31",
+    "count": 100,
+    "id": "DUMMY-00000001"
+  },
+  "blob": {
+    "uploadUrl": "https://blob.threemaonprem.initrode.com/blob/upload",
+    "downloadUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}",
+    "doneUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done"
+  },
+  "web": {
+    "url": "https://web.threemaonprem.initrode.com/"
+  },
+  "chat": {
+    "hostname": "chat.threemaonprem.initrode.com",
+    "publicKey": "r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=",
+    "ports": [
+      5222,
+      443
+    ]
+  },
+  "work": {
+    "url": "https://work.threemaonprem.initrode.com/"
+  },
+  "signatureKey": "jae1lgwR3W7YyKiGQlsbdqObG13FR1EvjVci2aDNIi8=",
+  "safe": {
+    "url": "https://safe.threemaonprem.initrode.com/"
+  },
+  "refresh": 86400,
+  "avatar": {
+    "url": "https://avatar.threemaonprem.initrode.com/"
+  },
+  "version": "1.0",
+  "directory": {
+    "url": "https://dir.threemaonprem.initrode.com/directory"
+  }
+}
+vpme+JwL0+vDDf9SH8vkuyAIjjr4bBweKkGY3rvJeCF+932vxIvFKJcJvRHhgA7VYb/abplIt/8hg/7+ow6QCQ==

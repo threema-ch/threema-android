@@ -1709,23 +1709,12 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Nullable
     @Override
     public Instant getLastMultiDeviceGroupCheckTimestamp() {
-        final long utcMillisOrZero = this.preferenceStore.getLong(
-            this.getKeyName(R.string.preferences__last_multi_device_group_check_timestamp)
-        );
-        if (utcMillisOrZero > 0L) {
-            return Instant.ofEpochMilli(utcMillisOrZero);
-        } else {
-            return null;
-        }
+        return preferenceStore.getInstant(getKeyName(R.string.preferences__last_multi_device_group_check_timestamp));
     }
 
     @Override
     public void setLastMultiDeviceGroupCheckTimestamp(final @NonNull Instant timestamp) {
-        final long utcMillis = timestamp.toEpochMilli();
-        this.preferenceStore.save(
-            this.getKeyName(R.string.preferences__last_multi_device_group_check_timestamp),
-            utcMillis
-        );
+        preferenceStore.save(getKeyName(R.string.preferences__last_multi_device_group_check_timestamp), timestamp);
     }
 
     private boolean changeRequired(@NonNull String keyName, boolean value) {
@@ -1736,5 +1725,16 @@ public class PreferenceServiceImpl implements PreferenceService {
         if (multiDeviceManager.isMultiDeviceActive() && triggerSource == TriggerSource.LOCAL) {
             taskManager.schedule(task);
         }
+    }
+
+    @Nullable
+    @Override
+    public Instant getLastDeprecatedAndroidVersionWarningDismissed() {
+        return preferenceStore.getInstant(getKeyName(R.string.preferences__last_deprecated_android_warning_dimissed_timestamp));
+    }
+
+    @Override
+    public void setLastDeprecatedAndroidVersionWarningDismissed(@NonNull Instant timestamp) {
+        preferenceStore.save(getKeyName(R.string.preferences__last_deprecated_android_warning_dimissed_timestamp), timestamp);
     }
 }

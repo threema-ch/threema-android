@@ -32,6 +32,7 @@ import ch.threema.app.activities.StateFlowViewModel
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingInvalidQrCodeException
+import ch.threema.app.multidevice.linking.DeviceLinkingScannedWebQrCodeException
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.multidevice.linking.DeviceLinkingUnsupportedProtocolException
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceLinkingProgressFragment
@@ -131,6 +132,7 @@ class LinkNewDeviceWizardViewModel : StateFlowViewModel() {
                         cancelAllJobs()
                         val linkingResult = when (deviceLinkingStatus.throwable) {
                             is DeviceLinkingInvalidQrCodeException -> LinkingResult.Failure.UnknownQrCode
+                            is DeviceLinkingScannedWebQrCodeException -> LinkingResult.Failure.ThreemaWebQrCode
                             is DeviceLinkingUnsupportedProtocolException -> LinkingResult.Failure.OldRendezvousProtocolVersion
                             is UnknownHostException -> LinkingResult.Failure.GenericNetwork
                             else -> LinkingResult.Failure.Generic

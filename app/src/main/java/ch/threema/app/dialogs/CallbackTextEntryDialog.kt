@@ -27,9 +27,17 @@ import android.view.View
 import android.widget.EditText
 import ch.threema.app.R
 import ch.threema.app.utils.EditTextUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+private val logger = LoggingUtil.getThreemaLogger("CallbackTextEntryDialog")
+
 class CallbackTextEntryDialog : ThreemaDialogFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var title: String? = null
     private var initialText: String? = null
     private var callback: OnButtonClickedCallback? = null

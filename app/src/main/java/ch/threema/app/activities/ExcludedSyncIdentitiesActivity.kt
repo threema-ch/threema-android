@@ -23,8 +23,16 @@ package ch.threema.app.activities
 
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("ExcludedSyncIdentitiesActivity")
 
 class ExcludedSyncIdentitiesActivity : IdentityListActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val identityList: IdentityList? by lazy {
         val listService = ThreemaApplication.getServiceManager()?.excludedSyncIdentitiesService
             ?: return@lazy null

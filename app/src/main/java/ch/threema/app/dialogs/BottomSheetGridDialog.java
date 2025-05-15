@@ -23,12 +23,19 @@ package ch.threema.app.dialogs;
 
 import android.os.Bundle;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 
 import androidx.annotation.StringRes;
 import ch.threema.app.ui.BottomSheetItem;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BottomSheetGridDialog extends BottomSheetAbstractDialog {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BottomSheetGridDialog");
+
     public static BottomSheetGridDialog newInstance(@StringRes int title, ArrayList<BottomSheetItem> items) {
         BottomSheetGridDialog dialog = new BottomSheetGridDialog();
         Bundle args = new Bundle();
@@ -36,6 +43,12 @@ public class BottomSheetGridDialog extends BottomSheetAbstractDialog {
         args.putParcelableArrayList("items", items);
         dialog.setArguments(args);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     /* Hack to prevent TransactionTooLargeException when hosting activity goes into the background */

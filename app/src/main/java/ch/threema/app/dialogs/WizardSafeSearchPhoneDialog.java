@@ -32,6 +32,8 @@ import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -47,8 +49,12 @@ import ch.threema.app.services.LocaleService;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardSafeSearchPhoneDialog extends DialogFragment implements SelectorDialog.SelectorDialogClickListener {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardSafeSearchPhoneDialog");
 
     private static final String DIALOG_TAG_PROGRESS = "pro";
     private static final String DIALOG_TAG_SELECT_ID = "se";
@@ -76,6 +82,7 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         try {
             callback = (WizardSafeSearchPhoneDialogCallback) getTargetFragment();

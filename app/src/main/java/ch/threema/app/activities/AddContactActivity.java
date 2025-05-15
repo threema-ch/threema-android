@@ -68,8 +68,8 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
-import ch.threema.app.webclient.services.QRCodeParser;
-import ch.threema.app.webclient.services.QRCodeParserImpl;
+import ch.threema.app.webclient.services.WebSessionQRCodeParser;
+import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -77,6 +77,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ID;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.domain.protocol.csp.ProtocolDefines.IDENTITY_LEN;
 
 public class AddContactActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener, NewContactDialog.NewContactDialogClickListener {
@@ -98,6 +99,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
     public void onCreate(Bundle savedInstanceState) {
+        logScreenVisibility(this, logger);
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
         if (serviceManager == null) {
@@ -224,6 +226,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     @SuppressLint("StaticFieldLeak")
     private void addContactByQRResult(final QRCodeService.QRCodeContentResult qrResult) {
+        logger.info("Adding contact from QR code");
         if (qrResult.getExpirationDate() != null
             && qrResult.getExpirationDate().before(new Date())) {
             GenericAlertDialog.newInstance(R.string.title_adduser, getString(R.string.expired_barcode), R.string.ok, 0).show(getSupportFragmentManager(), "ex");
@@ -370,13 +373,13 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
                 try {
                     byte[] base64Payload = Base64.decode(payload);
                     if (base64Payload != null) {
-                        final QRCodeParser webClientQRCodeParser = new QRCodeParserImpl();
+                        final WebSessionQRCodeParser webClientQRCodeParser = new WebSessionQRCodeParserImpl();
                         webClientQRCodeParser.parse(base64Payload); // throws if QR is not valid
                         // it was a valid web client qr code, exit method
                         startWebClientByQRResult(base64Payload);
                         return;
                     }
-                } catch (IOException | QRCodeParser.InvalidQrCodeException x) {
+                } catch (IOException | WebSessionQRCodeParser.InvalidQrCodeException x) {
                     // not a valid base64 or web client payload
                     // ignore and continue
                 }
@@ -436,6 +439,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     @Override
     public void onScanButtonClick(String tag) {
+        logger.info("Scan button clicked");
         scanQR();
     }
 }

@@ -44,6 +44,8 @@ import ch.threema.app.R;
 import ch.threema.app.adapters.StickerSelectorAdapter;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class StickerSelectorActivity extends ThreemaToolbarActivity implements LoaderManager.LoaderCallbacks<String[]> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("StickerSelectorActivity");
 
@@ -55,6 +57,7 @@ public class StickerSelectorActivity extends ThreemaToolbarActivity implements L
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         gridView = findViewById(R.id.grid_view);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

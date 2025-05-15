@@ -121,6 +121,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ContactDetailActivity extends ThreemaToolbarActivity
     implements LifecycleOwner,
@@ -308,6 +309,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         this.identity = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
         if (this.identity == null || this.identity.length() == 0) {

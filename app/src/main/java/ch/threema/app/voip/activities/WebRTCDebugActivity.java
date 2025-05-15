@@ -77,6 +77,8 @@ import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.protobuf.callsignaling.O2OCall;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 /**
  * An activity to debug problems with WebRTC (in the context of Threema Calls).
  */
@@ -126,6 +128,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         logger.trace("onCreate");
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         // Get services
         final ServiceManager serviceManager = ThreemaApplication.getServiceManager();

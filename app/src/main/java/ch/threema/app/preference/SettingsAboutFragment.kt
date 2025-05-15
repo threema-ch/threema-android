@@ -45,6 +45,10 @@ private val logger = LoggingUtil.getThreemaLogger("SettingsAboutFragment")
 
 @Suppress("unused")
 class SettingsAboutFragment : ThreemaPreferenceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var aboutCounter = 0
 
     private val preferenceService: PreferenceService = requirePreferenceService()

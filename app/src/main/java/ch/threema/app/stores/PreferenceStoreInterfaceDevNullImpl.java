@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -132,6 +133,11 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     }
 
     @Override
+    public void save(@NonNull String key, @Nullable Instant instant) {
+
+    }
+
+    @Override
     public void save(String key, Long thing) {
 
     }
@@ -199,6 +205,12 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
     @Override
     public Long getDateAsLong(String key) {
         return 0L;
+    }
+
+    @Nullable
+    @Override
+    public Instant getInstant(@NonNull String key) {
+        return null;
     }
 
     @Override

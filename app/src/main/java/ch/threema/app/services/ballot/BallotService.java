@@ -192,6 +192,7 @@ public interface BallotService {
     /**
      * get my votes
      */
+    @NonNull
     List<BallotVoteModel> getMyVotes(Integer ballotModelId) throws NotAllowedException;
 
     /**

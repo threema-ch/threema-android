@@ -31,8 +31,16 @@ import ch.threema.app.activities.StorageManagementActivity
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.services.MessageServiceImpl
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("SettingsMediaFragment")
 
 class SettingsMediaFragment : ThreemaPreferenceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var saveMediaPreference: Preference? = null
 
     private val preferenceService = requirePreferenceService()

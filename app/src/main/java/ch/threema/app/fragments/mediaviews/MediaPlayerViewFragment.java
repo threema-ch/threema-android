@@ -21,6 +21,7 @@
 
 package ch.threema.app.fragments.mediaviews;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.app.utils.StringConversionUtil.getDurationString;
 
 import android.annotation.SuppressLint;
@@ -74,6 +75,12 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 
     public MediaPlayerViewFragment() {
         super();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

@@ -74,6 +74,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationManagerCompat;
@@ -115,6 +116,7 @@ import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.TextExtensionsKt;
 import ch.threema.app.utils.ThumbnailUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.transcoder.VideoConfig;
@@ -2952,69 +2954,71 @@ public class MessageServiceImpl implements MessageService {
             return new MessageString(context.getString(R.string.new_messages_locked));
         }
 
+        if (messageModel.isDeleted()) {
+            return new MessageString(context.getString(R.string.message_was_deleted));
+        }
+
         switch (messageModel.getType()) {
             case TEXT:
-                String messageText, rawMessageText;
-
-                messageText = QuoteUtil.getMessageBody(messageModel, false);
-                rawMessageText = prefix + messageText;
-                if ((maxLength > 0) && (messageText.length() > maxLength)) {
+                @Nullable String messageText = QuoteUtil.getMessageBody(messageModel, false);
+                String rawMessageText = prefix + messageText;
+                if (maxLength > 0 && messageText != null && messageText.length() > maxLength) {
                     messageText = messageText.substring(0, maxLength - 3) + "...";
                 }
                 return new MessageString(messageText, rawMessageText);
             case VIDEO:
-                return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder));
+                return new MessageString(prefix + context.getString(R.string.video_placeholder));
             case LOCATION:
-                String locationString = prefix + context.getResources().getString(R.string.location_placeholder);
+                String locationString = prefix + context.getString(R.string.location_placeholder);
                 final @NonNull LocationDataModel locationDataModel = messageModel.getLocationData();
                 if (locationDataModel.poiNameOrNull != null) {
                     locationString += ": " + locationDataModel.poiNameOrNull;
                 }
                 return new MessageString(locationString);
             case VOICEMESSAGE:
-                String messageString = prefix + context.getResources().getString(R.string.audio_placeholder);
+                String messageString = prefix + context.getString(R.string.audio_placeholder);
                 messageString += " (" + StringConversionUtil.secondsToString(messageModel.getAudioData().getDuration(), false) + ")";
                 return new MessageString(messageString);
             case FILE:
                 if (MimeUtil.isImageFile(messageModel.getFileData().getMimeType())) {
                     if (TestUtil.isEmptyOrNull(messageModel.getCaption())) {
-                        return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder));
+                        return new MessageString(prefix + context.getString(R.string.image_placeholder));
                     } else {
-                        return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder) + ": " + messageModel.getFileData().getCaption());
+                        return new MessageString(prefix + context.getString(R.string.image_placeholder) + ": " + messageModel.getFileData().getCaption());
                     }
                 } else if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType())) {
                     if (TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption())) {
                         String durationString = messageModel.getFileData().getDurationString();
-                        return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder) + " (" + durationString + ")");
+                        return new MessageString(prefix + context.getString(R.string.video_placeholder) + " (" + durationString + ")");
                     } else {
-                        return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder) + ": " + messageModel.getFileData().getCaption());
+                        return new MessageString(prefix + context.getString(R.string.video_placeholder) + ": " + messageModel.getFileData().getCaption());
                     }
                 } else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())) {
                     if (TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption())) {
                         String durationString = messageModel.getFileData().getDurationString();
                         if ("00:00".equals(durationString)) {
-                            return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder));
+                            return new MessageString(prefix + context.getString(R.string.audio_placeholder));
                         } else {
-                            return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + " (" + durationString + ")");
+                            return new MessageString(prefix + context.getString(R.string.audio_placeholder) + " (" + durationString + ")");
                         }
                     } else {
-                        return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + ": " + messageModel.getFileData().getCaption());
+                        return new MessageString(prefix + context.getString(R.string.audio_placeholder) + ": " + messageModel.getFileData().getCaption());
                     }
                 } else {
                     if (TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption())) {
-                        return new MessageString(prefix + context.getResources().getString(R.string.file_placeholder) + ": " + messageModel.getFileData().getFileName());
+                        return new MessageString(prefix + context.getString(R.string.file_placeholder) + ": " + messageModel.getFileData().getFileName());
                     } else {
-                        return new MessageString(prefix + context.getResources().getString(R.string.file_placeholder) + ": " + messageModel.getFileData().getCaption());
+                        return new MessageString(prefix + context.getString(R.string.file_placeholder) + ": " + messageModel.getFileData().getCaption());
                     }
                 }
             case IMAGE:
                 if (TestUtil.isEmptyOrNull(messageModel.getCaption())) {
-                    return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder));
+                    return new MessageString(prefix + context.getString(R.string.image_placeholder));
                 } else {
-                    return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder) + ": " + messageModel.getCaption());
+                    return new MessageString(prefix + context.getString(R.string.image_placeholder) + ": " + messageModel.getCaption());
                 }
             case BALLOT:
-                return new MessageString(prefix + context.getResources().getString(R.string.ballot_placeholder) + ":" + BallotUtil.getNotificationString(context, messageModel));
+                return new MessageString(prefix + context.getString(R.string.ballot_placeholder) + ":" + BallotUtil.getNotificationString(context, messageModel));
             case VOIP_STATUS:
                 return new MessageString(prefix + MessageUtil.getViewElement(context, messageModel).placeholder);
             default:

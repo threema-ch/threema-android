@@ -54,6 +54,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.domain.models.ContactKt.CONTACT_NAME_MAX_LENGTH_BYTES;
 
 public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEditView.AvatarEditListener {
@@ -178,6 +179,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         try {
             callbackRef = new WeakReference<>((ContactEditDialogClickListener) getTargetFragment());

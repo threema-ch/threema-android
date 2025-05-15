@@ -22,6 +22,7 @@
 package ch.threema.app.voip.activities;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.app.utils.ShortcutUtil.EXTRA_CALLED_FROM_SHORTCUT;
 import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
@@ -41,7 +42,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -58,7 +58,6 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Rational;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -725,6 +724,7 @@ public class CallActivity extends ThreemaActivity implements
     @UiThread
     public void onCreate(Bundle savedInstanceState) {
         logger.info("onCreate");
+        logScreenVisibility(this, logger);
 
         super.onCreate(savedInstanceState);
 

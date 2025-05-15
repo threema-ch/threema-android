@@ -52,6 +52,8 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 /**
  * This fragment is used to show images.
  */
@@ -65,6 +67,12 @@ public class ImageViewFragment extends MediaViewFragment {
 
     public ImageViewFragment() {
         super();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

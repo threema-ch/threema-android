@@ -1,5 +1,4 @@
-- Die Android-App lässt sich nun mit der Beta-Version von Threema 2.0 für Desktop nutzen («Hauptmenü > Threema 2.0 für Desktop (Beta)»)
-- Behebung verschiedener Fehler bei der Suche innerhalb eines Chats
-- Korrekte Anzeige des Dateinamens bei PDFs
-- Verbesserungen in Zusammenhang mit der Benachrichtigung bei Einzelanrufen
-- Verbesserung des Speicherverbrauchs bei der Wiederherstellung von grossen Daten-Backups
+- Bulgarisch als Sprache hinzugefügt
+- Behebung eines Fehlers, wodurch Threema 2.0 für Desktop auf gewissen Geräten nicht genutzt werden konnte
+- Behebung eines Fehlers beim Threema-Widget
+- Behebung einer Sicherheitslücke, die ältere Android-Versionen betraf (bis Android 10): Eine bösartige App, die auf demselben Gerät wie Threema installiert war, hätte Nutzer dazu verleiten können, eine beliebige Datei an einen bestehenden Kontakt zu senden (gemeldet von Retr02332)

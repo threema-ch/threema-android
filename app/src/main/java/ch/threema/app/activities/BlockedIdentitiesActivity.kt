@@ -23,8 +23,16 @@ package ch.threema.app.activities
 
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("BlockedIdentitiesActivity")
 
 class BlockedIdentitiesActivity : IdentityListActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val identityList: IdentityList? by lazy {
         val blockedIdentitiesService =
             ThreemaApplication.getServiceManager()?.blockedIdentitiesService ?: return@lazy null

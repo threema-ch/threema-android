@@ -39,5 +39,7 @@
     <string name="webclient_diagnostics_start">Avvia</string>
     <string name="webclient_diagnostics_intro">Premi il pulsante Avvia per iniziare il test.</string>
     <string name="webclient_diagnostics_done">Fatto. Se riscontri problemi di connessione a Threema Web, invia questo log al servizio di assistenza di Threema.</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">Codice QR errato</string>
     <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
+    <string name="webclient_scanned_md_linking_qr_code_message">Il codice QR che hai scansionato appartiene alla nuova app desktop beta.\n\nTorna a \"Menu principale &gt; ${app_name_desktop} 2.0 per desktop (Beta)\" e seleziona \"${md_link_device}\" per collegarti a questa app desktop.</string>
 </resources>

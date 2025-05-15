@@ -205,6 +205,7 @@ class MessageListViewHolder(
                 // position may have changed after the item was bound. query current position from holder
                 val currentPos = layoutPosition
                 if (currentPos >= 0) {
+                    logger.info("Message clicked")
                     clickListener.onItemClick(v, currentPos)
                 }
             }

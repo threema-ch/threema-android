@@ -84,6 +84,8 @@ import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 import java8.util.Optional;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity implements
     OutgoingGroupJoinRequestDialog.OutgoingGroupJoinRequestDialogClickListener,
     GenericAlertDialog.DialogClickListener,
@@ -128,6 +130,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
         // scanQR code and init on callback onActivityResult or init directly
         if (getIntent().getStringExtra(EXTRA_QR_RESULT) != null) {
             parseQrResult(getIntent().getStringExtra(EXTRA_QR_RESULT));

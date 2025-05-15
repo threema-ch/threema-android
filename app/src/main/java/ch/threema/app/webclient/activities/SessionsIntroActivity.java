@@ -30,18 +30,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 @UiThread
 public class SessionsIntroActivity extends ThreemaToolbarActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SessionsIntroActivity");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

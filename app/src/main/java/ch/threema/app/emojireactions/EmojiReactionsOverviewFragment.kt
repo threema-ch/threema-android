@@ -35,6 +35,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.storage.models.AbstractMessageModel
 import kotlinx.coroutines.CoroutineScope
@@ -43,10 +45,16 @@ import kotlinx.coroutines.launch
 
 private const val RECYCLER_VIEW_STATE = "recyclerViewState"
 
+private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsOverviewFragment")
+
 class EmojiReactionsOverviewFragment(
     val emojiSequence: String? = null,
     val messageModel: AbstractMessageModel,
 ) : Fragment(), EmojiReactionsOverviewListAdapter.OnItemClickListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val emojiReactionsViewModel: EmojiReactionsViewModel by activityViewModels()
     private lateinit var emojiReactionsOverviewListAdapter: EmojiReactionsOverviewListAdapter
     private lateinit var recyclerView: RecyclerView

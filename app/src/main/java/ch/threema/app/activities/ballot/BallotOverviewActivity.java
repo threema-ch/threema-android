@@ -70,6 +70,8 @@ import ch.threema.domain.models.MessageId;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class BallotOverviewActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener, GenericAlertDialog.DialogClickListener, SelectorDialog.SelectorDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("BallotOverviewActivity");
 
@@ -159,6 +161,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (!this.requireInstancesOrExit()) {
             return;

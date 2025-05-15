@@ -38,24 +38,22 @@ class StreamUtilTest {
     @Test
     fun testDifferentLength() {
         val bytes = byteArrayOf(0, 1, 2, 3)
-        val inputStream = ByteArrayInputStream(bytes)
 
         // Assert false when the provided byte array is longer
-        assertFalse(inputStream.contentEquals(bytes + 11))
+        assertFalse(ByteArrayInputStream(bytes).contentEquals(bytes + 11))
 
         // Assert false when the provided byte array is shorter
-        assertFalse(inputStream.contentEquals(bytes.copyOf(bytes.size - 1)))
+        assertFalse(ByteArrayInputStream(bytes).contentEquals(bytes.copyOf(bytes.size - 2)))
     }
 
     @Test
     fun testDifferentContent() {
         val inputBytes = byteArrayOf(0, 1, 2, 3)
-        val inputStream = ByteArrayInputStream(inputBytes)
 
-        assertFalse(inputStream.contentEquals(byteArrayOf(0, 1, 2, 42)))
-        assertFalse(inputStream.contentEquals(byteArrayOf(42, 1, 2, 3)))
-        assertFalse(inputStream.contentEquals(byteArrayOf(42, 42, 42, 42)))
-        assertFalse(inputStream.contentEquals(byteArrayOf(0, 42, 3, 4)))
+        assertFalse(ByteArrayInputStream(inputBytes).contentEquals(byteArrayOf(0, 1, 2, 42)))
+        assertFalse(ByteArrayInputStream(inputBytes).contentEquals(byteArrayOf(42, 1, 2, 3)))
+        assertFalse(ByteArrayInputStream(inputBytes).contentEquals(byteArrayOf(42, 42, 42, 42)))
+        assertFalse(ByteArrayInputStream(inputBytes).contentEquals(byteArrayOf(0, 42, 3, 4)))
     }
 
     @Test
@@ -80,10 +78,11 @@ class StreamUtilTest {
 
     @Test
     fun testStreamEmpty() {
-        val inputStream = ByteArrayInputStream(byteArrayOf())
-
         // Assert that the comparison fails when the input is not empty or null
-        assertFalse(inputStream.contentEquals(byteArrayOf(0)))
-        assertFalse(inputStream.contentEquals(null))
+        assertFalse(ByteArrayInputStream(byteArrayOf()).contentEquals(byteArrayOf(0)))
+        assertFalse(ByteArrayInputStream(byteArrayOf()).contentEquals(null))
+
+        // Assert that the comparison succeeds when both the input and the provided bytes are empty
+        assertTrue(ByteArrayInputStream(byteArrayOf()).contentEquals(byteArrayOf()))
     }
 }

@@ -48,17 +48,22 @@ import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.services.QRCodeServiceImpl.QRCodeColor
 import ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ANY
 import ch.threema.app.utils.SoundUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+private val logger = LoggingUtil.getThreemaLogger("QRScannerActivity")
+
 class QRScannerActivity : ThreemaActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     companion object {
         const val KEY_HINT_TEXT: String = "hint"
         const val KEY_QR_TYPE: String = "qrType"
     }
-
-    private val logger = LoggingUtil.getThreemaLogger("QRScannerActivity")
 
     private lateinit var cameraExecutor: ExecutorService
 

@@ -27,6 +27,8 @@ import android.view.View;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
@@ -34,8 +36,12 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.emojis.EmojiConversationTextView;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class GenericScanResultDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GenericScanResultDialog");
 
     public static final String EXTRA_SCAN_RESULT = "scan_result";
 
@@ -45,6 +51,12 @@ public class GenericScanResultDialog extends ThreemaDialogFragment {
         args.putString(EXTRA_SCAN_RESULT, scanResult);
         dialog.setArguments(args);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @NonNull

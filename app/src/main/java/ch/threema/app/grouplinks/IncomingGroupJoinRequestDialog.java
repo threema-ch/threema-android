@@ -47,6 +47,8 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import java8.util.Optional;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class IncomingGroupJoinRequestDialog extends ThreemaDialogFragment {
     private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingGroupJoinRequestDialog");
 
@@ -65,6 +67,12 @@ public class IncomingGroupJoinRequestDialog extends ThreemaDialogFragment {
 
         dialog.setArguments(args);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @NonNull

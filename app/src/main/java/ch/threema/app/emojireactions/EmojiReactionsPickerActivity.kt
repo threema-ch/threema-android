@@ -40,6 +40,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.ui.SingleToast
 import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.models.EmojiReactionsModel
@@ -54,6 +55,10 @@ import kotlinx.coroutines.withContext
 private val logger = LoggingUtil.getThreemaLogger("EmojiReactionPickerActivity")
 
 class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.EmojiKeyListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var emojiService: EmojiService = ThreemaApplication.requireServiceManager().emojiService
     private var messageService = ThreemaApplication.requireServiceManager().messageService
     private var messageModel: AbstractMessageModel? = null

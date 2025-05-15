@@ -83,6 +83,12 @@ fun getFromUri(context: Context, uri: Uri?): InputStream? {
     return inputStream
 }
 
+/**
+ * Compares the content of the input stream with the provided [byteArray]. Note that the input stream is read until the first byte that does not match
+ * the byte array.
+ *
+ * @return true if both the input stream and the byte array are null or both contain the exact same bytes
+ */
 fun InputStream?.contentEquals(byteArray: ByteArray?): Boolean {
     if (this == null && byteArray == null) {
         return true
@@ -100,6 +106,11 @@ fun InputStream?.contentEquals(byteArray: ByteArray?): Boolean {
         var index = 0
         var next: Int
         while (input.read().also { next = it } != -1) {
+            // Abort if the provided byte array is shorter than the input stream
+            if (index >= byteArray.size) {
+                return false
+            }
+            // Abort if the next byte does not match the byte array's byte at this position
             if (next.toByte() != byteArray[index]) {
                 return false
             }

@@ -289,6 +289,7 @@ public class QuoteUtil {
      *                              if no body text is present, alternative text sources such as captions or file names are considered
      * @return body text
      */
+    @Nullable
     public static String getMessageBody(AbstractMessageModel messageModel, boolean substituteAndTruncate) {
         String text;
         if (messageModel.getType() == MessageType.TEXT) {
@@ -310,15 +311,18 @@ public class QuoteUtil {
 
         if (text != null) {
             if (QuoteUtil.isQuoteV1(text)) {
-                Matcher match = bodyMatchPattern.matcher(messageModel.getBody());
-                try {
-                    if (match.find()) {
-                        if (match.groupCount() == 1) {
-                            text = messageModel.getBody().substring(match.end(1)).trim();
+                @Nullable var body = messageModel.getBody();
+                if (body != null) {
+                    Matcher match = bodyMatchPattern.matcher(body);
+                    try {
+                        if (match.find()) {
+                            if (match.groupCount() == 1) {
+                                text = body.substring(match.end(1)).trim();
+                            }
                         }
+                    } catch (Exception e) {
+                        //
                     }
-                } catch (Exception e) {
-                    //
                 }
             }
 

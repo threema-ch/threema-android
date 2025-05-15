@@ -43,6 +43,8 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.identitybackup.IdentityBackupGenerator;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class ExportIDActivity extends AppCompatActivity implements PasswordEntryDialog.PasswordEntryDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ExportIDActivity");
 
@@ -54,6 +56,7 @@ public class ExportIDActivity extends AppCompatActivity implements PasswordEntry
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         preferenceService = serviceManager.getPreferenceService();

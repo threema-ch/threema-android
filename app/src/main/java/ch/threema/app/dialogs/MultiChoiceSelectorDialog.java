@@ -27,12 +27,19 @@ import android.os.Bundle;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class MultiChoiceSelectorDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MultiChoiceSelectorDialog");
+
     private SelectorDialogClickListener callback;
     private Activity activity;
     private AlertDialog alertDialog;
@@ -107,6 +114,7 @@ public class MultiChoiceSelectorDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         try {
             callback = (SelectorDialogClickListener) getTargetFragment();

@@ -63,6 +63,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardSafeRestoreActivity extends WizardBackgroundActivity implements
     PasswordEntryDialog.PasswordEntryDialogClickListener,
@@ -91,6 +92,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         setContentView(R.layout.activity_wizard_restore_safe);
 

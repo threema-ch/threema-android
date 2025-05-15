@@ -51,6 +51,7 @@ import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceResultFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceScanQrFragment
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.getStatusBarHeightPxCompat
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.utils.withCurrentWindowInsets
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -62,6 +63,10 @@ import kotlinx.coroutines.launch
 private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceWizardActivity")
 
 class LinkNewDeviceWizardActivity : ThreemaActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var currentFragment: Fragment? = null
     private val viewModel: LinkNewDeviceWizardViewModel by viewModels()
 

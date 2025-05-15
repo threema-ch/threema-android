@@ -23,14 +23,23 @@ package ch.threema.app.activities;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.ActionBar;
-
-import android.view.MenuItem;
-import android.webkit.WebView;
+import org.slf4j.Logger;
 
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class LicenseActivity extends SimpleWebViewActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LicenseActivity");
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
+
     @Override
     protected int getWebViewTitle() {
         return R.string.os_licenses;

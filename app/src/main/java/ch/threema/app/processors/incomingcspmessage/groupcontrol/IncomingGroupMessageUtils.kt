@@ -39,7 +39,6 @@ import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel
 import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupMessageUtils")
@@ -200,7 +199,7 @@ suspend fun runGroupSyncRequestSteps(
 
     // If the group has been recently resynced (less than one hour ago), abort these steps
     val syncFactory = serviceManager.databaseServiceNew.outgoingGroupSyncRequestLogModelFactory
-    val syncModel = syncFactory[groupIdentity.groupIdHexString, groupIdentity.creatorIdentity]
+    val syncModel = syncFactory[groupIdentity]
 
     val lastSyncedTimestamp = syncModel?.lastRequest?.time ?: 0
     val now = Date()
@@ -227,12 +226,7 @@ suspend fun runGroupSyncRequestSteps(
     )
 
     // Mark the group as recently resynced
-    syncFactory.create(
-        OutgoingGroupSyncRequestLogModel().apply {
-            setAPIGroupId(groupIdentity.groupIdHexString, groupIdentity.creatorIdentity)
-            setLastRequest(now)
-        },
-    )
+    syncFactory.createOrUpdate(groupIdentity, now)
 }
 
 /**

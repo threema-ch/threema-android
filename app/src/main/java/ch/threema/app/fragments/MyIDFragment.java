@@ -275,7 +275,13 @@ public class MyIDFragment extends MainFragment
                 fragmentView.findViewById(R.id.my_id_qr).setOnClickListener(this);
 
                 fragmentView.findViewById(R.id.public_key_button).setOnClickListener(
-                    v -> PublicKeyDialog.newInstance(getString(R.string.public_key_for, userService.getIdentity()), userService.getPublicKey()).show(getParentFragmentManager(), "pk")
+                    v -> {
+                        logger.info("Show my public key clicked");
+                        PublicKeyDialog.newInstance(
+                            getString(R.string.public_key_for, userService.getIdentity()),
+                            userService.getPublicKey()
+                        ).show(getParentFragmentManager(), "pk");
+                    }
                 );
             }
 
@@ -327,7 +333,6 @@ public class MyIDFragment extends MainFragment
     }
 
     private void onPicReleaseSpinnerItemClicked(View view, int position) {
-
         final @Nullable ProfilePictureSharePolicy.Policy sharePolicy = ProfilePictureSharePolicy.Policy.fromIntOrNull(position);
         if (sharePolicy == null) {
             logger.error("Failed to get concrete enum value of type ProfilePictureSharePolicy.Policy for ordinal value {}", position);
@@ -580,6 +585,7 @@ public class MyIDFragment extends MainFragment
         final int id = v.getId();
 
         if (id == R.id.change_email) {
+            logger.info("Change email clicked");
             neutral = 0;
             if (this.userService.getEmailLinkingState() != UserService.LinkingState_NONE) {
                 neutral = R.string.unlink;
@@ -596,6 +602,7 @@ public class MyIDFragment extends MainFragment
             textEntryDialog.setTargetFragment(this, 0);
             textEntryDialog.show(getFragmentManager(), DIALOG_TAG_LINKED_EMAIL);
         } else if (id == R.id.change_mobile) {
+            logger.info("Change mobile clicked");
             String presetNumber = serviceManager.getLocaleService().getHRPhoneNumber(userService.getLinkedMobile());
             neutral = 0;
             if (this.userService.getMobileLinkingState() != UserService.LinkingState_NONE) {
@@ -621,6 +628,7 @@ public class MyIDFragment extends MainFragment
             if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
                 HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_REVOCATION);
             } else {
+                logger.info("Set revocation key clicked");
                 setRevocationPassword();
             }
         } else if (id == R.id.delete_id) {
@@ -628,6 +636,7 @@ public class MyIDFragment extends MainFragment
             if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
                 HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_DELETE_ID);
             } else {
+                logger.info("Delete ID clicked");
                 confirmIdDelete();
             }
         } else if (id == R.id.export_id) {
@@ -635,11 +644,13 @@ public class MyIDFragment extends MainFragment
             if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
                 HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_EXPORT_ID);
             } else {
+                logger.info("Export ID clicked");
                 startActivity(new Intent(getContext(), ExportIDActivity.class));
             }
         } else if (id == R.id.picrelease_config) {
             launchProfilePictureRecipientsSelector(v);
         } else if (id == R.id.profile_edit) {
+            logger.info("Edit nickname clicked, showing dialog");
             TextEntryDialog nicknameEditDialog = TextEntryDialog.newInstance(R.string.set_nickname_title,
                 R.string.wizard3_nickname_hint,
                 R.string.ok, 0,
@@ -651,8 +662,10 @@ public class MyIDFragment extends MainFragment
             nicknameEditDialog.setTargetFragment(this, 0);
             nicknameEditDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_NICKNAME);
         } else if (id == R.id.my_id_qr) {
+            logger.info("My ID clicked, showing QR code");
             new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, null, QRCodeServiceImpl.QR_TYPE_ID);
         } else if (id == R.id.my_id_share) {
+            logger.info("Share clicked");
             ShareUtil.shareContact(getContext(), null);
         }
     }
@@ -746,6 +759,7 @@ public class MyIDFragment extends MainFragment
     public void onYes(String tag, Object data) {
         switch (tag) {
             case DIALOG_TAG_DELETE_ID:
+                logger.info("Showing second ID deletion warning");
                 GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
                     R.string.delete_id_title,
                     R.string.delete_id_message2,
@@ -755,9 +769,11 @@ public class MyIDFragment extends MainFragment
                 dialogFragment.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE);
                 break;
             case DIALOG_TAG_REALLY_DELETE:
+                logger.info("Delete ID confirmed");
                 deleteIdentity();
                 break;
             case DIALOG_TAG_LINKED_MOBILE_CONFIRM:
+                logger.info("Verify mobile confirmed");
                 launchMobileVerification((String) data);
                 break;
             default:
@@ -773,6 +789,7 @@ public class MyIDFragment extends MainFragment
     public void onYes(@NonNull String tag, @NonNull String text) {
         switch (tag) {
             case DIALOG_TAG_LINKED_MOBILE:
+                logger.info("Link mobile clicked, showing confirm dialog");
                 final String normalizedPhoneNumber = localeService.getNormalizedPhoneNumber(text);
                 GenericAlertDialog alertDialog = GenericAlertDialog.newInstance(R.string.wizard2_phone_number_confirm_title, String.format(getString(R.string.wizard2_phone_number_confirm), normalizedPhoneNumber), R.string.ok, R.string.cancel);
                 alertDialog.setData(normalizedPhoneNumber);
@@ -780,9 +797,11 @@ public class MyIDFragment extends MainFragment
                 alertDialog.show(getFragmentManager(), DIALOG_TAG_LINKED_MOBILE_CONFIRM);
                 break;
             case DIALOG_TAG_LINKED_EMAIL:
+                logger.info("Link email clicked");
                 new LinkWithEmailAsyncTask(getContext(), getFragmentManager(), text, () -> updatePendingStateTexts(getView())).execute();
                 break;
             case DIALOG_TAG_EDIT_NICKNAME:
+                logger.info("New nickname set");
                 // Update public nickname
                 String newNickname = text.trim();
                 if (!newNickname.equals(userService.getPublicNickname())) {
@@ -797,9 +816,9 @@ public class MyIDFragment extends MainFragment
 
     @Override
     public void onYes(String tag, final String text, boolean isChecked, Object data) {
-        switch (tag) {
-            case DIALOG_TAG_SET_REVOCATION_KEY:
-                setRevocationKey(text);
+        if (tag.equals(DIALOG_TAG_SET_REVOCATION_KEY)) {
+            logger.info("Revocation key set");
+            setRevocationKey(text);
         }
     }
 
@@ -811,6 +830,7 @@ public class MyIDFragment extends MainFragment
     public void onNeutral(String tag) {
         switch (tag) {
             case DIALOG_TAG_LINKED_MOBILE:
+                logger.info("Unlinking mobile");
                 new Thread(() -> {
                     try {
                         userService.unlinkMobileNumber(TriggerSource.LOCAL);
@@ -822,6 +842,7 @@ public class MyIDFragment extends MainFragment
                 }).start();
                 break;
             case DIALOG_TAG_LINKED_EMAIL:
+                logger.info("Unlinking email");
                 new LinkWithEmailAsyncTask(getContext(), getFragmentManager(), "", () -> updatePendingStateTexts(getView())).execute();
                 break;
             default:
@@ -869,6 +890,7 @@ public class MyIDFragment extends MainFragment
         if (getView() != null) {
             NestedScrollView scrollView = getView().findViewById(R.id.fragment_id_container);
             if (scrollView != null) {
+                logger.info("Logo clicked, scrolling to top");
                 scrollView.scrollTo(0, 0);
             }
         }

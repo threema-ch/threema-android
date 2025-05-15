@@ -89,6 +89,7 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
 import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     LifecycleOwner,
@@ -205,6 +206,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         try {
             serviceManager = ThreemaApplication.getServiceManager();

@@ -54,6 +54,7 @@ import ch.threema.app.notifications.migrations.Version1Migration
 import ch.threema.app.notifications.migrations.Version2Migration
 import ch.threema.app.notifications.migrations.Version3Migration
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.RingtoneUtil
 import ch.threema.base.utils.LoggingUtil
 import org.slf4j.Logger
 
@@ -137,7 +138,7 @@ class NotificationChannelSetup(
             setVibrationEnabled(true)
             setVibrationPattern(NotificationChannels.VIBRATE_PATTERN_INCOMING_CALL)
             setShowBadge(false)
-            setSound(Settings.System.DEFAULT_RINGTONE_URI, AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+            setSound(RingtoneUtil.THREEMA_CALL_RINGTONE_URI, AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
         }
 
         createChannel(

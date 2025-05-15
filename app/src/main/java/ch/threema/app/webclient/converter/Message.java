@@ -42,10 +42,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -67,7 +65,6 @@ import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
@@ -80,11 +77,6 @@ import ch.threema.storage.models.data.status.VoipStatusDataModel;
 @AnyThread
 public class Message extends Converter {
     private static final Logger logger = LoggingUtil.getThreemaLogger("Message");
-
-    // TODO(ANDR-3517): Remove
-    public final static String REACTIONS = "reactions";
-    public final static String REACTIONS_ACK = "ack";
-    public final static String REACTIONS_DEC = "dec";
 
     public final static String ID = "id";
     public final static String TYPE = "type";
@@ -269,35 +261,13 @@ public class Message extends Converter {
                 builder.put(PARTNER_ID, message.getIdentity());
                 builder.put(IS_UNREAD, MessageUtil.isUnread(message));
 
-                // TODO(ANDR-3517): Remove
-                final @NonNull List<EmojiReactionData> reactions = getReactions(message);
-
                 ch.threema.storage.models.MessageState messageState = message.getState();
                 if (message instanceof GroupMessageModel
                     && (messageState == USERACK || messageState == USERDEC)) {
                     // web/webtop does not know how to handle group acks
                     messageState = DELIVERED;
-                } else if (message instanceof MessageModel) {
-                    // TODO(ANDR-3517): Remove else if branch
-                    messageState = EmojiReactionConverterUtil
-                        .getContactAckDecFromReactions((MessageModel) message, reactions)
-                        .orElse(messageState);
                 }
-                if (BuildConfig.EMOJI_REACTIONS_WEB_ENABLED) {
-                    maybePutEmojiReactions(builder, getReactionBuckets(message));
-                } else {
-                    if (message instanceof GroupMessageModel) {
-                        maybePutReactions(
-                            builder,
-                            REACTIONS,
-                            EmojiReactionConverterUtil.getGroupAckDecFromReactions(reactions)
-                        );
-                    } else if (message instanceof MessageModel) {
-                        messageState = EmojiReactionConverterUtil
-                            .getContactAckDecFromReactions((MessageModel) message, reactions)
-                            .orElse(messageState);
-                    }
-                }
+                maybePutEmojiReactions(builder, getReactionBuckets(message));
 
                 maybePutState(builder, STATE, messageState);
                 maybePutDate(builder, DATE, message);
@@ -350,18 +320,6 @@ public class Message extends Converter {
                 .getEmojiReaction()
                 .safeGetReactionsByMessage(message);
             return ReactionBucket.fromReactions(reactions);
-        } catch (NullPointerException e) {
-            throw new ConversionException(e);
-        }
-    }
-
-    @NonNull
-    private static List<EmojiReactionData> getReactions(AbstractMessageModel message) throws ConversionException {
-        try {
-            return Objects.requireNonNull(getServiceManager())
-                .getModelRepositories()
-                .getEmojiReaction()
-                .safeGetReactionsByMessage(message);
         } catch (NullPointerException e) {
             throw new ConversionException(e);
         }
@@ -462,28 +420,6 @@ public class Message extends Converter {
         throws ConversionException {
         if (state != null) {
             builder.put(field, MessageState.convert(state));
-        }
-    }
-
-    // TODO(ANDR-3517): Remove
-    private static void maybePutReactions(MsgpackObjectBuilder builder, String field, @Nullable Map<String, ch.threema.storage.models.MessageState> messageStates) {
-        if (messageStates != null) {
-            final MsgpackArrayBuilder ackBuilder = new MsgpackArrayBuilder();
-            final MsgpackArrayBuilder decBuilder = new MsgpackArrayBuilder();
-
-            for (Map.Entry<String, ch.threema.storage.models.MessageState> entry : messageStates.entrySet()) {
-                if (ch.threema.storage.models.MessageState.USERACK == entry.getValue()) {
-                    ackBuilder.put(entry.getKey());
-                } else if (ch.threema.storage.models.MessageState.USERDEC == entry.getValue()) {
-                    decBuilder.put(entry.getKey());
-                }
-            }
-
-            builder.put(field,
-                new MsgpackObjectBuilder()
-                    .put(REACTIONS_ACK, ackBuilder)
-                    .put(REACTIONS_DEC, decBuilder)
-            );
         }
     }
 

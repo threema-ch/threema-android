@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2025 Threema GmbH
+ * Copyright (c) 2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,12 +19,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.services;
+package ch.threema.domain.onprem
 
-import androidx.annotation.NonNull;
-import ch.threema.domain.protocol.ServerAddressProvider;
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
+import ch.threema.domain.protocol.urls.MapPoiNamesUrl
 
-public interface ServerAddressProviderService {
-    @NonNull
-    ServerAddressProvider getServerAddressProvider();
-}
+data class OnPremConfigMaps(
+    val styleUrl: String,
+    val poiNamesUrl: MapPoiNamesUrl,
+    val poiAroundUrl: MapPoiAroundUrl,
+)

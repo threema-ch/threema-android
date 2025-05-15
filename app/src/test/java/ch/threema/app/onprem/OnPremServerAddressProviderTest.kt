@@ -28,16 +28,20 @@ import ch.threema.domain.onprem.OnPremConfigBlob
 import ch.threema.domain.onprem.OnPremConfigChat
 import ch.threema.domain.onprem.OnPremConfigDirectory
 import ch.threema.domain.onprem.OnPremConfigFetcher
+import ch.threema.domain.onprem.OnPremConfigMaps
 import ch.threema.domain.onprem.OnPremConfigMediator
 import ch.threema.domain.onprem.OnPremConfigSafe
 import ch.threema.domain.onprem.OnPremConfigWeb
 import ch.threema.domain.onprem.OnPremConfigWork
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
+import ch.threema.domain.protocol.urls.MapPoiNamesUrl
 import io.mockk.every
 import io.mockk.mockk
 import java.time.Instant
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -55,40 +59,45 @@ class OnPremServerAddressProviderTest {
         validUntil = Instant.ofEpochMilli(999L),
         license = mockk(),
         domains = null,
-        chatConfig = OnPremConfigChat(
+        chat = OnPremConfigChat(
             hostname = "chat.threemaonprem.initrode.com",
             ports = intArrayOf(5222, 443),
             publicKey = byteArrayOf(0x1, 0x2, 0x3),
         ),
-        directoryConfig = OnPremConfigDirectory(
+        directory = OnPremConfigDirectory(
             url = "https://dir.threemaonprem.initrode.com/directory",
         ),
-        blobConfig = OnPremConfigBlob(
+        blob = OnPremConfigBlob(
             uploadUrl = "https://blob.threemaonprem.initrode.com/blob/upload",
             downloadUrl = BlobUrl("https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}"),
             doneUrl = BlobUrl("https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done"),
         ),
-        workConfig = OnPremConfigWork(
+        work = OnPremConfigWork(
             url = "https://work.threemaonprem.initrode.com/",
         ),
-        avatarConfig = OnPremConfigAvatar(
+        avatar = OnPremConfigAvatar(
             url = "https://avatar.threemaonprem.initrode.com/",
         ),
-        safeConfig = OnPremConfigSafe(
+        safe = OnPremConfigSafe(
             url = "https://safe.threemaonprem.initrode.com/",
         ),
-        webConfig = OnPremConfigWeb(
+        web = OnPremConfigWeb(
             url = "https://web.threemaonprem.initrode.com/",
             overrideSaltyRtcHost = null,
             overrideSaltyRtcPort = 0,
         ),
-        mediatorConfig = OnPremConfigMediator(
+        mediator = OnPremConfigMediator(
             url = DeviceGroupUrl("https://mediator.threemaonprem.initrode.com/"),
             blob = OnPremConfigBlob(
                 uploadUrl = "https://mediator.threemaonprem.initrode.com/blob/upload",
                 downloadUrl = BlobUrl("https://mediator.threemaonprem.initrode.com/blob/{blobId}"),
                 doneUrl = BlobUrl("https://mediator.threemaonprem.initrode.com/blob/{blobId}/done"),
             ),
+        ),
+        maps = OnPremConfigMaps(
+            styleUrl = "https://map.initrode.com/styles/threema/style.json",
+            poiNamesUrl = MapPoiNamesUrl("https://poi.initrode.com/names/{latitude}/{longitude}/{query}/"),
+            poiAroundUrl = MapPoiAroundUrl("https://poi.initrode.com/around/{latitude}/{longitude}/{radius}/"),
         ),
     )
 
@@ -242,7 +251,7 @@ class OnPremServerAddressProviderTest {
     fun `test mediator url when no mediator config available`() {
         onPremConfigFetcher = mockk {
             every { fetch() } returns onPremConfig.copy(
-                mediatorConfig = null,
+                mediator = null,
             )
         }
 
@@ -256,5 +265,65 @@ class OnPremServerAddressProviderTest {
         assertFailsWith<ThreemaException> {
             serverAddressProvider.getAppRatingUrl()
         }
+    }
+
+    @Test
+    fun `test maps style url when maps config available`() {
+        assertEquals(
+            "https://map.initrode.com/styles/threema/style.json",
+            serverAddressProvider.getMapStyleUrl(),
+        )
+    }
+
+    @Test
+    @Ignore("disabled until fallback is removed") // TODO(ANDR-3805)
+    fun `test maps style url when maps config not available`() {
+        onPremConfigFetcher = mockk {
+            every { fetch() } returns onPremConfig.copy(
+                maps = null,
+            )
+        }
+
+        assertNull(serverAddressProvider.getMapStyleUrl())
+    }
+
+    @Test
+    fun `test maps POI names url when maps config available`() {
+        assertEquals(
+            MapPoiNamesUrl("https://poi.initrode.com/names/{latitude}/{longitude}/{query}/"),
+            serverAddressProvider.getMapPoiNamesUrl(),
+        )
+    }
+
+    @Test
+    @Ignore("disabled until fallback is removed") // TODO(ANDR-3805)
+    fun `test maps POI names url when maps config not available`() {
+        onPremConfigFetcher = mockk {
+            every { fetch() } returns onPremConfig.copy(
+                maps = null,
+            )
+        }
+
+        assertNull(serverAddressProvider.getMapPoiNamesUrl())
+    }
+
+    @Test
+    fun `test maps POI around url when maps config available`() {
+        assertEquals(
+            MapPoiAroundUrl("https://poi.initrode.com/around/{latitude}/{longitude}/{radius}/"),
+            serverAddressProvider.getMapPoiAroundUrl(),
+        )
+    }
+
+    @Test
+    @Ignore("disabled until fallback is removed") // TODO(ANDR-3805)
+    fun `test maps POI around url when maps config not available`() {
+        onPremConfigFetcher = mockk {
+            every { fetch() } returns onPremConfig.copy(
+                maps = null,
+            )
+        }
+
+        assertNull(serverAddressProvider.getMapPoiAroundUrl())
     }
 }

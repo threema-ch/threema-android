@@ -82,6 +82,7 @@ import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 import static ch.threema.app.ui.DirectoryDataSource.MIN_SEARCH_STRING_LENGTH;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class DirectoryActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener, MultiChoiceSelectorDialog.SelectorDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryActivity");
@@ -138,6 +139,12 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             directoryDataSourceFactory.postLiveData.getValue().invalidate();
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -240,6 +247,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         directoryAdapter.setOnClickItemListener(new DirectoryAdapter.OnClickItemListener() {
             @Override
             public void onClick(WorkDirectoryContact workDirectoryContact, int position) {
+                logger.info("Directory contact clicked");
                 launchContact(workDirectoryContact, position);
             }
 

@@ -28,10 +28,14 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.multidevice.PersistedMultiDeviceProperties
 import ch.threema.app.multidevice.linking.DeviceLinkingException
 import ch.threema.app.multidevice.linking.DeviceLinkingInvalidQrCodeException
+import ch.threema.app.multidevice.linking.DeviceLinkingScannedWebQrCodeException
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.multidevice.linking.DeviceLinkingUnsupportedProtocolException
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
+import ch.threema.app.webclient.services.WebSessionQRCodeParser
+import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl
+import ch.threema.base.utils.Base64
 import ch.threema.base.utils.Base64UrlSafe
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
@@ -45,6 +49,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.url_payloads.DeviceGroupJoinRequestOrOffer
 import com.google.protobuf.InvalidProtocolBufferException
+import java.io.IOException
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
@@ -172,10 +177,24 @@ class DeviceLinkingPartOneTask(
 
     /**
      *  @throws DeviceLinkingInvalidQrCodeException if the [deviceJoinOfferUri] is not in correct form
+     *  @throws DeviceLinkingScannedWebQrCodeException if the user scanned a Threema Web session qr code
      */
     private fun parseDeviceJoinOfferUri(deviceJoinOfferUri: String): DeviceGroupJoinRequestOrOffer {
+        try {
+            // If this will not throw the user scanned a Threema Web QR code
+            WebSessionQRCodeParserImpl().parse(
+                Base64.decode(deviceJoinOfferUri),
+            )
+            throw DeviceLinkingScannedWebQrCodeException("The user scanned a Threema Web session qr code.")
+        } catch (_: WebSessionQRCodeParser.InvalidQrCodeException) {
+            // ignore it
+        } catch (_: IOException) {
+            // ignore it
+        } catch (_: IllegalArgumentException) {
+            // ignore it
+        }
         val parts = deviceJoinOfferUri.split("#")
-        if (parts.size != 2 && parts[0] != MultiDeviceManager.DEVICE_JOIN_OFFER_URI_PREFIX) {
+        if (parts.size != 2 || parts[0] != MultiDeviceManager.DEVICE_JOIN_OFFER_URI_PREFIX) {
             throw DeviceLinkingInvalidQrCodeException("Invalid device join offer uri: $deviceJoinOfferUri")
         }
         val bytes = Base64UrlSafe.decode(parts[1])

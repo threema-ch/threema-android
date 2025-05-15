@@ -132,7 +132,7 @@ object TestHelpers {
                 scope: NonceScope,
                 chunkSize: Int,
                 offset: Int,
-                nonces: MutableList<HashedNonce>,
+                hashedNonces: MutableList<HashedNonce>,
             ) {
                 // noop
             }

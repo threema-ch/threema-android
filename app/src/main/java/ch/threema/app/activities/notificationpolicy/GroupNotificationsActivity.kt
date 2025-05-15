@@ -26,10 +26,18 @@ import android.view.View
 import androidx.annotation.UiThread
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.GroupUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.repositories.GroupModelRepository
 
+private val logger = LoggingUtil.getThreemaLogger("GroupNotificationsActivity")
+
 class GroupNotificationsActivity : NotificationsActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private companion object {
         const val GROUP_ID_NOT_PASSED = -1
     }

@@ -40,15 +40,21 @@ import androidx.appcompat.app.AppCompatDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class TextEntryDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("TextEntryDialog");
 
     public static final String ARG_TITLE = "title";
     public static final String ARG_MESSAGE = "message";
@@ -212,6 +218,7 @@ public class TextEntryDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (callback == null) {
             try {

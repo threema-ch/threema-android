@@ -44,6 +44,8 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class WizardFingerPrintActivity extends WizardBackgroundActivity implements WizardDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFingerPrintActivity");
 
@@ -57,6 +59,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
         setContentView(R.layout.activity_new_fingerprint);
 
         swipeProgress = findViewById(R.id.wizard1_swipe_progress);

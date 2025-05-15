@@ -26,7 +26,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.0.0"
+val appVersion = "6.0.1"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -35,7 +35,7 @@ val appVersion = "6.0.0"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1070
+val defaultVersionCode = 1074
 
 /**
  * Map with keystore paths (if found).
@@ -113,7 +113,7 @@ android {
         stringBuildConfigField("WEB_SERVER_URL", "https://web.threema.ch/")
         stringBuildConfigField("APP_RATING_URL", "https://threema.ch/app-rating/android/{rating}")
         stringBuildConfigField("MAP_STYLES_URL", "https://map.threema.ch/styles/streets/style.json")
-        stringBuildConfigField("MAP_POI_URL", "https://poi.threema.ch/around/{latitude}/{longitude}/{radius}/")
+        stringBuildConfigField("MAP_POI_AROUND_URL", "https://poi.threema.ch/around/{latitude}/{longitude}/{radius}/")
         stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.threema.ch/names/{latitude}/{longitude}/{query}/")
         byteArrayBuildConfigField("THREEMA_PUSH_PUBLIC_KEY", PublicKeys.threemaPush)
         stringBuildConfigField("ONPREM_ID_PREFIX", "O")
@@ -124,8 +124,6 @@ android {
         booleanBuildConfigField("MD_SYNC_DISTRIBUTION_LISTS", false)
         booleanBuildConfigField("EDIT_MESSAGES_ENABLED", true)
         booleanBuildConfigField("DELETE_MESSAGES_ENABLED", true)
-        booleanBuildConfigField("EMOJI_REACTIONS_ENABLED", true)
-        booleanBuildConfigField("EMOJI_REACTIONS_WEB_ENABLED", true)
 
         // config fields for action URLs / deep links
         stringBuildConfigField("uriScheme", "threema")
@@ -148,6 +146,7 @@ android {
             setOf(
                 "en",
                 "be-rBY",
+                "bg",
                 "ca",
                 "cs",
                 "de",

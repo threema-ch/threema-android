@@ -26,13 +26,21 @@ import android.os.Bundle
 import ch.threema.app.R
 import ch.threema.app.services.ContactService
 import ch.threema.app.utils.ContactUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
+private val logger = LoggingUtil.getThreemaLogger("ResendGroupMessageDialog")
 
 class ResendGroupMessageDialog(
     private val rejectedIdentities: Set<String>,
     private val contactService: ContactService,
     private val callback: ResendMessageCallback,
 ) : ThreemaDialogFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val concatenatedContactNames = ContactUtil.joinDisplayNames(
             context,

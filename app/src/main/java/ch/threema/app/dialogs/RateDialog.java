@@ -45,6 +45,8 @@ import androidx.appcompat.app.AppCompatDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.slf4j.Logger;
+
 import java.util.Optional;
 
 import ch.threema.app.R;
@@ -55,9 +57,13 @@ import ch.threema.app.services.RatingService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ServerAddressProvider;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class RateDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("RateDialog");
     private static final String BUNDLE_RATE_STAR = "rs";
     private RateDialogClickListener callback;
     private Context context;
@@ -94,6 +100,7 @@ public class RateDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager == null) {

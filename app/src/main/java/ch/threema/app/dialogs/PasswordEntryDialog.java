@@ -49,11 +49,17 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LocaleUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class PasswordEntryDialog extends ThreemaDialogFragment implements GenericAlertDialog.DialogClickListener {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PasswordEntryDialog");
     private static final String DIALOG_TAG_CONFIRM_CHECKBOX = "dtcc";
 
     protected PasswordEntryDialogClickListener callback;
@@ -136,6 +142,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         try {
             callback = (PasswordEntryDialogClickListener) getTargetFragment();

@@ -36,6 +36,8 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -47,8 +49,12 @@ import ch.threema.app.R;
 import ch.threema.app.motionviews.widget.TextEntity;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintKeyboardActivity");
 
     public final static String INTENT_EXTRA_TEXT = "text";
     public final static String INTENT_EXTRA_COLOR = "color"; // resolved color
@@ -59,6 +65,7 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         this.currentKeyboardHeight = 0;
 

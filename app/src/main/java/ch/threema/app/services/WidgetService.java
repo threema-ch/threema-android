@@ -22,11 +22,14 @@
 package ch.threema.app.services;
 
 import android.content.Intent;
+import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.adapters.WidgetViewsFactory;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 
 public class WidgetService extends RemoteViewsService {
@@ -35,8 +38,63 @@ public class WidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         logger.debug("onGetViewFactory");
+        try {
+            return new WidgetViewsFactory(this.getApplicationContext());
+        } catch (ThreemaException e) {
+            logger.error("Could not create widget views factory");
+            // We use an empty views factory as we cannot do anything if the actual views factory
+            // cannot be created.
+            return getEmptyViewsFactory();
+        }
+    }
 
-        return (new WidgetViewsFactory(this.getApplicationContext(),
-            intent));
+    @NonNull
+    private RemoteViewsFactory getEmptyViewsFactory() {
+        return new RemoteViewsFactory() {
+            @Override
+            public void onCreate() {
+                // Nothing to do
+            }
+
+            @Override
+            public void onDataSetChanged() {
+                // Nothing to do
+            }
+
+            @Override
+            public void onDestroy() {
+                // Nothing to do
+            }
+
+            @Override
+            public int getCount() {
+                return 0;
+            }
+
+            @Override
+            public RemoteViews getViewAt(int i) {
+                return null;
+            }
+
+            @Override
+            public RemoteViews getLoadingView() {
+                return null;
+            }
+
+            @Override
+            public int getViewTypeCount() {
+                return 0;
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return 0;
+            }
+
+            @Override
+            public boolean hasStableIds() {
+                return false;
+            }
+        };
     }
 }

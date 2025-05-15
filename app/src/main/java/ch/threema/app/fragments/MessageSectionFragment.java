@@ -216,7 +216,7 @@ public class MessageSectionFragment extends MainFragment
     private MessageService messageService;
     private DistributionListService distributionListService;
     private BackupChatService backupChatService;
-    @NonNull
+    @Nullable
     private ConversationCategoryService conversationCategoryService;
     private ConversationTagService conversationTagService;
     private RingtoneService ringtoneService;
@@ -578,8 +578,10 @@ public class MessageSectionFragment extends MainFragment
                     if (isAdded()) {
                         toggleHiddenMenuItemRef.get().setOnMenuItemClickListener(item -> {
                             if (preferenceService.isPrivateChatsHidden()) {
+                                logger.info("Requesting to show private chats");
                                 requestUnhideChats();
                             } else {
+                                logger.info("Requesting to hide private chats");
                                 preferenceService.setPrivateChatsHidden(true);
                                 updateList(null, null, new Thread(this::firePrivateReceiverUpdate));
                             }
@@ -699,6 +701,11 @@ public class MessageSectionFragment extends MainFragment
             return;
         }
 
+        if (conversationCategoryService == null) {
+            logger.error("Conversation category service is null: cannot remove private mark");
+            return;
+        }
+
         if (!conversationCategoryService.removePrivateMark(receiver)) {
             logger.warn("Private mark couldn't be removed from conversation");
             return;
@@ -721,6 +728,11 @@ public class MessageSectionFragment extends MainFragment
             return;
         }
 
+        if (conversationCategoryService == null) {
+            logger.error("Conversation category service is null: cannot mark chat as private");
+            return;
+        }
+
         if (conversationCategoryService.isPrivateChat(receiver.getUniqueIdString())) {
             if (ConfigUtils.hasProtection(preferenceService)) {
                 // persist selection
@@ -731,6 +743,7 @@ public class MessageSectionFragment extends MainFragment
             }
         } else {
             if (ConfigUtils.hasProtection(preferenceService)) {
+                logger.info("Showing dialog for confirming making a chat private");
                 GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.hide_chat,
                     R.string.really_hide_chat_message,
                     R.string.ok,
@@ -740,6 +753,7 @@ public class MessageSectionFragment extends MainFragment
                 dialog.setData(conversationModel);
                 dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_HIDE_THREAD);
             } else {
+                logger.info("Showing dialog to explain private chats");
                 GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.hide_chat,
                     R.string.hide_chat_message_explain,
                     R.string.set_lock,
@@ -770,6 +784,11 @@ public class MessageSectionFragment extends MainFragment
                 MessageReceiver<?> messageReceiver = conversationModel.getReceiver();
                 if (messageReceiver == null) {
                     logger.warn("The chat cannot be marked as private as the receiver is null");
+                    return false;
+                }
+
+                if (conversationCategoryService == null) {
+                    logger.error("Conversation category service is null in background task: cannot mark chat as private");
                     return false;
                 }
 
@@ -942,6 +961,7 @@ public class MessageSectionFragment extends MainFragment
                     final int oldPosition = conversationModel.getPosition();
 
                     if (direction == ItemTouchHelper.RIGHT) {
+                        logger.info("Chat swiped right for pinning");
                         conversationTagService.toggle(conversationModel, ConversationTag.PINNED, true, TriggerSource.LOCAL);
                         conversationModel.setIsPinTagged(!conversationModel.isPinTagged());
 
@@ -954,6 +974,7 @@ public class MessageSectionFragment extends MainFragment
                             () -> conversationListeners.handle((ConversationListener listener) -> listener.onModified(conversationModel, oldPosition))
                         );
                     } else if (direction == ItemTouchHelper.LEFT) {
+                        logger.info("Chat swiped right for archiving");
                         archiveChat(conversationModel);
                     }
                 }
@@ -1118,6 +1139,7 @@ public class MessageSectionFragment extends MainFragment
     }
 
     private void onFABClicked(View v) {
+        logger.info("FAB clicked, opening new chat screen");
         // stop list fling to avoid crashes due to concurrent access to conversation data
         recyclerView.stopScroll();
         Intent intent = new Intent(getContext(), RecipientListBaseActivity.class);
@@ -1140,6 +1162,7 @@ public class MessageSectionFragment extends MainFragment
 
     @Override
     public void onItemClick(View view, int position, ConversationModel model) {
+        logger.info("Conversation clicked");
         new Thread(() -> showConversation(model, view)).start();
     }
 
@@ -1147,11 +1170,14 @@ public class MessageSectionFragment extends MainFragment
     public void onAvatarClick(View view, int position, ConversationModel model) {
         Intent intent = null;
         if (model.isContactConversation()) {
+            logger.info("Contact avatar clicked");
             intent = new Intent(getActivity(), ContactDetailActivity.class);
             intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, model.getContact().getIdentity());
         } else if (model.isGroupConversation()) {
+            logger.info("Group avatar clicked");
             openGroupDetails(model);
         } else if (model.isDistributionListConversation()) {
+            logger.info("Distribution list avatar clicked");
             intent = new Intent(getActivity(), DistributionListAddActivity.class);
             intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, model.getDistributionList().getId());
         }
@@ -1162,6 +1188,7 @@ public class MessageSectionFragment extends MainFragment
 
     @Override
     public void onFooterClick(View view) {
+        logger.info("Footer clicked, showing archive");
         Intent intent = new Intent(getActivity(), ArchiveActivity.class);
         intent.putExtra(ThreemaApplication.INTENT_DATA_ARCHIVE_FILTER, filterQuery);
         getActivity().startActivity(intent);
@@ -1169,6 +1196,7 @@ public class MessageSectionFragment extends MainFragment
 
     @Override
     public void onJoinGroupCallClick(ConversationModel conversationModel) {
+        logger.info("Join group call clicked");
         GroupModel group = conversationModel.getGroup();
         if (group != null) {
             startActivity(GroupCallActivity.getJoinCallIntent(requireActivity(), group.getId()));
@@ -1273,6 +1301,7 @@ public class MessageSectionFragment extends MainFragment
 
     @Override
     public void onYes(String tag, String text, boolean isChecked, Object data) {
+        logger.info("Chat sharing confirmed");
         shareChat((ConversationModel) data, text, isChecked);
     }
 
@@ -1293,11 +1322,17 @@ public class MessageSectionFragment extends MainFragment
         try {
             receiver = conversationModel.getReceiver();
         } catch (Exception e) {
-            logger.error("Exception", e);
+            logger.error("Could not get receiver of conversation model", e);
             return;
         }
 
         if (receiver == null) {
+            logger.warn("No receiver in conversation model for showing selector");
+            return;
+        }
+
+        if (conversationCategoryService == null) {
+            logger.error("Conversation category service is null: cannot show selector");
             return;
         }
 
@@ -1401,9 +1436,11 @@ public class MessageSectionFragment extends MainFragment
 
         switch (which) {
             case TAG_ARCHIVE_CHAT:
+                logger.info("Archive chat clicked");
                 archiveChat(conversationModel);
                 break;
             case TAG_EMPTY_CHAT:
+                logger.info("Empty chat clicked, showing dialog");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.empty_chat_title,
                     R.string.empty_chat_confirm,
@@ -1414,6 +1451,7 @@ public class MessageSectionFragment extends MainFragment
                 dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_EMPTY_CHAT);
                 break;
             case TAG_DELETE_CHAT:
+                logger.info("Delete chat clicked, showing dialog");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.delete_chat_title,
                     R.string.delete_chat_confirm,
@@ -1424,6 +1462,7 @@ public class MessageSectionFragment extends MainFragment
                 dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_CHAT);
                 break;
             case TAG_DELETE_DISTRIBUTION_LIST:
+                logger.info("Delete distribution list clicked, showing dialog");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.really_delete_distribution_list,
                     R.string.really_delete_distribution_list_message,
@@ -1434,9 +1473,11 @@ public class MessageSectionFragment extends MainFragment
                 dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_DISTRIBUTION_LIST);
                 break;
             case TAG_EDIT_GROUP:
+                logger.info("Edit group clicked, opening details screen");
                 openGroupDetails(conversationModel);
                 break;
             case TAG_LEAVE_GROUP:
+                logger.info("Leave group clicked, showing dialog");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.action_leave_group,
                     R.string.really_leave_group_message,
@@ -1447,6 +1488,7 @@ public class MessageSectionFragment extends MainFragment
                 dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_LEAVE_GROUP);
                 break;
             case TAG_DISSOLVE_GROUP:
+                logger.info("Dissolve group clicked, showing dialog");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.action_dissolve_group,
                     R.string.really_dissolve_group,
@@ -1458,6 +1500,7 @@ public class MessageSectionFragment extends MainFragment
                 dialog.show(getParentFragmentManager(), DIALOG_TAG_REALLY_DISSOLVE_GROUP);
                 break;
             case TAG_DELETE_MY_GROUP:
+                logger.info("Delete my group clicked");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.action_dissolve_and_delete_group,
                     R.string.delete_my_group_message,
@@ -1469,6 +1512,7 @@ public class MessageSectionFragment extends MainFragment
                 dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_MY_GROUP);
                 break;
             case TAG_DELETE_GROUP:
+                logger.info("Delete group clicked");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.action_delete_group,
                     R.string.delete_group_message,
@@ -1480,6 +1524,7 @@ public class MessageSectionFragment extends MainFragment
                 dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_GROUP);
                 break;
             case TAG_DELETE_LEFT_GROUP:
+                logger.info("Leave group clicked");
                 dialog = GenericAlertDialog.newInstance(
                     R.string.action_delete_group,
                     R.string.delete_left_group_message,
@@ -1491,14 +1536,17 @@ public class MessageSectionFragment extends MainFragment
                 break;
             case TAG_SET_PRIVATE:
             case TAG_UNSET_PRIVATE:
+                logger.info("(un)private clicked");
                 markAsPrivate(conversationModel);
                 break;
             case TAG_SHARE:
+                logger.info("Share clicked");
                 if (ConfigUtils.requestWriteStoragePermissions(activity, this, PERMISSION_REQUEST_SHARE_THREAD)) {
                     prepareShareChat(conversationModel);
                 }
                 break;
             case TAG_MARK_READ:
+                logger.info("Mark read clicked");
                 conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
                 conversationModel.setIsUnreadTagged(false);
                 conversationModel.setUnreadCount(0);
@@ -1508,6 +1556,7 @@ public class MessageSectionFragment extends MainFragment
                 ).start();
                 break;
             case TAG_MARK_UNREAD:
+                logger.info("Mark unread clicked");
                 conversationTagService.addTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
                 conversationModel.setIsUnreadTagged(true);
                 break;
@@ -1532,6 +1581,7 @@ public class MessageSectionFragment extends MainFragment
     public void onYes(String tag, Object data) {
         switch (tag) {
             case DIALOG_TAG_REALLY_HIDE_THREAD:
+                logger.info("Make chat private confirmed");
                 reallyHideChat((ConversationModel) data);
                 break;
             case DIALOG_TAG_HIDE_THREAD_EXPLAIN:
@@ -1541,16 +1591,20 @@ public class MessageSectionFragment extends MainFragment
                 startActivityForResult(intent, ID_RETURN_FROM_SECURITY_SETTINGS);
                 break;
             case DIALOG_TAG_REALLY_LEAVE_GROUP:
+                logger.info("Leave group confirmed");
                 leaveGroup(GroupLeaveIntent.LEAVE, getNewGroupModel((GroupModel) data));
                 break;
             case DIALOG_TAG_REALLY_DISSOLVE_GROUP:
+                logger.info("Dissolve group confirmed");
                 disbandGroup(GroupDisbandIntent.DISBAND, getNewGroupModel((GroupModel) data));
                 break;
             case DIALOG_TAG_REALLY_DELETE_MY_GROUP:
             case DIALOG_TAG_REALLY_DELETE_GROUP:
+                logger.info("Delete group confirmed");
                 removeGroup(getNewGroupModel((GroupModel) data));
                 break;
             case DIALOG_TAG_REALLY_DELETE_DISTRIBUTION_LIST:
+                logger.info("Deletion of distribution list confirmed");
                 new DeleteDistributionListAsyncTask((DistributionListModel) data, distributionListService, this, null).execute();
                 break;
             case DIALOG_TAG_REALLY_EMPTY_CHAT:
@@ -1709,17 +1763,7 @@ public class MessageSectionFragment extends MainFragment
     }
 
     @Override
-    public void onNo(String tag, Object data) {
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_SHARE_THREAD:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -1775,24 +1819,10 @@ public class MessageSectionFragment extends MainFragment
             List<ConversationModel> conversationModels;
 
             conversationModels = conversationService.getAll(false, new ConversationService.Filter() {
-                @Override
-                public boolean onlyUnread() {
-                    return false;
-                }
-
-                @Override
-                public boolean noDistributionLists() {
-                    return false;
-                }
 
                 @Override
                 public boolean noHiddenChats() {
                     return preferenceService.isPrivateChatsHidden();
-                }
-
-                @Override
-                public boolean noInvalid() {
-                    return false;
                 }
 
                 @Override
@@ -1803,7 +1833,7 @@ public class MessageSectionFragment extends MainFragment
 
             RuntimeUtil.runOnUiThread(() -> {
                 synchronized (messageListAdapterLock) {
-                    if (messageListAdapter == null || recreate) {
+                    if ((messageListAdapter == null || recreate) && conversationCategoryService != null) {
                         messageListAdapter = new MessageListAdapter(
                             MessageSectionFragment.this.activity,
                             contactService,
@@ -1850,6 +1880,10 @@ public class MessageSectionFragment extends MainFragment
             synchronized (messageListAdapterItemCache) {
                 for (ConversationModel conversationModel : conversationModels) {
                     if (!messageListAdapterItemCache.containsKey(conversationModel)) {
+                        if (conversationCategoryService == null) {
+                            logger.error("Conversation category service is null while updating cache");
+                            break;
+                        }
                         messageListAdapterItemCache.put(
                             conversationModel,
                             new MessageListAdapterItem(
@@ -1874,6 +1908,10 @@ public class MessageSectionFragment extends MainFragment
 
     private void updateHiddenMenuVisibility() {
         if (isAdded() && toggleHiddenMenuItemRef != null && toggleHiddenMenuItemRef.get() != null) {
+            if (conversationCategoryService == null) {
+                logger.error("Conversation category service is null: cannot update hidden menu visibility");
+                return;
+            }
             toggleHiddenMenuItemRef.get().setVisible(
                 conversationCategoryService.hasPrivateChats() &&
                     ConfigUtils.hasProtection(preferenceService)
@@ -1911,6 +1949,11 @@ public class MessageSectionFragment extends MainFragment
 
     @WorkerThread
     private void firePrivateReceiverUpdate() {
+        if (conversationCategoryService == null) {
+            logger.error("Conversation category service is null: cannot fire private receiver update");
+            return;
+        }
+
         //fire a update for every secret receiver (to update webclient data)
         for (ConversationModel c : Functional.filter(
             this.conversationService.getAll(false, null),
@@ -1925,6 +1968,7 @@ public class MessageSectionFragment extends MainFragment
 
     public void onLogoClicked() {
         if (this.recyclerView != null) {
+            logger.info("Logo clicked, scrolling to top");
             this.recyclerView.stopScroll();
             this.recyclerView.scrollToPosition(0);
         }

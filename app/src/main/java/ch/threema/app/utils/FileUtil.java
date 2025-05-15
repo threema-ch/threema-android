@@ -62,6 +62,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -424,7 +425,7 @@ public class FileUtil {
     }
 
     @Nullable
-    public static String getRealPathFromURI(final Context context, final Uri uri) {
+    public static String getRealPathFromURI(@NonNull final Context context, @NonNull final Uri uri) {
         // DocumentProvider
         if (DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
@@ -758,12 +759,15 @@ public class FileUtil {
 
     /**
      * Try to get a file uri from a content uri to maintain access to a file across two activities.
+     * This method does not sanitize the uri and allows converting the uri to a file uri that can
+     * refer internal files.
      * NOTE: This hack will probably stop working in API 30
      *
      * @param uri content uri to resolve
      * @return file uri, if a file path could be resolved
      */
-    public static Uri getFileUri(Uri uri) {
+    @NonNull
+    public static Uri getFileUri(@NonNull Uri uri) {
         String path = FileUtil.getRealPathFromURI(ThreemaApplication.getAppContext(), uri);
 
         if (path != null) {
@@ -864,5 +868,58 @@ public class FileUtil {
      */
     public static boolean isAnimatedImageFile(@NonNull Uri uri, String mimeType) {
         return isAnimatedWebPFile(uri) || MimeUtil.isGifFile(mimeType);
+    }
+
+    /**
+     * Checks that the file path is not inside the app's internal data directory after resolving
+     * path traversals.
+     *
+     * @param context the context
+     * @param path the path that will be checked
+     * @return {@code false} if the provided path is null, contains unresolvable path traversals, or
+     * resides inside the internal data directory
+     */
+    public static boolean isSanePath(@NonNull Context context, @Nullable String path) {
+        if (path == null) {
+            // We are rather restrictive here. In general it is safer to assume that null paths are
+            // not safe.
+            return false;
+        }
+
+        String canonicalPath;
+        try {
+            canonicalPath = kotlin.io.FilesKt.normalize(new File(path)).getCanonicalPath();
+        } catch (IOException exception) {
+            logger.error("Cannot get canonical path", exception);
+            return false;
+        }
+
+        // Check for path traversals
+        if (canonicalPath.contains("..")) {
+            logger.warn("Path traversal attempted");
+            return false;
+        }
+
+        File dataDir = ContextCompat.getDataDir(context);
+        if (dataDir == null) {
+            logger.error("Could not determine data directory");
+            return false;
+        }
+
+        String canonicalDataDir;
+        try {
+            canonicalDataDir = dataDir.getCanonicalPath();
+        } catch (IOException exception) {
+            logger.warn("Cannot get canonical path of data dir");
+            return false;
+        }
+
+        // Check that the path lies not inside the private files directory
+        if (canonicalPath.startsWith(canonicalDataDir)) {
+            logger.warn("Access denied to data dir");
+            return false;
+        }
+
+        return true;
     }
 }

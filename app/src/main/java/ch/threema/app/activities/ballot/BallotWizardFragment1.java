@@ -40,11 +40,14 @@ import com.google.android.material.elevation.ElevationOverlayProvider;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 
+import org.slf4j.Logger;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,12 +57,16 @@ import ch.threema.app.dialogs.FormatTextEntryDialog;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
 
 public class BallotWizardFragment1 extends BallotWizardFragment implements BallotWizardActivity.BallotWizardCallback, BallotWizard1Adapter.OnChoiceListener {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotWizardFragment1");
+
     private static final String DIALOG_TAG_SELECT_DATE = "selectDate";
     private static final String DIALOG_TAG_SELECT_TIME = "selectTime";
     private static final String DIALOG_TAG_SELECT_DATETIME = "selectDateTime";
@@ -74,6 +81,12 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
     private LinearLayoutManager choiceRecyclerViewLayoutManager;
     private int lastVisibleBallotPosition;
     private int editItemPosition = -1;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

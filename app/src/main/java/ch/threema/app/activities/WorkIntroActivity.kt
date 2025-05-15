@@ -32,8 +32,16 @@ import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.activities.wizard.components.WizardButtonXml
 import ch.threema.app.utils.LinkifyUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("WorkIntroActivity")
 
 class WorkIntroActivity : ThreemaActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     companion object {
         private const val HTML_LINK_FORMAT_TEMPLATE_PREFIX = "<a href='%1\$s'> "
         private const val HTML_LINK_FORMAT_TEMPLATE_POSTFIX = " </a>"
@@ -55,6 +63,7 @@ class WorkIntroActivity : ThreemaActivity() {
         findViewById<WizardButtonXml>(R.id.work_intro_login_button_compose).apply {
             text = getString(R.string.work_intro_login)
             setOnClickListener {
+                logger.info("Login button clicked")
                 startActivity(Intent(this@WorkIntroActivity, EnterSerialActivity::class.java))
             }
         }
@@ -75,6 +84,7 @@ class WorkIntroActivity : ThreemaActivity() {
         workInfoLinkTextView.text = HtmlCompat.fromHtml(workInfoHtmlLink, HtmlCompat.FROM_HTML_MODE_COMPACT)
         workInfoLinkTextView.movementMethod = LinkMovementMethod.getInstance()
         workInfoLinkTextView.setOnClickListener {
+            logger.info("Threema Work link clicked")
             LinkifyUtil.getInstance().openLink(workInfoLink.toUri(), null, this)
         }
     }
@@ -104,6 +114,7 @@ class WorkIntroActivity : ThreemaActivity() {
     }
 
     private fun openConsumerAppInPlayStore() {
+        logger.info("Opening Play Store")
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setData(getString(R.string.private_download_url).toUri())
         intent.setPackage("com.android.vending")
@@ -111,6 +122,7 @@ class WorkIntroActivity : ThreemaActivity() {
     }
 
     private fun openConsumerAppInHuaweiAppGallery() {
+        logger.info("Opening Huawai App Gallery")
         val intent = Intent(Intent.ACTION_VIEW)
         val uri = ("market://details?id=" + this.packageName).toUri()
         intent.setData(uri)

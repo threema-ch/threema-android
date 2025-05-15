@@ -47,13 +47,11 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        logger.debug("onUpdate");
-
         final String ACTION_OPEN = context.getPackageName() + ".ACTION_OPEN";
 
         // Perform this loop procedure for each App Widget that belongs to this provider
-        for (int i = 0; i < appWidgetIds.length; i++) {
-            int appWidgetId = appWidgetIds[i];
+        for (int appWidgetId : appWidgetIds) {
+            logger.info("Updating widget with id {}", appWidgetId);
 
             Intent intent = new Intent(context, RecipientListBaseActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);

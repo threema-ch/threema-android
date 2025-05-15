@@ -35,8 +35,16 @@ import ch.threema.app.R
 import ch.threema.app.activities.WorkExplainActivity
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils.*
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("SettingsSummaryFragment")
 
 class SettingsSummaryFragment : ThreemaPreferenceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var preferencePairs: List<Pair<Preference, String>> = emptyList()
     private var selectedPrefView: View? = null
     private val preferenceService = requirePreferenceService()

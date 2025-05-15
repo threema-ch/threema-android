@@ -58,6 +58,8 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 // Note: This should NOT extend ThreemaToolbarActivity
 public class UnlockMasterKeyActivity extends ThreemaActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("UnlockMasterKeyActivity");
@@ -76,6 +78,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
         ConfigUtils.configureSystemBars(this);
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 

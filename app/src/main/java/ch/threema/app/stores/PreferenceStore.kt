@@ -45,6 +45,7 @@ import java.io.IOException
 import java.io.ObjectOutput
 import java.io.ObjectOutputStream
 import java.io.Serializable
+import java.time.Instant
 import java.util.Date
 import javax.crypto.CipherInputStream
 import org.apache.commons.io.IOUtils
@@ -257,6 +258,10 @@ class PreferenceStore(
         this.save(key, date?.time ?: 0, crypt)
     }
 
+    override fun save(key: String, instant: Instant?) {
+        save(key, instant?.toEpochMilli() ?: 0L)
+    }
+
     override fun save(key: String, array: JSONArray) {
         save(key, array, crypt = false)
     }
@@ -448,6 +453,15 @@ class PreferenceStore(
             return Date(longValue)
         }
         return null
+    }
+
+    override fun getInstant(key: String): Instant? {
+        val longValue = getLong(key)
+        return if (longValue != 0L) {
+            Instant.ofEpochMilli(longValue)
+        } else {
+            null
+        }
     }
 
     override fun getDateAsLong(key: String): Long {

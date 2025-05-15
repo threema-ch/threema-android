@@ -29,10 +29,18 @@ import ch.threema.app.services.IdListService
 import ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask
 import ch.threema.app.utils.LogUtil
 import ch.threema.app.utils.equalsIgnoreOrder
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel
 
+private val logger = LoggingUtil.getThreemaLogger("ProfilePicRecipientsActivity")
+
 class ProfilePicRecipientsActivity : MemberChooseActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private lateinit var profilePicRecipientsService: IdListService
     private lateinit var taskManager: TaskManager
 

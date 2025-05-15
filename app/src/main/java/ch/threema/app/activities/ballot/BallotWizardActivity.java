@@ -66,6 +66,8 @@ import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class BallotWizardActivity extends ThreemaActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("BallotWizardActivity");
 
@@ -111,6 +113,7 @@ public class BallotWizardActivity extends ThreemaActivity {
         ConfigUtils.configureSystemBars(this);
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         setContentView(R.layout.activity_ballot_wizard);
 

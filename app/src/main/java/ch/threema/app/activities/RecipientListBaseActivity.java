@@ -149,6 +149,7 @@ import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_IT
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     CancelableHorizontalProgressDialog.ProgressDialogClickListener,
@@ -800,24 +801,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     }
 
     private void addMediaItemSharedFromOtherApp(String mimeType, @NonNull Uri uri, @Nullable String caption) {
-        if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())) {
-            String path = uri.getPath();
-            File applicationDir = new File(getApplicationInfo().dataDir);
-
-            if (path != null) {
-                try {
-                    String inputPath = new File(path).getCanonicalPath();
-                    if (inputPath.startsWith(applicationDir.getCanonicalPath())) {
-                        Toast.makeText(this, "Illegal path", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                } catch (IOException e) {
-                    logger.error("Exception", e);
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-        } else if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
+        if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
             try {
                 getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } catch (Exception e) {
@@ -827,6 +811,13 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 }
             }
         }
+
+        String realPath = FileUtil.getRealPathFromURI(this, uri);
+        if (realPath != null && !FileUtil.isSanePath(this, realPath)) {
+            Toast.makeText(this, R.string.invalid_file_cannot_be_shared, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         MediaItem mediaItem = new MediaItem(uri, mimeType, caption);
 
         // never create a voice message out of a shared audio file - fix default
@@ -1423,6 +1414,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (savedInstanceState != null) {
             queryText = savedInstanceState.getString(BUNDLE_QUERY_TEXT, null);

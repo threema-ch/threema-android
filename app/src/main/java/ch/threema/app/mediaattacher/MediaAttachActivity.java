@@ -96,6 +96,7 @@ import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.ThreemaApplication.getMessageDraft;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 public class MediaAttachActivity extends MediaSelectionBaseActivity implements View.OnClickListener,
@@ -158,6 +159,12 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
             }
             finish();
         });
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     /* start setup methods */
     @Override

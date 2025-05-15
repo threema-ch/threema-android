@@ -716,15 +716,11 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     /**
      * Check whether we should send emoji reactions to this particular MessageReceiver
      *
-     * @return true if we should send emoji reactions to this MessageReceiver, false otherwise
+     * @return [Reactions_FULL] if we should send emoji reactions to this MessageReceiver, [Reactions_NONE] otherwise
      */
     @Override
     @EmojiReactionsSupport
     public int getEmojiReactionSupport() {
-        if (!ConfigUtils.canSendEmojiReactions()) {
-            return Reactions_NONE;
-        }
-
         return ThreemaFeature.canEmojiReactions((this).getContact().getFeatureMask())
             ? Reactions_FULL
             : Reactions_NONE;

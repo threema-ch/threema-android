@@ -21,10 +21,25 @@
 
 package ch.threema.app.activities;
 
+import android.os.Bundle;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class PrivacyPolicyActivity extends SimpleWebViewActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PrivacyPolicyActivity");
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
+
     @Override
     protected int getWebViewTitle() {
         return R.string.privacy_policy;

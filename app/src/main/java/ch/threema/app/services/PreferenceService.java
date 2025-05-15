@@ -663,4 +663,9 @@ public interface PreferenceService {
     Instant getLastMultiDeviceGroupCheckTimestamp();
 
     void setLastMultiDeviceGroupCheckTimestamp(final @NonNull Instant timestamp);
+
+    @Nullable
+    Instant getLastDeprecatedAndroidVersionWarningDismissed();
+
+    void setLastDeprecatedAndroidVersionWarningDismissed(final @NonNull Instant timestamp);
 }

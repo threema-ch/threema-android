@@ -21,7 +21,6 @@
 
 package ch.threema.app.adapters;
 
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -33,6 +32,8 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -54,41 +55,45 @@ import ch.threema.storage.models.ConversationModel;
 public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetViewsFactory");
 
-    private Context context;
-    private int appWidgetId;
-    private ServiceManager serviceManager;
-    private ConversationService conversationService;
-    private GroupService groupService;
-    private ContactService contactService;
-    private DistributionListService distributionListService;
-    private LockAppService lockAppService;
-    private PreferenceService preferenceService;
-    private NotificationPreferenceService notificationPreferenceService;
-    private MessageService messageService;
-    private ConversationCategoryService conversationCategoryService;
+    @NonNull
+    private final Context context;
+    @NonNull
+    private final ConversationService conversationService;
+    @NonNull
+    private final GroupService groupService;
+    @NonNull
+    private final ContactService contactService;
+    @NonNull
+    private final DistributionListService distributionListService;
+    @NonNull
+    private final LockAppService lockAppService;
+    @NonNull
+    private final PreferenceService preferenceService;
+    @NonNull
+    private final NotificationPreferenceService notificationPreferenceService;
+    @NonNull
+    private final MessageService messageService;
+    @NonNull
+    private final ConversationCategoryService conversationCategoryService;
+
     private List<ConversationModel> conversations;
 
-    public WidgetViewsFactory(Context context, Intent intent) {
+    public WidgetViewsFactory(@NonNull Context context) throws ThreemaException {
         this.context = context;
-        this.appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-            AppWidgetManager.INVALID_APPWIDGET_ID);
 
-        this.serviceManager = ThreemaApplication.getServiceManager();
-        if (this.serviceManager != null) {
-            try {
-                this.conversationService = serviceManager.getConversationService();
-                this.contactService = serviceManager.getContactService();
-                this.groupService = serviceManager.getGroupService();
-                this.distributionListService = serviceManager.getDistributionListService();
-                this.messageService = serviceManager.getMessageService();
-                this.lockAppService = serviceManager.getLockAppService();
-                this.preferenceService = serviceManager.getPreferenceService();
-                this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-                this.conversationCategoryService = serviceManager.getConversationCategoryService();
-            } catch (ThreemaException e) {
-                logger.debug("no conversationservice");
-            }
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            throw new ThreemaException("Could not get the service manager");
         }
+        this.conversationService = serviceManager.getConversationService();
+        this.contactService = serviceManager.getContactService();
+        this.groupService = serviceManager.getGroupService();
+        this.distributionListService = serviceManager.getDistributionListService();
+        this.messageService = serviceManager.getMessageService();
+        this.lockAppService = serviceManager.getLockAppService();
+        this.preferenceService = serviceManager.getPreferenceService();
+        this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
+        this.conversationCategoryService = serviceManager.getConversationCategoryService();
     }
 
 
@@ -114,30 +119,19 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
      */
     @Override
     public void onDataSetChanged() {
-        if (contactService != null) {
-            conversations = conversationService.getAll(false, new ConversationService.Filter() {
-                @Override
-                public boolean onlyUnread() {
-                    return true;
-                }
+        conversations = conversationService.getAll(false, new ConversationService.Filter() {
+            @Override
+            public boolean onlyUnread() {
+                return true;
+            }
 
-                @Override
-                public boolean noDistributionLists() {
-                    return false;
-                }
+            @Override
+            public boolean noHiddenChats() {
+                return preferenceService.isPrivateChatsHidden();
+            }
 
-                @Override
-                public boolean noHiddenChats() {
-                    return preferenceService.isPrivateChatsHidden();
-                }
-
-                @Override
-                public boolean noInvalid() {
-                    return false;
-                }
-
-            });
-        }
+        });
+        logger.info("Conversations updated");
     }
 
     /**
@@ -154,10 +148,10 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
      */
     @Override
     public int getCount() {
-        if (lockAppService != null &&
-            !lockAppService.isLocked() &&
+        if (!lockAppService.isLocked() &&
             notificationPreferenceService.isShowMessagePreview() &&
-            conversations != null) {
+            conversations != null
+        ) {
             return conversations.size();
         } else {
             return 0;
@@ -174,16 +168,17 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
      */
     @Override
     public RemoteViews getViewAt(int position) {
-        if (conversations != null && conversations.size() > 0 && position < conversations.size()) {
+        if (conversations != null && !conversations.isEmpty() && position < conversations.size()) {
             ConversationModel conversationModel = conversations.get(position);
 
             if (conversationModel != null) {
-                String sender = "", message = "", date = "", count = "";
+                @Nullable String message = "";
+                String sender = "", date = "", count = "";
                 Bitmap avatar = null;
                 Bundle extras = new Bundle();
                 String uniqueId = conversationModel.getReceiver().getUniqueIdString();
 
-                if (this.lockAppService != null && !this.lockAppService.isLocked() && notificationPreferenceService.isShowMessagePreview()) {
+                if (!this.lockAppService.isLocked() && notificationPreferenceService.isShowMessagePreview()) {
                     sender = conversationModel.getReceiver().getDisplayName();
 
                     if (conversationModel.isContactConversation()) {
@@ -199,7 +194,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 
                     count = Long.toString(conversationModel.getUnreadCount());
 
-                    if (conversationCategoryService != null && conversationCategoryService.isPrivateChat(uniqueId)) {
+                    if (conversationCategoryService.isPrivateChat(uniqueId)) {
                         message = context.getString(R.string.private_chat_subject);
                     } else if (conversationModel.getLatestMessage() != null) {
                         AbstractMessageModel messageModel = conversationModel.getLatestMessage();

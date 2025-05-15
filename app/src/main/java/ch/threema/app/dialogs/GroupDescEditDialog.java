@@ -27,15 +27,22 @@ import android.widget.EditText;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 
 public class GroupDescEditDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDescEditDialog");
+
 
     private static final String ARG_TITLE = "title";
     private static final String ARG_GROUP_DESC = "groupDesc";
@@ -69,6 +76,11 @@ public class GroupDescEditDialog extends ThreemaDialogFragment {
         this.callback = callback;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @NonNull
     @Override

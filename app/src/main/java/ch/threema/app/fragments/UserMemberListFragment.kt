@@ -38,7 +38,6 @@ import org.slf4j.Logger
 private val logger: Logger = LoggingUtil.getThreemaLogger("UserMemberListFragment")
 
 class UserMemberListFragment : MemberListFragment() {
-
     override fun getBundleName(): String = "UserMemberListState"
 
     override fun getEmptyText(): Int = R.string.no_matching_contacts

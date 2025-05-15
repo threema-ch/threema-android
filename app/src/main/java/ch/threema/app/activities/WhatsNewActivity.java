@@ -27,12 +27,19 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WhatsNewActivity extends ThreemaAppCompatActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WhatsNewActivity");
+
     public static final String EXTRA_NO_ANIMATION = "noanim";
 
     @Override
@@ -41,6 +48,7 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
         ConfigUtils.configureSystemBars(this);
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         setContentView(R.layout.activity_whatsnew);
 

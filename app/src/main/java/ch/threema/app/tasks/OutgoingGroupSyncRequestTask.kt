@@ -30,13 +30,13 @@ import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContact
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.now
+import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -70,15 +70,20 @@ class OutgoingGroupSyncRequestTask(
             return
         }
 
+        val groupIdentity = GroupIdentity(
+            creatorIdentity = creatorIdentity,
+            groupId = groupId.toLong(),
+        )
+
         // Only send a group sync request once in an hour for a specific group
-        val model = outgoingGroupSyncRequestLogModelFactory.get(groupId.toString(), creatorIdentity)
+        val groupSyncRequestLogModel = outgoingGroupSyncRequestLogModelFactory.get(groupIdentity)
         val oneHourAgo = Date(System.currentTimeMillis() - DateUtils.HOUR_IN_MILLIS)
-        val lastSyncRequest = model?.lastRequest ?: Date(0)
+        val lastSyncRequest = groupSyncRequestLogModel?.lastRequest ?: Date(0)
         if (lastSyncRequest.after(oneHourAgo)) {
             logger.info(
                 "Do not send request sync to group creator {}: last sync request was at {}",
                 creatorIdentity,
-                model?.lastRequest,
+                groupSyncRequestLogModel?.lastRequest,
             )
             return
         }
@@ -122,15 +127,7 @@ class OutgoingGroupSyncRequestTask(
         )
 
         // Update sync request sent date
-        if (model == null) {
-            val newModel = OutgoingGroupSyncRequestLogModel()
-            newModel.setAPIGroupId(groupId.toString(), creatorIdentity)
-            newModel.lastRequest = createdAt
-            outgoingGroupSyncRequestLogModelFactory.create(newModel)
-        } else {
-            model.lastRequest = createdAt
-            outgoingGroupSyncRequestLogModelFactory.update(model)
-        }
+        outgoingGroupSyncRequestLogModelFactory.createOrUpdate(groupIdentity, createdAt)
     }
 
     override fun serialize(): SerializableTaskData = OutgoingGroupSyncRequestData(

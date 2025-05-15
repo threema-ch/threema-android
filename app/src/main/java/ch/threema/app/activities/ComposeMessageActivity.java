@@ -49,6 +49,8 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class ComposeMessageActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageActivity");
 
@@ -72,6 +74,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
         getWindow().setAllowEnterTransitionOverlap(true);
         getWindow().setAllowReturnTransitionOverlap(true);
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         // Tell the Window that our app is going to responsible for fitting for any system windows.
         // This is similar to the now deprecated:

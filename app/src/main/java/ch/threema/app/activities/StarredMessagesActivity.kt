@@ -60,6 +60,7 @@ import ch.threema.app.ui.SelectorDialogItem
 import ch.threema.app.ui.ThreemaSearchView
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_NONE
@@ -70,11 +71,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private val logger = LoggingUtil.getThreemaLogger("StarredMessagesActivity")
+
 class StarredMessagesActivity :
     ThreemaToolbarActivity(),
     SearchView.OnQueryTextListener,
     SelectorDialog.SelectorDialogClickListener,
     GenericAlertDialog.DialogClickListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val starredMessagesSearchQueryTimeout = 500.milliseconds
     private var chatsAdapter: GlobalSearchAdapter? = null
     private var globalSearchViewModel: GlobalSearchViewModel? = null
@@ -178,6 +185,7 @@ class StarredMessagesActivity :
                 position: Int,
             ) {
                 if (actionMode != null) {
+                    logger.info("Starred message selection toggled")
                     chatsAdapter?.toggleChecked(position)
                     if ((chatsAdapter?.checkedItemsCount ?: 0) > 0) {
                         actionMode?.invalidate()
@@ -185,6 +193,7 @@ class StarredMessagesActivity :
                         actionMode?.finish()
                     }
                 } else {
+                    logger.info("Starred message clicked")
                     showMessage(messageModel)
                 }
             }
@@ -371,6 +380,7 @@ class StarredMessagesActivity :
 
     override fun onClick(tag: String, which: Int, data: Any?) {
         if (DIALOG_TAG_SORT_BY == tag) {
+            logger.info("Sorting order for starred messages changed")
             sortOrder = which
             preferenceService?.starredMessagesSortOrder = sortOrder
             onQueryTextChange(queryText)
@@ -393,7 +403,6 @@ class StarredMessagesActivity :
     }
 
     companion object {
-        private val logger = LoggingUtil.getThreemaLogger("StarredMessagesActivity")
         private const val DIALOG_TAG_SORT_BY = "sortBy"
         private const val FILTER_FLAGS =
             FILTER_STARRED_ONLY or FILTER_GROUPS or FILTER_CHATS or FILTER_INCLUDE_ARCHIVED

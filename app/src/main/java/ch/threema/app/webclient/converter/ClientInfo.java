@@ -68,7 +68,6 @@ public class ClientInfo extends Converter {
     private final static String QUOTES_V2 = "quotesV2";
     private final static String IMAGE_FORMAT = "imageFormat";
     private final static String MDM = "mdm";
-    private final static String GROUP_REACTIONS = "groupReactions"; // TODO(ANDR-3517): Remove
     private final static String EMOJI_REACTIONS = "emojiReactions";
 
     // Image format keys
@@ -146,11 +145,7 @@ public class ClientInfo extends Converter {
         capabilities.put(MAX_FILE_SIZE, ThreemaApplication.MAX_BLOB_SIZE);
         capabilities.put(DISTRIBUTION_LISTS, true);
         capabilities.put(QUOTES_V2, true);
-        if (BuildConfig.EMOJI_REACTIONS_WEB_ENABLED) {
-            capabilities.put(EMOJI_REACTIONS, true);
-        } else {
-            capabilities.put(GROUP_REACTIONS, true);
-        }
+        capabilities.put(EMOJI_REACTIONS, true);
 
         // Image format
         final MsgpackObjectBuilder imageFormat = new MsgpackObjectBuilder();

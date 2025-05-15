@@ -85,6 +85,7 @@ import ch.threema.app.ui.LessObnoxiousMediaActionSound
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.RuntimeUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import java.io.File
@@ -98,8 +99,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 
+private val logger = LoggingUtil.getThreemaLogger("CameraFragment")
+
 class CameraFragment : Fragment() {
-    private val logger = LoggingUtil.getThreemaLogger("CameraFragment")
+    init {
+        logScreenVisibility(logger)
+    }
 
     private lateinit var viewModel: CameraFragmentViewModel
 

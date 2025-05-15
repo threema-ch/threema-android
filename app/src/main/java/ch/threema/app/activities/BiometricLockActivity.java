@@ -48,6 +48,8 @@ import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class BiometricLockActivity extends ThreemaAppCompatActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("BiometricLockActivity");
 
@@ -64,6 +66,7 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
         logger.debug("onCreate");
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager == null) {

@@ -21,7 +21,6 @@
 
 package ch.threema.app.camera;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -32,24 +31,20 @@ import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
 import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class CameraActivity extends ThreemaAppCompatActivity implements CameraFragment.CameraCallback, CameraFragment.CameraConfiguration {
     private static final Logger logger = LoggingUtil.getThreemaLogger("CameraActivity");
@@ -70,6 +65,7 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
         logger.info("onCreate");
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         setContentView(R.layout.camerax_activity_camera);
 

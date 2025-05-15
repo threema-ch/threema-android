@@ -1,0 +1,1942 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_section2">Контакти</string>
+    <!-- Label on first tab on app's main screen, selecting it leads to the list of chats -->
+    <string name="title_section1">Чатове</string>
+    <string name="title_compose_message">Започнете чат</string>
+    <string name="title_choose_recipient">Изберете получател</string>
+    <string name="title_keyfingerprint">Ключ-пръстов отпечатък</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_mythreemaid">Моят ${app_name_short} идентификатор</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_threemaid">${app_name_short} идентификатор</string>
+    <string name="title_adduser">Добавете нов контакт</string>
+    <string name="title_enter_id">Въведете идентификатор</string>
+    <string name="title_invite_friend">Поканете приятел</string>
+    <string name="invite_via">Поканете приятел чрез…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_body">Здравейте, \n\n използвам %1$s, приложението за сигурна и мигновена комуникация, което защитава поверителността на потребителя.\n\n Моят ${app_name_short} идентификатор: https://threema.id/%2$s\n\n Нека си общуваме чрез %1$s!\n\n Поздрави, \n</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_sms_body">Здравейте! Нека използваме %1$s, за да си общуваме по сигурен и поверителен начин! Моят ${app_name_short} идентификатор: https://threema.id/%2$s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invite_email_subject">${app_name_short}. Сигурният месинджър, който защитава нашата поверителност</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_id_hint">Въведете ${app_name_short} идентификатор</string>
+    <string name="account_links">Свързани акаунти</string>
+    <string name="menu_settings">Настройки</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="menu_about">За ${app_name}</string>
+    <string name="menu_add_contact">Нов контакт</string>
+    <string name="menu_done">Готово</string>
+    <string name="compose_message_and_enter">Въведете съобщение</string>
+    <string name="title_job_title">Длъжност</string>
+    <string name="title_department">Отдел</string>
+    <string name="send">Изпратете</string>
+    <string name="prefs_privacy">Поверителност</string>
+    <string name="prefs_notifications">Звук &amp; известия</string>
+    <string name="prefs_chatdisplay">Чат</string>
+    <string name="prefs_security">Сигурност</string>
+    <string name="prefs_sum_privacy">Настройки на поверителността</string>
+    <string name="prefs_sum_notifications">Настройки на звука и вибрациите</string>
+    <string name="prefs_sum_chatdisplay">Настройки на чата</string>
+    <string name="prefs_masterkey">Криптиране на локалните данни</string>
+    <string name="prefs_header_contacts">Контакти</string>
+    <string name="prefs_header_chat">Чат</string>
+    <string name="prefs_header_reset">Възобнови</string>
+    <string name="prefs_header_keyboard">Клавиатура</string>
+    <string name="prefs_sum_sync_contacts_on">Синхронизирайте %s потребителите с контактите от адресната книга</string>
+    <string name="prefs_sum_sync_contacts_off">Не синхронизирайте %s потребителите с адресната книга</string>
+    <string name="prefs_title_sync_contacts">Синхронизирайте контактите</string>
+    <string name="prefs_sum_block_unknown_off">Всеки може да Ви изпраща съобщения. Новите контакти ще бъдат добавяни автоматично, щом пристигне първото съобщение.</string>
+    <string name="prefs_sum_block_unknown_on">Само хора от адресната книга могат да Ви изпращат съобщения.</string>
+    <string name="prefs_title_block_unknown">Блокиране на непознати</string>
+    <string name="prefs_title_read_receipts">Изпратете уведомление за прочетено съобщение</string>
+    <string name="prefs_title_typing_indicator">Показване на индикатор при писане</string>
+    <string name="prefs_media_title">Мултимедийни елементи &amp; памет</string>
+    <string name="prefs_sum_media_title">Настройки на мултимедия</string>
+    <string name="prefs_image_size">Размери на изображенията</string>
+    <string name="prefs_notification_sound">Звук на известията</string>
+    <string name="prefs_sum_notification_sound">Стандартни настройки</string>
+    <string name="prefs_vibrate">Вибрация</string>
+    <string name="prefs_sum_vibrate">Вибрация при входящо обаждане</string>
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_notification_light">Цветове на известията</string>
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_sum_notification_light">Използвайте цветовете за известията (ако са достъпни) за входящите съобщения</string>
+    <string name="prefs_sum_light">Бяло</string>
+    <string name="prefs_title_wallpaper">Изберете фон</string>
+    <string name="prefs_sum_wallpaper">Изберете снимка за фон</string>
+    <string name="prefs_title_wallpaper_switch">Фон</string>
+    <string name="prefs_title_enter">Натиснете „Enter“, за да изпратите</string>
+    <string name="prefs_sum_enter_on">Бутонът „Enter“ изпраща съобщението веднага</string>
+    <string name="prefs_sum_enter_off">Бутонът „Enter“ добавя нов ред</string>
+    <string name="prefs_system_notifications">Чат</string>
+    <string name="prefs_inapp">В приложението</string>
+    <string name="prefs_inapp_sounds">Звук в приложението</string>
+    <string name="prefs_inapp_sounds_on">Възпроизвеждане на звук, когато се изпращат/получават съобщения</string>
+    <string name="prefs_inapp_sounds_off">Да не се възпроизвеждат никакви звуци в приложението</string>
+    <string name="prefs_inapp_vibrate">Вибрация в приложението</string>
+    <string name="prefs_inapp_vibrate_on">Вибрация при получаване на съобщения</string>
+    <string name="prefs_inapp_vibrate_off">Да не вибрира при получаване на съобщения</string>
+    <string name="workarounds">Решения</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_threema_push_switch">Използвайте push-известията на ${app_name_short}</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_threema_push_on">Използвайте push-известията на ${app_name_short}, за да получавате известия за нови съобщения</string>
+    <string name="prefs_sum_threema_push_off">Проверете за нови съобщения чрез системата на push-известия</string>
+    <string name="prefs_logging">Вписване</string>
+    <string name="prefs_title_message_log_switch">Запишете лога във файл</string>
+    <string name="prefs_title_sum_message_log_on">Събитията и информацията за мрежата ще бъдат логнати във файла debug_log.txt</string>
+    <string name="prefs_title_sum_message_log_off">Събитията няма да бъдат запазени в лога</string>
+    <string name="prefs_reset_push">Рестартирайте push-токен</string>
+    <string name="prefs_sum_reset_push">Пререгистрирайте устройството за push-известия с FCM/HMS</string>
+    <string name="prefs_notification_preview">Покажете предварителен преглед на съобщението</string>
+    <string name="prefs_sum_reset_ringtones">Възстановете системните настройки</string>
+    <string name="prefs_title_reset_ringtones">Възстановете настройките на звуковите известия</string>
+    <string name="image_size_small">Малък (640x640)</string>
+    <string name="image_size_medium">Среден (1024x1024)</string>
+    <string name="image_size_large">Голям (1600x1600)</string>
+    <string name="image_size_xlarge">Огромен (2592x2592)</string>
+    <string name="image_size_original">Оригинален размер</string>
+    <string name="next">Следващо</string>
+    <string name="finish">Край</string>
+    <string name="please_wait">Моля, изчакайте…</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_first_create_id">Създайте своя ${app_name_short} идентификатор…</string>
+    <string name="wizard1_sync_contacts">Синхронизирайте контактите…</string>
+    <string name="wizard2_email_hint">Въведете Вашия имейл адрес</string>
+    <string name="wizard2_email_linking">Свържете Вашият имейл с идентификатора</string>
+    <string name="wizard2_phone_hint">Въведете Вашия телефонен номер.</string>
+    <string name="wizard2_phone_number_confirm_title">Потвърдете телефонния номер</string>
+    <string name="wizard2_phone_number_confirm">На път сме да изпратим СМС на номер \n\n%1$s\n\n. Това правилният телефонен номер ли е?</string>
+    <string name="wizard2_phone_linking">Свързване на телефонния номер с Вашият идентификатор</string>
+    <string name="wizard3_nickname_hint">Въведете Вашият псевдоним</string>
+    <string name="set_nickname_title">Задайте псевдоним</string>
+    <string name="ok">Добре</string>
+    <string name="cancel">Отменете</string>
+    <string name="copy_message_action">Копирайте</string>
+    <string name="delete_contact_action">Изтрийте контакт</string>
+    <string name="delete_multiple_contact_action">Изтрийте контакти</string>
+    <string name="scan_id">Сканирайте идентификатора</string>
+    <string name="id_scanned">Идентификаторът е сканиран</string>
+    <string name="id_mismatch">Публичният ключ, който сканирахте, не съвпада с ключа, който сървърът е запазил         за този идентификатор. Това означава, че някой е манипулирал сканирания код, и че на този ключ не може да му се има доверие.</string>
+    <string name="scan_successful">Идентификаторът е успешно сканиран и контактът е потвърден.</string>
+    <string name="scan_duplicate">Този идентификатор вече е сканиран и потвърден.</string>
+    <string name="linked_email">Имейл</string>
+    <string name="linked_mobile">Мобилен телефон</string>
+    <string name="public_nickname">Псевдоним</string>
+    <string name="share_via">Изпрати чрез…</string>
+    <string name="share_subject">Чат в %s</string>
+    <string name="message_delete_undo">Отмени</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="mobile_already_linked">Вашият ${app_name_short} идентификатор вече е свързан към този мобилен телефон</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="email_already_linked">Вашият ${app_name_short} идентификатор вече е свързан към този имейл</string>
+    <string name="whoaaa">Уведомление</string>
+    <string name="really_delete_message_title">Изтрийте съобщението</string>
+    <string name="really_delete_thread">Изтрийте чата</string>
+    <string name="really_delete_multiple_threads">Изтрийте чатовете</string>
+    <string name="really_delete_contact">Наистина ли искате да изтриете този контакт и всичките свързани с него съобщения?</string>
+    <string name="image_placeholder">Изображение</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="invalid_threema_id">Невалиден ${app_name_short} идентификатор</string>
+    <string name="contact_already_exists">Контактът вече съществува</string>
+    <string name="close">Затворете</string>
+    <string name="creating_contact">Добавете нов контакт</string>
+    <string name="creating_contact_successful">Контактът е добавен успешно</string>
+    <string name="invalid_threema_qr_code">Невалиден QR код</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="threema_contact">${app_name_short} контакт</string>
+    <string name="first_name">Име</string>
+    <string name="last_name">Фамилно име</string>
+    <string name="os_licenses">Лицензи</string>
+    <string name="verify_title">Проверява се телефонният номер</string>
+    <string name="verify_success_text">Вашият телефонен номер е потвърден успешно.</string>
+    <string name="verify_failed">Неуспешна проверка</string>
+    <string name="verify_failed_summary">Неуспешна проверка на телефонния номер. Моля, проверете дали въведеният номер         е правилен и дали сте свързани към мобилната мрежа преди да опитате отново.</string>
+    <string name="verify_failed_not_linked">Неуспешна проверка на телефонния номер. Процесът по потвърждаване е прекратен.</string>
+    <string name="check_incoming_sms">Проверете за входящи СМС-и</string>
+    <string name="backup_title">Експортиране на идентификатор</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_sum">Експортирайте Вашия ${app_name_short} идентификатор</string>
+    <string name="backup_and_delete">Резервно копие и изтриване</string>
+    <string name="delete_id_title">Изтрийте идентификатора</string>
+    <string name="delete_id_message">Освен ако не сте създали резервно копие или експортирали/копирали този идентификатор, Вие никога няма да можете да изпращате или получавате         съобщения с този идентификатор отново.\n\nАко не искате да използвате този идентификатор повече, се препоръчва да създадете парола за анулиране и да анулирате идентификатора на myid.threema.ch/revoke преди да го изтриете.</string>
+    <string name="delete_id_message2">Последно предупреждение: наистина ли искате да изтриете идентификатора на това устройство?</string>
+    <string name="delete_id_sum">Окончателно изтриване на ${app_name_short} идентификатора и всички чатове на това устройство</string>
+    <string name="backup_password_summary">Вашият експортиран идентификатор ще бъде криптиран с парола. Използвайте комбинация от букви, цифри и символи. Не забравяйте какво е въведено тук!</string>
+    <string name="backup_password_again_summary">Въведете паролата отново</string>
+    <string name="password_hint">Парола</string>
+    <string name="generating_backup_data">Създаване на резервно копие</string>
+    <string name="backup_id_title">Вашият експортиран идентификатор</string>
+    <string name="backup_id_summary">Текстовата секвенция, която се изписва отгоре, или QR кодът, който заедно с паролата         сте избрали, могат да се използват, за да възстановите Вашия идентификатор на друго устройство. Трябва да го копирате на подходящо място, да го споделите чрез         имейл или да сканирате QR кода, използвайки друго устройство.</string>
+    <string name="support">Помощ</string>
+    <string name="support_url">https://threema.ch/android/support/</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_content">Тази текстова секвенция може да бъде използвана заедно с паролата, за да възстановите Вашия ${app_name_short} идентификатор.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_share_subject">${app_name_short} идентификаторът се експортира към</string>
+    <string name="add_attachment">Добавете нов прикачен файл</string>
+    <string name="invalid_passphrase">Невалидна тайна фраза</string>
+    <string name="master_key_locked">Главният ключ е блокиран</string>
+    <string name="master_key_locked_notify_description">Натиснете тук, за да въведете Вашата тайна фраза</string>
+    <string name="prefs_masterkey_passphrase">Няма въведена тайна фраза</string>
+    <string name="prefs_title_masterkey_passphrase">Тайна фраза</string>
+    <string name="setting_masterkey_passphrase">Настройване на тайна фраза за главен ключ</string>
+    <string name="masterkey_passphrase_title">Тайна фраза за главен ключ</string>
+    <string name="masterkey_passphrase_summary">Въведете тайна фраза, за да предпазите Вашия главен ключ. Имайте предвид, че ще трябва да я въвеждате всеки път щом приложението се рестартира.</string>
+    <string name="masterkey_passphrase_again_summary">Въведете тайната фраза отново</string>
+    <string name="masterkey_passphrase_hint">Тайна фраза</string>
+    <string name="master_key_locked_want_exit">Главният ключ е затворен. Искате ли да опитате отново?</string>
+    <string name="click_here_to_change_passphrase">Натиснете тук, за да промените тайната фраза</string>
+    <string name="attach_camera">Камера</string>
+    <string name="menu_restore">Възстановете от резервно копие</string>
+    <string name="restore_id_hint">Въведете или поставете текстовата секвенция на експортирания идентификатор, за да възстановите</string>
+    <string name="location_placeholder">Местоположение</string>
+    <string name="video_placeholder">Видео</string>
+    <string name="audio_placeholder">Аудио</string>
+    <string name="restoring_backup">Възстановяване от резервно копие</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="server_message_title">Съобщение от сървъра на ${company_name}</string>
+    <string name="error">Грешка</string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is disabled -->
+    <string name="no_contacts"><![CDATA[Вие нямате все още контакти. Включете синхронизацията на контакти (от Настройки > Поверителност) или добавете собственоръчно контакти.]]></string>
+    <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_contacts_sync_on"><![CDATA[Вие нямате все още контакти. Синхронизацията е включена, но изглежда, че никой от Вашите контакти не е в ${app_name_short} (поканете ги!).]]></string>
+    <string name="masterkey_title">Въведете тайна фраза</string>
+    <string name="masterkey_body">Твоят главен ключ е защитен с тайна фраза. Въведете тайната фраза, за да отблокирате ключа.</string>
+    <string name="masterkey_unlocking">Отблокиране на главния ключ</string>
+    <string name="verify_phonecall_text">Поискайте обаждане</string>
+    <string name="prepare_call_message">Ако продължите, ще се опитаме да Ви се обадим веднага. Вашият код за потвърждение        ще Ви бъде прочетен два пъти. Имайте предвид, че ще направим само един опит, така че се подсигурете, че сте готови преди         да продължите.</string>
+    <string name="enter_code_hint">Въведете кода</string>
+    <string name="enter_code_sum">Моля, въведете кода от СМС-а за потвърждение или от телефонното обаждане.</string>
+    <string name="no_matching_contacts">Не са намерени контакти.</string>
+    <string name="code_invalid">Въведеният код е невалиден.</string>
+    <string name="try_again">Опитайте отново</string>
+    <string name="decoding_message">Разшифроване на съобщението</string>
+    <string name="invalid_barcode">Невалиден баркод</string>
+    <string name="expired_barcode">Този код е изтекъл. Моля, сканирайте го отново направо от устройството на другия потребител.</string>
+    <string name="pending">Висящ</string>
+    <string name="unlinking_email">Премахване на връзката с имейла</string>
+    <string name="unlink">Премахване на връзката</string>
+    <string name="threema_version">Версия</string>
+    <string name="threema_version_code">Код на версията</string>
+    <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
+    <string name="about_server_config_title">Настройки на сървъра</string>
+    <string name="wrong_backupid_or_password_or_no_internet_connection">Няма връзка с интернет, невалидни експортирани данни за идентификатор или грешна парола</string>
+    <string name="prefs_header_other">Друго</string>
+    <string name="an_error_occurred">Появи се грешка</string>
+    <string name="an_error_occurred_more">Появи се грешка: „%1$s“</string>
+    <string name="acknowledge">Съгласие</string>
+    <string name="decline">Несъгласие</string>
+    <string name="forward_message">Препратете съобщението</string>
+    <string name="file_is_not_a_image">Избраният файл не е изображение</string>
+    <string name="connection_error">Проблем с връзката. Моля, опитайте отново по-късно.</string>
+    <string name="me_myself_and_i">Мен</string>
+    <string name="really_forward">Препратете на „%1$s“?</string>
+    <string name="really_send">Изпратете на „%1$s“?</string>
+    <string name="ringtone_none">Без звук</string>
+    <string name="no_camera_installed">Няма работеща камера на разположение</string>
+    <string name="save_message_action">Запазете</string>
+    <string name="file_is_not_a_video">Избраният файл не е видео</string>
+    <string name="masterkey_is_unlocked">Главният ключ е отблокиран</string>
+    <string name="file_too_large">Размерът на файла надвишава допустимия размер от %1$d мегабайта</string>
+    <string name="deleting_thread">Чатът се изтрива</string>
+    <string name="enter_serial_body"><![CDATA[Въведете Вашият лицензионен ключ. Можете да <a href="https://shop.threema.ch/">купите</a>лиценз или да <a href="https://shop.threema.ch/retrieve_keys"> възстановите</a>Вашия ключ, ако вече сте закупили лиценз.]]></string>
+    <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_enter_serial_body">Моля, въведете ${app_name_short} данните, които са Ви предоставени от фирмата.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="enter_serial_title">Отключете ${app_name}</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="serial_required_want_exit">Лицензионният ключ е невалиден. Бихте ли желали да опитате отново или да излезете от ${app_name}?</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_serial_required_want_exit">Лицензионният ключ е невалиден. Бихте ли желали да опитате отново или да излезете от ${app_name}?</string>
+    <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
+    <string name="checking_serial">Проверка на лиценз</string>
+    <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
+    <string name="work_checking_credentials">Проверка на данните</string>
+    <string name="update_available">Има налична актуализация</string>
+    <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
+    <string name="update_available_message">Достъпна е нова версия. Искате ли да я изтеглите сега?</string>
+    <string name="no_update_available">Няма налична актуализация</string>
+    <string name="download">Изтеглете</string>
+    <string name="not_now">Напомнете ми по-късно</string>
+    <string name="preparing_messages">Подготовка на съобщенията</string>
+    <string name="select_emoji">емотикони</string>
+    <string name="search_contact">Потърсете контакт</string>
+    <string name="push_reset_title">Обновете Push-токенът</string>
+    <string name="push_reset_text">Push-токенът е обновен</string>
+    <string name="emoji_recent">Скорошни</string>
+    <string name="emoji_smileys">Изражения &amp; Емоции</string>
+    <string name="emoji_people">Хора &amp; Тяло</string>
+    <string name="emoji_nature">Животни &amp; Природа</string>
+    <string name="emoji_food">Храни &amp; Напитки</string>
+    <string name="emoji_travel">Пътувания &amp; Места</string>
+    <string name="emoji_activity">Дейности</string>
+    <string name="emoji_objects">Предмети</string>
+    <string name="emoji_symbols">Символи</string>
+    <string name="emoji_flags">Знамена</string>
+    <string name="emoji_search">Потърсете емотикони</string>
+    <string name="emoji_search_no_result">Няма намерени резултати</string>
+    <string name="title_lock">Заключете</string>
+    <string name="new_messages_locked">Имате нови съобщения</string>
+    <string name="new_messages_locked_description">Натиснете за да видите новите съобщения.</string>
+    <string name="new_unprocessed_messages">Имате нови съобщения</string>
+    <string name="new_unprocessed_messages_description">Натиснете, за да извлечете и видите новите входящи съобщения.</string>
+    <string name="prefs_title_masterkey_notification_newmsg">Известие за ново съобщение</string>
+    <string name="prefs_masterkey_notification_newmsg_off">Не се показват известия за нови съобщения, когато главният ключ е блокиран</string>
+    <string name="prefs_masterkey_notification_newmsg_on">Новите съобщения показват базово известие, когато главният ключ е блокиран</string>
+    <string name="chat_history_attached">Логът от чата е прикачен.</string>
+    <string name="backup_data_title">Резервно копие</string>
+    <string name="backup_data_password_msg">Данните Ви ще бъдат запазени в ZIP файл на USB памет и могат да         се възстановят на всяко Android устройство. Моля, въведете парола, за да защитите данните си.</string>
+    <string name="restore_data_password_msg">Въведете паролата, която сте използвали при създаването на това резервно копие.</string>
+    <string name="backup_data_media">Включете големи мултимедийни файлове (видео, документи, оригинални изображения)</string>
+    <string name="backup_data_new">Създайте резервно копие</string>
+    <string name="pinentry_enter_pin">Въведете Вашия %s ПИН, за да продължите</string>
+    <string name="pinentry_wrong_pin">Грешен ПИН</string>
+    <string name="prefs_sum_security_pin">Заключване на достъпа до интерфейса</string>
+    <string name="prefs_title_pin_switch">Заключване на приложението</string>
+    <string name="prefs_title_pin_code">Създайте ПИН</string>
+    <string name="prefs_pin_grace">Време до заключване</string>
+    <string name="prefs_sum_pin_grace">Време докато се активира заключването на екрана</string>
+    <string name="click_here_to_change_pin">ПИН кодът е създаден. Натиснете тук, за да го промените</string>
+    <string name="set_pin_menu_title">Създайте нов ПИН код</string>
+    <string name="set_pin_summary_intro">Защитете поверителността си като въведете цифров ПИН код (само с цифри). Този ПИН код може да се използва за заключване на достъпа до интерфейса след известно време или за да защити поверителните чатове</string>
+    <string name="set_pin_again_summary">Въведете ПИН кода отново</string>
+    <string name="set_pin_hint">ПИН код</string>
+    <string name="title_addgroup">Нова група</string>
+    <string name="search_group">Потърсете група</string>
+    <string name="updating_system">Актуализация на системата</string>
+    <string name="title_select_contacts">Изберете членове</string>
+    <string name="pin_invalid_not_set">Невалиден ПИН код. Не е създаден.</string>
+    <string name="prefs_group_notifications">Групов чат</string>
+    <string name="group_select_at_least_two">Трябва да бъде избран поне един член, за да продължите</string>
+    <string name="group_select_max">Вие не можете да изберете повече от %1$d членове на групата</string>
+    <string name="search">Потърсете</string>
+    <string name="hint_search_keyword">Потърсете ключова дума</string>
+    <string name="add_group_owner">Създател на групата</string>
+    <string name="title_tab_users">Контакти</string>
+    <string name="title_tab_groups">Групи</string>
+    <string name="no_matching_groups">Не са намерени групи</string>
+    <string name="action_leave_group">Напуснете групата</string>
+    <string name="group_edit_title">Редактирайте групата</string>
+    <string name="really_leave_group_message">Наистина ли искате да напуснете групата?</string>
+    <string name="search_no_matches">Няма съвпадения</string>
+    <string name="search_no_more_matches">Няма повече съвпадения</string>
+    <string name="backup_share">Споделяне на резервно копие</string>
+    <string name="my_backups_title">Резервни копия</string>
+    <string name="backup_delete_confirm">Резервното копие е изтрито</string>
+    <string name="message_log_title">Детайли на съобщението</string>
+    <string name="state_read">прочетено</string>
+    <string name="state_ack">одобрено</string>
+    <string name="state_dec">неодобрено</string>
+    <string name="state_delivered">доставено</string>
+    <string name="state_sending">изпращане</string>
+    <string name="state_pending">висящо</string>
+    <string name="state_failed">неуспешно</string>
+    <string name="state_sent">изпратено</string>
+    <string name="state_dialog_created">Създадено</string>
+    <string name="state_dialog_posted">Изпратено</string>
+    <string name="state_dialog_modified">Обновено</string>
+    <string name="state_dialog_edited">Изменено</string>
+    <string name="state_dialog_deleted">Изтрито</string>
+    <string name="state_dialog_status">Статус</string>
+    <string name="title_tab_recent">Скорошни</string>
+    <string name="no_recent_conversations">Не са намерени чатове</string>
+    <string name="save_changes">Запазете</string>
+    <string name="group_created_confirm">Групата е създадена успешно</string>
+    <string name="creating_group">Създаване на групата</string>
+    <string name="updating_group">Обновяване на групата</string>
+    <string name="status_create_group">Групата е създадена.</string>
+    <string name="status_rename_group">Групата е преименувана на „%1$s“</string>
+    <string name="status_group_new_photo">Снимката на групата е обновена.</string>
+    <string name="status_group_new_member">%1$s бе добавен в групата.</string>
+    <string name="status_group_member_left">%1$s напусна групата.</string>
+    <string name="status_group_member_kicked">%1$s бе отстранен от групата.</string>
+    <string name="can_not_send_no_group_members">Не можете да изпращате съобщения в празна група</string>
+    <string name="you_are_not_a_member_of_this_group">Вие не сте член на тази група</string>
+    <string name="can_not_delete_not_valid">Не може да се изтрие невалиден обект</string>
+    <string name="can_not_delete_contact_until_in_group">Контактът е все още член или създател на групата         и следователно не може да бъде изтрит. Напуснете или изтрийте всички групи, които включват този контакт и опитайте         отново.</string>
+    <string name="can_not_delete_contact">Не може да се премахне контактът</string>
+    <string name="title_public_nickname">Псевдоним</string>
+    <string name="prefs_sum_excluded_sync_identities">Идентификаторите, които са изброени тук, ще бъдат игнорирани при синхронизация на контактите</string>
+    <string name="prefs_title_excluded_sync_identities">Списък с изключения</string>
+    <string name="synchronize_contact">Синхронизация на контактите от телефона</string>
+    <string name="exclude_contact">Изключете от автоматичната синхронизация</string>
+    <string name="prefs_header_lists">Списъци</string>
+    <string name="prefs_title_blocked_contacts">Блокирани контакти</string>
+    <string name="prefs_sum_blocked_contacts">Съобщенията от идентификаторите в този списък ще бъдат игнорирани.</string>
+    <string name="verified">Потвърден</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="want_to_add_to_exclude_list">Този контакт е свързан с един от записаните в твоя телефон. Ако го         изтриете в ${app_name_short}, ще се появи отново след синхронизация на контактите.\nБихте ли желали да го изключите от синхронизацията?</string>
+    <string name="no">Не</string>
+    <string name="yes">Да</string>
+    <string name="deleting_contact">Изтриване на контакта</string>
+    <string name="prefs_contact_soring">Класификация</string>
+    <string name="prefs_sum_contact_soring">Избор на реда на класификация на контактите от списъка с контакти</string>
+    <string name="prefs_contact_format">Вижте имената на контактите</string>
+    <string name="prefs_sum_contact_format">Задаване на формата на имената на контактите</string>
+    <string name="prefs_contact_list_title">Списък с контакти</string>
+    <string name="prefs_default_contact_picture_colored">Стандартно изображение на контакта</string>
+    <string name="prefs_show_inactive_contacts">Покажете неактивните идентификатори</string>
+    <string name="prefs_sum_default_contact_picture_colored_on">Показване на многоцветни аватари, ако профилната снимка на контакта        липсва</string>
+    <string name="prefs_sum_default_contact_picture_colored_off">Използване на сив аватар, ако контактът няма профилна снимка</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_on">Показване на всички ${app_name_short} идентификатори във Вашия списък с контакти</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_show_inactive_contacts_off">Скриване на неактивните/анулираните ${app_name_short} идентификатори</string>
+    <string name="contact_sorting_first_name">Име - Фамилно име</string>
+    <string name="contact_sorting_last_name">Фамилно име - Собствено име</string>
+    <string name="contact_format_first_name_last_name">Име - Фамилно име</string>
+    <string name="contact_format_last_name_first_name">Фамилно име - Собствено име</string>
+    <string name="block_contact">Блокирайте контакта</string>
+    <string name="unblock_contact">Разблокирайте контакта</string>
+    <string name="one_unread_message">1 непрочетено съобщение</string>
+    <string name="really_unlink_contact_title">Премахнете връзката с контакта</string>
+    <string name="really_unlink_contact">Наистина ли искате да премахнете връзката с този контакт?</string>
+    <string name="do_unlink_contact">Премахване на връзката с контакта</string>
+    <string name="do_choose_other_contact">Изберете друг контакт</string>
+    <string name="touch_to_link">(няма)</string>
+    <string name="prefs_validate_contacts">Проверка на връзките с контактите</string>
+    <string name="prefs_validate_contacts_loading">Проверяване на връзките с контактите</string>
+    <string name="prefs_title_fullscreen_ime">Клавиатура на цял екран</string>
+    <string name="prefs_sum_fullscreen_ime_on">Клавиатурата закрива приложението, когато Вашето устройство е в хоризонтална позиция</string>
+    <string name="prefs_sum_fullscreen_ime_off">Показване на предварителен преглед на чата отгоре, ако има място</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_acount_from_within_threema">Управлявайте Вашия ${app_name_short} идентификатор от приложението ${app_name_short}.</string>
+    <string name="save_image">Запазете изображението</string>
+    <string name="share_image">Споделете изображението</string>
+    <string name="view_in_gallery">Показване в Галерия</string>
+    <string name="token_register_failed">Грешка при актуализирането на push-токена. Моля, опитайте отново по-късно.</string>
+    <string name="internet_connection_required">Няма интернет връзка.</string>
+    <string name="prefs_sum_save_media">Запазете получените изображения и видеа и изходящите снимки от камерата в некриптирана форма</string>
+    <string name="prefs_save_media">Автоматично запаметяване в галерия</string>
+    <string name="title_add_distribution_list">Нов списък с дистрибуция</string>
+    <string name="title_edit_distribution_list">Редактирайте списъка с дистрибуция</string>
+    <string name="really_delete_distribution_list">Изтрийте списъка с дистрибуция</string>
+    <string name="really_delete_distribution_list_message">Наистина ли искате да премахнете списъка и да изтриете неговите         съобщения?</string>
+    <string name="enter_distribution_list_name">Изберете име за този списък</string>
+    <string name="distribution_list">Списък с дистрибуция</string>
+    <string name="title_tab_distribution_list">Списъци с дистрибуции</string>
+    <string name="no_matching_distribution_lists">Няма съвпадения със списъците с дистрибуции</string>
+    <string name="is_typing">пише…</string>
+    <string name="push_not_available_title">Няма намерен push-service</string>
+    <string name="push_not_available_text1">Не можем да намерим push-service на Вашето устройство, защото Google Play Store не е инсталиран или е много стара версия.</string>
+    <string name="push_not_available_text2">%s ще се опита да отвори връзка във фонов режим към сървъра. Това може да не работи добре, ако оптимизацията на батерията пречи на фоновите връзки.</string>
+    <string name="backup_in_progress">Резервното копие е в ход</string>
+    <string name="backup_or_restore_success_body">Резервното копие е завършено</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_or_restore_error">${app_name_short} резервно копие</string>
+    <string name="backup_or_restore_error_body">Резервното копие не е завършено успешно</string>
+    <string name="could_not_download_message">Изтеглянето на съобщението е неуспешно</string>
+    <string name="info">Информация</string>
+    <string name="resync_group">Повторно синхронизиране на групата</string>
+    <string name="edit_name">Променете името и снимката</string>
+    <string name="edit_name_only">Променете името</string>
+    <string name="group_was_synchronized">Групата е синхронизирана.</string>
+    <string name="verification_level2_work_explain">Вътрешен контакт, който е добавен от Вашата организация.</string>
+    <string name="verification_level3_work_explain">Вътрешен контакт, чиято самоличност и чийто публичен ключ сте проверили лично чрез сканиране на QR кода.</string>
+    <string name="verification_level3_explain">Контакт, чиято самоличност и чийто публичен ключ сте проверили лично чрез сканиране на QR кода.</string>
+    <string name="verification_level2_explain">Контакт, чийто телефонен номер и/или имейл се съдържа в списъка Ви с контакти.</string>
+    <string name="verification_level1_explain">Непознат контакт, който не си е свързал телефонния номер и/или имейла с неговия идентификатор или във Вашия списък с контакти няма информация за него.</string>
+    <string name="state_dialog_received">Получено</string>
+    <string name="prefs_title_hide_screenshots">Без миниатюри и екранни снимки</string>
+    <string name="prefs_summary_hide_screenshots">Не показвайте миниатюри в приложението и деактивирайте възможността за екранни снимки от         избраните екрани</string>
+    <string name="media_gallery">Мултимедийна галерия</string>
+    <string name="media_file_not_found">Не може да се отвори мултимедийният файл, защото е бил изтрит или не е бил изтеглен от сървъра.</string>
+    <string name="no_media_found">Не е намерен %s в този чат.</string>
+    <string name="media_gallery_all">Всичко</string>
+    <string name="media_gallery_pictures">Изображения</string>
+    <string name="media_gallery_videos">Видеа</string>
+    <string name="group_membership_title">Членове на тези групи</string>
+    <string name="group_description">Описание на групата</string>
+    <string name="change_group_description">Променете описанието на групата</string>
+    <string name="add_group_description">Добавете описание на групата</string>
+    <string name="read_more">прочетете повече</string>
+    <string name="read_less">прочетете по-малко</string>
+    <string name="changed_group_desc_date">Последна промяна: \u0020</string>
+    <string name="num_items_sected">Избор на %s</string>
+    <string name="really_delete_media">Наистина ли искате да изтриете %d медийни съобщения?</string>
+    <string name="check_updates">Проверете за актуализации</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="masterkey_lock_explain">${app_name} пази тайната фраза в паметта. Ако имате нужда да записвате тайната фраза често, подсигурете се, че мениджърът на задачите и приложенията за запазване на батерията са изключени, защото могат да спрат ${app_name_short} преждевременно.</string>
+    <string name="identity_already_exists">Вече имате този идентификатор във Вашия списък с контакти</string>
+    <string name="share_contact">Споделете контакта</string>
+    <string name="add_shortcut">Добавете пряк път</string>
+    <string name="group_not_found">Няма такава група.</string>
+    <string name="contact_not_found">Няма такъв контакт</string>
+    <string name="contact_now_blocked">Блокиран контакт</string>
+    <string name="contact_now_unblocked">Разблокиран контакт</string>
+    <string name="sending_images">Изпращане на изображения</string>
+    <string name="share_conversation_body">Модерно ZIP приложение за разархивиране с AES поддръжка е нужно, за да се разархивира този файл. Например:         http://www.7-zip.org или https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
+    <string name="enter_zip_password_body">Чатът ще бъде изпратен като криптиран zip файл. Моля, изберете парола:</string>
+    <string name="ballot_create">Създайте анкета</string>
+    <string name="ballot_choice_add">Добавете избор</string>
+    <string name="ballot_state_closed">Анкетата е завършена</string>
+    <string name="ballot_vote">Гласувайте</string>
+    <string name="ballot_placeholder">Анкета</string>
+    <string name="ballot_close">Затворете тази анкета</string>
+    <string name="ballot_really_close">Наистина ли ще затворите тази анкета?</string>
+    <string name="ballot_multiple_choice">Множество отговори</string>
+    <string name="ballot_result_intermediate">Временни резултати</string>
+    <string name="ballot_error_more_than_x_choices">Трябва да зададете поне два избора</string>
+    <string name="ballot_message_closed">Налични са резултати</string>
+    <string name="ballot_vote_posted_successfully">Гласът Ви е успешно регистриран</string>
+    <string name="ballot_vote_posted_failed">Вотът Ви е неуспешен</string>
+    <string name="attach_ballot">Анкета</string>
+    <string name="ballot_overview">Всички анкети</string>
+    <string name="ballot_copy">Копирайте анкетата</string>
+    <string name="ballot_remove">Изтрийте анкетата</string>
+    <string name="ballot_not_exist">Анкетата не съществува</string>
+    <string name="ballot_tap_to_vote">Натиснете, за да гласувате</string>
+    <string name="ballot_tap_to_view_results">Анкетата приключи. Натиснете, за да видите резултатите</string>
+    <string name="ballot_subject_hint">Въведете заглавие на тази анкета</string>
+    <string name="ballot_no_ballots_yet">Още няма анкети.</string>
+    <string name="print">Принтирайте</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_wizard0_explain">Създайте бързо онлайн анкета директно с ${app_name_short}. Програмирайте събитие, създайте
+         запитване или попитайте приятели нещо.</string>
+    <string name="ballot_add_choices">Добавете отговори</string>
+    <string name="blocked_cannot_send">Не можете да изпращате съобщения на блокиран контакт</string>
+    <string name="invalid_some_cannot_send">Някои получатели не могат да бъдат избрани.</string>
+    <string name="invalid_all_cannot_send">Тези получатели не могат да бъдат избрани.</string>
+    <string name="really_block_contact">Всяко следващо съобщение от този контакт ще бъде отхвърлено. Да продължим ли?</string>
+    <string name="ballot_result_final">Краен резултат</string>
+    <string name="invalid_cannot_send">Не можете да изпращате съобщения на невалиден контакт</string>
+    <string name="ballot_answer_count_error">Моля, въведете поне два варианта за гласуване в анкетата.</string>
+    <string name="ballot_one_contact_not_supported">Внимание: %1$s няма да може да участва във Вашата анкета.</string>
+    <string name="ballot_x_contact_not_supported">Внимание: %1$d човека няма да могат да участват в анкетата.</string>
+    <string name="contact_state_inactive">Неактивен</string>
+    <string name="contact_state_invalid">Невалиден</string>
+    <string name="back">Назад</string>
+    <string name="wearable_reply">Отговорете</string>
+    <string name="wearable_reply_label">Отговорете на %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="push_disable_text">Ако продължите, „${app_name_short} Push“ ще бъде използван вместо системните push-известия. Това помага да се намали Вашият дигитален отпечатък, но изисква телефонът Ви да бъде настроен, така че приложението да се изпълнява на заден план. Може да се наложи да се свържете с производителя на устройството за помощ с настройката, ако тази опция отсъства в настройките на устройството.</string>
+    <string name="ballot_intermediate_results_show">Покажете временните резултати</string>
+    <string name="converting_video">Обработка на видеото</string>
+    <string name="video_size_small">Висока (по-малко данни)</string>
+    <string name="video_size_large">Ниска (повече данни)</string>
+    <string name="video_size_original">Никаква (огромно количество данни)</string>
+    <string name="prefs_video_size">Видео компресия</string>
+    <string name="menu_video_size_small">Малък размер</string>
+    <string name="menu_video_size_medium">Среден размер</string>
+    <string name="menu_video_size_large">Оригинален размер</string>
+    <string name="show_contact">Покажете контактите</string>
+    <string name="chat_with">Чатете с %1$s</string>
+    <string name="kick_user_from_group">Изгонете %1$s от групата</string>
+    <string name="show_as_qrcode">Покажете като QR код</string>
+    <string name="qr_code">QR код</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="really_leave_id_export">Ако все още не сте го направили, запазете експортираната секвенция от текст на Вашия идентификатор или съответния QR код на сигурно място или го принтирайте. Вашият ${app_name_short} идентификатор не може да бъде възстановен без резервно копие.</string>
+    <string name="revocation_key_title">Анулиране на идентификатор</string>
+    <string name="revocation_key_not_set">Няма парола за анулиране</string>
+    <string name="revocation_key_set_at">Паролата е създадена %1$s</string>
+    <string name="prefs_sum_remove_wallpapers">Изтрийте всички индивидуални фонове</string>
+    <string name="prefs_title_remove_wallpapers">Изтрийте всички фонове</string>
+    <string name="really_remove_wallpapers">Наистина ли искате да изтриете всички фонове?</string>
+    <string name="wallpapers_removed">Фоновете са премахнати</string>
+    <string name="invalid_backup">Невалидно резервно копие. Възстановяването не може да се извърши.</string>
+    <string name="invalid_zip_restore_failed">Възстановяването се провали. Невалидно резервно копие: %1$s</string>
+    <string name="revocation_explain">Паролата, която въвеждате тук, Ви позволява да анулирате Вашия идентификатор на        https://myid.threema.ch/revoke в случай, че го изгубите или е бил откраднат</string>
+    <string name="no_unread_messages">Няма непрочетени съобщения или има активно заключване с PIN-код</string>
+    <string name="send_media">Изпратете мултимедия</string>
+    <string name="rotate">Завъртете</string>
+    <string name="remove">Премахнете</string>
+    <string name="item_already_added">Този елемент вече е бил добавен.</string>
+    <string name="password_too_short" tools:ignore="PluralsCandidate">%d знака най-малко.</string>
+    <string name="mark_read">Маркирайте като прочетено</string>
+    <string name="attach_document">Файл</string>
+    <string name="parent_directory">Основна директория</string>
+    <string name="file_placeholder">Файл</string>
+    <string name="internal_storage">Вътрешно хранилище</string>
+    <string name="no_activity_for_mime_type">Няма приложение, което да може да отвори този файл.</string>
+    <string name="no_activity_for_intent">Няма намерено приложение.</string>
+    <string name="open_from">Отворете от</string>
+    <string name="file_one_contact_not_supported">%1$s не може да получава файлове.</string>
+    <string name="file_x_contact_not_supported">Внимание: %1$d контакти не могат да получат Вашия файл.</string>
+    <string name="mime_android_apk">Пакет за Андроид</string>
+    <string name="mime_audio">Аудио файл</string>
+    <string name="mime_certificate">Дигитален сертификат</string>
+    <string name="mime_codes">Изходен код</string>
+    <string name="mime_compressed">Архив</string>
+    <string name="mime_contact">Контакт</string>
+    <string name="mime_event">Събитие от календара</string>
+    <string name="mime_font">Шрифт</string>
+    <string name="mime_image">Размер на файла</string>
+    <string name="mime_pdf">PDF документ</string>
+    <string name="mime_presentation">Презентация</string>
+    <string name="mime_spreadsheet">Excel файл</string>
+    <string name="mime_text">Текстови файл</string>
+    <string name="mime_video">Видео файл</string>
+    <string name="mime_word">Word документ</string>
+    <string name="no_filename"><![CDATA[<No filename>]]></string>
+    <string name="send_as_files">Изпратете като файл</string>
+    <string name="send_as_files_warning">Трансферът на некомпресирани файлове и изображения може да повиши значително обема на телефонни данни,         което може да доведе до начисляване на допълнителни такси от Вашия мобилен оператор. Препоръчваме Ви да качвате и сваляте файлове само в WiFi        мрежи.</string>
+    <string name="prefs_theme">Тема</string>
+    <string name="list_theme_light">Светла</string>
+    <string name="list_theme_dark">Тъмна</string>
+    <string name="prefs_header_appearance">Облик</string>
+    <string name="prefs_sum_passphrase">Изисква се тайна фраза, за да се отключи локалното криптиране</string>
+    <string name="prefs_title_masterkey_change_passphrase">Сменете тайната фраза</string>
+    <string name="storage_total">Място във вътрешното хранилище</string>
+    <string name="storage_threema">Използвано от %s</string>
+    <string name="storage_total_free">Цялото свободно място</string>
+    <string name="storage_total_in_use">Използвано</string>
+    <string name="one_year">1 година</string>
+    <string name="six_months">6 месеца</string>
+    <string name="three_months">3 месеца</string>
+    <string name="one_month">1 месец</string>
+    <string name="one_week">1 седмица</string>
+    <string name="everything">всичко</string>
+    <string name="delete_media_files_time">Изтрийте мултимедия и файлове по стари от:</string>
+    <string name="storage_explain">Ако нямате свободно място, може да изтриете стари криптирани файлове, за да освободите        място. Миниатюрите ще се запазят. Имайте предвид, че това не е автоматичен процес. Освен ако не натиснете един от бутоните отдолу, нищо няма да бъде изтрито.</string>
+    <string name="delete_data">Изтрийте данните сега</string>
+    <string name="delete_date_confirm_message">Ако продължите, файловете ще бъдат изтрити и само миниатюрите ще бъдат        запазени.</string>
+    <string name="storage_management">Управление на хранилището</string>
+    <string name="media">Мултимедия</string>
+    <string name="prefs_storage_mgmt_title">Изчистване на мултимедия, файлове и съобщения</string>
+    <string name="num_messages">Брой съобщения</string>
+    <string name="delete_messages_explain">Изтрийте съобщения по-стари от:</string>
+    <string name="delete_message">Изтрийте съобщенията сега</string>
+    <string name="really_delete_messages">Ако продължите, съобщенията ще бъдат окончателно изтрити. Няма да         можете да ги възстановите.</string>
+    <string name="messages_delete_explain">Вие също можете да изтриете стари съобщения изцяло.</string>
+    <string name="backup_started">Стартиране на резервно копие</string>
+    <string name="invalid_data">Невалидни данни. Не могат да се изпратят.</string>
+    <string name="prefs_emoji_style">Стил на емоджита</string>
+    <string name="prefs_android_emojis">Системни емоджита</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_default_emojis">${app_name_short} емоджита (по подразбиране)</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="android_emojis_warning">Забележете, че системните символи може и да не успеят да покажат всички емоджита, които се поддържат от ${app_name_short}.</string>
+    <string name="crop">Изрежете</string>
+    <string name="scan_id_mismatch_title">Несъответстващ идентификатор</string>
+    <string name="scan_id_mismatch_message">Идентификаторът, който сканирахте не съвпада с контакта, който Вие сте         запаметили.</string>
+    <string name="title_remove_picture">Премахнете снимката</string>
+    <string name="blocked">блокиран</string>
+    <string name="name">Име</string>
+    <string name="privacy_policy">Политика за поверителност</string>
+    <string name="terms_of_service">Общи условия</string>
+    <string name="eula">Лицензионно споразумение с крайния потребител</string>
+    <string name="save_group_changes">Искате ли да запазите промените на групата?</string>
+    <string name="prefs_title_fontsize">Размер на текста</string>
+    <string name="fontsize_normal">Нормален</string>
+    <string name="fontsize_large">Голям</string>
+    <string name="fontsize_xlarge">Огромен</string>
+    <string name="no_app_for_location">Няма инсталирано приложение с карти на това устройство</string>
+    <string name="prefs_sendlog">Изпратете лог</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sendlog_summary">Изпратете лог на ${company_name} за последващ анализ, ако имате проблеми</string>
+    <string name="prefs_exportlog">Експортирайте лог</string>
+    <string name="prefs_exportlog_summary">Изпратете лог-файл с друго приложение</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_storage_required">За да запазите или изпратите мултимедийни файлове, позволете на ${app_name} да има достъп до вътрешното хранилище.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_location_required">За да изпратите локация, позволете на ${app_name} да има достъп до Вашето местонахождение.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_contacts_required">За да изпратите контакти, позволете на ${app_name} да има достъп до контактите.</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">Харесахте съобщението</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">„Неодобрението“ е изпратено</string>
+    <string name="notifications_settings">Настройки на известията</string>
+    <string name="notifications_default">Стандартни настройки</string>
+    <string name="notifications_until">До %s</string>
+    <string name="notifications_mute">Заглушете</string>
+    <string name="notifications_choose_sound">Изберете звук</string>
+    <string name="error_video_conversion">Грешка при конвертирането на видеото.</string>
+    <string name="confirm_your_pin">Потвърдете Вашия ПИН-код</string>
+    <string name="too_many_incorrect_attempts">Твърде много неуспешни опита. Опитайте отново след %s секунди.</string>
+    <string name="no_lockscreen_set">Не е зададено екранно заключване.</string>
+    <string name="on">включено</string>
+    <string name="off">изключено</string>
+    <string name="new_wizard_select_country">Изберете Вашата държава</string>
+    <string name="new_wizard_lets_get_started">Да започваме!</string>
+    <string name="new_wizard_setup_threema">Настройте Threema</string>
+    <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_new_wizard_setup_threema">Настройте ${app_name}</string>
+    <string name="new_wizard_restore_id_backup">Възстановете експортирания идентификатор</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_welcome">Добре дошли в ${app_name}!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_move_finger">Плъзнете Вашия пръст по екрана, за да създадете нов ${app_name_short} идентификатор.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_this_is_your_id">Това е Вашият ${app_name_short} идентификатор:</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_works_like_phone_number">Вашият ${app_name_short} идентификатор е като телефонен номер.\nВашите приятели могат да се свържат с Вас чрез този идентификатор.</string>
+    <string name="new_wizard_choose_nickname">Изберете си псевдоним</string>
+    <string name="new_wizard_nickname_explain">Вашите приятели ще виждат псевдонима Ви в техните известия</string>
+    <string name="new_wizard_hint_enter_nickname">Въведете псевдоним</string>
+    <string name="new_wizard_help_your_friends_find_you">Помогнете на Вашите приятели да Ви намерят!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile">Свържете Вашия мобилен номер и/или Вашия имейл към ${app_name_short} идентификатора.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_link_mobile_only">Свържете Вашия мобилен номер към Вашия ${app_name_short} идентификатор.</string>
+    <string name="new_wizard_hint_mobile_number">Мобилен телефон (незадължително)</string>
+    <string name="new_wizard_hint_email">Имейл (незадължително)</string>
+    <string name="new_wizard_done_title">Готово!\nВсичко ли е правилно?</string>
+    <string name="new_wizard_linked_to">Свързан към</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_need_internet">Необходима е стабилна интернет връзка, за да създадете уникален ${app_name_short} идентификатор. Моля, опитайте отново.</string>
+    <string name="new_wizard_more_information">Повече информация</string>
+    <string name="message_details_message_id_copied">Идентификаторът на съобщението е копиран в буферната памет</string>
+    <string name="contact_details_id_copied">Идентификаторът е копиран в буферната памет</string>
+    <string name="contact_details_nickname_copied">Псевдонимът е копиран в буферната памет</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_use_id_as_nickname">Искате ли да използвате Вашия ${app_name_short} идентификатор като псевдоним?</string>
+    <string name="new_wizard_phone_email_invalid">Телефонният номер или имейлът са невалидни.\nМоля, коригирайте ги преди да продължите.</string>
+    <string name="new_wizard_phone_invalid">Телефонният номер, който въведохте, е невалиден.\nМоля, коригирайте го преди да продължите.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_fingerprint">Чрез движение на пръста, Вие създавате произволни данни (ентропия), които се използват за да създадат
+        двойка ключове, които са свързани с новия Ви уникален ${app_name_short} идентификатор. Двойката ключове се състои от <b>публичен ключ</b>, който е видим за
+         Вашите приятели и <b>поверителен ключ</b>, който е запаметен на сигурно място във Вашия телефон. Вашите приятели ще криптират съобщенията си с
+         Вашия публичен ключ. Само притежателят на публичния ключ може да декриптира тези съобщения.</string>
+    <string name="new_wizard_info_id">Вие също създадохте двойка ключове. Публичният ключ е изпратен сигурно към нашите         сървъри. Поверителният ключ никога не напуска устройството Ви. Това Ви гарантира, че никой друг не може да прочете съобщенията Ви.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_sync_contacts">Ако активирате тази опция, ${app_name_short} криптира едностранно (хеш) имейл адресите и телефонните номера
+        преди да ги изпрати към сървърите, за да потърси съвпадения при контактите. Ние не запазваме никакви
+         данни за контактите Ви.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Синхронизирането на контактите Ви помага да намерите приятели автоматично. Ако се съгласите, телефонните номера и имейл адресите от списъка Ви с контакти ще бъдат криптирани преди да се изпратят към сървърите ни, за да потърсим съвпадащи контакти. Абсолютно никакви данни няма да бъдат запазвани или споделяни.\n\nЖелаете ли да активирате синхронизацията на контактите?</string>
+    <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
+    <string name="new_wizard_info_link">Предоставяйки ни Вашия телефонен номер и имейл, ${app_name_short} може да помогне на приятелите да Ви намират автоматично, ако Ви имат като контакт в техните списъци с контакти. Данните Ви ще бъдат запазени в едностранно криптирана (хеш) форма на нашите сървъри. Може просто да прескочите тази стъпка, ако искате да ползвате ${app_name} напълно анонимно.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_link_phone_only">Предоставяйки ни Вашия телефонен номер, ${app_name_short} може да помогне на приятелите да
+         Ви намират автоматично, ако Ви имат като контакт в техните списъци с контакти. Номерът Ви ще бъде запазен в 
+        едностранно криптирана (хеш) форма на нашите сървъри. Може просто да прескочите тази стъпка, ако искате да ползвате ${app_name_short}
+      напълно анонимно.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_info_nickname">Псевдонимът е използван в push-известията на някои устройства или като
+         допълнителен метод да Ви идентифицират потребители, които още не са Ви добавили в техните списъци с контакти. Ние препоръчваме
+       да предоставите само името Ви или псевдоним. Ако не добавите псевдоним, ние ще използваме Вашия ${app_name_short} идентификатор по подразбиране.</string>
+    <string name="not_linked">не е свързан</string>
+    <string name="linked">свързан</string>
+    <string name="pending_sms_verification_notice">Вашият телефонен номер все още не е потвърден.</string>
+    <string name="no_sms_received">Не получихте ли СМС?</string>
+    <string name="really_cancel_verify">Наистина ли искате да прекратите процеса по верификация на телефонния номер?</string>
+    <string name="verification_of">Потвърждаване на %s</string>
+    <string name="status_ballot_voting_changed">Анкета „%1$s“ отчете нов глас</string>
+    <string name="status_ballot_user_first_vote">„%1$s“ гласува за „%2$s“</string>
+    <string name="status_ballot_user_modified_vote">„%1$s“ промени вота си на „%2$s“</string>
+    <string name="status_ballot_all_votes">Гласовете за „%1$s“ приключиха</string>
+    <string name="restore">Възстановяване</string>
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="new_wizard_anonymous_confirm">Не сте въвели мобилен телефон или имейл, които да се свържат с Вашия ${app_name_short} идентификатор. Вие няма да се виждате в списъка с контакти на Вашите приятели. Наистина ли искате да използвате ${app_name} анонимно?</string>
+    <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="new_wizard_anonymous_confirm_phone_only">Не сте въвели мобилен телефон, който да се свърже с Вашия ${app_name_short} идентификатор. Вие няма да се виждате в списъка с контакти на Вашите приятели. Наистина ли искате да използвате ${app_name} анонимно?</string>
+    <string name="new_wizard_scan_id_backup">Или сканирайте QR кода на Вашия експортиран идентификатор</string>
+    <string name="error_saving_file">Някои файлове не могат да бъдат запаметени</string>
+    <string name="wait_one_minute">Моля, изчакайте поне 10 минути за СМС-а преди да поискате телефонно обаждане.</string>
+    <string name="backup_id">Експортиран идентификатор</string>
+    <string name="backup_data">Резервно копие</string>
+    <string name="really_leave_group_admin_message">Вие сте администраторът на групата. Ако я напуснете, тя         ще остане без администрация. Останалите членове ще могат да чатят, но промените няма да са възможни.</string>
+    <string name="action_delete_group">Изтрийте групата</string>
+    <string name="action_leave_and_delete_group">Напуснете или изтрийте групата</string>
+    <string name="action_dissolve_and_delete_group">Разпуснете или изтрийте групата</string>
+    <string name="delete_my_group_message">Наистина ли искате напълно да изтриете тази група? Всички съобщения ще бъдат премахнати и останалите членове няма да могат да използват групата.</string>
+    <string name="error_out_of_memory">Няма достатъчно памет, за да се изпълни това действие</string>
+    <string name="configure">Настройки</string>
+    <string name="file_is_not_audio">Не е аудио файл</string>
+    <string name="disabled_by_policy">Някои настройки са деактивирани от администратора</string>
+    <string name="select_all">Изберете всички</string>
+    <string name="deleting_messages">Изтриване на съобщенията</string>
+    <string name="media_gallery_files">Файлове</string>
+    <string name="prefs_gif_autoplay">Автоматично възпроизвеждане на анимирани картинки</string>
+    <string name="media_gallery_audio">Гласови съобщения</string>
+    <string name="action_clone_group">Клониране на групата</string>
+    <string name="clone_group_message">Това действие ще създаде копие на групата с Вас като администратор. Ще продължите ли?</string>
+    <string name="prefs_proximity_sensor">Използване на сензора за близост</string>
+    <string name="prefs_proximity_sensor_explain">Използване на слушалка за възпроизвеждане на гласови съобщения, ако сензорът за близост е закрит</string>
+    <string name="error_creating_group">Грешка при създаването/актуализирането на групата</string>
+    <string name="no_media_found_generic">Няма мултимедийни елементи в този чат, които да съвпадат с избора Ви.</string>
+    <string name="max_images_reached">Максимум %d елемента могат да се редактират едновременно</string>
+    <string name="enter_description">Моля, опишете грешката/проблема тук.</string>
+    <string name="add_caption_hint">Добавете допълнителни данни</string>
+    <string name="disable">Деактивирайте</string>
+    <string name="continue_anyway">Продължете въпреки всичко</string>
+    <string name="invalid_input">Невалидно въвеждане</string>
+    <string name="already_licensed">Вече е лицензирано</string>
+    <string name="hide_chat">Поверителни чатове</string>
+    <string name="really_hide_chat_message">Искате ли да отбележите този чат като поверителен? Използвайте менюто, за да активирате видимостта на поверителните чатове в списъка със съобщения.</string>
+    <string name="chat_hidden">Чатът е отбелязан като поверителен</string>
+    <string name="title_show_private_chats">Покажете поверителните чатове</string>
+    <string name="title_hide_private_chats">Скрийте поверителните чатове</string>
+    <string name="chat_visible">Чатът вече не е поверителен</string>
+    <string name="prefs_title_locking_mechanism">Механизъм за заключване</string>
+    <string name="lock_option_none">Никакъв</string>
+    <string name="lock_option_pin">ПИН код</string>
+    <string name="lock_option_screenlock">Системно блокиране на екрана</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="hide_chat_message_explain">${app_name_short} Ви позволява да защитите определени чатове с ПИН код и временно да ги скриете от списъка Ви със съобщения. За да активирате поверителните чатове, моля да зададете ПИН код или да използвате системното блокиране на екрана (Android 6.0+) в настройките.</string>
+    <string name="set_lock">Настройте сега</string>
+    <string name="prefs_title_access_protection">Защита на достъпа</string>
+    <string name="private_chat_subject">Поверително</string>
+    <string name="grace_thirty_seconds">30 секунди</string>
+    <string name="grace_one_minute">1 минута</string>
+    <string name="grace_two_minutes">2 минути</string>
+    <string name="grace_five_minutes">5 минути</string>
+    <string name="grace_ten_minutes">10 минути</string>
+    <string name="grace_thirty_minutes">30 минути</string>
+    <string name="grace_never">Никога (ръчно)</string>
+    <string name="never">Никога</string>
+    <string name="access_protection_cannot_be_removed">Защитеният достъп не може да бъде премахнат, защото има поне един поверителен чат.</string>
+    <string name="verification_started">Проверката започна</string>
+    <string name="cannot_open_file">Не може да се отвори файлът</string>
+    <string name="prefs_title_image_attach_previews">Бърз избор на мултимедия</string>
+    <string name="prefs_sum_image_attach_previews">Показване на списък с наскоро добавени изображения в изскачащите прикачени файлове</string>
+    <string name="prefs_title_direct_share">Директно споделяне</string>
+    <string name="prefs_sum_direct_share">Показване на последните чатове, когато се споделя нещо от други приложения</string>
+    <string name="restore_disable_energy_saving">Моля, включете устройството в зарядното и деактивирайте опциите за пестене на енергия, за да предпазите Вашето устройство от прекъсване на процеса по създаване/възстановяване на резервно копие.</string>
+    <string name="draft">Чернова</string>
+    <string name="prefs_bigger_single_emojis">По-големи индивидуални емождита</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard1_sync_work">Синхронизиране на ${app_name} данни…</string>
+    <string name="notification_hidden_text">Съдържанието е скрито</string>
+    <string name="really_reset_ringtones">Наистина ли искате да възстановите настройките на звука на известията?</string>
+    <string name="reset_ringtones_confirm">Настройките на известията на звука бяха възстановени.</string>
+    <string name="prefs_language_override">Език</string>
+    <string name="threema_channel_intro">Threema каналът Ви предоставя новини за всичко около Threema. Искате ли да се абонирате за канала на Threema и да го добавите като контакт? Безплатно е и винаги можете да се отпишете.</string>
+    <string name="quote">Цитирайте</string>
+    <string name="contacts_deleted">Контактът е изтрит</string>
+    <string name="take_photo">Направете снимка</string>
+    <string name="select_from_gallery">Изберете от галерията</string>
+    <string name="palette">Палитра</string>
+    <string name="stickers">Стикери</string>
+    <string name="text">Текст</string>
+    <string name="undo">Отменете</string>
+    <string name="android_backup_date">Последното резервно копие</string>
+    <string name="check_now">Проверете сега</string>
+    <string name="discard">Отменете</string>
+    <string name="android_backup_restart_threema">Моля, изчакайте. Приложението ще се рестартира след няколко секунди.</string>
+    <string name="battery_optimizations_title">Деактивиране на оптимизацията на батерията</string>
+    <string name="battery_optimizations_explain">Оптимизацията на батерията пречи на %1$s да работи правилно, когато телефонът Ви заспи. Моля, деактивирайте оптимизацията на батерията за %2$s.</string>
+    <string name="battery_optimizations_disable_guide">Изберете „Всички приложения“ от падащото меню</string>
+    <string name="battery_optimizations_disable_guide_ctd">Потърсете %s в списъка и деактивирайте оптимизацията</string>
+    <string name="battery_optimizations_disable_confirm">Наистина ли искате да оставите оптимизацията на батерията включена за %1$s? %2$s няма да работи правилно.</string>
+    <string name="enter_text_hint">Въведете текст</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_explain_text">Ако замените устройството Ви или го изгубите, никой няма да може да възстанови Вашия ${app_name_short} идентификатор или Вашите чатове, ако нямате резервно копие. Моля, запазете данните Ви, като изберете подходящата опция за създаване на резервно копие.</string>
+    <string name="data_backup_explain">Резервното копие съдържа:\n\n&#9679; Вашият идентификатор и двойката ключове\n&#9679; Контактите\n&#9679; Членствата в групи\n&#9679; Чатовете\n&#9679; Мултимедийните файлове (по желание)\n\nДанните ще бъдат запазени като криптиран ZIP файл. Препоръчва се да преместите файла на друго устройство след създаване на резервното копие.</string>
+    <string name="draw">Рисувайте</string>
+    <string name="edit">Редактирайте</string>
+    <string name="edit_message">Редактирайте съобщението</string>
+    <string name="edited">Редактирано</string>
+    <string name="confirm_edit_desc">Потвърдете измененията</string>
+    <string name="edit_history">История на измененията</string>
+    <string name="discard_changes">Бихте ли искали да отмените промените?</string>
+    <string name="prefs_title_network">Мрежа</string>
+    <string name="prefs_title_ipv6_preferred">IPv6 за съобщения</string>
+    <string name="prefs_ipv6_preferred_off">Използване единствено на IPv4 връзки</string>
+    <string name="prefs_ipv6_preferred_on">Предпочитане на IPv6 връзки над IPv4</string>
+    <string name="prefs_title_ipv6_webrtc_allowed">IPv6 за обаждания и уеб</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_on">Позволяване на IPv6 за ${app_name_short} обаждания и приложението за компютър / уеб клиент.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_ipv6_webrtc_allowed_off">Забраняване на IPv6 за ${app_name_short} обаждания и приложението за компютър / уеб клиент</string>
+    <string name="ipv6_requires_restart">За да се приложи тази настройка, приложението ще се нуждае от рестартиране.</string>
+    <string name="ipv6_restart_now">Рестартирайте сега</string>
+    <string name="on_cap">Включено</string>
+    <string name="off_cap">Изключено</string>
+    <string name="share_chat">Споделете чат</string>
+    <string name="flip">Завъртете</string>
+    <string name="to_front">Напред</string>
+    <string name="play">Възпроизведете</string>
+    <string name="pause">Паузирайте</string>
+    <string name="retry">Повторете</string>
+    <string name="voice_message_record">Запишете гласово съобщение</string>
+    <string name="open_navdrawer">Отворете навигационния панел</string>
+    <string name="profile_picture">Профилна снимка</string>
+    <string name="profile_picture_release">Кой може да вижда профилната Ви снимка?</string>
+    <string name="picrelease_nobody">никой</string>
+    <string name="picrelease_selected">избрани контакти</string>
+    <string name="picrelease_everyone">всеки, на когото пишете</string>
+    <string name="prefs_title_receive_profilepics">Показване на профилна снимка</string>
+    <string name="prefs_sum_receive_profilepics_off">Скриване на профилната снимка, която контактите Ви са добавили</string>
+    <string name="prefs_sum_receive_profilepics_on">Показване на профилната снимка, която контактите Ви са добавили</string>
+    <string name="prefs_sum_receive_profilepics_recipients_list">Контактите от този списък ще видят Вашата профилна снимка, когато им изпратите съобщение.</string>
+    <string name="menu_send_profilpic">Добавете профилна снимка</string>
+    <string name="menu_send_profilpic_off">Премахнете профилна снимка</string>
+    <string name="menu_send_profilpic_now">Изпратете профилната снимка сега</string>
+    <string name="profile_picture_sent">Профилната снимка е изпратена</string>
+    <string name="sending_messages">Изпращане…</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_data_media_confirm">Запазването на големи мултимедийни файлове като локално ZIP резервно копие може да претовари процесора или паметта на Вашето устройство и може да отнеме много време. ${app_name} няма да получава/изпраща съобщения докато резервното копие се създава. Ще продължите ли?</string>
+    <string name="backup_data_cancelled">Резервното копие е отказано</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="service_manager_not_available">${app_name} не може да стартира. Моля, изключете устройството и после го включете отново.</string>
+    <string name="message_sent">Съобщението е изпратено</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_call">Обаждане с ${app_name_short}</string>
+    <string name="threema_message_to">Съобщение до %s</string>
+    <string name="threema_call_with">Обадете се на %s</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip">Обаждания с ${app_name_short}</string>
+    <string name="prefs_title_force_turn">Винаги използвайте криптирано обаждане</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_off">Установете директна връзка, ако е възможно, а използвайте криптирано обаждане само за непотвърдени контакти през ${company_name} сървъри. Може да се разкрие Вашето IP.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_force_turn_on">Криптирайте всички обаждания през ${company_name} сървъри, защитавайки Вашия IP адрес. Може да се отрази на качеството на разговора.</string>
+    <string name="permission_record_audio_required">За да криптирате обажданията и да изпращате гласови съобщения, трябва да разрешите достъпа до микрофона.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_voice_call_notifications">${app_name_short} Обаждания</string>
+    <string name="prefs_voice_call_sound">Мелодия за повикванията</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_sound">Избор на мелодия за входящите ${app_name_short} обаждания</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_sum_voice_call_vibrate">Вибрация при входящо ${app_name_short} повикване</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_title_voip_enable">Активиране на ${app_name_short} обажданията</string>
+    <string name="webclient_invalid_push_token_message">Трябва да се стартира ръчно</string>
+    <string name="threema_work_contact">Threema Work контакт</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_phone_required">Позволете управлението на телефонни обаждания при използване на ${app_name}</string>
+    <string name="strikethrough">Зачертан</string>
+    <string name="italic">Курсив</string>
+    <string name="bold">Получер</string>
+    <string name="shortcut_choice_title">Създайте пряк път за…</string>
+    <string name="prefs_title_device_info">Информация за устройството</string>
+    <string name="notifications_disabled_title">Деактивирани известия</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="notifications_disabled_text">Известията за ${app_name} са деактивирани от системните настройки. Няма да получавате известия за нови съобщения.</string>
+    <string name="notifications_disabled_settings">Променете системните настройки</string>
+    <string name="error_attaching_files">Грешка при прикачването на файлове.</string>
+    <string name="prefs_fix_powermanager_problems">Деактивирайте енергийните ограничения</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_powermanager_problems_desc">Позволете на ${app_name} да работи на заден план, за да може да получавате съобщения дори и при неактивност.</string>
+    <string name="disable_powermanager_explain">Подсигурете се, че „%s“ е изключено от всякакъв вид енергийни ограничения на Вашия телефон. Натиснете „назад“, когато сте готови.</string>
+    <string name="disable_autostart_explain">Подсигурете се, че „%s“ е включено в списъка с приложения, които могат да се стартират автоматично. Натиснете „назад“, когато сте готови.</string>
+    <string name="notification_priority_default">Нисък</string>
+    <string name="notification_priority_high">Висок</string>
+    <string name="notification_priority_max">Максимален</string>
+    <string name="prefs_title_notification_priority">Приоритет</string>
+    <string name="pin">Закачете</string>
+    <string name="unpin">Откачете</string>
+    <string name="location_services_disabled">Услугата за определяне на местонахождението е деактивирана. Желаете ли да я активирате сега?</string>
+    <string name="send_location">Изпратете местоположението Ви</string>
+    <string name="forward_location">Препратете местоположението Ви</string>
+    <string name="unknown_address">Неизвестен адрес</string>
+    <string name="your_location">Вашето местоположение</string>
+    <string name="reply_later">Ще се чуем по-късно</string>
+    <string name="reply_on_my_way">На път съм</string>
+    <string name="reply_thank_you">Благодаря</string>
+    <string name="reply_youre_welcome">Пак заповядай</string>
+    <string name="prefs_auto_download_title">Автоматично изтегляне на мултимедия</string>
+    <string name="prefs_auto_download_wifi">С WiFi</string>
+    <string name="prefs_auto_download_mobile">С мобилни данни</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_intro">Как бихте оценили ${app_name}?</string>
+    <string name="rate_feedback_intro">Моля, кажете ни как можем да подобрим приложението (не е задължително).</string>
+    <string name="rate_positive">Изпратете отзив</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rate_title">Оценете ${app_name}</string>
+    <string name="rate_thank_you">Благодарим Ви за отзива!</string>
+    <string name="disabled_by_policy_short">Функцията е деактивирана от администратора</string>
+    <string name="rate_forward_to_play_store">Бихте ли желали да ни оцените и в Google Play?</string>
+    <string name="rate_error">Не можахте да изпратите Вашия отзив към сървъра. Моля, уверете се, че сте имате интернет връзка преди да опитате отново.</string>
+    <string name="off_unless_i_was_mentioned">Само ако ме споменат</string>
+    <string name="dnd">Не ме безпокойте</string>
+    <string name="minus">Минус</string>
+    <string name="plus">Плюс</string>
+    <string name="switched_off">Изключено</string>
+    <string name="switched_on">Включено</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="title_tab_work_users">${app_name} потребители</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_matching_work_contacts">Няма намерени ${app_name} контакти, които да са одобрени от администратора</string>
+    <string name="all">Всичко</string>
+    <string name="webclient_session_stop_all">Затворете всичко</string>
+    <string name="passphrase_service_name">Тайна фраза</string>
+    <string name="passphrase_service_description">Известие, когато тайната фраза е отключена</string>
+    <string name="webclient_service_description">Известие, когато Уеб/Компютърната сесия е активна</string>
+    <string name="prefs_title_accept_privacy_policy">Приемане на политиката за поверителност</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="privacy_policy_explain">${app_name} пази поверителността Ви по-щателно от всеки друг месинджър. Научете повече в нашия %1$s.</string>
+    <string name="privacy_policy_check_confirm">За да използвате %s, приемете политиката за поверителност.\n\n(Изискване от европейските регулатори 2016/679)</string>
+    <string name="prefs_title_incognito_keyboard">Изискване за инкогнито клавиатура</string>
+    <string name="prefs_sum_incognito_keyboard">Деактивиране на събирането на данни за персонализирани предложения (ако се поддържа от клавиатурата)</string>
+    <string name="tooltip_mentions">Натиснете @, за да споменете член на групата.</string>
+    <string name="tooltip_imagepaint">Проявете въображение! Натиснете на магическата пръчка, за да нарисувате/напишете нещо или за да добавите стикер на Вашата картинка преди да я изпратите.</string>
+    <string name="call_ongoing">Текущ разговор</string>
+    <string name="ballot_received_votes">Брой получени гласове: %1$d/%2$d</string>
+    <string name="quote_not_found">Не е намерено цитираното съобщение</string>
+    <string name="ballot_secret">тайно</string>
+    <string name="password_too_short_generic">Паролата е твърде кратка</string>
+    <string name="passwords_dont_match">Паролите не съвпадат</string>
+    <string name="test_unsuccessful">Неуспешен тест</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="preparing_threema_safe">Подготовка на ${app_name_short} Safe</string>
+    <string name="disable_powermanager_title">Енергийни ограничения</string>
+    <string name="disable_autostart_title">Автоматично стартиране</string>
+    <string name="unchanged">без промяна</string>
+    <string name="safe_learn_more_button">Научете повече</string>
+    <string name="safe_enable_explain">Всичко от което се нуждаете, за да чатите, е запазено само на Вашето устройство. Вие нямате регистрация и ние не можем да Ви помогнем, ако си изгубите телефона или случайно си изтриете данните.\n\n${app_name_short} Safe създава автоматично резервно копие на всички важни данни, като ключове, контакти и групи (без съдържанието на съобщенията) анонимно на сигурен сървър, който Вие сам си избирате.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_disable_confirm">Искате ли да продължите без активен ${app_name_short} Safe? Когато използвате ${app_name_short} Safe, Вие можете да възстановите Вашия ${app_name_short} идентификатор, контактите и групите, ако загубите достъп до Вашето устройство</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password">Моля, изберете силна парола. Ще се нуждаете от тази парола, за да възстановите Вашето ${app_name_short} Safe резервно копие.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_server">Изберете ${app_name_short} Safe сървър</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_server_explain">Можете да използвате сървъра на ${company_name} или да изберете сървър за резервни копия от трети страни.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="onprem_safe_configure_server_explain">Запазете Вашето ${app_name_short} Safe резервно копие на сървъра на фирмата или на друг специфичен сървър.</string>
+    <string name="safe_use_default_server">Използвайте стандартния сървър</string>
+    <string name="safe_test_server">Тествайте сървъра</string>
+    <string name="safe_advanced_options">Разширени настройки за експерти</string>
+    <string name="safe_enter_password">Моля, въведете Вашата ${app_name_short} Safe парола</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_threema_id">Вашият ${app_name_short} идентификатор</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore_enter_id">Моля, въведете ${app_name_short} идентификатора, който искате да възстановите</string>
+    <string name="safe_search_id_title">Моля, въведете мобилния номер или имейл адреса, който е свързан към Вашия ${app_name_short} идентификатор</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_id_lookup">Търсене на ${app_name_short} идентификатора</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_no_id_found">Не е намерен ${app_name_short} идентификатора</string>
+    <string name="safe_no_backup_found">Не е намерено резервно копие в сървъра. Проверете идентификатора или паролата.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_select_id">Открити са множество ${app_name_short} идентификатори. Моля, изберете идентификатора, който искате да използвате:</string>
+    <string name="safe_backup_now">Направете резервно копие сега</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_enable_explain_short">Активирайте ${app_name_short} Safe, за да създадете автоматични, сигурни и анонимни резервни копия на всичките Ви важни данни.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deleting">Изтриване на ${app_name_short} Safe резервни копия</string>
+    <string name="safe_delete_error">Грешка при изтриване на резервно копие: %s</string>
+    <string name="safe_delete_success">Резервното копие е изтрито успешно</string>
+    <string name="safe_error_preparing">Грешка при подготвянето на ${app_name_short} Safe резервно копие</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_configure_choose_password_force">Моля, сложете силна парола, за да защитите Вашия ${app_name_short} идентификатор с ${app_name_short} Safe. Не забравяйте какво сте въвели тук!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate">Изключване на ${app_name_short} Safe</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_deactivate_explain">Ако деактивирате ${app_name_short} Safe, всяко съществуващо резервно копие ще бъде изтрито. Ще продължите ли?</string>
+    <string name="add_group_members">Добавете още членове</string>
+    <string name="contact_add_confirm">Искате ли да добавите новия контакт „%1$s“ към Вашия списък с контакти?</string>
+    <string name="password_bad">Слаба парола</string>
+    <string name="prefs_fix_background_data">Активирайте данни във фонов режим</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_fix_background_data_desc">За да получавате съобщения, когато ${app_name} е във фонов режим, активирайте Данни във фонов режим и Неограничено използване на данни</string>
+    <string name="prefs_fix_device">Поправка на проблеми с настройките на устройството</string>
+    <string name="safe_successful">Успешно</string>
+    <string name="safe_unsuccessful">Неуспешно</string>
+    <string name="safe_upload_failed">Качването е неуспешно</string>
+    <string name="safe_upload_size_exceeded">Превишен е лимитът на качване в сървъра</string>
+    <string name="safe_connection_error">Грешка при свързване</string>
+    <string name="safe_server_name">Име на сървъра</string>
+    <string name="safe_max_backup_size">Максимален размер на резервното копие</string>
+    <string name="safe_retention">Запазване на резервното копие</string>
+    <string name="safe_result">Резултат от резервното копие</string>
+    <string name="number_of_days">%d дни</string>
+    <string name="backup_other_restore_options">Други опции за възстановяване</string>
+    <string name="safe_size">Размер на резервното копие</string>
+    <string name="backup_version_mismatch">Версията на това резервно копие е по-нова от поддържаната версия. Моля, актуализирайте приложението до последната му версия.</string>
+    <string name="safe_restore_failed">Възстановяването е неуспешно</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_failed_notification">Не може да се създаде ${app_name_short} резервно копие от %d поредни дни. Натиснете тук, за да проверите.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_restore">Възстановяване на ${app_name_short} Safe</string>
+    <string name="backup_restore_in_progress">Резервното копие или възстановяването е в ход. Проверете напредъка в известията.</string>
+    <string name="restore_error_body">Възстановяването е неуспешно</string>
+    <string name="forgot_your_id">Забравили сте Вашия идентификатор?</string>
+    <string name="restore_success_body">Възстановяването е успешно</string>
+    <string name="work_data_sync">Синхронизиране на данни</string>
+    <string name="private_contact">Поверителен контакт</string>
+    <string name="ringtone_selection_default">Стандартен (%s)</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_data_sync_desc">${app_name} синхронизация</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="ballot_not_connected">Моля, подсигурете се, че приложението ${app_name} е свързано с интернет преди да затворите анкетата.</string>
+    <string name="empty_chat_title">Изчистете чата</string>
+    <string name="empty_chat_confirm">Всички съобщения в този чат ще бъдат изтрити. Ще продължите ли?</string>
+    <string name="emptying_chat">Изчистване на чата</string>
+    <string name="emptying_chat_deleting_messages">Изтриване на съобщенията…</string>
+    <string name="delete_chat_title">Изтрийте чата</string>
+    <string name="delete_chat_confirm">Всички съобщения в този чат ще бъдат премахнати и чатът ще бъде изтрит. Ще продължите ли?</string>
+    <string name="deleting_chat">Изтриване на чат</string>
+    <string name="set_private">Маркирайте като „поверителен чат“</string>
+    <string name="unset_private">Деактивирайте „поверителния чат“</string>
+    <string name="delete_group_message">Искате ли да напуснете групата и да я изтриете напълно? Всички съобщения ще бъдат премахнати.</string>
+    <string name="delete_left_group_message">Наистина ли искате да изтриете тази група? Всички съобщения ще бъдат премахнати.</string>
+    <string name="chats">Чатове</string>
+    <string name="notification_setting_ignored">ВСЯКАКВИ ПРОМЕНИ ЩЕ БЪДАТ ИГНОРИРАНИ!</string>
+    <string name="notification_channel_alerts">Предупреждения и грешки</string>
+    <string name="notification_channel_notices">Уведомления</string>
+    <string name="chat_updates">Актуализации на чата</string>
+    <string name="backup_or_restore_progress">Прогресът на резервното копие и възстановяването</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="tooltip_export_id">Натиснете тук, за да споделите или принтирате Вашия криптиран ${app_name_short} идентификатор сега</string>
+    <string name="downloading">Изтегляне</string>
+    <string name="today">Днес</string>
+    <string name="restore_data_cancelled">Възстановяването е прекратено</string>
+    <string name="safe_change_password">Променете паролата</string>
+    <string name="safe_configure_choose_password_title">Изберете парола</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="password_bad_explain">Избраната парола за ${app_name_short} Safe не е сигурна и може много лесно да бъде отгатната от хакери. Моля, изберете друга парола. Съвет: Използвайте парола, която е съставена от множество думи.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_password_updated">${app_name_short} Safe паролата е обновена.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_activated">${app_name_short} Safe е активиран.</string>
+    <string name="restore_zip_invalid_file">Невалидно резервно копие.</string>
+    <string name="push_token_cleared">Push-токенът е изчистен</string>
+    <string name="insert_date">Въведете дата</string>
+    <string name="add_answer">Добавете отговор</string>
+    <string name="title_cannot_be_empty">Анкетата не може да е без заглавие</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="voip_disabled">${app_name_short} обажданията са деактивирани</string>
+    <string name="hide_chat_enter_message_explain">Този чат е отбелязан като поверителен. За да го отворите, първо сложете защита на достъпа до него.</string>
+    <string name="unknown">Неизвестно</string>
+    <string name="miui_notification_title">Важна информация за известията на MIUI</string>
+    <string name="miui_notification_body">MIUI 10 деактивира звуковите и светлинни сигнали за новите приложения по подразбиране (освен за някои приложения, които са обозначени като „важни“ от Xiaomi). Вие ще трябва изрично да ги активирате за всяко приложение поотделно в екранните настройки на Вашето устройство. Свържете се с производителя на телефона за повече информация.</string>
+    <string name="miui12_notification_body">MIUI деактивира звуковите, светлинните сигнали и плаващите известия за новите приложения по подразбиране (освен за някои много популярни приложения, които са обозначени като „важни“ от Xiaomi). Вие ще трябва да ги активирате ръчно за всяко приложение в екранните настройки на Вашето устройство и да повтаряте тази процедура при всяка актуализация на приложението. Свържете се с Xiaomi за повече информация.</string>
+    <string name="dont_show_again">Не показвайте отново</string>
+    <string name="miui_notification_prefs">MIUI настройки</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_upload_successful">${app_name_short} Safe резервно копие е качено успешно</string>
+    <string name="time_remaining">%s до края</string>
+    <string name="safe_configure_server_credentials_title">Удостоверяване (не е задължително)</string>
+    <string name="username_hint">Потребителско име</string>
+    <string name="server_hint">Сървър</string>
+    <string name="lock_option_biometric">Биометрия</string>
+    <string name="biometric_enter_authentication">Необходимо е удостоверяване, за да се отключи</string>
+    <string name="biometric_authentication_failed">Удостоверяването е неуспешно</string>
+    <string name="biometric_authentication_successful">Успешно удостоверяване</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_safe_forced_explain">Вашият администратор е активирал ${app_name_short} Safe за това устройство.</string>
+    <string name="pin_locked_cannot_send">Приложението е заключено. Изпращането не е разрешено.</string>
+    <string name="prefs_summary_hide_screenshots_notice">С цел защита на поверителността, миниатюрите и екранните снимки са скрити, когато „Заключването на приложението“ е активирано в настройките за сигурност</string>
+    <string name="work_select_categories">Изберете категории</string>
+    <string name="my_profile">Моят профил</string>
+    <string name="message_too_long">Съобщението е твърде дълго. Не може да се изпрати.</string>
+    <string name="database_migration_no_space">Преносът на базата данни е неуспешен: Няма достатъчно място за съхранение на устройството.</string>
+    <string name="advanced_options">Разширени настройки</string>
+    <string name="url_warning_body">Линкът, който искате да отворите е съмнителен:\n\nИмето на хоста:<b>%s</b>\nИстинското име на хоста:<b>%s</b>\n\nТова може да е опит за измама, който да Ви накара да отворите фалшив сайт, който прилича на истинския.\n\nЖелаете ли да продължите въпреки предупреждението?</string>
+    <string name="url_warning_title">Предупреждение за фишинг измама</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">За да сканирате QR кодове, ${app_name} се нуждае от достъп до камерата Ви</string>
+    <string name="voice_action_title">Гласови команди</string>
+    <string name="voice_action_body">Обработка на гласовите команди</string>
+    <string name="permission_camera_photo_required">За да снимате, трябва да разрешите достъпа до камерата</string>
+    <string name="global_search">Търсене в чатовете</string>
+    <string name="global_search_empty_view_text">Въведете поне две букви, за да търсите из съобщенията</string>
+    <string name="my_id">Моят идентификатор</string>
+    <string name="profile_picture_and_nickname">Профилна снимка и потребителско име</string>
+    <string name="lp_select_this_place">Изберете това място</string>
+    <string name="lp_or_select_nearby">Или изберете място в близост</string>
+    <string name="lp_use_this_location">Ще изпратите ли тази локация?</string>
+    <string name="lp_search_place">Въведете град</string>
+    <string name="lp_no_nearby_places_found">Не са открити места в близост</string>
+    <string name="select_directory_for_backup">Запазете тук</string>
+    <string name="data_backup_headline">Създайте резервно копие, за да запазите Вашите данни, включително чатовете и мултимедията.</string>
+    <string name="data_backup_save_path">Папката с резервното копие</string>
+    <string name="change">Променете</string>
+    <string name="data_backup_last_date">Последното успешно резервно копие</string>
+    <string name="archived">Архивирано</string>
+    <string name="to_archive">Архивирайте</string>
+    <string name="archived_chats">Архивирани чатове</string>
+    <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
+    <string name="archive_chat">Архивирайте чата</string>
+    <string name="unarchive">Разархивирайте</string>
+    <string name="no_archived_chats">Няма архивирани чатове.\nЗа да архивирате чат, трябва да го плъзнете наляво от списъка със съобщенията</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="add_contact_enter_id_hint">Моля, въведете ${app_name_short} идентификатора на контакта, който искате да добавите</string>
+    <string name="notification_channel_new_contact">Нови контакти</string>
+    <string name="notification_channel_new_contact_desc">Известие за нови контакти</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a person's name. -->
+    <string name="notification_contact_has_joined">%1$s се присъедини към ${app_name_short}. Натиснете тук, за да изпратите съобщение.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. %1$s is a placeholder for a number (of contacts). %2$s is a summary of people's names. -->
+    <string name="notification_contact_has_joined_multiple">%1$d контакти се присъединиха в ${app_name_short}: %2$s. Натиснете тук за да им изпратите съобщение.</string>
+    <string name="system_default">Стандартни за системата</string>
+    <string name="open_in_maps_app">Отворете в приложението Карти</string>
+    <string name="delete">Изтрийте</string>
+    <string name="delete_from_this_device">Изтрийте само за това устройство</string>
+    <string name="delete_for_all">Изтрийте за всички</string>
+    <string name="message_was_deleted">Съобщението е изтрито</string>
+    <string name="continue_recording">Продължете записа</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
+    <string name="whatsnew_title">Какво ново в ${app_name} %1$s?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Вече можете да свържете Вашето устройство с Андроид към новото настолно приложение (бета) и да изпробвате функцията с множество устройства.</p>
+        <p>За повече информация, отидете в „Меню - Threema 2,0 за настолен компютър (бета)“.</p>
+        ]]></string>
+    <string name="tap_to_start">Натиснете тук, за да започнете %s сега.</string>
+    <string name="two_years">2 години</string>
+    <string name="invalid_backup_path">Невалиден път/невалидна папка на резервното копие</string>
+    <string name="backup_data_no_permission">Не може да се записва в тази директория. Моля, изберете друга.</string>
+    <string name="prefs_sum_show_unread_badge">Показване на индикатор за броя непрочетени съобщения</string>
+    <string name="prefs_title_show_unread_badge">Индикатор на непрочетените съобщения</string>
+    <string name="pinning_not_trusted">Грешка в сертификата: Моля, проверете дали при надеждните сертификати има инсталиран и активен „Entrust Root Certification Authority - G2“ в хранилището на Вашето устройство.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinning_failed">Грешка в Сертификата. Не се изключва и Man-in-the-middle атака. Проверете дали имате инсталирано разширение за блокиране на реклами, филтър на съдържание или защитна стена, като „AdGuard“. Ако е така, добавете ${app_name} в изключения.</string>
+    <string name="open_myid_popup">Отворете изкачащ прозорец за бърз достъп</string>
+    <string name="logo">Лого / Отидете най-горе</string>
+    <string name="quote_subj_end">Край на цитата</string>
+    <string name="quote_subj">Цитат</string>
+    <string name="duration">Продължителност</string>
+    <string name="seconds">Секунди</string>
+    <string name="minutes">Минути</string>
+    <string name="and">и</string>
+    <string name="edit_type_content_description">Прегледайте или редактирайте %1$s %2$s</string>
+    <string name="group">Група</string>
+    <string name="play_services_not_installed_unable_to_use_push">Услугите не са инсталирани. Не може да се премине към Google FCM или HMS push.</string>
+    <string name="unable_to_get_current_location">Не може да се уточни настоящето местоположение.</string>
+    <string name="lp_search_place_min_chars">Моля, въведете поне три букви, за да потърсите дадено място.</string>
+    <string name="lp_search_place_no_matches">Няма намерени места. Моля, променете запитването.</string>
+    <string name="wallpaper_default">Фон по подразбиране</string>
+    <string name="wallpaper_gallery">Изберете от галерията</string>
+    <string name="wallpaper_none">Без фон</string>
+    <string name="wallpaper_threema">%s фон</string>
+    <string name="message_id">Идентификатор на съобщението</string>
+    <string name="mime_type">Tип MIME</string>
+    <string name="password_does_not_comply">Паролата не съответства с изискванията, които са поставени от администратора.</string>
+    <string name="audio_mute_due_to_focus_loss">Звукът е временно заглушен заради друго приложение</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="restore_data_backup_explain">За да възстановите от резервно копие, първо изтрийте Вашия ${app_name_short} идентификатор от „Моят профил“.\n\nКогато приложението се рестартира, изберете „Възстановяване от резервно копие“, „Други опции за възстановяване“, „Резервно копие на данни“ и след това изберете файла с резервното копие от който ще възстановявате.</string>
+    <string name="audio_focus_loss_complete">Обаждането е прекъснато поради пълната загуба на звука заради друго приложение.</string>
+    <string name="tap_for_picture_hold_for_video">Натиснете за снимка, задръжте за видео</string>
+    <string name="sending_media">Изпращане на мултимедия</string>
+    <string name="permission_record_video_audio_required">За да запишете видео, позволете достъпа до микрофона</string>
+    <string name="media_files">Файлове</string>
+    <string name="auto_download_limit_explain">Видеа и файлове по-големи от %s винаги ще бъдат изтегляни при поискване</string>
+    <string name="quoted_message_deleted">Цитираното съобщение вече не е достъпно</string>
+    <string name="searching">Търсене…</string>
+    <string name="prefs_work_life_balance">Не ме безпокойте</string>
+    <string name="prefs_title_working_days">Работни дни</string>
+    <string name="prefs_working_days_sum">Изберете работни дни</string>
+    <string name="prefs_work_time_start">Начало на работните часове</string>
+    <string name="prefs_work_time_start_sum">Задайте начален час</string>
+    <string name="prefs_work_time_end">Край на работните часове</string>
+    <string name="prefs_work_time_end_sum">Задайте краен час</string>
+    <string name="prefs_working_days_enable_title">Политика в неработно време</string>
+    <string name="prefs_working_days_enable_sum">Деактивиране на известията и отказ на обажданията извън работното време</string>
+    <string name="work_life_dnd_active">Извън работното време е активирано</string>
+    <string name="warning">Внимание</string>
+    <string name="password_remember_warning">Запомнете какво сте въвели тук! След като %s не запаметява пароли на сървъра, ние не можем да Ви помогнем, ако забравите Вашата парола или ПИН.</string>
+    <string name="safe_backup_tap_to_restart">Натиснете на системното известие, за да рестартирате приложението. Ако не виждате известието, плъзнете надолу панела на известията на Вашето устройство.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="send_to_support">Изпратете към екипа по поддръжка на ${company_name}</string>
+    <string name="menu_legal">Правна информация</string>
+    <string name="tooltip_work_hint">Този контакт използва Threema Work.</string>
+    <string name="video_camera_on">Видео камерата е включена</string>
+    <string name="video_camera_off">Видео камерата е изключена</string>
+    <string name="enable_picture_in_picture">Стартирайте режима „картина в картината“</string>
+    <string name="call_with">Обадете се на %s</string>
+    <string name="picture_in_picture_disabled_in_setting">Режимът „Картина в Картината“ е изключен за %s. Моля, активирайте го от системните настройки.</string>
+    <string name="delete_everything">Изтрийте всичко</string>
+    <string name="prefs_title_voip_video_enable">Позволете видеото</string>
+    <string name="video_calls">Видео обаждания</string>
+    <string name="prefs_videocall_profile">Предпочитано качество на картината</string>
+    <string name="videocall_profile_auto">Балансирано (препоръчително)</string>
+    <string name="videocall_profile_low_bandwidth">Малък трафик на данни (ниско качество)</string>
+    <string name="videocall_profile_max_quality">Максимално качество</string>
+    <string name="unable_to_play_video">Не може да се възпроизведе видеото</string>
+    <string name="tooltip_voip_turn_on_camera">Натиснете тук, за да включите камерата</string>
+    <string name="prefs_videocall_profile_explain">Актуалното качество на картината зависи от интернета и настройките на събеседника Ви</string>
+    <string name="permission_camera_videocall_required">За да стартирате видео обаждане, трябва да разрешите достъпа до камерата</string>
+    <string name="tooltip_voip_enable_speakerphone">Натиснете тук, за да включите високоговорителя</string>
+    <string name="ballot_open">Отворени анкети</string>
+    <string name="translators">Преводачи</string>
+    <string name="credits">Благодарности</string>
+    <string name="translators_thanks">Благодарности на нашите преводачи доброволци:\n%s</string>
+    <string name="ballot_window_hide">Скрийте отворените анкети</string>
+    <string name="ballot_window_show">Покажете отворените анкети</string>
+    <string name="single_ballot_really_delete">Премахнете тази анкета</string>
+    <string name="single_ballot_really_delete_text">Наистина ли искате да премахнете тази анкета? Няма да можете да възстановите гласовете.</string>
+    <string name="tooltip_voip_other_party_video_on">Събеседникът Ви стартира видео обаждане. Натиснете тук, за да включите Вашата камера.</string>
+    <string name="tooltip_voip_other_party_video_disabled">Събеседникът Ви не използва текущата версия на приложението или не е разрешил видео обажданията.</string>
+    <string name="biometrics_not_enrolled">Няма настроена биометрия в системата.</string>
+    <string name="biometrics_not_avilable">Биометрията не е налична за тази система.</string>
+    <string name="biometrics_no_permission">Липсва разрешение за достъп до биометрията или хардуера.</string>
+    <string name="verification_settings_desc">Точките са индикатор за нивото на верификация на контакта.</string>
+    <string name="verification_levels_title">Ниво на верификация</string>
+    <string name="work_verification_levels_title">Контакти във Вашата организация</string>
+    <string name="external_verification_levels_title">Други контакти</string>
+    <string name="switch_flash">Променете режима на светкавицата</string>
+    <string name="message_not_found">Съобщението не е намерено</string>
+    <string name="insert_datetime">Въведете дата и час</string>
+    <string name="prefs_sum_disable_smart_replies">Забрана за интелигентните отговори в известията на Android</string>
+    <string name="prefs_title_disable_smart_replies">Деактивирайте интелигентните отговори</string>
+    <string name="url_warning_body_alt">Линкът, който сте на път да отворите е подозрителен.\n\nТова може да е опит да Ви заблудят да отворите фалшив уеб сайт, който да изглежда като истински.\n\nИскате ли да го отворите въпреки предупреждението?</string>
+    <string name="read_on">Продължете с четенето…</string>
+    <string name="forward_text">Препратете съобщението</string>
+    <string name="an_error_occurred_during_send">Грешка при изпращането на едно или повече съобщения.</string>
+    <string name="state_processing">обработка</string>
+    <string name="passphrase_locked">Тайната фраза е заключена</string>
+    <string name="selected_media">Вашият избор</string>
+    <string name="attach_gif">Gif файл</string>
+    <string name="attach_gallery">Галерия</string>
+    <string name="attach_picture">Изображение</string>
+    <string name="attach_video">Видео</string>
+    <string name="attach_location">Местоположение</string>
+    <string name="filter_by_album">Филтрирайте по албум</string>
+    <string name="media_date_taken">Дата: %s</string>
+    <string name="media_date_added">Дата на добавяне: %s</string>
+    <string name="media_date_modified">Дата на редактиране: %s</string>
+    <string name="media_date_unknown">Неизвестна дата</string>
+    <string name="max_selectable_media_exceeded">Не повече от %d файла могат да се изпратят наведнъж.</string>
+    <string name="error_unable_loading_media_thumb">Грешка. Миниатюрата не може да бъде заредена</string>
+    <string name="select">Изберете</string>
+    <string name="filter_list">Филтрирайте списъка</string>
+    <string name="hint_filter_list">Въведете текст на филтъра</string>
+    <string name="add">Добавете</string>
+    <string name="threema_message_from">Съобщение от %s</string>
+    <string name="show_text">Покажете текста</string>
+    <string name="only_images_or_videos">Само изображения или видеа могат да се избират</string>
+    <string name="media_gallery_gifs">GIF файлове</string>
+    <string name="no_media_found_global">Не са намерени мултимедийни файлове на това устройство</string>
+    <string name="original_file_no_longer_avilable">Оригиналният файл вече е недостъпен. Моля, изпратете съобщението отново.</string>
+    <string name="state_transcoding">транскодиране</string>
+    <string name="importing_files">Импортиране на файлове</string>
+    <string name="tooltip_image_resolution_hint">Натиснете тук, за да нагласите резолюцията на изображението.</string>
+    <string name="ballot_created_successfully">Анкетата е създадена успешно.</string>
+    <string name="file_size">Размер на файла</string>
+    <string name="thirty_days_abbrev">3О дни</string>
+    <string name="show_in_chat">Покажете в чата</string>
+    <string name="group_create_no_members">Сигурни ли сте, че искате да създадете празна група?</string>
+    <string name="notes">Бележки</string>
+    <string name="blur_faces">Замъглете лицата</string>
+    <string name="brush">Четка</string>
+    <string name="pencil">Молив</string>
+    <string name="highlighter">Маркер за подчертаване</string>
+    <string name="error_detecting_faces">Грешка при разпознаването на лицата</string>
+    <string name="no_faces_detected">Не са разпознати лица</string>
+    <string name="smiley">Емотикони</string>
+    <string name="blur">Замъглете</string>
+    <string name="face_blur_tooltip_title">Разпознаване на лица</string>
+    <string name="face_blur_tooltip_text">Намерете лица в изображенията и ги замъглете или покрийте с емотикона.</string>
+    <string name="listened_to">изслушано</string>
+    <string name="transcoder_unsupported_audio_format">Аудио файлът не може да бъде транскодиран заради липсваща системна поддръжка.</string>
+    <string name="transcoder_unknown_audio_error">Неизвестна грешка при транскодирането на аудио файла.</string>
+    <string name="video_size_explain">Много големите видеа могат да бъдат компресирани, независимо от настройките.</string>
+    <string name="status_create_notes">*Вие сте единственият член на тази група*\nИзползвайте този чат за водене на лични бележки, за изображения или документи, които са Ваши лични.</string>
+    <string name="status_create_notes_off">*Вие вече не сте единственият в този чат*\nНовите съобщения ще се изпращат до всички членове на групата.</string>
+    <string name="note_group_howto">Съвет: Ако не добавите други членове на групата, съобщенията в тази група ще се запазват локално в устройството Ви. Това е идеално за сигурното запазване на бележки, мултимедия или документи. Ще може да си ги изпратите към компютъра.</string>
+    <string name="mark_unread">Отбележете като непрочетено</string>
+    <string name="mark_read_short">Отбележете като прочетено</string>
+    <string name="unread">Непрочетено</string>
+    <string name="missing_app_licence">Магазинът за приложения не можа да удостовери Вашата покупка. Ако използвате Google Play, изчистете данните за Google Play Store и рестартирайте Вашето устройство.</string>
+    <string name="set_backup_path">Задайте път/папка към резервното копие</string>
+    <string name="set_backup_path_intro">Отбележете папката, където ще се съхраняват резервните копия.</string>
+    <string name="discard_changes_title">Отменете промените</string>
+    <string name="group_join_request_message_info"><![CDATA[Напишете кратко съобщение до администратора на групата <b>%1$s</b> с причината за поисканото Ви присъединяване в <b>%2$s</b>.]]></string>
+    <string name="group_join_request">Заявка за присъединяване към група</string>
+    <string name="group_join_request_for">Заявка за присъединяване за %s</string>
+    <string name="group_link_default_name">Линк без име</string>
+    <string name="group_link_share">Споделете линка на групата </string>
+    <string name="group_request_incoming_dialog_title">Заявка от %s</string>
+    <string name="accept">Приемете</string>
+    <string name="reject">Откажете</string>
+    <string name="group_request_already_sent"><![CDATA[Вече сте изпратили заявка за присъединяване към  <b>%s</b> чрез този линк и се чака отговор от администратора. Натиснете върху заявката в списъка, ако искате да я изпратите отново.]]></string>
+    <string name="group_link_none">Все още няма генериран линк</string>
+    <string name="group_request_confirm_send"><![CDATA[На път сте да изпратите заявка за присъединяване към групата <b>%1$s</b> на администратора <b>%2$s</b>. Ако линкът е валиден, Вие ще бъдете добавен автоматично щом администраторът получи Вашата заявка.]]></string>
+    <string name="really_delete_group_request_title_singular">Изтрийте заявката за присъединяване към група</string>
+    <string name="really_delete_group_request_title_plural">Изтрийте заявките за присъединяване към групи</string>
+    <string name="sent_to">Изпратено на: %s</string>
+    <string name="sent_on">Изпратено в: %s</string>
+    <string name="group_response">Отговор на заявката за присъединяване към група</string>
+    <string name="group_response_accepted">Вашата заявка за членство в групата %s е приета</string>
+    <string name="group_response_full">Вашата заявка за членство в групата %s е отхвърлена, защото групата е пълна</string>
+    <string name="group_response_rejected">Вашата заявка за членство в групата %s е отхвърлена</string>
+    <string name="group_link_expiration_none">Без ограничение</string>
+    <string name="group_request_hint">Здравейте! Аз съм…</string>
+    <string name="group_request_send_title">Изпратете заявка за присъединяване към група</string>
+    <string name="group_request_message_empty">Заявката за присъединяване към група не може да бъде празна</string>
+    <string name="group_requests_all_title">Всички заявки за група</string>
+    <string name="group_requests_none_outgoing">Няма изпратени заявки за присъединяване към групата. Заявките могат да бъдат изпратени чрез създадения от администратора линк.</string>
+    <string name="notification_channel_group_join_response">Известие за отговора на заявката за присъединяване в група</string>
+    <string name="group_qr_code_title">QR кодът на групата</string>
+    <string name="group_link_qr_desc"><![CDATA[Споделете този линк към групата с хората, които бихте желали да се присъединят в групата: <b>%s</b>.]]></string>
+    <string name="new_group_link_success">Добавен е нов линк</string>
+    <string name="link_administration_off_explain">Този линк е вече настроен и споделен, поради тази причина вече не може да се промени това свойство. Създайте нов линк със свойството, което Ви е нужно.</string>
+    <string name="group_link_update_success">Линкът е актуализиран успешно</string>
+    <string name="no_group_links">Няма линкове към групата. За да създадете линк към групата, натиснете на бутона „добави“ долу вдясно или активирайте линка по подразбиране от „детайлния преглед на групата“.</string>
+    <string name="group_links_overview_title">Линкове към групата за %s</string>
+    <string name="group_link_invalid">Изтекъл</string>
+    <string name="group_link_valid">Валиден</string>
+    <string name="open_group_requests_chips_title">Отворени заявки за присъединяване в групата</string>
+    <string name="all_open_group_requests">Всички заявки за присъединяване към група</string>
+    <string name="no_incoming_group_requests">Няма входящи заявки за присъединяване към група. Могат да бъдат изпратени чрез линкове, които могат да бъдат управлявани от Вас от „детайлния изглед на групата“, ако Вие сте администраторът.</string>
+    <string name="received_on">Получено на %s</string>
+    <string name="group_request_state_full">Групата е пълна</string>
+    <string name="group_request_state_rejected">Отхвърлен</string>
+    <string name="group_request_state_expired">Изтекъл</string>
+    <string name="group_request_state_pending">В процес на обработка</string>
+    <string name="group_request_state_accepted">Приет</string>
+    <string name="open_group_requests_show">Покажете заявки за присъединяване към група</string>
+    <string name="open_group_requests_hide">Скрийте заявките за присъединяване към група</string>
+    <string name="group_request_link_already_deleted">Линк на групата докато се изтрива</string>
+    <string name="incoming_group_request_no_message">Изпратено през отворен линк… без съобщение</string>
+    <string name="group_request_received_through">През линк: %s</string>
+    <string name="reaccept">Приемете отново</string>
+    <string name="group_link_edit_expiration_date">Редактирайте датата на валидност</string>
+    <string name="group_link_show_qr">Покажете QR код</string>
+    <string name="group_link_rename">Преименувайте</string>
+    <string name="group_link_rename_tag">Ново име</string>
+    <string name="tap_here_for_more">Натиснете тук за повече информация</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="another_connection_instructions"><![CDATA[Сървърът засече две или повече връзки от различни устройства със същия ${app_name_short} идентификатор.<br><br>Не е възможно да се използва един и същ ${app_name_short} идентификатор на различни устройства по едно и също време. Новите съобщения ще се получават само на устройството, което последно се е вписало в сървъра. <br><br>Ако сменяте устройството, деинсталирайте или деактивирайте %s на старото устройство и рестартирайте новото.]]></string>
+    <string name="app_store_error_code">Код на грешката в магазина за приложения: %d</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="backup_restore_type"><![CDATA[Какъв тип резервно копие искате да възстановите? <br/><br/> <a href=%s>Научете повече за резервните копия в ${app_name_short}</a>]]></string>
+    <string name="data_backup_info">Възстановете всичко, вкл. и чатовете</string>
+    <string name="new_to_threema">Нов ли сте в %s?</string>
+    <string name="back_to_threema">Завръщате ли се в %s?</string>
+    <string name="id_backup_info">Възстановете само Вашия идентификатор</string>
+    <string name="restore_your_id_contacts_and_groups">Възстановете Вашия идентификатор, контакти и групи</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_safe_backup">Резервно копие ${app_name_short} Safe</string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Помощ</a>]]></string>
+    <string name="download_failed">Изтеглянето е неуспешно. Код на грешката: %d</string>
+    <string name="edit_answer">Редактирайте отговора</string>
+    <string name="share_media">Споделете с друго приложение…</string>
+    <string name="group_link_administered">Администрирано</string>
+    <string name="group_link_open">Отворете</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="group_link_share_message">Присъединете се към моята ${app_name_short} група през следния линк!: %s</string>
+    <string name="group_link_bottom_sheet_title">Линк на групата</string>
+    <string name="group_link_bottom_sheet_desc">Споделете този линк с хората, които бихте искали да се присъединят към групата. Имайте предвид опциите отдолу.</string>
+    <string name="group_link_bottom_sheet_link_title">Линк</string>
+    <string name="group_link_properties_title">Свойства на линка</string>
+    <string name="group_link_property_administration_title">Ръчно потвърждение</string>
+    <string name="group_link_property_administration_desc">Ако е активирано, ще получавате заявки в чата на групата, които Вие можете да приемете или отхвърлите</string>
+    <string name="group_link_property_expiration_title">Крайна дата на валидност</string>
+    <string name="group_link_property_expiration_desc">Линкът вече няма да е валиден след посочената дата.</string>
+    <string name="group_image">Изображение на групата</string>
+    <string name="add_group_link">Добавете членове през линка на групата</string>
+    <string name="miui_battery_optimization">Моля, деактивирайте „оптимизацията на батерията“ за %s, за да изпълните тази задача. Ще трябва да направите това ръчно, защото Xiaomi не позволява приложенията да отварят тази настройка сами. Свържете се с поддръжката на Xiaomi, ако имате нужда от помощ с деактивирането на оптимизацията на батерията.</string>
+    <string name="forward_captions">Добавете още информация</string>
+    <string name="importing_files_failed">Не може да се импортира резервното копие. Подсигурете се, че имате достатъчно място във вътрешната памет.</string>
+    <string name="label_continue">Продължете</string>
+    <string name="select_date">Изберете дата</string>
+    <string name="select_time">Изберете час</string>
+    <string name="send_to">Изпратете на %s</string>
+    <string name="receipts_override_choice_send">Изпратете</string>
+    <string name="receipts_override_choice_dont_send">Не изпращайте</string>
+    <string name="receipts_override_choice_default">По подразбиране (%s)</string>
+    <string name="unable_to_determine_recording_length">Празен запис или невъзможност да се определи дължината му</string>
+    <string name="prefs_header_receipts">Потвърждения</string>
+    <string name="prefs_title_reset_receipts">Изчистете индивидуалните настройки</string>
+    <string name="prefs_sum_reset_receipts">Направете специфичните контактни настройки на индикатора за четене и писане по подразбиране</string>
+    <string name="reset_successful">Успешно задаване по подразбиране</string>
+    <string name="group_link_add">Добавете линк на групата</string>
+    <string name="group_requests_show_menu_title">Покажете отворените заявки за присъединяване</string>
+    <string name="group_request_show_all">Покажете всички заявки за групата</string>
+    <string name="group_links_manage_menu">Управлявайте линковете на групата</string>
+    <string name="group_request_sent_menu">Изпратете заявки за групата</string>
+    <string name="really_delete_group_link_title">Изтрийте линка на групата</string>
+    <string name="really_delete_multiple_group_links_title">Изтрийте линковете на групата</string>
+    <string name="qr_scan_result_dialog_title">Резултат от QR сканирането</string>
+    <string name="scan_failure_dialog_title">Сканирането е неуспешно</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_threema_qr_info">Това не е специфичен ${app_name_short} QR код. Декодираното съдържание е: </string>
+    <string name="default_group_link">Линк на групата по подразбиране</string>
+    <string name="default_link_name">Линк по подразбиране</string>
+    <string name="reset_default_group_link">Рестартирайте линка по подразбиране на групата</string>
+    <string name="resend">Препратете</string>
+    <string name="group_request_already_sent_title">Вече е изпратена заявка</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="qr_scanner_id_hint">Сканирайте QR кода на контакта, за да потвърдите неговата самоличност. За да се покаже кодът, помолете Вашия контакт да натисне върху профилната си снимка в левия ъгъл в основния прозорец на ${app_name_short}.</string>
+    <string name="enable_storage_access_for_media">Разрешете достъпа до хранилището, за да виждате изображенията и видеата от Вашето устройство</string>
+    <string name="select_storage_access_for_media_is_granted">Вие дадохте достъп до избран брой снимки и видеа.</string>
+    <string name="take_me_there">Отведи ме там…</string>
+    <string name="manage">Управлявайте</string>
+    <string name="notification_channel_group_join_request">Канал на известията за получените заявки за група</string>
+    <string name="reset_default_group_link_title">Рестартирайте информацията на линка по подразбиране</string>
+    <string name="reset_default_group_link_desc">Старият линк ще стане невалиден и всички заявки през него ще се отхвърлят автоматично с отговор, че линкът е изтекъл.</string>
+    <string name="custom">друго</string>
+    <string name="show_public_key">Покажете публичния ключ</string>
+    <string name="public_key_for">Публичният ключ на %s</string>
+    <string name="copied">Копирано</string>
+    <string name="no_votes_yet">Още никой не е гласувал.</string>
+    <string name="permission_contacts_sync_required">Моля, разрешете достъпа до контактите, за да може да се синхронизират.</string>
+    <string name="not_voted_user_list">Тези участници не гласуваха: %s</string>
+    <string name="contact_update">Актуализиране на контактите</string>
+    <string name="invalid_onprem_id">Този идентификатор не съществува (вече) или не е съвместим с Вашия идентификатор.</string>
+    <string name="enable_unknown_sources">Не може да се инсталира. Моля, подсигурете се, че „инсталирането на неизвестни приложения“ е активирано за %s.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push">${app_name_short} Push</string>
+    <string name="threema_push_notification_text">Натиснете, за да научите повече.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_notification_info_text_1">${app_name_short} Push работи на заден план, за да Ви информира за входящи съобщения и обаждания.</string>
+    <string name="threema_push_notification_info_text_2">Приложенията не могат да работят на заден план без да показват постоянни известия. Чрез показването на това известие, ние гарантираме, че ${app_name_short} Push ще остане активен дори и да не използвате активно приложението.</string>
+    <string name="threema_push_notification_info_text_3">Ако все още изпитвате проблеми със забавени или липсващи известия, променете системните настройки, така че приложението да може да работи на заден план без ограничения и без пестене на батерия.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_service_description">Постоянното известие се показва, когато ${app_name_short} Push е активен</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_push_activated">${app_name_short} Push е активиран.</string>
+    <string name="add_shortcut_success">Прекият път е успешно създаден</string>
+    <string name="add_shortcut_error">Грешка при добавянето на пряк път на екрана на устройството</string>
+    <string name="web_link">Линк</string>
+    <string name="link_copied">%s копирано</string>
+    <string name="invalid_onprem_id_title">Не може да се добави идентификаторът</string>
+    <string name="name_given">Име</string>
+    <string name="name_family">Фамилно име</string>
+    <string name="name_prefix">Префикс на името</string>
+    <string name="name_middle">Презиме</string>
+    <string name="name_suffix">Суфикс на името</string>
+    <string name="full_name">Пълното име</string>
+    <string name="send_contact">Изпратете контакт</string>
+    <string name="edit_send_contact_detail_icon">Детайли за контакта</string>
+    <string name="phoneTypeCustom">Персонализиран</string>
+    <string name="phoneTypeHome">Домашен</string>
+    <string name="phoneTypeMobile">Мобилен</string>
+    <string name="phoneTypeWork">Служебен</string>
+    <string name="phoneTypePager">Пейджър</string>
+    <string name="phoneTypeOther">Друг</string>
+    <string name="phoneTypeCar">Автомобилен</string>
+    <string name="phoneTypeIsdn">ISDN</string>
+    <string name="phoneTypeOtherFax">Друг факс</string>
+    <string name="eventTypeCustom">Персонализиран</string>
+    <string name="eventTypeBirthday">Рожден ден</string>
+    <string name="eventTypeAnniversary">Годишнина</string>
+    <string name="eventTypeOther">Друг</string>
+    <string name="emailTypeHome">Личен</string>
+    <string name="emailTypeWork">Служебен</string>
+    <string name="emailTypeOther">Друг</string>
+    <string name="postalTypeCustom">Персонализиран</string>
+    <string name="postalTypeHome">Домашен</string>
+    <string name="postalTypeWork">Служебен</string>
+    <string name="postalTypeOther">Друг</string>
+    <string name="relationTypeCustom">Персонализиран</string>
+    <string name="relationTypeChild">Дете</string>
+    <string name="relationTypeFriend">Приятел</string>
+    <string name="relationTypeParent">Родител</string>
+    <string name="relationTypeSpouse">Съпруг/а</string>
+    <string name="contact_property_key">"Ключ"</string>
+    <string name="header_nickname_entry">"Псевдоним"</string>
+    <string name="contact_picture_content_description">Снимка на контакта</string>
+    <string name="prefs_title_use_system_ringtone">Използвайте системна мелодия</string>
+    <string name="organization_type">Организация</string>
+    <string name="permission_bluetooth_connect_required">Активирайте разрешението за „Устройства в близост“, за да локализирате свързаните Блутут слушалки</string>
+    <string name="tooltip_multiple_recipients_title">Множество получатели</string>
+    <string name="tooltip_multiple_recipients_text">Натиснете и задръжте, за да изберете множество получатели на които да изпратите едно и също съобщение.</string>
+    <string name="synchronizing">Синхронизиране…</string>
+    <string name="forward_security">Изпратете съобщения с Perfect Forward Secrecy</string>
+    <string name="forward_security_mode">Perfect Forward Secrecy</string>
+    <string name="forward_security_mode_none">Няма</string>
+    <string name="clear_forward_security">Рестартирайте Perfect Forward Secrecy за този контакт</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="clear_forward_security_warning">Това действие трябва да бъде извършено единствено, ако така Ви е казано от екипа по поддръжка на ${company_name}.</string>
+    <string name="forward_security_cleared">Perfect Forward Secrecy сесиите с този контакт са изчистени</string>
+    <string name="message_without_forward_security">Съобщение без Perfect Forward Secrecy е получено. Проверете дали изпращачът умишлено го е деактивирал.</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecy е деактивирано за този чат.</string>
+    <string name="forward_security_established">Съобщенията с Вашия чат събеседник са защитени от Perfect Forward Secrecy.</string>
+    <string name="forward_security_established_rx">Съобщенията получени в този чат са защитени от Perfect Forward Secrecy.</string>
+    <string name="forward_security_reset">Perfect Forward Secrecy сесията е рестартирана. Това може да се случи, когато Вашият събеседник е сменил устройствата или е преинсталирал приложението.</string>
+    <string name="forward_security_reset_simple">Perfect Forward Secrecy сесията с този контакт е рестартирана.</string>
+    <string name="forward_security_message_out_of_order">Получено е съобщение, което не може да бъде декриптирано.</string>
+    <string name="forward_security_notification_channel_name">Предупреждение от Perfect Forward Secrecy</string>
+    <string name="forward_security_notification_rejected_title">Изпращането на съобщения е неуспешно</string>
+    <string name="forward_security_notification_rejected_text_contact">Едно или повече съобщения не могат да бъдат изпратени на %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Едно или повече съобщения не могат да бъдат изпратени на %1$s.”</string>
+    <string name="forward_security_notification_rejected_text_generic">Едно или повече съобщения не могат да бъдат изпратени.</string>
+    <string name="self_updater_installation_failed">Изтеглянето на актуализацията е неуспешно. Моля, изтеглете и инсталирайте актуализацията от <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ръчно.</string>
+    <string name="spam_first_contact">Чатът е от непознат контакт</string>
+    <string name="spam_report">Докладвайте за спам</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="spam_report_dialog_explain">Ако продължите, идентификаторът и псевдонимът на този контакт ще бъдат препратени към ${company_name} заедно с Вашия идентификатор. Не се изпраща съдържание или лични данни. Контактът няма да бъде известен за това.</string>
+    <string name="spam_report_dialog_block_checkbox">Също така блокирайте този контакт и изтрийте чата</string>
+    <string name="spam_report_dialog_title">Докладвайте %s</string>
+    <string name="spam_successfully_reported">Идентификаторът на този потребител беше докладван като изпращащ спам.</string>
+    <string name="spam_error_reporting">Грешка при докладването за спам: %s</string>
+    <string name="spam_report_short">Докладвайте</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="wizard_incompatible_contact_sync_params">Има несъвместими MDM параметри. ${app_name_short} MDM параметърът th_contact_sync не може да бъде променен на true, ако потребителското ограничение DISALLOW_MODIFY_ACCOUNTS е настроено. Моля, свържете се с администратора на устройството.</string>
+    <string name="messages_cannot_be_recovered">Няма да можете да възстановите съобщенията.</string>
+    <string name="groups_left_or_dissolved">Групите ще бъдат разпуснати и изтрити след това.</string>
+    <string name="contact_deleted">Контактът е изтрит</string>
+    <string name="last_added_contact">Последно добавен</string>
+    <string name="directory_explain_text">Потърсете в списъка на компанията за служители, които все още не са във Вашия списък с контакти.</string>
+    <string name="cannot_display_location">Местоположението не може да бъде показано.</string>
+    <string name="draw_reply">Отговорете с рисунка</string>
+    <string name="drawing">Рисуване</string>
+    <string name="background_color">Цвят на фона</string>
+    <string name="send_video_muted">Премахнете звука от видеото</string>
+    <string name="send_without_audio">Премахнете звука</string>
+    <string name="edit_filename">Преименувайте файла</string>
+    <string name="unable_to_restore_identity_because">Не е възможно да се възстанови идентификаторът. Причина: %s</string>
+    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="share_with_app">Споделете чрез ${app_name}</string>
+    <string name="read_phone_state_dialog_allow">Предоставете разрешение</string>
+    <string name="read_phone_state_dialog_disallow">Продължете въпреки всичко</string>
+    <string name="read_phone_state_dialog_never_ask_again">Не ме питайте отново</string>
+    <string name="read_phone_state_dialog_title">Изискват се разрешения</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_dialog_message">За да се предотврати прекъсването на мобилните разговори от ${app_name_short} разговорите, приложението има нужда от разрешение на достъпа до управлението на „Телефон“. Ако разрешението не е предоставено, всяко входящо ${app_name_short} обаждане ще звъни дори ако сте в текущо мобилно обаждане.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="read_phone_state_short_message">За да провери за текущи обаждания, разрешете достъпа на ${app_name} до „Телефон“.</string>
+    <string name="prefs_title_read_phone_state">Даване на достъп до Телефона</string>
+    <string name="prefs_title_hibernation">Настройки на неизползваните приложения</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api_32">За да предотвратите приложението ${app_name} да бъде поставено на пауза от системата след дълга неактивност, деактивирайте системната настройка „Премахнете разрешенията и освободете място“.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="prefs_summary_hibernation_api">За да предотвратите приложението ${app_name} да бъде поставено на пауза от системата след дълга неактивност, деактивирайте системната настройка „Поставете на пауза приложението, ако не се използва“.</string>
+    <string name="unable_to_fetch_configuration">Няма достъп до данните от сървъра за настройки. Опитайте отново по-късно.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="rogue_device_warning"><![CDATA[Засечена е връзка от друго устройство със същия ${app_name_short} идентификатор. Наскоро да сте използвали Вашия ${app_name_short} идентификатор от друго устройство? <br><br> Ако сте го направил\а, може да игнорирате това съобщение. <br><br> Ако не сте, поверителният Ви ключ може да е компрометиран. Моля, <a href="https://threema.ch/en/faq/another_connection"> последвайте нашите предложения,</a> за да защитите Вашето устройство и Вашите данни преди да създадете нов идентификатор.]]></string>
+    <string name="fetch2_failure">Синхронизацията със сървъра за предоставяне на услуги е неуспешна.</string>
+    <string name="no_members_support_group_calls">Няма повече членове в тази група, които да могат да отговорят на групови обаждания</string>
+    <string name="group_calls">Групови обаждания</string>
+    <string name="prefs_title_group_calls_enable">Активирайте груповите обаждания</string>
+    <string name="group_no_members">Тази група няма повече членове</string>
+    <string name="group_call">Групово обаждане</string>
+    <string name="checking_compatibility">Проверка на съвместимостта…</string>
+    <string name="group_call_mic_permission_rationale">За да извършите групови обаждания, трябва да позволите %s да има достъп до микрофона от „разрешения“.</string>
+    <string name="group_call_mic_permission_description">За да извършите групови обаждания, Вие трябва да позволите достъпа до микрофона, за да могат другите да Ви чуват.</string>
+    <string name="call_mic_permission_description">За да извършите обаждания, Вие трябва да позволите достъпа до микрофона, за да могат другите да Ви чуват.</string>
+    <string name="group_call_camera_permission_rationale">За да могат останалите участници да Ви виждат снимката, трябва да предоставите достъп на %s до камерата от „разрешения“.</string>
+    <string name="group_call_phone_permission_description">За да извършите групови обаждания, приложението има нужда от разрешение за проверка кога друго обаждане прекъсва Вашето групово обаждане.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_phone_permission_description">За да извършите ${app_name_short} обаждания, приложението има нужда от разрешение за „телефон“, за да отчита кога друго мобилно обаждане прекъсва Вашето ${app_name_short} обаждане.</string>
+    <string name="group_call_nearby_devices_permission_description">За да започнете групови обаждания с блутут слушалки, Вие трябва да позволите достъпа до „устройства в близост“, за да могат да се намерят блутут слушалките.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="call_nearby_devices_permission_description">За да започнете ${app_name_short} обаждания с блутут слушалки, Вуе трябва да позволите достъпа до „устройства в близост“, за да могат да се намерят блутут слушалките.</string>
+    <string name="settings">Настройки</string>
+    <string name="leave">Напуснете</string>
+    <string name="fs_key_mismatch">несъответствие с ключа</string>
+    <string name="tap_to_resend">Натиснете, за да го изпратите отново</string>
+    <string name="group_calls_tooltip_title">Групови обаждания</string>
+    <string name="group_calls_tooltip_text">Натиснете тук, за да поканите всички членове на групата да се присъединят в обаждането. Всички те ще получат известие и могат да решат дали да се включат в разговора или не.</string>
+    <string name="prefs_title_calls">Защитени обаждания</string>
+    <string name="prefs_sum_group_calls_vibration">Изберете дали устройството да вибрира, когато започне групово обаждане</string>
+    <string name="forward_security_mode_4dh">Завършено</string>
+    <string name="forward_security_mode_2dh">Едностранно</string>
+    <string name="forward_security_mode_all">Пълно</string>
+    <string name="forward_security_mode_partial">Частично</string>
+    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) защитава записаната комуникация от ретроактивното декриптиране дори ако криптирането в дългосрочен план е нарушено.\n\nОпцията може да бъде активирана, ако приложението и на двете страни поддържа PFS.</string>
+    <string name="group_call_inactivity_left">Напускане на груповото обаждане поради неактивност</string>
+    <string name="missing_permission_external_storage">Не може да се копира файлът. Опитайте следните стъпки:\n1. Отворете „Настройки“.\nОтидете в „Приложения“ и изберете „Специален достъп на приложението“.\n3. Натиснете на „Достъп до всички файлове“.\n4. Натиснете на трите точки в горния десен ъгъл и изберете „Покажете системните настройки“.\n5. Натиснете на „Външно хранилище“ и се подсигурете, че сте дали „позволение за достъп до управлението на всички файлове“.\n6. Опитайте отново да възстановите резервното копие.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy е деактивирано за този разговор, защото Вашият събеседник използва несъвместима версия на приложението.</string>
+    <string name="forward_security_illegal_session_status_message">Perfect Forward Secrecy сесията беше рестартирана поради невалидност.</string>
+    <string name="crop_image_title">Изрежете изображението</string>
+    <string name="scroll_to_bottom">Плъзнете до долу</string>
+    <string name="scroll_to_top">Плъзнете до най-горе</string>
+    <string name="contact_sync_mdm_rationale">Вашият администратор е активирал синхронизацията на контакти за Вашето устройство. Следователно, се изисква разрешението за достъп до контактите.</string>
+    <string name="welcome_back">Добре дошли отново!</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="id_restored_successfully">Вашият ${app_name_short} идентификатор е възстановен успешно</string>
+    <string name="prefs_dynamic_colors">Динамичен цвят</string>
+    <string name="prefs_dynamic_colors_sum">Използване на системните цветове</string>
+    <string name="apply_changes">Запазете промените</string>
+    <string name="prefs_threema_work_summary">Знаете ли, че Threema също така предлага професионална комуникация за бизнеси? Натиснете тук за повече информация за Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Четец на гласови съобщения</string>
+    <string name="voice_message_from">Гласово съобщение от %s</string>
+    <string name="vm_fg_service_not_allowed">Грешка при възпроизвеждане на гласовото съобщение</string>
+    <string name="vm_fg_service_not_allowed_explain">Натиснете на бутона за възпроизвеждане в мултимедийното известие, ако все още е налично. В противен случай, отворете приложението и стартитайте възпроизвеждането от чата.</string>
+    <string name="use_threema_without_this_permission">Използвайте %s без това разрешение</string>
+    <string name="grant_permission">Предоставете разрешение</string>
+    <string name="grant_permission_settings">Предоставете разрешение в настройките</string>
+    <string name="ignore_permission">Не ме питайте отново</string>
+    <string name="permission_nearby_devices">Устройства в близост</string>
+    <string name="permission_bluetooth">Блутут</string>
+    <string name="permission_camera">Камера</string>
+    <string name="permission_microphone">Микрофон</string>
+    <string name="permission_read_phone_state">Телефон</string>
+    <string name="permission_enable_in_settings_rationale">Моля, активирайте разрешението в настройките. Изберете „Разрешения“ и след това позволете „%s“.</string>
+    <string name="group_name">Име на групата</string>
+    <string name="star_message">Маркирайте съобщението като „важно“ със звездичка</string>
+    <string name="starred_message">Важно съобщение със звездичка</string>
+    <string name="starred">Важно</string>
+    <string name="starred_messages">Важни съобщения със звездичка</string>
+    <string name="sorting">Сортиране</string>
+    <string name="sort_by">Подредете…</string>
+    <string name="newest_first">най-новите първо</string>
+    <string name="oldest_first">най-старите първо</string>
+    <string name="no_starred_messages">Не са намерени важни съобщения със звезда. За да маркирате съобщение със звезда, натиснете и задръжте върху него и изберете бутона със звезда.</string>
+    <string name="remove_all_stars">Премахнете всички звезди</string>
+    <string name="remove_star">Премахнете звезда</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="samsung_permission_problem_explain">${app_name} няма достъп до мултимедийните файлове, защото липсва съответното разрешение. За да го оправите, превключете бутона, който е до „Външно хранилище“ в следващия екран и след това рестартирайте %1$s.</string>
+    <string name="min_n_chars">мин. %d символа</string>
+    <string name="prefs_title_grant_bluetooth_permission">Предоставяне на достъп до Блутут</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_password_confirm">Зададена е парола за Вашето ${app_name_short} Safe резервно копие.\n\nЖелаете ли да използвате тази парола? Ако имате съмнения, свържете се с Вашия администратор.</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="safe_managed_new_password_confirm">Зададена е парола за Вашето ${app_name_short} Safe резервно копие.\n\nЖелаете ли да използвате замените сегашната Ви парола с новата? Ако имате съмнения, свържете се с Вашия администратор.</string>
+    <string name="real_not_now">Не сега</string>
+    <string name="add_contact_in">Добавете контакта в…</string>
+    <string name="really_remove_all_stars">Наистина ли искате да махнете звездата на всички съобщения?</string>
+    <string name="prefs_sum_storage_management">Управление на паметта и изтриване на съобщения и мултимедия</string>
+    <string name="delete_automatically">Автоматично изтриване</string>
+    <string name="keep_messages">Запазване на съобщенията:</string>
+    <string name="clean_up_manually">Ръчно почистване</string>
+    <string name="forever">Завинаги</string>
+    <string name="autodelete_explain">Ако се избере която и да е друга опция освен „завинаги“, входящите и изходящите съобщения ще бъдат изтрити перманентно след определено време. Това включва непрочетените и неизпратените съобщения. Въпреки това, съобщенията в бележките Ви и маркираните със звезда съобщения няма да бъдат изтрити. Процесът по изтриване е периодичен и не е задължително да започне веднага след активирането му.</string>
+    <string name="autodelete_confirm">Съобщенията ще бъдат изтрити автоматично след %s. Ще продължите ли?</string>
+    <string name="autodelete_activated">Автоматичното изтриване е активирано.</string>
+    <string name="autodelete_disabled">Автоматичното изтриване е деактивирано.</string>
+    <string name="set_by_administrator">Тази стойност е зададена от администратора и не може да бъде променена.</string>
+    <string name="action_dissolve_group">Разпуснете групата</string>
+    <string name="really_dissolve_group">Ако разпуснете групата, никой няма да може да изпраща съобщения до групата и тя няма да може да се управлява. Разпуснатата група все още може да бъде клонирана.</string>
+    <string name="status_orphaned_group">*Тази група е без собственик*\nСъздателят напусна групата и тя вече не може да бъде поддържана. Един от останалите членове може да я клонира (от детайлите на групата), за да стане новият администратор.</string>
+    <string name="group_orphaned_notice">Групата е без собственик, защото създателят ѝ я напусна. Моля, клонирайте групата, за да станете новият администратор.</string>
+    <string name="group_not_a_member_notice">Вече не сте част от групата и не можете да я използвате повече.</string>
+    <string name="group_dissolved_notice">Тази група е разпусната и е неизползваема.</string>
+    <string name="md_linked_devices">${app_name_desktop} 2,0 за настолен компютър (бета)</string>
+    <string name="md_link_device">Свържете нови устройства</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <string name="md_linked_devices_empty">Преди да свържете ново устройство, изтеглете и отворете най-новата бета версия на [${app_name_desktop} за настолен компютър].</string>
+    <string name="md_link_device_qr_scan_message">Моля, сканирайте qr кода</string>
+    <string name="directory_request_failed">Заявката за директория е неуспешна. Опитайте отново.</string>
+    <string name="add_shortcut_exists">Прекият път за този елемент вече съществува.</string>
+    <string name="scan_qr_code">Сканирайте QR кода</string>
+    <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="scan_qr_code_explain">Сканирайте QR кода, който се показва в бета версията на ${app_name_desktop} за настолен компютър на устройството, което искате да свържете.</string>
+    <string name="connecting">Свързване…</string>
+    <string name="trust_new_device">Доверете се на новото устройство</string>
+    <string name="trust_new_device_explain">Изберете същите изображения, които се показват на новото устройство, за да потвърдите, че му вярвате.</string>
+    <string name="trust_new_device_info">Новото устройство ще запази независимо копие на Вашия %s профил и съобщенията ще бъдат изпращани и получавани от Ваше име.</string>
+    <string name="no_match_question">Няма съвпадение?</string>
+    <string name="sending_data">Изпращане на данни…</string>
+    <string name="continue_on_new_device">Моля, продължете на новото устройство</string>
+    <string name="device_linked_successfully">Устройството е свързано успешно</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linked_successfully_explain">${app_name} може да бъде използвано на устройството, което току-що свързахте (дори когато устройството е изключено или не е свързано в интернет).</string>
+    <string name="resend_message_dialog_title">Искате ли да изпратите отново груповото съобщение?</string>
+    <string name="resend_message_dialog_message">Това съобщение не може да бъде изпратено на всички членове. Искате ли да изпратите отново съобщението на %1$s?</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_lost_credentials_help">Забрали сте Вашите данни за вписване? Моля, свържете се с Вашия ${app_name_short} администратор.</string>
+    <string name="problemsolver_intro">Някои системни настройки пречат на %s да работи правилно. Поправете тези проблеми следвайки инструкциите отдолу.</string>
+    <string name="problemsolver_title">Поправете проблемите с настройките</string>
+    <string name="problemsolver_title_background">Работата на заден план е ограничена</string>
+    <string name="problemsolver_title_background_data">Данните на заден план са ограничени</string>
+    <string name="problemsolver_title_notifications">Известията са деактивирани</string>
+    <string name="problemsolver_title_fullscreen_notifications">Не са разрешени известията при цял екран</string>
+    <string name="problemsolver_explain_fullscreen_notifications">На приложението не му е разрешено да показва известия на цял екран. Може да пропуснете входящите обаждания, когато устройството е заключено. За да го оправите, активирайте „Позволете известията на цял екран.“</string>
+    <string name="problemsolver_explain_notifications">Известията са напълно деактивирани за това приложение. Няма да бъдете информирани за входящите съобщения или обаждания и приложението може и да не работи правилно. За да го поправите, активирайте „Всички известия.“</string>
+    <string name="problemsolver_explain_background_data">Приложението не може да използва мобилни данни, когато е във фонов режим. Няма да бъдете информирани за входящи съобщения, освен ако не отворите самото приложение. За да поправите това, активирайте „Данни във фонов режим.“</string>
+    <string name="problemsolver_explain_background">Ограничена е възможността за работа във фонов режим. Няма да получавате известия и много функции няма да работят правилно. За да поправите това, натиснете на „Използване на батерията от приложението“ и изберете „Неограничено.“</string>
+    <string name="problemsolver_info_text">Наименованията на някои от тези системни настройки, които се споменават по-горе, може да се различават в зависимост от версията на Android и от производителя на устройството.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Използването на батерията е настроено на “оптимизирано“</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="problemsolver_explain_app_battery_usgae_optimized">На приложението не му е разрешено да поддържа постоянна връзка със сървърите, а това е необходимо на ${app_name_short} Push, за да работи. Вие няма да бъдете информирани за нови съобщения, когато приложението е във фонов режим. За да го поправите, натиснете на „Използване на батерията“ и изберете „Неограничено“.</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_to_settings">Към настройките</string>
+    <string name="prefs_advanced_options">Разширени опции</string>
+    <string name="push_service">Push услуга</string>
+    <string name="edit_and_send">Редактирайте и изпратете</string>
+    <string name="media_gallery_animated_webps">Анимирани WebPs</string>
+    <string name="unsupported_image_type">Неподдържан вид изображение: %s</string>
+    <string name="application_setup_steps_failed">Необходима е интернет връзка, за да проверява състоянието на Вашите контакти. Моля, уверете се, че сте свързани в интернет и опитайте отново.</string>
+    <string name="add_contact_failed">Добавянето на контакта е неуспешно</string>
+    <string name="edit_message_not_supported_for_contact">Не можете да редактирате съобщението, защото версията на приложението на Вашия получател не поддържа тази функция.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Следните членове на групата няма да могат да видят Вашите редакции: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Не можете да редактирате съобщението, защото версията на приложението на членовете на групата не поддържа тази функция.</string>
+    <string name="prefs_notification_settings">Настройки на известията</string>
+    <string name="prefs_notification_settings_summary">Променете звука и вибрацията в системните настройки</string>
+    <string name="new_messages">Нови съобщения</string>
+    <string name="new_group_messages">Нови групови съобщения</string>
+    <string name="individual_notification_settings">Индивидуални настройки на известията</string>
+    <string name="delete_message_not_supported_for_all_group_members">Съобщението няма да бъде изтрито за следните членове на групата: %1$s</string>
+    <string name="work_intro_more_link_text">Научете повече за Threema Work</string>
+    <string name="work_intro_subtitle">Сигурният бизнес месинджър\nза фирми.</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_login">Вписване в ${app_name}</string>
+    <string name="consumer_notice_description">Моля, изтеглете обикновената версия на Threema, ако сте частен потребител.</string>
+    <string name="consumer_notice_playstore_link_description">Threema в Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema в AppGallery</string>
+    <string name="consumer_notice_subtitle">За лична употреба</string>
+    <string name="individual_notification_settings_warn">За всеки чат с индивидуални настройки на известията се създава отделен канал на известяване, което означава, че името на чата е видимо в настройките на устройството дори при заключено приложение. Ще продължите ли?</string>
+    <string name="incoming_calls">Входящи повиквания</string>
+    <string name="group_chats">Групови чатове</string>
+    <string name="edit_history_file_no_caption">История на файл без заглавие</string>
+    <string name="device_linking_failed">Свързването на устройството е неуспешно</string>
+    <string name="device_linking_failed_explain">Устройството не може да бъде свързано. Моля, опитайте отново.\nПричина: %s.</string>
+    <string name="qr_code_scan_error">Грешка при сканиране на QR код</string>
+    <string name="verification_failed">Верификацията е неуспешна</string>
+    <string name="md_device_currently_active">Активни в момента</string>
+    <string name="md_device_last_active_at">Последно активен: %s</string>
+    <plurals name="md_max_device_slots_reached_info">
+        <item quantity="one">Само едно устройство може да бъде свързано.</item>
+        <item quantity="other">Максималният брой от %d свързани устройства е достигнат. Премахнете някое свързано устройство, за да добавите ново.</item>
+    </plurals>
+    <string name="md_device_invalid_label">Устройство</string>
+    <string name="md_device_invalid_hint">Информацията не може да бъде получена</string>
+    <string name="device_linking_cancel_dialog_title">Отмяна на свързването</string>
+    <string name="device_linking_cancel_dialog_message">Свързването не може да бъде завършено все още. Искате ли да го прекратите?</string>
+    <string name="device_linking_cancel_dialog_cancel">Откажете свързването</string>
+    <string name="device_linking_cancel_dialog_continue">Продължете</string>
+    <string name="md_drop_device_dialog_drop_button">Премахнете устройство</string>
+    <string name="md_drop_device_dialog_close_button">Затворете</string>
+    <string name="md_drop_device_failed_dialog_title">Премахването на свързаното устройство е неуспешно</string>
+    <string name="md_drop_device_failed_dialog_message">Моля, проверете интернет връзката Ви и опитайте отново.</string>
+    <string name="md_drop_device_failed_dialog_button_close">Затворете</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">изпратено е „съгласие“</string>
+    <string name="cd_dec_icon">изпратено е „несъгласие“</string>
+    <string name="cd_ack_dec_group_count">от %d членове на групата</string>
+    <string name="cd_edited">съобщението е редактирано</string>
+    <string name="cd_created_at">създадено: %s</string>
+    <string name="cd_edited_at">редактирано: %s</string>
+    <string name="cd_index_in_edit_history">%d. история на промените</string>
+    <string name="cd_message_details_container">детайли за съобщението</string>
+    <string name="cd_enable_formatting">Активирайте форматирането</string>
+    <string name="cd_message">съобщение</string>
+    <string name="reactions_on_this_message">Всички реакции</string>
+    <string name="select_emoji_content_description">Изберете емотикона от списъка, която да добавите</string>
+    <string name="group_emoji_reactions_partially_supported">Някои няма да видят Вашата реакция, защото имат стара версия на приложението.</string>
+    <string name="tab_emoji_reactions_overview_content_description">%1$s реакции с %2$s</string>
+    <string name="reaction_cannot_be_displayed">Тази реакция не може да бъде показана. Непозната емотикона.</string>
+    <string name="emoji_reactions_unavailable_title">Недостъпна реакция с емотикона</string>
+    <string name="emoji_reactions_unavailable_body">%1$s използва версия на приложението, която не поддържа тази услуга.</string>
+    <string name="emoji_reactions_unavailable_group_body">Не можете да реагирате на това съобщение с емотикона, защото няма член на групата с актуална версия на приложението, която да поддържа тази функция.</string>
+    <string name="emoji_reactions_cannot_remove_title">Премахването на реакции е недостъпно</string>
+    <string name="emoji_reactions_cannot_remove_body">%1$s използва версия на приложението, която не поддържа премахването на реакции с емотикони или изпращането на повече от една емотикона като реакция. Все още може да подмените 👍 с 👎и обратното.</string>
+    <string name="emoji_reactions_cannot_remove_group_body">Никой в тази група не използва версия на приложението, която да поддържа премахването на реакции с емотикони или изпращането на повече от една емотикона като реакция. Все още може да подмените 👍 с 👎и обратното.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Това съобщение има реакции с емотикони. Натиснете и задръжте в чата, което и да е балонче с емотикони, за да ги видите всичките.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Емоджи реакция</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Това съобщение има реакции с емотикони. Натиснете и задръжте емоджи балончетата, за да ги видите всичките.</string>
+    <string name="accessibility_device_linking_pfs_warning_icon">Информация</string>
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_pfs_warning_body">Когато свържете устройство, Perfect Forward Secrecy ще бъде деактивирана за всички контакти.\n\nТова е ограничение за настоящата бета версия. За да разберете по-подробно за ограниченията, консултирайте се тук {this FAQ entry}.</string>
+    <string name="device_linking_pfs_warning_button_continue">Свържете ново устройство</string>
+    <string name="device_linking_pfs_warning_button_cancel">Отменете</string>
+    <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_web_link_to_multi_device_feature_banner_title">${app_name_desktop} 2,0 за настолен компютър (бета)</string>
+    <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <string name="threema_web_link_to_multi_device_feature_banner_body">Натиснете тук, за да използвате настолното приложение от следващо поколение с поддръжка на разнообразни устройства.</string>
+    <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <string name="accessibility_dismiss_hint">Премахнете подсказката</string>
+    <string name="device_linking_error_generic_title">Изпращането на данни е неуспешно</string>
+    <string name="device_linking_error_generic_body">Моля, опитайте се да свържете устройството отново. Ако проблемът продължава, свържете се с екипа по поддръжка (Основно меню &gt; Помощ).</string>
+    <string name="device_linking_error_generic_network_title">Няма интернет връзка</string>
+    <string name="device_linking_error_generic_network_body">Моля, опитайте се да свържете устройството отново. Ако проблемът продължава, свържете се с екипа по поддръжка (Основно меню &gt; Помощ).</string>
+    <string name="device_linking_error_unknown_qr_code_title">QR кодът не е разпознат</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_old_rendezvous_version_title">Несъвместима версия</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linking_error_old_rendezvous_version_body">Моля, инсталирайте най-новата версия на ${app_name} и на двете устройства.</string>
+    <string name="device_linking_error_emoji_mismatch_title">Изображенията не съвпадат ли?</string>
+    <string name="device_linking_error_emoji_mismatch_body">Изглежда, че има проблем с връзката към новото устройство. Моля, рестартирайте приложението на новото устройство и опитайте отново.</string>
+    <string name="device_linking_error_unexpected_title">Неочаквана грешка</string>
+    <string name="device_linking_error_unexpected_body">Моля, опитайте се да свържете устройството отново. Ако проблемът продължава, свържете се с екипа по поддръжка (Основно меню &gt; Помощ).</string>
+    <string name="device_linking_error_screen_close">Затворете</string>
+    <string name="work_directory_title">Директория на фирмата</string>
+    <!-- Instruction text for the user directory search -->
+    <string name="work_directory_search">Потърсете във фирмената директория</string>
+    <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_directory_empty_view_text">Моля, въведете поне 3 букви от името, за да започне търсенето във фирмената директория с ${app_name_short} потребители.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="one">%d контакт</item>
+        <item quantity="other">%d контакти</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Наистина ли искате да изтриете %d чат?</item>
+        <item quantity="other">Наистина ли искате да изтриете %d чата?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">%1$d съобщение не може да бъде изпратено</item>
+        <item quantity="other">%1$d съобщения не могат да бъдат изпратени</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">%d избрано изображение</item>
+        <item quantity="other">%d избрани изображения</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Копирано съобщение</item>
+        <item quantity="other">Копирани съобщения</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="one">%d ново съобщение</item>
+        <item quantity="other">%d нови съобщения</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="one">%d непрочетено съобщение</item>
+        <item quantity="other">%d непрочетени съобщения</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="one">%d файл е успешно запаметен.</item>
+        <item quantity="other">%d файла са успешно запаметени.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">Запазване на мултимедиен файл</item>
+        <item quantity="other">Запазване на %d мултимедийни файла</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="one">Премахнете анкета</item>
+        <item quantity="other">Премахнете анкети</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="one">Наистина ли искате да изтриете тази %1$d анкета? Няма да можете да възстановите гласовете.</item>
+        <item quantity="other">Наистина ли искате да изтриете %1$d анкети? Няма да можете да възстановите гласовете.</item>
+    </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="one">%d мултимедиен файл е изтрит</item>
+        <item quantity="other">%d мултимедийни файла са изтрити</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="one">%d изтрито съобщение</item>
+        <item quantity="other">%d изтрити съобщения</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="one">За %d час</item>
+        <item quantity="other">За %d часа</item>
+    </plurals>
+    <plurals name="really_delete_contacts_message">
+        <item quantity="one">Наистина ли искате да изтриете %1$d контакт и всички свързани с него чатове?</item>
+        <item quantity="other">Наистина ли искате да изтриете %1$d контаки и всичките свързани чатове?</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="one">Този %d контакт не може да бъде изтрит, защото все още е част от група.</item>
+        <item quantity="other">%d контакти не могат да бъдат изтрити, защото са част от група.</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="one">%d архивиран чат</item>
+        <item quantity="other">%d архивирани чата</item>
+    </plurals>
+    <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d ново съобщение в %2$d чата</item>
+        <item quantity="other">%1$d нови съобщения в %2$d чата</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="one">%d сесия е в ход</item>
+        <item quantity="other">%d сесии са в ход</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Наистина ли искате да изтриете тази %d групова заявка?
+            Имайте предвид, че тази заявка няма да бъде отхвърлена и Вие все още може да бъдете приет или поканен,            ако на заявката все още не е отговорено.</item>
+        <item quantity="other">Наистина ли искате да изтриете %d групови заявки?
+            Имайте предвид, че тази заявка няма да бъде отхвърлена и Вие все още може да бъдете приет или поканен,            ако на заявката все още не е отговорено.</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="one">Наистина ли искате да изтриете тази %d групова заявка?            Не можете да отговорите на заявките щом ги изтриете.</item>
+        <item quantity="other">Наистина ли искате да изтриете %d групови заявки?
+            Не можете да отговорите на заявките щом ги изтриете.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="one">Наистина ли искате да изтриете този %d групов линк?
+            Хората няма да могат да изпращат заявки през него.
+            Вече получените заявки все още могат да бъдат приети или отхвърлени.</item>
+        <item quantity="other">Наистина ли искате да изтриете %d групови линка?
+            Хората няма да могат да изпращат заявки през тях.
+            Вече получените заявки все още могат да бъдат приети или отхвърлени.</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="one">%d изтрит чат.</item>
+        <item quantity="other">%d изтрити чата.</item>
+    </plurals>
+    <plurals name="num_archived_chats">
+        <item quantity="one">%d архивиран чат</item>
+        <item quantity="other">%d архивирани чата</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped">
+        <item quantity="one">Едно съобщение е изгубено след последното съобщение.</item>
+        <item quantity="other">%d съобщения са изгубени след последното съобщение.</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="one">Искате ли да изтриете съобщението?</item>
+        <item quantity="other">Искате ли да изтриете %d съобщения?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="one">%d член на групата</item>
+        <item quantity="other">%d членове на групата</item>
+    </plurals>
+</resources>

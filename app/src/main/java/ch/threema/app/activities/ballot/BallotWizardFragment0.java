@@ -36,11 +36,18 @@ import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.ViewUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class BallotWizardFragment0 extends BallotWizardFragment implements BallotWizardActivity.BallotWizardCallback {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotWizardFragment0");
+
     private EditText editText;
     private TextInputLayout textInputLayout;
     private CheckBox secretCheckbox;
@@ -114,6 +121,7 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

@@ -48,6 +48,7 @@ import ch.threema.app.ui.PermissionIconView
 import ch.threema.app.ui.PermissionIconView.PermissionIconState
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.PermissionRequest
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("PermissionRequestActivity")
@@ -61,6 +62,10 @@ private val logger = LoggingUtil.getThreemaLogger("PermissionRequestActivity")
  * [INTENT_PERMISSION_REQUESTS].
  */
 class PermissionRequestActivity : ThreemaActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     companion object {
         const val INTENT_PERMISSION_REQUESTS = "permission_requests_extra"
     }

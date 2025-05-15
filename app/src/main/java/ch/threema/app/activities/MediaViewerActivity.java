@@ -97,6 +97,8 @@ import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class MediaViewerActivity extends ThreemaToolbarActivity implements
     ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
@@ -136,6 +138,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

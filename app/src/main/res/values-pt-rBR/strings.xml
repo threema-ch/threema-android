@@ -1705,6 +1705,10 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Uso de bateria do app definido como \"otimizado\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">O app não tem permissão para manter uma conexão permanente com os servidores necessários para o funcionamento do ${app_name_short} Push. Você não receberá alertas de novas mensagens com o app em segundo plano. Para corrigir isso, toque em \"Uso de bateria do app\" e selecione \"Não restrito\".</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Esta versão do Android em breve não será mais compatível</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Você está usando um dispositivo Android que não recebe mais atualizações de software. Por motivos de segurança, esta versão do Android em breve não será mais compatível com o Threema.</string>
     <string name="problemsolver_to_settings">Ir a Configurações</string>
     <string name="prefs_advanced_options">Opções avançadas</string>
     <string name="push_service">Serviço de push</string>
@@ -1770,16 +1774,13 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="select_emoji_content_description">Selecione um emoji para adicionar no seletor de emojis</string>
     <string name="group_emoji_reactions_partially_supported">Alguns não verão suas reações devido a uma versão antiga.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s reações com %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Você recebeu reações de emoji de um contato que tem uma versão mais recente do aplicativo. Além de 👍 e 👎, sua versão do aplicativo ainda não suporta o envio de reações de emoji.</string>
     <string name="reaction_cannot_be_displayed">Essa reação não pode ser exibida. Emoji desconhecido.</string>
     <string name="emoji_reactions_unavailable_title">Reações de emoji indisponíveis</string>
-    <string name="emoji_reactions_sending_not_supported_body">Sua versão do aplicativo ainda não suporta o envio de reações de emoji.</string>
     <string name="emoji_reactions_unavailable_body">%1$s está usando uma versão do aplicativo que ainda não é compatível com esse recurso.</string>
     <string name="emoji_reactions_unavailable_group_body">Você não pode reagir a essa mensagem com um emoji porque nenhum membro do grupo tem uma versão do aplicativo que é compatível com esse recurso.</string>
     <string name="emoji_reactions_cannot_remove_title">Remoção de reações indisponível</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s está usando uma versão do aplicativo que ainda não suporta a remoção de reações de emoji ou o envio de mais de uma reação de emoji. Você ainda pode substituir 👍 por 👎 ou vice-versa.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Nenhum dos membros do grupo está usando uma versão do aplicativo que suporta a remoção de reações de emoji ou o envio de mais de uma reação de emoji. Você pode substituir 👍 por 👎 ou vice-versa.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Sua versão do aplicativo ainda não suporta a remoção de reações de emoji ou o envio de mais de uma reação de emoji.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">Esta mensagem tem reações de emoji. No chat, toque e segure qualquer balão de emoji para ver todos eles.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1805,7 +1806,11 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="device_linking_error_unknown_qr_code_title">Código QR desconhecido</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Verifique se você está usando o aplicativo correspondente em [nosso site].</string>
+    <string name="device_linking_error_unknown_qr_code_body">Este código QR não parece ser do ${app_name_desktop} 2.0 para Desktop (Beta). Baixe a versão beta mais recente do aplicativo para desktop em [our website] e escaneie o código QR exibido quando o aplicativo é aberto.</string>
+    <string name="device_linking_error_web_qr_code_title">Não o código QR correto</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Este código QR pertence ao cliente web da ${app_name_short}.\nBaixe a versão mais recente do ${app_name_desktop} 2.0 para Desktop (Beta) em [our website] e escaneie o código QR exibido quando o aplicativo é aberto.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Versão incompatível</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Instale a versão mais recente do ${app_name} em ambos os dispositivos.</string>

@@ -33,3 +33,5 @@ class DeviceLinkingUnsupportedProtocolException(message: String) : DeviceLinking
 class DeviceLinkingCancelledException(cause: Throwable? = null) : DeviceLinkingException("Linking cancelled", cause)
 
 class DeviceLinkingInvalidQrCodeException(message: String, cause: Throwable? = null) : DeviceLinkingException(message, cause)
+
+class DeviceLinkingScannedWebQrCodeException(message: String, cause: Throwable? = null) : DeviceLinkingException(message, cause)

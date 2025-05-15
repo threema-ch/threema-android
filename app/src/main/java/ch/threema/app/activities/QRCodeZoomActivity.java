@@ -24,23 +24,30 @@ package ch.threema.app.activities;
 import android.os.Bundle;
 import android.view.View;
 
+import org.slf4j.Logger;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.QRCodePopup;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ANY;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 /***
  * Activity displaying QR Code popup
  */
 public class QRCodeZoomActivity extends AppCompatActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodeZoomActivity");
+
     QRCodePopup qrPopup = null;
     private static final String EXTRA_COLOR = "color";
 
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         final View rootView = getWindow().getDecorView().getRootView();
 

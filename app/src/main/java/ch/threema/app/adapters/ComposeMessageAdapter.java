@@ -21,6 +21,7 @@
 
 package ch.threema.app.adapters;
 
+import static ch.threema.app.utils.MessageUtilKt.findIndexByMessageId;
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
 
 import android.content.Context;
@@ -1162,29 +1163,19 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
      * Get adapter position of next available (i.e. downloaded) voice message with same incoming/outgoing status
      *
      * @param messageModel of original message
-     * @return AbstractMessageModel of next message in adapter that matches the specified criteria or AbsListView.INVALID_POSITION if none is found
+     * @return Position of the next message in the adapter that matches the specified criteria or AbsListView.INVALID_POSITION if none is found
      */
-    public int getNextVoiceMessage(AbstractMessageModel messageModel) {
-        int index = values.indexOf(messageModel);
-        if (index < values.size() - 1) {
+    public int getNextVoiceMessage(@NonNull AbstractMessageModel messageModel) {
+        Integer index = findIndexByMessageId(values, messageModel.getId());
+        if (index != null && index < values.size() - 1) {
             AbstractMessageModel nextMessage = values.get(index + 1);
-            if (nextMessage != null) {
-                boolean isVoiceMessage = nextMessage.getType() == MessageType.VOICEMESSAGE;
-                if (!isVoiceMessage) {
-                    // new school voice messages
-                    isVoiceMessage = nextMessage.getType() == MessageType.FILE &&
-                        MimeUtil.isAudioFile(nextMessage.getFileData().getMimeType()) &&
-                        nextMessage.getFileData().getRenderingType() == FileData.RENDERING_MEDIA &&
-                        nextMessage.getFileData().isDownloaded();
-                }
-
-                if (isVoiceMessage) {
-                    if (messageModel.isOutbox() == nextMessage.isOutbox()) {
-                        if (messageModel.isAvailable()) {
-                            return index + 1;
-                        }
-                    }
-                }
+            if (
+                nextMessage != null &&
+                    nextMessage.isDownloadedVoiceMessage() &&
+                    messageModel.isOutbox() == nextMessage.isOutbox() &&
+                    messageModel.isAvailable()
+            ) {
+                return index + 1;
             }
         }
         return AbsListView.INVALID_POSITION;

@@ -158,7 +158,7 @@ internal class GroupCallControllerImpl(
     override fun confirmCall() {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        logger.trace("Confirm call")
+        logger.info("Confirming call")
         confirmCallSignal.complete(Unit)
     }
 
@@ -166,7 +166,7 @@ internal class GroupCallControllerImpl(
     override fun declineCall() {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        logger.trace("Decline call")
+        logger.info("Declining call")
         confirmCallSignal.completeExceptionally(GroupCallException("Call declined"))
     }
 
@@ -177,7 +177,7 @@ internal class GroupCallControllerImpl(
 
     @AnyThread
     override fun leave() {
-        logger.debug("Leave call")
+        logger.info("Leaving call")
         if (callLeftSignal.isCompleted) {
             logger.warn("Attempt to leave call that has already been left")
         } else {
@@ -268,12 +268,12 @@ internal class GroupCallControllerImpl(
         when (state) {
             is Failed -> {
                 val completed = callLeftSignal.completeExceptionally(state.reason)
-                logger.debug("Completed exceptionally: {}", completed)
+                logger.info("Completed exceptionally: {}", completed, state.reason)
                 groupCallLeaveTimer.disable()
                 onLeave.run()
             }
 
-            else -> logger.debug("Unhandled state update: {}", state)
+            else -> logger.info("Unhandled state update: {}", state)
         }
     }
 

@@ -31,8 +31,8 @@ import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.protocol.urls.AppRatingUrl
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
-import ch.threema.domain.protocol.urls.MapPoiUrl
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 import com.neilalexander.jnacl.NaCl
@@ -191,15 +191,15 @@ internal class TestServerAddressProvider(
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getMapStyleUrl(): String {
+    override fun getMapStyleUrl(): String? {
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getMapPOINamesUrl(): MapPoiNamesUrl {
+    override fun getMapPoiNamesUrl(): MapPoiNamesUrl {
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getMapPOIUrl(): MapPoiUrl {
+    override fun getMapPoiAroundUrl(): MapPoiAroundUrl {
         MUST_NOT_BE_CALLED()
     }
 }

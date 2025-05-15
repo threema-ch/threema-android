@@ -568,8 +568,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public interface OnGroupDetailsClickListener {
-        void onGroupOwnerClick(View v, String identity);
-
         void onGroupMemberClick(View v, @NonNull ContactModel contactModel);
 
         void onResetLinkClick();

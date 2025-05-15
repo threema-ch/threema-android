@@ -46,6 +46,8 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupModel;
 import kotlinx.coroutines.Deferred;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class GroupAdd2Activity extends GroupEditActivity implements ContactEditDialog.ContactEditDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAdd2Activity");
 
@@ -62,6 +64,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
     public void onCreate(Bundle savedInstanceState) {
         logger.debug("onCreate");
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

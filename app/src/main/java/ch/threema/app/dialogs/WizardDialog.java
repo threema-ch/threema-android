@@ -34,11 +34,18 @@ import androidx.appcompat.app.AppCompatDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.components.WizardButtonStyle;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardDialog");
+
     private static final String ARG_TITLE = "title";
     private static final String ARG_TITLE_STRING = "titleString";
     private static final String ARG_POSITIVE = "positive";
@@ -96,6 +103,7 @@ public class WizardDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         try {
             callback = (WizardDialogCallback) getTargetFragment();

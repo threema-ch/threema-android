@@ -25,6 +25,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -42,10 +44,15 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class GroupAddActivity extends MemberChooseActivity implements GenericAlertDialog.DialogClickListener {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAddActivity");
+
     private static final String BUNDLE_EXISTING_MEMBERS = "ExMem";
     private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
     private static final String DIALOG_TAG_NOTE_GROUP_HOWTO = "note_group_hint";
@@ -53,6 +60,12 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     private GroupService groupService;
     private GroupModel groupModel;
     private boolean appendMembers;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     protected boolean initActivity(Bundle savedInstanceState) {

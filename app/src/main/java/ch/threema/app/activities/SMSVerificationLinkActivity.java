@@ -39,6 +39,8 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.taskmanager.TriggerSource;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class SMSVerificationLinkActivity extends AppCompatActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SMSVerificationLinkActivity");
 
@@ -46,6 +48,7 @@ public class SMSVerificationLinkActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         Integer resultText = R.string.verify_failed_summary;
 

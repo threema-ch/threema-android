@@ -27,6 +27,8 @@ import ch.threema.base.utils.TimeProvider
 import ch.threema.base.utils.plus
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
+import ch.threema.domain.protocol.urls.MapPoiNamesUrl
 import ch.threema.domain.utils.toIntArray
 import ch.threema.domain.utils.toJSONObjectList
 import java.io.IOException
@@ -53,14 +55,15 @@ class OnPremConfigParser(
                 validUntil = timeProvider.get() + getRefreshDuration(obj),
                 license = parseLicense(obj.getJSONObject("license")),
                 domains = parseDomains(obj.optJSONObject("domains")),
-                chatConfig = parseChatConfig(obj.getJSONObject("chat")),
-                directoryConfig = parseDirectoryConfig(obj.getJSONObject("directory")),
-                blobConfig = parseBlobConfig(obj.getJSONObject("blob")),
-                workConfig = parseWorkConfig(obj.getJSONObject("work")),
-                avatarConfig = parseAvatarConfig(obj.getJSONObject("avatar")),
-                safeConfig = parseSafeConfig(obj.getJSONObject("safe")),
-                webConfig = parseWebConfig(obj.optJSONObject("web")),
-                mediatorConfig = parseMediatorConfig(obj.optJSONObject("mediator")),
+                chat = parseChatConfig(obj.getJSONObject("chat")),
+                directory = parseDirectoryConfig(obj.getJSONObject("directory")),
+                blob = parseBlobConfig(obj.getJSONObject("blob")),
+                work = parseWorkConfig(obj.getJSONObject("work")),
+                avatar = parseAvatarConfig(obj.getJSONObject("avatar")),
+                safe = parseSafeConfig(obj.getJSONObject("safe")),
+                web = parseWebConfig(obj.optJSONObject("web")),
+                mediator = parseMediatorConfig(obj.optJSONObject("mediator")),
+                maps = parseMapConfig(obj.optJSONObject("maps")),
             )
         } catch (e: IOException) {
             throw OnPremConfigParseException(e)
@@ -166,6 +169,15 @@ class OnPremConfigParser(
             OnPremConfigMediator(
                 url = DeviceGroupUrl(obj.getString("url")),
                 blob = parseBlobConfig(obj.getJSONObject("blob")),
+            )
+        }
+
+    private fun parseMapConfig(obj: JSONObject?): OnPremConfigMaps? =
+        obj?.let {
+            OnPremConfigMaps(
+                styleUrl = obj.getString("styleUrl"),
+                poiNamesUrl = MapPoiNamesUrl(obj.getString("poiNamesUrl")),
+                poiAroundUrl = MapPoiAroundUrl(obj.getString("poiAroundUrl")),
             )
         }
 

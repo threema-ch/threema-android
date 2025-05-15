@@ -68,6 +68,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class BallotMatrixActivity extends BallotDetailActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("BallotMatrixActivity");
 
@@ -135,6 +137,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (!this.requireInstancesOrExit()) {
             return;

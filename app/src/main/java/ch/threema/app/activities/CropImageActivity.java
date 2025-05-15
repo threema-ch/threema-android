@@ -42,14 +42,20 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
+import org.slf4j.Logger;
+
 import java.util.Collections;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class CropImageActivity extends ThreemaToolbarActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CropImageActivity");
 
     public static final String EXTRA_ASPECT_X = "ax";
     public static final String EXTRA_ASPECT_Y = "ay";
@@ -69,6 +75,7 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        logScreenVisibility(this, logger);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 

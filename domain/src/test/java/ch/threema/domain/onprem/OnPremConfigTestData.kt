@@ -21,12 +21,14 @@
 
 package ch.threema.domain.onprem
 
+import ch.threema.testhelpers.loadResource
+
 object OnPremConfigTestData {
     /**
      * The public key used to verify the OPPF signature.
      *
      * The corresponding secret key is ezDKBie96Hnu39gpM2iiIYwfE6cRXzON32K/KbLusYk=
-     * It can be used to regenerate the signature whenever the data in [TEST_GOOD_OPPF] is modified.
+     * It can be used to regenerate the signature whenever the data in [goodOppf] is modified.
      */
     const val PUBLIC_KEY: String = "jae1lgwR3W7YyKiGQlsbdqObG13FR1EvjVci2aDNIi8="
 
@@ -38,77 +40,18 @@ object OnPremConfigTestData {
     /**
      * An OPPF that is valid, unexpired and has a good signature
      */
-    const val TEST_GOOD_OPPF: String = """{
-    "license": {
-        "expires": "2099-12-31",
-        "count": 100,
-        "id": "DUMMY-00000001"
-    },
-    "domains": {
-        "rules": [
-            {
-                "fqdn": "threemaonprem.initrode.com",
-                "matchMode": "include-subdomains",
-                "spkis": [
-                    {
-                        "value": "DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk=",
-                        "algorithm": "sha256"
-                    },
-                    {
-                        "value": "C19RmQgZXzwovKRRJ2st7bsokiRchKcYjBo3m63fvn8=",
-                        "algorithm": "sha256"
-                    }
-                ]
-            },
-            {
-                "fqdn": "another-host.initrode.com",
-                "matchMode": "exact",
-                "spkis": [
-                    {
-                        "value": "XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4=",
-                        "algorithm": "sha256"
-                    },
-                    {
-                        "value": "XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4=",
-                        "algorithm": "unknown-algorithm"
-                    }
-                ]
-            },
-            {
-                "fqdn": "unknown.initrode.com",
-                "matchMode": "unknown-mode"
-            }
-        ]
-    },
-    "blob": {
-        "uploadUrl": "https://blob.threemaonprem.initrode.com/blob/upload",
-        "downloadUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}",
-        "doneUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done"
-    },
-    "web": {"url": "https://web.threemaonprem.initrode.com/"},
-    "chat": {
-        "hostname": "chat.threemaonprem.initrode.com",
-        "publicKey": "r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=",
-        "ports": [
-            5222,
-            443
-        ]
-    },
-    "work": {"url": "https://work.threemaonprem.initrode.com/"},
-    "signatureKey": "jae1lgwR3W7YyKiGQlsbdqObG13FR1EvjVci2aDNIi8=",
-    "safe": {"url": "https://safe.threemaonprem.initrode.com/"},
-    "refresh": 86400,
-    "avatar": {"url": "https://avatar.threemaonprem.initrode.com/"},
-    "mediator": {
-        "blob": {
-            "uploadUrl": "https://mediator.threemaonprem.initrode.com/blob/upload",
-            "downloadUrl": "https://mediator.threemaonprem.initrode.com/blob/{blobId}",
-            "doneUrl": "https://mediator.threemaonprem.initrode.com/blob/{blobId}/done"
-        },
-        "url": "https://mediator.threemaonprem.initrode.com/"
-    },
-    "version": "1.0",
-    "directory": {"url": "https://dir.threemaonprem.initrode.com/directory"}
-}
-mJb7U/0AudmPzsKUZ52qyGFXMHLs6bNvqGVg6PYn+KSF96Dunhn22v67fFYkcPsAwOmIXx33RWFM00ZYQjzQAw=="""
+    val goodOppf
+        get() = loadResource("oppf/good_oppf")
+
+    /**
+     * An OPPF that is valid, unexpired and has a good signature, but contains only the minimally required fields
+     */
+    val minimalOppf
+        get() = loadResource("oppf/minimal_oppf")
+
+    /**
+     * An OPPF with an invalid signature
+     */
+    val badOppf
+        get() = goodOppf.replace("initrode", "injtrode")
 }

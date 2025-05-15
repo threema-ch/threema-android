@@ -61,7 +61,9 @@
     <string name="prefs_vibrate">Vibrazione</string>
     <string name="prefs_sum_vibrate">Vibrazione per i messaggi in arrivo</string>
     <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_notification_light">Luce di notifica</string>
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <string name="prefs_sum_notification_light">Utilizza LED colorati (se disponibili) per i messaggi in arrivo</string>
     <string name="prefs_sum_light">Bianca</string>
     <string name="prefs_title_wallpaper">Selezionare immagine di sfondo</string>
     <string name="prefs_sum_wallpaper">Selezionare immagine di sfondo</string>
@@ -212,6 +214,7 @@
 		aggiungere contatti manualmente mediante il pulsante +.]]></string>
     <!-- Empty state text for Contacts tab, shown when there are no contacts and Contact Synchronization is enabled -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="no_contacts_sync_on"><![CDATA[La rubrica è ancora vuota. La sincronizzazione è stata avviata, ma a quanto pare nessuno dei tuoi contatti ha installato ${app_name_short} (invitali!).]]></string>
     <string name="masterkey_title">Inserisci passphrase</string>
     <string name="masterkey_body">La chiave principale è protetta da una passphrase. Inserisci la passphrase qui per
 		sbloccare la chiave e accedere all\'app.</string>
@@ -234,6 +237,7 @@
     <string name="threema_version">Version</string>
     <string name="threema_version_code">Codice versione</string>
     <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
+    <string name="about_server_config_title">Configurazione del server</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Nessuna connessione a Internet, ID esportato non valido o password sbagliata</string>
     <string name="prefs_header_other">Altri</string>
     <string name="an_error_occurred">Si è verificato un errore</string>
@@ -255,16 +259,20 @@
     <string name="deleting_thread">Cancellazione chat in corso</string>
     <string name="enter_serial_body"><![CDATA[Inserire una chiave di licenza valida per attivare ${app_name_short}.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_enter_serial_body">Inserisci le credenziali ${app_name_short} ricevute dalla tua azienda o organizzazione.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_serial_title">Esame di licenza</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">La chiave di licenza non è valida. Vuoi riprovare o desideri uscire da ${app_name}?</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_serial_required_want_exit">La licenza non è valida. Vuoi riprovare o desideri uscire da ${app_name}?</string>
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Verifica della licenza in corso</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
+    <string name="work_checking_credentials">Verifica delle credenziali</string>
     <string name="update_available">Disponibile aggiornamento</string>
     <!-- Message shown in Update dialog to inform the user that a new version of the app is available -->
+    <string name="update_available_message">È disponibile una nuova versione. Vuoi scaricarla subito?</string>
     <string name="no_update_available">Nessun aggiornamento disponibile</string>
     <string name="download">Scarica</string>
     <string name="not_now">Non ora</string>
@@ -350,6 +358,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="state_dialog_edited">Modificato</string>
     <string name="state_dialog_deleted">Cancellato</string>
     <string name="state_dialog_status">Stato</string>
+    <string name="title_tab_recent">Recenti</string>
     <string name="no_recent_conversations">Nessuna chat trovata</string>
     <string name="save_changes">Salvare modifiche</string>
     <string name="group_created_confirm">Creazione gruppo effettuata con successo</string>
@@ -649,7 +658,9 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="permission_contacts_required">Per poter inviare contatti, devi permettere a ${app_name} di leggere i contatti.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">\"Pollice in su\" inviato</string>
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">\"Pollice in giù\" inviato</string>
     <string name="notifications_settings">Impostazioni notifiche</string>
     <string name="notifications_default">Impostazioni predefinite</string>
     <string name="notifications_until">Fino a %s</string>
@@ -665,6 +676,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="new_wizard_lets_get_started">Iniziamo</string>
     <string name="new_wizard_setup_threema">Imposta ${app_name_short}</string>
     <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <string name="work_new_wizard_setup_threema">Imposta ${app_name}</string>
     <string name="new_wizard_restore_id_backup">Ripristina ID esportato</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_welcome">Ti diamo il benvenuto su ${app_name}</string>
@@ -778,6 +790,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="grace_thirty_minutes">30 minuti</string>
     <string name="grace_never">Mai (manuale)</string>
     <string name="never">Mai</string>
+    <string name="access_protection_cannot_be_removed">La protezione dell\'accesso non può essere rimossa poiché è presente almeno una chat privata.</string>
     <string name="verification_started">Verifica avviata</string>
     <string name="cannot_open_file">Impossibile aprire il file</string>
     <string name="prefs_title_image_attach_previews">Selezione rapida immagine</string>
@@ -977,6 +990,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_server_explain">Puoi usare un server ${app_name_short} Safe o specificare in alternativa l\'utilizzo di un server di terza parte per il backup.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="onprem_safe_configure_server_explain">Salva il backup sicuro di ${app_name_short} sul server della tua organizzazione oppure specifica un server di backup diverso.</string>
     <string name="safe_use_default_server">Usa il server di default</string>
     <string name="safe_test_server">Server di test</string>
     <string name="safe_advanced_options">Impostazioni avanzate</string>
@@ -1131,6 +1145,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="to_archive">Archivia</string>
     <string name="archived_chats">Chat archiviate</string>
     <!-- Menu option in context menu when long-pressing a chat in the Chats tab, allows the user to move the selected chat to the archive -->
+    <string name="archive_chat">Archivia chat</string>
     <string name="unarchive">Non archiviare più</string>
     <string name="no_archived_chats">Nessuna chat archiviata.\nPer archiviare una chat, scorri il dito a sinistra sull\'elenco messaggi</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1150,6 +1165,9 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="continue_recording">Continua registrazione</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="whatsnew_title">Cosa c\'è di nuovo in ${app_name} %1$s?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Ora puoi collegare il tuo dispositivo Android alla nuova app desktop (beta) e testare la funzionalità multi-dispositivo.</p>
+        <p>Per maggiori dettagli, vai su "Menu > Threema 2.0 per Desktop (Beta)".</p>
+        ]]></string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>
     <string name="invalid_backup_path">Percorso backup sbagliato</string>
@@ -1668,11 +1686,23 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
+    <string name="md_linked_devices_empty">Prima di collegare un nuovo dispositivo, scarica e apri l\'ultima versione beta di [${app_name_desktop} per desktop].</string>
     <string name="md_link_device_qr_scan_message">Scansiona il codice QR</string>
     <string name="directory_request_failed">Consultazione della directory non riuscita. Riprova.</string>
     <string name="add_shortcut_exists">Esiste già un collegamento con questo obiettivo.</string>
+    <string name="scan_qr_code">Scansiona il codice QR</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="scan_qr_code_explain">Scansiona il codice QR mostrato nella versione beta di ${app_name_desktop} per desktop sul dispositivo che vuoi collegare.</string>
+    <string name="connecting">Connessione in corso…</string>
+    <string name="trust_new_device">Nuovo dispositivo affidabile</string>
+    <string name="trust_new_device_explain">Seleziona le stesse immagini così come mostrato sul nuovo dispositivo per confermare che è affidabile.</string>
+    <string name="trust_new_device_info">Il nuovo dispositivo memorizzerà una copia indipendente del tuo profilo %s e i messaggi verranno inviati e ricevuti per tuo conto.</string>
+    <string name="no_match_question">Nessuna corrispondenza?</string>
+    <string name="sending_data">Invio dati in corso…</string>
+    <string name="continue_on_new_device">Continua sul nuovo dispositivo</string>
+    <string name="device_linked_successfully">Dispositivo collegato correttamente</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linked_successfully_explain">Ora ${app_name} può essere usato sul dispositivo che hai collegato (anche quando questo dispositivo è disattivato oppure non è connesso a Internet).</string>
     <string name="resend_message_dialog_title">Ripetere invio messaggio di gruppo?</string>
     <string name="resend_message_dialog_message">Non è stato possibile inviare questo messaggio a tutti i membri. Vuoi ripetere l\'invio del messaggio a %1$s?</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1691,6 +1721,10 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="problemsolver_title_app_battery_usgae_optimized">Utilizzo batteria app \"ottimizzato\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">L\'applicazione non può mantenere una connessione permanente ai server, necessaria per il funzionamento di ${app_name_short} Push. Quando l\'app è in background, i nuovi messaggi non vengono notificati. Per risolvere il problema, tocca \"Utilizzo batteria app\" e seleziona \"Senza restrizioni\".</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Questa versione di Android non sarà più supportata a breve</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Stai utilizzando un dispositivo Android che non riceve più aggiornamenti software. Per motivi di sicurezza, questa versione di Android non sarà più supportata da Threema a breve.</string>
     <string name="problemsolver_to_settings">Alle impostazioni</string>
     <string name="prefs_advanced_options">Opzioni avanzate</string>
     <string name="push_service">Servizio push</string>
@@ -1720,6 +1754,27 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="incoming_calls">Chiamate in arrivo</string>
     <string name="group_chats">Chat di gruppo</string>
     <string name="edit_history_file_no_caption">Nessuna didascalia</string>
+    <string name="device_linking_failed">Collegamento del dispositivo non riuscito</string>
+    <string name="device_linking_failed_explain">Impossibile collegare il dispositivo. Riprova.\nMotivo: %s.</string>
+    <string name="qr_code_scan_error">Si è verificato un errore durante la scansione del codice QR</string>
+    <string name="verification_failed">Verifica non riuscita</string>
+    <string name="md_device_currently_active">Attivi al momento</string>
+    <string name="md_device_last_active_at">Ultima attività: %s</string>
+    <plurals name="md_max_device_slots_reached_info">
+        <item quantity="one">È possibile collegare solo un dispositivo alla volta.</item>
+        <item quantity="other">È stato raggiunto il numero massimo di %d dispositivi collegati. Rimuovi un dispositivo collegato per aggiungerne uno nuovo.</item>
+    </plurals>
+    <string name="md_device_invalid_label">Dispositivo</string>
+    <string name="md_device_invalid_hint">Non è stato possibile ottenere informazioni</string>
+    <string name="device_linking_cancel_dialog_title">Annulla collegamento</string>
+    <string name="device_linking_cancel_dialog_message">Il collegamento non è ancora stato completato. Vuoi annullarlo?</string>
+    <string name="device_linking_cancel_dialog_cancel">Annulla collegamento</string>
+    <string name="device_linking_cancel_dialog_continue">Continua</string>
+    <string name="md_drop_device_dialog_drop_button">Rimuovi dispositivo</string>
+    <string name="md_drop_device_dialog_close_button">Chiudi</string>
+    <string name="md_drop_device_failed_dialog_title">Rimozione del dispositivo collegato non riuscita</string>
+    <string name="md_drop_device_failed_dialog_message">Controlla la connessione a Internet e riprova.</string>
+    <string name="md_drop_device_failed_dialog_button_close">Chiudi</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">accordo inviato</string>
     <string name="cd_dec_icon">disaccordo inviato</string>
@@ -1731,17 +1786,55 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="cd_message_details_container">dettagli del messaggio</string>
     <string name="cd_enable_formatting">Abilita la formattazione</string>
     <string name="cd_message">messaggio</string>
+    <string name="reactions_on_this_message">Tutte le reazioni</string>
+    <string name="select_emoji_content_description">Seleziona l\'emoji da aggiungere dal selettore di emoji</string>
+    <string name="group_emoji_reactions_partially_supported">Alcuni non vedranno le tue reazioni a causa di una vecchia versione.</string>
+    <string name="tab_emoji_reactions_overview_content_description">%1$s reazioni con %2$s</string>
+    <string name="reaction_cannot_be_displayed">Questa reazione non può essere visualizzata. Emoji sconosciuta.</string>
+    <string name="emoji_reactions_unavailable_title">Reazioni emoji non disponibili</string>
+    <string name="emoji_reactions_unavailable_body">%1$s sta utilizzando una versione dell\'app che non supporta ancora questa funzionalità.</string>
+    <string name="emoji_reactions_unavailable_group_body">Non puoi rispondere a questo messaggio con un\'emoji perché nessun membro del gruppo ha una versione dell\'app che supporta questa funzione.</string>
+    <string name="emoji_reactions_cannot_remove_title">Rimozione delle reazioni non disponibili</string>
+    <string name="emoji_reactions_cannot_remove_body">%1$s sta utilizzando una versione dell\'app che non supporta ancora la rimozione delle reazioni emoji o l\'invio di più di una reazione emoji. Puoi comunque sostituire 👍 con 👎 o viceversa.</string>
+    <string name="emoji_reactions_cannot_remove_group_body">Nessuno dei membri del gruppo utilizza una versione dell\'app che supporta la rimozione delle reazioni emoji o l\'invio di più di una reazione emoji. Puoi sostituire 👍 con 👎 o viceversa.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Questo messaggio contiene reazioni emoji. Nella chat, tocca e tieni premuto un fumetto emoji per visualizzarle tutte.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Reazione emoji</string>
     <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Questo messaggio contiene reazioni emoji. Nella chat, tocca e tieni premuto un fumetto emoji per visualizzarle tutte.</string>
+    <string name="accessibility_device_linking_pfs_warning_icon">Informazioni</string>
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_pfs_warning_body">Quando colleghi un dispositivo, Perfect Forward Secrecy verrà disattivato per tutti i contatti.\n\nQuesto è un limite dell\'attuale versione beta. Per ulteriori limiti, fai riferimento a [questa Domanda frequente].</string>
+    <string name="device_linking_pfs_warning_button_continue">Collega un nuovo dispositivo</string>
+    <string name="device_linking_pfs_warning_button_cancel">Annulla</string>
     <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
     <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="threema_web_link_to_multi_device_feature_banner_title">Novità: ${app_name_desktop} 2.0 per desktop (Beta)</string>
     <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
+    <string name="threema_web_link_to_multi_device_feature_banner_body">Tocca qui per usare la nuova generazione di app desktop con supporto multi-dispositivo.</string>
     <!-- Screen reader text on a cross icon button to close a hint banner -->
+    <string name="accessibility_dismiss_hint">Ignora suggerimento</string>
+    <string name="device_linking_error_generic_title">Impossibile inviare i dati</string>
+    <string name="device_linking_error_generic_body">Riprova a collegare il dispositivo. Se il problema persiste, contatta l\'assistenza (\"Menu principale &gt; Aiuto\").</string>
+    <string name="device_linking_error_generic_network_title">Connessione internet assente</string>
+    <string name="device_linking_error_generic_network_body">Riprova a collegare il dispositivo. Se il problema persiste, contatta l\'assistenza (\"Menu principale &gt; Aiuto\").</string>
+    <string name="device_linking_error_unknown_qr_code_title">Codice QR sconosciuto</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_unknown_qr_code_body">Non sembra essere un codice QR di ${app_name_desktop} 2.0 per desktop (Beta). Scarica l\'ultima versione beta dell\'app desktop dal [nostro sito web] e scansiona il codice QR visualizzato all\'apertura dell\'app.</string>
+    <string name="device_linking_error_web_qr_code_title">Non è il codice QR corretto</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Questo codice QR appartiene al client web di ${app_name_short}.\nScarica l\'ultima versione di ${app_name_desktop} 2.0 per desktop (Beta) dal [nostro sito web] e scansiona il codice QR visualizzato all\'apertura dell\'app.</string>
+    <string name="device_linking_error_old_rendezvous_version_title">Versione non compatibile</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="device_linking_error_old_rendezvous_version_body">Installa l\'ultima versione di ${app_name} su entrambi i dispositivi.</string>
+    <string name="device_linking_error_emoji_mismatch_title">Le immagini non corrispondono?</string>
+    <string name="device_linking_error_emoji_mismatch_body">Sembra che si sia verificato un problema di connessione con il dispositivo. Riavvia l\'app sul nuovo dispositivo e riprova.</string>
+    <string name="device_linking_error_unexpected_title">Errore inatteso</string>
+    <string name="device_linking_error_unexpected_body">Riprova a collegare il dispositivo. Se il problema persiste, contatta l\'assistenza (\"Menu principale &gt; Aiuto\").</string>
+    <string name="device_linking_error_screen_close">Chiudi</string>
     <string name="work_directory_title">Directory azienda</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Cerca nella directory</string>

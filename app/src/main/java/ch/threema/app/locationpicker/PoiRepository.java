@@ -23,7 +23,6 @@ package ch.threema.app.locationpicker;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import org.maplibre.android.geometry.LatLng;
 
@@ -46,7 +45,6 @@ import androidx.lifecycle.MutableLiveData;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
@@ -91,8 +89,11 @@ class PoiRepository {
                     }
                     @NonNull
                     final var addressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
-
-                    final String placesUrl = addressProvider.getMapPOINamesUrl().get(center.getLatitude(), center.getLongitude(), query);
+                    final var parameterizedUrl = addressProvider.getMapPoiNamesUrl();
+                    if (parameterizedUrl == null) {
+                        return null;
+                    }
+                    final String placesUrl = parameterizedUrl.get(center.getLatitude(), center.getLongitude(), query);
                     URL serverUrl = new URL(placesUrl);
                     logger.debug("Places URL: {}", placesUrl);
                     HttpsURLConnection urlConnection = null;

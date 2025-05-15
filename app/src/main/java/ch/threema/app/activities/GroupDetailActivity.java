@@ -128,6 +128,7 @@ import kotlinx.coroutines.Deferred;
 
 import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
 import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener,
     GenericAlertDialog.DialogClickListener,
@@ -310,6 +311,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         this.myIdentity = userService.getIdentity();
 
@@ -407,6 +409,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             actionBar.setDisplayHomeAsUpEnabled(true);
 
             floatingActionButton.setOnClickListener(v -> {
+                logger.info("FAB (save group settings) clicked");
                 saveGroupSettings();
             });
             groupNameEditText.setMaxByteSize(GroupModel.GROUP_NAME_MAX_LENGTH_BYTES);
@@ -1106,16 +1109,20 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         if (selectorInfo.contactModel != null) {
             switch (selectorInfo.optionsMap.get(which)) {
                 case SELECTOR_OPTION_CONTACT_DETAIL:
+                    logger.info("Contact details button clicked");
                     launchContactDetail(selectorInfo.view, selectorInfo.contactModel.getIdentity());
                     break;
                 case SELECTOR_OPTION_CHAT:
+                    logger.info("Chat button clicked");
                     showConversation(selectorInfo.contactModel.getIdentity());
                     finish();
                     break;
                 case SELECTOR_OPTION_REMOVE:
+                    logger.info("Kick user button clicked");
                     removeMemberFromGroup(selectorInfo.contactModel);
                     break;
                 case SELECTOR_OPTION_CALL:
+                    logger.info("Call button clicked");
                     VoipUtil.initiateCall(this, selectorInfo.contactModel, false, null);
                     break;
                 default:
@@ -1133,6 +1140,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         // text entry dialog
         switch (tag) {
             case DIALOG_TAG_CLONE_GROUP:
+                logger.info("Clone group dialog confirmed");
                 cloneGroup(text);
                 break;
             default:
@@ -1171,18 +1179,23 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     public void onYes(String tag, Object data) {
         switch (tag) {
             case DIALOG_TAG_LEAVE_GROUP:
+                logger.info("Leave group dialog confirmed");
                 leaveGroupAndQuit();
                 break;
             case DIALOG_TAG_DISSOLVE_GROUP:
+                logger.info("Dissolve group dialog confirmed");
                 dissolveGroupAndQuit();
                 break;
             case DIALOG_TAG_DELETE_GROUP:
+                logger.info("Delete group dialog confirmed");
                 deleteGroupAndQuit();
                 break;
             case DIALOG_TAG_QUIT:
+                logger.info("Save group changes dialog confirmed");
                 saveGroupSettings();
                 break;
             case DIALOG_TAG_CLONE_GROUP_CONFIRM:
+                logger.info("Clone group info dialog confirmed");
                 showCloneDialog();
                 break;
             default:
@@ -1198,6 +1211,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     @Override
     public void handleOnBackPressed() {
         if (this.operationMode == MODE_EDIT && hasChanges()) {
+            logger.info("Showing warning about unsaved changes");
             GenericAlertDialog.newInstance(
                     R.string.leave,
                     R.string.save_group_changes,
@@ -1309,16 +1323,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @Override
-    public void onGroupOwnerClick(View v, String identity) {
-        Intent intent = new Intent(this, ContactDetailActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, groupModel.getCreatorIdentity());
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
-        ActivityCompat.startActivityForResult((Activity) this, intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL, options.toBundle());
-    }
-
-    @Override
     public void onGroupMemberClick(View v, @NonNull ContactModel contactModel) {
+        logger.info("Group member clicked");
         String identity = contactModel.getIdentity();
         String shortName = NameUtil.getShortName(contactModel);
 
@@ -1361,22 +1367,26 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
     @Override
     public void onResetLinkClick() {
+        logger.info("Reset link button clicked");
         RuntimeUtil.runOnUiThread(() -> ShowOnceDialog.newInstance(R.string.reset_default_group_link_title, R.string.reset_default_group_link_desc).show(getSupportFragmentManager(), DIALOG_SHOW_ONCE_RESET_LINK_INFO));
     }
 
     @Override
     public void onShareLinkClick() {
+        logger.info("Share link button clicked");
         // option only enabled if there is a default link
         groupInviteService.shareGroupLink(this, groupInviteService.getDefaultGroupInvite(groupModel).get());
     }
 
     @Override
     public void onGroupDescriptionEditClick() {
+        logger.info("Edit description button clicked");
         showGroupDescEditDialog();
     }
 
     @Override
     public void onAddMembersClick(View v) {
+        logger.info("Add member button clicked");
         addNewMembers();
     }
 

@@ -125,7 +125,7 @@
     <string name="linked_email">Электронная почта</string>
     <string name="linked_mobile">Мобильный телефон</string>
     <string name="public_nickname">Псевдоним</string>
-    <string name="share_via">Отправить через…</string>
+    <string name="share_via">Поделиться…</string>
     <string name="share_subject">Беседа в %s</string>
     <string name="message_delete_undo">Отмена</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1702,6 +1702,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Использование батареи приложением установлено на «оптимальное»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Приложению не разрешено поддерживать постоянное подключение к серверам, которое требуется для работы ${app_name_short} Push. Вы не будете получать уведомления о новых сообщениях, когда приложение работает в фоновом режиме. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Эта версия Android скоро перестанет поддерживаться</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Вы используете Android-устройство, на которое больше не поступают обновления программного обеспечения. По соображениям безопасности Threema скоро перестанет поддерживать эту версию Android.</string>
     <string name="problemsolver_to_settings">К настройкам</string>
     <string name="prefs_advanced_options">Дополнительные настройки</string>
     <string name="push_service">Push-сервис</string>
@@ -1769,16 +1773,13 @@
     <string name="select_emoji_content_description">Выберите эмоцию для добавления в окне выбора</string>
     <string name="group_emoji_reactions_partially_supported">Некоторые не заметят ваши реакции из-за старой версии.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s реакции с %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Вы получили эмоциональную реакцию от собеседника, у которого установлена новая версия приложения. Ваша версия приложения не поддерживает отправку реакций, отличных от 👍 и 👎.</string>
     <string name="reaction_cannot_be_displayed">Реакция не может быть отображена. Неизвестная эмоция.</string>
     <string name="emoji_reactions_unavailable_title">Реакции на эмоции недоступны</string>
-    <string name="emoji_reactions_sending_not_supported_body">Ваша версия приложения не поддерживает отправку эмоциональных реакций.</string>
     <string name="emoji_reactions_unavailable_body">%1$s использует версию приложения, которая не поддерживает данную функцию.</string>
     <string name="emoji_reactions_unavailable_group_body">Вы не можете ответить на это сообщение эмоцией, так как ни у одного участника группы нет версии приложения, поддерживающей данную функцию.</string>
     <string name="emoji_reactions_cannot_remove_title">Удаление реакций недоступно</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s использует версию приложения, которая не поддерживает удаление эмоциональных реакций или отправку нескольких. Вы можете поменять 👍 на 👎 или наоборот.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Ни один из участников группы не использует версию приложения, которая поддерживает удаление эмоциональных реакций или отправку нескольких. Вы можете поменять 👍 на 👎 или наоборот.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Ваша версия приложения не поддерживает удаление эмоциональных реакций или отправку нескольких.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">В этом сообщении есть эмоциональные реакции. Долгим нажатием на любую эмоцию в чате можно просмотреть их все.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1804,7 +1805,11 @@
     <string name="device_linking_error_unknown_qr_code_title">Неизвестный QR-код</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Убедитесь, что вы используете соответствующее приложение с [нашего сайта].</string>
+    <string name="device_linking_error_unknown_qr_code_body">Этот код не похож на QR-код из ${app_name_desktop} 2.0 для ПК (бета). Загрузите последнюю бета-версию приложения для ПК с [нашего сайта] и считайте QR-код, который отображается при запуске приложения.</string>
+    <string name="device_linking_error_web_qr_code_title">Нет подходящего QR-кода</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Этот QR-код относится к web-клиенту ${app_name_short}.\nЗагрузите последнюю версию приложения ${app_name_desktop} 2.0 для ПК (бета) с [нашего сайта] и считайте QR-код, который отображается при запуске приложения.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Несовместимая версия</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Установите на обоих устройствах последнюю версию ${app_name}.</string>

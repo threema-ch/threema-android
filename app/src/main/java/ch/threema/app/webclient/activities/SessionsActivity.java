@@ -95,8 +95,8 @@ import ch.threema.app.webclient.listeners.WebClientServiceListener;
 import ch.threema.app.webclient.listeners.WebClientSessionListener;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
 import ch.threema.app.webclient.manager.WebClientServiceManager;
-import ch.threema.app.webclient.services.QRCodeParser;
-import ch.threema.app.webclient.services.QRCodeParserImpl;
+import ch.threema.app.webclient.services.WebSessionQRCodeParser;
+import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl;
 import ch.threema.app.webclient.services.SessionService;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
@@ -108,6 +108,8 @@ import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
 import kotlin.Unit;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 @UiThread
 public class SessionsActivity extends ThreemaToolbarActivity implements
@@ -332,6 +334,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         // Make sure that all necessary services are initialized
         if (!this.requireInstances()) {
@@ -513,10 +516,10 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
     private void processPayload(byte[] payload) {
         try {
-            final QRCodeParserImpl qrCodeParser = new QRCodeParserImpl();
-            final QRCodeParser.Result qrResult = qrCodeParser.parse(payload);
+            final WebSessionQRCodeParserImpl qrCodeParser = new WebSessionQRCodeParserImpl();
+            final WebSessionQRCodeParser.Result qrResult = qrCodeParser.parse(payload);
             this.startByQrResult(qrResult);
-        } catch (QRCodeParser.InvalidQrCodeException invalidQRCode) {
+        } catch (WebSessionQRCodeParser.InvalidQrCodeException invalidQRCode) {
             // ignore and log
             logger.error("Invalid QR code", invalidQRCode);
         }
@@ -774,12 +777,12 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                     String payload = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
 
                     if (!TestUtil.isEmptyOrNull(payload)) {
-                        final QRCodeParser qrCodeParser = new QRCodeParserImpl();
+                        final WebSessionQRCodeParser webSessionQrCodeParser = new WebSessionQRCodeParserImpl();
                         try {
                             final byte[] pl = Base64.decode(payload);
-                            final QRCodeParser.Result qrResult = qrCodeParser.parse(pl);
+                            final WebSessionQRCodeParser.Result qrResult = webSessionQrCodeParser.parse(pl);
                             this.startByQrResult(qrResult);
-                        } catch (QRCodeParser.InvalidQrCodeException | IOException e) {
+                        } catch (WebSessionQRCodeParser.InvalidQrCodeException | IOException e) {
                             logger.error("Could not initiate new web client session", e);
                             final boolean isMdJoinOfferQrCode = payload.startsWith(MultiDeviceManager.DEVICE_JOIN_OFFER_URI_PREFIX);
                             GenericAlertDialog.newInstance(
@@ -800,7 +803,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         }
     }
 
-    private void startByQrResult(@NonNull final QRCodeParser.Result qrCodeResult) {
+    private void startByQrResult(@NonNull final WebSessionQRCodeParser.Result qrCodeResult) {
         // Validate protocol version
         if (qrCodeResult.versionNumber != Protocol.PROTOCOL_VERSION) {
             // Wrong protocol version!
@@ -890,7 +893,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
      * Start the webclient service.
      * Connect asynchronously.
      */
-    private void start(@NonNull final QRCodeParser.Result qrCodeResult) {
+    private void start(@NonNull final WebSessionQRCodeParser.Result qrCodeResult) {
         logger.info("Starting Threema Web session");
 
         // MDM constraints

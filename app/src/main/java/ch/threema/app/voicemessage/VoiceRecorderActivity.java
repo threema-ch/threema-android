@@ -22,6 +22,7 @@
 package ch.threema.app.voicemessage;
 
 import static android.Manifest.permission.BLUETOOTH_CONNECT;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.animation.LayoutTransition;
 import android.bluetooth.BluetoothAdapter;
@@ -151,6 +152,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
         }
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         setContentView(R.layout.activity_voice_recorder);
 

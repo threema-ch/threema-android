@@ -1700,6 +1700,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="problemsolver_title_app_battery_usgae_optimized">Uygulama pil kullanımı \"optimize\" olarak ayarlandı</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Uygulamanın, ${app_name_short} Push\'un çalışması için gerekli olan sunucularla kalıcı bir bağlantı kurmasına izin verilmez. Uygulama arka plandayken yeni mesajlardan haberdar olmazsınız. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Bu Android sürümü yakında artık desteklenmeyecek</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Artık yazılım güncellemeleri almayan bir Android cihaz kullanıyorsunuz. Güvenlik nedenleriyle, bu Android sürümü yakında Threema tarafından desteklenmeyecektir.</string>
     <string name="problemsolver_to_settings">Ayarlara</string>
     <string name="prefs_advanced_options">Gelişmiş seçenekler</string>
     <string name="push_service">Push hizmeti</string>
@@ -1765,16 +1769,13 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="select_emoji_content_description">Simge seçiciden eklenecek simgeyi seçin</string>
     <string name="group_emoji_reactions_partially_supported">Bazıları eski sürüm nedeniyle tepkilerinizi göremeyecek.</string>
     <string name="tab_emoji_reactions_overview_content_description">%2$s ile %1$s tepkisi</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Daha yeni bir uygulama sürümüne sahip bir kişiden emoji tepkileri aldınız. 👍 ve 👎 dışında, uygulama sürümün henüz emoji tepkileri göndermeyi desteklemiyor.</string>
     <string name="reaction_cannot_be_displayed">Daha yeni bir uygulama sürümüne sahip bir kişiden simge tepkileri aldınız. 👍 ve 👎 dışında, uygulama sürümün henüz simge tepkileri göndermeyi desteklemiyor.</string>
     <string name="emoji_reactions_unavailable_title">Simge Tepkileri Mevcut Değil</string>
-    <string name="emoji_reactions_sending_not_supported_body">Uygulama sürümün henüz simge tepkileri göndermeyi desteklemiyor.</string>
     <string name="emoji_reactions_unavailable_body">%1$s henüz bu özelliği desteklemeyen bir uygulama sürümü kullanıyor.</string>
     <string name="emoji_reactions_unavailable_group_body">Hiçbir grup üyesinin bu özelliği destekleyen bir uygulama sürümü olmadığından bu mesaja simge ile yanıt veremezsiniz.</string>
     <string name="emoji_reactions_cannot_remove_title">Kullanılamayan Tepkilerin Kaldırılması</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s, henüz simge tepkilerinin kaldırılmasını veya birden fazla simge tepkisi gönderilmesini desteklemeyen bir uygulama sürümü kullanıyor. 👍 yine 👎 ile değiştirebilirsiniz veya tam tersi de mümkündür.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Grup üyelerinden hiçbiri uygulamanın simge tepkilerini kaldırmayı veya birden fazla simge tepkisi göndermeyi destekleyen bir sürümünü kullanmıyor. 👍 👎 ile değiştirebilirsiniz veya tam tersi de mümkündür.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Uygulama sürümün henüz simge tepkilerinin kaldırılmasını veya birden fazla simge tepkisi gönderilmesini desteklemiyor.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">Bu mesajda simge tepkileri var. Sohbette, tümünü görüntülemek için herhangi bir simge balonuna dokunup basılı tutun.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1800,6 +1801,11 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="device_linking_error_unknown_qr_code_title">Bilinmeyen QR Kodu</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_unknown_qr_code_body">Bu, Masaüstü için ${app_name_desktop} 2.0 \'dan (Beta) bir QR kodu gibi görünmüyor. Lütfen masaüstü uygulamasının en son beta sürümünü [web sitemizden] indirin ve uygulamayı açtığınızda görüntülenen QR kodunu tarayın.</string>
+    <string name="device_linking_error_web_qr_code_title">Doğru QR Kodu değil</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Bu QR kodu ${app_name_short} web istemcisine aittir.\nLütfen Masaüstü için ${app_name_desktop} 2.0 \'ın (Beta) en son sürümünü [web sitemizden] indirin ve uygulamayı açtığınızda görüntülenen QR kodunu tarayın.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Uyumsuz Sürüm</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Lütfen her iki cihazınıza da ${app_name} uygulamasının en son sürümünü yükleyin.</string>

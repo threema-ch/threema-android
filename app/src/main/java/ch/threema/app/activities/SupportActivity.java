@@ -21,6 +21,8 @@
 
 package ch.threema.app.activities;
 
+import android.os.Bundle;
+
 import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
@@ -33,8 +35,16 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.UrlUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class SupportActivity extends SimpleWebViewActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SupportActivity");
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     protected boolean requiresConnection() {

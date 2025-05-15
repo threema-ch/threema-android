@@ -23,12 +23,19 @@ package ch.threema.app.dialogs;
 
 import android.os.Bundle;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 
 import androidx.annotation.StringRes;
 import ch.threema.app.ui.BottomSheetItem;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BottomSheetListDialog extends BottomSheetAbstractDialog {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BottomSheetListDialog");
+
     public static BottomSheetListDialog newInstance(@StringRes int title, ArrayList<BottomSheetItem> items, int selected) {
         BottomSheetListDialog dialog = new BottomSheetListDialog();
         Bundle args = new Bundle();
@@ -52,5 +59,11 @@ public class BottomSheetListDialog extends BottomSheetAbstractDialog {
 
         dialog.setArguments(args);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 }

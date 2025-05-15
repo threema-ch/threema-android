@@ -21,9 +21,11 @@
 
 package ch.threema.storage.models
 
+import ch.threema.app.utils.MimeUtil
 import ch.threema.app.utils.QuoteUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.blob.BlobScope
+import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.storage.models.data.DisplayTag
 import ch.threema.storage.models.data.LocationDataModel
@@ -329,6 +331,16 @@ internal constructor(
      */
     val blobScopeForMarkAsDone: BlobScope
         get() = if (!isOutbox && this !is GroupMessageModel) BlobScope.Public else BlobScope.Local
+
+    fun isDownloadedVoiceMessage(): Boolean {
+        if (type == MessageType.VOICEMESSAGE) {
+            return true
+        }
+        return type == MessageType.FILE &&
+            MimeUtil.isAudioFile(fileData.getMimeType()) &&
+            fileData.renderingType == FileData.RENDERING_MEDIA &&
+            fileData.isDownloaded
+    }
 
     companion object {
         /**

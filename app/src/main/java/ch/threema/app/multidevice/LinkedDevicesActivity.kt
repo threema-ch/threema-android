@@ -58,6 +58,7 @@ import ch.threema.app.ui.EmptyRecyclerView
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.HiddenChatUtil
 import ch.threema.app.utils.linkifyWeb
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -67,6 +68,10 @@ import kotlinx.coroutines.launch
 private val logger = LoggingUtil.getThreemaLogger("LinkedDevicesActivity")
 
 class LinkedDevicesActivity : ThreemaToolbarActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private companion object {
         const val PERMISSION_REQUEST_CAMERA = 1
     }
@@ -112,6 +117,12 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
         linkDeviceButton.setOnClickListener(
             object : DebouncedOnClickListener(1000L) {
                 override fun onDebouncedClick(v: View?) {
+                    logger.info("Link device button clicked")
+                    if (!ConfigUtils.isMultiDeviceEnabled(this@LinkedDevicesActivity)) {
+                        logger.warn("MD disabled, ignoring link button")
+                        viewModel.updateLinkDeviceButtonEnabled()
+                        return
+                    }
                     if (ConfigUtils.hasProtection(preferenceService)) {
                         HiddenChatUtil.launchLockCheckDialog(
                             this@LinkedDevicesActivity,
@@ -135,6 +146,11 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
 
         startObservers()
         startPreferenceListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.updateLinkDeviceButtonEnabled()
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
@@ -199,6 +215,11 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     }
 
     private fun startLinkingWizard() {
+        if (!ConfigUtils.isMultiDeviceEnabled(this)) {
+            logger.warn("MD disabled, not start linking wizard")
+            viewModel.updateLinkDeviceButtonEnabled()
+            return
+        }
         logger.info("Start linking wizard")
         linkingWizardLauncher.launch(Intent(this, LinkNewDeviceWizardActivity::class.java))
     }

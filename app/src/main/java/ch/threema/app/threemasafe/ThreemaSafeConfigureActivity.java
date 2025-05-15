@@ -61,6 +61,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity implements ThreemaSafeAdvancedDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeConfigureActivity");
@@ -84,6 +85,12 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     private boolean updatePasswordOnly;
     private ThreemaSafeServerInfo serverInfo;
     private boolean openHomeActivity = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @SuppressLint("SetTextI18n")
     @Override

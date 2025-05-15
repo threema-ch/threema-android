@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2025 Threema GmbH
+ * Copyright (c) 2016-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,14 +19,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.domain.protocol.urls
+package ch.threema.app.services
 
-import java.util.Locale
+import ch.threema.domain.protocol.ServerAddressProvider
 
-class MapPoiUrl(template: String) : ParameterizedUrl(template, requiredPlaceholders = arrayOf("latitude", "longitude", "radius")) {
-    fun get(latitude: Double, longitude: Double, radius: Int) = getUrl(
-        "latitude" to "%f".format(Locale.US, latitude),
-        "longitude" to "%f".format(Locale.US, longitude),
-        "radius" to radius.toString(),
-    )
+interface ServerAddressProviderService {
+    val serverAddressProvider: ServerAddressProvider
 }

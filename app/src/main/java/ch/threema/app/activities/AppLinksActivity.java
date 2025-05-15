@@ -49,6 +49,8 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.ContactModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class AppLinksActivity extends ThreemaToolbarActivity {
     private final static Logger logger = LoggingUtil.getThreemaLogger("AppLinksActivity");
 
@@ -58,6 +60,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         checkLock();
     }

@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.view.View
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("ThreemaPushNotificationInfoActivity")
@@ -33,6 +34,10 @@ private val logger = LoggingUtil.getThreemaLogger("ThreemaPushNotificationInfoAc
  * Activity that is shown when the user taps on the persistent Threema Push notification.
  */
 class ThreemaPushNotificationInfoActivity : ThreemaActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         logger.debug("onCreate")
 

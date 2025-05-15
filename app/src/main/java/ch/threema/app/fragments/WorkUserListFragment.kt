@@ -39,6 +39,7 @@ import ch.threema.app.adapters.UserListAdapter
 import ch.threema.app.services.ContactService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.TestUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.IdentityState
 import ch.threema.storage.models.ContactModel
@@ -48,6 +49,10 @@ import org.slf4j.Logger
 private val logger: Logger = LoggingUtil.getThreemaLogger("WorkUserListFragment")
 
 class WorkUserListFragment : RecipientListFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     override fun isMultiSelectAllowed(): Boolean = multiSelect || multiSelectIdentity
 
     override fun getBundleName(): String = "WorkerUserListState"

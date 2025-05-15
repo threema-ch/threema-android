@@ -605,10 +605,6 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             return Reactions_NONE;
         }
 
-        if (!ConfigUtils.canSendEmojiReactions()) {
-            return Reactions_NONE;
-        }
-
         GroupModelData groupModelData = groupModel.getData().getValue();
 
         if (groupModelData == null) {

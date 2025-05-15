@@ -32,15 +32,22 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class NewContactDialog extends ThreemaDialogFragment {
+
+    private static final Logger logger = LoggingUtil.getThreemaLogger("NewContactDialog");
     private NewContactDialogClickListener callback;
     private Activity activity;
     private AlertDialog alertDialog;
@@ -69,6 +76,7 @@ public class NewContactDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (callback == null) {
             try {
@@ -112,12 +120,10 @@ public class NewContactDialog extends ThreemaDialogFragment {
         editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
 
         final Chip scanButton = dialogView.findViewById(R.id.scan_button);
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // do not dismiss dialog
-                callback.onScanButtonClick(tag);
-            }
+        scanButton.setOnClickListener(v -> {
+            // do not dismiss dialog
+            logger.info("Scan contact clicked");
+            callback.onScanButtonClick(tag);
         });
 
         if (message != 0) {
@@ -131,18 +137,14 @@ public class NewContactDialog extends ThreemaDialogFragment {
             builder.setTitle(title);
         }
 
-        builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    callback.onContactEnter(tag, editText.getText().toString());
-                }
-            }
-        );
-        builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    callback.onCancel(tag);
-                }
-            }
-        );
+        builder.setPositiveButton(getString(positive), (dialog, whichButton) -> {
+            logger.info("Add contact confirmed");
+            callback.onContactEnter(tag, editText.getText().toString());
+        });
+        builder.setNegativeButton(getString(negative), (dialog, whichButton) -> {
+            logger.info("Adding contact cancelled");
+            callback.onCancel(tag);
+        });
 
         alertDialog = builder.create();
 

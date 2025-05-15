@@ -75,3 +75,7 @@ fun AbstractMessageModel.getUiContentColor(context: Context): ColorStateList =
             if (isOutbox) R.color.bubble_send_text_colorstatelist else R.color.bubble_receive_text_colorstatelist,
         )
     }
+
+fun List<AbstractMessageModel>.findIndexByMessageId(messageId: Int): Int? =
+    indexOfFirst { message -> message.id == messageId }
+        .takeUnless { it == -1 }

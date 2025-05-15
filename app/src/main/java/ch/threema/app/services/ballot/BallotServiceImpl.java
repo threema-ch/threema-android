@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -671,12 +672,10 @@ public class BallotServiceImpl implements BallotService {
     public List<String> getPendingParticipants(Integer ballotModelId) {
         String[] allParticipants = this.getParticipants(ballotModelId);
         List<String> pendingParticipants = new ArrayList<>();
-        if (allParticipants.length > 0) {
-            for (String i : allParticipants) {
-                List<BallotVoteModel> voteModels = this.getVotes(ballotModelId, i);
-                if (voteModels == null || voteModels.size() == 0) {
-                    pendingParticipants.add(i);
-                }
+        for (String i : allParticipants) {
+            List<BallotVoteModel> voteModels = this.getVotes(ballotModelId, i);
+            if (voteModels.isEmpty()) {
+                pendingParticipants.add(i);
             }
         }
 
@@ -740,9 +739,10 @@ public class BallotServiceImpl implements BallotService {
         return new String[0];
     }
 
+    @NonNull
     private List<BallotVoteModel> getVotes(Integer ballotModelId, String fromIdentity) {
         if (ballotModelId == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         return this.databaseServiceNew.getBallotVoteModelFactory().getByBallotIdAndVotingIdentity(
@@ -764,6 +764,7 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
+    @NonNull
     public List<BallotVoteModel> getMyVotes(Integer ballotModelId) {
         return this.getVotes(ballotModelId, this.userService.getIdentity());
     }
@@ -1187,61 +1188,76 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public BallotVoteResult vote(final BallotVoteInterface voteMessage) throws NotAllowedException {
-        final BallotModel ballotModel = this.get(voteMessage.getBallotId().toString(), voteMessage.getBallotCreatorIdentity());
+    public BallotVoteResult vote(@NonNull final BallotVoteInterface voteMessage) throws NotAllowedException {
+        final BallotId pollId = voteMessage.getBallotId();
 
-        //invalid ballot model
-        if (ballotModel == null) {
+        if (pollId == null) {
+            logger.warn("Invalid vote message, poll id is null.");
             return new BallotVoteResult(false);
         }
 
-        if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE && !TestUtil.compare(
-            ballotModel.getCreatorIdentity(),
-            this.userService.getIdentity())) {
-            logger.error("this is not a intermediate ballot and not mine, ingore the message");
-            //return true to ack the message
-            return new BallotVoteResult(true);
+        final BallotModel ballotModel = this.get(pollId.toString(), voteMessage.getBallotCreatorIdentity());
+
+        // Invalid ballot model
+        if (ballotModel == null) {
+            logger.warn("No poll found for poll id");
+            return new BallotVoteResult(false);
         }
 
-        //if the ballot is closed, ignore any votes
+        final String fromIdentity = ((AbstractMessage) voteMessage).getFromIdentity();
+
+        if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
+            final String pollCreatorIdentity = ballotModel.getCreatorIdentity();
+            final String myIdentity = this.userService.getIdentity();
+            // When a vote from someone else is received in a RESULT_ON_CLOSE poll, where we are not
+            // the creator, this should not happen and the message must be ignored.
+            // If a vote is received from ourselves in such a case this is a reflected vote that must
+            // be processed.
+            if (!TestUtil.compare(pollCreatorIdentity, myIdentity)
+                && !TestUtil.compare(fromIdentity, myIdentity)) {
+                logger.warn("Intermediate results are not shown for this poll. Ignore message.");
+                // Return true to ack the message
+                return new BallotVoteResult(true);
+            }
+        }
+
+        // If the ballot is closed, ignore any votes
         if (ballotModel.getState() == BallotModel.State.CLOSED) {
             logger.error("this is a closed ballot, ignore this message");
             return new BallotVoteResult(true);
         }
 
-        final String fromIdentity = ((AbstractMessage) voteMessage).getFromIdentity();
-
-        //load existing votes of user
+        // Load existing votes of user
         List<BallotVoteModel> existingVotes = this.getVotes(ballotModel.getId(), fromIdentity);
-        final boolean firstVote = existingVotes == null || existingVotes.isEmpty();
+        final boolean firstVote = existingVotes.isEmpty();
 
         List<BallotVoteModel> savingVotes = new ArrayList<>();
         List<BallotChoiceModel> choices = this.getChoices(ballotModel.getId());
 
         for (final BallotVote apiVoteModel : voteMessage.getVotes()) {
-            //check if the choice correct
+            // Check if the choice correct
             final BallotChoiceModel ballotChoiceModel = Functional.select(choices, type -> type.getApiBallotChoiceId() == apiVoteModel.getId());
 
             if (ballotChoiceModel != null) {
-                //cool, correct choice
+                // Cool, correct choice
                 BallotVoteModel ballotVoteModel = Functional.select(existingVotes, type -> type.getBallotChoiceId() == ballotChoiceModel.getId());
 
                 if (ballotVoteModel == null) {
-                    //ok, a new vote
+                    // Ok, a new vote
                     ballotVoteModel = new BallotVoteModel();
                     ballotVoteModel.setBallotId(ballotModel.getId());
                     ballotVoteModel.setBallotChoiceId(ballotChoiceModel.getId());
                     ballotVoteModel.setVotingIdentity(fromIdentity);
                     ballotVoteModel.setCreatedAt(new Date());
                 } else {
-                    //remove from existing votes
+                    // Remove from existing votes
                     existingVotes.remove(ballotVoteModel);
                 }
 
                 if (
-                    //is a new vote...
+                    // Is a new vote...
                     ballotVoteModel.getId() <= 0
-                        //... or a modified
+                        // ... or a modified
                         || ballotVoteModel.getChoice() != apiVoteModel.getValue()) {
 
                     ballotVoteModel.setChoice(apiVoteModel.getValue());
@@ -1251,7 +1267,7 @@ public class BallotServiceImpl implements BallotService {
             }
         }
 
-        //remove votes
+        // Remove votes
         boolean hasModifications = false;
 
         if (existingVotes != null && !existingVotes.isEmpty()) {

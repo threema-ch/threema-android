@@ -152,6 +152,7 @@
         <item>Slovenčina</item> <!-- Slovak -->
         <item>Türkçe</item>
         <item>Беларуская</item> <!-- Belarusian -->
+        <item>Български</item> <!-- Bulgarian -->
         <item>Pусский</item> <!-- Russian -->
         <item>Українська</item> <!-- Ukrainian -->
         <item>简体中文</item> <!-- Chinese simplified -->
@@ -177,6 +178,7 @@
         <item>sk</item> <!-- Slovak -->
         <item>tr</item>
         <item>be-BY</item> <!-- Belarusian -->
+        <item>bg</item> <!-- Bulgarian -->
         <item>ru</item> <!-- Russian -->
         <item>uk</item> <!-- Ukrainian -->
         <item>zh-hans-CN</item> <!-- Chinese simplified. Note that we need 'hans' in it to apply the script correctly in the settings. -->

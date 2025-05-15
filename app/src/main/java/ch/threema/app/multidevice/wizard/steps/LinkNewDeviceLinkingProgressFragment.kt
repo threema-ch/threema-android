@@ -32,9 +32,17 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updatePadding
 import ch.threema.app.R
 import ch.threema.app.utils.getStatusBarHeightPxCompat
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.utils.withCurrentWindowInsets
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceLinkingProgressFragment")
 
 class LinkNewDeviceLinkingProgressFragment : LinkNewDeviceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private lateinit var bodyTextView: TextView
 
     override fun onCreateView(

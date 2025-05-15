@@ -47,6 +47,7 @@ import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.fragments.BackupDataFragment.REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS;
 import static ch.threema.app.utils.PowermanagerUtil.isIgnoringBatteryOptimizations;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 /**
  * Guides user through the process of disabling battery optimization energy saving option.
@@ -97,6 +98,7 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
     @TargetApi(Build.VERSION_CODES.M)
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (isIgnoringBatteryOptimizations(this)) {
             setResult(RESULT_OK);

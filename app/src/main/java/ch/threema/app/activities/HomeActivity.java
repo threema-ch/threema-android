@@ -181,6 +181,8 @@ import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.MessageState;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class HomeActivity extends ThreemaAppCompatActivity implements
     SMSVerificationDialog.SMSVerificationDialogCallback,
     GenericAlertDialog.DialogClickListener,
@@ -324,20 +326,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                     return true;
                 }
 
-                @Override
-                public boolean noDistributionLists() {
-                    return false;
-                }
-
-                @Override
-                public boolean noHiddenChats() {
-                    return false;
-                }
-
-                @Override
-                public boolean noInvalid() {
-                    return false;
-                }
             });
 
             int unread = 0;
@@ -627,6 +615,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         ConfigUtils.configureSystemBars(this);
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (BackupService.isRunning() || RestoreService.isRunning()) {
             startActivity(new Intent(this, BackupRestoreProgressActivity.class));
@@ -751,6 +740,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+        logger.info("HomeActivity started");
 
         if (serviceManager != null) {
 
@@ -793,7 +783,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false) ||
                 ConfigUtils.isNotificationsDisabled(ThreemaApplication.getAppContext()) ||
                 (preferenceService.isVoipEnabled() && ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext())) ||
-                ((preferenceService.useThreemaPush() || BuildFlavor.getCurrent().getForceThreemaPush()) && !PowermanagerUtil.isIgnoringBatteryOptimizations(ThreemaApplication.getAppContext()));
+                ((preferenceService.useThreemaPush() || BuildFlavor.getCurrent().getForceThreemaPush()) && !PowermanagerUtil.isIgnoringBatteryOptimizations(ThreemaApplication.getAppContext())) ||
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.N && preferenceService.getLastDeprecatedAndroidVersionWarningDismissed() == null);
     }
 
     private void showWhatsNew() {
@@ -1311,19 +1302,25 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
             if (currentFragment != null) {
                 if (item.getItemId() == R.id.contacts) {
+                    logger.info("Contacts tab clicked");
                     if (!FRAGMENT_TAG_CONTACTS.equals(currentFragmentTag)) {
+                        logger.info("Switching to Contacts tab");
                         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(contactsFragment).commit();
                         currentFragmentTag = FRAGMENT_TAG_CONTACTS;
                     }
                     return true;
                 } else if (item.getItemId() == R.id.messages) {
+                    logger.info("Messages tab clicked");
                     if (!FRAGMENT_TAG_MESSAGES.equals(currentFragmentTag)) {
+                        logger.info("Switching to Messages tab");
                         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(messagesFragment).commit();
                         currentFragmentTag = FRAGMENT_TAG_MESSAGES;
                     }
                     return true;
                 } else if (item.getItemId() == R.id.my_profile) {
+                    logger.info("Profile tab clicked");
                     if (!FRAGMENT_TAG_PROFILE.equals(currentFragmentTag)) {
+                        logger.info("Switching to My Profile tab");
                         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(profileFragment).commit();
                         currentFragmentTag = FRAGMENT_TAG_PROFILE;
                     }
@@ -1505,38 +1502,54 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         Intent intent = null;
         final int id = item.getItemId();
         if (id == android.R.id.home) {
+            logger.info("Own avatar clicked");
             showQRPopup();
             return true;
         } else if (id == R.id.menu_lock) {
+            logger.info("Lock button clicked");
             lockAppService.lock();
             return true;
         } else if (id == R.id.menu_new_group) {
+            logger.info("New group button clicked");
             intent = new Intent(this, GroupAddActivity.class);
         } else if (id == R.id.menu_new_distribution_list) {
+            logger.info("New distribution list button clicked");
             intent = new Intent(this, DistributionListAddActivity.class);
         } else if (id == R.id.group_requests) {
+            logger.info("Group requests button clicked");
             intent = new Intent(this, OutgoingGroupRequestActivity.class);
         } else if (id == R.id.my_backups) {
+            logger.info("Backups button clicked");
             intent = new Intent(this, BackupAdminActivity.class);
         } else if (id == R.id.webclient) {
+            logger.info("Web button clicked");
             intent = new Intent(this, SessionsActivity.class);
         } else if (id == R.id.multi_device) {
+            logger.info("MD button clicked");
             intent = new Intent(this, LinkedDevicesActivity.class);
         } else if (id == R.id.scanner) {
+            logger.info("QR scanner button clicked");
             intent = new Intent(this, BaseQrScannerActivity.class);
         } else if (id == R.id.help) {
+            logger.info("Help button clicked");
             intent = new Intent(this, SupportActivity.class);
         } else if (id == R.id.settings) {
+            logger.info("Settings button clicked");
             startActivityForResult(new Intent(this, SettingsActivity.class), ThreemaActivity.ACTIVITY_ID_SETTINGS);
         } else if (id == R.id.directory) {
+            logger.info("Directory button clicked");
             intent = new Intent(this, DirectoryActivity.class);
         } else if (id == R.id.threema_channel) {
+            logger.info("Threema channel button clicked");
             confirmThreemaChannel();
         } else if (id == R.id.archived) {
+            logger.info("Archive button clicked");
             intent = new Intent(this, ArchiveActivity.class);
         } else if (id == R.id.globalsearch) {
+            logger.info("Global search button clicked");
             intent = new Intent(this, GlobalSearchActivity.class);
         } else if (id == R.id.starred_messages) {
+            logger.info("Starred messages button clicked");
             intent = new Intent(this, StarredMessagesActivity.class);
         }
 
@@ -1561,6 +1574,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             PorterDuff.Mode.SRC_IN);
         toolbarLogoMain.setContentDescription(getString(R.string.logo));
         toolbarLogoMain.setOnClickListener(v -> {
+            logger.info("Logo clicked");
             if (currentFragmentTag != null) {
                 Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
                 if (currentFragment != null && currentFragment.isAdded() && !currentFragment.isHidden()) {
@@ -1759,15 +1773,18 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     public void onYes(String tag, Object data) {
         switch (tag) {
             case DIALOG_TAG_VERIFY_CODE_CONFIRM:
+                logger.info("Verify code confirmed");
                 reallyRequestCall();
                 break;
             case DIALOG_TAG_CANCEL_VERIFY:
                 reallyCancelVerify();
                 break;
             case DIALOG_TAG_MASTERKEY_LOCKED:
+                logger.info("Retrying unlocking master key confirmed");
                 startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
                 break;
             case DIALOG_TAG_SERIAL_LOCKED:
+                logger.info("Retrying entering valid license confirmed");
                 startActivityForResult(new Intent(this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
                 finish();
                 break;
@@ -1775,6 +1792,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 System.exit(0);
                 break;
             case DIALOG_TAG_THREEMA_CHANNEL_VERIFY:
+                logger.info("Add Threema channel confirmed");
                 addThreemaChannel();
                 break;
             case DIALOG_TAG_PASSWORD_PRESET_CONFIRM:

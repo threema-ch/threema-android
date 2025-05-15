@@ -36,6 +36,8 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.slf4j.Logger;
+
 import java.io.IOException;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -56,13 +58,17 @@ import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.ShareUtil;
-import ch.threema.app.webclient.services.QRCodeParser;
-import ch.threema.app.webclient.services.QRCodeParserImpl;
+import ch.threema.app.webclient.services.WebSessionQRCodeParser;
+import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl;
 import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BaseQrScannerActivity extends AppCompatActivity implements
     GenericScanResultDialog.ScanResultClickListener,
     GenericAlertDialog.DialogClickListener {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BaseQrScannerActivity");
 
     private static final int PERMISSION_REQUEST_CAMERA = 1;
     private static final String DIALOG_TAG_SCAN_RESULT = "show_scan_result";
@@ -81,6 +87,7 @@ public class BaseQrScannerActivity extends AppCompatActivity implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
             launchScanner();
@@ -173,12 +180,12 @@ public class BaseQrScannerActivity extends AppCompatActivity implements
     private void handleWebSessionResult(String result) {
         try {
             byte[] base64Payload = Base64.decode(result);
-            final QRCodeParser webClientQRCodeParser = new QRCodeParserImpl();
+            final WebSessionQRCodeParser webClientQRCodeParser = new WebSessionQRCodeParserImpl();
             webClientQRCodeParser.parse(base64Payload); // throws if QR is not valid
             // it was a valid web client qr code, exit method
             startWebClientByQRResult(base64Payload);
             finish();
-        } catch (IOException | QRCodeParser.InvalidQrCodeException | IllegalArgumentException e) {
+        } catch (IOException | WebSessionQRCodeParser.InvalidQrCodeException | IllegalArgumentException e) {
             // not a valid base64 or web client payload
             invalidCodeDialog();
         }

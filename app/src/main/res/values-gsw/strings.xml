@@ -1658,7 +1658,7 @@
     <string name="group_orphaned_notice">Die Gruppe isch verwaist, wil de Gruppe-Ersteller d’Gruppe verlaa hät. Bitte chloned Sie d’Gruppe, zum de neu Adminstrator z’werde.</string>
     <string name="group_not_a_member_notice">Sie sind nüme Mitglied vo dere Gruppe und chönd Sie nüme bruuche.</string>
     <string name="group_dissolved_notice">Die Gruppe isch ufglöst worde und cha nüme bruucht werde.</string>
-    <string name="md_linked_devices">${app_name_desktop} 2.0 für Desktop</string>
+    <string name="md_linked_devices">${app_name_desktop} 2.0 für Desktop (Beta)</string>
     <string name="md_link_device">Neus Grät verchnüpfe</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
@@ -1698,6 +1698,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Akkunutzig vode App «optimiert»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">D’App cha kei permanenti Verbindig zude Server ufrächterhalte, was für d’Funktion vo ${app_name_short} Push aber erforderlich isch. Befindet sich d’App im Hindergrund, werded Sie nöd über neui Nachrichte informiert. Zum das z’behebe, tipped Sie uf «Akkunutzung der App» und wähled Sie «Uneingeschränkt».</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Die Android-Version wird bald nüme unterstützt</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Sie händ es Android-Grät, wo kei Software-Updates me überchunnt. Us Sicherheitsgründ wird die Android-Version vo Threema bald nüme unterstützt.</string>
     <string name="problemsolver_to_settings">Zude Iistellige</string>
     <string name="prefs_advanced_options">Erwiitereti Optione</string>
     <string name="push_service">Push-Dienst</string>
@@ -1735,7 +1739,7 @@
     <string name="md_device_last_active_at">Zletscht aktiv: %s</string>
     <plurals name="md_max_device_slots_reached_info">
         <item quantity="one">Nur eis Grät cha verchnüpft werde.</item>
-        <item quantity="other">Maximal Azahl vo %d verchnüpfte Grät erreicht. Entfered Sie es verchnüpfts Grät, zum es neus dezue z’tue.</item>
+        <item quantity="other">Maximal Azahl vo %d verchnüpfte Grät erreicht. Entferned Sie es verchnüpfts Grät, zum es neus dezue z’tue.</item>
     </plurals>
     <string name="md_device_invalid_label">Grät</string>
     <string name="md_device_invalid_hint">Informatione händ nöd chöne ermittlet werde</string>
@@ -1763,16 +1767,13 @@
     <string name="select_emoji_content_description">Emoji usem Emoji-Picker uswähle</string>
     <string name="group_emoji_reactions_partially_supported">Es paar werded Ihri Reaktione nöd gseh, wil si e alti App-Version händ.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s Reaktione mit %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Sie händ Emoji-Reaktione vomene Kontakt übercho, wo e neueri App-Version bruucht. Abgseh vo 👍 und 👎 unterstützt Ihri App-Version s’Sände vo Emoji-Reaktione nonig.</string>
     <string name="reaction_cannot_be_displayed">Die Reaktion cha nöd aazeigt werde, wil das Emoji unbekannt isch.</string>
     <string name="emoji_reactions_unavailable_title">Emoji-Reaktione nöd verfüegbar</string>
-    <string name="emoji_reactions_sending_not_supported_body">Ihri App-Version unterstützt s’Sände vo Emoji-Reaktione nonig.</string>
     <string name="emoji_reactions_unavailable_body">%1$s bruucht e App-Version, wo die Funktion nonig unterstützt.</string>
     <string name="emoji_reactions_unavailable_group_body">Sie chönd nöd miteme Emoji uf die Nachricht reagiere, wil keis Gruppemitglied e App-Version hät, wo das Feature unterstützt.</string>
     <string name="emoji_reactions_cannot_remove_title">Lösche vo Reaktione nöd möglich</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s bruucht e App-Version, wo s’Lösche vo Emoji-Reaktione oder s’Sände vo mehrere Emoji-Reaktione nonig unterstützt. 👍 und 👎 lönd sich wiiterhin ustuusche.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Keis Gruppemitglied hät e Version vode App, wo s’Lösche vo Emoji-Reaktione oder s’Sände vo mehrere Emoji-Reaktione unterstützt. 👍 und 👎 lönd sich aber wiiterhin ustuusche.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Ihri App-Version unterstützt s’Lösche vo Emoji-Reaktione oder s’Sände vo mehrere Emoji-Reaktione nonig.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">Die Nachricht hät Reaktione. Tipped Sie im Chat lang uf es Reaktions-Emoji, zum all Reaktione gseh.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1798,7 +1799,11 @@
     <string name="device_linking_error_unknown_qr_code_title">Unbekannte QR-Code</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Bitte stelled Sie sicher, dass Sie di entsprächend App vo [üsere Website] bruuched.</string>
+    <string name="device_linking_error_unknown_qr_code_body">Das schiint kein QR-Code vo ${app_name_desktop} 2.0 für Desktop (Beta) z’sii. Bitte laded Sie di aktuell Beta-Version vode Desktop-App vo [üsere Website] abe und scanned Sie de QR-Code, wo Ihne bim Ufmache vode App aazeigt wird.</string>
+    <string name="device_linking_error_web_qr_code_title">Nöd de richtig QR-Code</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">De QR-Code ghört zum Web-Client vo ${app_name_short}.\nBitte laded Sie die aktuell Version vo ${app_name_desktop} 2.0 für Desktop (Beta) vo [üsere Website] abe und scanned Sie de QR-Code, wo Ihne bim Ufmache vode App aazeigt wird.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Nöd unterstützti Version</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Bitte installiered Sie di neuscht Version vo ${app_name} uf beidne Grät.</string>

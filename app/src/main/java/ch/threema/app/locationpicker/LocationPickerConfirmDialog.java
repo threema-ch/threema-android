@@ -48,6 +48,8 @@ import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 
 public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
     private LocationConfirmDialogClickListener callback;
@@ -78,6 +80,12 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 
         default void onCancel(String tag) {
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @NonNull

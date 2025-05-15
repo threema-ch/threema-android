@@ -1,0 +1,88 @@
+{
+  "license": {
+    "expires": "2099-12-31",
+    "count": 100,
+    "id": "DUMMY-00000001"
+  },
+  "domains": {
+    "rules": [
+      {
+        "fqdn": "threemaonprem.initrode.com",
+        "matchMode": "include-subdomains",
+        "spkis": [
+          {
+            "value": "DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk=",
+            "algorithm": "sha256"
+          },
+          {
+            "value": "C19RmQgZXzwovKRRJ2st7bsokiRchKcYjBo3m63fvn8=",
+            "algorithm": "sha256"
+          }
+        ]
+      },
+      {
+        "fqdn": "another-host.initrode.com",
+        "matchMode": "exact",
+        "spkis": [
+          {
+            "value": "XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4=",
+            "algorithm": "sha256"
+          },
+          {
+            "value": "XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4=",
+            "algorithm": "unknown-algorithm"
+          }
+        ]
+      },
+      {
+        "fqdn": "unknown.initrode.com",
+        "matchMode": "unknown-mode"
+      }
+    ]
+  },
+  "blob": {
+    "uploadUrl": "https://blob.threemaonprem.initrode.com/blob/upload",
+    "downloadUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}",
+    "doneUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done"
+  },
+  "web": {
+    "url": "https://web.threemaonprem.initrode.com/"
+  },
+  "chat": {
+    "hostname": "chat.threemaonprem.initrode.com",
+    "publicKey": "r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=",
+    "ports": [
+      5222,
+      443
+    ]
+  },
+  "work": {
+    "url": "https://work.threemaonprem.initrode.com/"
+  },
+  "signatureKey": "jae1lgwR3W7YyKiGQlsbdqObG13FR1EvjVci2aDNIi8=",
+  "safe": {
+    "url": "https://safe.threemaonprem.initrode.com/"
+  },
+  "refresh": 86400,
+  "avatar": {
+    "url": "https://avatar.threemaonprem.initrode.com/"
+  },
+  "mediator": {
+    "blob": {
+      "uploadUrl": "https://mediator.threemaonprem.initrode.com/blob/upload",
+      "downloadUrl": "https://mediator.threemaonprem.initrode.com/blob/{blobId}",
+      "doneUrl": "https://mediator.threemaonprem.initrode.com/blob/{blobId}/done"
+    },
+    "url": "https://mediator.threemaonprem.initrode.com/"
+  },
+  "maps": {
+    "styleUrl": "https://map.initrode.com/styles/threema/style.json",
+    "poiNamesUrl": "https://poi.initrode.com/names/{latitude}/{longitude}/{query}/",
+    "poiAroundUrl": "https://poi.initrode.com/around/{latitude}/{longitude}/{radius}/"
+  },
+  "version": "1.0",
+  "directory": {
+    "url": "https://dir.threemaonprem.initrode.com/directory"
+  }
+}
+5WCL7I50TrBBCuz8nX3yeQhqlAIXaPK2bGQQbTeg6DdWS8yZVN49t4l/pwDyntSpYQklBPYN5OMrGeQOjMVRAg==

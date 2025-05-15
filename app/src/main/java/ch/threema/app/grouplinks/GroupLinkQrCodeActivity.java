@@ -50,6 +50,8 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkQrCodeActivity");
 
@@ -61,6 +63,7 @@ public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

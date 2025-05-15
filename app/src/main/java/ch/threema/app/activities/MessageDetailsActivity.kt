@@ -58,6 +58,7 @@ import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.LinkifyUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
@@ -65,6 +66,10 @@ import com.google.android.material.appbar.MaterialToolbar
 import org.slf4j.Logger
 
 class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private companion object {
         val logger: Logger = LoggingUtil.getThreemaLogger("MessageDetailsActivity")
 
@@ -123,7 +128,10 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
 
             override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
-                    CONTEXT_MENU_FORWARD -> forwardText()
+                    CONTEXT_MENU_FORWARD -> {
+                        logger.info("Forward message clicked")
+                        forwardText()
+                    }
                     else -> return false
                 }
                 return true
@@ -252,6 +260,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.enable_formatting) {
+                logger.info("Toggle formatting clicked")
                 onToggleFormattingClicked(item)
                 return@setOnMenuItemClickListener true
             }
@@ -274,6 +283,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
 
     override fun onYes(tag: String, data: Any) {
         if (LinkifyUtil.DIALOG_TAG_CONFIRM_LINK == tag) {
+            logger.info("Opening of link confirmed")
             LinkifyUtil.getInstance().openLink(data as Uri, null, this)
         }
     }

@@ -21,6 +21,7 @@
 
 package ch.threema.app.grouplinks;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
 import android.content.Context;
@@ -93,6 +94,12 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
     private TextView linkExpirationDate;
     private ControlPanelButton qrButton;
     private ControlPanelButton shareButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     protected boolean initActivity(Bundle savedInstanceState) {

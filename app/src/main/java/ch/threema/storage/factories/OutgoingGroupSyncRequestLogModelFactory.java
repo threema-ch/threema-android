@@ -25,7 +25,12 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import java.util.Date;
+import java.util.Objects;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel;
@@ -36,7 +41,12 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
     }
 
     @Nullable
-    public OutgoingGroupSyncRequestLogModel get(String apiGroupId, String groupCreator) {
+    public OutgoingGroupSyncRequestLogModel get(@NonNull GroupIdentity groupIdentity) {
+        return get(groupIdentity.getGroupIdHexString(), groupIdentity.getCreatorIdentity());
+    }
+
+    @Nullable
+    public OutgoingGroupSyncRequestLogModel get(@Nullable String apiGroupId, @Nullable String groupCreator) {
         return getFirst(
             OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID + "=?"
                 + " AND " + OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY + "=?",
@@ -46,45 +56,25 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
             });
     }
 
-    public boolean createOrUpdate(OutgoingGroupSyncRequestLogModel outgoingGroupSyncRequestLogModel) {
-        boolean insert = true;
-        if (outgoingGroupSyncRequestLogModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
-                this.getTableName(),
-                null,
-                OutgoingGroupSyncRequestLogModel.COLUMN_ID + "=?",
-                new String[]{
-                    String.valueOf(outgoingGroupSyncRequestLogModel.getId())
-                },
-                null,
-                null,
-                null
-            );
+    public boolean createOrUpdate(@NonNull GroupIdentity groupIdentity, @Nullable Date lastRequest) {
+        OutgoingGroupSyncRequestLogModel existingModel = get(groupIdentity);
 
-            if (cursor != null) {
-                try {
-                    insert = !cursor.moveToNext();
-                } finally {
-                    cursor.close();
-                }
-            }
-        }
-
-        if (insert) {
-            return create(outgoingGroupSyncRequestLogModel);
+        if (existingModel == null) {
+            return create(groupIdentity, lastRequest);
         } else {
-            return update(outgoingGroupSyncRequestLogModel);
+            return update(new OutgoingGroupSyncRequestLogModel(
+                existingModel.getId(),
+                existingModel.getApiGroupId(),
+                existingModel.getCreatorIdentity(),
+                lastRequest
+            ));
         }
     }
 
-    public boolean create(OutgoingGroupSyncRequestLogModel outgoingGroupSyncRequestLogModel) {
-        ContentValues contentValues = buildValues(outgoingGroupSyncRequestLogModel);
+    public boolean create(@NonNull GroupIdentity groupIdentity, @Nullable Date lastRequest) {
+        ContentValues contentValues = buildValues(groupIdentity, lastRequest);
         long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
-        if (newId > 0) {
-            outgoingGroupSyncRequestLogModel.setId((int) newId);
-            return true;
-        }
-        return false;
+        return newId > 0;
     }
 
     public boolean update(OutgoingGroupSyncRequestLogModel outgoingGroupSyncRequestLogModel) {
@@ -103,8 +93,20 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID, outgoingGroupSyncRequestLogModel.getApiGroupId());
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY, outgoingGroupSyncRequestLogModel.getCreatorIdentity());
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST, outgoingGroupSyncRequestLogModel.getLastRequest() != null
-            ? CursorHelper.dateAsStringFormat.get().format(outgoingGroupSyncRequestLogModel.getLastRequest()) :
-            null);
+            ? CursorHelper.dateAsStringFormat.get().format(outgoingGroupSyncRequestLogModel.getLastRequest())
+            : null
+        );
+        return contentValues;
+    }
+
+    private ContentValues buildValues(@NonNull GroupIdentity groupIdentity, @Nullable Date lastRequest) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID, groupIdentity.getGroupIdHexString());
+        contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY, groupIdentity.getCreatorIdentity());
+        contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST, lastRequest != null
+            ? CursorHelper.dateAsStringFormat.get().format(lastRequest)
+            : null
+        );
         return contentValues;
     }
 
@@ -120,12 +122,10 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
         );
 
         if (cursor != null) {
-            try {
+            try (cursor) {
                 if (cursor.moveToFirst()) {
                     return convert(cursor);
                 }
-            } finally {
-                cursor.close();
             }
         }
 
@@ -133,29 +133,18 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
     }
 
     private OutgoingGroupSyncRequestLogModel convert(Cursor cursor) {
-        if (cursor != null && cursor.getPosition() >= 0) {
-            final OutgoingGroupSyncRequestLogModel c = new OutgoingGroupSyncRequestLogModel();
-
-            //convert default
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
-                @Override
-                public boolean next(CursorHelper cursorHelper) {
-                    c
-                        .setId(cursorHelper.getInt(OutgoingGroupSyncRequestLogModel.COLUMN_ID))
-                        .setAPIGroupId(
-                            cursorHelper.getString(OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID),
-                            cursorHelper.getString(OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY))
-                        .setLastRequest(cursorHelper.getDateByString(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST))
-                    ;
-
-                    return false;
-                }
-            });
-
-            return c;
+        if (cursor == null || cursor.getPosition() < 0) {
+            return null;
         }
 
-        return null;
+        CursorHelper cursorHelper = new CursorHelper(cursor, columnIndexCache);
+
+        return new OutgoingGroupSyncRequestLogModel(
+            Objects.requireNonNull(cursorHelper.getInt(OutgoingGroupSyncRequestLogModel.COLUMN_ID)),
+            Objects.requireNonNull(cursorHelper.getString(OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID)),
+            Objects.requireNonNull(cursorHelper.getString(OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY)),
+            cursorHelper.getDateByString(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST)
+        );
     }
 
     @Override

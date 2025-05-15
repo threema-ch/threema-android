@@ -799,6 +799,7 @@ public class ContactsSectionFragment
     }
 
     private void onFABClicked(View v) {
+        logger.info("FAB clicked");
         Intent intent = new Intent(getActivity(), AddContactActivity.class);
         intent.putExtra(AddContactActivity.EXTRA_ADD_BY_ID, true);
         startActivity(intent);
@@ -1135,6 +1136,7 @@ public class ContactsSectionFragment
         if (contactModel != null) {
             String identity = contactModel.getIdentity();
             if (identity != null) {
+                logger.info("Contact clicked, opening conversation");
                 openConversationForIdentity(v, identity);
             }
         }
@@ -1157,6 +1159,7 @@ public class ContactsSectionFragment
 
         final @Nullable ContactModel clickedContactModel = contactListAdapter.getClickedItem(listItemView);
         if (clickedContactModel != null) {
+            logger.info("Contact avatar clicked");
             openContact(view, clickedContactModel.getIdentity());
         }
     }
@@ -1272,6 +1275,7 @@ public class ContactsSectionFragment
                 R.string.ok,
                 R.string.cancel);
         } else {
+            logger.info("Showing delete contact dialog");
             dialog = GenericAlertDialog.newInstance(
                 deleteContactTitle,
                 message,
@@ -1408,6 +1412,7 @@ public class ContactsSectionFragment
     }
 
     public void onLogoClicked() {
+        logger.info("Logo clicked, scrolling to top");
         if (this.listView != null) {
             // this stops the fling
             this.listView.smoothScrollBy(0, 0);
@@ -1433,6 +1438,7 @@ public class ContactsSectionFragment
                 openContact(null, contactModel.getIdentity());
                 break;
             case SELECTOR_TAG_REPORT_SPAM:
+                logger.info("Showing report for spam dialog");
                 TextWithCheckboxDialog sdialog = TextWithCheckboxDialog.newInstance(requireContext().getString(R.string.spam_report_dialog_title, NameUtil.getDisplayNameOrNickname(contactModel, true)), R.string.spam_report_dialog_explain,
                     R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel);
                 sdialog.setData(contactModel);
@@ -1440,20 +1446,14 @@ public class ContactsSectionFragment
                 sdialog.show(getParentFragmentManager(), DIALOG_TAG_REPORT_SPAM);
                 break;
             case SELECTOR_TAG_BLOCK:
+                logger.info("Block contact clicked");
                 serviceManager.getBlockedIdentitiesService().toggleBlocked(contactModel.getIdentity(), getContext());
                 break;
             case SELECTOR_TAG_DELETE:
+                logger.info("Delete contact clicked");
                 deleteContacts(Set.of(contactModel));
                 break;
         }
-    }
-
-    @Override
-    public void onCancel(String tag) {
-    }
-
-    @Override
-    public void onNo(String tag) {
     }
 
     /* callback from TextWithCheckboxDialog */
@@ -1462,12 +1462,14 @@ public class ContactsSectionFragment
         switch (tag) {
             case DIALOG_TAG_REALLY_DELETE_CONTACTS:
                 try {
+                    logger.info("Contact deletion confirmed");
                     reallyDeleteContacts((Set<ContactModel>) data, checked);
                 } catch (ThreemaException e) {
                     logger.error("Could not delete contacts", e);
                 }
                 break;
             case DIALOG_TAG_REPORT_SPAM:
+                logger.info("Reporting contact for spam confirmed");
                 ContactModel contactModel = (ContactModel) data;
 
                 contactService.reportSpam(contactModel.getIdentity(),

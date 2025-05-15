@@ -23,6 +23,7 @@ package ch.threema.app.mediaattacher;
 
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
@@ -44,6 +45,8 @@ import androidx.lifecycle.Observer;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +59,19 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class MediaSelectionActivity extends MediaSelectionBaseActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaSelectionActivity");
 
     private ControlPanelButton selectButton, cancelButton;
     private Button selectCounterButton;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     protected void initActivity(Bundle savedInstanceState) {

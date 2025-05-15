@@ -48,6 +48,7 @@ import ch.threema.app.R
 import ch.threema.app.mediaattacher.ContactEditViewModel
 import ch.threema.app.ui.VCardPropertyView
 import ch.threema.app.utils.VCardExtractor
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -65,6 +66,10 @@ private val logger = LoggingUtil.getThreemaLogger("EditSendContactActivity")
  * it in a chat. The name of the contact can be modified.
  */
 class EditSendContactActivity : ThreemaToolbarActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private lateinit var viewModel: ContactEditViewModel
     private lateinit var toolbar: MaterialToolbar
     private lateinit var appBarLayout: AppBarLayout

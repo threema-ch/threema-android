@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
@@ -68,6 +69,7 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.storage.models.data.status.VoipStatusDataModel.NO_CALL_ID;
 
 @SuppressWarnings("unused")
@@ -86,6 +88,12 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
     private MultiDeviceManager multiDeviceManager;
     private APIConnector apiConnector;
     private ContactModelRepository contactModelRepository;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     public void initializePreferences() {

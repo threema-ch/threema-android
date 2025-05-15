@@ -29,7 +29,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Utils;
 
 @AnyThread
-public interface QRCodeParser {
+public interface WebSessionQRCodeParser {
     @AnyThread
     class Result {
         public final int versionNumber;
@@ -65,6 +65,7 @@ public interface QRCodeParser {
             this.saltyRtcHost = saltyRtcHost;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "version: " + this.versionNumber

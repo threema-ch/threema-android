@@ -26,9 +26,17 @@ import android.view.View
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.TestUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.repositories.ContactModelRepository
 
+private val logger = LoggingUtil.getThreemaLogger("ContactNotificationsActivity")
+
 class ContactNotificationsActivity : NotificationsActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val contactModelRepository: ContactModelRepository by lazy {
         ThreemaApplication.requireServiceManager().modelRepositories.contacts
     }

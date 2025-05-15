@@ -42,7 +42,6 @@ import ch.threema.app.emojis.EmojiUtil
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.AnimationUtil
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.ViewUtil
 import ch.threema.data.models.EmojiReactionsModel
@@ -103,7 +102,7 @@ class EmojiReactionsPopup(
         addReactionButton.tag = topReactions.size
         addReactionButton.setOnClickListener(this)
         if (!isSendingReactionsAllowed) {
-            if (ConfigUtils.canSendEmojiReactions() && !shouldHideUnsupportedReactions) {
+            if (!shouldHideUnsupportedReactions) {
                 // V2 clients: display implausible buttons as disabled but still clickable
                 addReactionButton.alpha = FAKE_DISABLE_ALPHA
             } else {
@@ -134,7 +133,7 @@ class EmojiReactionsPopup(
             emojiItemView.setEmoji(topReaction.emojiSequence, false, 0)
 
             if (isDisabledOrHiddenButton(index)) {
-                if (ConfigUtils.canSendEmojiReactions() && !shouldHideUnsupportedReactions) {
+                if (!shouldHideUnsupportedReactions) {
                     // V2 clients: display implausible buttons as disabled but still clickable
                     emojiItemView.alpha = FAKE_DISABLE_ALPHA
                 } else {
@@ -283,20 +282,16 @@ class EmojiReactionsPopup(
     }
 
     private fun onImpossibleReactionClicked() {
-        val body = if (ConfigUtils.canSendEmojiReactions()) {
-            if (messageModel is GroupMessageModel) {
-                context.getString(R.string.emoji_reactions_cannot_remove_group_body)
-            } else {
-                messageModel.getDisplayNameOrNickname()
-                    ?.let { name ->
-                        context.getString(
-                            R.string.emoji_reactions_cannot_remove_body,
-                            name,
-                        )
-                    }
-            }
+        val body = if (messageModel is GroupMessageModel) {
+            context.getString(R.string.emoji_reactions_cannot_remove_group_body)
         } else {
-            context.getString(R.string.emoji_reactions_cannot_remove_v1_body)
+            messageModel.getDisplayNameOrNickname()
+                ?.let { name ->
+                    context.getString(
+                        R.string.emoji_reactions_cannot_remove_body,
+                        name,
+                    )
+                }
         }
 
         createAlertDialogIfBodySet(

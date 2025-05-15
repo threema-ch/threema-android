@@ -23,16 +23,10 @@ package ch.threema.app.webclient.converter;
 
 import androidx.annotation.AnyThread;
 
-import ch.threema.app.BuildConfig;
-import ch.threema.app.utils.BackupUtils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 
 @AnyThread
 public class MessageState extends Converter {
-    // TODO(ANDR-3517): Remove
-    public static final String USERACK = "user-ack";
-    public static final String USERDEC = "user-dec";
-
     public static final String DELIVERED = "delivered";
     public static final String READ = "read";
     public static final String SENDFAILED = "send-failed";
@@ -41,15 +35,6 @@ public class MessageState extends Converter {
     public static final String SENDING = "sending";
 
     public static String convert(ch.threema.storage.models.MessageState state) throws ConversionException {
-        // TODO(ANDR-3517): Remove
-        if (!BuildConfig.EMOJI_REACTIONS_WEB_ENABLED) {
-            if (state == ch.threema.storage.models.MessageState.USERACK) {
-                return USERACK;
-            } else if (state == ch.threema.storage.models.MessageState.USERDEC) {
-                return USERDEC;
-            }
-        }
-
         try {
             switch (state) {
                 case DELIVERED:

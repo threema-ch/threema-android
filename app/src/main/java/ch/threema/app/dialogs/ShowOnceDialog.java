@@ -39,10 +39,15 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 /**
  * A simple string dialog with a "don't show again" checkbox
@@ -50,6 +55,8 @@ import ch.threema.app.ThreemaApplication;
  * Make sure to use a unique tag for this dialog in the show() method
  */
 public class ShowOnceDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ShowOnceDialog");
+
     private Activity activity;
 
     private static final String PREF_PREFIX = "dialog_";
@@ -92,6 +99,7 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (callback == null) {
             try {

@@ -35,6 +35,7 @@ import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConfigUtils.isTabletLayout
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
@@ -42,6 +43,10 @@ private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
 class SettingsActivity :
     ThreemaToolbarActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val settingsSummaryFragment = SettingsSummaryFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {

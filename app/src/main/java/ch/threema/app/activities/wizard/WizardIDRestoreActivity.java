@@ -54,6 +54,8 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.FetchIdentityException;
 import ch.threema.domain.protocol.connection.ServerConnection;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIDRestoreActivity");
     private static final String DIALOG_TAG_RESTORE_PROGRESS = "rp";
@@ -69,6 +71,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         setContentView(R.layout.activity_wizard_restore_id);
 

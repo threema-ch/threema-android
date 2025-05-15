@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">Записване на съобщение</string>
+    <string name="recording_stopped_title">Записът приключи</string>
+    <string name="recording_stopped_message">Бихте ли желали да запишете и изпратите гласово съобщение?</string>
+    <string name="recording_canceled">Записът е прекратен поради неизвестна причина.</string>
+    <string name="cancel_recording">Отмени записа</string>
+    <string name="cancel_recording_message">Наистина ли искате да прекратите и отмените записа?</string>
+    <string name="stop">Стоп</string>
+</resources>

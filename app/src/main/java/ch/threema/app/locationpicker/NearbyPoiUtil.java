@@ -63,7 +63,11 @@ public class NearbyPoiUtil {
         long startTime = System.currentTimeMillis();
 
         try {
-            final String poiUrl = serverAddressProvider.getMapPOIUrl().get(center.getLatitude(), center.getLongitude(), POI_RADIUS);
+            var parameterizedUrl = serverAddressProvider.getMapPoiAroundUrl();
+            if (parameterizedUrl == null) {
+                return;
+            }
+            final String poiUrl = parameterizedUrl.get(center.getLatitude(), center.getLongitude(), POI_RADIUS);
             URL serverUrl = new URL(poiUrl);
 
             if (center.getLatitude() == 0.0d && center.getLongitude() == 0.0d) {

@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -38,8 +40,12 @@ import androidx.fragment.app.FragmentTransaction;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SimpleStringAlertDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SimpleStringAlertDialog");
     protected Activity activity;
     @Nullable
     private Runnable onDismissRunnable;
@@ -73,6 +79,12 @@ public class SimpleStringAlertDialog extends ThreemaDialogFragment {
 
         dialog.setArguments(args);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

@@ -84,7 +84,7 @@ import static ch.threema.app.PermissionRuleUtilsKt.getReadWriteExternalStoragePe
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-@DangerousTest // Deletes data and possibly identity
+@DangerousTest(reason = "Deletes data and possibly identity")
 @Ignore("because this test broke with API version switch introduced in 7ed52bcfedd0bdcd2924ae14afe7ccb7bdc52c7a")
 // TODO(ANDR-1483)
 public class BackupServiceTest {

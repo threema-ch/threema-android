@@ -28,8 +28,8 @@ import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.urls.AppRatingUrl
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
-import ch.threema.domain.protocol.urls.MapPoiUrl
 
 class DefaultServerAddressProvider : ServerAddressProvider {
     override fun getChatServerNamePrefix(ipv6: Boolean): String =
@@ -159,7 +159,7 @@ class DefaultServerAddressProvider : ServerAddressProvider {
 
     override fun getMapStyleUrl(): String = BuildConfig.MAP_STYLES_URL
 
-    override fun getMapPOIUrl() = MapPoiUrl(BuildConfig.MAP_POI_URL)
+    override fun getMapPoiAroundUrl() = MapPoiAroundUrl(BuildConfig.MAP_POI_AROUND_URL)
 
-    override fun getMapPOINamesUrl() = MapPoiNamesUrl(BuildConfig.MAP_POI_NAMES_URL)
+    override fun getMapPoiNamesUrl() = MapPoiNamesUrl(BuildConfig.MAP_POI_NAMES_URL)
 }

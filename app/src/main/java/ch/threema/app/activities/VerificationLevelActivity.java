@@ -22,21 +22,22 @@
 package ch.threema.app.activities;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.R;
-import ch.threema.app.adapters.ContactDetailAdapter;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.base.utils.LoggingUtil;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebView;
+
+import org.slf4j.Logger;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class VerificationLevelActivity extends ThreemaToolbarActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VerificationLevelActivity");
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

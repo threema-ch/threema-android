@@ -24,7 +24,6 @@ package ch.threema.app.notifications.migrations
 import android.content.Context
 import android.content.SharedPreferences
 import android.media.AudioAttributes
-import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import ch.threema.app.R
 import ch.threema.app.notifications.NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_CALLS
@@ -32,6 +31,7 @@ import ch.threema.app.notifications.NotificationChannels.VIBRATE_PATTERN_INCOMIN
 import ch.threema.app.notifications.getRingtoneUri
 import ch.threema.app.notifications.migrateOrCreateChannel
 import ch.threema.app.notifications.setSound
+import ch.threema.app.utils.RingtoneUtil
 
 /**
  * This migration deletes the (v1) notification channel for incoming calls and replaces it with a new one (v2) with a different id,
@@ -44,7 +44,7 @@ class Version2Migration : NotificationChannelMigration {
         notificationManager: NotificationManagerCompat,
     ) = with(notificationManager) {
         val ringtone = sharedPreferences.getRingtoneUri(context.getString(R.string.preferences__voip_ringtone))
-            ?: Settings.System.DEFAULT_RINGTONE_URI
+            ?: RingtoneUtil.THREEMA_CALL_RINGTONE_URI
         val vibrate = sharedPreferences.getBoolean(context.getString(R.string.preferences__voip_vibration), true)
 
         migrateOrCreateChannel(

@@ -24,11 +24,18 @@ package ch.threema.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WorkExplainActivity extends SimpleWebViewActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WorkExplainActivity");
+
     private static final String WORK_PACKAGE_NAME = "ch.threema.app.work";
 
     @Override
@@ -42,6 +49,7 @@ public class WorkExplainActivity extends SimpleWebViewActivity {
             finish();
         }
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

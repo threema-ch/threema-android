@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_default_status">Сканирайте QR-кода в квадратната рамка.</string>
+    <string name="msg_camera_framework_bug">Няма достъп до камерата на Андроид. Уверете се, че сте дали достъп до камерата или рестартирайте Вашето устройство.</string>
+</resources>

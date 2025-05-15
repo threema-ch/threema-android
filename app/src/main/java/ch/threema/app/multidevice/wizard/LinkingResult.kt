@@ -94,6 +94,20 @@ sealed class LinkingResult(
                 )
         }
 
+        data object ThreemaWebQrCode : Failure(
+            titleTextRes = R.string.device_linking_error_web_qr_code_title,
+            bodyTextRes = R.string.device_linking_error_web_qr_code_body,
+        ) {
+            override fun resolveBodyText(context: Context): AnnotatedString = context.getString(bodyTextRes)
+                .linkifyWeb(
+                    url = context.getString(BuildFlavor.current.desktopClientFlavor.downloadLink),
+                    linkStyle = SpanStyle(
+                        textDecoration = TextDecoration.Underline,
+                        color = Color(ConfigUtils.getColorFromAttribute(context, R.attr.colorPrimary)),
+                    ),
+                )
+        }
+
         data object OldRendezvousProtocolVersion : Failure(
             titleTextRes = R.string.device_linking_error_old_rendezvous_version_title,
             bodyTextRes = R.string.device_linking_error_old_rendezvous_version_body,

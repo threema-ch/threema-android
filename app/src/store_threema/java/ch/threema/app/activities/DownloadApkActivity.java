@@ -64,6 +64,8 @@ import ch.threema.app.utils.DownloadUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class DownloadApkActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadApkActivity");
 
@@ -200,6 +202,7 @@ public class DownloadApkActivity extends ThreemaActivity implements GenericAlert
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (savedInstanceState != null) {
             downloadId = savedInstanceState.getLong(BUNDLE_DOWNLOAD_ID, -1);

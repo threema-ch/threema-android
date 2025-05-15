@@ -30,11 +30,16 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.CompressionMethod;
 
+import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.TestOnly;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Date;
 
@@ -59,10 +64,13 @@ public class DebugLogFileBackend implements LogBackend {
     // Constants
     private static final String TAG = BuildConfig.LOG_TAG;
     private static final String LOGFILE_NAME = "debug_log.txt";
+    private static final String FALLBACK_LOGFILE_NAME = "fallback_debug_log.txt";
 
     // Static variables
     private static boolean enabled = false;
     private static File logFile = null;
+    private static File fallbackLogFile = null;
+    private static boolean hasSuccessFullyWrittenLogLine = false;
     private final @LogLevel int minLogLevel;
 
     // For tags starting with these prefixes, the package path is stripped
@@ -117,16 +125,19 @@ public class DebugLogFileBackend implements LogBackend {
      * When disabling the logging, then the file is deleted if it already exists.
      */
     public synchronized static void setEnabled(boolean enabled) {
+        if (!DebugLogFileBackend.enabled && enabled) {
+            hasSuccessFullyWrittenLogLine = false;
+        }
         DebugLogFileBackend.enabled = enabled;
         if (!enabled) {
             final File file = getLogFile();
             if (file == null) {
                 Log.e(TAG, "DebugLogFileBackend: Could not get debug log file path");
-                return;
             }
-            if (file.exists() && !file.delete()) {
+            if (file != null && file.exists() && !file.delete()) {
                 Log.e(TAG, "DebugLogFileBackend: Could not delete debug log file");
             }
+            deleteFallbackLogFileIfExists();
         }
     }
 
@@ -140,28 +151,60 @@ public class DebugLogFileBackend implements LogBackend {
     /**
      * @hidden Used only for tests.
      */
+    @TestOnly
+    @NonNull
     static File getLogFilePath() {
         final File threemaDir = new File(ThreemaApplication.getAppContext().getExternalFilesDir(null), "log");
         return new File(threemaDir, LOGFILE_NAME);
     }
 
+    @TestOnly
+    @NonNull
+    static File getFallbackLogFilePath() {
+        return new File(ThreemaApplication.getAppContext().getFilesDir(), FALLBACK_LOGFILE_NAME);
+    }
+
     /**
-     * @return a {@link File} instance pointing to the debug log file or `null` if the log file
-     * directory could not be created.
+     * @return a {@link File} instance pointing to the debug log file or {@code null} if the log file directory could not be created.
      */
     @Nullable
     private static File getLogFile() {
-        if (logFile == null || !logFile.exists()) {
-            final File threemaDir = new File(ThreemaApplication.getAppContext().getExternalFilesDir(null), "log");
-            if (!threemaDir.exists()) {
-                if (!threemaDir.mkdirs()) {
-                    Log.e(TAG, "DebugLogFileBackend: Could not create threema directory");
-                    return null;
+        try {
+            if (logFile == null || !logFile.exists()) {
+                final File threemaDir = new File(ThreemaApplication.getAppContext().getExternalFilesDir(null), "log");
+                if (!threemaDir.exists()) {
+                    if (!threemaDir.mkdirs()) {
+                        Log.e(TAG, "DebugLogFileBackend: Could not create threema directory");
+                        return null;
+                    }
                 }
+                logFile = new File(threemaDir, LOGFILE_NAME);
             }
-            logFile = new File(threemaDir, LOGFILE_NAME);
+            return logFile;
+        } catch (SecurityException e) {
+            return null;
         }
-        return logFile;
+    }
+
+    /**
+     * @return a {@link File} instance pointing to the fallback debug log file.
+     * This fallback should only be used if the default log file cannot be used.
+     */
+    @NonNull
+    private static File getFallbackLogFile() {
+        if (fallbackLogFile == null) {
+            final File filesDir = ThreemaApplication.getAppContext().getFilesDir();
+            fallbackLogFile = new File(filesDir, FALLBACK_LOGFILE_NAME);
+        }
+        return fallbackLogFile;
+    }
+
+    private static void deleteFallbackLogFileIfExists() {
+        final File filesDir = ThreemaApplication.getAppContext().getFilesDir();
+        final File fallbackLogFile = new File(filesDir, FALLBACK_LOGFILE_NAME);
+        if (fallbackLogFile.exists() && !fallbackLogFile.delete()) {
+            Log.e(TAG, "DebugLogFileBackend: Could not delete fallback debug log file");
+        }
     }
 
     /**
@@ -188,14 +231,6 @@ public class DebugLogFileBackend implements LogBackend {
 
         // Dispatch I/O to worker thread.
         getHandler().post(() -> {
-            // Get log file
-            final File logFile = getLogFile();
-            if (logFile == null) {
-                Log.w(TAG, "DebugLogFileBackend: Could not get log file path");
-                future.complete(false);
-                return;
-            }
-
             // Get log level string
             String levelString;
             switch (level) {
@@ -236,19 +271,34 @@ public class DebugLogFileBackend implements LogBackend {
             }
 
             // Write to logfile
-            try (
-                final FileWriter fw = new FileWriter(logFile, true);
-                final PrintWriter pw = new PrintWriter(fw)
-            ) {
-                pw.println(logLine);
-                future.complete(true);
-            } catch (Exception e) {
-                // Write failed...
-                future.complete(false);
+            boolean success = false;
+            @Nullable final File defaultLogFile = getLogFile();
+            if (defaultLogFile != null) {
+                success = writeToFile(defaultLogFile, logLine);
+                if (success && !hasSuccessFullyWrittenLogLine) {
+                    deleteFallbackLogFileIfExists();
+                    hasSuccessFullyWrittenLogLine = true;
+                }
             }
+            if (!success && !hasSuccessFullyWrittenLogLine) {
+                success = writeToFile(getFallbackLogFile(), logLine);
+            }
+            future.complete(success);
         });
 
         return future;
+    }
+
+    private static boolean writeToFile(@NonNull File file, @NonNull String logLine) {
+        try (
+            final FileWriter fw = new FileWriter(file, true);
+            final PrintWriter pw = new PrintWriter(fw)
+        ) {
+            pw.println(logLine);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -285,38 +335,60 @@ public class DebugLogFileBackend implements LogBackend {
 
     @Nullable
     public static File getZipFile(FileService fileService) {
-        // Open log file
-        final File logFile = getLogFile();
-        if (logFile == null) {
-            Log.w(TAG, "DebugLogFileBackend: getLogFile returned null");
-            return null;
-        }
-
         // Delete old debug log archive
         final File tempDebugLogArchive = new File(fileService.getExtTmpPath(), "debug_log.zip");
-        if (tempDebugLogArchive.exists() && !tempDebugLogArchive.delete()) {
-            Log.w(TAG, "DebugLogFileBackend: Could not delete tempDebugLogArchive");
-        }
+        deleteIfExists(tempDebugLogArchive);
 
         // Create and return ZIP
-        try (
-            final FileInputStream inputStream = new FileInputStream(logFile);
-            final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(tempDebugLogArchive, null)
-        ) {
-            final ZipParameters parameters = createZipParameters(logFile.getName());
-            zipOutputStream.putNextEntry(parameters);
-
-            final byte[] buf = new byte[16384];
-            int nread;
-            while ((nread = inputStream.read(buf)) > 0) {
-                zipOutputStream.write(buf, 0, nread);
-            }
-
-            zipOutputStream.closeEntry();
-
+        if (createZipFile(tempDebugLogArchive)) {
             return tempDebugLogArchive;
+        }
+
+        // Try to create a fallback ZIP file if the default one could not be created
+        final File fallbackDebugLogArchive = new File(ThreemaApplication.getAppContext().getCacheDir(), "debug_log.zip");
+        deleteIfExists(fallbackDebugLogArchive);
+        if (createZipFile(fallbackDebugLogArchive)) {
+            return fallbackDebugLogArchive;
+        }
+
+        return null;
+    }
+
+    private static void deleteIfExists(@NonNull File file) {
+        try {
+            if (file.exists() && !file.delete()) {
+                Log.w(TAG, "DebugLogFileBackend: Could not delete " + file.getPath());
+            }
+        } catch (SecurityException e) {
+            Log.w(TAG, "DebugLogFileBackend: Failed to access " + file.getPath(), e);
+        }
+    }
+
+    private static boolean createZipFile(@NonNull File zipFile) {
+        try (
+            final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(zipFile, null)
+        ) {
+            writeToZipFileIfPossible(getLogFile(), zipOutputStream);
+            writeToZipFileIfPossible(getFallbackLogFile(), zipOutputStream);
+            return true;
         } catch (Exception e) {
-            return null;
+            Log.w(TAG, "DebugLogFileBackend: Failed to create zip file " + zipFile.getPath(), e);
+            return false;
+        }
+    }
+
+    private static void writeToZipFileIfPossible(
+        @Nullable File file,
+        @NonNull FileHandlingZipOutputStream zipOutputStream
+    ) throws IOException, SecurityException {
+        if (file == null || !file.exists()) {
+            return;
+        }
+        try(final InputStream inputStream = new FileInputStream(file)) {
+            final ZipParameters parameters = createZipParameters(file.getName());
+            zipOutputStream.putNextEntry(parameters);
+            IOUtils.copy(inputStream, zipOutputStream, 16384);
+            zipOutputStream.closeEntry();
         }
     }
 

@@ -33,14 +33,14 @@ import androidx.annotation.Nullable;
 
 @AnyThread
 @SuppressWarnings("FieldCanBeLocal")
-public class QRCodeParserImpl implements QRCodeParser {
+public class WebSessionQRCodeParserImpl implements WebSessionQRCodeParser {
 
-    private static int PROTOCOL_VERSION_LENGTH = 2;
-    private static int OPTIONS_LENGTH = 1;
-    private static int KEY_LENGTH = 32;
-    private static int AUTH_TOKEN_LENGTH = 32;
-    private static int SALTY_RTC_PORT_LENGTH = 2;
-    private static int SERVER_KEY_LENGTH = 32;
+    private static final int PROTOCOL_VERSION_LENGTH = 2;
+    private static final int OPTIONS_LENGTH = 1;
+    private static final int KEY_LENGTH = 32;
+    private static final int AUTH_TOKEN_LENGTH = 32;
+    private static final int SALTY_RTC_PORT_LENGTH = 2;
+    private static final int SERVER_KEY_LENGTH = 32;
 
     @NonNull
     @Override
@@ -106,7 +106,8 @@ public class QRCodeParserImpl implements QRCodeParser {
                 authToken,
                 serverKey,
                 port,
-                host);
+                host
+            );
         } catch (IOException x) {
             throw new InvalidQrCodeException("Invalid Threema Web QR code contents");
         }

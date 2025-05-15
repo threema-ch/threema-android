@@ -23,6 +23,7 @@ package ch.threema.app.fragments.wizard;
 
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MAX_PW_LENGTH;
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -36,6 +37,8 @@ import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -48,14 +51,22 @@ import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvancedDialog.WizardDialogCallback {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment1");
     public static final int PAGE_ID = 1;
 
     private static final String DIALOG_TAG_ADVANCED = "adv";
 
     private EditText password1, password2;
     private TextInputLayout password1layout, password2layout;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

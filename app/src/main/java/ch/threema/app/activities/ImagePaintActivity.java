@@ -24,6 +24,7 @@ package ch.threema.app.activities;
 import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -457,6 +458,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 

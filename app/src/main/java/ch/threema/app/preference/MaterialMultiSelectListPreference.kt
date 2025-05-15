@@ -26,9 +26,17 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.preference.MultiSelectListPreferenceDialogFragmentCompat
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+private val logger = LoggingUtil.getThreemaLogger("MaterialMultiSelectListPreference")
+
 class MaterialMultiSelectListPreference : MultiSelectListPreferenceDialogFragmentCompat() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var mWhichButtonClicked = 0
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context: Context? = activity

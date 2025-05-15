@@ -26,16 +26,23 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class AboutActivity extends ThreemaToolbarActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AboutActivity");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

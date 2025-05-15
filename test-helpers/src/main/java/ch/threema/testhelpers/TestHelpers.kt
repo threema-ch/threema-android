@@ -49,3 +49,8 @@ fun randomIdentity(): String {
 fun MUST_NOT_BE_CALLED(): Nothing {
     throw UnsupportedOperationException("This method must not be called")
 }
+
+fun Any.loadResource(file: String): String =
+    javaClass.classLoader.getResourceAsStream(file).use {
+        it.readAllBytes().toString(Charsets.UTF_8)
+    }

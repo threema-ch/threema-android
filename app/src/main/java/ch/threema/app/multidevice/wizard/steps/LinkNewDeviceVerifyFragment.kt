@@ -32,10 +32,18 @@ import androidx.core.widget.NestedScrollView
 import ch.threema.app.R
 import ch.threema.app.multidevice.wizard.LinkingResult
 import ch.threema.app.utils.getStatusBarHeightPxCompat
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.utils.withCurrentWindowInsets
+import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.button.MaterialButton
 
+private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceVerifyFragment")
+
 class LinkNewDeviceVerifyFragment : LinkNewDeviceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val emojiSelectionViews = arrayOfNulls<LinkNewDeviceEmojiSelectionView>(3)
 
     private val onValidSelectionListener = View.OnClickListener {

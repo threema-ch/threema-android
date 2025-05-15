@@ -23,6 +23,7 @@ package ch.threema.app.fragments.wizard;
 
 import static ch.threema.app.ThreemaApplication.EMAIL_LINKED_PLACEHOLDER;
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,6 +35,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
@@ -41,14 +44,22 @@ import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WizardFragment4 extends WizardFragment implements View.OnClickListener {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment4");
     private TextView nicknameText, phoneText, emailText, syncContactsText, phoneWarnText, emailWarnText, safeText;
     private ImageView phoneWarn, emailWarn;
     private ProgressBar phoneProgress, emailProgress, syncContactsProgress, safeProgress;
     private WizardButtonXml finishButtonCompose;
     private SettingsInterface callback;
     public static final int PAGE_ID = 4;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

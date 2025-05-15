@@ -37,7 +37,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.children
-import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -47,9 +46,9 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiTextView
-import ch.threema.app.emojis.EmojiUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.repositories.EmojiReactionsRepository.ReactionMessageIdentifier
@@ -66,9 +65,12 @@ import org.slf4j.Logger
 private val logger: Logger = LoggingUtil.getThreemaLogger("EmojiReactionOverviewActivity")
 
 class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private lateinit var viewPager: ViewPager2
     private lateinit var parentLayout: CoordinatorLayout
-    private lateinit var infoBox: View
     private var initialItem: String? = null
     private var messageModel: AbstractMessageModel? = null
     private val items = mutableListOf<EmojiReactionItems>()
@@ -134,7 +136,6 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                 return false
             }
 
-            infoBox = findViewById(R.id.infobox)
             window.statusBarColor = statusBarColorCollapsed
 
             setupParentLayout()
@@ -181,18 +182,6 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
             setupDefaultViewPagerItem()
         } else {
             emojiReactionsOverviewAdapter?.notifyDataSetChanged()
-        }
-    }
-
-    /**
-     * Show an infobox if there are new-style emoji reactions but we can't send them (V1)
-     */
-    private fun setupInfoBox() {
-        if (!ConfigUtils.canSendEmojiReactions()) {
-            infoBox.isVisible = items.any { item ->
-                item.emojiSequence != EmojiUtil.THUMBS_UP_SEQUENCE &&
-                    item.emojiSequence != EmojiUtil.THUMBS_DOWN_SEQUENCE
-            }
         }
     }
 
@@ -402,7 +391,6 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
         // Create and attach new TabLayoutMediator
         setupTabLayout()
-        setupInfoBox()
     }
 
     override fun finish() {

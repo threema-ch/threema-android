@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
@@ -65,6 +66,8 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 @SuppressLint("UnsafeOptInUsageError")
 public class VideoViewFragment extends MediaViewFragment implements Player.Listener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("VideoViewFragment");
@@ -95,6 +98,12 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
     public VideoViewFragment() {
         super();
         logger.debug("new instance");
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

@@ -1235,9 +1235,9 @@ public class FileServiceImpl implements FileService {
             IOUtils.copy(inputStream, cipherOutputStream);
             return true;
         } catch (OutOfMemoryError e) {
-            throw new IOException("Out of memory");
+            throw new IOException("Out of memory", e);
         } catch (FileNotFoundException e) {
-            logger.error("Unable to save file to " + file.getAbsolutePath(), e);
+            logger.error("Unable to save file to {}", file.getAbsolutePath(), e);
             throw new FileNotFoundException(e.getMessage());
         }
     }

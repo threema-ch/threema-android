@@ -47,6 +47,8 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
+import org.slf4j.Logger;
+
 import java.io.ByteArrayOutputStream;
 
 import ch.threema.app.R;
@@ -57,8 +59,13 @@ import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ExportIDResultActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, LifecycleOwner {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ExportIDResultActivity");
+
     private static final String DIALOG_TAG_QUIT_CONFIRM = "qconf";
     private static final int QRCODE_SMALL_DIMENSION_PIXEL = 200;
 
@@ -71,6 +78,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(this.toolbar);

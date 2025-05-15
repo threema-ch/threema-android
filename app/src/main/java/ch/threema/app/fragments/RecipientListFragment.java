@@ -327,6 +327,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
     }
 
     private void onFloatingActionButtonClick() {
+        logger.info("FAB clicked");
         final HashSet<?> objects = adapter.getCheckedItems();
         if (!objects.isEmpty()) {
             if (multiSelectIdentity) {

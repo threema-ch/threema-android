@@ -35,6 +35,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+
 import java.util.Objects;
 
 import ch.threema.app.R;
@@ -42,9 +44,13 @@ import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class WizardFragment2 extends WizardFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment2");
     private EditText nicknameText;
     public static final int PAGE_ID = 2;
 
@@ -108,6 +114,7 @@ public class WizardFragment2 extends WizardFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     public interface OnSettingsChangedListener {

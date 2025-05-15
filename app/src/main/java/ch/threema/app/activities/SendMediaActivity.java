@@ -37,6 +37,7 @@ import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_ADAPTER;
 import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_ALL;
 import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_BOTH_ADAPTERS;
 import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_PREVIEW_ADAPTER;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.Manifest;
 import android.animation.LayoutTransition;
@@ -215,6 +216,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         backgroundLayout = null;
 
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override
@@ -487,6 +489,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         sendButton.setOnClickListener(new DebouncedOnClickListener(500) {
             @Override
             public void onDebouncedClick(View v) {
+                logger.info("Send button clicked");
                 // avoid duplicates
                 v.setEnabled(false);
                 AnimationUtil.zoomOutAnimate(v);

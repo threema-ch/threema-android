@@ -59,6 +59,10 @@ private val logger = LoggingUtil.getThreemaLogger("SettingsPrivacyFragment")
 class SettingsPrivacyFragment :
     ThreemaPreferenceFragment(),
     GenericAlertDialog.DialogClickListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
     private val preferenceService by lazy { serviceManager.preferenceService }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }

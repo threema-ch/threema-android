@@ -38,22 +38,22 @@ import android.widget.TextView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.data.models.GroupModel;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ExpandableTextEntryDialog");
     private ExpandableTextEntryDialogClickListener callback;
     private Activity activity;
     private ComposeEditText captionEditText;
@@ -111,6 +111,7 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (callback == null) {
             try {

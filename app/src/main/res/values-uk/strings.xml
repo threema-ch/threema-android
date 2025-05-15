@@ -298,7 +298,7 @@
 		не надходять</string>
     <string name="prefs_masterkey_notification_newmsg_on">Коли головний ключ заблоковано, про нові повідомлення надходить
 		загальне сповіщення</string>
-    <string name="chat_history_attached">Журнал чатів додається.</string>
+    <string name="chat_history_attached">Історія чатів додається.</string>
     <string name="backup_data_title">Резервне копіювання</string>
     <string name="backup_data_password_msg">Ваші дані буде збережено у вигляді ZIP-файлу у внутрішній пам\'яті пристрою.
 		Ви зможете відновити їх на будь-якому пристрої Android. Введіть пароль, щоб захистити резервну копію своїх даних.</string>
@@ -851,7 +851,7 @@
     <string name="edit_message">Редагувати повідомлення</string>
     <string name="edited">Відредаговано</string>
     <string name="confirm_edit_desc">Підтвердити зміни</string>
-    <string name="edit_history">Редагувати історію</string>
+    <string name="edit_history">Історія редагування</string>
     <string name="discard_changes">Справді відхилити зміни?</string>
     <string name="prefs_title_network">Мережа</string>
     <string name="prefs_title_ipv6_preferred">IPv6 для повідомлень</string>
@@ -1183,6 +1183,9 @@
     <string name="continue_recording">Продовжити запис</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="whatsnew_title">Що нового в ${app_name} %1$s?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Тепер ви можете зв\'язати свій пристрій Android із новим додатком для ПК (бета-версія) і спробувати функцію роботи на кількох пристроях.</p>
+        <p>Щоб дізнатися більше, натисніть значок меню і виберіть "Threema 2.0 для ПК (бета)".</p>
+        ]]></string>
     <string name="tap_to_start">Натисніть тут, щоб запустити %s.</string>
     <string name="two_years">2 роки</string>
     <string name="invalid_backup_path">Недійсний шлях до рез. копії</string>
@@ -1696,7 +1699,7 @@
     <string name="group_orphaned_notice">Цю групу покинуто, оскільки засновник вийшов із неї. Клонуйте групу, щоб стати її новим адміністратором.</string>
     <string name="group_not_a_member_notice">Ви більше не належите до цієї групи й не можете її використовувати.</string>
     <string name="group_dissolved_notice">Цю групу розпущено, тому її більше неможливо використовувати.</string>
-    <string name="md_linked_devices">${app_name_desktop} 2.0 для ПК (бета-версія)</string>
+    <string name="md_linked_devices">${app_name_desktop} 2.0 для ПК (бета)</string>
     <string name="md_link_device">Додати пристрій</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
@@ -1736,6 +1739,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">\"Використання акумулятора додатком\" – \"Оптимізовано\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Цьому додатку заборонено підтримувати постійне з\'єднання із серверами, що необхідно для роботи ${app_name_short} Push. Ви не отримуватимете сповіщення про нові повідомлення, коли додаток працює у фоновому режимі. Щоб виправити це, натисніть \"Використання акумулятора додатком\" і виберіть \"Необмежено\".</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Незабаром ми припинимо підтримку цієї версії Android</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">Ви користуєтеся пристроєм Android, який більше не отримує оновлень системи. З міркувань безпеки Threema незабаром припинить підтримку цієї версії Android.</string>
     <string name="problemsolver_to_settings">Відкрити налаштування</string>
     <string name="prefs_advanced_options">Розширені налаштування</string>
     <string name="push_service">Сервіс push-сповіщень</string>
@@ -1769,7 +1776,7 @@
     <string name="device_linking_failed_explain">Не вдалося зв\'язати пристрій. Повторіть спробу.\nПричина: %s.</string>
     <string name="qr_code_scan_error">Під час сканування QR-коду сталася помилка</string>
     <string name="verification_failed">Помилка підтвердження</string>
-    <string name="md_device_currently_active">Активний</string>
+    <string name="md_device_currently_active">Зараз активний</string>
     <string name="md_device_last_active_at">Остання активність: %s</string>
     <plurals name="md_max_device_slots_reached_info">
         <item quantity="one">Одночасно можна зв\'язати лише один пристрій.</item>
@@ -1803,16 +1810,13 @@
     <string name="select_emoji_content_description">Виберіть емодзі, які потрібно додати</string>
     <string name="group_emoji_reactions_partially_supported">Контакти зі старою версією додатка не бачитимуть ваші реакції.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s реакції з %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Ви отримали емодзі-реакції від контакта з новою версією додатка. Наразі ваша версія додатка підтримує лише реакції 👍 і 👎.</string>
     <string name="reaction_cannot_be_displayed">Цю реакцію неможливо показати. Невідомий емодзі.</string>
     <string name="emoji_reactions_unavailable_title">Емодзі-реакції недоступні</string>
-    <string name="emoji_reactions_sending_not_supported_body">Ваша версія додатка наразі не підтримує надсилання емодзі-реакцій.</string>
     <string name="emoji_reactions_unavailable_body">%1$s використовує версію додатка, яка наразі не підтримує цю функцію.</string>
     <string name="emoji_reactions_unavailable_group_body">Неможливо відреагувати на це повідомлення за допомогою емодзі, оскільки в жодного з учасників групи не встановлено версію додатка, яка підтримує цю функцію.</string>
     <string name="emoji_reactions_cannot_remove_title">Вилучення реакцій недоступно</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s використовує версію додатка, яка наразі не підтримує вилучення емодзі-реакцій або надсилання кількох реакцій одночасно. Проте ви можете замінити 👍 на 👎 чи навпаки.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Жоден із учасників групи не використовує версію додатка, яка підтримує вилучення емодзі-реакцій або надсилання кількох реакцій одночасно. Проте ви можете замінити 👍 на 👎 або навпаки.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Ваша версія додатка наразі не підтримує вилучення емодзі-реакцій або надсилання кількох реакцій одночасно.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">У цього повідомлення є емодзі-реакції. Щоб переглянути їх, натисніть і утримуйте будь-яку бульбашку емодзі в чаті.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1838,7 +1842,11 @@
     <string name="device_linking_error_unknown_qr_code_title">Невідомий QR-код</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Переконайтеся, що ви використовуєте відповідний додаток із [нашого сайту].</string>
+    <string name="device_linking_error_unknown_qr_code_body">Це не схоже на QR-код із додатка ${app_name_desktop} 2.0 для ПК (бета-версія). Завантажте останню бета-версію додатка для ПК з [нашого сайту] та відскануйте QR-код, що відобразиться після запуску додатка.</string>
+    <string name="device_linking_error_web_qr_code_title">Неправильний QR-код</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Цей QR-код належить веб-клієнту ${app_name_short}.\nЗавантажте останню версію додатка ${app_name_desktop} 2.0 для ПК (бета-версія) з [нашого сайту] та відскануйте QR-код, що відобразиться після запуску додатка.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Несумісна версія</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Установіть останню версію ${app_name} на обох пристроях.</string>

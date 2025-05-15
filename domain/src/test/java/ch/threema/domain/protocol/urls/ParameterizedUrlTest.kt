@@ -29,7 +29,7 @@ class ParameterizedUrlTest {
     @Test
     fun `parameterized url equality`() {
         assertEquals(BlobUrl("foo"), BlobUrl("foo"))
-        assertNotEquals<ParameterizedUrl>(BlobUrl("foo"), MapPoiUrl("foo"))
+        assertNotEquals<ParameterizedUrl>(BlobUrl("foo"), MapPoiAroundUrl("foo"))
     }
 
     @Test

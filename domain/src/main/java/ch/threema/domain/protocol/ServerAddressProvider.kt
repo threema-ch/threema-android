@@ -26,8 +26,8 @@ import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.urls.AppRatingUrl
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
-import ch.threema.domain.protocol.urls.MapPoiUrl
 
 interface ServerAddressProvider {
     @Throws(ThreemaException::class)
@@ -97,11 +97,11 @@ interface ServerAddressProvider {
     fun getAppRatingUrl(): AppRatingUrl
 
     @Throws(ThreemaException::class)
-    fun getMapStyleUrl(): String
+    fun getMapStyleUrl(): String?
 
     @Throws(ThreemaException::class)
-    fun getMapPOINamesUrl(): MapPoiNamesUrl
+    fun getMapPoiNamesUrl(): MapPoiNamesUrl?
 
     @Throws(ThreemaException::class)
-    fun getMapPOIUrl(): MapPoiUrl
+    fun getMapPoiAroundUrl(): MapPoiAroundUrl?
 }

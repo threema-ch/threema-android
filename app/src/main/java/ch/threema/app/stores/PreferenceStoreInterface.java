@@ -29,6 +29,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +76,8 @@ public interface PreferenceStoreInterface {
 
     void save(String key, Date date, boolean crypt);
 
+    void save(@NonNull String key, @Nullable Instant instant);
+
     void save(String key, Long thing);
 
     void save(String key, Long thing, boolean crypt);
@@ -111,6 +114,9 @@ public interface PreferenceStoreInterface {
     Date getDate(String key);
 
     Date getDate(String key, boolean crypt);
+
+    @Nullable
+    Instant getInstant(@NonNull String key);
 
     Long getDateAsLong(String key);
 

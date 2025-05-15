@@ -135,12 +135,10 @@ public class BackupDataFragment extends Fragment implements
             this.fragmentView = inflater.inflate(R.layout.fragment_backup_data, container, false);
 
             fab = fragmentView.findViewById(R.id.floating);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    launchedFromFAB = true;
-                    initiateBackup();
-                }
+            fab.setOnClickListener(v -> {
+                logger.info("FAB clicked, initiating backup");
+                launchedFromFAB = true;
+                initiateBackup();
             });
             fab.show();
 
@@ -163,6 +161,7 @@ public class BackupDataFragment extends Fragment implements
             pathChangeButton.findViewById(R.id.backup_path_change_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    logger.info("Path change button clicked");
                     launchedFromFAB = false;
                     showPathSelectionIntro();
                 }
@@ -218,6 +217,7 @@ public class BackupDataFragment extends Fragment implements
     @UiThread
     private void launchDocumentTree() {
         try {
+            logger.info("Opening document picker");
             Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             // undocumented APIs according to https://issuetracker.google.com/issues/72053350
             i.putExtra("android.content.extra.SHOW_ADVANCED", true);
@@ -255,6 +255,7 @@ public class BackupDataFragment extends Fragment implements
 
     private void checkBatteryOptimizations() {
         if (ConfigUtils.requestWriteStoragePermissions(getActivity(), this, PERMISSION_REQUEST_STORAGE_DOBACKUP)) {
+            logger.info("Launching battery optimization settings");
             Intent intent = new Intent(getActivity(), DisableBatteryOptimizationsActivity.class);
             intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.backup_data));
             startActivityForResult(intent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
@@ -263,6 +264,7 @@ public class BackupDataFragment extends Fragment implements
 
     private void launchDataBackup(@Nullable String password, boolean includeMedia) {
         if (password != null) {
+            logger.info("Launching data backup");
             final BackupRestoreDataConfig backupRestoreDataConfig = new BackupRestoreDataConfig(password);
             backupRestoreDataConfig
                 .setBackupContactAndMessages(true)
@@ -375,6 +377,7 @@ public class BackupDataFragment extends Fragment implements
                 dialog.show(getFragmentManager(), DIALOG_TAG_ENERGY_SAVING_REMINDER);
                 break;
             case REQUEST_CODE_DOCUMENT_TREE:
+                logger.info("Document picker returned, {}", resultCode);
                 if (resultCode == RESULT_OK) {
                     if (data != null) {
                         Uri treeUri = data.getData();

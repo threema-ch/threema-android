@@ -36,6 +36,7 @@ import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.WallpaperService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil.mapLocaleToPredefinedLocales
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
@@ -45,6 +46,10 @@ private val logger = LoggingUtil.getThreemaLogger("SettingsAppearanceFragment")
 
 @Suppress("unused")
 class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var oldTheme: Int = 0
 
     private val wallpaperService: WallpaperService = requireWallpaperService()

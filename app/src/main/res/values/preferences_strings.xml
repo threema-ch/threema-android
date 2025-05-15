@@ -238,4 +238,5 @@
     <string name="preferences__dev_create_messages_with_reactions" translatable="false">pref_dev_create_create_messages_with_reactions</string>
     <string name="preferences__dev_create_nonces" translatable="false">pref_dev_create_nonces</string>
     <string name="preferences__last_multi_device_group_check_timestamp" translatable="false">pref_last_multi_device_group_check_timestamp</string>
+    <string name="preferences__last_deprecated_android_warning_dimissed_timestamp" translatable="false">pref_last_deprecated_android_warning_dismissed_timestamp</string>
 </resources>

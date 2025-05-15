@@ -24,11 +24,13 @@ package ch.threema.app.preference;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -38,6 +40,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SettingsRateFragment extends ThreemaPreferenceFragment implements RateDialog.RateDialogClickListener, GenericAlertDialog.DialogClickListener {
 
@@ -45,6 +48,12 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 
     private static final String DIALOG_TAG_RATE = "rate";
     private static final String DIALOG_TAG_RATE_ON_GOOGLE_PLAY = "ratep";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     protected void initializePreferences() {

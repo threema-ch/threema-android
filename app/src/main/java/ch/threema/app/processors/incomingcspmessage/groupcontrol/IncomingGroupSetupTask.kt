@@ -138,15 +138,21 @@ class IncomingGroupSetupTask(
         return ReceiveStepsResult.DISCARD
     }
 
+    /**
+     * Check whether the [members] of the group setup message imply a change to the given [group].
+     *
+     * The [members] are expected to contain the user's identity but not the group creator identity. If this is not the case, this method may indicate
+     * that there is a change despite there isn't any change.
+     */
     private fun hasChange(members: Set<String>, group: GroupModel): Boolean {
-        val data = group.data.value
-        if (data == null || !data.isMember) {
+        val groupModelData = group.data.value
+        if (groupModelData == null || !groupModelData.isMember) {
             if (members.isEmpty()) {
                 return false
             }
         } else {
-            val currentMembersIncludingUser = data.otherMembers + myIdentity
-            if (currentMembersIncludingUser == members) {
+            val allMembersWithoutCreator = groupModelData.getAllMembers(myIdentity) - group.groupIdentity.creatorIdentity
+            if (allMembersWithoutCreator == members) {
                 return false
             }
         }

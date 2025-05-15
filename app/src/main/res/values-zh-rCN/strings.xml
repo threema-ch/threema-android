@@ -1728,6 +1728,10 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">应用程序电池使用量设置为 “优化”。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">此应用被禁止与服务器永久保持连接，以至 ${app_name_short} Push 无法正常运行。当此应用在后台运行时，您将不会收到新消息的通知。如要解决问题，请先点击 “应用程序电池使用量” ，然后选择 “无限制”。</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">此 Android 版本很快将不再受支持</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">您使用的 Android 设备已不能获取软件更新。出于安全考虑，Threema 即将不再支持此 Android 版本。</string>
     <string name="problemsolver_to_settings">前往设置</string>
     <string name="prefs_advanced_options">高级选项</string>
     <string name="push_service">推送服务</string>
@@ -1792,16 +1796,13 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="select_emoji_content_description">在表情符号选择器内，选择要添加的表情符号</string>
     <string name="group_emoji_reactions_partially_supported">部分用户可能正使用旧版本的应用程序，而看不到您的心情表态。</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s心情表态为%2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">您收到了使用新应用版本的联系人的心情表态。除了 👍 和 👎 外，您的应用版本还不支持发送心情表态。</string>
     <string name="reaction_cannot_be_displayed">无法显示此心情表态，这是未知的表情符号。</string>
     <string name="emoji_reactions_unavailable_title">添加心情表态失败</string>
-    <string name="emoji_reactions_sending_not_supported_body">您当前使用的应用版本尚不支持发送心情表态。</string>
     <string name="emoji_reactions_unavailable_body">%1$s使用的应用程序版本尚不支持此功能。</string>
     <string name="emoji_reactions_unavailable_group_body">由于所有群组成员使用的应用版本都不支持心情表态功能，因此无法对消息进行心情表态。</string>
     <string name="emoji_reactions_cannot_remove_title">移除心情表态失败</string>
     <string name="emoji_reactions_cannot_remove_body">虽然%1$s使用的应用版本尚不支持删除心情表态或发送多个心情表态，但您仍然可以选择 👍 或 👎 。</string>
     <string name="emoji_reactions_cannot_remove_group_body">虽然所有群组成员使用的应用版本都不支持删除心情表态或发送多个心情表态，但您仍然可以选择 👍 或 👎 。</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">您当前使用的应用版本尚不支持删除心情表态或发送多个心情表态。</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">有人为此消息添加了心情表态。在会话內，长按任意表情符号气泡即可查看所有心情表态。</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1827,7 +1828,11 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="device_linking_error_unknown_qr_code_title">未知的二维码</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">请确保您使用的是来自 [我们的网站] 相应的应用程序。</string>
+    <string name="device_linking_error_unknown_qr_code_body">这似乎不是 ${app_name_desktop} 2.0 桌面版（测试版）的二维码。请先从 [我们的网站] 下载桌面版应用程序的最新测试版，之后用手机扫描桌面版应用程序上显示的二维码。</string>
+    <string name="device_linking_error_web_qr_code_title">没有正确的二维码</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">此二维码属于 ${app_name_short} 的网页客户端。\n请先从 [我们的网站] 下载 ${app_name_desktop} 2.0 桌面版（测试版）的最新测试版，之后用手机扫描桌面版应用程序上显示的二维码。</string>
     <string name="device_linking_error_old_rendezvous_version_title">不兼容版本</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">请在两台设备上安装最新版本的 ${app_name}。</string>

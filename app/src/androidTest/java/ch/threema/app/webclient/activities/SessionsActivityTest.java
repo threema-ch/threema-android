@@ -69,7 +69,7 @@ import static ch.threema.app.services.BrowserDetectionService.Browser;
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-@DangerousTest // Modifies webclient sessions
+@DangerousTest(reason = "Modifies webclient sessions")
 public class SessionsActivityTest {
     @Rule
     public ActivityTestRule<SessionsActivity> activityTestRule

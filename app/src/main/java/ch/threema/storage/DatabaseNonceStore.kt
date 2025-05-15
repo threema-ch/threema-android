@@ -30,10 +30,7 @@ import ch.threema.base.crypto.NonceStore
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.toHexString
 import ch.threema.domain.stores.IdentityStoreInterface
-import java.security.InvalidKeyException
-import java.security.NoSuchAlgorithmException
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
+import com.neilalexander.jnacl.NaCl
 import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
@@ -116,7 +113,7 @@ class DatabaseNonceStore(
         return readableDatabase.rawQuery(
             "SELECT COUNT(*) FROM `$tableName` WHERE nonce=? OR nonce=?;",
             nonce.bytes,
-            nonce.hashNonce().bytes,
+            nonce.hashIfIdentityAvailable(),
         ).use {
             if (it.moveToFirst()) {
                 it.getInt(0) > 0
@@ -131,7 +128,11 @@ class DatabaseNonceStore(
         if (logger.isTraceEnabled) {
             logger.trace("Store nonce {} for scope {}", nonce.bytes.toHexString(), scope)
         }
-        return insertNonce(nonce.hashNonce())
+        val identity = identityStore.identity
+        check(identity != null) {
+            logger.error("Cannot store hashed nonce if identity is null")
+        }
+        return insertNonce(nonce.hashNonce(identity))
     }
 
     override fun getCount(scope: NonceScope): Long {
@@ -158,9 +159,11 @@ class DatabaseNonceStore(
         scope: NonceScope,
         chunkSize: Int,
         offset: Int,
-        nonces: MutableList<HashedNonce>,
+        hashedNonces: MutableList<HashedNonce>,
     ) {
         val tableName = scope.getTableName()
+        val rawNonces = mutableListOf<Nonce>()
+        val invalidNonces = mutableListOf<ByteArray>()
         readableDatabase
             .rawQuery(
                 "SELECT `$COLUMN_NONCE` FROM `$tableName` LIMIT ? OFFSET ?",
@@ -169,9 +172,71 @@ class DatabaseNonceStore(
             )
             .use {
                 while (it.moveToNext()) {
-                    nonces.add(HashedNonce(it.getBlob(0)))
+                    val nonceBytes = it.getBlob(0)
+                    when (nonceBytes.size) {
+                        // In case the bytes has the length of a raw nonce, we treat it as a raw nonce
+                        NaCl.NONCEBYTES -> rawNonces.add(Nonce(nonceBytes))
+                        // Hashed nonces consist of 32 bytes and will therefore be added to the hashed nonce list
+                        32 -> hashedNonces.add(HashedNonce(nonceBytes))
+                        // If the bytes have a different length, we can safely discard them
+                        else -> invalidNonces.add(nonceBytes)
+                    }
                 }
             }
+
+        removeInvalidNonces(scope, invalidNonces.toSet())
+
+        val newlyHashedNonces = hashAndReplaceRawNonces(scope, rawNonces.toSet())
+        hashedNonces.addAll(newlyHashedNonces)
+    }
+
+    private fun removeInvalidNonces(scope: NonceScope, invalidNonces: Set<ByteArray>) {
+        if (invalidNonces.isEmpty()) {
+            return
+        }
+
+        logger.warn("Remove {} invalid nonces", invalidNonces.size)
+        removeNonces(scope, invalidNonces)
+    }
+
+    private fun hashAndReplaceRawNonces(scope: NonceScope, rawNonces: Set<Nonce>): Set<HashedNonce> {
+        if (rawNonces.isEmpty()) {
+            return emptySet()
+        }
+
+        val identity = identityStore.identity
+        if (identity == null) {
+            logger.error("Cannot hash and replace raw nonces if identity is null")
+            return emptySet()
+        }
+
+        logger.info("Hash and replace {} raw nonces", rawNonces.size)
+        val hashedNonces = rawNonces.map { rawNonce -> rawNonce.hashNonce(identity) }
+
+        // Insert hashed nonces into database again
+        val insertionSuccess = insertHashedNonces(scope, hashedNonces)
+
+        if (!insertionSuccess) {
+            logger.warn("Could not insert hashed nonces into database")
+            return hashedNonces.toSet()
+        }
+
+        // Remove raw nonces
+        removeNonces(scope, rawNonces.map(Nonce::bytes).toSet())
+
+        return hashedNonces.toSet()
+    }
+
+    private fun Nonce.hashIfIdentityAvailable(): ByteArray {
+        val identity = identityStore.identity
+        return if (identity == null) {
+            logger.warn("Cannot hash nonce as identity is not available")
+            // Just return the nonce bytes as it is not possible to hash them without identity
+            this.bytes
+        } else {
+            // Hash the nonce and return the bytes
+            hashNonce(identity).bytes
+        }
     }
 
     private fun createInsertNonce(
@@ -179,16 +244,34 @@ class DatabaseNonceStore(
         database: SQLiteDatabase,
     ): (nonce: HashedNonce) -> Boolean {
         val tableName = scope.getTableName()
-        val stmt = database.compileStatement("INSERT INTO $tableName VALUES (?)")
+        val statement = database.compileStatement("INSERT INTO $tableName VALUES (?)")
         return { nonce ->
             try {
-                stmt.bindBlob(1, nonce.bytes)
-                stmt.executeInsert() >= 0
+                statement.bindBlob(1, nonce.bytes)
+                statement.executeInsert() >= 0
             } catch (e: SQLException) {
                 logger.warn("Could not insert nonce", e)
                 false
             } finally {
-                stmt.clearBindings()
+                statement.clearBindings()
+            }
+        }
+    }
+
+    private fun createRemoveNonce(
+        scope: NonceScope,
+        database: SQLiteDatabase,
+    ): (nonceBytes: ByteArray) -> Unit {
+        val tableName = scope.getTableName()
+        val statement = database.compileStatement("DELETE FROM $tableName WHERE $COLUMN_NONCE = ?")
+        return { nonce ->
+            try {
+                statement.bindBlob(1, nonce)
+                statement.executeRaw()
+            } catch (e: SQLException) {
+                logger.warn("Could not remove nonce", e)
+            } finally {
+                statement.clearBindings()
             }
         }
     }
@@ -209,33 +292,25 @@ class DatabaseNonceStore(
         }
     }
 
+    /**
+     * Note: Only use this if the nonces already have been hashed and inserted.
+     */
+    private fun removeNonces(scope: NonceScope, nonces: Set<ByteArray>) {
+        val database = writableDatabase
+        database.beginTransaction()
+        try {
+            val removeNonce = createRemoveNonce(scope, database)
+            nonces.forEach { removeNonce(it) }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+
     private fun NonceScope.getTableName(): String {
         return when (this) {
             NonceScope.CSP -> TABLE_NAME_CSP
             NonceScope.D2D -> TABLE_NAME_D2D
-        }
-    }
-
-    /**
-     * Hash nonce with HMAC-SHA256 using the identity as the key if available.
-     * This serves to make it impossible to correlate the nonce DBs of users to
-     * determine whether they have been communicating.
-     */
-    private fun Nonce.hashNonce(): HashedNonce {
-        val identity = identityStore.identity
-        return if (identity == null) {
-            HashedNonce(this.bytes)
-        } else {
-            try {
-                val mac = Mac.getInstance("HmacSHA256")
-                mac.init(SecretKeySpec(identity.encodeToByteArray(), "HmacSHA256"))
-                HashedNonce(mac.doFinal(this.bytes))
-            } catch (e: Exception) {
-                when (e) {
-                    is NoSuchAlgorithmException, is InvalidKeyException -> throw RuntimeException(e)
-                    else -> throw e
-                }
-            }
         }
     }
 

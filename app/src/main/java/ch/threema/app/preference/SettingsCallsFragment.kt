@@ -32,6 +32,7 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.services.VoipStateService
 import ch.threema.app.voip.util.VoipUtil
@@ -41,6 +42,10 @@ private val logger = LoggingUtil.getThreemaLogger("SettingsCallsFragment")
 
 @Suppress("unused")
 class SettingsCallsFragment : ThreemaPreferenceFragment() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private var fragmentView: View? = null
     private var enableCallReject: CheckBoxPreference? = null
     private lateinit var callEnable: CheckBoxPreference

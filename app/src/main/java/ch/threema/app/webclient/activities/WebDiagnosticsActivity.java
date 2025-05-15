@@ -107,6 +107,8 @@ import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 @SuppressWarnings("FieldCanBeLocal")
 @UiThread
 public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements TextEntryDialog.TextEntryDialogClickListener {
@@ -175,6 +177,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         logger.trace("onCreate");
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

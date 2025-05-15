@@ -26,7 +26,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Menu
-import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.activity.result.ActivityResult
@@ -55,6 +54,7 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
@@ -66,6 +66,10 @@ import org.slf4j.Logger
 private val logger: Logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity")
 
 class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextListener {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private companion object {
         const val QUERY_MIN_LENGTH: Int = 2
         const val GLOBAL_SEARCH_QUERY_TIMEOUT_MS: Long = 500
@@ -165,10 +169,9 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
             R.layout.item_global_search,
             17,
         )
-        chatsAdapter?.setOnClickItemListener { messageModel: AbstractMessageModel?, _: View, _: Int ->
-            showMessage(
-                messageModel,
-            )
+        chatsAdapter?.setOnClickItemListener { messageModel: AbstractMessageModel?, _, _ ->
+            logger.info("Message clicked")
+            showMessage(messageModel)
         }
 
         setupChip(R.id.chats, FILTER_CHATS)

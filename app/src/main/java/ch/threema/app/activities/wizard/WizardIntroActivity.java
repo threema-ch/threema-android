@@ -40,6 +40,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
@@ -57,8 +59,13 @@ import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardIntroActivity extends WizardBackgroundActivity {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIntroActivity");
+
     private static final int ACTIVITY_RESULT_PRIVACY_POLICY = 9442;
     private AnimationDrawable frameAnimation;
 
@@ -88,6 +95,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
         setContentView(R.layout.activity_wizard_intro);
 
         if (ConfigUtils.isWorkRestricted()) {

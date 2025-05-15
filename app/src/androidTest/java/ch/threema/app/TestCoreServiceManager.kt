@@ -227,7 +227,7 @@ class TestNonceStore : NonceStore {
         scope: NonceScope,
         chunkSize: Int,
         offset: Int,
-        nonces: MutableList<HashedNonce>,
+        hashedNonces: MutableList<HashedNonce>,
     ) {
         // Nothing to do
     }

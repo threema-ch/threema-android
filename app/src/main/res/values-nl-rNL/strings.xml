@@ -1704,6 +1704,10 @@ Voer een vraag in voor uw poll.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Batterijgebruik van de app is ingesteld op \'geoptimaliseerd\'</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">De app kan geen permanente verbinding met de servers onderhouden en dit is nodig om ${app_name_short} Push te laten werken. U wordt niet op de hoogte gebracht van nieuwe berichten wanneer de app op de achtergrond is. Tik op \'Batterijgebruik van de app\' en selecteer \'Onbeperkt\' om dit probleem op te lossen.</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Deze Android-versie wordt binnenkort niet meer ondersteund</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">U gebruikt een Android-apparaat dat geen software-updates meer ontvangt. Om veiligheidsredenen wordt deze Android-versie binnenkort niet meer door Threema ondersteund.</string>
     <string name="problemsolver_to_settings">Naar de instellingen</string>
     <string name="prefs_advanced_options">Geavanceerde opties</string>
     <string name="push_service">Pushdienst</string>
@@ -1769,16 +1773,13 @@ Voer een vraag in voor uw poll.</string>
     <string name="select_emoji_content_description">Selecteer de toe te voegen emoji uit de emoji-kiezer</string>
     <string name="group_emoji_reactions_partially_supported">Sommigen zullen je reacties niet zien vanwege een oude versie.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s reacties met %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">Je hebt emoji-reacties ontvangen van een contactpersoon die een nieuwere app-versie heeft. Naast 👍 en 👎 ondersteunt jouw app-versie nog geen emoji-reacties.</string>
     <string name="reaction_cannot_be_displayed">Deze reactie kan niet worden weergegeven. Onbekende emoji.</string>
     <string name="emoji_reactions_unavailable_title">Emoji-reacties niet beschikbaar</string>
-    <string name="emoji_reactions_sending_not_supported_body">Je app-versie ondersteunt het verzenden van emoji-reacties nog niet.</string>
     <string name="emoji_reactions_unavailable_body">%1$s gebruikt een app-versie die deze functie nog niet ondersteunt.</string>
     <string name="emoji_reactions_unavailable_group_body">Je kunt niet op dit bericht reageren met een emoji omdat geen enkel groepslid een app-versie heeft die deze functie ondersteunt.</string>
     <string name="emoji_reactions_cannot_remove_title">Reacties verwijderen niet beschikbaar</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s gebruikt een app-versie die het verwijderen van emoji-reacties of het verzenden van meer dan één emoji-reactie nog niet ondersteunt. Je kunt 👍 nog steeds vervangen door 👎 of andersom.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Geen van de groepsleden gebruikt een versie van de app die het verwijderen van emoji-reacties of het verzenden van meer dan één emoji-reactie ondersteunt. Je kunt 👍 vervangen door 👎 of andersom.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Je app-versie ondersteunt nog niet het verwijderen van emoji-reacties of het verzenden van meer dan één emoji-reactie.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">Dit bericht heeft emoji-reacties. Tik in de chat op een emoji-ballon en houd deze vast om ze allemaal te bekijken.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1804,7 +1805,11 @@ Voer een vraag in voor uw poll.</string>
     <string name="device_linking_error_unknown_qr_code_title">Onbekende QR-code</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Zorg ervoor dat u de bijbehorende app van [onze website] gebruikt.</string>
+    <string name="device_linking_error_unknown_qr_code_body">Dit lijkt geen QR-code van ${app_name_desktop} 2.0 for Desktop (Beta) te zijn. Download de nieuwste beta-versie van de desktop-app van [our website] en scan de QR-code die wordt weergegeven als u de app opent.</string>
+    <string name="device_linking_error_web_qr_code_title">Niet de correcte QR-code</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">Deze QR-code hoort bij de web-client van ${app_name_short}.\nDownload de nieuwste versie van ${app_name_desktop} 2.0 for Desktop (Beta) van [our website] en scan de QR-code die wordt weergegeven als u de app opent.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Incompatibele versie</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Installeer de laatste versie van ${app_name} op beide apparaten.</string>

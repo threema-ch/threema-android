@@ -38,9 +38,9 @@ import org.junit.Test
 class DatabaseNonceStoreTest {
     private lateinit var tempDbFileName: String
 
-    private var _store: DatabaseNonceStore? = null
+    private lateinit var _store: DatabaseNonceStore
     private val store: NonceStore
-        get() = _store!!
+        get() = _store
 
     @Before
     fun setup() {
@@ -55,8 +55,7 @@ class DatabaseNonceStoreTest {
 
     @After
     fun teardown() {
-        _store!!.close()
-        _store = null
+        _store.close()
         ApplicationProvider
             .getApplicationContext<ThreemaApplication>()
             .deleteDatabase(tempDbFileName)
@@ -152,25 +151,6 @@ class DatabaseNonceStoreTest {
     }
 
     @Test
-    fun testBulkImportNotHashed() {
-        assertStoreEmpty()
-
-        val nonces = createNonces()
-        val pseudoHashedNonces = nonces.map { HashedNonce(it.bytes) }
-
-        // Insert the unhashed nonces. As they are inserted as if they were already hashed,
-        // the store must not hash them again.
-        assertTrue(store.insertHashedNonces(NonceScope.CSP, pseudoHashedNonces))
-        assertTrue(store.insertHashedNonces(NonceScope.D2D, pseudoHashedNonces))
-
-        nonces.forEach {
-            // Assert that the nonce as inserted should exist
-            assertTrue(store.exists(NonceScope.CSP, it))
-            assertTrue(store.exists(NonceScope.D2D, it))
-        }
-    }
-
-    @Test
     fun testBulkImportHashed() {
         assertStoreEmpty()
 
@@ -182,11 +162,41 @@ class DatabaseNonceStoreTest {
         assertTrue(store.insertHashedNonces(NonceScope.CSP, hashedNonces))
         assertTrue(store.insertHashedNonces(NonceScope.D2D, hashedNonces))
 
-        // Assert that all unhashed nonces exist in the store
+        // Assert that all unhashed nonces are detected as existing in the store
         nonces.forEach {
             // Assert that the nonce as inserted should exist
             assertTrue(store.exists(NonceScope.CSP, it))
             assertTrue(store.exists(NonceScope.D2D, it))
+        }
+    }
+
+    @Test
+    fun testGettingRawNoncesAsHashedNonces() {
+        assertStoreEmpty()
+        val nonces = createNonces()
+
+        // Insert raw nonces without hashing them. This test is important as this may still be the case on some devices as nonces used to be stored
+        // without being hashed first.
+        nonces.forEach { nonce ->
+            val statement = _store.writableDatabase.compileStatement("INSERT INTO nonce_csp VALUES (?)")
+            statement.bindBlob(1, nonce.bytes)
+            statement.executeInsert()
+        }
+
+        // Check that insertion worked
+        nonces.forEach { nonce ->
+            assertTrue(store.exists(NonceScope.CSP, nonce))
+        }
+        assertEquals(256, store.getCount(NonceScope.CSP))
+
+        // Act
+        val hashedNonces = store.getAllHashedNonces(NonceScope.CSP)
+
+        // Assert
+        assertEquals(256, hashedNonces.size)
+        assertEquals(256, store.getCount(NonceScope.CSP))
+        nonces.forEach { nonce ->
+            assertTrue(store.exists(NonceScope.CSP, nonce))
         }
     }
 

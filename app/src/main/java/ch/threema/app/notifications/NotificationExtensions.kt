@@ -40,7 +40,6 @@ private val logger = LoggingUtil.getThreemaLogger("NotificationExtensions")
  */
 fun SharedPreferences.getRingtoneUri(key: String): Uri? =
     getString(key, null)
-        .takeUnless { it.isNullOrBlank() }
         ?.takeUnless { it == ServicesConstants.PREFERENCES_NULL }
         ?.toUri()
 

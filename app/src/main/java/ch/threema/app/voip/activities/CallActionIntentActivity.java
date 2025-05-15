@@ -21,7 +21,6 @@
 
 package ch.threema.app.voip.activities;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -32,10 +31,7 @@ import android.widget.Toast;
 
 import org.slf4j.Logger;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -49,6 +45,8 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 /**
  * Handle call action intents (sent by calling someone through the Android phonebook),
@@ -89,6 +87,7 @@ public class CallActionIntentActivity extends ThreemaActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         if (!this.requiredInstances()) {
             this.finish();

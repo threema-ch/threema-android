@@ -28,6 +28,7 @@ import kotlin.test.assertEquals
 
 class LocaleUtilTest {
     private val predefinedLocales = arrayOf(
+        "bg",
         "ca",
         "cs",
         "de",
@@ -58,6 +59,7 @@ class LocaleUtilTest {
 
     @Test
     fun testExactLocales() {
+        assertLocaleMap("bg")
         assertLocaleMap("ca")
         assertLocaleMap("en")
         assertLocaleMap("de")

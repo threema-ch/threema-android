@@ -37,12 +37,20 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.backuprestore.csv.BackupService
 import ch.threema.app.backuprestore.csv.RestoreService
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("BackupRestoreProgressActivity")
 
 /**
  * This activity is shown when the user opens Threema while a backup is being created or restored.
  * This is useful to get a hint about the progress if notifications are not allowed or activated.
  */
 class BackupRestoreProgressActivity : AppCompatActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
+
     private lateinit var titleTextView: TextView
     private lateinit var infoTextView: TextView
     private lateinit var durationDelimiter: View

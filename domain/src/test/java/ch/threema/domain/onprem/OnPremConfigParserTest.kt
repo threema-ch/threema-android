@@ -26,12 +26,15 @@ import ch.threema.base.utils.plus
 import ch.threema.base.utils.withoutLastLine
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
+import ch.threema.domain.protocol.urls.MapPoiNamesUrl
 import ch.threema.testutils.TestTimeProvider
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.hours
 import org.json.JSONObject
 
@@ -42,7 +45,7 @@ class OnPremConfigParserTest {
 
     @BeforeTest
     fun setUp() {
-        config = createParser().parse(JSONObject(OnPremConfigTestData.TEST_GOOD_OPPF.withoutLastLine()))
+        config = createParser().parse(JSONObject(OnPremConfigTestData.goodOppf.withoutLastLine()))
     }
 
     private fun createParser(): OnPremConfigParser =
@@ -66,7 +69,7 @@ class OnPremConfigParserTest {
 
     @Test
     fun testChatConfig() {
-        val chatConfig = config.chatConfig
+        val chatConfig = config.chat
         assertEquals("chat.threemaonprem.initrode.com", chatConfig.hostname)
         assertContentEquals(intArrayOf(5222, 443), chatConfig.ports)
         assertContentEquals(Base64.decode("r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc="), chatConfig.publicKey)
@@ -74,13 +77,13 @@ class OnPremConfigParserTest {
 
     @Test
     fun testDirectoryConfig() {
-        val directoryConfig = config.directoryConfig
+        val directoryConfig = config.directory
         assertEquals("https://dir.threemaonprem.initrode.com/directory", directoryConfig.url)
     }
 
     @Test
     fun testBlobConfig() {
-        val blobConfig = config.blobConfig
+        val blobConfig = config.blob
         assertEquals("https://blob.threemaonprem.initrode.com/blob/upload", blobConfig.uploadUrl)
         assertEquals(BlobUrl("https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}"), blobConfig.downloadUrl)
         assertEquals(BlobUrl("https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done"), blobConfig.doneUrl)
@@ -88,31 +91,31 @@ class OnPremConfigParserTest {
 
     @Test
     fun testWorkConfig() {
-        val workConfig = config.workConfig
+        val workConfig = config.work
         assertEquals("https://work.threemaonprem.initrode.com/", workConfig.url)
     }
 
     @Test
     fun testAvatarConfig() {
-        val avatarConfig = config.avatarConfig
+        val avatarConfig = config.avatar
         assertEquals("https://avatar.threemaonprem.initrode.com/", avatarConfig.url)
     }
 
     @Test
     fun testSafeConfig() {
-        val safeConfig = config.safeConfig
+        val safeConfig = config.safe
         assertEquals("https://safe.threemaonprem.initrode.com/", safeConfig.url)
     }
 
     @Test
     fun testWebConfig() {
-        val webConfig = config.webConfig!!
+        val webConfig = config.web!!
         assertEquals("https://web.threemaonprem.initrode.com/", webConfig.url)
     }
 
     @Test
     fun testMediatorConfig() {
-        val mediatorConfig = config.mediatorConfig!!
+        val mediatorConfig = config.mediator!!
         assertEquals(DeviceGroupUrl("https://mediator.threemaonprem.initrode.com/"), mediatorConfig.url)
         assertEquals("https://mediator.threemaonprem.initrode.com/blob/upload", mediatorConfig.blob.uploadUrl)
         assertEquals(BlobUrl("https://mediator.threemaonprem.initrode.com/blob/{blobId}"), mediatorConfig.blob.downloadUrl)
@@ -120,7 +123,7 @@ class OnPremConfigParserTest {
     }
 
     @Test
-    fun testDomainRules() {
+    fun testDomainRulesConfig() {
         assertEquals(
             OnPremConfigDomains(
                 rules = listOf(
@@ -150,7 +153,29 @@ class OnPremConfigParserTest {
                     ),
                 ),
             ),
-            config.domains!!,
+            config.domains,
         )
+    }
+
+    @Test
+    fun testMapsConfig() {
+        assertEquals(
+            OnPremConfigMaps(
+                styleUrl = "https://map.initrode.com/styles/threema/style.json",
+                poiNamesUrl = MapPoiNamesUrl("https://poi.initrode.com/names/{latitude}/{longitude}/{query}/"),
+                poiAroundUrl = MapPoiAroundUrl("https://poi.initrode.com/around/{latitude}/{longitude}/{radius}/"),
+            ),
+            config.maps,
+        )
+    }
+
+    @Test
+    fun `test minimal oppf`() {
+        val config = createParser().parse(JSONObject(OnPremConfigTestData.minimalOppf.withoutLastLine()))
+
+        assertEquals(testTimeProvider.get() + 24.hours, config.validUntil)
+        assertNull(config.maps)
+        assertNull(config.mediator)
+        assertNull(config.domains)
     }
 }

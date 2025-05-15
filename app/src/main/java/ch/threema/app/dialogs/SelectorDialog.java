@@ -39,13 +39,19 @@ import androidx.appcompat.app.AppCompatDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.ui.SelectorDialogItem;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SelectorDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SelectorDialog");
     private SelectorDialogClickListener callback;
     private SelectorDialogInlineClickListener inlineCallback;
     private Activity activity;
@@ -214,6 +220,7 @@ public class SelectorDialog extends ThreemaDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         try {
             callback = (SelectorDialogClickListener) getTargetFragment();

@@ -47,6 +47,8 @@ import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class PinLockActivity extends ThreemaActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockActivity");
     private static final long ERROR_MESSAGE_TIMEOUT = 3000;
@@ -68,6 +70,7 @@ public class PinLockActivity extends ThreemaActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
 
         logger.debug("onCreate");
 

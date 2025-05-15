@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.media3.common.AudioAttributes;
@@ -64,6 +65,8 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 @SuppressLint("UnsafeOptInUsageError")
 public class AudioViewFragment extends MediaViewFragment implements Player.Listener, PreviewFragmentInterface {
     private static final Logger logger = LoggingUtil.getThreemaLogger("AudioViewFragment");
@@ -75,6 +78,12 @@ public class AudioViewFragment extends MediaViewFragment implements Player.Liste
 
     public AudioViewFragment() {
         super();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

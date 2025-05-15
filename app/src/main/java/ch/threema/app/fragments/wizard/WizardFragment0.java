@@ -27,13 +27,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+
 import java.util.Objects;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
+import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardFragment0 extends WizardFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment0");
     public static final int PAGE_ID = 0;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

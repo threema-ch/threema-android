@@ -31,8 +31,8 @@ import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.urls.AppRatingUrl
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
-import ch.threema.domain.protocol.urls.MapPoiUrl
 
 class OnPremServerAddressProvider(
     private val fetcherProvider: FetcherProvider,
@@ -47,42 +47,42 @@ class OnPremServerAddressProvider(
 
     @Throws(ThreemaException::class)
     override fun getChatServerNameSuffix(ipv6: Boolean): String =
-        fetch().chatConfig.hostname
+        fetch().chat.hostname
 
     @Throws(ThreemaException::class)
     override fun getChatServerPorts(): IntArray =
-        fetch().chatConfig.ports
+        fetch().chat.ports
 
     override fun getChatServerUseServerGroups() = false
 
     @Throws(ThreemaException::class)
     override fun getChatServerPublicKey(): ByteArray =
-        fetch().chatConfig.publicKey
+        fetch().chat.publicKey
 
     @Throws(ThreemaException::class)
     override fun getChatServerPublicKeyAlt(): ByteArray =
         // No alternate public key for OnPrem, as it can easily be switched in OPPF
-        fetch().chatConfig.publicKey
+        fetch().chat.publicKey
 
     @Throws(ThreemaException::class)
     override fun getDirectoryServerUrl(ipv6: Boolean): String =
-        fetch().directoryConfig.url
+        fetch().directory.url
 
     @Throws(ThreemaException::class)
     override fun getWorkServerUrl(ipv6: Boolean): String =
-        fetch().workConfig.url
+        fetch().work.url
 
     @Throws(ThreemaException::class)
     override fun getBlobServerDownloadUrl(useIpV6: Boolean): BlobUrl =
-        fetch().blobConfig.downloadUrl
+        fetch().blob.downloadUrl
 
     @Throws(ThreemaException::class)
     override fun getBlobServerUploadUrl(useIpV6: Boolean): String =
-        fetch().blobConfig.uploadUrl
+        fetch().blob.uploadUrl
 
     @Throws(ThreemaException::class)
     override fun getBlobServerDoneUrl(useIpV6: Boolean): BlobUrl =
-        fetch().blobConfig.doneUrl
+        fetch().blob.doneUrl
 
     @Throws(ThreemaException::class)
     override fun getBlobMirrorServerDownloadUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider): BlobUrl =
@@ -98,24 +98,24 @@ class OnPremServerAddressProvider(
 
     @Throws(ThreemaException::class)
     override fun getAvatarServerUrl(ipv6: Boolean): String =
-        fetch().avatarConfig.url
+        fetch().avatar.url
 
     @Throws(ThreemaException::class)
     override fun getSafeServerUrl(ipv6: Boolean): String =
-        fetch().safeConfig.url
+        fetch().safe.url
 
     @Throws(ThreemaException::class)
     override fun getWebServerUrl(): String =
-        fetch().webConfig?.url
+        fetch().web?.url
             ?: throw ThreemaException("Unable to fetch Threema Web server url")
 
     @Throws(ThreemaException::class)
     override fun getWebOverrideSaltyRtcHost(): String? =
-        fetch().webConfig?.overrideSaltyRtcHost
+        fetch().web?.overrideSaltyRtcHost
 
     @Throws(ThreemaException::class)
     override fun getWebOverrideSaltyRtcPort(): Int =
-        fetch().webConfig?.overrideSaltyRtcPort ?: 0
+        fetch().web?.overrideSaltyRtcPort ?: 0
 
     @Throws(ThreemaException::class)
     override fun getThreemaPushPublicKey(): ByteArray? {
@@ -137,12 +137,18 @@ class OnPremServerAddressProvider(
 
     @Throws(ThreemaException::class)
     private fun fetchMediatorConfig(): OnPremConfigMediator =
-        fetch().mediatorConfig
+        fetch().mediator
             ?: throw ThreemaException("No mediator config available")
 
-    override fun getMapStyleUrl(): String = BuildConfig.MAP_STYLES_URL
+    @Throws(ThreemaException::class)
+    override fun getMapStyleUrl(): String? = fetch().maps?.styleUrl
+        ?: BuildConfig.MAP_STYLES_URL // TODO(ANDR-3805): Remove the fallback
 
-    override fun getMapPOIUrl() = MapPoiUrl(BuildConfig.MAP_POI_URL)
+    @Throws(ThreemaException::class)
+    override fun getMapPoiAroundUrl() = fetch().maps?.poiAroundUrl
+        ?: MapPoiAroundUrl(BuildConfig.MAP_POI_AROUND_URL) // TODO(ANDR-3805): Remove the fallback
 
-    override fun getMapPOINamesUrl() = MapPoiNamesUrl(BuildConfig.MAP_POI_NAMES_URL)
+    @Throws(ThreemaException::class)
+    override fun getMapPoiNamesUrl() = fetch().maps?.poiNamesUrl
+        ?: MapPoiNamesUrl(BuildConfig.MAP_POI_NAMES_URL) // TODO(ANDR-3805): Remove the fallback
 }

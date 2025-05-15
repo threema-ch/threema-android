@@ -21,7 +21,6 @@
 
 package ch.threema.app.grouplinks;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -55,6 +54,8 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
+
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class IncomingGroupRequestActivity extends ThreemaToolbarActivity implements
     IncomingGroupJoinRequestDialog.IncomingGroupJoinRequestDialogClickListener,
@@ -90,6 +91,7 @@ public class IncomingGroupRequestActivity extends ThreemaToolbarActivity impleme
     protected void onCreate(Bundle savedInstanceState) {
         logger.debug("onCreate()");
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
         initActivity(savedInstanceState);
     }
 

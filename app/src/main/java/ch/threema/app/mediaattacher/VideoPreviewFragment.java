@@ -52,6 +52,8 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.Listener, PreviewFragmentInterface {
     private static final Logger logger = LoggingUtil.getThreemaLogger("VideoPreviewFragment");
 
@@ -76,6 +78,12 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 
     VideoPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel) {
         super(mediaItem, mediaAttachViewModel);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

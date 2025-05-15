@@ -1739,6 +1739,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">App battery usage set to “optimized”</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">The app is not allowed to maintain a permanent connection to the servers which is required for ${app_name_short} Push to work. You will not be informed of new messages when the app is in the background. To fix this, tap on “App battery usage” and select “Unrestricted.”</string>
+    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">This Android version will soon no longer be supported</string>
+    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_explain_android_version_deprecated">You are using an Android device that no longer receives software updates. For security reasons, this Android version will soon no longer be supported by Threema.</string>
     <string name="problemsolver_to_settings">To settings</string>
     <string name="prefs_advanced_options">Advanced options</string>
     <string name="push_service">Push service</string>
@@ -1810,16 +1814,13 @@
     <string name="select_emoji_content_description">Select emoji to add from emoji picker</string>
     <string name="group_emoji_reactions_partially_supported">Some won\'t see your reactions due to an old version.</string>
     <string name="tab_emoji_reactions_overview_content_description">%1$s reactions with %2$s</string>
-    <string name="emoji_reactions_compatibility_infobox_text">You have received emoji reactions from a contact who has a newer app version. Besides 👍 and 👎, your app version does not yet support sending emoji reactions.</string>
     <string name="reaction_cannot_be_displayed">This reaction cannot be displayed. Unknown emoji.</string>
     <string name="emoji_reactions_unavailable_title">Emoji Reactions Unavailable</string>
-    <string name="emoji_reactions_sending_not_supported_body">Your app version does not yet support sending emoji reactions.</string>
     <string name="emoji_reactions_unavailable_body">%1$s is using an app version that does not yet support this feature.</string>
     <string name="emoji_reactions_unavailable_group_body">You cannot react to this message with an emoji because no group member has an app version that supports this feature.</string>
     <string name="emoji_reactions_cannot_remove_title">Removing Reactions Unavailable</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s is using an app version that does not yet support removing emoji reactions or sending more than one emoji reaction. You can still replace 👍 with 👎 or vice versa.</string>
     <string name="emoji_reactions_cannot_remove_group_body">None of the group members is using a version of the app that supports removing emoji reactions or sending more than one emoji reaction. You can replace 👍 with 👎 or vice-versa.</string>
-    <string name="emoji_reactions_cannot_remove_v1_body">Your app version does not yet support removing emoji reactions or sending more than one emoji reaction.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">This message has emoji reactions. In the chat, tap and hold any emoji bubble to view them all.</string>
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1848,7 +1849,11 @@
     <string name="device_linking_error_unknown_qr_code_title">Unknown QR Code</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Please make sure you’re using the corresponding app from [our website].</string>
+    <string name="device_linking_error_unknown_qr_code_body">This does not appear to be a QR code from ${app_name_desktop} 2.0 for Desktop (Beta). Please download the latest beta version of the desktop app from [our website] and scan the QR code that is displayed when you open the app.</string>
+    <string name="device_linking_error_web_qr_code_title">Not the correct QR Code</string>
+    <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
+    <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">This QR code belongs to ${app_name_short}s web client.\nPlease download the latest version of ${app_name_desktop} 2.0 for Desktop (Beta) from [our website] and scan the QR code that is displayed when you open the app.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Incompatible Version</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Please install the latest version of ${app_name} on both devices.</string>
@@ -1864,6 +1869,9 @@
     <string name="work_directory_search">Search in the directory</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Please enter at least 3 characters of a name to begin searching in your company\'s directory of ${app_name_short} users.</string>
+
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">This file is invalid and cannot be shared</string>
 
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>

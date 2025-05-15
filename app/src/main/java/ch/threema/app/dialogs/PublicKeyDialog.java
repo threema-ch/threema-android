@@ -32,15 +32,21 @@ import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class PublicKeyDialog extends SimpleStringAlertDialog {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PublicKeyDialog");
+
     private String publicKeyString;
     private CharSequence title;
 
@@ -52,6 +58,12 @@ public class PublicKeyDialog extends SimpleStringAlertDialog {
 
         dialog.setArguments(args);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

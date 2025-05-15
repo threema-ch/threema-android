@@ -344,7 +344,11 @@ class IncomingMessageTask(
 
         // If the message should be protected against replay, store the nonce
         if (protectAgainstReplay) {
-            nonceFactory.store(NonceScope.CSP, Nonce(messageBox.nonce))
+            try {
+                nonceFactory.store(NonceScope.CSP, Nonce(messageBox.nonce))
+            } catch (e: IllegalArgumentException) {
+                logger.error("Cannot protect message against replay due to invalid nonce")
+            }
         }
 
         // If there is a peer ratchet identifier known, then turn the peer ratchet

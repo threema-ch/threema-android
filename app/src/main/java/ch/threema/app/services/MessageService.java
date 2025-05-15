@@ -138,23 +138,27 @@ public interface MessageService {
     }
 
     class MessageString {
-        String message;
-        String rawMessage;
+        @Nullable
+        private final String message;
+        @Nullable
+        private final String rawMessage;
 
-        public MessageString(String message) {
+        public MessageString(@Nullable String message) {
             this.message = message;
             this.rawMessage = message;
         }
 
-        MessageString(String message, String rawMessage) {
+        MessageString(@Nullable String message, @Nullable String rawMessage) {
             this.message = message;
             this.rawMessage = rawMessage;
         }
 
+        @Nullable
         public String getMessage() {
             return message;
         }
 
+        @Nullable
         public String getRawMessage() {
             return rawMessage;
         }

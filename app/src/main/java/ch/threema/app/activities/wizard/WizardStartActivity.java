@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.util.Pair;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ui.AnimationDrawableCallback;
 import ch.threema.app.utils.ConfigUtils;
@@ -39,6 +40,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID;
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardStartActivity extends WizardBackgroundActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardStartActivity");
@@ -47,6 +49,7 @@ public class WizardStartActivity extends WizardBackgroundActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
         setContentView(R.layout.activity_wizard_start);
 
         NotificationManagerCompat.from(this).cancel(RESTORE_COMPLETION_NOTIFICATION_ID);
@@ -54,7 +57,7 @@ public class WizardStartActivity extends WizardBackgroundActivity {
         final ImageView imageView = findViewById(R.id.wizard_animation);
         final AnimationDrawable frameAnimation = getAnimationDrawable(imageView);
 
-        if (!RuntimeUtil.isInTest() && !ConfigUtils.isWorkRestricted()) {
+        if (!RuntimeUtil.isInTest() && !ConfigUtils.isWorkRestricted() && !BuildConfig.DEBUG) {
             imageView.setOnClickListener(v -> {
                 ((AnimationDrawable) v.getBackground()).stop();
                 launchNextActivity(null);

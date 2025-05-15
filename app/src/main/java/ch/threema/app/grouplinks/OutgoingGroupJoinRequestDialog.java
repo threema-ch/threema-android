@@ -35,6 +35,8 @@ import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -43,9 +45,13 @@ import androidx.core.text.HtmlCompat;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class OutgoingGroupJoinRequestDialog extends ThreemaDialogFragment {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("OutgoingGroupJoinRequestDialog");
 
     public static final String EXTRA_GROUP_NAME = "groupName";
     public static final String EXTRA_GROUP_ADMIN = "groupAdmin";
@@ -60,6 +66,12 @@ public class OutgoingGroupJoinRequestDialog extends ThreemaDialogFragment {
         args.putString(EXTRA_GROUP_ADMIN, groupAdmin);
         dialog.setArguments(args);
         return dialog;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override

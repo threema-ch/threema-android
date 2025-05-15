@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -415,15 +416,15 @@ public class ConversationServiceImpl implements ConversationService {
     public void markConversationAsRead(@NonNull MessageReceiver<?> messageReceiver) {
         if (messageReceiver instanceof GroupMessageReceiver) {
             new GroupConversationModelParser().markConversationAsRead(
-                    ((GroupMessageReceiver) messageReceiver).getGroup()
+                ((GroupMessageReceiver) messageReceiver).getGroup()
             );
         } else if (messageReceiver instanceof DistributionListMessageReceiver) {
             new DistributionListConversationModelParser().markConversationAsRead(
-                    ((DistributionListMessageReceiver) messageReceiver).getDistributionList()
+                ((DistributionListMessageReceiver) messageReceiver).getDistributionList()
             );
         } else if (messageReceiver instanceof ContactMessageReceiver) {
             new ContactConversationModelParser().markConversationAsRead(
-                    ((ContactMessageReceiver) messageReceiver).getContact()
+                ((ContactMessageReceiver) messageReceiver).getContact()
             );
         }
     }
@@ -1111,6 +1112,17 @@ public class ConversationServiceImpl implements ConversationService {
             }
 
             final ConversationModel newConversationModel = new ConversationModel(context, messageReceiver);
+
+            Optional<ConversationModel> optionalConversationModel = conversationCache.stream()
+                .filter(model -> model.getUid().equals(newConversationModel.getUid()))
+                .findFirst();
+
+            if (optionalConversationModel.isPresent()) {
+                ConversationModel existingConversationModel = optionalConversationModel.get();
+                existingConversationModel.setReceiver(messageReceiver);
+                logger.warn("The conversation already existed and was updated");
+                return existingConversationModel;
+            }
 
             // Add to cache, but only for non-archived and non-hidden conversations
             if (addToCache && !receiverModel.isArchived() && !receiverModel.isHidden()) {

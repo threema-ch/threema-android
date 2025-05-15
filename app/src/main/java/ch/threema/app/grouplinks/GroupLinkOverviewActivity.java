@@ -70,6 +70,8 @@ import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 
+import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+
 public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
     GenericAlertDialog.DialogClickListener,
     SelectorDialog.SelectorDialogClickListener,
@@ -100,6 +102,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logScreenVisibility(this, logger);
     }
 
     @Override
