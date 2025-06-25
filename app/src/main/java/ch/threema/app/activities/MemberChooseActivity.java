@@ -33,9 +33,13 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
@@ -64,6 +68,8 @@ import ch.threema.app.fragments.UserMemberListFragment;
 import ch.threema.app.fragments.WorkUserMemberListFragment;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.ThreemaSearchView;
+import ch.threema.app.ui.ViewExtensionsKt;
+import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LogUtil;
@@ -131,6 +137,29 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 
     public int getLayoutResource() {
         return R.layout.activity_member_choose_tabbed;
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById(R.id.floating),
+            new OnApplyWindowInsetsListener() {
+                @NonNull
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(@NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
+                    final Insets insets = windowInsets.getInsets(
+                        WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+                    );
+                    updateFABMarginDependingOnSelectedContactsState(
+                        findViewById(R.id.floating),
+                        insets,
+                        !getSelectedContacts().isEmpty()
+                    );
+                    return WindowInsetsCompat.CONSUMED;
+                }
+            });
     }
 
     @Override
@@ -335,18 +364,20 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
         }
     }
 
+    @NonNull
     protected List<ContactModel> getSelectedContacts() {
-        Set<ContactModel> contacts = new HashSet<>();
-        MemberListFragment fragment;
-
+        final @NonNull Set<ContactModel> selectedContacts = new HashSet<>();
+        @Nullable MemberListFragment fragment;
         for (int i = 0; i < NUM_FRAGMENTS; i++) {
-            fragment = (MemberListFragment) memberChoosePagerAdapter.getRegisteredFragment(i);
+            fragment = (memberChoosePagerAdapter != null) ? (MemberListFragment) memberChoosePagerAdapter.getRegisteredFragment(i) : null;
             if (fragment != null) {
-                contacts.addAll(fragment.getSelectedContacts());
+                final @Nullable HashSet<ContactModel> selectedContactsFromFragment = fragment.getSelectedContacts();
+                if (selectedContactsFromFragment != null && !selectedContactsFromFragment.isEmpty()) {
+                    selectedContacts.addAll(selectedContactsFromFragment);
+                }
             }
         }
-
-        return new ArrayList<>(contacts);
+        return new ArrayList<>(selectedContacts);
     }
 
     public class MemberChoosePagerAdapter extends FragmentPagerAdapter {
@@ -418,7 +449,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 
     @Override
     public void onSelectionChanged() {
-        List<ContactModel> contacts = getSelectedContacts();
+        final List<ContactModel> contacts = getSelectedContacts();
         if (!contacts.isEmpty()) {
             if (snackbar == null) {
                 snackbar = SnackbarUtil.make(rootView, "", Snackbar.LENGTH_INDEFINITE, 4);
@@ -447,6 +478,32 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
                 }
             }
         }
+
+        final Insets relevantInsets = ActivityExtensionsKt.getCurrentInsets(
+            this,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        updateFABMarginDependingOnSelectedContactsState(this.floatingActionButton, relevantInsets, !contacts.isEmpty());
+    }
+
+    /**
+     * We have to update the FABs margin depending on if the user has currently selected at least one contact list item.
+     * If one or more contact list items are selected, a snackbar is displayed that will handle the window insets on its own.
+     * However if this snackbar hides itself, because no items are selected, we have to handle the insets again.
+     */
+    private void updateFABMarginDependingOnSelectedContactsState(
+        @NonNull ExtendedFloatingActionButton floatingActionButton,
+        @NonNull final Insets relevantInsets,
+        boolean hasSelectedContacts
+    ) {
+        final int marginLeft = relevantInsets.left;
+        final int marginTop = 0;
+        final int marginRight = relevantInsets.right + getResources().getDimensionPixelSize(R.dimen.grid_unit_x2);
+        int marginBottom = getResources().getDimensionPixelSize(R.dimen.grid_unit_x2);
+        if (!hasSelectedContacts) {
+            marginBottom += relevantInsets.bottom;
+        }
+        ViewExtensionsKt.setMargin(floatingActionButton, marginLeft, marginTop, marginRight, marginBottom);
     }
 
     @NonNull
@@ -491,7 +548,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     protected abstract int getMode();
 
     @MainThread
-    protected abstract void initData(Bundle savedInstanceState);
+    protected abstract void initData(@Nullable Bundle savedInstanceState);
 
     @StringRes
     protected abstract int getNotice();

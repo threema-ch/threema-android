@@ -29,16 +29,19 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.requireServiceManager
+import ch.threema.app.ThreemaApplication.Companion.requireServiceManager
 import ch.threema.app.activities.StateFlowViewModel
 import ch.threema.app.multidevice.unlinking.DropDeviceResult
+import ch.threema.app.multidevice.unlinking.DropDevicesIntent
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.stores.PreferenceStoreInterface
-import ch.threema.app.tasks.DeactivateMultiDeviceIfAloneTask
+import ch.threema.app.tasks.DropDevicesStepsTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.DeviceId
+import ch.threema.domain.taskmanager.NetworkException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +53,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
+
+private val logger = LoggingUtil.getThreemaLogger("LinkedDevicesViewModel")
 
 class LinkedDevicesViewModel : StateFlowViewModel() {
     private val serviceManager by lazy { requireServiceManager() }
@@ -95,7 +100,6 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
         isMultiDeviceEnabled.value = ConfigUtils.isMultiDeviceEnabled(ThreemaApplication.getAppContext())
     }
 
-    // TODO(ANDR-2758): Handle the failure case better then emitting empty list
     fun updateDeviceList() {
         if (updateDeviceListJob?.isActive == true) {
             return
@@ -103,8 +107,8 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
         _isLoading.update { true }
         updateDeviceListJob = viewModelScope.launch {
             val linkedDevices: List<LinkedDevice> = mdManager.loadLinkedDevices(taskCreator).getOrElse {
-                emptyList()
-            }
+                emptyMap()
+            }.toLinkedDevices(mdManager.propertiesProvider.get().keys)
             if (linkedDevices.isNotEmpty()) {
                 emitDeviceListState(linkedDevices)
             } else {
@@ -112,7 +116,7 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
             }
         }.apply {
             invokeOnCompletion { throwable ->
-                throwable?.printStackTrace()
+                throwable?.let { logger.error("Exception when updating device list", it) }
                 _isLoading.update { false }
             }
         }
@@ -140,7 +144,6 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
         )
     }
 
-    // TODO(ANDR-3763): This will be moved inside a task with a transaction
     fun dropDevice(deviceId: DeviceId) {
         if (dropDeviceJob?.isActive == true) {
             return
@@ -149,33 +152,46 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
         _isLoading.update { true }
 
         dropDeviceJob = viewModelScope.launch {
-            val dropDeviceResult = mdManager.dropDevice(
-                deviceId = deviceId,
-                taskCreator = taskCreator,
-            )
+            val multiDeviceProperties = mdManager.propertiesProvider.get()
+            val thisDeviceId = multiDeviceProperties.mediatorDeviceId
+            check(thisDeviceId != deviceId) {
+                "Cannot drop this device"
+            }
+
+            val dropDeviceResult = try {
+                serviceManager.taskManager.schedule(
+                    DropDevicesStepsTask(
+                        intent = DropDevicesIntent.DropDevices(
+                            deviceIdsToDrop = setOf(deviceId),
+                            thisDeviceId = thisDeviceId,
+                        ),
+                        serviceManager = serviceManager,
+                    ),
+                ).await()
+            } catch (e: NetworkException) {
+                DropDeviceResult.Failure.Timeout
+            }
+
             when (dropDeviceResult) {
-                is DropDeviceResult.Success -> onDeviceDroppedSuccessfully(dropDeviceResult.remainingLinkedDevicesResult)
+                is DropDeviceResult.Success -> onDeviceDroppedSuccessfully(
+                    dropDeviceResult.remainingLinkedDevices.toLinkedDevices(multiDeviceProperties.keys),
+                )
+
                 is DropDeviceResult.Failure -> _onDropDeviceFailed.emit(Unit)
             }
         }.apply {
             invokeOnCompletion { throwable ->
-                throwable?.printStackTrace()
+                throwable?.let { logger.error("Exception when dropping device", it) }
                 _isLoading.update { false }
             }
         }
     }
 
-    // TODO(ANDR-2758): Handle the failure case better then emitting empty list
-    private suspend fun onDeviceDroppedSuccessfully(remainingLinkedDevicesResult: Result<List<LinkedDevice>>) {
-        val remainingLinkedDevices = remainingLinkedDevicesResult.getOrElse {
-            emptyList()
-        }
+    private suspend fun onDeviceDroppedSuccessfully(remainingLinkedDevices: List<LinkedDevice>) {
         if (remainingLinkedDevices.isNotEmpty()) {
             emitDeviceListState(remainingLinkedDevices)
         } else {
             _state.emit(LinkedDevicesUiState.NoDevices)
-            // TODO(ANDR-3763): This will be moved to be run inside the same task (and even transaction)
-            serviceManager.taskManager.schedule(DeactivateMultiDeviceIfAloneTask(serviceManager))
         }
     }
 

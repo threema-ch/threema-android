@@ -5,8 +5,6 @@
 <resources>
     <string name="google_app_id" translatable="false">1:547934774937:android:8312a582de897c81</string>
     <string name="gcm_defaultSenderId" translatable="false">547934774937</string>
-    <string name="default_web_client_id" translatable="false">547934774937-itv2dmsn97ifu3t3dijf377e22cvbo42.apps.googleusercontent.com</string>
-    <string name="firebase_database_url" translatable="false">https://api-project-547934774937.firebaseio.com</string>
     <string name="google_api_key" translatable="false">AIzaSyBgl_b1i9FMYJ3kioQ4EIrGjtUjFzhS-2A</string>
     <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBgl_b1i9FMYJ3kioQ4EIrGjtUjFzhS-2A</string>
     <string name="project_id" translatable="false">api-project-547934774937</string>

@@ -42,7 +42,7 @@ import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestData;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseData;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
 import ch.threema.storage.models.GroupModel;
@@ -56,7 +56,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
     private final @NonNull GroupJoinResponseService groupJoinResponseService;
     private final @NonNull GroupService groupService;
     private final @NonNull UserService userService;
-    private final @NonNull DatabaseServiceNew databaseServiceNew;
+    private final @NonNull DatabaseService databaseService;
 
     private static final String GROUP_INVITE_NOT_FOUND_MSG = "Group Join Request: Group invite not found";
 
@@ -64,12 +64,12 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
         @NonNull final GroupJoinResponseService groupJoinResponseService,
         @NonNull final GroupService groupService,
         @NonNull final UserService userService,
-        @NonNull final DatabaseServiceNew databaseService
+        @NonNull final DatabaseService databaseService
     ) {
         this.groupJoinResponseService = groupJoinResponseService;
         this.groupService = groupService;
         this.userService = userService;
-        this.databaseServiceNew = databaseService;
+        this.databaseService = databaseService;
     }
 
     /**
@@ -84,7 +84,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
     boolean process(@NonNull final GroupJoinRequestMessage message) {
         final GroupJoinRequestData joinRequest = message.getData();
         final GroupInviteToken token = joinRequest.getToken();
-        GroupInviteModelFactory groupInviteModelFactory = databaseServiceNew.getGroupInviteModelFactory();
+        GroupInviteModelFactory groupInviteModelFactory = databaseService.getGroupInviteModelFactory();
         final Optional<GroupInviteModel> optionalGroupInvite = groupInviteModelFactory
             .getByToken(token.toString());
 
@@ -105,7 +105,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
             return trySendingResponse(message, new GroupJoinResponseData.Expired());
         }
 
-        final GroupModel group = databaseServiceNew.getGroupModelFactory().getByApiGroupIdAndCreator(groupInvite.getGroupApiId().toString(), userService.getIdentity());
+        final GroupModel group = databaseService.getGroupModelFactory().getByApiGroupIdAndCreator(groupInvite.getGroupApiId().toString(), userService.getIdentity());
         if (group == null) {
             logger.error("Group Join Request: Corresponding group not found");
             return false;
@@ -119,7 +119,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
         }
 
         final @Nullable IncomingGroupJoinRequestModel joinRequestModel;
-        IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+        IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseService.getIncomingGroupJoinRequestModelFactory();
         Optional<IncomingGroupJoinRequestModel> previousRequest = incomingGroupJoinRequestModelFactory
             .getRequestByGroupInviteAndIdentity(groupInvite.getId(), message.getFromIdentity());
 
@@ -174,14 +174,14 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
      */
     @Override
     public void accept(@NonNull IncomingGroupJoinRequestModel model) throws Exception {
-        Optional<GroupInviteModel> invite = this.databaseServiceNew.getGroupInviteModelFactory()
+        Optional<GroupInviteModel> invite = this.databaseService.getGroupInviteModelFactory()
             .getById(model.getGroupInviteId());
 
         if (invite.isEmpty()) {
             throw new ThreemaException(GROUP_INVITE_NOT_FOUND_MSG);
         }
 
-        GroupModel group = this.databaseServiceNew.getGroupModelFactory()
+        GroupModel group = this.databaseService.getGroupModelFactory()
             .getByApiGroupIdAndCreator(invite.get().getGroupApiId().toString(), userService.getIdentity());
         if (group == null) {
             throw new ThreemaException("Group could not be found");
@@ -203,7 +203,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 //			false
 //		);
 
-        this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
+        this.databaseService.getIncomingGroupJoinRequestModelFactory()
             .updateStatus(model, IncomingGroupJoinRequestModel.ResponseStatus.ACCEPTED);
 
         this.groupJoinResponseService.send(
@@ -222,14 +222,14 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
      */
     @Override
     public void reject(@NonNull IncomingGroupJoinRequestModel model) throws ThreemaException {
-        Optional<GroupInviteModel> invite = this.databaseServiceNew.getGroupInviteModelFactory()
+        Optional<GroupInviteModel> invite = this.databaseService.getGroupInviteModelFactory()
             .getById(model.getGroupInviteId());
 
         if (invite.isEmpty()) {
             throw new ThreemaException(GROUP_INVITE_NOT_FOUND_MSG);
         }
 
-        this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
+        this.databaseService.getIncomingGroupJoinRequestModelFactory()
             .updateStatus(model, IncomingGroupJoinRequestModel.ResponseStatus.REJECTED);
 
         this.groupJoinResponseService.send(
@@ -253,7 +253,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
         @NonNull String identity,
         @NonNull IncomingGroupJoinRequestModel.ResponseStatus responseStatus
     ) {
-        IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+        IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseService.getIncomingGroupJoinRequestModelFactory();
         List<IncomingGroupJoinRequestModel> otherOpenRequests = incomingGroupJoinRequestModelFactory
             .getAllOpenRequestsByGroupIdAndIdentity(groupId, identity);
 
@@ -282,7 +282,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
         );
 
         final Result<IncomingGroupJoinRequestModel, Exception> insertResult =
-            this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory().insert(provisionalModel);
+            this.databaseService.getIncomingGroupJoinRequestModelFactory().insert(provisionalModel);
 
         if (insertResult.isFailure()) {
             logger.error("Group Join Request: Could not insert database record", insertResult.getError());

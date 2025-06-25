@@ -26,9 +26,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import net.zetetic.database.sqlcipher.SQLiteConnection;
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook;
@@ -39,10 +36,8 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.threema.app.services.UpdateSystemService;
-import ch.threema.app.services.systemupdate.FSDatabaseUpgradeToVersion2;
-import ch.threema.app.services.systemupdate.FSDatabaseUpgradeToVersion3;
-import ch.threema.app.services.systemupdate.FSDatabaseUpgradeToVersion4;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.fs.DHSession;
@@ -52,6 +47,12 @@ import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.protobuf.csp.e2e.fs.Version;
+import ch.threema.storage.databaseupdate.DatabaseUpdate;
+import ch.threema.storage.databaseupdate.FSDatabaseUpgradeToVersion2;
+import ch.threema.storage.databaseupdate.FSDatabaseUpgradeToVersion3;
+import ch.threema.storage.databaseupdate.FSDatabaseUpgradeToVersion4;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateKt.getFullDescription;
 
 public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStoreInterface {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SQLDHSessionStore");
@@ -78,17 +79,13 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
     public static final String COLUMN_MY_EPHEMERAL_PRIVATE_KEY = "myEphemeralPrivateKey";
     public static final String COLUMN_MY_EPHEMERAL_PUBLIC_KEY = "myEphemeralPublicKey";
 
-    @NonNull
-    private final UpdateSystemService updateSystemService;
-
     @Nullable
     private DHSessionStoreErrorHandler errorHandler = null;
 
     public SQLDHSessionStore(
         final Context context,
         final byte[] databaseKey,
-        final String dbName,
-        @NonNull UpdateSystemService updateSystemService
+        final String dbName
     ) {
         super(
             context,
@@ -109,19 +106,17 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
                     connection.execute("PRAGMA kdf_iter = 1;", new Object[]{}, null);
                 }
             },
-            false);
-
-        this.updateSystemService = updateSystemService;
+            false
+        );
 
         System.loadLibrary("sqlcipher");
     }
 
     public SQLDHSessionStore(
         final Context context,
-        final byte[] databaseKey,
-        @NonNull final UpdateSystemService updateSystemService
+        final byte[] databaseKey
     ) {
-        this(context, databaseKey, DATABASE_NAME, updateSystemService);
+        this(context, databaseKey, DATABASE_NAME);
     }
 
     @Override
@@ -152,13 +147,22 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
         logger.info("Upgrading DH session database from {} to {}", oldVersion, newVersion);
 
         if (oldVersion < FSDatabaseUpgradeToVersion2.VERSION) {
-            updateSystemService.addUpdate(new FSDatabaseUpgradeToVersion2(db));
+            runDatabaseUpdate(new FSDatabaseUpgradeToVersion2(db));
         }
         if (oldVersion < FSDatabaseUpgradeToVersion3.VERSION) {
-            updateSystemService.addUpdate(new FSDatabaseUpgradeToVersion3(db));
+            runDatabaseUpdate(new FSDatabaseUpgradeToVersion3(db));
         }
         if (oldVersion < FSDatabaseUpgradeToVersion4.VERSION) {
-            updateSystemService.addUpdate(new FSDatabaseUpgradeToVersion4(db));
+            runDatabaseUpdate(new FSDatabaseUpgradeToVersion4(db));
+        }
+    }
+
+    private void runDatabaseUpdate(DatabaseUpdate databaseUpdate) {
+        try {
+            logger.info("Running DB update to {}", getFullDescription(databaseUpdate));
+            databaseUpdate.run();
+        } catch (SQLException e) {
+            throw new RuntimeException("DB update failed", e);
         }
     }
 

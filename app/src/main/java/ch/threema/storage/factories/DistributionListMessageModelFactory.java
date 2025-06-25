@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -44,12 +44,12 @@ import ch.threema.storage.models.MessageType;
 public class DistributionListMessageModelFactory extends AbstractMessageModelFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListMessageModelFactory");
 
-    public DistributionListMessageModelFactory(DatabaseServiceNew databaseService) {
+    public DistributionListMessageModelFactory(DatabaseService databaseService) {
         super(databaseService, DistributionListMessageModel.TABLE);
     }
 
     public List<DistributionListMessageModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -92,7 +92,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
             final DistributionListMessageModel c = new DistributionListMessageModel();
 
             //convert default
-            super.convert(c, new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            super.convert(c, new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
                 public boolean next(CursorHelper cursorHelper) {
                     Long distributionListId = cursorHelper.getLong(DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID);
@@ -116,7 +116,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
         for (int n = 0; n < messageTypes.length; n++) {
             args[n] = String.valueOf(messageTypes[n].ordinal());
         }
-        Cursor c = this.databaseService.getReadableDatabase().rawQuery(
+        Cursor c = getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName() + " "
                 + "WHERE " + DistributionListMessageModel.COLUMN_TYPE + " IN (" + DatabaseUtil.makePlaceholders(args.length) + ")",
             args
@@ -128,7 +128,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
     public boolean createOrUpdate(DistributionListMessageModel distributionListMessageModel) {
         boolean insert = true;
         if (distributionListMessageModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 DistributionListMessageModel.COLUMN_ID + "=?",
@@ -159,7 +159,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
     private boolean create(DistributionListMessageModel distributionListMessageModel) {
         ContentValues contentValues = this.buildContentValues(distributionListMessageModel);
         contentValues.put(DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID, distributionListMessageModel.getDistributionListId());
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             distributionListMessageModel.setId((int) newId);
             return true;
@@ -169,7 +169,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 
     private boolean update(DistributionListMessageModel distributionListMessageModel) {
         ContentValues contentValues = this.buildContentValues(distributionListMessageModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             DistributionListMessageModel.COLUMN_ID + "=?",
             new String[]{
@@ -179,7 +179,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
     }
 
     public long countMessages(long distributionListId) {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + DistributionListMessageModel.COLUMN_ID + "=?",
             new String[]{
@@ -203,7 +203,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 
         queryBuilder.setTables(this.getTableName());
         List<DistributionListMessageModel> messageModels = convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             placeholders.toArray(new String[placeholders.size()]),
@@ -218,7 +218,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
     }
 
     public List<DistributionListMessageModel> getByDistributionListIdUnsorted(long distributionListId) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "=?",
             new String[]{
@@ -230,7 +230,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
     }
 
     public int delete(DistributionListMessageModel distributionListMessageModel) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             DistributionListMessageModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(distributionListMessageModel.getId())
@@ -238,7 +238,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
     }
 
     private @Nullable DistributionListMessageModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

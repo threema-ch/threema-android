@@ -38,14 +38,14 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 
 /**
  * Contains all necessary services used by the web client.
@@ -74,7 +74,7 @@ public class ServicesContainer {
     @NonNull
     public final NotificationService notification;
     @NonNull
-    public final DatabaseServiceNew database;
+    public final DatabaseService database;
     @NonNull
     public final BlockedIdentitiesService blockedIdentitiesService;
     @NonNull
@@ -114,7 +114,7 @@ public class ServicesContainer {
         @NonNull final ConversationTagService conversationTag,
         @NonNull final MessageService message,
         @NonNull final NotificationService notification,
-        @NonNull final DatabaseServiceNew database,
+        @NonNull final DatabaseService database,
         @NonNull final BlockedIdentitiesService blockedIdentitiesService,
         @NonNull final PreferenceService preference,
         @NonNull final UserService user,

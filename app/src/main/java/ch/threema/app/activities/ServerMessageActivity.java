@@ -35,12 +35,16 @@ import org.slf4j.Logger;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.services.notification.NotificationService;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ServerMessageViewModel;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ServerMessageActivity extends ThreemaActivity {
@@ -54,10 +58,11 @@ public class ServerMessageActivity extends ThreemaActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        ConfigUtils.configureSystemBars(this);
-
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -67,17 +72,12 @@ public class ServerMessageActivity extends ThreemaActivity {
 
         setContentView(R.layout.activity_server_message);
 
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null) {
-            logger.error("Service manager is null");
-            finish();
-            return;
-        }
-
         serverMessageTextView = findViewById(R.id.server_message_text);
         serverMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        notificationService = serviceManager.getNotificationService();
+        handleDeviceInsets();
+
+        notificationService = ThreemaApplication.requireServiceManager().getNotificationService();
 
         viewModel = new ViewModelProvider(this).get(ServerMessageViewModel.class);
 
@@ -95,6 +95,19 @@ public class ServerMessageActivity extends ThreemaActivity {
             }
             showServerMessage(serverMessage);
         });
+    }
+
+    private void handleDeviceInsets() {
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.scroll_container),
+            InsetSides.ltr(),
+            SpacingValues.all(R.dimen.grid_unit_x2)
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.close_button),
+            InsetSides.lbr(),
+            SpacingValues.all(R.dimen.grid_unit_x2)
+        );
     }
 
     @Override
@@ -120,7 +133,6 @@ public class ServerMessageActivity extends ThreemaActivity {
     }
 
     private void cancelServerMessageNotification() {
-        notificationService.cancel(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID);
+        notificationService.cancel(NotificationIDs.SERVER_MESSAGE_NOTIFICATION_ID);
     }
-
 }

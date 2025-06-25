@@ -33,7 +33,7 @@ import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseData;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 import java8.util.Optional;
@@ -46,7 +46,7 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
     private final @NonNull OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
 
     public GroupJoinResponseServiceImpl(
-        @NonNull DatabaseServiceNew databaseService
+        @NonNull DatabaseService databaseService
     ) {
         this.outgoingGroupJoinRequestModelFactory = databaseService.getOutgoingGroupJoinRequestModelFactory();
     }

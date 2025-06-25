@@ -74,10 +74,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationManagerCompat;
+import ch.threema.app.ExecutorServices;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
@@ -86,19 +86,19 @@ import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.exceptions.TranscodeCanceledException;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
+import ch.threema.app.notifications.NotificationIDs;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.MarkAsReadRoutine;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotUpdateResult;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.stores.IdentityStore;
-import ch.threema.app.tasks.OutgoingGroupDeliveryReceiptMessageTask;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -116,7 +116,6 @@ import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.TextExtensionsKt;
 import ch.threema.app.utils.ThumbnailUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.transcoder.VideoConfig;
@@ -161,7 +160,7 @@ import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.protobuf.csp.e2e.Reaction;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.MessageModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -189,9 +188,9 @@ import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
 import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE_MB;
-import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
+import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
+import static ch.threema.app.AppConstants.MAX_BLOB_SIZE_MB;
+import static ch.threema.app.preference.service.PreferenceService.ImageScale_DEFAULT;
 import static ch.threema.app.ui.MediaItem.TIME_UNDEFINED;
 import static ch.threema.app.ui.MediaItem.TYPE_FILE;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
@@ -218,7 +217,7 @@ public class MessageServiceImpl implements MessageService {
 
     // Services
     private final MessageSendingService messageSendingService;
-    private final DatabaseServiceNew databaseServiceNew;
+    private final DatabaseService databaseService;
     private final ContactService contactService;
     private final FileService fileService;
     private final IdentityStore identityStore;
@@ -251,7 +250,7 @@ public class MessageServiceImpl implements MessageService {
         @NonNull
         Context context,
         CacheService cacheService,
-        DatabaseServiceNew databaseServiceNew,
+        DatabaseService databaseService,
         ContactService contactService,
         FileService fileService,
         IdentityStore identityStore,
@@ -269,7 +268,7 @@ public class MessageServiceImpl implements MessageService {
         EmojiReactionsRepository emojiReactionsRepository
     ) {
         this.context = context;
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.contactService = contactService;
         this.fileService = fileService;
         this.identityStore = identityStore;
@@ -877,7 +876,7 @@ public class MessageServiceImpl implements MessageService {
         @NonNull TriggerSource triggerSource
     ) throws Exception {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
+        notificationManager.cancel(NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID);
 
         if (messageModel.getState() == MessageState.SENDFAILED || messageModel.getState() == MessageState.FS_KEY_MISMATCH) {
             if (messageModel.getType() == MessageType.FILE) {
@@ -1184,7 +1183,7 @@ public class MessageServiceImpl implements MessageService {
         }
 
         // If not cached, load from database (and cache it)
-        MessageModel contactMessageModel = databaseServiceNew.getMessageModelFactory().getByApiMessageIdAndIdentity(
+        MessageModel contactMessageModel = databaseService.getMessageModelFactory().getByApiMessageIdAndIdentity(
             apiMessageId,
             identity);
         if (contactMessageModel != null) {
@@ -1228,7 +1227,7 @@ public class MessageServiceImpl implements MessageService {
         }
 
         // retrieve from database
-        GroupMessageModel groupMessageModel = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndGroupId(
+        GroupMessageModel groupMessageModel = databaseService.getGroupMessageModelFactory().getByApiMessageIdAndGroupId(
             messageId,
             groupModel.getId());
 
@@ -1414,7 +1413,7 @@ public class MessageServiceImpl implements MessageService {
                     receiverAllowsDeliveryReceipt = false;
                     break;
                 default:
-                    receiverAllowsDeliveryReceipt = preferenceService.isReadReceipts();
+                    receiverAllowsDeliveryReceipt = preferenceService.areReadReceiptsEnabled();
                     break;
             }
 
@@ -1493,7 +1492,7 @@ public class MessageServiceImpl implements MessageService {
 
         //remove from dao
         if (messageModel instanceof GroupMessageModel) {
-            databaseServiceNew.getGroupMessageModelFactory().delete(
+            databaseService.getGroupMessageModelFactory().delete(
                 (GroupMessageModel) messageModel
             );
 
@@ -1507,7 +1506,7 @@ public class MessageServiceImpl implements MessageService {
                 }
             }
         } else if (messageModel instanceof DistributionListMessageModel) {
-            databaseServiceNew.getDistributionListMessageModelFactory().delete(
+            databaseService.getDistributionListMessageModelFactory().delete(
                 (DistributionListMessageModel) messageModel
             );
 
@@ -1521,7 +1520,7 @@ public class MessageServiceImpl implements MessageService {
                 }
             }
         } else if (messageModel instanceof MessageModel) {
-            databaseServiceNew.getMessageModelFactory().delete((MessageModel) messageModel);
+            databaseService.getMessageModelFactory().delete((MessageModel) messageModel);
 
             //remove from cache
             synchronized (contactMessageCache) {
@@ -1551,7 +1550,7 @@ public class MessageServiceImpl implements MessageService {
 
         MessageModel messageModel = null;
 
-        MessageModel existingModel = databaseServiceNew.getMessageModelFactory()
+        MessageModel existingModel = databaseService.getMessageModelFactory()
             .getByApiMessageIdAndIdentity(message.getMessageId(), message.getFromIdentity());
 
         if (existingModel != null) {
@@ -1684,7 +1683,7 @@ public class MessageServiceImpl implements MessageService {
             groupService.bumpLastUpdate(groupModel);
         }
 
-        GroupMessageModel existingModel = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndIdentity(
+        GroupMessageModel existingModel = databaseService.getGroupMessageModelFactory().getByApiMessageIdAndIdentity(
             message.getMessageId(),
             message.getFromIdentity()
         );
@@ -1760,7 +1759,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel.setForwardSecurityMode(message.getForwardSecurityMode());
             messageModel.setSaved(true);
 
-            databaseServiceNew.getMessageModelFactory().create(messageModel);
+            databaseService.getMessageModelFactory().create(messageModel);
 
             fireOnNewMessage(messageModel);
         }
@@ -2187,7 +2186,7 @@ public class MessageServiceImpl implements MessageService {
             return null;
         }
 
-        GroupMessageModelFactory messageModelFactory = databaseServiceNew.getGroupMessageModelFactory();
+        GroupMessageModelFactory messageModelFactory = databaseService.getGroupMessageModelFactory();
 
         //download thumbnail
         if (messageModel == null) {
@@ -2396,7 +2395,7 @@ public class MessageServiceImpl implements MessageService {
 
         logger.info("saveBoxMessage: {} - A", message.getMessageId());
 
-        MessageModelFactory messageModelFactory = databaseServiceNew.getMessageModelFactory();
+        MessageModelFactory messageModelFactory = databaseService.getMessageModelFactory();
 
         logger.info("saveBoxMessage: {} - B", message.getMessageId());
 
@@ -2600,7 +2599,7 @@ public class MessageServiceImpl implements MessageService {
 
         // We save the message model already here to ensure it is in the database in case the app
         // gets killed before resolving the address.
-        databaseServiceNew.getMessageModelFactory().create(messageModel);
+        databaseService.getMessageModelFactory().create(messageModel);
 
         // If the location model is missing an address, we perform a lookup based on the coordinates
         if (message.getPoi() == null) {
@@ -2622,7 +2621,7 @@ public class MessageServiceImpl implements MessageService {
                 );
 
                 // Update the db record
-                databaseServiceNew.getMessageModelFactory().update(messageModel);
+                databaseService.getMessageModelFactory().update(messageModel);
 
             } catch (IOException ioException) {
                 logger.error("Exception", ioException);
@@ -2753,11 +2752,11 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private List<AbstractMessageModel> getContactMessagesForText(String query, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
-        return databaseServiceNew.getMessageModelFactory().getMessagesByText(query, includeArchived, starredOnly, sortAscending);
+        return databaseService.getMessageModelFactory().getMessagesByText(query, includeArchived, starredOnly, sortAscending);
     }
 
     private List<AbstractMessageModel> getGroupMessagesForText(String query, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
-        return databaseServiceNew.getGroupMessageModelFactory().getMessagesByText(query, includeArchived, starredOnly, sortAscending);
+        return databaseService.getGroupMessageModelFactory().getMessagesByText(query, includeArchived, starredOnly, sortAscending);
     }
 
     @Override
@@ -2793,16 +2792,16 @@ public class MessageServiceImpl implements MessageService {
     @WorkerThread
     public int unstarAllMessages() {
         return
-            databaseServiceNew.getMessageModelFactory().unstarAllMessages() +
-                databaseServiceNew.getGroupMessageModelFactory().unstarAllMessages();
+            databaseService.getMessageModelFactory().unstarAllMessages() +
+                databaseService.getGroupMessageModelFactory().unstarAllMessages();
     }
 
     @Override
     @WorkerThread
     public long countStarredMessages() throws SQLiteException {
         return
-            databaseServiceNew.getMessageModelFactory().countStarredMessages() +
-                databaseServiceNew.getGroupMessageModelFactory().countStarredMessages();
+            databaseService.getMessageModelFactory().countStarredMessages() +
+                databaseService.getGroupMessageModelFactory().countStarredMessages();
     }
 
     @Override
@@ -2813,7 +2812,7 @@ public class MessageServiceImpl implements MessageService {
             model = Functional.select(contactMessageCache, type -> type.getId() == id);
         }
         if (model == null) {
-            model = databaseServiceNew.getMessageModelFactory().getById(id);
+            model = databaseService.getMessageModelFactory().getById(id);
             if (model != null) {
                 synchronized (contactMessageCache) {
                     contactMessageCache.add(model);
@@ -2837,7 +2836,7 @@ public class MessageServiceImpl implements MessageService {
         }
         if (model == null) {
             try {
-                model = databaseServiceNew.getMessageModelFactory().getByApiMessageIdAndIdentity(
+                model = databaseService.getMessageModelFactory().getByApiMessageIdAndIdentity(
                     new MessageId(Utils.hexStringToByteArray(apiMessageId)),
                     messageReceiver.getContact().getIdentity()
                 );
@@ -2846,7 +2845,8 @@ public class MessageServiceImpl implements MessageService {
                         contactMessageCache.add(model);
                     }
                 }
-            } catch (ThreemaException ignore) {
+            } catch (MessageId.BadMessageIdException ignore) {
+                logger.warn("Encountered invalid message ID in contact message");
             }
         }
         return model;
@@ -2855,7 +2855,7 @@ public class MessageServiceImpl implements MessageService {
     @Nullable
     @Override
     public MessageModel getContactMessageModel(final String uid) {
-        return databaseServiceNew.getMessageModelFactory().getByUid(uid);
+        return databaseService.getMessageModelFactory().getByUid(uid);
     }
 
     @Override
@@ -2865,7 +2865,7 @@ public class MessageServiceImpl implements MessageService {
             GroupMessageModel model = Functional.select(groupMessageCache, type -> type.getId() == id);
 
             if (model == null) {
-                model = databaseServiceNew.getGroupMessageModelFactory().getById(id);
+                model = databaseService.getGroupMessageModelFactory().getById(id);
                 if (model != null) {
                     groupMessageCache.add(model);
                 }
@@ -2877,7 +2877,7 @@ public class MessageServiceImpl implements MessageService {
     @Nullable
     @Override
     public GroupMessageModel getGroupMessageModel(final String uid) {
-        return databaseServiceNew.getGroupMessageModelFactory().getByUid(uid);
+        return databaseService.getGroupMessageModelFactory().getByUid(uid);
     }
 
     private GroupMessageModel getGroupMessageModel(
@@ -2894,11 +2894,12 @@ public class MessageServiceImpl implements MessageService {
 
             if (model == null) {
                 try {
-                    model = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndGroupId(new MessageId(Utils.hexStringToByteArray(apiMessageId)), groupId);
+                    model = databaseService.getGroupMessageModelFactory().getByApiMessageIdAndGroupId(new MessageId(Utils.hexStringToByteArray(apiMessageId)), groupId);
                     if (model != null) {
                         groupMessageCache.add(model);
                     }
-                } catch (ThreemaException ignore) {
+                } catch (MessageId.BadMessageIdException ignore) {
+                    logger.warn("Encountered invalid message ID in group message");
                 }
             }
             return model;
@@ -2908,7 +2909,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Nullable
     public DistributionListMessageModel getDistributionListMessageModel(long id) {
-        return databaseServiceNew.getDistributionListMessageModelFactory().getById(id);
+        return databaseService.getDistributionListMessageModelFactory().getById(id);
     }
 
     private void fireOnNewMessage(final AbstractMessageModel messageModel) {
@@ -3029,7 +3030,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void saveIncomingServerMessage(final ServerMessageModel msg) {
         // Store server message into database
-        databaseServiceNew.getServerMessageModelFactory().storeServerMessageModel(msg);
+        databaseService.getServerMessageModelFactory().storeServerMessageModel(msg);
         // Show as alert
         ListenerManager.serverMessageListeners.handle(listener -> {
             if (msg.getType() == ServerMessageModel.TYPE_ALERT) {
@@ -3294,9 +3295,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void removeAll() throws SQLException, IOException, ThreemaException {
         //use the fast way
-        databaseServiceNew.getMessageModelFactory().deleteAll();
-        databaseServiceNew.getGroupMessageModelFactory().deleteAll();
-        databaseServiceNew.getDistributionListMessageModelFactory().deleteAll();
+        databaseService.getMessageModelFactory().deleteAll();
+        databaseService.getGroupMessageModelFactory().deleteAll();
+        databaseService.getDistributionListMessageModelFactory().deleteAll();
 
         //clear all caches
         synchronized (contactMessageCache) {
@@ -3322,7 +3323,7 @@ public class MessageServiceImpl implements MessageService {
         if (messageModel != null) {
             if (messageModel instanceof MessageModel) {
                 synchronized (contactMessageCache) {
-                    databaseServiceNew.getMessageModelFactory().createOrUpdate(
+                    databaseService.getMessageModelFactory().createOrUpdate(
                         (MessageModel) messageModel
                     );
 
@@ -3339,7 +3340,7 @@ public class MessageServiceImpl implements MessageService {
                 }
             } else if (messageModel instanceof GroupMessageModel) {
                 synchronized (groupMessageCache) {
-                    databaseServiceNew.getGroupMessageModelFactory().createOrUpdate(
+                    databaseService.getGroupMessageModelFactory().createOrUpdate(
                         (GroupMessageModel) messageModel);
 
                     //remove "old" message models from cache
@@ -3351,7 +3352,7 @@ public class MessageServiceImpl implements MessageService {
             } else if (messageModel instanceof DistributionListMessageModel) {
                 synchronized (distributionListMessageCache) {
 
-                    databaseServiceNew.getDistributionListMessageModelFactory().createOrUpdate(
+                    databaseService.getDistributionListMessageModelFactory().createOrUpdate(
                         (DistributionListMessageModel) messageModel);
 
                     //remove "old" message models from cache
@@ -3372,9 +3373,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public long getTotalMessageCount() {
         //simple count
-        return databaseServiceNew.getMessageModelFactory().count()
-            + databaseServiceNew.getGroupMessageModelFactory().count()
-            + databaseServiceNew.getDistributionListMessageModelFactory().count();
+        return databaseService.getMessageModelFactory().count()
+            + databaseService.getGroupMessageModelFactory().count()
+            + databaseService.getDistributionListMessageModelFactory().count();
 
     }
 
@@ -3409,7 +3410,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public boolean shareMediaMessages(final Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris, String caption) {
         if (TestUtil.required(context, models, shareFileUris)) {
-            if (models.size() > 0 && shareFileUris.size() > 0) {
+            if (!models.isEmpty() && !shareFileUris.isEmpty()) {
                 Intent intent;
                 if (models.size() == 1) {
                     AbstractMessageModel model = models.get(0);
@@ -3890,7 +3891,7 @@ public class MessageServiceImpl implements MessageService {
         @NonNull final List<MessageReceiver> messageReceivers,
         @Nullable final SendResultListener sendResultListener
     ) {
-        ThreemaApplication.sendMessageExecutorService.submit(() -> {
+        ExecutorServices.getSendMessageExecutorService().submit(() -> {
             sendMedia(mediaItems, messageReceivers, sendResultListener);
         });
     }
@@ -3906,7 +3907,7 @@ public class MessageServiceImpl implements MessageService {
     public void sendMediaSingleThread(
         @NonNull final List<MediaItem> mediaItems,
         @NonNull final List<MessageReceiver> messageReceivers) {
-        ThreemaApplication.sendMessageSingleThreadExecutorService.submit(() -> {
+        ExecutorServices.getSendMessageSingleThreadExecutorService().submit(() -> {
             sendMedia(mediaItems, messageReceivers, null);
         });
     }

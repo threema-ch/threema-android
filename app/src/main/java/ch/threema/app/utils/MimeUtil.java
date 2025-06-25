@@ -411,7 +411,7 @@ public class MimeUtil {
     private static String getType(String mimeType) throws MalformedMimeTypeException {
         if (mimeType != null) {
             String[] parts = mimeType.split("/");
-            if (parts.length == 2 && parts[0].length() > 0) {
+            if (parts.length == 2 && !parts[0].isEmpty()) {
                 return parts[0];
             }
         }
@@ -422,11 +422,11 @@ public class MimeUtil {
     private static String getSubType(String mimeType) throws MalformedMimeTypeException {
         if (mimeType != null) {
             String[] parts = mimeType.split("/");
-            if (parts.length == 2 && parts[1].length() > 0) {
+            if (parts.length == 2 && !parts[1].isEmpty()) {
                 String subType = parts[1];
                 // strip parameter part
                 parts = subType.split(";");
-                if (parts.length > 1 && parts[1].length() > 0) {
+                if (parts.length > 1 && !parts[1].isEmpty()) {
                     subType = parts[0];
                 }
                 return subType;

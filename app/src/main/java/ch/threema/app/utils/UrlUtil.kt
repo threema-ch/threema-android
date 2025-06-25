@@ -22,8 +22,6 @@
 package ch.threema.app.utils
 
 import android.net.Uri
-import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
 import java.util.regex.Pattern
 
 object UrlUtil {
@@ -89,20 +87,6 @@ object UrlUtil {
         }
 
         return components.map(::isLegalComponent).none { !it }
-    }
-
-    /**
-     * A version of URLEncoder.encode that cannot fail.
-     *
-     * The encoding used is always UTF-8.
-     */
-    @JvmStatic
-    fun urlencode(value: String): String {
-        try {
-            return URLEncoder.encode(value, "UTF-8")
-        } catch (encodingException: UnsupportedEncodingException) {
-            throw AssertionError(encodingException)
-        }
     }
 
     /**

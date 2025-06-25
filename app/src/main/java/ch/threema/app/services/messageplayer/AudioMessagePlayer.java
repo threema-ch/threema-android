@@ -52,7 +52,7 @@ import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;

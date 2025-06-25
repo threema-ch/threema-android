@@ -27,10 +27,11 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.utils.ConversationUtil;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTagModel;
@@ -39,16 +40,20 @@ import ch.threema.storage.models.GroupModel;
 
 public class ConversationTagServiceImpl implements ConversationTagService {
     @NonNull
-    private final DatabaseServiceNew databaseService;
+    private final DatabaseService databaseService;
     @NonNull
     private final TaskCreator taskCreator;
+    @NonNull
+    private final MultiDeviceManager multiDeviceManager;
 
     public ConversationTagServiceImpl(
-        @NonNull DatabaseServiceNew databaseService,
-        @NonNull TaskCreator taskCreator
+        @NonNull DatabaseService databaseService,
+        @NonNull TaskCreator taskCreator,
+        @NonNull MultiDeviceManager multiDeviceManager
     ) {
         this.databaseService = databaseService;
         this.taskCreator = taskCreator;
+        this.multiDeviceManager = multiDeviceManager;
     }
 
     @Override
@@ -180,7 +185,8 @@ public class ConversationTagServiceImpl implements ConversationTagService {
         boolean isPinned,
         @NonNull TriggerSource triggerSource
     ) {
-        if (triggerSource == TriggerSource.SYNC || conversationModel.isDistributionListConversation()) {
+        if (triggerSource == TriggerSource.SYNC || conversationModel.isDistributionListConversation()
+            || !multiDeviceManager.isMultiDeviceActive()) {
             return;
         }
         ContactModel contactModel = conversationModel.getContact();
@@ -196,7 +202,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
     }
 
     private void reflectConversationCategoryPinnedIfApplicable(@NonNull String conversationUid, boolean isPinned, @NonNull TriggerSource triggerSource) {
-        if (triggerSource == TriggerSource.SYNC) {
+        if (triggerSource == TriggerSource.SYNC || !multiDeviceManager.isMultiDeviceActive()) {
             return;
         }
         String identity = ConversationUtil.getContactIdentityFromUid(conversationUid);
@@ -212,14 +218,14 @@ public class ConversationTagServiceImpl implements ConversationTagService {
     }
 
     private void reflectContactPinnedIfApplicable(@NonNull String identity, boolean isPinned, @NonNull TriggerSource triggerSource) {
-        if (triggerSource == TriggerSource.SYNC) {
+        if (triggerSource == TriggerSource.SYNC || !multiDeviceManager.isMultiDeviceActive()) {
             return;
         }
         taskCreator.scheduleReflectConversationVisibilityPinned(identity, isPinned);
     }
 
     private void reflectGroupPinnedIfApplicable(long groupDatabaseId, boolean isPinned, @NonNull TriggerSource triggerSource) {
-        if (triggerSource == TriggerSource.SYNC) {
+        if (triggerSource == TriggerSource.SYNC || !multiDeviceManager.isMultiDeviceActive()) {
             return;
         }
         taskCreator.scheduleReflectGroupConversationVisibilityPinned(groupDatabaseId, isPinned);

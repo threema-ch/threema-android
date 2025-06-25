@@ -26,7 +26,6 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -43,6 +42,8 @@ import org.slf4j.Logger;
 
 import java.util.Arrays;
 
+import ch.threema.app.AppConstants;
+import ch.threema.app.GlobalAppState;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -50,7 +51,11 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.services.ThreemaPushService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ThreemaTextInputEditText;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
@@ -75,14 +80,18 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
     private final MasterKey masterKey = ThreemaApplication.getMasterKey();
 
     public void onCreate(Bundle savedInstanceState) {
-        ConfigUtils.configureSystemBars(this);
-
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
         setContentView(R.layout.activity_unlock_masterkey);
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.top_view),
+            InsetSides.all(),
+            SpacingValues.horizontal(R.dimen.grid_unit_x2)
+        );
 
         TextView infoText = findViewById(R.id.unlock_info);
         TypedArray array = getTheme().obtainStyledAttributes(new int[]{R.attr.colorOnSurface});
@@ -137,15 +146,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
         this.unlock(this.passphraseText.getPassphrase());
     }
 
-    public class PasswordWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
+    public class PasswordWatcher extends SimpleTextWatcher {
         @Override
         public void afterTextChanged(Editable s) {
             if (unlockButton != null) {
@@ -169,7 +170,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
             // Only change on master key!
             GenericProgressDialog.newInstance(R.string.masterkey_unlocking, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_UNLOCKING);
 
-            new Thread(() -> {
+            RuntimeUtil.runOnWorkerThread(() -> {
                 boolean isValid;
                 if (justCheck) {
                     isValid = masterKey.checkPassphrase(passphrase);
@@ -194,7 +195,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
                     } else {
                         // Finish after unlock
                         RuntimeUtil.runOnUiThread(() -> {
-                            ThreemaApplication.reset();
+                            ThreemaApplication.onMasterKeyUnlocked(masterKey);
 
                             // Cancel all notifications...if any
                             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(UnlockMasterKeyActivity.this);
@@ -206,18 +207,18 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
                             // ServiceManager (and thus LifetimeService) are now available
                             // Trigger a connection
                             final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-                            new Thread(() -> {
+                            RuntimeUtil.runOnWorkerThread(() -> {
                                 if (serviceManager != null) {
                                     final LifetimeService lifetimeService = serviceManager.getLifetimeService();
                                     if (lifetimeService != null) {
-                                        if (ThreemaApplication.isResumed) {
-                                            lifetimeService.acquireConnection(ThreemaApplication.ACTIVITY_CONNECTION_TAG);
+                                        if (GlobalAppState.isAppResumed()) {
+                                            lifetimeService.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG);
                                         } else {
                                             lifetimeService.ensureConnection();
                                         }
                                     }
                                 }
-                            }).start();
+                            });
 
                             // Start ThreemaPush service (which could not be started without an unlocked passphrase)
                             ThreemaPushService.tryStart(logger, getApplicationContext());
@@ -227,14 +228,14 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
                     }
                 }
                 RuntimeUtil.runOnUiThread(() -> DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_UNLOCKING, true));
-            }).start();
+            });
         } else {
             this.finish();
         }
     }
 
     private boolean justCheck() {
-        return getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_PASSPHRASE_CHECK, false);
+        return getIntent().getBooleanExtra(AppConstants.INTENT_DATA_PASSPHRASE_CHECK, false);
     }
 
     @Override

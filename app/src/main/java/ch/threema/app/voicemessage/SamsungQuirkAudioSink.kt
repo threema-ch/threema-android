@@ -29,6 +29,8 @@ import androidx.media3.exoplayer.audio.DefaultAudioSink
 import ch.threema.base.utils.LoggingUtil
 import java.nio.ByteBuffer
 
+private val logger = LoggingUtil.getThreemaLogger("SamsungQuirkAudioSink")
+
 /**
  * Handle audio sink error on some Samsung devices when changing AudioAttributes by retrying
  */
@@ -43,8 +45,6 @@ class SamsungQuirkAudioSink(
         .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
         .build(),
 ) : AudioSink by delegate {
-    private val logger = LoggingUtil.getThreemaLogger("SamsungQuirkAudioSink")
-
     override fun handleBuffer(
         buffer: ByteBuffer,
         presentationTimeUs: Long,

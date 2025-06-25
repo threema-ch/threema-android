@@ -33,17 +33,17 @@ import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.WebClientSessionModel;
 
 public class WebClientSessionModelFactory extends ModelFactory {
-    public WebClientSessionModelFactory(DatabaseServiceNew databaseService) {
+    public WebClientSessionModelFactory(DatabaseService databaseService) {
         super(databaseService, WebClientSessionModel.TABLE);
     }
 
     public List<WebClientSessionModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -82,7 +82,7 @@ public class WebClientSessionModelFactory extends ModelFactory {
                                                String orderBy) {
         queryBuilder.setTables(this.getTableName());
         return convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             args,
@@ -109,7 +109,7 @@ public class WebClientSessionModelFactory extends ModelFactory {
         if (cursor != null && cursor.getPosition() >= 0) {
             final WebClientSessionModel model = new WebClientSessionModel();
 
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
                 public boolean next(CursorHelper cursorFactory) {
                     model
@@ -171,13 +171,13 @@ public class WebClientSessionModelFactory extends ModelFactory {
         if (insert) {
             //never update key field
             //just set on update
-            long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+            long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
             if (newId > 0) {
                 model.setId((int) newId);
                 return true;
             }
         } else {
-            this.databaseService.getWritableDatabase().update(this.getTableName(),
+            getWritableDatabase().update(this.getTableName(),
                 contentValues,
                 WebClientSessionModel.COLUMN_ID + " =?",
                 new String[]{
@@ -190,7 +190,7 @@ public class WebClientSessionModelFactory extends ModelFactory {
     }
 
     public int delete(WebClientSessionModel model) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             WebClientSessionModel.COLUMN_ID + " =?",
             new String[]{
                 String.valueOf(model.getId())
@@ -226,7 +226,7 @@ public class WebClientSessionModelFactory extends ModelFactory {
 
     @Nullable
     private WebClientSessionModel getFirst(String selection, String[] selectionArgs) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().query(
+        final Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

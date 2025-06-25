@@ -28,14 +28,12 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingCancelledException
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
-import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ServerMessageService
 import ch.threema.app.services.UserService
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.stores.PreferenceStoreInterface
 import ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask
-import ch.threema.app.tasks.DeleteDeviceGroupTask
 import ch.threema.app.tasks.DeviceLinkingController
 import ch.threema.app.tasks.FSRefreshStepsTask
 import ch.threema.app.tasks.TaskCreator
@@ -53,6 +51,7 @@ import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.D2mProtocolVersion
 import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
@@ -62,12 +61,10 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.csp.e2e.fs.Terminate
 import ch.threema.storage.models.ServerMessageModel
 import java.util.Date
-import kotlin.time.Duration
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -76,7 +73,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 
 private val logger = LoggingUtil.getThreemaLogger("MultiDeviceManagerImpl")
 
@@ -144,21 +140,6 @@ class MultiDeviceManagerImpl(
         get() = properties != null
 
     private var serverInfo: InboundD2mMessage.ServerInfo? = null
-
-    /**
-     * TODO(ANDR-3763): This will probably also need to start a transaction.
-     */
-    @WorkerThread
-    override suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec) {
-        logger.info("Deactivating multi device ...")
-
-        // Delete device group
-        logger.info("Delete device group")
-        DeleteDeviceGroupTask(serviceManager).invoke(handle)
-
-        // Remove local properties and enable forward security again
-        removeMultiDeviceLocally(serviceManager)
-    }
 
     override suspend fun setDeviceLabel(deviceLabel: String) {
         persistedProperties = persistedProperties!!.withDeviceLabel(deviceLabel)
@@ -238,6 +219,7 @@ class MultiDeviceManagerImpl(
                         is CancellationException -> logger.warn("Device linking was cancelled in step two", exception)
                         else -> logger.error("Device linking failed with exception for step two", exception)
                     }
+                    linkingPartOneResult.getOrNull()?.close()
                     deviceLinkingController.onFailed(exception)
                 },
             )
@@ -247,66 +229,29 @@ class MultiDeviceManagerImpl(
         }
     }
 
-    @WorkerThread
-    override suspend fun dropDevice(
-        deviceId: DeviceId,
-        taskCreator: TaskCreator,
-        timeout: Duration,
-    ): DropDeviceResult {
-        if (!isMultiDeviceActive) {
-            return DropDeviceResult.Failure.Internal
-        }
-
-        logger.debug("Drop device: {}", deviceId.id)
-
-        // drop the device from the current group with a timeout
-        try {
-            withTimeout(timeout) {
-                taskCreator.scheduleDropDeviceTask(deviceId).await()
-            }
-        } catch (timeoutCancellationException: TimeoutCancellationException) {
-            timeoutCancellationException.printStackTrace()
-            return DropDeviceResult.Failure.Timeout
-        }
-
-        // re-load all remaining devices in the current group
-        val remainingLinkedDevicesResult: Result<List<LinkedDevice>> = loadLinkedDevices(taskCreator)
-
-        return DropDeviceResult.Success(
-            remainingLinkedDevicesResult = remainingLinkedDevicesResult,
-        )
-    }
-
     @AnyThread
-    override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>> = withContext(Dispatchers.Default) {
-        if (isMultiDeviceActive) {
-            taskCreator.scheduleGetLinkedDevicesTask().await().toResult()
-        } else {
-            Result.failure(IllegalStateException("MD is not active anymore"))
+    override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<Map<DeviceId, DevicesInfo.AugmentedDeviceInfo>> =
+        withContext(Dispatchers.IO) {
+            if (isMultiDeviceActive) {
+                taskCreator.scheduleGetLinkedDevicesTask().await().toResult()
+            } else {
+                Result.failure(IllegalStateException("MD is not active anymore"))
+            }
         }
-    }
 
     override suspend fun setProperties(persistedProperties: PersistedMultiDeviceProperties?) {
         this.persistedProperties = persistedProperties
     }
 
-    private fun removeMultiDeviceLocally(serviceManager: ServiceManager) {
+    override fun removeMultiDeviceLocally(serviceManager: ServiceManager) {
         // Delete dgk
         logger.info("Delete multi device properties")
         persistedProperties = null
 
-        // Enable FS
-        if (!IS_FS_SUPPORTED_WITH_MD) {
-            enableForwardSecurity(serviceManager)
-        }
-
-        // Cleanup
+        // Cleanup server info
         serverInfo = null
 
         logger.info("Deactivated multi device")
-
-        // Reconnect
-        reconnect()
     }
 
     private fun onSocketClosed(reason: ServerSocketCloseReason) {
@@ -356,6 +301,10 @@ class MultiDeviceManagerImpl(
         val serviceManager = ThreemaApplication.getServiceManager()
         if (serviceManager != null) {
             removeMultiDeviceLocally(serviceManager)
+            // Enable FS again
+            if (!IS_FS_SUPPORTED_WITH_MD) {
+                enableForwardSecurity(serviceManager)
+            }
         } else {
             logger.error("Could not disable multi device locally because the service manager is null")
         }
@@ -403,7 +352,7 @@ class MultiDeviceManagerImpl(
 
     // TODO(ANDR-2519): Remove when md allows fs
     @WorkerThread
-    private fun enableForwardSecurity(serviceManager: ServiceManager) {
+    override fun enableForwardSecurity(serviceManager: ServiceManager) {
         val userService = serviceManager.userService
         val contactService = serviceManager.contactService
         val groupService = serviceManager.groupService

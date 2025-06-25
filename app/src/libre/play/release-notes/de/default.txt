@@ -1,4 +1,3 @@
-- Bulgarisch als Sprache hinzugefügt
-- Behebung eines Fehlers, wodurch Threema 2.0 für Desktop auf gewissen Geräten nicht genutzt werden konnte
-- Behebung eines Fehlers beim Threema-Widget
-- Behebung einer Sicherheitslücke, die ältere Android-Versionen betraf (bis Android 10): Eine bösartige App, die auf demselben Gerät wie Threema installiert war, hätte Nutzer dazu verleiten können, eine beliebige Datei an einen bestehenden Kontakt zu senden (gemeldet von Retr02332)
+- Version 6.1 ist die letzte Version, welche Android 5 und 6 unterstützt
+- Aktualisierung von Logo und Farbschema, um das neue Corporate Design zu widerspiegeln
+- Behebung eines Fehlers, der bei Benutzung des Web-Client unter älteren Android-Versionen auftreten konnte

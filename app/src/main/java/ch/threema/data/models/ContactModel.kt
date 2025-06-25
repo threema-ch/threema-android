@@ -50,6 +50,7 @@ import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
+import com.neilalexander.jnacl.NaCl
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
@@ -134,6 +135,9 @@ data class ContactModelData(
     companion object {
         /**
          * Factory function using only Java-compatible types.
+         *
+         * @throws IllegalArgumentException when the color index is negative or greater than 255, the feature mask is negative or more than 64 bits,
+         * or the public key is not [NaCl.PUBLICKEYBYTES] long.
          */
         @JvmStatic
         fun javaCreate(
@@ -162,12 +166,9 @@ data class ContactModelData(
             department: String?,
             notificationTriggerPolicyOverride: Long?,
         ): ContactModelData {
-            if (colorIndex < 0 || colorIndex > 255) {
-                throw IllegalArgumentException("colorIndex must be between 0 and 255")
-            }
-            if (featureMask.signum() < 0 || featureMask.bitLength() > 64) {
-                throw IllegalArgumentException("featureMask must be between 0 and 2^64")
-            }
+            require(colorIndex in 0..255) { "colorIndex must be between 0 and 255" }
+            require(featureMask.signum() >= 0 && featureMask.bitLength() <= 64) { "featureMask must be between 0 and 2^64" }
+            require(publicKey.size == NaCl.PUBLICKEYBYTES) { "public key must be ${NaCl.PUBLICKEYBYTES} long" }
             return ContactModelData(
                 identity = identity,
                 publicKey = publicKey,

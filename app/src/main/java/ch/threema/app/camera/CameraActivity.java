@@ -22,15 +22,16 @@
 package ch.threema.app.camera;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -69,16 +70,25 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
 
         setContentView(R.layout.camerax_activity_camera);
 
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+
+        // Add a listener to update the behavior of the toggle fullscreen button when the system bars are hidden or revealed.
+        ViewCompat.setOnApplyWindowInsetsListener(
+            getWindow().getDecorView(),
+            (view, windowInsets) -> {
+                // You can hide the caption bar even when the other system bars are visible.
+                // To account for this, explicitly check the visibility of navigationBars()
+                // and statusBars() rather than checking the visibility of systemBars().
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars()) || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())) {
+                    // Hide both the status bar and the navigation bar.
+                    windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
+                }
+                return ViewCompat.onApplyWindowInsets(view, windowInsets);
+            }
+        );
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // we want dark icons, i.e. a light status bar
-            getWindow().getDecorView().setSystemUiVisibility(
-                getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
 
         if (getIntent() != null) {
             cameraFilePath = getIntent().getStringExtra(MediaStore.EXTRA_OUTPUT);

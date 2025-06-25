@@ -25,7 +25,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -199,7 +199,7 @@ open class PollSetupMessageTest {
     @Test
     fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
         // act
-        val outgoingMessageId = MessageId()
+        val outgoingMessageId = MessageId.random()
         val outgoingMessageCreatedAt: Long = 42424242
         val outgoingD2DMessage = outgoingMessage {
             this.messageId = outgoingMessageId.messageIdLong

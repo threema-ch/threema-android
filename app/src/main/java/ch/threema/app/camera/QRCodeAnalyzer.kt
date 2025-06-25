@@ -30,9 +30,10 @@ import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import java.nio.ByteBuffer
 
+private val logger = LoggingUtil.getThreemaLogger("QRCodeAnalyzer")
+
 class QRCodeAnalyzer(private val onDecodeQRCode: (decodeQRCodeState: DecodeQRCodeState) -> Unit) :
     ImageAnalysis.Analyzer {
-    private val logger = LoggingUtil.getThreemaLogger("QRCodeAnalyzer")
 
     private var formats: List<Int> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         listOf(ImageFormat.YUV_420_888, ImageFormat.YUV_422_888, ImageFormat.YUV_444_888)

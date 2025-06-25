@@ -94,7 +94,7 @@ suspend fun handleIncomingGroupSyncRequest(
     serviceManager: ServiceManager,
 ): ReceiveStepsResult {
     val incomingGroupSyncRequestLogModelFactory =
-        serviceManager.databaseServiceNew.incomingGroupSyncRequestLogModelFactory
+        serviceManager.databaseService.incomingGroupSyncRequestLogModelFactory
 
     // Check whether the user is the creator. If not, abort these steps.
     if (serviceManager.userService.identity != group.groupIdentity.creatorIdentity) {
@@ -156,7 +156,7 @@ private suspend fun answerGroupSyncRequest(
             OutgoingCspMessageHandle(
                 sender,
                 OutgoingCspGroupMessageCreator(
-                    MessageId(),
+                    MessageId.random(),
                     Date(),
                     group,
                 ) {
@@ -171,12 +171,17 @@ private suspend fun answerGroupSyncRequest(
         runActiveGroupStateResyncSteps(
             group,
             setOf(sender),
-            PreGeneratedMessageIds(MessageId(), MessageId(), MessageId(), MessageId()),
+            PreGeneratedMessageIds(
+                firstMessageId = MessageId.random(),
+                secondMessageId = MessageId.random(),
+                thirdMessageId = MessageId.random(),
+                fourthMessageId = MessageId.random(),
+            ),
             serviceManager.userService,
             serviceManager.apiService,
             serviceManager.fileService,
             serviceManager.groupCallManager,
-            serviceManager.databaseServiceNew,
+            serviceManager.databaseService,
             serviceManager.getOutgoingCspMessageServices(),
             handle,
         )

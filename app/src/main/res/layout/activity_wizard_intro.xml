@@ -4,7 +4,8 @@
     android:id="@+id/layout_wizard_intro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:paddingTop="100dp">
 
     <include layout="@layout/background_new_wizard" />
 
@@ -16,13 +17,6 @@
         android:orientation="vertical"
         android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
         android:paddingRight="@dimen/wizard_contents_padding_horizontal">
-
-        <ImageView
-            android:id="@+id/three_dots"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:importantForAccessibility="no"
-            android:transitionName="@string/transition_name_dots" />
 
         <TextView
             android:id="@+id/wizard_privacy_policy_explain"

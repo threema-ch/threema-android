@@ -33,33 +33,34 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
-import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingFileTask")
 
 internal class ReflectedOutgoingFileTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(message, Common.CspE2eMessageType.FILE, serviceManager) {
+) : ReflectedOutgoingContactMessageTask<FileMessage>(
+    outgoingMessage = outgoingMessage,
+    message = FileMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.FILE,
+    serviceManager = serviceManager,
+) {
     private val messageService by lazy { serviceManager.messageService }
-
-    private val fileMessage: FileMessage by lazy { FileMessage.fromByteArray(message.body.toByteArray()) }
-
-    override val storeNonces: Boolean
-        get() = fileMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean = true
 
     override fun processOutgoingMessage() {
         // 1: Check if the message already exists locally (from previous run(s) of this task).
         //    If so, cancel and accept that the download for the content(s) might not be complete.
         messageService.getContactMessageModel(
-            fileMessage.messageId,
+            message.messageId,
             messageReceiver.contact.identity,
-        )?.run { return }
+        )?.run {
+            // It is possible that a message gets reflected twice when the reflecting task gets restarted.
+            logger.warn("Skipping message {} as it already exists.", message.messageId)
+            return
+        }
 
-        val fileData: FileData = fileMessage.fileData ?: run {
-            logger.warn("Message {} error: missing file data", message.messageId)
+        val fileData: FileData = message.fileData ?: run {
+            logger.warn("Message {} error: missing file data", outgoingMessage.messageId)
             return
         }
 
@@ -68,7 +69,7 @@ internal class ReflectedOutgoingFileTask(
 
         // 3. Create the actual AbstractMessageModel containing the file and receiver information
         val messageModel: MessageModel = createMessageModelFromFileMessage(
-            fileMessage = fileMessage,
+            fileMessage = message,
             fileDataModel = fileDataModel,
             fileData = fileData,
         )
@@ -96,21 +97,16 @@ internal class ReflectedOutgoingFileTask(
         fileDataModel: FileDataModel,
         fileData: FileData,
     ): MessageModel {
-        val messageModel: MessageModel = messageReceiver.createLocalModel(
+        val messageModel: MessageModel = createMessageModel(
             /* type = */
             MessageType.FILE,
             /* contentsType = */
             MimeUtil.getContentTypeFromFileData(fileDataModel),
-            /* postedAt = */
-            Date(message.createdAt),
         )
-        initializeMessageModelsCommonFields(messageModel)
         return messageModel.apply {
             this.fileData = fileDataModel
             messageFlags = fileMessage.messageFlags
             correlationId = fileData.correlationId
-            forwardSecurityMode = fileMessage.forwardSecurityMode
-            state = MessageState.SENT
         }
     }
 

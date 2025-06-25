@@ -38,6 +38,7 @@ import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.receivers.SendTextToContactBroadcastReceiver;
@@ -106,7 +107,7 @@ public class BackgroundErrorNotification {
             replyIntent.putExtra(EXTRA_TEXT_TO_SEND, supportChannelText.toString());
             replyIntent.putExtra(EXTRA_NOTIFICATION_ID, NotificationIDs.BACKGROUND_ERROR);
 
-            replyIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, THREEMA_SUPPORT_IDENTITY);
+            replyIntent.putExtra(AppConstants.INTENT_DATA_CONTACT, THREEMA_SUPPORT_IDENTITY);
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 appContext,

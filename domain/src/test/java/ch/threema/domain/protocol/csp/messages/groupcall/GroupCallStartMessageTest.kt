@@ -27,7 +27,7 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import java.io.ByteArrayOutputStream
 import kotlin.random.Random.Default.nextBytes

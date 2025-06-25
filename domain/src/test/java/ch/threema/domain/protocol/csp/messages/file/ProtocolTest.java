@@ -21,17 +21,16 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import androidx.annotation.NonNull;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceScope;
-import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.BasicContact;
+import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -85,24 +84,24 @@ public class ProtocolTest {
         NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
         MessageBox boxmsg = messageCoder.encode(groupFileMessage, nonceFactory.nextNonce(NonceScope.CSP));
-        Assert.assertNotNull("BoxMessage failed", boxmsg);
+        Assertions.assertNotNull(boxmsg, "BoxMessage failed");
 
         //now decode again
         AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
-        Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-        Assert.assertTrue(decodedBoxMessage instanceof GroupFileMessage);
+        Assertions.assertNotNull(decodedBoxMessage, "decodedBox failed");
+        Assertions.assertInstanceOf(GroupFileMessage.class, decodedBoxMessage);
 
         GroupFileMessage groupFileMessageDecoded = (GroupFileMessage) decodedBoxMessage;
         FileData fileData = groupFileMessageDecoded.getFileData();
-        Assert.assertNotNull(fileData);
+        Assertions.assertNotNull(fileData);
 
-        Assert.assertArrayEquals(blobIdFile, fileData.getFileBlobId());
-        Assert.assertArrayEquals(blobIdThumbnail, fileData.getThumbnailBlobId());
-        Assert.assertArrayEquals(key, fileData.getEncryptionKey());
-        Assert.assertEquals("image/jpg", fileData.getMimeType());
-        Assert.assertEquals("therme.jpg", fileData.getFileName());
-        Assert.assertEquals(123, fileData.getFileSize());
-        Assert.assertEquals(FileData.RENDERING_DEFAULT, fileData.getRenderingType());
+        Assertions.assertArrayEquals(blobIdFile, fileData.getFileBlobId());
+        Assertions.assertArrayEquals(blobIdThumbnail, fileData.getThumbnailBlobId());
+        Assertions.assertArrayEquals(key, fileData.getEncryptionKey());
+        Assertions.assertEquals("image/jpg", fileData.getMimeType());
+        Assertions.assertEquals("therme.jpg", fileData.getFileName());
+        Assertions.assertEquals(123, fileData.getFileSize());
+        Assertions.assertEquals(FileData.RENDERING_DEFAULT, fileData.getRenderingType());
     }
 
     @Test
@@ -136,24 +135,24 @@ public class ProtocolTest {
         NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
         MessageBox boxmsg = messageCoder.encode(fileMessage, nonceFactory.nextNonce(NonceScope.CSP));
-        Assert.assertNotNull("BoxMessage failed", boxmsg);
+        Assertions.assertNotNull(boxmsg, "BoxMessage failed");
 
         //now decode again
         AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
-        Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-        Assert.assertTrue(decodedBoxMessage instanceof FileMessage);
+        Assertions.assertNotNull(decodedBoxMessage, "decodedBox failed");
+        Assertions.assertInstanceOf(FileMessage.class, decodedBoxMessage);
 
         FileMessage fileMessageDecoded = (FileMessage) decodedBoxMessage;
         FileData fileData = fileMessageDecoded.getFileData();
-        Assert.assertNotNull(fileData);
+        Assertions.assertNotNull(fileData);
 
-        Assert.assertArrayEquals(blobIdFile, fileData.getFileBlobId());
-        Assert.assertArrayEquals(blobIdThumbnail, fileData.getThumbnailBlobId());
-        Assert.assertArrayEquals(key, fileData.getEncryptionKey());
-        Assert.assertEquals("image/jpg", fileData.getMimeType());
-        Assert.assertEquals("therme.jpg", fileData.getFileName());
-        Assert.assertEquals(123, fileData.getFileSize());
-        Assert.assertEquals(FileData.RENDERING_MEDIA, fileData.getRenderingType());
+        Assertions.assertArrayEquals(blobIdFile, fileData.getFileBlobId());
+        Assertions.assertArrayEquals(blobIdThumbnail, fileData.getThumbnailBlobId());
+        Assertions.assertArrayEquals(key, fileData.getEncryptionKey());
+        Assertions.assertEquals("image/jpg", fileData.getMimeType());
+        Assertions.assertEquals("therme.jpg", fileData.getFileName());
+        Assertions.assertEquals(123, fileData.getFileSize());
+        Assertions.assertEquals(FileData.RENDERING_MEDIA, fileData.getRenderingType());
     }
 
     private static ContactStore createFakeContactStore() {

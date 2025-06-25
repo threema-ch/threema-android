@@ -1,6 +1,13 @@
+//! Logging utility to forward logging.
+
+#![expect(
+    missing_docs,
+    reason = "False positive: https://github.com/mozilla/uniffi-rs/pull/2478"
+)]
+
 use std::{io, sync::Arc};
 
-use tracing::Level;
+use tracing::{Level, debug};
 use tracing_subscriber::{filter::LevelFilter, fmt::MakeWriter};
 
 /// Log levels used by libthreema.
@@ -42,7 +49,6 @@ impl From<Level> for LogLevel {
         }
     }
 }
-
 /// Dispatches log records from libthreema.
 #[uniffi::export(with_foreign)]
 pub trait LogDispatcher: Send + Sync {
@@ -125,9 +131,7 @@ pub(super) fn init_logging(min_log_level: LogLevel, log_dispatcher: Arc<dyn LogD
         .without_time()
         .with_writer(MakeDispatchWriter::new(log_dispatcher))
         .finish();
-    tracing::subscriber::set_global_default(subscriber).expect(
-        "Cannot initialize logging multiple times. Did you call init_logging_once() more than \
-         once?",
-    );
-    tracing::debug!("Configured log level filter: {}", level_filter);
+    tracing::subscriber::set_global_default(subscriber)
+        .expect("Cannot initialize logging multiple times. Did you call this more than once?");
+    debug!(?level_filter, "Configured log level filter");
 }

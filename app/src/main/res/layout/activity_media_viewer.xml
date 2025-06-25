@@ -41,10 +41,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
+        android:paddingHorizontal="@dimen/grid_unit_x2"
         android:visibility="gone"
         app:contentPaddingBottom="@dimen/mediaviewer_caption_container_padding_vertical"
-        app:contentPaddingLeft="16dp"
-        app:contentPaddingRight="16dp"
         app:contentPaddingTop="@dimen/mediaviewer_caption_container_padding_vertical">
 
         <ch.threema.app.emojis.EmojiTextView
@@ -53,18 +52,26 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:ellipsize="end"
+            android:paddingHorizontal="@dimen/grid_unit_x1"
             android:text=""
             android:textColor="@android:color/white"
             android:textSize="@dimen/mediaviewer_caption_text_size" />
 
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#77000000"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/Threema.PopupMenuStyle.Overflow" />
+        android:layout_height="wrap_content"
+        android:background="#77000000">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/Threema.PopupMenuStyle.Overflow" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
 </FrameLayout>

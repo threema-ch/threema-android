@@ -58,8 +58,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
@@ -69,10 +71,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
-import ch.threema.app.activities.ContactDetailActivity;
+import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.activities.ThreemaActivity;
@@ -90,7 +93,9 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.dialogs.loadingtimeout.LoadingWithTimeoutDialogXml;
 import ch.threema.app.groupflows.GroupDisbandIntent;
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupLeaveIntent;
 import ch.threema.app.listeners.ChatListener;
 import ch.threema.app.listeners.ContactListener;
@@ -116,13 +121,16 @@ import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
@@ -137,6 +145,7 @@ import ch.threema.app.utils.ViewUtil;
 import ch.threema.app.voip.activities.GroupCallActivity;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModelData;
@@ -147,13 +156,15 @@ import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
 import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
 import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
-import static ch.threema.app.ThreemaApplication.MAX_PW_LENGTH_BACKUP;
-import static ch.threema.app.ThreemaApplication.MIN_PW_LENGTH_BACKUP;
+import static ch.threema.app.AppConstants.MAX_PW_LENGTH_BACKUP;
+import static ch.threema.app.AppConstants.MIN_PW_LENGTH_BACKUP;
+import static ch.threema.app.groupflows.GroupFlowResultKt.GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS;
 import static ch.threema.app.managers.ListenerManager.conversationListeners;
 
 /**
@@ -695,7 +706,7 @@ public class MessageSectionFragment extends MainFragment
     }
 
     private void removePrivateMark(@NonNull ConversationModel conversationModel) {
-        MessageReceiver<?> receiver = conversationModel.getReceiver();
+        MessageReceiver<?> receiver = conversationModel.messageReceiver;
         if (receiver == null) {
             logger.warn("Cannot remove private mark as the receiver is null");
             return;
@@ -722,7 +733,7 @@ public class MessageSectionFragment extends MainFragment
     }
 
     private void markAsPrivate(ConversationModel conversationModel) {
-        MessageReceiver<?> receiver = conversationModel.getReceiver();
+        MessageReceiver<?> receiver = conversationModel.messageReceiver;
         if (receiver == null) {
             logger.warn("Cannot mark chat as private as the receiver is null");
             return;
@@ -781,7 +792,7 @@ public class MessageSectionFragment extends MainFragment
                 if (conversationModel == null) {
                     return false;
                 }
-                MessageReceiver<?> messageReceiver = conversationModel.getReceiver();
+                MessageReceiver<?> messageReceiver = conversationModel.messageReceiver;
                 if (messageReceiver == null) {
                     logger.warn("The chat cannot be marked as private as the receiver is null");
                     return false;
@@ -797,7 +808,7 @@ public class MessageSectionFragment extends MainFragment
                     return false;
                 }
 
-                fireReceiverUpdate(conversationModel.getReceiver());
+                fireReceiverUpdate(conversationModel.messageReceiver);
                 return true;
             }
 
@@ -909,6 +920,12 @@ public class MessageSectionFragment extends MainFragment
             this.recyclerView.setLayoutManager(linearLayoutManager);
             this.recyclerView.setItemAnimator(new DefaultItemAnimator());
 
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                recyclerView,
+                new InsetSides(false, true, isMultiPaneEnabled(activity), true),
+                new SpacingValues(null, null, R.dimen.grid_unit_x10, null)
+            );
+
             this.cornerRadius = getResources().getDimensionPixelSize(R.dimen.messagelist_card_corner_radius);
 
             final ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
@@ -963,7 +980,7 @@ public class MessageSectionFragment extends MainFragment
                     if (direction == ItemTouchHelper.RIGHT) {
                         logger.info("Chat swiped right for pinning");
                         conversationTagService.toggle(conversationModel, ConversationTag.PINNED, true, TriggerSource.LOCAL);
-                        conversationModel.setIsPinTagged(!conversationModel.isPinTagged());
+                        conversationModel.isPinTagged = !conversationModel.isPinTagged;
 
                         ArrayList<ConversationModel> conversationModels = new ArrayList<>();
                         conversationModels.add(conversationModel);
@@ -1075,12 +1092,13 @@ public class MessageSectionFragment extends MainFragment
             ViewUtil.show(this.loadingView, true);
 
             this.floatingButtonView = fragmentView.findViewById(R.id.floating);
-            this.floatingButtonView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onFABClicked(v);
-                }
-            });
+            this.floatingButtonView.setOnClickListener(this::onFABClicked);
+
+            ViewExtensionsKt.applyDeviceInsetsAsMargin(
+                floatingButtonView,
+                new InsetSides(false, true, isMultiPaneEnabled(activity), true),
+                SpacingValues.all(R.dimen.floating_button_margin)
+            );
 
             // add text view if contact list is empty
             EmptyView emptyView = new EmptyView(activity);
@@ -1143,7 +1161,7 @@ public class MessageSectionFragment extends MainFragment
         // stop list fling to avoid crashes due to concurrent access to conversation data
         recyclerView.stopScroll();
         Intent intent = new Intent(getContext(), RecipientListBaseActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, true);
+        intent.putExtra(AppConstants.INTENT_DATA_HIDE_RECENTS, true);
         intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT, false);
         intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT_FOR_COMPOSE, true);
         getActivity().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
@@ -1172,14 +1190,14 @@ public class MessageSectionFragment extends MainFragment
         if (model.isContactConversation()) {
             logger.info("Contact avatar clicked");
             intent = new Intent(getActivity(), ContactDetailActivity.class);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, model.getContact().getIdentity());
+            intent.putExtra(AppConstants.INTENT_DATA_CONTACT, model.getContact().getIdentity());
         } else if (model.isGroupConversation()) {
             logger.info("Group avatar clicked");
             openGroupDetails(model);
         } else if (model.isDistributionListConversation()) {
             logger.info("Distribution list avatar clicked");
             intent = new Intent(getActivity(), DistributionListAddActivity.class);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, model.getDistributionList().getId());
+            intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, model.getDistributionList().getId());
         }
         if (intent != null) {
             activity.startActivity(intent);
@@ -1190,7 +1208,7 @@ public class MessageSectionFragment extends MainFragment
     public void onFooterClick(View view) {
         logger.info("Footer clicked, showing archive");
         Intent intent = new Intent(getActivity(), ArchiveActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_ARCHIVE_FILTER, filterQuery);
+        intent.putExtra(AppConstants.INTENT_DATA_ARCHIVE_FILTER, filterQuery);
         getActivity().startActivity(intent);
     }
 
@@ -1320,7 +1338,7 @@ public class MessageSectionFragment extends MainFragment
 
         MessageReceiver receiver;
         try {
-            receiver = conversationModel.getReceiver();
+            receiver = conversationModel.messageReceiver;
         } catch (Exception e) {
             logger.error("Could not get receiver of conversation model", e);
             return;
@@ -1362,7 +1380,7 @@ public class MessageSectionFragment extends MainFragment
         labels.add(new SelectorDialogItem(getString(R.string.archive_chat), R.drawable.ic_archive_outline));
         tags.add(TAG_ARCHIVE_CHAT);
 
-        if (conversationModel.getMessageCount() > 0) {
+        if (conversationModel.messageCount > 0) {
             labels.add(new SelectorDialogItem(getString(R.string.empty_chat_title), R.drawable.ic_outline_delete_sweep));
             tags.add(TAG_EMPTY_CHAT);
         }
@@ -1548,17 +1566,17 @@ public class MessageSectionFragment extends MainFragment
             case TAG_MARK_READ:
                 logger.info("Mark read clicked");
                 conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
-                conversationModel.setIsUnreadTagged(false);
+                conversationModel.isUnreadTagged = false;
                 conversationModel.setUnreadCount(0);
                 new Thread(() -> messageService.markConversationAsRead(
-                    conversationModel.getReceiver(),
+                    conversationModel.messageReceiver,
                     serviceManager.getNotificationService())
                 ).start();
                 break;
             case TAG_MARK_UNREAD:
                 logger.info("Mark unread clicked");
                 conversationTagService.addTagAndNotify(conversationModel, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
-                conversationModel.setIsUnreadTagged(true);
+                conversationModel.isUnreadTagged = true;
                 break;
         }
     }
@@ -1619,7 +1637,7 @@ public class MessageSectionFragment extends MainFragment
                 final EmptyOrDeleteConversationsAsyncTask.Mode mode = tag.equals(DIALOG_TAG_REALLY_DELETE_CHAT)
                     ? EmptyOrDeleteConversationsAsyncTask.Mode.DELETE
                     : EmptyOrDeleteConversationsAsyncTask.Mode.EMPTY;
-                MessageReceiver<?> receiver = conversationModel.getReceiver();
+                MessageReceiver<?> receiver = conversationModel.messageReceiver;
                 if (receiver != null) {
                     logger.info("{} chat with receiver {} (type={}).", mode, receiver.getUniqueIdString(), receiver.getType());
                 } else {
@@ -1643,56 +1661,142 @@ public class MessageSectionFragment extends MainFragment
         }
     }
 
-    private void leaveGroup(@NonNull GroupLeaveIntent intent, @Nullable ch.threema.data.models.GroupModel groupModel) {
+    private void leaveGroup(
+        @NonNull GroupLeaveIntent intent,
+        @Nullable ch.threema.data.models.GroupModel groupModel
+    ) {
         if (groupModel == null) {
-            logger.warn("Cannot leave group: group model is null");
+            logger.error("Cannot leave group: group model is null");
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_leaving_group_internal)
+                .show(getParentFragmentManager());
             return;
         }
 
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
-            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runLeaveGroupFlow(
-                getParentFragmentManager(),
-                intent,
-                groupModel
-            );
-
-            result.invokeOnCompletion(throwable -> {
-                // TODO(ANDR-3631): Do not ignore throwable and refactor result type
-                if (result.getCompleted() != Boolean.TRUE) {
-                    logger.error("Could not leave group with intent {}", intent);
-                }
-
-                return null;
-            });
-        } catch (ThreemaException e) {
-            logger.error("Could not leave group", e);
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException exception) {
+            logger.error("Failed to leave group", exception);
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_leaving_group_internal)
+                .show(getParentFragmentManager());
+            return;
         }
+
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.leaving_group
+        );
+        loadingDialog.show(getParentFragmentManager());
+
+        Deferred<GroupFlowResult> leaveGroupFlowResultDeferred = groupFlowDispatcher
+            .runLeaveGroupFlow(intent, groupModel);
+
+        CoroutinesExtensionKt.onCompleted(
+            leaveGroupFlowResultDeferred,
+            exception -> {
+                logger.error("leave-group-flow was completed exceptionally", exception);
+                onLeaveGroupFailed(GroupFlowResult.Failure.Other.INSTANCE, loadingDialog);
+                return Unit.INSTANCE;
+            },
+            result -> {
+                if (result instanceof GroupFlowResult.Success) {
+                    RuntimeUtil.runOnUiThread(loadingDialog::dismiss);
+                } else if (result instanceof GroupFlowResult.Failure) {
+                    onLeaveGroupFailed((GroupFlowResult.Failure) result, loadingDialog);
+                }
+                return Unit.INSTANCE;
+            }
+        );
     }
 
-    private void disbandGroup(@NonNull GroupDisbandIntent intent, @Nullable ch.threema.data.models.GroupModel groupModel) {
+    @AnyThread
+    private void onLeaveGroupFailed(
+        @NonNull GroupFlowResult.Failure failureResult,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (failureResult instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_leaving_group_network;
+            } else {
+                errorMessageRes = R.string.error_leaving_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getParentFragmentManager());
+        });
+    }
+
+    private void disbandGroup(
+        @NonNull GroupDisbandIntent intent,
+        @Nullable ch.threema.data.models.GroupModel groupModel
+    ) {
         if (groupModel == null) {
-            logger.warn("Cannot disband group: group model is null");
+            logger.error("Cannot disband group: group model is null");
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_disbanding_group_internal)
+                .show(getParentFragmentManager());
             return;
         }
 
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
-            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runDisbandGroupFlow(
-                getParentFragmentManager(),
-                intent,
-                groupModel
-            );
-
-            result.invokeOnCompletion(throwable -> {
-                if (result.getCompleted() != Boolean.TRUE) {
-                    logger.error("Could not disband (or delete) group with intent {}", intent);
-                }
-
-                return null;
-            });
-
-        } catch (ThreemaException e) {
-            logger.error("Could not disband group", e);
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException exception) {
+            logger.error("Failed to disband group", exception);
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_disbanding_group_internal)
+                .show(getParentFragmentManager());
+            return;
         }
+
+        Deferred<GroupFlowResult> disbandGroupFlowResultDeferred = groupFlowDispatcher
+            .runDisbandGroupFlow(intent, groupModel);
+
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.disbanding_group
+        );
+        loadingDialog.show(getParentFragmentManager());
+
+        CoroutinesExtensionKt.onCompleted(
+            disbandGroupFlowResultDeferred,
+            exception -> {
+                logger.error("disband-group-flow was completed exceptionally", exception);
+                onDisbandGroupFailed(GroupFlowResult.Failure.Other.INSTANCE, loadingDialog);
+                return Unit.INSTANCE;
+            },
+            result -> {
+                if (result instanceof GroupFlowResult.Success) {
+                    RuntimeUtil.runOnUiThread(loadingDialog::dismiss);
+                } else if (result instanceof GroupFlowResult.Failure) {
+                    onDisbandGroupFailed((GroupFlowResult.Failure) result, loadingDialog);
+                }
+                return Unit.INSTANCE;
+            }
+        );
+    }
+
+    @AnyThread
+    private void onDisbandGroupFailed(
+        @NonNull GroupFlowResult.Failure failureResult,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (failureResult instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_disbanding_group_network;
+            } else {
+                errorMessageRes = R.string.error_disbanding_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getParentFragmentManager());
+        });
     }
 
     private void removeGroup(@Nullable ch.threema.data.models.GroupModel groupModel) {
@@ -1723,24 +1827,65 @@ public class MessageSectionFragment extends MainFragment
     /**
      * Note that this must only be run for groups that are already left or disbanded.
      */
-    private void runGroupRemoveFlow(@NonNull ch.threema.data.models.GroupModel groupModel) {
+    private void runGroupRemoveFlow(
+        @NonNull ch.threema.data.models.GroupModel groupModel
+    ) {
+
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
-            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runRemoveGroupFlow(
-                getParentFragmentManager(),
-                groupModel
-            );
-
-            result.invokeOnCompletion(throwable -> {
-                if (result.getCompleted() != Boolean.TRUE) {
-                    logger.error("Could not remove group");
-                }
-
-                return null;
-            });
-
-        } catch (ThreemaException e) {
-            logger.error("Could not remove group", e);
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException exception) {
+            logger.error("Failed to remove group", exception);
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_removing_group_internal)
+                .show(getParentFragmentManager());
+            return;
         }
+
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.removing_group
+        );
+        loadingDialog.show(getParentFragmentManager());
+
+        Deferred<GroupFlowResult> removeGroupFlowResultDeferred = groupFlowDispatcher
+            .runRemoveGroupFlow(groupModel);
+
+        CoroutinesExtensionKt.onCompleted(
+            removeGroupFlowResultDeferred,
+            exception -> {
+                logger.error("remove-group-flow was completed exceptionally", exception);
+                onRemoveGroupFailed(GroupFlowResult.Failure.Other.INSTANCE, loadingDialog);
+                return Unit.INSTANCE;
+            },
+            result -> {
+                if (result instanceof GroupFlowResult.Success) {
+                    RuntimeUtil.runOnUiThread(loadingDialog::dismiss);
+                } else if (result instanceof GroupFlowResult.Failure) {
+                    onRemoveGroupFailed((GroupFlowResult.Failure) result, loadingDialog);
+                }
+                return Unit.INSTANCE;
+            }
+        );
+    }
+
+    @AnyThread
+    private void onRemoveGroupFailed(
+        @NonNull GroupFlowResult.Failure failureResult,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (failureResult instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_removing_group_network;
+            } else {
+                errorMessageRes = R.string.error_removing_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getParentFragmentManager());
+        });
     }
 
     @Nullable
@@ -1763,6 +1908,7 @@ public class MessageSectionFragment extends MainFragment
     }
 
     @Override
+    @Deprecated
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_SHARE_THREAD:
@@ -1958,10 +2104,10 @@ public class MessageSectionFragment extends MainFragment
         for (ConversationModel c : Functional.filter(
             this.conversationService.getAll(false, null),
             (IPredicateNonNull<ConversationModel>)
-                conversationModel -> conversationCategoryService.isPrivateChat(conversationModel.getReceiver().getUniqueIdString())
+                conversationModel -> conversationCategoryService.isPrivateChat(conversationModel.messageReceiver.getUniqueIdString())
         )) {
             if (c != null) {
-                this.fireReceiverUpdate(c.getReceiver());
+                this.fireReceiverUpdate(c.messageReceiver);
             }
         }
     }

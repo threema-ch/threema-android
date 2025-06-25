@@ -29,25 +29,6 @@ import ch.threema.app.ThreemaApplication;
 
 public class NetworkUtil {
 
-    public static boolean isAnyNetworkAvailable() {
-        Context context = ThreemaApplication.getAppContext();
-        ConnectivityManager connectivityManager = (ConnectivityManager) context
-            .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager == null) {
-            return false;
-        } else {
-            NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-            if (networkInfo.length > 0) {
-                for (NetworkInfo info : networkInfo) {
-                    if (info.getState() == NetworkInfo.State.CONNECTED) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     public static boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) ThreemaApplication.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {

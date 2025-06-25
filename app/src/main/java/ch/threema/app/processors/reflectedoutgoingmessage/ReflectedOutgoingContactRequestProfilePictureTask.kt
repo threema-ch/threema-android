@@ -35,20 +35,14 @@ private val logger =
  * Therefore this task is currently never executed.
  */
 internal class ReflectedOutgoingContactRequestProfilePictureTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<ContactRequestProfilePictureMessage>(
+    outgoingMessage = outgoingMessage,
+    message = ContactRequestProfilePictureMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE,
+    serviceManager = serviceManager,
 ) {
-    private val requestProfilePictureMessage by lazy {
-        ContactRequestProfilePictureMessage.fromReflected(message)
-    }
-
-    override val shouldBumpLastUpdate: Boolean = requestProfilePictureMessage.bumpLastUpdate()
-
-    override val storeNonces: Boolean = requestProfilePictureMessage.protectAgainstReplay()
 
     override fun processOutgoingMessage() {
         val identity = messageReceiver.contact.identity

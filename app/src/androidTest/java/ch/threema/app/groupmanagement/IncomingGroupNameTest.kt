@@ -32,9 +32,9 @@ import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
 import junit.framework.TestCase.*
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -165,7 +165,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
         // receive steps.
     }
 
-    @After
+    @AfterTest
     fun removeAllGroupListeners() {
         GroupRenameTracker.stopAllListeners()
     }

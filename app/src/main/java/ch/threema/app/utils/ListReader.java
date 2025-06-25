@@ -50,7 +50,7 @@ public class ListReader {
 
     public byte[] nextStringAsByteArray() {
         String v = this.nextString();
-        if (v != null && v.length() > 0) {
+        if (v != null && !v.isEmpty()) {
             return Utils.hexStringToByteArray(v);
         }
         return null;

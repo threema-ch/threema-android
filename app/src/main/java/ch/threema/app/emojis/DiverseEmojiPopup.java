@@ -34,7 +34,6 @@ import android.widget.PopupWindow;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.ConfigUtils;
 
 public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListener {
 
@@ -91,27 +90,27 @@ public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListen
 
         this.originView = originView;
 
-        this.originalImage.setImageDrawable(emojiManager.getEmojiDrawable(originalEmoji));
+        this.originalImage.setImageDrawable(emojiManager.getEmojiDrawableAsync(originalEmoji));
         this.originalImage.setTag(originalEmoji);
         this.originalImage.setOnClickListener(this);
 
-        this.type1Image.setImageDrawable(emojiManager.getEmojiDrawable(originalEmojiInfo.diversities[0]));
+        this.type1Image.setImageDrawable(emojiManager.getEmojiDrawableAsync(originalEmojiInfo.diversities[0]));
         this.type1Image.setTag(originalEmojiInfo.diversities[0]);
         this.type1Image.setOnClickListener(this);
 
-        this.type3Image.setImageDrawable(emojiManager.getEmojiDrawable(originalEmojiInfo.diversities[1]));
+        this.type3Image.setImageDrawable(emojiManager.getEmojiDrawableAsync(originalEmojiInfo.diversities[1]));
         this.type3Image.setTag(originalEmojiInfo.diversities[1]);
         this.type3Image.setOnClickListener(this);
 
-        this.type4Image.setImageDrawable(emojiManager.getEmojiDrawable(originalEmojiInfo.diversities[2]));
+        this.type4Image.setImageDrawable(emojiManager.getEmojiDrawableAsync(originalEmojiInfo.diversities[2]));
         this.type4Image.setTag(originalEmojiInfo.diversities[2]);
         this.type4Image.setOnClickListener(this);
 
-        this.type5Image.setImageDrawable(emojiManager.getEmojiDrawable(originalEmojiInfo.diversities[3]));
+        this.type5Image.setImageDrawable(emojiManager.getEmojiDrawableAsync(originalEmojiInfo.diversities[3]));
         this.type5Image.setTag(originalEmojiInfo.diversities[3]);
         this.type5Image.setOnClickListener(this);
 
-        this.type6Image.setImageDrawable(emojiManager.getEmojiDrawable(originalEmojiInfo.diversities[4]));
+        this.type6Image.setImageDrawable(emojiManager.getEmojiDrawableAsync(originalEmojiInfo.diversities[4]));
         this.type6Image.setTag(originalEmojiInfo.diversities[4]);
         this.type6Image.setOnClickListener(this);
 

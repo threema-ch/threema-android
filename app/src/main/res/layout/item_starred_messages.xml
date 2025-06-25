@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019-2025 Threema GmbH
   ~ All rights reserved.
   -->
-
 <ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/listitem_background_selector"
     android:paddingTop="4dp"
-    android:paddingBottom="4dp"
-    android:background="@drawable/listitem_background_selector">
+    android:paddingBottom="4dp">
 
     <ch.threema.app.ui.AvatarView
         android:id="@+id/avatar_view"
@@ -21,7 +19,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="16dp"
         android:clickable="false"
-        android:importantForAccessibility="no" />
+        android:importantForAccessibility="no"
+        tools:background="@drawable/ic_profile" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/message_block"
@@ -29,17 +28,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/avatar_view"
-        android:layout_toLeftOf="@+id/next_view"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="0dp"
-        app:shapeAppearanceOverlay="@style/Threema.ShapeAppearance.CardView.Bubble.Status"
+        android:layout_toLeftOf="@+id/next_view"
+        android:layout_toRightOf="@+id/avatar_view"
         app:contentPaddingLeft="@dimen/chat_bubble_margin_end"
-        app:contentPaddingRight="@dimen/chat_bubble_margin_start">
+        app:contentPaddingRight="@dimen/chat_bubble_margin_start"
+        app:shapeAppearanceOverlay="@style/Threema.ShapeAppearance.CardView.Bubble.Status">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/grid_unit_x0_5">
 
             <ch.threema.app.emojis.EmojiTextView
                 android:id="@+id/name"
@@ -51,7 +51,8 @@
                 android:singleLine="true"
                 android:textAppearance="@style/Threema.TextAppearance.BodySmall"
                 android:textColor="@color/bubble_send_text_colorstatelist"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="Conversation Name" />
 
             <ch.threema.app.emojis.EmojiTextView
                 android:id="@+id/snippet"
@@ -60,10 +61,11 @@
                 android:layout_below="@id/name"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/thumbnail_view"
-                android:textColor="@color/bubble_send_text_colorstatelist"
                 android:ellipsize="end"
                 android:maxLines="4"
-                android:textAppearance="@style/Threema.Bubble.Text.Body.Unscaled" />
+                android:textAppearance="@style/Threema.Bubble.Text.Body.Unscaled"
+                android:textColor="@color/bubble_send_text_colorstatelist"
+                tools:text="Message contents of the starred message" />
 
             <ch.threema.app.emojis.EmojiTextView
                 android:id="@+id/deleted_placeholder"
@@ -72,35 +74,37 @@
                 android:layout_below="@id/name"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/thumbnail_view"
-                android:textColor="@color/text_color_deleted"
-                android:textStyle="italic"
+                android:alpha="0.6"
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:textAppearance="@style/Threema.Bubble.Text.Body.Unscaled"
+                android:textColor="@color/bubble_send_text_colorstatelist"
+                android:textStyle="italic"
                 android:visibility="gone" />
 
             <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_below="@id/snippet"
                 android:layout_alignLeft="@+id/snippet"
                 android:layout_toLeftOf="@+id/thumbnail_view"
+                android:alpha="0.6"
                 android:ellipsize="none"
                 android:singleLine="true"
                 android:textAppearance="@style/Threema.TextAppearance.BodySmall"
-                android:textColor="@color/bubble_send_text_colorstatelist" />
+                android:textColor="@color/bubble_send_text_colorstatelist"
+                tools:text="Today" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/thumbnail_view"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
                 android:background="?attr/colorTertiaryContainer"
                 android:clickable="false"
                 android:contentDescription="@string/attach_picture"

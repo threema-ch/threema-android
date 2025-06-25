@@ -77,7 +77,7 @@ public class Conversation extends Converter {
             builder.put(Receiver.TYPE, model.getType());
             builder.put(Receiver.ID, model.getId());
             builder.put(POSITION, conversation.getPosition());
-            builder.put(MESSAGE_COUNT, conversation.getMessageCount());
+            builder.put(MESSAGE_COUNT, conversation.messageCount);
             builder.put(UNREAD_COUNT, conversation.getUnreadCount());
             maybePutLatestMessage(builder, LATEST_MESSAGE, conversation);
 
@@ -107,9 +107,9 @@ public class Conversation extends Converter {
         String field,
         ConversationModel conversation
     ) throws ConversionException {
-        AbstractMessageModel message = conversation.getLatestMessage();
+        AbstractMessageModel message = conversation.latestMessage;
         if (message != null) {
-            builder.put(field, Message.convert(message, conversation.getReceiver(), false, Message.DETAILS_NO_QUOTE));
+            builder.put(field, Message.convert(message, conversation.messageReceiver, false, Message.DETAILS_NO_QUOTE));
         }
     }
 }

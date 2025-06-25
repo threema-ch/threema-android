@@ -42,7 +42,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -55,6 +54,9 @@ import ch.threema.app.services.ballot.BallotMatrixService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.HintedImageView;
 import ch.threema.app.ui.HintedTextView;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
@@ -185,6 +187,24 @@ public class BallotMatrixActivity extends BallotDetailActivity {
     }
 
     @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.scroll_parent),
+            InsetSides.lbr()
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.no_votes_yet),
+            InsetSides.horizontal()
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.avatar_container),
+            InsetSides.horizontal(),
+            SpacingValues.all(R.dimen.grid_unit_x2)
+        );
+    }
+
+    @Override
     public int getLayoutResource() {
         return R.layout.activity_ballot_matrix;
     }
@@ -271,12 +291,12 @@ public class BallotMatrixActivity extends BallotDetailActivity {
         TextView notVotedTextView = findViewById(R.id.not_voted);
         MaterialCardView notVotedContainer = findViewById(R.id.not_voted_container);
 
-        if (contactService != null && notVotedParticipants.size() > 0) {
+        if (contactService != null && !notVotedParticipants.isEmpty()) {
             notVotedContainer.setVisibility(View.VISIBLE);
             String userList = "";
 
             for (BallotMatrixService.Participant p : notVotedParticipants) {
-                if (!"".equals(userList)) {
+                if (!userList.isEmpty()) {
                     userList += ", ";
                 }
                 userList += NameUtil.getDisplayNameOrNickname(p.getIdentity(), contactService);
@@ -366,11 +386,9 @@ public class BallotMatrixActivity extends BallotDetailActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -395,8 +413,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
                 this.identity = serviceManager.getUserService().getIdentity();
                 this.contactService = serviceManager.getContactService();
                 this.groupService = serviceManager.getGroupService();
-            } catch (NoIdentityException | MasterKeyLockedException |
-                     FileSystemNotPresentException e) {
+            } catch (NoIdentityException | MasterKeyLockedException e) {
                 logger.error("Exception", e);
             }
         }
@@ -426,31 +443,6 @@ public class BallotMatrixActivity extends BallotDetailActivity {
     BallotService getBallotService() {
         if (this.requiredInstances()) {
             return this.ballotService;
-        }
-
-        return null;
-    }
-
-    @Override
-    public ContactService getContactService() {
-        if (requiredInstances()) {
-            return this.contactService;
-        }
-        return null;
-    }
-
-    @Override
-    public GroupService getGroupService() {
-        if (requiredInstances()) {
-            return this.groupService;
-        }
-        return null;
-    }
-
-    @Override
-    public String getIdentity() {
-        if (requiredInstances()) {
-            return this.identity;
         }
         return null;
     }

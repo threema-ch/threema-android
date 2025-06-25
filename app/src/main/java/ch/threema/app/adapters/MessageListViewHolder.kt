@@ -35,6 +35,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
@@ -58,7 +59,6 @@ import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.groupcall.GroupCallObserver
 import ch.threema.app.voip.groupcall.localGroupId
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.models.ConversationModel.NO_RESOURCE
 import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
@@ -200,16 +200,18 @@ class MessageListViewHolder(
     }
 
     private fun initializeOnClickListeners() {
-        listItem.setOnClickListener(object : DebouncedOnClickListener(500) {
-            override fun onDebouncedClick(v: View) {
-                // position may have changed after the item was bound. query current position from holder
-                val currentPos = layoutPosition
-                if (currentPos >= 0) {
-                    logger.info("Message clicked")
-                    clickListener.onItemClick(v, currentPos)
+        listItem.setOnClickListener(
+            object : DebouncedOnClickListener(500) {
+                override fun onDebouncedClick(v: View) {
+                    // position may have changed after the item was bound. query current position from holder
+                    val currentPos = layoutPosition
+                    if (currentPos >= 0) {
+                        logger.info("Message clicked")
+                        clickListener.onItemClick(v, currentPos)
+                    }
                 }
-            }
-        })
+            },
+        )
         listItem.setOnLongClickListener { v: View ->
             // position may have changed after the item was bound. query current position from holder
             val currentPos = layoutPosition
@@ -251,7 +253,7 @@ class MessageListViewHolder(
 
         val latestMessage = messageListAdapterItem.latestMessage
 
-        var text = messageListAdapterItem.conversationModel.receiver.displayName
+        var text = messageListAdapterItem.conversationModel.messageReceiver.displayName
         if (params.showLastUpdate) {
             // For debugging purposes, developers can enable the "show lastUpdate" option in the developer settings.
             val formattedLastUpdate = messageListAdapterItem.conversationModel.lastUpdate?.let {
@@ -292,7 +294,12 @@ class MessageListViewHolder(
 
         initializeGroupCallIndicator(messageListAdapterItem)
 
-        messageListAdapterItem.latestMessage?.isDeleted?.let { initializeDeletedAppearance(it) }
+        messageListAdapterItem.latestMessage?.isDeleted?.let {
+            initializeDeletedAppearance(
+                isDeleted = it,
+                isOutbox = messageListAdapterItem.latestMessage.isOutbox,
+            )
+        }
 
         initializeHiddenAppearance(isHidden)
 
@@ -405,9 +412,10 @@ class MessageListViewHolder(
             deliveryView.visibility = GONE
         } else {
             deliveryView.visibility = VISIBLE
-            val deliveryIconResource = messageListAdapterItem.deliveryIconResource
-            if (deliveryIconResource != NO_RESOURCE) {
-                deliveryView.setImageResource(deliveryIconResource)
+            @DrawableRes
+            val deliveryIconRes: Int? = messageListAdapterItem.conversationModel.getConversationIconRes()
+            if (deliveryIconRes != null) {
+                deliveryView.setImageResource(deliveryIconRes)
                 deliveryView.contentDescription = when {
                     messageListAdapterItem.isContactConversation -> strings.stateSent
                     messageListAdapterItem.isNotesGroup() -> strings.notes
@@ -456,10 +464,19 @@ class MessageListViewHolder(
         }
     }
 
-    private fun initializeDeletedAppearance(isDeleted: Boolean) {
+    private fun initializeDeletedAppearance(
+        isDeleted: Boolean,
+        isOutbox: Boolean,
+    ) {
         if (isDeleted) {
             subjectView.setText(R.string.message_was_deleted)
-            subjectView.setTextColor(context.resources.getColor(R.color.text_color_deleted))
+            subjectView.setTextColor(
+                ResourcesCompat.getColorStateList(
+                    context.resources,
+                    if (isOutbox) R.color.bubble_send_text_colorstatelist else R.color.bubble_receive_text_colorstatelist,
+                    context.theme,
+                ),
+            )
             subjectView.setTypeface(subjectView.typeface, Typeface.ITALIC)
             attachmentView.visibility = GONE
             deliveryView.visibility = GONE

@@ -22,8 +22,8 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy.Policy
-import ch.threema.app.services.PreferenceService
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.protobuf.d2d.sync.MdD2DSync

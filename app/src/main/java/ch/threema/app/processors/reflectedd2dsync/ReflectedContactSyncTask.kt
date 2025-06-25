@@ -21,10 +21,10 @@
 
 package ch.threema.app.processors.reflectedd2dsync
 
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.contentEquals
@@ -42,11 +42,10 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.protocol.blob.BlobLoader
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.Common.Blob
 import ch.threema.protobuf.d2d.MdD2D.ContactSync
@@ -72,11 +71,8 @@ class ReflectedContactSyncTask(
 ) {
     private val conversationCategoryService by lazy { serviceManager.conversationCategoryService }
     private val ringtoneService by lazy { serviceManager.ringtoneService }
-    private val symmetricEncryptionService by lazy { serviceManager.symmetricEncryptionService }
     private val fileService by lazy { serviceManager.fileService }
     private val contactService by lazy { serviceManager.contactService }
-
-    private val multiDeviceProperties by lazy { serviceManager.multiDeviceManager.propertiesProvider }
 
     // Used when chats are pinned
     private val conversationTagService by lazy { serviceManager.conversationTagService }
@@ -320,11 +316,9 @@ class ReflectedContactSyncTask(
     private fun applyContactDefinedProfilePicture(contact: Contact) {
         when (contact.contactDefinedProfilePictureOrNull?.imageCase) {
             Common.DeltaImage.ImageCase.UPDATED -> {
-                contact.contactDefinedProfilePicture.updated.blob.downloadBlob { blob ->
-                    if (!fileService.getContactDefinedProfilePictureStream(contact.identity)
-                            .contentEquals(blob)
-                    ) {
-                        logger.info("Setting contact defined profile picture from sync")
+                contact.contactDefinedProfilePicture.updated.blob.loadAndMarkAsDone { blob ->
+                    logger.info("Applying updated contact defined profile picture from sync")
+                    if (!fileService.getContactDefinedProfilePictureStream(contact.identity).contentEquals(blob)) {
                         fileService.writeContactDefinedProfilePicture(contact.identity, blob)
                         onAvatarChanged(contact.identity)
                     }
@@ -347,11 +341,9 @@ class ReflectedContactSyncTask(
     private fun applyUserDefinedProfilePicture(contact: Contact) {
         when (contact.userDefinedProfilePictureOrNull?.imageCase) {
             Common.DeltaImage.ImageCase.UPDATED -> {
-                contact.userDefinedProfilePicture.updated.blob.downloadBlob { blob ->
-                    if (!fileService.getUserDefinedProfilePictureStream(contact.identity)
-                            .contentEquals(blob)
-                    ) {
-                        logger.info("Setting user defined profile picture from sync")
+                logger.info("Applying updated user defined profile picture from sync")
+                contact.userDefinedProfilePicture.updated.blob.loadAndMarkAsDone { blob ->
+                    if (!fileService.getUserDefinedProfilePictureStream(contact.identity).contentEquals(blob)) {
                         fileService.writeUserDefinedProfilePicture(contact.identity, blob)
                         onAvatarChanged(contact.identity)
                     }
@@ -376,51 +368,44 @@ class ReflectedContactSyncTask(
         ShortcutUtil.updateShareTargetShortcut(contactService.createReceiver(identity))
     }
 
-    private fun Blob.downloadBlob(persistBlob: (blob: ByteArray) -> Unit) {
-        val blobLoader = getBlobLoader()
-        val encryptedBlob = {
-            blobLoader.load(BlobScope.Local)
-        }.catchAllExceptNetworkException { e ->
-            logger.error("Could not download blob", e)
-            return
+    private fun Blob.loadAndMarkAsDone(persistBlob: (blob: ByteArray) -> Unit) {
+        val blobLoadingResult = loadAndMarkAsDone(
+            okHttpClient = serviceManager.okHttpClient,
+            version = AppVersionProvider.appVersion,
+            serverAddressProvider = serviceManager.serverAddressProviderService.serverAddressProvider,
+            multiDevicePropertyProvider = serviceManager.multiDeviceManager.propertiesProvider,
+            symmetricEncryptionService = serviceManager.symmetricEncryptionService,
+            fallbackNonce = ProtocolDefines.CONTACT_PHOTO_NONCE,
+            downloadBlobScope = BlobScope.Local,
+            markAsDoneBlobScope = BlobScope.Local,
+        )
+        when (blobLoadingResult) {
+            is ReflectedBlobDownloader.BlobLoadingResult.Success -> {
+                persistBlob(blobLoadingResult.blobBytes)
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.BlobMirrorNotAvailable -> {
+                logger.warn("Cannot download blob because blob mirror is not available", blobLoadingResult.exception)
+                throw ProtocolException("Blob mirror not available")
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.DecryptionFailed -> {
+                logger.error("Could not decrypt profile picture blob", blobLoadingResult.exception)
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.BlobNotFound -> {
+                logger.error("Could not download profile picture because the blob was not found")
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.BlobDownloadCancelled -> {
+                logger.error("Could not download profile picture because the download was cancelled")
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.Other -> {
+                logger.error("Could not download profile picture because of an exception", blobLoadingResult.exception)
+            }
         }
-
-        val decryptedBlob = {
-            symmetricEncryptionService.decrypt(
-                encryptedBlob,
-                key.toByteArray(),
-                nonce.toByteArray().let { nonceBytes ->
-                    if (nonceBytes.isEmpty()) {
-                        ProtocolDefines.CONTACT_PHOTO_NONCE
-                    } else {
-                        nonceBytes
-                    }
-                },
-            )
-        }.catchAllExceptNetworkException { e ->
-            logger.error("Could not decrypt blob", e)
-            return
-        }
-
-        if (decryptedBlob == null) {
-            logger.warn("Decrypted blob is null")
-            blobLoader.markAsDone(id.toByteArray(), BlobScope.Local)
-            return
-        }
-
-        persistBlob(decryptedBlob)
-
-        blobLoader.markAsDone(id.toByteArray(), BlobScope.Local)
     }
-
-    private fun Blob.getBlobLoader() = BlobLoader.mirror(
-        baseOkHttpClient = serviceManager.okHttpClient,
-        blobId = id.toByteArray(),
-        version = ThreemaApplication.getAppVersion(),
-        serverAddressProvider = serviceManager.serverAddressProviderService.serverAddressProvider,
-        progressListener = null,
-        multiDevicePropertyProvider = multiDeviceProperties,
-    )
 
     private fun applyConversationVisibility(contact: Contact) {
         if (contact.hasConversationVisibility()) {
@@ -467,7 +452,7 @@ class ReflectedContactSyncTask(
             return
         }
         conversationTagService.addTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-        conversationModel.setIsPinTagged(true)
+        conversationModel.isPinTagged = true
     }
 
     private fun unPinConversation(identity: String) {
@@ -477,7 +462,7 @@ class ReflectedContactSyncTask(
             return
         }
         conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-        conversationModel.setIsPinTagged(false)
+        conversationModel.isPinTagged = false
     }
 
     private fun getConversationModel(identity: String): ConversationModel? {

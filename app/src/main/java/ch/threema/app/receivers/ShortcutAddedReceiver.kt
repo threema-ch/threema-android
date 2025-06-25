@@ -28,13 +28,11 @@ import android.widget.Toast
 import ch.threema.app.R
 import ch.threema.base.utils.LoggingUtil
 
+private val logger = LoggingUtil.getThreemaLogger("ShortcutAddedReceiver")
+
 class ShortcutAddedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Toast.makeText(context, R.string.add_shortcut_success, Toast.LENGTH_LONG).show()
         logger.info("Shortcut successfully added to launcher")
-    }
-
-    companion object {
-        private val logger = LoggingUtil.getThreemaLogger("ShortcutAddedReceiver")
     }
 }

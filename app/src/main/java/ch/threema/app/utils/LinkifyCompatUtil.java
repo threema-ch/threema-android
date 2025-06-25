@@ -141,7 +141,7 @@ public final class LinkifyCompatUtil {
 
         pruneOverlaps(links, text);
 
-        if (links.size() == 0) {
+        if (links.isEmpty()) {
             return false;
         }
 
@@ -280,7 +280,7 @@ public final class LinkifyCompatUtil {
             spec.end = match.end();
             links.add(spec);
         }
-        return links.size() > 0;
+        return !links.isEmpty();
     }
 
     private static void applyLink(String url, int start, int end, Spannable text) {

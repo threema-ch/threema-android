@@ -1,30 +1,25 @@
+//! Implementation of the _Connection Rendezvous Protocol_.
 use std::collections::HashMap;
 
+use duplicate::duplicate_item;
 use libthreema_macros::{DebugVariantNames, VariantNames};
 use prost::Message as _;
 use rand::{self, Rng as _};
 use tracing::{debug, trace, warn};
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
-use self::frame::IncomingFrameDecoder;
-pub use self::frame::{FrameDecoderError, IncomingFrame, OutgoingFrame};
+use self::frame::FrameDecoder;
+pub use self::frame::{IncomingFrame, OutgoingFrame};
 use crate::{
     crypto::x25519,
     protobuf::d2d_rendezvous as protobuf,
-    time::{Duration, Instant},
+    utils::time::{Duration, Instant},
 };
 
-/// Incoming/Outgoing frame utilities.
 mod frame;
-
-/// Shared encryption/decryption utilities for RIDAK/RRDAK and RIDTK/RRDTK.
-mod rxdxk;
-
-/// Rendezvous Initiator/Responder Device Authentication Key (RIDAK/RRDAK) utilities.
 mod rxdak;
-
-/// Rendezvous Initiator/Responder Device Transport Key (RIDTK/RRDTK) utilities.
 mod rxdtk;
+mod rxdxk;
 
 /// An error occurred while running the Connection Rendezvous Protocol.
 ///
@@ -36,6 +31,8 @@ mod rxdtk;
 ///
 /// 1. Let `error` be the provided [`RendezvousProtocolError`].
 /// 2. Abort the protocol due to `error`.
+///
+/// TODO(LIB-30): Align errors with other protocols
 #[derive(Debug, thiserror::Error)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
 pub enum RendezvousProtocolError {
@@ -48,9 +45,9 @@ pub enum RendezvousProtocolError {
     #[error("Sequence number would overflow")]
     SequenceNumberOverflow,
 
-    /// An error occurred while decoding an incoming frame.
-    #[error("Frame decoding failed: {0}")]
-    FrameDecodeFailed(#[from] FrameDecoderError),
+    /// Oversized frame received.
+    #[error("Oversized frame of {0} bytes")]
+    OversizedFrame(usize),
 
     /// Unable to decrypt a frame's payload.
     #[error("Decryption failed")]
@@ -61,7 +58,7 @@ pub enum RendezvousProtocolError {
     EncryptionFailed,
 
     /// Unable to decode a protobuf message.
-    #[error("Decoding failed")]
+    #[error("Decoding failed: {0}")]
     ProtobufDecodeFailed(#[from] prost::DecodeError),
 
     /// Incoming RRD's `Hello` message is invalid.
@@ -136,28 +133,24 @@ pub enum PathStateUpdate {
 ///
 /// When handling this result, run the following steps:
 ///
-/// 1. Let `path` be the context of the path whose PID was used in the function call that yielded
-///    this result.
+/// 1. Let `path` be the context of the path whose PID was used in the function call that yielded this result.
 /// 2. If the current phase is the _handshake and nominaton phase_:
-///    1. If `incoming_ulp_data` is present, abort the protocol due to an error and abort these
-///       steps.
+///    1. If `incoming_ulp_data` is present, abort the protocol due to an error and abort these steps.
 ///    2. If `outgoing_frame` is present, enqueue it to be sent on `path`.
-///    3. If `state_update` is [`PathStateUpdate::AwaitingNominate`] and the protocol took the role
-///       of the nominator, run the _Path Awaiting Nomination Steps_ with `path` and abort these
-///       steps.
+///    3. If `state_update` is [`PathStateUpdate::AwaitingNominate`] and the protocol took the role of the
+///       nominator, run the _Path Awaiting Nomination Steps_ with `path` and abort these steps.
 ///    4. If `state_update` is [`PathStateUpdate::Nominated`]:
 ///       1. Mark `path` as _nominated_.
-///       2. If the protocol took the role of the nominee, mark all other paths except `path` as
-///          _disregarded_ and close them (for WebSocket, use close code `1000`).
+///       2. If the protocol took the role of the nominee, mark all other paths except `path` as _disregarded_
+///          and close them (for WebSocket, use close code `1000`).
 ///       3. If the protocol took the rule of the nominator, mark all other paths except `path` as
-///          _disregarded_ but keep them open with a timeout of 15s after which they should be
-///          closed (for WebSocket, use close code `1000`).[^close-race]
+///          _disregarded_ but keep them open with a timeout of 15s after which they should be closed (for
+///          WebSocket, use close code `1000`).[^close-race]
 ///       4. Enter the _ULP phase_. At this point, the ULP may start creating frames through
 ///          [`RendezvousProtocol::create_ulp_frame`].
 ///    5. (Unreachable)
 /// 3. If the current phase is the _ULP phase_:
-///    1. If `path` is not marked as _nominated_, abort the protocol due to an error and abort these
-///       steps.
+///    1. If `path` is not marked as _nominated_, abort the protocol due to an error and abort these steps.
 ///    2. If `state_update` is present, abort the protocol due to an error and abort these steps.
 ///    3. If `outgoing_frame` is present, enqueue it to be sent on `path`.
 ///    4. If `incoming_ulp_data` is present, hand it off to the ULP.
@@ -199,30 +192,6 @@ impl Context {
     }
 }
 
-/// Shared path attributes.
-struct BasePath {
-    pid: u32,
-    decoder: IncomingFrameDecoder,
-}
-impl BasePath {
-    fn new(pid: u32) -> Self {
-        Self {
-            pid,
-            decoder: IncomingFrameDecoder::new(),
-        }
-    }
-
-    fn decode_next(&mut self, nominated: bool) -> Result<Option<IncomingFrame>, FrameDecoderError> {
-        // During the handshake and before nomination, we don't expect frames larger than 16 KiB.
-        // After the handshake, we don't expect frames larger than 100 MiB. (If we ever need larger
-        // frames than this, we need to add Blob chunking and stream the content.)
-        let max_frame_length = if nominated { 100 * 1_048_576 } else { 16_384 };
-
-        // Decode and process the next frame, if any can be decoded
-        self.decoder.decode_next(max_frame_length)
-    }
-}
-
 /// Path states of RID.
 #[derive(VariantNames, DebugVariantNames)]
 enum RidPathState {
@@ -255,13 +224,15 @@ enum RidPathState {
 
 /// RID path protocol.
 struct RidPath {
-    path: BasePath,
+    pid: u32,
+    decoder: FrameDecoder,
     state: RidPathState,
 }
 impl RidPath {
     fn new(ak: &AuthenticationKey, pid: u32) -> Self {
         Self {
-            path: BasePath::new(pid),
+            pid,
+            decoder: FrameDecoder::new(vec![]),
             state: RidPathState::AwaitingHello {
                 authentication_keys: rxdak::ForRid::new(ak, pid),
             },
@@ -273,20 +244,18 @@ impl RidPath {
         ctx: &Context,
         mut incoming_frame: IncomingFrame,
     ) -> Result<PathProcessResult, RendezvousProtocolError> {
-        trace! { state = ?self.state, ?incoming_frame, "Processing frame" }
+        trace!(state = ?self.state, ?incoming_frame, "Processing frame");
         if let RidPathState::Nominated { transport_keys } = &mut self.state {
             // Handle `Nominated` state where the transport can be used by the ULP.
-            Self::handle_ulp_data(transport_keys, incoming_frame).map(|incoming_ulp_data| {
-                PathProcessResult {
-                    state_update: None,
-                    outgoing_frame: None,
-                    incoming_ulp_data: Some(incoming_ulp_data),
-                }
+            Self::handle_ulp_data(transport_keys, incoming_frame).map(|incoming_ulp_data| PathProcessResult {
+                state_update: None,
+                outgoing_frame: None,
+                incoming_ulp_data: Some(incoming_ulp_data),
             })
         } else {
             // Handle `Closed` state
             if let RidPathState::Closed = &self.state {
-                return Err(RendezvousProtocolError::PathClosed(self.path.pid));
+                return Err(RendezvousProtocolError::PathClosed(self.pid));
             }
 
             // Handle states that should immediately transition into another state
@@ -326,28 +295,20 @@ impl RidPath {
                     let measured_rtt = Instant::now().duration_since(sent_at);
 
                     // Handle `RrdToRid.Auth` and update state.
-                    Self::handle_auth(
-                        &mut authentication_keys,
-                        &local_challenge,
-                        &mut incoming_frame,
+                    Self::handle_auth(&mut authentication_keys, &local_challenge, &mut incoming_frame).map(
+                        |()| {
+                            let (transport_keys, rph) =
+                                rxdtk::ForRid::new(&ctx.ak, authentication_keys, shared_etk);
+                            (
+                                RidPathState::AwaitingNominate { transport_keys, rph },
+                                PathProcessResult {
+                                    state_update: Some(PathStateUpdate::AwaitingNominate { measured_rtt }),
+                                    outgoing_frame: None,
+                                    incoming_ulp_data: None,
+                                },
+                            )
+                        },
                     )
-                    .map(|()| {
-                        let (transport_keys, rph) =
-                            rxdtk::ForRid::new(&ctx.ak, authentication_keys, shared_etk);
-                        (
-                            RidPathState::AwaitingNominate {
-                                transport_keys,
-                                rph,
-                            },
-                            PathProcessResult {
-                                state_update: Some(PathStateUpdate::AwaitingNominate {
-                                    measured_rtt,
-                                }),
-                                outgoing_frame: None,
-                                incoming_ulp_data: None,
-                            },
-                        )
-                    })
                 },
 
                 RidPathState::AwaitingNominate {
@@ -379,13 +340,13 @@ impl RidPath {
             }
             .map(|(state, result)| {
                 self.state = state;
-                debug! { state = ?self.state, "Changed state" }
+                debug!(state = ?self.state, "Changed state");
                 result
             })
         }
         .map_err(|error| {
             self.state = RidPathState::Closed;
-            warn! { ?error, state = ?self.state, "Closed due to error" }
+            warn!(?error, state = ?self.state, "Closed due to error");
             error
         })
     }
@@ -419,12 +380,12 @@ impl RidPath {
         }
         .map(|(state, result)| {
             self.state = state;
-            debug! { state = ?self.state, "Changed state" }
+            debug!(state = ?self.state, "Changed state");
             result
         })
         .map_err(|error| {
             self.state = RidPathState::Closed;
-            warn! { ?error, state = ?self.state, "Closed due to error" }
+            warn!(?error, state = ?self.state, "Closed due to error");
             error
         })
     }
@@ -435,12 +396,10 @@ impl RidPath {
     ) -> Result<PathProcessResult, RendezvousProtocolError> {
         match &mut self.state {
             RidPathState::Nominated { transport_keys } => {
-                Self::create_ulp_data(transport_keys, outgoing_data).map(|outgoing_frame| {
-                    PathProcessResult {
-                        state_update: None,
-                        outgoing_frame: Some(outgoing_frame),
-                        incoming_ulp_data: None,
-                    }
+                Self::create_ulp_data(transport_keys, outgoing_data).map(|outgoing_frame| PathProcessResult {
+                    state_update: None,
+                    outgoing_frame: Some(outgoing_frame),
+                    incoming_ulp_data: None,
                 })
             },
             _ => Err(RendezvousProtocolError::NominationRequired),
@@ -457,21 +416,19 @@ impl RidPath {
             let hello = protobuf::handshake::rrd_to_rid::Hello::decode(incoming_frame.0.as_ref())?;
 
             // Validate `RrdToRid.Hello`
-            let remote_challenge =
-                Challenge(hello.challenge.as_slice().try_into().map_err(|_| {
-                    RendezvousProtocolError::InvalidRrdHelloMessage(format!(
-                        "Expected 16 challenge bytes, got {}",
-                        hello.challenge.len()
-                    ))
-                })?);
-            let remote_etk = x25519::PublicKey::from(
-                <[u8; 32]>::try_from(hello.etk.as_ref()).map_err(|_| {
+            let remote_challenge = Challenge(hello.challenge.as_slice().try_into().map_err(|_| {
+                RendezvousProtocolError::InvalidRrdHelloMessage(format!(
+                    "Expected 16 challenge bytes, got {}",
+                    hello.challenge.len()
+                ))
+            })?);
+            let remote_etk =
+                x25519::PublicKey::from(<[u8; 32]>::try_from(hello.etk.as_ref()).map_err(|_| {
                     RendezvousProtocolError::InvalidRrdHelloMessage(format!(
                         "Invalid remote ETK, got {} bytes",
                         hello.etk.len()
                     ))
-                })?,
-            );
+                })?);
             (remote_challenge, remote_etk)
         };
 
@@ -589,19 +546,20 @@ enum RrdPathState {
 
 /// RRD path protocol.
 struct RrdPath {
-    path: BasePath,
+    pid: u32,
+    decoder: FrameDecoder,
     state: RrdPathState,
 }
 impl RrdPath {
     fn new(ak: &AuthenticationKey, pid: u32) -> (Self, OutgoingFrame) {
         // Create initial state
         let mut authentication_keys = rxdak::ForRrd::new(ak, pid);
-        let (local_challenge, local_etk, outgoing_frame) =
-            Self::create_hello(&mut authentication_keys);
+        let (local_challenge, local_etk, outgoing_frame) = Self::create_hello(&mut authentication_keys);
 
         // Create path
         let path = Self {
-            path: BasePath::new(pid),
+            pid,
+            decoder: FrameDecoder::new(vec![]),
             state: RrdPathState::AwaitingAuthHello {
                 authentication_keys,
                 sent_at: Instant::now(),
@@ -617,20 +575,18 @@ impl RrdPath {
         ctx: &Context,
         mut incoming_frame: IncomingFrame,
     ) -> Result<PathProcessResult, RendezvousProtocolError> {
-        trace! { state = ?self.state, ?incoming_frame, "Processing frame" }
+        trace!(state = ?self.state, ?incoming_frame, "Processing frame");
         if let RrdPathState::Nominated { transport_keys } = &mut self.state {
             // Handle `Nominated` state where the transport can be used by the ULP.
-            Self::handle_ulp_data(transport_keys, incoming_frame).map(|incoming_ulp_data| {
-                PathProcessResult {
-                    state_update: None,
-                    outgoing_frame: None,
-                    incoming_ulp_data: Some(incoming_ulp_data),
-                }
+            Self::handle_ulp_data(transport_keys, incoming_frame).map(|incoming_ulp_data| PathProcessResult {
+                state_update: None,
+                outgoing_frame: None,
+                incoming_ulp_data: Some(incoming_ulp_data),
             })
         } else {
             // Handle `Closed` state
             if let RrdPathState::Closed = &self.state {
-                return Err(RendezvousProtocolError::PathClosed(self.path.pid));
+                return Err(RendezvousProtocolError::PathClosed(self.pid));
             }
 
             // Handle states that should immediately transition into another state
@@ -657,14 +613,9 @@ impl RrdPath {
                         let (transport_keys, rph) =
                             rxdtk::ForRrd::new(&ctx.ak, authentication_keys, shared_etk);
                         (
-                            RrdPathState::AwaitingNominate {
-                                transport_keys,
-                                rph,
-                            },
+                            RrdPathState::AwaitingNominate { transport_keys, rph },
                             PathProcessResult {
-                                state_update: Some(PathStateUpdate::AwaitingNominate {
-                                    measured_rtt,
-                                }),
+                                state_update: Some(PathStateUpdate::AwaitingNominate { measured_rtt }),
                                 outgoing_frame: Some(outgoing_frame),
                                 incoming_ulp_data: None,
                             },
@@ -701,13 +652,13 @@ impl RrdPath {
             }
             .map(|(state, result)| {
                 self.state = state;
-                debug! { state = ?self.state, "Changed state" }
+                debug!(state = ?self.state, "Changed state");
                 result
             })
         }
         .map_err(|error| {
             self.state = RrdPathState::Closed;
-            warn! { ?error, state = ?self.state, "Closed due to error" }
+            warn!(?error, state = ?self.state, "Closed due to error");
             error
         })
     }
@@ -741,12 +692,12 @@ impl RrdPath {
         }
         .map(|(state, result)| {
             self.state = state;
-            debug! { state = ?self.state, "Changed state" }
+            debug!(state = ?self.state, "Changed state");
             result
         })
         .map_err(|error| {
             self.state = RrdPathState::Closed;
-            warn! { ?error, state = ?self.state, "Closed due to error" }
+            warn!(?error, state = ?self.state, "Closed due to error");
             error
         })
     }
@@ -757,21 +708,17 @@ impl RrdPath {
     ) -> Result<PathProcessResult, RendezvousProtocolError> {
         match &mut self.state {
             RrdPathState::Nominated { transport_keys } => {
-                Self::create_ulp_data(transport_keys, outgoing_data).map(|outgoing_frame| {
-                    PathProcessResult {
-                        state_update: None,
-                        outgoing_frame: Some(outgoing_frame),
-                        incoming_ulp_data: None,
-                    }
+                Self::create_ulp_data(transport_keys, outgoing_data).map(|outgoing_frame| PathProcessResult {
+                    state_update: None,
+                    outgoing_frame: Some(outgoing_frame),
+                    incoming_ulp_data: None,
                 })
             },
             _ => Err(RendezvousProtocolError::NominationRequired),
         }
     }
 
-    fn create_hello(
-        keys: &mut rxdak::ForRrd,
-    ) -> (Challenge, x25519::EphemeralSecret, OutgoingFrame) {
+    fn create_hello(keys: &mut rxdak::ForRrd) -> (Challenge, x25519::EphemeralSecret, OutgoingFrame) {
         // Generate a challenge
         let local_challenge = Challenge::random();
 
@@ -805,25 +752,18 @@ impl RrdPath {
 
             // Validate `RidToRrd.AuthHello`
             if remote_auth_hello.response != local_challenge.0 {
-                return Err(RendezvousProtocolError::InvalidRidAuthHelloMessage(
-                    format!(
-                        "Challenge response of {} bytes does not match",
-                        remote_auth_hello.response.len()
-                    ),
-                ));
+                return Err(RendezvousProtocolError::InvalidRidAuthHelloMessage(format!(
+                    "Challenge response of {} bytes does not match",
+                    remote_auth_hello.response.len()
+                )));
             }
-            let remote_challenge = Challenge(
-                remote_auth_hello
-                    .challenge
-                    .as_slice()
-                    .try_into()
-                    .map_err(|_| {
-                        RendezvousProtocolError::InvalidRrdHelloMessage(format!(
-                            "Expected 16 challenge bytes, got {}",
-                            remote_auth_hello.challenge.len()
-                        ))
-                    })?,
-            );
+            let remote_challenge =
+                Challenge(remote_auth_hello.challenge.as_slice().try_into().map_err(|_| {
+                    RendezvousProtocolError::InvalidRrdHelloMessage(format!(
+                        "Expected 16 challenge bytes, got {}",
+                        remote_auth_hello.challenge.len()
+                    ))
+                })?);
             let remote_etk = x25519::PublicKey::from(
                 <[u8; 32]>::try_from(remote_auth_hello.etk.as_ref()).map_err(|_| {
                     RendezvousProtocolError::InvalidRidAuthHelloMessage(format!(
@@ -892,12 +832,9 @@ impl RrdPath {
 }
 
 trait Path: Send {
-    fn add_chunk(&mut self, chunk: &[u8]);
+    fn add_chunks(&mut self, chunks: &[&[u8]]) -> Result<(), RendezvousProtocolError>;
 
-    fn process_frame(
-        &mut self,
-        ctx: &Context,
-    ) -> Result<Option<PathProcessResult>, RendezvousProtocolError>;
+    fn process_frame(&mut self, ctx: &Context) -> Result<Option<PathProcessResult>, RendezvousProtocolError>;
 
     fn nominate(&mut self) -> Result<PathProcessResult, RendezvousProtocolError>;
 
@@ -907,56 +844,41 @@ trait Path: Send {
     ) -> Result<PathProcessResult, RendezvousProtocolError>;
 }
 
-impl Path for RidPath {
-    fn add_chunk(&mut self, chunk: &[u8]) {
-        self.path.decoder.add_chunk(chunk);
-    }
+#[duplicate_item(
+    path_type   path_state_type;
+    [ RidPath ] [ RidPathState ];
+    [ RrdPath ] [ RrdPathState ];
+)]
+impl Path for path_type {
+    #[inline]
+    fn add_chunks(&mut self, chunks: &[&[u8]]) -> Result<(), RendezvousProtocolError> {
+        let length = self.decoder.add_chunks(chunks);
 
-    fn process_frame(
-        &mut self,
-        ctx: &Context,
-    ) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
-        let nominated = matches!(&self.state, RidPathState::Nominated { .. });
-        if let Some(incoming_frame) = self.path.decode_next(nominated)? {
-            self.process_frame(ctx, incoming_frame).map(Some)
+        // Check if the frame exceeds the maximum supported length of this state
+        let max_length = if matches!(&self.state, path_state_type::Nominated { .. }) {
+            FrameDecoder::MAX_LENGTH_AFTER_NOMINATION
         } else {
-            Ok(None)
+            FrameDecoder::MAX_LENGTH_BEFORE_NOMINATION
+        };
+        if length > max_length {
+            return Err(RendezvousProtocolError::OversizedFrame(length));
         }
+        Ok(())
     }
 
+    fn process_frame(&mut self, ctx: &Context) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
+        self.decoder
+            .next_frame_and_then(|incoming_frame| IncomingFrame(incoming_frame.to_vec()))
+            .map(|incoming_frame| self.process_frame(ctx, incoming_frame))
+            .transpose()
+    }
+
+    #[inline]
     fn nominate(&mut self) -> Result<PathProcessResult, RendezvousProtocolError> {
         self.nominate()
     }
 
-    fn create_ulp_frame(
-        &mut self,
-        outgoing_data: Vec<u8>,
-    ) -> Result<PathProcessResult, RendezvousProtocolError> {
-        self.create_ulp_frame(outgoing_data)
-    }
-}
-
-impl Path for RrdPath {
-    fn add_chunk(&mut self, chunk: &[u8]) {
-        self.path.decoder.add_chunk(chunk);
-    }
-
-    fn process_frame(
-        &mut self,
-        ctx: &Context,
-    ) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
-        let nominated = matches!(&self.state, RrdPathState::Nominated { .. });
-        if let Some(incoming_frame) = self.path.decode_next(nominated)? {
-            self.process_frame(ctx, incoming_frame).map(Some)
-        } else {
-            Ok(None)
-        }
-    }
-
-    fn nominate(&mut self) -> Result<PathProcessResult, RendezvousProtocolError> {
-        self.nominate()
-    }
-
+    #[inline]
     fn create_ulp_frame(
         &mut self,
         outgoing_data: Vec<u8>,
@@ -986,35 +908,34 @@ enum ProtocolState {
 ///
 /// The protocol goes through exactly two phases:
 ///
-/// - The _handshake and nomination phase_ where all paths are racing the handshake simultaneously
-///   until one has been nominated by the nominator.
+/// - The _handshake and nomination phase_ where all paths are racing the handshake simultaneously until one
+///   has been nominated by the nominator.
 /// - The _ULP phase_ where ULP frames can be exchanged on the nominated path.
 ///
 /// The following steps are defined as the _Path Awaiting Nomination Steps_:
 ///
 /// 1. Let `path` be the associated path.
-/// 2. If the protocol did not take the role of the nominator, abort the protocol due to an error
-///    and abort these steps.
-/// 3. If `path` is the only path, run [`RendezvousProtocol::nominate_path`] for `path` and abort
+/// 2. If the protocol did not take the role of the nominator, abort the protocol due to an error and abort
 ///    these steps.
+/// 3. If `path` is the only path, run [`RendezvousProtocol::nominate_path`] for `path` and abort these steps.
 /// 4. (Unreachable / TODO(LIB-10): As of today, only one path is expected to be used.)
 ///
 /// When a path closed, run the following steps:
 ///
 /// 1. Let `path` be the path that closed (initiated locally or remotely).
-/// 2. If `path` is marked as _nominated_, abort the protocol normally with any available close
-///    information and abort these steps.
+/// 2. If `path` is marked as _nominated_, abort the protocol normally with any available close information
+///    and abort these steps.
 /// 3. If `path` is marked as _disregarded_, log a notice and abort these steps.
-/// 4. If `path` is the last path that closed (i.e. all other paths already closed or there are no
-///    other paths), log a warning that all paths closed before nomination, abort the protocol
-///    normally with any available close information and abort these steps.
+/// 4. If `path` is the last path that closed (i.e. all other paths already closed or there are no other
+///    paths), log a warning that all paths closed before nomination, abort the protocol normally with any
+///    available close information and abort these steps.
 /// 5. Log a warning that `path` closed before nomination.
 ///
 /// When receiving data on a path:
 ///
 /// 1. Run [`RendezvousProtocol::add_chunks`] with the respective path's PID.
-/// 2. In a loop, run [`RendezvousProtocol::process_frame`] with the respective path's PID and
-///    handle the result until it no longer produces a [`PathProcessResult`].
+/// 2. In a loop, run [`RendezvousProtocol::process_frame`] with the respective path's PID and handle the
+///    result until it no longer produces a [`PathProcessResult`].
 ///
 /// When the protocol is being aborted:
 ///
@@ -1039,7 +960,7 @@ impl RendezvousProtocol {
     ///
     /// Returns the protocol state machine instance.
     pub fn new_as_rid(is_nominator: bool, ak: AuthenticationKey, pids: &[u32]) -> Self {
-        debug! { "Creating protocol" };
+        debug!("Creating D2D rendezvous protocol");
         let ctx = Context::new(is_nominator, ak);
 
         // Create paths
@@ -1072,7 +993,7 @@ impl RendezvousProtocol {
         ak: AuthenticationKey,
         pids: &[u32],
     ) -> (Self, Vec<(u32, OutgoingFrame)>) {
-        debug! { "Creating protocol" };
+        debug!("Creating protocol");
         let ctx = Context::new(is_nominator, ak);
         let mut outgoing_frames = vec![];
 
@@ -1118,16 +1039,9 @@ impl RendezvousProtocol {
     /// Returns [`RendezvousProtocolError::UnknownOrDroppedPath`] if the path associated to `pid`
     /// could not be found.
     #[tracing::instrument(skip(self, chunks))]
-    pub fn add_chunks<TChunk: AsRef<[u8]>>(
-        &mut self,
-        pid: u32,
-        chunks: &[TChunk],
-    ) -> Result<(), RendezvousProtocolError> {
+    pub fn add_chunks(&mut self, pid: u32, chunks: &[&[u8]]) -> Result<(), RendezvousProtocolError> {
         let path = Self::lookup_path(&mut self.state, pid)?;
-        for chunk in chunks {
-            path.add_chunk(chunk.as_ref());
-        }
-        Ok(())
+        path.add_chunks(chunks)
     }
 
     /// Process any available buffered complete frame for the specified path.
@@ -1139,18 +1053,12 @@ impl RendezvousProtocol {
     /// unexpected message was received, or, as a response to it, another outgoing frame could not
     /// be encrypted.
     #[tracing::instrument(skip(self))]
-    pub fn process_frame(
-        &mut self,
-        pid: u32,
-    ) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
+    pub fn process_frame(&mut self, pid: u32) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
         let path = Self::lookup_path(&mut self.state, pid)?;
 
         // Decode and process the next frame, if any can be decoded
         let result = path.process_frame(&self.ctx)?;
-        trace! {
-            ?result,
-            "Processed frame"
-        }
+        trace!(?result, "Processed frame");
         let Some(result) = result else {
             return Ok(result);
         };
@@ -1163,10 +1071,10 @@ impl RendezvousProtocol {
             let path = racing_paths
                 .remove(&pid)
                 .ok_or(RendezvousProtocolError::UnknownOrDroppedPath(pid))?;
-            debug! {
+            debug!(
                 dropped_pids = ?racing_paths.keys(),
                 "Remote nominated, dropping all other paths"
-            }
+            );
             self.state = ProtocolState::Nominated { pid, path };
         }
 
@@ -1182,10 +1090,7 @@ impl RendezvousProtocol {
     /// the path associated to `pid` could not be found, the path is not ready to be nominated or
     /// nomination already happened.
     #[tracing::instrument(skip(self))]
-    pub fn nominate_path(
-        &mut self,
-        pid: u32,
-    ) -> Result<PathProcessResult, RendezvousProtocolError> {
+    pub fn nominate_path(&mut self, pid: u32) -> Result<PathProcessResult, RendezvousProtocolError> {
         // Ensure we're allowed to nominate
         if !self.ctx.is_nominator {
             return Err(RendezvousProtocolError::NominateNotAllowed);
@@ -1199,10 +1104,10 @@ impl RendezvousProtocol {
                     .remove(&pid)
                     .ok_or(RendezvousProtocolError::UnknownOrDroppedPath(pid))?;
                 let result = path.nominate()?;
-                debug! {
+                debug!(
                     dropped_pids = ?racing_paths.keys(),
                     "Local nominated, dropping all other paths"
-                }
+                );
                 self.state = ProtocolState::Nominated { pid, path };
                 Ok(result)
             },

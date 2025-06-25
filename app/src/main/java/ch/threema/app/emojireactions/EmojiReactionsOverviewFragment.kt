@@ -35,6 +35,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.EmojiReactionData
@@ -98,6 +101,11 @@ class EmojiReactionsOverviewFragment(
                 }
             }
         }
+
+        recyclerView.applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.bottom(),
+            ownPadding = SpacingValues.vertical(R.dimen.grid_unit_x1),
+        )
     }
 
     override fun onRemoveClick(data: EmojiReactionData, position: Int) {

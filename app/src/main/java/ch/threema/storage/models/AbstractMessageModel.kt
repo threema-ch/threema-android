@@ -42,9 +42,8 @@ import ch.threema.storage.models.data.status.GroupStatusDataModel
 import ch.threema.storage.models.data.status.StatusDataModel
 import ch.threema.storage.models.data.status.VoipStatusDataModel
 import java.util.Date
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("AbstractMessageModel")
+private val logger = LoggingUtil.getThreemaLogger("AbstractMessageModel")
 
 abstract class AbstractMessageModel
 @JvmOverloads

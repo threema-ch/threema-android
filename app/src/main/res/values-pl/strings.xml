@@ -101,6 +101,7 @@
     <string name="next">Następny</string>
     <string name="finish">Zakończ</string>
     <string name="please_wait">Proszę czekać…</string>
+    <string name="please_wait_timeout">To zajmuje dłużej, niż oczekiwano</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Tworzenie Twojego identyfikatora ID…</string>
     <string name="wizard1_sync_contacts">Synchronizowanie kontaktów…</string>
@@ -164,6 +165,7 @@
     <string name="delete_id_message">Jeśli nie utworzyłeś kopii zapasowej lub nie wyeksportowałeś i nie zapisałeś kopii tego identyfikatora, nie będziesz mógł więcej wysyłać ani otrzymywać wiadomości za jego pomocą.\n\nJeśli nie chcesz już korzystać z tego identyfikatora, zaleca się ustawienie hasła unieważnienia i unieważnienie identyfikatora na myid.threema.ch/revoke przed jego usunięciem.</string>
     <string name="delete_id_message2">Ostatnie ostrzeżenie: czy na pewno chcesz usunąć swój identyfikator?</string>
     <string name="delete_id_sum">Trwale usuń swój identyfikator i wszystkie dane na tym urządzeniu</string>
+    <string name="delete_all_data_prompt">Usunąć wszystkie dane dotyczące aplikacji?</string>
     <string name="backup_password_summary">Twój eksport identyfikatora zostanie zabezpieczony hasłem. Użyj kombinacji liter, cyfr i symboli. Nie zapomnij swojego hasła!</string>
     <string name="backup_password_again_summary">Wprowadź hasło ponownie.</string>
     <string name="password_hint">Hasło</string>
@@ -171,7 +173,6 @@
     <string name="backup_id_title">Eksport identyfikatora</string>
     <string name="backup_id_summary">Ciąg tekstowy wyświetlany u góry albo kod QR, razem z wybranym przez Ciebie hasłem, może zostać użyty do odzyskiwania Twojego identyfikatora na innym urządzeniu. Możesz skopiować je do wygodniejszego miejsca, udostępnić je e-mailem albo zeskanować kod QR innym urządzeniem.</string>
     <string name="support">Pomoc</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Następujące dane backup-u mogą zostać użyte razem z wybranym hasłem do odzyskania Twojego identyfikatora ${app_name_short}.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -346,9 +347,12 @@
     <string name="title_tab_recent">Ostatnie</string>
     <string name="no_recent_conversations">Nie znalezione konwersacj</string>
     <string name="save_changes">Zapisz</string>
-    <string name="group_created_confirm">Grupa stworzona pomyślnie</string>
     <string name="creating_group">Tworzenie gtupy</string>
     <string name="updating_group">Aktualizowanie grupy</string>
+    <string name="leaving_group">Opuszczanie grupy</string>
+    <string name="disbanding_group">Rozwiązywanie grupy</string>
+    <string name="removing_group">Usuwanie grupy</string>
+    <string name="resyncing_group">Ponowne synchronizowanie grupy</string>
     <string name="status_create_group">Grupa stworzona.</string>
     <string name="status_rename_group">Nazwa grupy zmieniona na «%1$s»</string>
     <string name="status_group_new_photo">Zaktualizowano obraz grupowy.</string>
@@ -750,7 +754,20 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="clone_group_message">Utworzona zostanie kopia tej grupy, w której będziesz administratorem. Kontynuować?</string>
     <string name="prefs_proximity_sensor">Użyj czujnika odległości</string>
     <string name="prefs_proximity_sensor_explain">Użyj słuchawki do odtwarzania wiadomości głosowej, kiedy czujnik odległości jest zakryty</string>
-    <string name="error_creating_group">Błąd tworzenia grupy</string>
+    <string name="error_creating_group_network">Nie utworzono grupy. Sprawdź swoje połączenie internetowe i spróbuj ponownie.</string>
+    <string name="error_creating_group_internal">Z powodu wewnętrznego błędu nie utworzono grupy. Spróbuj ponownie później.</string>
+    <string name="error_cloning_group_network">Nie sklonowano grupy. Sprawdź swoje połączenie internetowe i spróbuj ponownie.</string>
+    <string name="error_cloning_group_internal">Z powodu wewnętrznego błędu nie sklonowano grupy. Spróbuj ponownie później.</string>
+    <string name="error_updating_group_network">Nie udało się zastosować zmian. Sprawdź swoje połączenie internetowe i spróbuj ponownie.</string>
+    <string name="error_updating_group_internal">Z powodu wewnętrznego błędu nie udało się zastosować zmian. Spróbuj ponownie później.</string>
+    <string name="error_leaving_group_network">Nie udało się opuścić grupy. Sprawdź swoje połączenie internetowe i spróbuj ponownie.</string>
+    <string name="error_leaving_group_internal">Z powodu wewnętrznego błędu nie udało się opuścić grupy. Spróbuj ponownie później.</string>
+    <string name="error_disbanding_group_network">Nie rozwiązano grupy. Sprawdź swoje połączenie internetowe i spróbuj ponownie.</string>
+    <string name="error_disbanding_group_internal">Z powodu wewnętrznego błędu nie rozwiązano grupy. Spróbuj ponownie później.</string>
+    <string name="error_removing_group_network">Nie usunięto grupy. Sprawdź swoje połączenie internetowe i spróbuj ponownie.</string>
+    <string name="error_removing_group_internal">Z powodu wewnętrznego błędu nie usunięto grupy. Spróbuj ponownie później.</string>
+    <string name="error_resyncing_group_network">Nie zsynchronizowano ponownie grupy. Sprawdź swoje połączenie internetowe i spróbuj ponownie.</string>
+    <string name="error_resyncing_group_internal">Z powodu wewnętrznego błędu nie zsynchronizowano ponownie grupy. Spróbuj jeszcze raz później.</string>
     <string name="no_media_found_generic">Nie znaleziono plików multimedialnych w tym czacie pasujących do wyboru.</string>
     <string name="max_images_reached">Możesz edytować  maksymalnie %d obieky(-ów) naraz</string>
     <string name="enter_description">Opisz błąd/problem tutaj.</string>
@@ -865,8 +882,6 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Zapisywanie dużych plików multimedialnych w lokalnej kopii zapasowej ZIP może przekroczyć możliwości procesora i pamięci Twojego urządzenia i potrwać bardzo długo. ${app_name} nie będzie wysyłać ani odbierać wiadomości podczas tworzenia kopii. Czy chcesz kontynuować?</string>
     <string name="backup_data_cancelled">Kopia zapasowa anulowana</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Uszkodzona baza danych lub niekompletne dane. Nie można uruchomić.</string>
     <string name="message_sent">Wiadomość wysłana</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">połączenie ${app_name_short}</string>
@@ -1236,9 +1251,6 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="permission_camera_videocall_required">Połączenia wideo wymagają dostępu do kamery.</string>
     <string name="tooltip_voip_enable_speakerphone">Dotknij, aby włączyć mikrofon</string>
     <string name="ballot_open">Otwarty sondaż</string>
-    <string name="translators">Tłumacze</string>
-    <string name="credits">Kredyty</string>
-    <string name="translators_thanks">Wielkie dzięki dla naszych ochotniczych tłumaczy: %s</string>
     <string name="ballot_window_hide">Ukryj otwarte ankiety</string>
     <string name="ballot_window_show">Pokaż otwarte ankiety</string>
     <string name="single_ballot_really_delete">Usuń tę ankietę</string>
@@ -1574,7 +1586,7 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="prefs_summary_hibernation_api">Aby zapobiec wstrzymywaniu aplikacji ${app_name} przez system po dłuższej nieaktywności, wyłącz ustawienie systemowe „Wstrzymuj aktywność aplikacji w razie nieużywania”.</string>
     <string name="unable_to_fetch_configuration">Nie można pobrać danych z serwera konfiguracji. Spróbuj ponownie później.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Wykryto połączenie z innego urządzenia z tym samym identyfikatorem ${app_name_short}. Czy był on ostatnio używany na innym urządzeniu?&lt;br&gt;&lt;br&gt;Jeśli tak, to można zignorować tę wiadomość.&lt;br&gt;&lt;br&gt;Jeśli nie, to mogło nastąpić ujawnienie Twojego klucza prywatnego. <a href="https://threema.ch/en/faq/another_connection">Postępuj zgodnie z naszymi sugestiami</a>, aby zabezpieczyć swoje urzązenie i dane przed utworzeniem nowego identyfikatora.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Wykryto połączenie z innego urządzenia z tym samym identyfikatorem ${app_name_short}. Czy był on ostatnio używany na innym urządzeniu?<br><br>Jeśli tak, to można zignorować tę wiadomość.<br><br>Jeśli nie, to mogło nastąpić ujawnienie Twojego klucza prywatnego. <a href="https://threema.com/faq/another_connection">Postępuj zgodnie z naszymi sugestiami</a>, aby zabezpieczyć swoje urzązenie i dane przed utworzeniem nowego identyfikatora.]]></string>
     <string name="fetch2_failure">Synchronizacja z serwerem udostępniającym nie powiodła się.</string>
     <string name="no_members_support_group_calls">W tej grupie nie ma innych członków, którzy mogą odpowiadać na połączenia grupowe</string>
     <string name="group_calls">Poł. grupowe</string>
@@ -1713,10 +1725,10 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="problemsolver_title_app_battery_usgae_optimized">Zużycie baterii przez aplikację ustawione na \"zoptymalizowane\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikacja nie ma uprawnień do utrzymywania stałego połączenia z serwerami, które jest wymagane do działania ${app_name_short} Push. Nie będziesz informowany o nowych wiadomościach, gdy aplikacja działa w tle. Aby to naprawić, dotknij \"Wykorzystanie baterii przez aplikację\" i wybierz \"Bez ograniczeń\".</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">Ta wersja Androida nie będzie wkrótce obsługiwana</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">Używasz urządzenia z systemem Android, które nie otrzymuje aktualizacji oprogramowania. Ze względów bezpieczeństwa ta wersja Androida nie będzie już wkrótce obsługiwana przez Threema.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">Ta aplikacja nie jest już aktualizowana</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">Używasz nieaktualnej wersji systemu Android, która ze względów bezpieczeństwa nie jest już obsługiwana przez Threema. To oznacza, że nie będziesz otrzymywać aktualizacji tej aplikacji. Aby kontynuować korzystanie z Threema wraz ze wszystkimi funkcjami, przejdź na aktualną wersję systemu operacyjnego.</string>
     <string name="problemsolver_to_settings">Do ustawień</string>
     <string name="prefs_advanced_options">Opcje zaawansowane</string>
     <string name="push_service">Usługa push</string>
@@ -1766,7 +1778,7 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="device_linking_cancel_dialog_continue">Kontynuuj</string>
     <string name="md_drop_device_dialog_drop_button">Usuń urządzenie</string>
     <string name="md_drop_device_dialog_close_button">Zamknij</string>
-    <string name="md_drop_device_failed_dialog_title">Nie udało się usunąć powiązanego urządzenia</string>
+    <string name="md_drop_device_failed_dialog_title">Usuwanie powiązanego urządzenia mogło się nie udać</string>
     <string name="md_drop_device_failed_dialog_message">Sprawdź połączenie z siecią i spróbuj ponownie.</string>
     <string name="md_drop_device_failed_dialog_button_close">Zamknij</string>
     <!-- accessibility -->
@@ -1828,12 +1840,20 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="device_linking_error_emoji_mismatch_body">Wygląda na to, że występują trudności z połączeniem się z urządzeniem. Ponownie uruchom aplikację na nowym urządzeniu i spróbuj jeszcze raz.</string>
     <string name="device_linking_error_unexpected_title">Nieoczekiwany błąd</string>
     <string name="device_linking_error_unexpected_body">Ponownie spróbuj powiązać urządzenie. Jeśli problem nie zniknie, skontaktuj się z pomocą techniczną („Menu główne” &gt; „Pomoc”).</string>
+    <string name="device_linking_error_invalid_contact_title">Nieprawidłowy kontakt</string>
+    <string name="device_linking_error_invalid_contact_body">Kontakt o tożsamości %1$s jest nieprawidłowo przechowywany na tym urządzeniu i zapobiega powiązaniu nowego urządzenia. Skontaktuj się z działem wsparcia („Menu główne” &gt; „Pomoc”).</string>
     <string name="device_linking_error_screen_close">Zamknij</string>
     <string name="work_directory_title">Firmowa książka telefoniczna</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Szukaj w książce telefonicznej</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Wpisz co najmniej 3 znaki nazwy, aby rozpocząć wyszukiwanie w Twojej firmowej książce telefonicznej użytkowników ${app_name_short}.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Ten plik jest nieprawidłowy i nie może być udostępniony</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Dostępny(-a)</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Niedostępny(-a)</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

@@ -35,21 +35,26 @@ import java.util.Set;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupCreateProperties;
 import ch.threema.app.groupflows.ProfilePicture;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Group;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 @WorkerThread
@@ -107,8 +112,7 @@ public class CreateGroupHandler extends MessageReceiver {
 
         // Parse group name
         String name = null;
-        if (data.containsKey(Protocol.ARGUMENT_NAME)
-            && !data.get(Protocol.ARGUMENT_NAME).isNilValue()) {
+        if (data.containsKey(Protocol.ARGUMENT_NAME) && !data.get(Protocol.ARGUMENT_NAME).isNilValue()) {
             name = data.get(Protocol.ARGUMENT_NAME).asStringValue().toString();
             if (name.getBytes(StandardCharsets.UTF_8).length > Protocol.LIMIT_BYTES_GROUP_NAME) {
                 this.failed(temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
@@ -125,30 +129,41 @@ public class CreateGroupHandler extends MessageReceiver {
 
         // Create group
         try {
-            Deferred<ch.threema.data.models.GroupModel> createGroupResult =
-                groupFlowDispatcher.runCreateGroupFlow(
-                    null,
-                    ThreemaApplication.getAppContext(),
-                    new GroupCreateProperties(
-                        name != null ? name : "",
-                        new ProfilePicture(avatar),
-                        identities
-                    )
-                );
-            createGroupResult.invokeOnCompletion(throwable -> {
-                ch.threema.data.models.GroupModel groupModel = createGroupResult.getCompleted();
-                if (groupModel != null) {
-                    GroupModel oldGroupModel = groupService.getByGroupIdentity(groupModel.getGroupIdentity());
-                    if (oldGroupModel != null) {
-                        this.success(temporaryId, oldGroupModel);
-                    } else {
-                        logger.error("Could not get old group model for existing group");
-                    }
-                } else {
-                    this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+            Deferred<GroupFlowResult> createGroupFlowResultDeferred = groupFlowDispatcher.runCreateGroupFlow(
+                ThreemaApplication.getAppContext(),
+                new GroupCreateProperties(
+                    name != null ? name : "",
+                    new ProfilePicture(avatar),
+                    identities
+                )
+            );
+
+            CoroutinesExtensionKt.onCompleted(
+                createGroupFlowResultDeferred,
+                exception -> {
+                    logger.error("The create-group-flow failed exceptionally", exception);
+                    RuntimeUtil.runOnWorkerThread(
+                        () -> failed(temporaryId, Protocol.ERROR_INTERNAL)
+                    );
+                    return Unit.INSTANCE;
+                },
+                groupFlowResult -> {
+                    RuntimeUtil.runOnWorkerThread(() -> {
+                        if (groupFlowResult instanceof GroupFlowResult.Success) {
+                            final @NonNull ch.threema.data.models.GroupModel createdGroupModel = ((GroupFlowResult.Success) groupFlowResult).getGroupModel();
+                            final @Nullable GroupModel oldGroupModel = groupService.getByGroupIdentity(createdGroupModel.getGroupIdentity());
+                            if (oldGroupModel != null) {
+                                success(temporaryId, oldGroupModel);
+                            } else {
+                                logger.error("Could not get old group model for existing group");
+                            }
+                        } else if (groupFlowResult instanceof GroupFlowResult.Failure) {
+                            failed(temporaryId, Protocol.ERROR_INTERNAL);
+                        }
+                    });
+                    return Unit.INSTANCE;
                 }
-                return null;
-            });
+            );
         } catch (Exception e) {
             this.failed(temporaryId, Protocol.ERROR_INTERNAL);
         }

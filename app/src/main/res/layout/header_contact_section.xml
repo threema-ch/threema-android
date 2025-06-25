@@ -2,7 +2,6 @@
   ~ Copyright (c) 2019-2025 Threema GmbH
   ~ All rights reserved.
   -->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/share_container"
@@ -12,8 +11,8 @@
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
-    android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
-    android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right">
+    android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right"
+    android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom">
 
     <ImageView
         android:id="@+id/avatar_view"

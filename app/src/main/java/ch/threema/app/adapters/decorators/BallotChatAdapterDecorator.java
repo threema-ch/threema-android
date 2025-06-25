@@ -184,14 +184,6 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
                 }
 
                 @Override
-                public void onCancel(String tag) {
-                }
-
-                @Override
-                public void onNo(String tag) {
-                }
-
-                @Override
                 public int describeContents() {
                     return 0;
                 }

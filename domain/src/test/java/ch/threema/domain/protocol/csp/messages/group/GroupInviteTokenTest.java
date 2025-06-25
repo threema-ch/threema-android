@@ -21,52 +21,55 @@
 
 package ch.threema.domain.protocol.csp.messages.group;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class GroupInviteTokenTest {
 
 
     @Test
-    public void testValidToken() throws GroupInviteToken.InvalidGroupInviteTokenException {
+    void testValidToken() throws GroupInviteToken.InvalidGroupInviteTokenException {
         byte[] byteValue = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         GroupInviteToken token = new GroupInviteToken(byteValue);
-        Assert.assertArrayEquals(byteValue, token.get());
-    }
-
-    @Test(expected = GroupInviteToken.InvalidGroupInviteTokenException.class)
-    public void testInvalidToken() throws GroupInviteToken.InvalidGroupInviteTokenException {
-        new GroupInviteToken(new byte[]{0, 1, 2, 3});
+        Assertions.assertArrayEquals(byteValue, token.get());
     }
 
     @Test
-    public void testFromHexString() throws GroupInviteToken.InvalidGroupInviteTokenException {
+    void testInvalidToken() {
+        Assertions.assertThrows(
+            GroupInviteToken.InvalidGroupInviteTokenException.class,
+            () -> new GroupInviteToken(new byte[]{0, 1, 2, 3})
+        );
+    }
+
+    @Test
+    void testFromHexString() throws GroupInviteToken.InvalidGroupInviteTokenException {
         byte[] byteValue = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         GroupInviteToken token = GroupInviteToken.fromHexString("000102030405060708090a0b0c0d0e0f");
-        Assert.assertArrayEquals(byteValue, token.get());
+        Assertions.assertArrayEquals(byteValue, token.get());
     }
 
     @Test
-    public void testEquals() throws GroupInviteToken.InvalidGroupInviteTokenException {
+    void testEquals() throws GroupInviteToken.InvalidGroupInviteTokenException {
         byte[] byteValue = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         GroupInviteToken token1 = new GroupInviteToken(byteValue);
         GroupInviteToken token2 = new GroupInviteToken(byteValue);
-        Assert.assertEquals(token1, token2);
+        Assertions.assertEquals(token1, token2);
     }
 
     @Test
-    public void testNotEquals() throws GroupInviteToken.InvalidGroupInviteTokenException {
+    void testNotEquals() throws GroupInviteToken.InvalidGroupInviteTokenException {
         byte[] byteValue1 = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         byte[] byteValue2 = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
         GroupInviteToken token1 = new GroupInviteToken(byteValue1);
         GroupInviteToken token2 = new GroupInviteToken(byteValue2);
-        Assert.assertNotEquals(token1, token2);
+        Assertions.assertNotEquals(token1, token2);
     }
 
     @Test
-    public void testToString() throws GroupInviteToken.InvalidGroupInviteTokenException {
+    void testToString() throws GroupInviteToken.InvalidGroupInviteTokenException {
         byte[] byteValue = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
         GroupInviteToken token = new GroupInviteToken(byteValue);
-        Assert.assertEquals("000102030405060708090a0b0c0d0e0f", token.toString());
+        Assertions.assertEquals("000102030405060708090a0b0c0d0e0f", token.toString());
     }
 }

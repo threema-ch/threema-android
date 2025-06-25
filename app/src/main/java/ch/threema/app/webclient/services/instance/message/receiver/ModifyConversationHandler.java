@@ -122,10 +122,10 @@ public class ModifyConversationHandler extends MessageReceiver {
             // Tag model
             if (isPinned) {
                 this.conversationTagService.addTagAndNotify(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
-                conversation.setIsPinTagged(true);
+                conversation.isPinTagged = true;
             } else {
                 this.conversationTagService.removeTagAndNotify(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
-                conversation.setIsPinTagged(false);
+                conversation.isPinTagged = false;
             }
 
             this.conversationService.sort();

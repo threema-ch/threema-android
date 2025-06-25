@@ -22,11 +22,11 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.common.now
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import java.util.Date
 
 class OutgoingVoipICECandidateMessageTask(
     private val voipICECandidatesData: VoipICECandidatesData,
@@ -39,7 +39,14 @@ class OutgoingVoipICECandidateMessageTask(
         val message = VoipICECandidatesMessage()
         message.data = voipICECandidatesData
 
-        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
+        sendContactMessage(
+            message = message,
+            messageModel = null,
+            toIdentity = toIdentity,
+            messageId = MessageId.random(),
+            createdAt = now(),
+            handle = handle,
+        )
     }
 
     // We do not need to persist this message

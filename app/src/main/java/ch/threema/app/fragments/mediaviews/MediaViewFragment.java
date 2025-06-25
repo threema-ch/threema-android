@@ -51,9 +51,9 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -104,7 +104,7 @@ abstract public class MediaViewFragment extends Fragment {
         @Override
         public void run() {
             if (getActivity() != null) {
-                ThreemaApplication.activityUserInteract(getActivity());
+                ActivityService.activityUserInteract(getActivity());
                 keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
             }
         }

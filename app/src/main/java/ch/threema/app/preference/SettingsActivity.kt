@@ -21,18 +21,16 @@
 
 package ch.threema.app.preference
 
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
+import ch.threema.app.startup.finishAndRestartLaterIfNotReady
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConfigUtils.isTabletLayout
 import ch.threema.app.utils.logScreenVisibility
@@ -40,9 +38,7 @@ import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
 
-class SettingsActivity :
-    ThreemaToolbarActivity(),
-    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     init {
         logScreenVisibility(logger)
     }
@@ -51,10 +47,8 @@ class SettingsActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.statusBarColor = Color.TRANSPARENT
-            window.navigationBarColor = Color.TRANSPARENT
+        if (finishAndRestartLaterIfNotReady()) {
+            return
         }
 
         // hide contents in app switcher and inhibit screenshots

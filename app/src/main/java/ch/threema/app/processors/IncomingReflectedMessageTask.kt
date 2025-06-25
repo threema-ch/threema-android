@@ -25,10 +25,13 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.getSubTaskFromMessage
 import ch.threema.app.processors.reflectedd2dsync.ReflectedContactSyncTask
 import ch.threema.app.processors.reflectedd2dsync.ReflectedGroupSyncTask
+import ch.threema.app.processors.reflectedd2dsync.ReflectedSettingsSyncTask
+import ch.threema.app.processors.reflectedd2dsync.ReflectedUserProfileSyncTask
 import ch.threema.app.processors.reflectedmessageupdate.ReflectedIncomingMessageUpdateTask
 import ch.threema.app.processors.reflectedmessageupdate.ReflectedOutgoingMessageUpdateTask
 import ch.threema.app.processors.reflectedoutgoingmessage.getReflectedOutgoingMessageTask
 import ch.threema.app.tasks.ActiveComposableTask
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
@@ -109,7 +112,9 @@ class IncomingReflectedMessageTask(
 
         val (nonce, envelope) = multiDeviceProperties.keys.decryptEnvelope(message.envelope)
 
-        logger.debug("Process reflected message: {} at {}", envelope, message.timestamp)
+        logger.info("Process reflected message with content case {} and timestamp {}", envelope.contentCase, message.timestamp)
+
+        logger.debug("Process reflected message: {}", envelope)
 
         suspend {
             if (!nonceFactory.exists(NonceScope.D2D, nonce)) {
@@ -328,8 +333,17 @@ class IncomingReflectedMessageTask(
     }
 
     private fun processUserProfileSync(userProfileSync: UserProfileSync) {
-        // TODO(ANDR-2840)
-        logger.warn("User profile sync is not yet supported")
+        ReflectedUserProfileSyncTask(
+            userProfileSync = userProfileSync,
+            userService = serviceManager.userService,
+            okHttpClient = serviceManager.okHttpClient,
+            serverAddressProvider = serviceManager.serverAddressProviderService.serverAddressProvider,
+            multiDevicePropertyProvider = multiDeviceManager.propertiesProvider,
+            symmetricEncryptionService = serviceManager.symmetricEncryptionService,
+            appVersion = AppVersionProvider.appVersion,
+            preferenceService = serviceManager.preferenceService,
+            profilePicRecipientsService = serviceManager.profilePicRecipientsService,
+        ).run()
     }
 
     private fun processContactSync(contactSync: ContactSync) {
@@ -346,8 +360,10 @@ class IncomingReflectedMessageTask(
             groupModelRepository = serviceManager.modelRepositories.groups,
             groupService = serviceManager.groupService,
             fileService = serviceManager.fileService,
-            apiService = serviceManager.apiService,
+            okHttpClient = serviceManager.okHttpClient,
+            serverAddressProvider = serviceManager.serverAddressProviderService.serverAddressProvider,
             symmetricEncryptionService = serviceManager.symmetricEncryptionService,
+            multiDeviceManager = multiDeviceManager,
             conversationService = serviceManager.conversationService,
             conversationTagService = serviceManager.conversationTagService,
             conversationCategoryService = serviceManager.conversationCategoryService,
@@ -361,8 +377,12 @@ class IncomingReflectedMessageTask(
     }
 
     private fun processSettingsSync(settingsSync: SettingsSync) {
-        // TODO(ANDR-2839)
-        logger.warn("Settings sync is not yet supported")
+        ReflectedSettingsSyncTask(
+            settingsSync = settingsSync,
+            preferenceService = serviceManager.preferenceService,
+            blockedIdentitiesService = serviceManager.blockedIdentitiesService,
+            excludedSyncIdentitiesService = serviceManager.excludedSyncIdentitiesService,
+        ).run()
     }
 
     private fun processMdmParameterSync(mdmParameterSync: MdmParameterSync) {

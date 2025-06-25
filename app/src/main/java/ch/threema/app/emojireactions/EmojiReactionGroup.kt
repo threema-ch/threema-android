@@ -37,46 +37,32 @@ import ch.threema.data.models.EmojiReactionData
 import ch.threema.storage.models.AbstractMessageModel
 import kotlin.math.roundToInt
 
-data class ButtonInfo(
-    val emojiSequence: String,
-    val count: Int,
-    val isChecked: Boolean,
-)
-
 class EmojiReactionGroup :
     LinearLayoutCompat,
     OnEmojiReactionButtonClickListener,
     SelectEmojiButton.OnSelectEmojiButtonClickListener,
     MoreReactionsButton.OnMoreReactionsButtonClickListener {
     private var messageModel: AbstractMessageModel? = null
-    private var buttonInfoList: MutableList<ButtonInfo> = ArrayList()
+    private var buttonInfoList: List<ButtonInfo> = emptyList()
     private var bubbleView: View? = null
     private var messageReceiver: MessageReceiver<*>? = null
     var onEmojiReactionGroupClickListener: OnEmojiReactionGroupClickListener? = null
-    val userService = ThreemaApplication.requireServiceManager().userService
-    var reactions: List<EmojiReactionData> = ArrayList()
+    private val userService = ThreemaApplication.requireServiceManager().userService
+    private var reactions: List<EmojiReactionData> = emptyList()
     var firstReactionButton: View? = null
         private set
     private var listViewWidth = -1
     private var messageBubbleWidth = -1
     private val buttonWidth = resources.getDimensionPixelSize(R.dimen.emojireactions_width)
-    private val buttonWidthWithCount =
-        resources.getDimensionPixelSize(R.dimen.emojireactions_width_with_count)
-    private lateinit var contextThemeWrapper: ContextThemeWrapper
+    private val buttonWidthWithCount = resources.getDimensionPixelSize(R.dimen.emojireactions_width_with_count)
+    private val contextThemeWrapper: ContextThemeWrapper
 
-    constructor(context: Context) : super(context) {
-        init()
-    }
+    @JvmOverloads
+    constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init()
-    }
-
-    private fun init() {
+    init {
         setWillNotDraw(false)
 
         orientation = HORIZONTAL
@@ -108,31 +94,11 @@ class EmojiReactionGroup :
 
     private fun drawButtons() {
         synchronized(buttonInfoList) {
-            if (messageBubbleWidth == -1) {
+            if (messageBubbleWidth == -1 || listViewWidth == -1) {
                 return
             }
 
-            if (listViewWidth == -1) {
-                return
-            }
-
-            val newButtonInfoList: MutableList<ButtonInfo> = ArrayList()
-
-            if (reactions.isNotEmpty()) {
-                val grouped = reactions.groupingBy { it.emojiSequence }.eachCount()
-
-                for ((key, count) in grouped) {
-                    newButtonInfoList.add(
-                        ButtonInfo(
-                            emojiSequence = key,
-                            count,
-                            isChecked = reactions.any { reaction ->
-                                reaction.emojiSequence == key && reaction.senderIdentity == userService.identity
-                            },
-                        ),
-                    )
-                }
-            }
+            val newButtonInfoList: List<ButtonInfo> = reactions.toButtonInfos(ownIdentity = userService.identity)
 
             if (newButtonInfoList != buttonInfoList) {
                 var allowedWidth: Int = if (messageBubbleWidth * 2 > listViewWidth) {
@@ -185,6 +151,23 @@ class EmojiReactionGroup :
             }
         }
     }
+
+    private fun List<EmojiReactionData>.toButtonInfos(ownIdentity: String): List<ButtonInfo> =
+        if (isNotEmpty()) {
+            groupingBy { it.emojiSequence }
+                .eachCount()
+                .map { (key, count) ->
+                    ButtonInfo(
+                        emojiSequence = key,
+                        count = count,
+                        isChecked = any { reaction ->
+                            reaction.emojiSequence == key && reaction.senderIdentity == ownIdentity
+                        },
+                    )
+                }
+        } else {
+            emptyList()
+        }
 
     private fun createEmojiReactionButton(buttonInfo: ButtonInfo): EmojiReactionsButton {
         val emojiReactionsButton = EmojiReactionsButton(contextThemeWrapper)
@@ -263,4 +246,10 @@ class EmojiReactionGroup :
     override fun onMoreReactionsButtonLongClick() {
         onEmojiReactionGroupClickListener?.onEmojiReactionLongClick(messageModel, null)
     }
+
+    private data class ButtonInfo(
+        val emojiSequence: String,
+        val count: Int,
+        val isChecked: Boolean,
+    )
 }

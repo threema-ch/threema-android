@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
-        <shape android:shape="rectangle" android:tint="@color/bubble_pressed">
+        <shape android:shape="rectangle" android:tint="?attr/colorPrimaryContainer">
             <solid android:color="#44000000" />
         </shape>
     </item>
     <item android:state_activated="true">
-        <shape android:shape="rectangle" android:tint="?attr/colorPrimary">
+        <shape android:shape="rectangle" android:tint="?attr/colorPrimaryContainer">
             <solid android:color="#44000000" />
         </shape>
     </item>

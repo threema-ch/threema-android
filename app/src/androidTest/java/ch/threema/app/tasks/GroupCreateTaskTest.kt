@@ -53,11 +53,11 @@ import ch.threema.storage.models.GroupModel
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 import java.util.Date
 import javax.net.ssl.HttpsURLConnection
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 
 @DangerousTest
 class GroupCreateTaskTest {
@@ -131,7 +131,7 @@ class GroupCreateTaskTest {
         )
     }
 
-    @Before
+    @BeforeTest
     fun setup() {
         clearDatabaseAndCaches(serviceManager)
 

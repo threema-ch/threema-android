@@ -65,6 +65,8 @@ properties:
             Domain configuration rule to be applied to a domain (and potentially
             subdomains).
 
+            Domains for which no rules apply will not be pinned.
+
             Note: Generally, rules are applied on a first-match basis. However, the
             exact order of which SPKI will be applied is not well-defined and
             depends on the underlying platform.
@@ -122,14 +124,14 @@ properties:
             - fqdn
             - matchMode
           examples:
-            - fqdn: threemaonprem.initrode.com
+            - fqdn: threemaonprem.example.com
               matchMode: include-subdomains
               spkis:
                 - value: 'DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk='
                   algorithm: sha256
                 - value: 'C19RmQgZXzwovKRRJ2st7bsokiRchKcYjBo3m63fvn8='
                   algorithm: sha256
-            - fqdn: another-host.initrode.com
+            - fqdn: another-host.example.com
               matchMode: exact
               spkis:
                 - value: 'XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4='
@@ -144,7 +146,7 @@ properties:
         type: string
         description: Chat server hostname
         examples:
-          - threemaonprem.initrode.com
+          - threemaonprem.example.com
       publicKey:
         type: string
         description:
@@ -187,7 +189,7 @@ properties:
           no fragment)
         pattern: '^https://'
         examples:
-          - https://blob-threemaonprem.initrode.com/blob/upload
+          - https://blob-threemaonprem.example.com/blob/upload
       downloadUrl:
         type: string
         description: |-
@@ -200,7 +202,7 @@ properties:
           - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
         pattern: '^https://'
         examples:
-          - https://blob-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}
+          - https://blob-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}
       doneUrl:
         type: string
         description: |-
@@ -213,7 +215,7 @@ properties:
           - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
         pattern: '^https://'
         examples:
-          - https://blob-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}/done
+          - https://blob-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}/done
     required:
       - uploadUrl
       - downloadUrl
@@ -229,7 +231,7 @@ properties:
           `/`, no parameters, no fragment)
         pattern: '^https://.*/$'
         examples:
-          - https://threemaonprem.initrode.com/work/
+          - https://threemaonprem.example.com/work/
     required:
       - url
   avatar:
@@ -244,7 +246,7 @@ properties:
           no parameters, no fragment)
         pattern: '^https://.*/$'
         examples:
-          - https://threemaonprem.initrode.com/avatar/
+          - https://threemaonprem.example.com/avatar/
     required:
       - url
   safe:
@@ -258,7 +260,7 @@ properties:
           `/`, no parameters, no fragment)
         pattern: '^https://.*/$'
         examples:
-          - https://threemaonprem.initrode.com/safe/
+          - https://threemaonprem.example.com/safe/
     required:
       - url
   web:
@@ -305,8 +307,8 @@ properties:
             rendezvous path
         pattern: '^wss://.*/$'
         examples:
-          - wss://threemaonprem.initrode.com/rendezvous/
-          - wss://rendezvous-{rendezvousPathPrefix4}.initrode.com/{rendezvousPathPrefix8}/
+          - wss://threemaonprem.example.com/rendezvous/
+          - wss://rendezvous-{rendezvousPathPrefix4}.example.com/{rendezvousPathPrefix8}/
     required:
       - url
   mediator:
@@ -330,8 +332,8 @@ properties:
             device group ID
         pattern: '^wss://.*/$'
         examples:
-          - wss://threemaonprem.initrode.com/mediator/
-          - wss://mediator-{deviceGroupIdPrefix4}.initrode.com/{deviceGroupIdPrefix8}/
+          - wss://threemaonprem.example.com/mediator/
+          - wss://mediator-{deviceGroupIdPrefix4}.example.com/{deviceGroupIdPrefix8}/
       blob:
         type: object
         description: Configuration for the blob mirror
@@ -343,7 +345,7 @@ properties:
               parameters, no fragment)
             pattern: '^https://'
             examples:
-              - https://blob-mirror-threemaonprem.initrode.com/blob/upload
+              - https://blob-mirror-threemaonprem.example.com/blob/upload
           downloadUrl:
             type: string
             description: |-
@@ -356,7 +358,7 @@ properties:
               - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
             pattern: '^https://'
             examples:
-              - https://blob-mirror-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}
+              - https://blob-mirror-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}
           doneUrl:
             type: string
             description: |-
@@ -369,7 +371,7 @@ properties:
               - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
             pattern: '^https://'
             examples:
-              - https://blob-mirror-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}/done
+              - https://blob-mirror-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}/done
         required:
           - uploadUrl
           - downloadUrl
@@ -377,6 +379,55 @@ properties:
     required:
       - url
       - blob
+  maps:
+    type: object
+    description: |-
+      Configuration for the map integration.
+
+      Should be provided. If not provided, clients will not be able to display
+      maps, e.g. for location messages and they will not be able to make POI
+      queries, e.g. when creating a location message.
+    properties:
+      styleUrl:
+        type: string
+        description: |-
+          URL to a JSON file following the [MapLibre Style
+          Spec](https://maplibre.org/maplibre-style-spec/), including any URLs
+          needed from where to fetch map tiles.
+        pattern: '^https://'
+        examples:
+          - https://map.threemaonprem.example.com/styles/threema/style.json
+      poiNamesUrl:
+        type: string
+        description: |-
+          URL for the POI server endpoint to determine a specific POI matching a
+          search query by name.
+
+          Valid placeholders:
+
+          - `{latitude}`: The WGS-84 latitude
+          - `{longitude}`: The WGS-84 longitude
+          - `{query}`: The URI encoded search query
+        pattern: '^https://'
+        examples:
+          - https://poi.threemaonprem.example.com/names/{latitude}/{longitude}/{query}/
+      poiAroundUrl:
+        type: string
+        description: |-
+          URL for the POI server endoint to determine nearby points of interest.
+
+          Valid placeholders:
+
+          - `{latitude}`: The WGS-84 latitude
+          - `{longitude}`: The WGS-84 longitude
+          - `{radius}`: The search radius in meters
+        pattern: '^https://'
+        examples:
+          - https://poi.threemaonprem.example.com/around/{latitude}/{longitude}/{radius}/
+    required:
+      - styleUrl
+      - poiNamesUrl
+      - poiAroundUrl
   updates:
     type: object
     description: URLs for update checks

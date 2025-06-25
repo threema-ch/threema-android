@@ -60,12 +60,16 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.listeners.SensorListener
 import ch.threema.app.listeners.SensorListener.keyIsNear
 import ch.threema.app.notifications.NotificationChannels
+import ch.threema.app.notifications.NotificationIDs
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.SoundUtil
 import ch.threema.app.voicemessage.SamsungQuirkAudioSink
 import ch.threema.base.utils.LoggingUtil
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+
+private val logger = LoggingUtil.getThreemaLogger("VoiceMessagePlayerService")
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VoiceMessagePlayerService :
@@ -92,7 +96,6 @@ class VoiceMessagePlayerService :
 
     companion object {
         private const val TAG = "VoiceMessagePlayerService"
-        private val logger = LoggingUtil.getThreemaLogger(TAG)
 
         private const val NOTIFICATION_ID = 59843
     }
@@ -119,7 +122,7 @@ class VoiceMessagePlayerService :
         val mediaNotificationProvider = DefaultMediaNotificationProvider.Builder(this)
             .setChannelName(R.string.notification_channel_voice_message_player)
             .setChannelId(NotificationChannels.NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER)
-            .setNotificationIdProvider { ThreemaApplication.VOICE_MSG_PLAYER_NOTIFICATION_ID }
+            .setNotificationIdProvider { NotificationIDs.VOICE_MSG_PLAYER_NOTIFICATION_ID }
             .build()
         mediaNotificationProvider.setSmallIcon(R.drawable.ic_notification_small)
         setMediaNotificationProvider(mediaNotificationProvider)

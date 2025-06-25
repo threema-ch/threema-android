@@ -55,7 +55,6 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.activities.GroupDetailActivity;
 import ch.threema.app.dialogs.ShowOnceDialog;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
@@ -226,7 +225,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      *                             to display the clone button. For non-orphaned groups this has no
      *                             effect and is not needed.
      * @throws MasterKeyLockedException      when the master key is locked
-     * @throws FileSystemNotPresentException when the file system is not present
      */
     public GroupDetailAdapter(
         Context context,
@@ -234,7 +232,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         GroupDetailViewModel groupDetailViewModel,
         @NonNull ServiceManager serviceManager,
         @Nullable Runnable onCloneGroupRunnable
-    ) throws MasterKeyLockedException, FileSystemNotPresentException {
+    ) throws MasterKeyLockedException {
         this.context = context;
         this.groupModel = groupModel;
         this.groupDetailViewModel = groupDetailViewModel;

@@ -29,33 +29,26 @@ import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.storage.models.AbstractMessageModel
 
 internal class ReflectedOutgoingEditMessageTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.EDIT_MESSAGE,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<EditMessage>(
+    outgoingMessage = outgoingMessage,
+    message = EditMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.EDIT_MESSAGE,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val editMessage by lazy { EditMessage.fromReflected(message) }
-
-    override val shouldBumpLastUpdate: Boolean
-        get() = editMessage.bumpLastUpdate()
-
-    override val storeNonces: Boolean
-        get() = editMessage.protectAgainstReplay()
-
     override fun processOutgoingMessage() {
         runCommonEditMessageReceiveSteps(
-            editMessage = editMessage,
+            editMessage = message,
             receiver = messageReceiver,
             messageService = messageService,
         )?.let { validEditMessageModel: AbstractMessageModel ->
             messageService.saveEditedMessageText(
                 validEditMessageModel,
-                editMessage.data.text,
-                editMessage.date,
+                message.data.text,
+                message.date,
             )
         }
     }

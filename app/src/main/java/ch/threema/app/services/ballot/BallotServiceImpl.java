@@ -70,7 +70,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.GroupBallotModelFactory;
 import ch.threema.storage.factories.IdentityBallotModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -91,7 +91,7 @@ public class BallotServiceImpl implements BallotService {
     private final SparseArray<BallotModel> ballotModelCache;
     private final SparseArray<LinkBallotModel> linkBallotModelCache;
 
-    private final DatabaseServiceNew databaseServiceNew;
+    private final DatabaseService databaseService;
     private final UserService userService;
     private final GroupService groupService;
     private final ContactService contactService;
@@ -101,14 +101,14 @@ public class BallotServiceImpl implements BallotService {
 
     public BallotServiceImpl(SparseArray<BallotModel> ballotModelCache,
                              SparseArray<LinkBallotModel> linkBallotModelCache,
-                             DatabaseServiceNew databaseServiceNew,
+                             DatabaseService databaseService,
                              UserService userService,
                              GroupService groupService,
                              ContactService contactService,
                              ServiceManager serviceManager) {
         this.ballotModelCache = ballotModelCache;
         this.linkBallotModelCache = linkBallotModelCache;
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.userService = userService;
         this.groupService = groupService;
         this.contactService = contactService;
@@ -146,7 +146,7 @@ public class BallotServiceImpl implements BallotService {
             ballotModel.setState(BallotModel.State.OPEN);
             try {
                 this.checkAccess();
-                this.databaseServiceNew.getBallotModelFactory().update(ballotModel);
+                this.databaseService.getBallotModelFactory().update(ballotModel);
             } catch (NotAllowedException e) {
                 logger.error("Exception", e);
                 return;
@@ -164,7 +164,7 @@ public class BallotServiceImpl implements BallotService {
                 );
             } catch (MessageTooLongException e) {
                 ballotModel.setState(BallotModel.State.TEMPORARY);
-                this.databaseServiceNew.getBallotModelFactory().update(
+                this.databaseService.getBallotModelFactory().update(
                     ballotModel
                 );
                 throw e;
@@ -179,7 +179,7 @@ public class BallotServiceImpl implements BallotService {
         if (ballotModel != null) {
             if (view) {
                 ballotModel.setLastViewedAt(new Date());
-                this.databaseServiceNew.getBallotModelFactory().update(
+                this.databaseService.getBallotModelFactory().update(
                     ballotModel);
                 this.openBallotId = ballotModel.getId();
                 //disabled for the moment!
@@ -237,7 +237,7 @@ public class BallotServiceImpl implements BallotService {
             ballotModel.setDisplayType(BallotModel.DisplayType.LIST_MODE); // default display type for ballots created on mobile client.
             ballotModel.setLastViewedAt(new Date());
 
-            this.databaseServiceNew.getBallotModelFactory().create(
+            this.databaseService.getBallotModelFactory().create(
                 ballotModel
             );
 
@@ -257,9 +257,6 @@ public class BallotServiceImpl implements BallotService {
             throw new NotAllowedException("choice already set on another ballot");
         }
 
-        if (choice.getApiBallotChoiceId() <= 0) {
-            throw new NotAllowedException("no api ballot choice id set");
-        }
         choice.setBallotId(ballotModel.getId());
 
         if (choice.getCreatedAt() == null) {
@@ -268,7 +265,7 @@ public class BallotServiceImpl implements BallotService {
 
         choice.setModifiedAt(new Date());
 
-        return this.databaseServiceNew.getBallotChoiceModelFactory().create(
+        return this.databaseService.getBallotChoiceModelFactory().create(
             choice
         );
     }
@@ -334,7 +331,7 @@ public class BallotServiceImpl implements BallotService {
     public BallotModel get(int ballotId) {
         BallotModel model = this.getFromCache(ballotId);
         if (model == null) {
-            model = this.databaseServiceNew.getBallotModelFactory().getById(
+            model = this.databaseService.getBallotModelFactory().getById(
                 ballotId
             );
 
@@ -426,11 +423,11 @@ public class BallotServiceImpl implements BallotService {
         ballotModel.setState(toState);
 
         if (toState == BallotModel.State.OPEN) {
-            this.databaseServiceNew.getBallotModelFactory().create(
+            this.databaseService.getBallotModelFactory().create(
                 ballotModel
             );
         } else {
-            this.databaseServiceNew.getBallotModelFactory().update(
+            this.databaseService.getBallotModelFactory().update(
                 ballotModel
             );
         }
@@ -456,7 +453,7 @@ public class BallotServiceImpl implements BallotService {
 
         if (toState == BallotModel.State.CLOSED && ballotModel.getDisplayType() == BallotModel.DisplayType.LIST_MODE) {
             //first remove all previously known votes if result should be shown in list mode to ensure a common result for all participants
-            this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotId(
+            this.databaseService.getBallotVoteModelFactory().deleteByBallotId(
                 ballotModel.getId()
             );
         }
@@ -485,7 +482,7 @@ public class BallotServiceImpl implements BallotService {
             }
             ballotChoiceModel.setCreatedAt(date);
 
-            this.databaseServiceNew.getBallotChoiceModelFactory().createOrUpdate(
+            this.databaseService.getBallotChoiceModelFactory().createOrUpdate(
                 ballotChoiceModel
             );
 
@@ -501,7 +498,7 @@ public class BallotServiceImpl implements BallotService {
                     voteModel.setModifiedAt(new Date());
                     voteModel.setCreatedAt(new Date());
 
-                    this.databaseServiceNew.getBallotVoteModelFactory().create(
+                    this.databaseService.getBallotVoteModelFactory().create(
                         voteModel
                     );
 
@@ -546,7 +543,7 @@ public class BallotServiceImpl implements BallotService {
 
         BallotModel model = this.getFromCache(id, creator);
         if (model == null) {
-            model = this.databaseServiceNew.getBallotModelFactory().getByApiBallotIdAndIdentity(
+            model = this.databaseService.getBallotModelFactory().getByApiBallotIdAndIdentity(
                 id,
                 creator
             );
@@ -559,7 +556,7 @@ public class BallotServiceImpl implements BallotService {
 
     @Override
     public List<BallotModel> getBallots(final BallotFilter filter) {
-        List<BallotModel> ballots = this.databaseServiceNew.getBallotModelFactory().filter(
+        List<BallotModel> ballots = this.databaseService.getBallotModelFactory().filter(
             filter
         );
         this.cache(ballots);
@@ -578,7 +575,7 @@ public class BallotServiceImpl implements BallotService {
 
     @Override
     public long countBallots(final BallotFilter filter) {
-        return this.databaseServiceNew.getBallotModelFactory().count(filter);
+        return this.databaseService.getBallotModelFactory().count(filter);
     }
 
     @Override
@@ -587,7 +584,7 @@ public class BallotServiceImpl implements BallotService {
             throw new NotAllowedException();
         }
 
-        return this.databaseServiceNew.getBallotChoiceModelFactory().getByBallotId(
+        return this.databaseService.getBallotChoiceModelFactory().getByBallotId(
             ballotModelId
         );
     }
@@ -606,7 +603,7 @@ public class BallotServiceImpl implements BallotService {
     @Override
     public boolean update(final BallotModel ballotModel) {
         ballotModel.setModifiedAt(new Date());
-        this.databaseServiceNew.getBallotModelFactory().update(
+        this.databaseService.getBallotModelFactory().update(
             ballotModel);
 
         this.handleModified(ballotModel);
@@ -633,7 +630,7 @@ public class BallotServiceImpl implements BallotService {
         });
 
         for (final BallotModel ballotModel : ballots) {
-            this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotIdAndVotingIdentity(
+            this.databaseService.getBallotVoteModelFactory().deleteByBallotIdAndVotingIdentity(
                 ballotModel.getId(),
                 identity
             );
@@ -745,7 +742,7 @@ public class BallotServiceImpl implements BallotService {
             return Collections.emptyList();
         }
 
-        return this.databaseServiceNew.getBallotVoteModelFactory().getByBallotIdAndVotingIdentity(
+        return this.databaseService.getBallotVoteModelFactory().getByBallotIdAndVotingIdentity(
             ballotModelId,
             fromIdentity
         );
@@ -757,7 +754,7 @@ public class BallotServiceImpl implements BallotService {
             return false;
         }
 
-        return this.databaseServiceNew.getBallotVoteModelFactory().countByBallotIdAndVotingIdentity(
+        return this.databaseService.getBallotVoteModelFactory().countByBallotIdAndVotingIdentity(
             ballotModelId,
             fromIdentity
         ) > 0L;
@@ -774,17 +771,17 @@ public class BallotServiceImpl implements BallotService {
         if (ballotModelId == null) {
             return null;
         }
-        return this.databaseServiceNew.getBallotVoteModelFactory().getByBallotId(
+        return this.databaseService.getBallotVoteModelFactory().getByBallotId(
             ballotModelId);
     }
 
 
     @Override
     public boolean removeAll() {
-        this.databaseServiceNew.getBallotModelFactory().deleteAll();
-        this.databaseServiceNew.getBallotVoteModelFactory().deleteAll();
-        this.databaseServiceNew.getBallotChoiceModelFactory().deleteAll();
-        this.databaseServiceNew.getGroupBallotModelFactory().deleteAll();
+        this.databaseService.getBallotModelFactory().deleteAll();
+        this.databaseService.getBallotVoteModelFactory().deleteAll();
+        this.databaseService.getBallotChoiceModelFactory().deleteAll();
+        this.databaseService.getGroupBallotModelFactory().deleteAll();
         return true;
     }
 
@@ -935,7 +932,7 @@ public class BallotServiceImpl implements BallotService {
                 ballotModel.setState(BallotModel.State.OPEN);
                 ballotModel.setModifiedAt(new Date());
 
-                this.databaseServiceNew.getBallotModelFactory().update(
+                this.databaseService.getBallotModelFactory().update(
                     ballotModel
                 );
 
@@ -963,7 +960,7 @@ public class BallotServiceImpl implements BallotService {
             return linkBallotModel;
         }
 
-        GroupBallotModel group = this.databaseServiceNew.getGroupBallotModelFactory().getByBallotId(
+        GroupBallotModel group = this.databaseService.getGroupBallotModelFactory().getByBallotId(
             ballotModel.getId());
 
         if (group != null) {
@@ -971,7 +968,7 @@ public class BallotServiceImpl implements BallotService {
             return group;
         }
 
-        IdentityBallotModel identityBallotModel = this.databaseServiceNew.getIdentityBallotModelFactory().getByBallotId(
+        IdentityBallotModel identityBallotModel = this.databaseService.getIdentityBallotModelFactory().getByBallotId(
             ballotModel.getId()
         );
         if (identityBallotModel != null) {
@@ -1001,22 +998,22 @@ public class BallotServiceImpl implements BallotService {
             List<AbstractMessageModel> messageModels = messageService.getMessageForBallot(ballotModel);
 
             //remove all votes
-            this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotId(
+            this.databaseService.getBallotVoteModelFactory().deleteByBallotId(
                 ballotModel.getId());
 
             //remove choices
-            this.databaseServiceNew.getBallotChoiceModelFactory().deleteByBallotId(
+            this.databaseService.getBallotChoiceModelFactory().deleteByBallotId(
                 ballotModel.getId());
 
             //remove link
-            this.databaseServiceNew.getGroupBallotModelFactory().deleteByBallotId(
+            this.databaseService.getGroupBallotModelFactory().deleteByBallotId(
                 ballotModel.getId());
 
-            this.databaseServiceNew.getIdentityBallotModelFactory().deleteByBallotId(
+            this.databaseService.getIdentityBallotModelFactory().deleteByBallotId(
                 ballotModel.getId());
 
             //remove ballot
-            this.databaseServiceNew.getBallotModelFactory().delete(
+            this.databaseService.getBallotModelFactory().delete(
                 ballotModel
             );
 
@@ -1149,7 +1146,7 @@ public class BallotServiceImpl implements BallotService {
             messageReceiver.createAndSendBallotVoteMessage(votes, ballotModel, triggerSource);
 
             //and save
-            this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotIdAndVotingIdentity(
+            this.databaseService.getBallotVoteModelFactory().deleteByBallotIdAndVotingIdentity(
                 ballotModel.getId(),
                 this.userService.getIdentity()
             );
@@ -1168,7 +1165,7 @@ public class BallotServiceImpl implements BallotService {
 
                 ballotVoteModel.setModifiedAt(new Date());
                 ballotVoteModel.setCreatedAt(new Date());
-                this.databaseServiceNew.getBallotVoteModelFactory().create(
+                this.databaseService.getBallotVoteModelFactory().create(
                     ballotVoteModel
                 );
             }
@@ -1276,13 +1273,13 @@ public class BallotServiceImpl implements BallotService {
                 ids[n] = existingVotes.get(n).getId();
             }
 
-            this.databaseServiceNew.getBallotVoteModelFactory().deleteByIds(ids);
+            this.databaseService.getBallotVoteModelFactory().deleteByIds(ids);
 
             hasModifications = true;
         }
 
         for (BallotVoteModel ballotVoteModel : savingVotes) {
-            this.databaseServiceNew.getBallotVoteModelFactory().createOrUpdate(
+            this.databaseService.getBallotVoteModelFactory().createOrUpdate(
                 ballotVoteModel
             );
             hasModifications = true;
@@ -1391,13 +1388,13 @@ public class BallotServiceImpl implements BallotService {
     }
 
     private int getCalculatedVotingCount(BallotChoiceModel choiceModel) {
-        return (int) this.databaseServiceNew.getBallotVoteModelFactory().countByBallotChoiceIdAndChoice(
+        return (int) this.databaseService.getBallotVoteModelFactory().countByBallotChoiceIdAndChoice(
             choiceModel.getId(),
             1);
     }
 
     private BallotChoiceModel getChoiceByApiId(BallotModel ballotModel, int choiceId) {
-        return this.databaseServiceNew.getBallotChoiceModelFactory().getByBallotIdAndApiChoiceId(
+        return this.databaseService.getBallotChoiceModelFactory().getByBallotIdAndApiChoiceId(
             ballotModel.getId(),
             choiceId
         );
@@ -1409,7 +1406,7 @@ public class BallotServiceImpl implements BallotService {
      * @return success
      */
     private boolean link(ContactModel contactModel, BallotModel ballotModel) {
-        IdentityBallotModelFactory identityBallotModelFactory = this.databaseServiceNew.getIdentityBallotModelFactory();
+        IdentityBallotModelFactory identityBallotModelFactory = this.databaseService.getIdentityBallotModelFactory();
         if (identityBallotModelFactory.getByIdentityAndBallotId(
             contactModel.getIdentity(),
             ballotModel.getId()
@@ -1435,7 +1432,7 @@ public class BallotServiceImpl implements BallotService {
      * @return success
      */
     private boolean link(GroupModel groupModel, BallotModel ballotModel) {
-        GroupBallotModelFactory groupBallotModelFactory = this.databaseServiceNew.getGroupBallotModelFactory();
+        GroupBallotModelFactory groupBallotModelFactory = this.databaseService.getGroupBallotModelFactory();
         if (groupBallotModelFactory.getByGroupIdAndBallotId(
             groupModel.getId(),
             ballotModel.getId()

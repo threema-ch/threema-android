@@ -149,6 +149,13 @@ internal class IncomingMessageTaskQueue(
             }
         }
         override val maximumNumberOfExecutions: Int = 1
+
+        /**
+         * Incoming message task queue elements should be dropped on disconnect. The incoming message task queue will be recreated anyways when a new
+         * connection is established. Therefore this flag isn't needed to clean up the queue.
+         */
+        override val shouldDropOnDisconnect = true
+
         private var isCompleted = false
 
         override suspend fun run(handle: TaskCodec) {

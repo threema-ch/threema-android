@@ -42,7 +42,12 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import org.slf4j.Logger;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -53,7 +58,6 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.WizardDialog;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.fragments.wizard.WizardFragment0;
 import ch.threema.app.fragments.wizard.WizardFragment1;
 import ch.threema.app.fragments.wizard.WizardFragment2;
@@ -63,15 +67,18 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.threemasafe.ThreemaSafeService;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ParallaxViewPager;
+import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.StepPagerStrip;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -87,7 +94,7 @@ import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
-import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.AppConstants.PHONE_LINKED_PLACEHOLDER;
 import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -104,6 +111,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBaseActivity");
 
     public static final String EXTRA_NEW_IDENTITY_CREATED = "newIdentity";
+    private static final String EXTRA_WORK_SYNC_PERFORMED = "workSyncPerformed";
     private static final String DIALOG_TAG_USE_ID_AS_NICKNAME = "nd";
     private static final String DIALOG_TAG_INVALID_ENTRY = "ie";
     private static final String DIALOG_TAG_USE_ANONYMOUSLY = "ano";
@@ -140,6 +148,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     private boolean errorRaised = false, isNewIdentity = false;
     private WizardFragment4 fragment4;
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
+    private boolean workSyncPerformed = false;
 
     private final Handler finishHandler = new Handler();
     private final Handler dialogHandler = new Handler();
@@ -208,6 +217,10 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
+        if (savedInstanceState != null) {
+            workSyncPerformed = savedInstanceState.getBoolean(EXTRA_WORK_SYNC_PERFORMED);
+        }
+
         try {
             serviceManager = ThreemaApplication.getServiceManager();
             if (serviceManager != null) {
@@ -245,16 +258,47 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
         viewPager.addLayer(findViewById(R.id.layer0));
         viewPager.addLayer(findViewById(R.id.layer1));
 
+        handleDeviceInsets();
+
         Intent intent = getIntent();
         if (intent != null) {
             isNewIdentity = intent.getBooleanExtra(EXTRA_NEW_IDENTITY_CREATED, false);
         }
 
-        if (ConfigUtils.isWorkBuild()) {
+        if (ConfigUtils.isWorkBuild() && !workSyncPerformed) {
             performWorkSync();
         } else {
             setupConfig();
         }
+    }
+
+    private void handleDeviceInsets() {
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            viewPager,
+            InsetSides.top(),
+            SpacingValues.vertical(R.dimen.wizard_contents_padding)
+        );
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.navigation_footer), (view, windowInsets) -> {
+
+            final @NonNull Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+
+            final @Px int paddingLeft = insets.left;
+            final @Px int paddingRight = insets.right;
+            final @Px int paddingBottom;
+
+            if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
+                final @NonNull Insets imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+                paddingBottom = imeInsets.bottom;
+            } else {
+                paddingBottom = insets.bottom;
+            }
+
+            view.setPadding(paddingLeft, 0, paddingRight, paddingBottom);
+
+            return windowInsets;
+        });
     }
 
     private void setupConfig() {
@@ -345,6 +389,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
             () -> {
                 // On success
                 DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+                workSyncPerformed = true;
                 setupConfig();
             },
             () -> {
@@ -517,7 +562,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
         } else {
             if (this.skipWizard) {
                 isSyncContacts = false;
-                this.serviceManager.getPreferenceService().setSyncContacts(false);
+                this.serviceManager.getPreferenceService().getContactSyncPolicySetting().setFromLocal(false);
                 linkPhone();
             } else {
                 WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_sync_contacts_dialog, R.string.yes, R.string.no, null);
@@ -530,7 +575,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
         if (ConfigUtils.requestContactPermissions(this, null, PERMISSION_REQUEST_READ_CONTACTS)) {
             // permission is already granted
             this.isSyncContacts = true;
-            preferenceService.setSyncContacts(this.isSyncContacts);
+            preferenceService.getContactSyncPolicySetting().setFromLocal(this.isSyncContacts);
             linkPhone();
         }
         // continue to onRequestPermissionsResult
@@ -705,7 +750,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                 break;
             case DIALOG_TAG_SYNC_CONTACTS_ENABLE:
                 isSyncContacts = false;
-                this.serviceManager.getPreferenceService().setSyncContacts(false);
+                this.serviceManager.getPreferenceService().getContactSyncPolicySetting().setFromLocal(false);
                 linkPhone();
                 break;
             case DIALOG_TAG_PASSWORD_PRESET_CONFIRM:
@@ -956,7 +1001,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                         routine.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) -> userService.enableAccountAutoSync(true));
 
                         routine.run();
-                    } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                    } catch (MasterKeyLockedException e) {
                         logger.error("Exception", e);
                     }
                     return null;
@@ -1035,11 +1080,10 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
         /* trigger a connection now - as application lifecycle was set to resumed state when there was no identity yet */
         serviceManager.getLifetimeService().ensureConnection();
 
+        preferenceService.getContactSyncPolicySetting().setFromLocal(this.isSyncContacts);
         if (this.isSyncContacts) {
-            preferenceService.setSyncContacts(true);
             reallySyncContactsAndFinish();
         } else {
-            preferenceService.setSyncContacts(false);
             prepareThreemaSafe();
         }
     }
@@ -1059,5 +1103,11 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                 linkPhone();
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_WORK_SYNC_PERFORMED, workSyncPerformed);
     }
 }

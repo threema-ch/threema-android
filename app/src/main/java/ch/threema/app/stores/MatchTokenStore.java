@@ -21,7 +21,7 @@
 
 package ch.threema.app.stores;
 
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.domain.stores.TokenStoreInterface;
 
 public class MatchTokenStore implements TokenStoreInterface {

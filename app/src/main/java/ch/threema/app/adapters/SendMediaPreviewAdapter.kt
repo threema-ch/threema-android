@@ -35,8 +35,8 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.adapters.SendMediaPreviewAdapter.SendMediaHolder
-import ch.threema.app.services.PreferenceService.ImageScale_SEND_AS_FILE
-import ch.threema.app.services.PreferenceService.VideoSize_SEND_AS_FILE
+import ch.threema.app.preference.service.PreferenceService.ImageScale_SEND_AS_FILE
+import ch.threema.app.preference.service.PreferenceService.VideoSize_SEND_AS_FILE
 import ch.threema.app.ui.CheckableFrameLayout
 import ch.threema.app.ui.MediaItem
 import ch.threema.app.ui.MediaItem.*

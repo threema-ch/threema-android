@@ -30,25 +30,25 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.WindowCompat;
 import androidx.fragment.app.FragmentManager;
 
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.fragments.MessageSectionFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.services.ConversationCategoryService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKey;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ComposeMessageActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
@@ -75,24 +75,17 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
         getWindow().setAllowReturnTransitionOverlap(true);
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-
-        // Tell the Window that our app is going to responsible for fitting for any system windows.
-        // This is similar to the now deprecated:
-        // view.setSystemUiVisibility(LAYOUT_STABLE | LAYOUT_FULLSCREEN | LAYOUT_FULLSCREEN)
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-            getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
         }
 
         this.currentIntent = getIntent();
+        this.initActivity(savedInstanceState);
 
-        //check master key
-        MasterKey masterKey = ThreemaApplication.getMasterKey();
-
-        if (!(masterKey != null && masterKey.isLocked())) {
-            this.initActivity(savedInstanceState);
-        }
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.appbar),
+            InsetSides.ltr()
+        );
     }
 
     @Override
@@ -220,8 +213,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 final Intent intent) {
+    public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
         switch (requestCode) {
             case ID_HIDDEN_CHECK_ON_CREATE:
                 super.onActivityResult(requestCode, resultCode, intent);
@@ -250,13 +242,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
                     if (!ConfigUtils.isTabletLayout()) {
                         finish();
                     }
-                }
-                break;
-            case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
-                if (ThreemaApplication.getMasterKey().isLocked()) {
-                    finish();
-                } else {
-                    ConfigUtils.recreateActivity(this, ComposeMessageActivity.class, getIntent().getExtras());
                 }
                 break;
             default:
@@ -291,7 +276,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
             }
             return true;
         }
-         return false;
+        return false;
     }
 
     @Override

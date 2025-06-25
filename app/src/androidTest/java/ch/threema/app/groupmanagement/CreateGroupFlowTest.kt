@@ -25,6 +25,7 @@ import android.text.format.DateUtils
 import ch.threema.app.DangerousTest
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.groupflows.GroupCreateProperties
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.groupflows.ProfilePicture
 import ch.threema.app.tasks.GroupCreateTask
 import ch.threema.app.tasks.ReflectGroupSyncCreateTask
@@ -47,16 +48,15 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Test
 
 /**
  * This test asserts that the corresponding tasks have been scheduled when running the create group
@@ -92,7 +92,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
         notificationTriggerPolicyOverride = null,
     )
 
-    @Before
+    @BeforeTest
     fun setup() {
         clearDatabaseAndCaches(serviceManager)
 
@@ -103,7 +103,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
     }
 
     @Test
-    fun testKnownMember() = runTest {
+    fun testKnownMemberMD() = runTest {
         val memberIdentity = initialContactModelData.identity
 
         // Assert that the member exists as a contact
@@ -120,7 +120,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
     }
 
     @Test
-    fun testKnownMemberNonMd() = runTest {
+    fun testKnownMemberNonMD() = runTest {
         val memberIdentity = initialContactModelData.identity
 
         // Assert that the member exists as a contact
@@ -137,7 +137,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
     }
 
     @Test
-    fun testNotesGroupMd() = runTest {
+    fun testNotesGroupMD() = runTest {
         testAndAssertSuccessfulGroupCreation(
             GroupCreateProperties(
                 name = "Test",
@@ -149,7 +149,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
     }
 
     @Test
-    fun testNotesGroupNonMd() = runTest {
+    fun testNotesGroupNonMD() = runTest {
         testAndAssertSuccessfulGroupCreation(
             GroupCreateProperties(
                 name = "Test",
@@ -161,13 +161,13 @@ class CreateGroupFlowTest : GroupFlowTest() {
     }
 
     @Test
-    fun testUnknownMemberMd() = runTest {
+    fun testUnknownMemberMD() = runTest {
         val unknownIdentity = "0UNKNOWN"
 
         // Assert that the identity is really unknown
         assertNull(contactModelRepository.getByIdentity(unknownIdentity))
 
-        val groupModel = testGroupCreation(
+        val groupFlowResult: GroupFlowResult = testGroupCreation(
             GroupCreateProperties(
                 name = "Test",
                 profilePicture = ProfilePicture(null as ByteArray?),
@@ -176,14 +176,40 @@ class CreateGroupFlowTest : GroupFlowTest() {
             ReflectionExpectation.REFLECTION_FAIL,
         )
 
-        assertNull(groupModel)
+        assertIs<GroupFlowResult.Failure.Other>(groupFlowResult)
+    }
+
+    @Test
+    fun shouldNotCreateGroupWhenMdActiveButConnectionIsLost() = runTest {
+        // arrange
+        val taskManager = ControlledTaskManager(emptyList())
+        val groupFlowDispatcher = getGroupFlowDispatcher(
+            setupConfig = SetupConfig.MULTI_DEVICE_ENABLED,
+            taskManager = taskManager,
+            connection = ConnectionDisconnected,
+        )
+
+        // act
+        val groupFlowResult: GroupFlowResult = groupFlowDispatcher.runCreateGroupFlow(
+            ThreemaApplication.getAppContext(),
+            GroupCreateProperties(
+                name = "Test",
+                profilePicture = ProfilePicture(null as ByteArray?),
+                members = setOf(initialContactModelData.identity),
+            ),
+        ).await()
+
+        // assert
+        assertTrue(groupFlowResult is GroupFlowResult.Failure.Network)
     }
 
     private suspend fun testAndAssertSuccessfulGroupCreation(
         groupCreateProperties: GroupCreateProperties,
         reflectionExpectation: ReflectionExpectation,
-    ): GroupModel? {
-        val groupModel = testGroupCreation(groupCreateProperties, reflectionExpectation)
+    ): GroupModel {
+        val createGroupFlowResult = testGroupCreation(groupCreateProperties, reflectionExpectation)
+        assertTrue(createGroupFlowResult is GroupFlowResult.Success)
+        val groupModel = createGroupFlowResult.groupModel
         groupModel.assertCreatedFrom(groupCreateProperties)
         groupModel.assertNewGroup()
         return groupModel
@@ -192,9 +218,10 @@ class CreateGroupFlowTest : GroupFlowTest() {
     private suspend fun testGroupCreation(
         groupCreateProperties: GroupCreateProperties,
         reflectionExpectation: ReflectionExpectation,
-    ): GroupModel? {
+    ): GroupFlowResult {
         val scheduledTaskAssertions: MutableList<(Task<*, TaskCodec>) -> Unit> = mutableListOf()
-        // If multi device is enabled, then we expect a reflection
+
+        // If multi device is enabled, then we expect the ReflectGroupSyncCreateTask to be scheduled
         if (reflectionExpectation.setupConfig == SetupConfig.MULTI_DEVICE_ENABLED) {
             scheduledTaskAssertions.add { task ->
                 assertIs<ReflectGroupSyncCreateTask>(task)
@@ -216,23 +243,21 @@ class CreateGroupFlowTest : GroupFlowTest() {
         val groupFlowDispatcher = getGroupFlowDispatcher(
             reflectionExpectation.setupConfig,
             taskManager,
+            ConnectionLoggedIn,
         )
 
         // Run create group flow
-        val groupModel = groupFlowDispatcher.runCreateGroupFlow(
-            null,
+        val groupFlowResult: GroupFlowResult = groupFlowDispatcher.runCreateGroupFlow(
             ThreemaApplication.getAppContext(),
             groupCreateProperties,
         ).await()
 
         // Assert that all expected tasks have been scheduled
-        taskManager.pendingTaskAssertions.size.let { size ->
-            if (size > 0) {
-                fail("There are $size pending task assertions left")
-            }
+        assert(taskManager.pendingTaskAssertions.isEmpty()) {
+            "There are ${taskManager.pendingTaskAssertions} pending task assertions left"
         }
 
-        return groupModel
+        return groupFlowResult
     }
 
     private fun GroupModel?.assertCreatedFrom(groupCreateProperties: GroupCreateProperties) {

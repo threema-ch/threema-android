@@ -21,14 +21,14 @@
 
 package ch.threema.domain.protocol.csp.messages.group;
 
+import com.google.protobuf.ByteString;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.protobuf.Common;
 import ch.threema.protobuf.csp.e2e.GroupJoinResponse;
-
-import com.google.protobuf.ByteString;
-
-import org.junit.Test;
-import org.junit.Assert;
 
 public class GroupJoinResponseDataTest {
     static final GroupJoinResponseData.Response TEST_RESPONSE = new GroupJoinResponseData.Expired();
@@ -57,47 +57,47 @@ public class GroupJoinResponseDataTest {
 
 
     static void assertEqualsTestProperties(GroupJoinResponseData data) {
-        Assert.assertEquals(TEST_TOKEN_VALID, data.getToken());
-        Assert.assertEquals(TEST_RESPONSE, data.getResponse());
+        Assertions.assertEquals(TEST_TOKEN_VALID, data.getToken());
+        Assertions.assertEquals(TEST_RESPONSE, data.getResponse());
     }
 
     @Test
-    public void testValidData() {
+    void testValidData() {
         final GroupJoinResponseData data = new GroupJoinResponseData(TEST_TOKEN_VALID, TEST_RESPONSE);
         assertEqualsTestProperties(data);
     }
 
     @Test
-    public void testFromProtobuf() throws BadMessageException {
+    void testFromProtobuf() throws BadMessageException {
         final byte[] rawMessage = TEST_PROTOBUF_MESSAGE.toByteArray();
         final GroupJoinResponseData data = GroupJoinResponseData.fromProtobuf(rawMessage);
         assertEqualsTestProperties(data);
     }
 
     @Test
-    public void testFromProtobufAccept() throws BadMessageException {
+    void testFromProtobufAccept() throws BadMessageException {
         final byte[] protobufRawMessage = TEST_PROTOBUF_MESSAGE_ACCEPT.toByteArray();
         final GroupJoinResponseData data = GroupJoinResponseData.fromProtobuf(protobufRawMessage);
-        Assert.assertEquals(TEST_TOKEN_VALID, data.getToken());
-        Assert.assertEquals(TEST_GROUP_ID, ((GroupJoinResponseData.Accept) data.getResponse()).getGroupId());
+        Assertions.assertEquals(TEST_TOKEN_VALID, data.getToken());
+        Assertions.assertEquals(TEST_GROUP_ID, ((GroupJoinResponseData.Accept) data.getResponse()).getGroupId());
     }
 
     @Test
-    public void testToProtobufMessage() {
+    void testToProtobufMessage() {
         final GroupJoinResponseData data = new GroupJoinResponseData(TEST_TOKEN_VALID, TEST_RESPONSE);
         final GroupJoinResponse generatedProtobufMessage = data.toProtobufMessage();
 
-        Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
+        Assertions.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
     }
 
     @Test
-    public void testToProtobufMessageAccept() {
+    void testToProtobufMessageAccept() {
         final GroupJoinResponseData data = new GroupJoinResponseData(
             TEST_TOKEN_VALID,
             new GroupJoinResponseData.Accept(TEST_GROUP_ID)
         );
         final GroupJoinResponse generatedProtobufMessage = data.toProtobufMessage();
 
-        Assert.assertEquals(TEST_PROTOBUF_MESSAGE_ACCEPT, generatedProtobufMessage);
+        Assertions.assertEquals(TEST_PROTOBUF_MESSAGE_ACCEPT, generatedProtobufMessage);
     }
 }

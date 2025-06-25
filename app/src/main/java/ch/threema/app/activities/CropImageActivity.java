@@ -46,8 +46,10 @@ import org.slf4j.Logger;
 
 import java.util.Collections;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
@@ -85,8 +87,6 @@ public class CropImageActivity extends ThreemaToolbarActivity {
             if (sharedPreferences != null && sharedPreferences.getBoolean("pref_dynamic_color", false)) {
                 DynamicColors.applyToActivityIfAvailable(this);
             }
-        } else {
-            ConfigUtils.configureSystemBars(this);
         }
 
         super.onCreate(savedInstanceState);
@@ -94,7 +94,9 @@ public class CropImageActivity extends ThreemaToolbarActivity {
         MaterialToolbar toolbar = findViewById(R.id.crop_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         ExtendedFloatingActionButton doneActionView = findViewById(R.id.floating);
         doneActionView.setOnClickListener(v -> onSaveClicked());
@@ -150,6 +152,15 @@ public class CropImageActivity extends ThreemaToolbarActivity {
     }
 
     @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.crop_parent),
+            InsetSides.lbr()
+        );
+    }
+
+    @Override
     public int getLayoutResource() {
         return R.layout.activity_crop;
     }
@@ -180,8 +191,8 @@ public class CropImageActivity extends ThreemaToolbarActivity {
             maxY = extras.getInt(EXTRA_MAX_Y);
             oval = extras.getBoolean(EXTRA_OVAL, false);
             saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
-            orientation = extras.getInt(ThreemaApplication.EXTRA_ORIENTATION, 0);
-            flip = extras.getInt(ThreemaApplication.EXTRA_FLIP, BitmapUtil.FLIP_NONE);
+            orientation = extras.getInt(AppConstants.EXTRA_ORIENTATION, 0);
+            flip = extras.getInt(AppConstants.EXTRA_FLIP, BitmapUtil.FLIP_NONE);
             additionalOrientation = extras.getInt(EXTRA_ADDITIONAL_ORIENTATION, 0);
             additionalFlip = extras.getInt(EXTRA_ADDITIONAL_FLIP, BitmapUtil.FLIP_NONE);
         }

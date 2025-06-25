@@ -41,7 +41,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.InitialAvatarView;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
@@ -165,7 +165,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
         holder.nameView.setText(name);
 
         StringBuilder categoriesBuilder = new StringBuilder("");
-        if (workDirectoryContact.categoryIds.size() > 0) {
+        if (!workDirectoryContact.categoryIds.isEmpty()) {
             int count = 0;
             for (String categoryId : workDirectoryContact.categoryIds) {
                 if (count != 0) {

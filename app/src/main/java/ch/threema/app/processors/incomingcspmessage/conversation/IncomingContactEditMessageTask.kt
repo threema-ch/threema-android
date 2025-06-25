@@ -31,9 +31,8 @@ import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.AbstractMessageModel
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingContactEditMessageTask")
+private val logger = LoggingUtil.getThreemaLogger("IncomingContactEditMessageTask")
 
 class IncomingContactEditMessageTask(
     editMessage: EditMessage,

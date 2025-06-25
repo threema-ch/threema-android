@@ -23,11 +23,9 @@ package ch.threema.app.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import ch.threema.storage.models.GroupModel;
 
-@PrepareForTest(GroupUtil.class)
 public class GroupUtilTest {
 
     private String[][] getGroup_SendToCreator() {

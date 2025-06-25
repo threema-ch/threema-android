@@ -26,9 +26,8 @@ import ch.threema.domain.protocol.csp.messages.voip.features.CallFeature;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -40,7 +39,7 @@ public class VoipCallAnswerDataTest {
      * A valid accept answer.
      */
     @Test
-    public void testAcceptAnswer() throws Exception {
+    void testAcceptAnswer() throws Exception {
         final VoipCallAnswerData.AnswerData answerData = new VoipCallAnswerData.AnswerData();
         answerData.setSdp("sdpsdp");
         answerData.setSdpType("answer");
@@ -53,15 +52,15 @@ public class VoipCallAnswerDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertTrue(json.contains("\"action\":1"));
-        Assert.assertTrue(json.contains("\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}"));
+        Assertions.assertTrue(json.contains("\"action\":1"));
+        Assertions.assertTrue(json.contains("\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}"));
     }
 
     /**
      * A valid accept answer (rollback -> sdp is null).
      */
     @Test
-    public void testAcceptRollbackAnswer() throws Exception {
+    void testAcceptRollbackAnswer() throws Exception {
         final VoipCallAnswerData.AnswerData answerData = new VoipCallAnswerData.AnswerData();
         answerData.setSdp(null);
         answerData.setSdpType("rollback");
@@ -74,15 +73,15 @@ public class VoipCallAnswerDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertTrue(json.contains("\"action\":1"));
-        Assert.assertTrue(json.contains("\"answer\":{\"sdpType\":\"rollback\",\"sdp\":null}"));
+        Assertions.assertTrue(json.contains("\"action\":1"));
+        Assertions.assertTrue(json.contains("\"answer\":{\"sdpType\":\"rollback\",\"sdp\":null}"));
     }
 
     /**
      * A valid reject answer.
      */
     @Test
-    public void testRejectAnswer() throws Exception {
+    void testRejectAnswer() throws Exception {
         final VoipCallAnswerData msg = new VoipCallAnswerData();
         msg.setAction(VoipCallAnswerData.Action.REJECT);
         msg.setRejectReason(VoipCallAnswerData.RejectReason.BUSY);
@@ -91,21 +90,21 @@ public class VoipCallAnswerDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertTrue(json.contains("\"action\":0"));
-        Assert.assertTrue(json.contains("\"rejectReason\":1"));
+        Assertions.assertTrue(json.contains("\"action\":0"));
+        Assertions.assertTrue(json.contains("\"rejectReason\":1"));
     }
 
     /**
      * Reject answer without reason.
      */
     @Test
-    public void testRejectAnswerInvalid() throws Exception {
+    void testRejectAnswerInvalid() throws Exception {
         final VoipCallAnswerData msg = new VoipCallAnswerData();
         msg.setAction(VoipCallAnswerData.Action.REJECT);
         // No reject reason
         try {
             msg.write(new ByteArrayOutputStream());
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -113,13 +112,13 @@ public class VoipCallAnswerDataTest {
      * Accept answer without reason.
      */
     @Test
-    public void testAcceptAnswerInvalid() throws Exception {
+    void testAcceptAnswerInvalid() throws Exception {
         final VoipCallAnswerData msg = new VoipCallAnswerData();
         msg.setAction(VoipCallAnswerData.Action.ACCEPT);
         // No answer data
         try {
             msg.write(new ByteArrayOutputStream());
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -127,7 +126,7 @@ public class VoipCallAnswerDataTest {
      * Answer with both accept data and reject reason.
      */
     @Test
-    public void testMixedAnswerInvalid() throws Exception {
+    void testMixedAnswerInvalid() throws Exception {
         final VoipCallAnswerData.AnswerData answerData = new VoipCallAnswerData.AnswerData();
         answerData.setSdp("sdpsdp");
         answerData.setSdpType("answer");
@@ -139,7 +138,7 @@ public class VoipCallAnswerDataTest {
 
         try {
             msg.write(new ByteArrayOutputStream());
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -147,12 +146,12 @@ public class VoipCallAnswerDataTest {
      * Answer with unknown action type.
      */
     @Test
-    public void testInvalidAction() throws Exception {
+    void testInvalidAction() throws Exception {
         final VoipCallAnswerData msg = new VoipCallAnswerData();
         msg.setAction((byte) 7);
         try {
             msg.write(new ByteArrayOutputStream());
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -160,41 +159,41 @@ public class VoipCallAnswerDataTest {
      * Valid accept answer.
      */
     @Test
-    public void parseValidAcceptAnswer() throws BadMessageException {
+    void parseValidAcceptAnswer() throws BadMessageException {
         final VoipCallAnswerData answer = VoipCallAnswerData.parse(
             "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
         );
-        Assert.assertEquals((Byte) VoipCallAnswerData.Action.ACCEPT, answer.getAction());
-        Assert.assertNull(answer.getRejectReason());
+        Assertions.assertEquals((Byte) VoipCallAnswerData.Action.ACCEPT, answer.getAction());
+        Assertions.assertNull(answer.getRejectReason());
         VoipCallAnswerData.AnswerData data = answer.getAnswerData();
-        Assert.assertNotNull(data);
-        Assert.assertEquals(data.getSdpType(), "answer");
-        Assert.assertEquals(data.getSdp(), "sdpsdp");
+        Assertions.assertNotNull(data);
+        Assertions.assertEquals("answer", data.getSdpType());
+        Assertions.assertEquals("sdpsdp", data.getSdp());
     }
 
     /**
      * Valid reject answer.
      */
     @Test
-    public void parseValidRejectAnswer() throws BadMessageException {
+    void parseValidRejectAnswer() throws BadMessageException {
         final VoipCallAnswerData answer = VoipCallAnswerData.parse(
             "{\"rejectReason\":1,\"action\":0}"
         );
-        Assert.assertEquals((Byte) VoipCallAnswerData.Action.REJECT, answer.getAction());
-        Assert.assertEquals(null, answer.getAnswerData());
-        Assert.assertEquals(answer.getRejectReason(), (Byte) VoipCallAnswerData.RejectReason.BUSY);
+        Assertions.assertEquals((Byte) VoipCallAnswerData.Action.REJECT, answer.getAction());
+        Assertions.assertNull(answer.getAnswerData());
+        Assertions.assertEquals((Byte) VoipCallAnswerData.RejectReason.BUSY, answer.getRejectReason());
     }
 
     /**
      * Accept answer with sdpType = offer
      */
     @Test
-    public void parseAcceptAnswerTypeOffer() throws BadMessageException {
+    void parseAcceptAnswerTypeOffer() {
         try {
             VoipCallAnswerData.parse(
                 "{\"answer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -202,12 +201,12 @@ public class VoipCallAnswerDataTest {
      * Accept answer with sdpType = answer and sdp = null
      */
     @Test
-    public void parseAcceptAnswerTypeAnswerSdpNull() throws BadMessageException {
+    void parseAcceptAnswerTypeAnswerSdpNull() {
         try {
             VoipCallAnswerData.parse(
                 "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":null},\"action\":1}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -215,14 +214,14 @@ public class VoipCallAnswerDataTest {
      * Accept answer with sdpType = rollback and sdp = null
      */
     @Test
-    public void parseAcceptAnswerTypeRollbackSdpNull() throws BadMessageException {
-        VoipCallAnswerData.parse(
-            "{\"answer\":{\"sdpType\":\"rollback\",\"sdp\":null},\"action\":1}"
-        );
+    void parseAcceptAnswerTypeRollbackSdpNull() {
+        Assertions.assertDoesNotThrow(() -> VoipCallAnswerData.parse(
+                "{\"answer\":{\"sdpType\":\"rollback\",\"sdp\":null},\"action\":1}"
+        ));
     }
 
     @Test
-    public void createAnswerWithFeatures() throws Exception {
+    void createAnswerWithFeatures() throws Exception {
         final VoipCallAnswerData.AnswerData answerData = new VoipCallAnswerData.AnswerData()
             .setSdpType("answer")
             .setSdp("sdpsdp");
@@ -236,23 +235,23 @@ public class VoipCallAnswerDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertTrue(json.contains("\"action\":1"));
-        Assert.assertTrue(json.contains("\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}"));
-        Assert.assertTrue(json.contains("\"features\":{\"video\":null}"));
+        Assertions.assertTrue(json.contains("\"action\":1"));
+        Assertions.assertTrue(json.contains("\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}"));
+        Assertions.assertTrue(json.contains("\"features\":{\"video\":null}"));
     }
 
     @Test
-    public void parseAnswerWithoutFeatures() throws BadMessageException {
+    void parseAnswerWithoutFeatures() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
             "{\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"},\"action\":1}"
         );
-        Assert.assertNotNull(parsed.getAnswerData());
-        Assert.assertEquals("answer", parsed.getAnswerData().getSdpType());
-        Assert.assertTrue(parsed.getFeatures().isEmpty());
+        Assertions.assertNotNull(parsed.getAnswerData());
+        Assertions.assertEquals("answer", parsed.getAnswerData().getSdpType());
+        Assertions.assertTrue(parsed.getFeatures().isEmpty());
     }
 
     @Test
-    public void parseAnswerWithFeatures() throws BadMessageException {
+    void parseAnswerWithFeatures() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
             "{" +
                 "\"answer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}," +
@@ -263,10 +262,10 @@ public class VoipCallAnswerDataTest {
                 "\"action\":1" +
                 "}"
         );
-        Assert.assertNotNull(parsed.getAnswerData());
-        Assert.assertEquals("answer", parsed.getAnswerData().getSdpType());
+        Assertions.assertNotNull(parsed.getAnswerData());
+        Assertions.assertEquals("answer", parsed.getAnswerData().getSdpType());
         final FeatureList features = parsed.getFeatures();
-        Assert.assertEquals(2, features.size());
+        Assertions.assertEquals(2, features.size());
 
         final List<String> names = features
             .getList()
@@ -274,12 +273,12 @@ public class VoipCallAnswerDataTest {
             .map(CallFeature::getName)
             .sorted()
             .collect(Collectors.toList());
-        Assert.assertEquals(names.get(0), "superextension");
-        Assert.assertEquals(names.get(1), "video");
+        Assertions.assertEquals("superextension", names.get(0));
+        Assertions.assertEquals("video", names.get(1));
     }
 
     @Test
-    public void createAnswerWithCallId() throws Exception {
+    void createAnswerWithCallId() throws Exception {
         final VoipCallAnswerData msg = new VoipCallAnswerData()
             .setCallId(42)
             .setAction(VoipCallAnswerData.Action.REJECT)
@@ -289,24 +288,24 @@ public class VoipCallAnswerDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertTrue(json.contains("\"callId\":42"));
-        Assert.assertTrue(json.contains("\"action\":0"));
-        Assert.assertTrue(json.contains("\"rejectReason\":1"));
+        Assertions.assertTrue(json.contains("\"callId\":42"));
+        Assertions.assertTrue(json.contains("\"action\":0"));
+        Assertions.assertTrue(json.contains("\"rejectReason\":1"));
     }
 
     @Test
-    public void parseAnswerWithCallId() throws BadMessageException {
+    void parseAnswerWithCallId() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
             "{\"rejectReason\":1,\"action\":0,\"callId\":1337}"
         );
-        Assert.assertEquals(Long.valueOf(1337), parsed.getCallId());
+        Assertions.assertEquals(Long.valueOf(1337), parsed.getCallId());
     }
 
     @Test
-    public void parseAnswerWithoutCallId() throws BadMessageException {
+    void parseAnswerWithoutCallId() throws BadMessageException {
         final VoipCallAnswerData parsed = VoipCallAnswerData.parse(
             "{\"rejectReason\":1,\"action\":0}"
         );
-        Assert.assertNull(parsed.getCallId());
+        Assertions.assertNull(parsed.getCallId());
     }
 }

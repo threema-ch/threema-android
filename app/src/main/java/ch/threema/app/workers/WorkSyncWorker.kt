@@ -26,6 +26,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.work.Constraints
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -38,60 +39,36 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.notifications.NotificationChannels
+import ch.threema.app.notifications.NotificationIDs
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionService
 import ch.threema.app.routines.UpdateAppLogoRoutine
 import ch.threema.app.routines.UpdateWorkInfoRoutine
-import ch.threema.app.services.ContactService
-import ch.threema.app.services.FileService
-import ch.threema.app.services.LifetimeService
-import ch.threema.app.services.PreferenceService
-import ch.threema.app.services.UserService
-import ch.threema.app.services.license.LicenseService
 import ch.threema.app.services.license.UserCredentials
-import ch.threema.app.services.notification.NotificationService
-import ch.threema.app.stores.IdentityStore
-import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.ContactModel
-import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkData
-import com.google.common.util.concurrent.Futures
-import com.google.common.util.concurrent.ListenableFuture
 import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 private val logger = LoggingUtil.getThreemaLogger("WorkSyncWorker")
 
-class WorkSyncWorker(private val context: Context, workerParameters: WorkerParameters) :
-    Worker(context, workerParameters) {
-    private val serviceManager: ServiceManager? = ThreemaApplication.getServiceManager()
-    private val contactService: ContactService? = serviceManager?.contactService
-    private val preferenceService: PreferenceService? = serviceManager?.preferenceService
-    private val fileService: FileService? = serviceManager?.fileService
-    private val licenseService: LicenseService<*>? = serviceManager?.licenseService
-    private val apiConnector: APIConnector? = serviceManager?.apiConnector
-    private val notificationService: NotificationService? = serviceManager?.notificationService
-    private val userService: UserService? = serviceManager?.userService
-    private val multiDeviceManager: MultiDeviceManager? = serviceManager?.multiDeviceManager
-    private val taskCreator: TaskCreator? = serviceManager?.taskCreator
-    private val lifetimeService: LifetimeService? = serviceManager?.lifetimeService
-    private val identityStore: IdentityStore? = serviceManager?.identityStore
-    private val contactModelRepository: ContactModelRepository? =
-        serviceManager?.modelRepositories?.contacts
+class WorkSyncWorker(
+    private val context: Context,
+    workerParameters: WorkerParameters,
+) : CoroutineWorker(context, workerParameters) {
 
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
@@ -110,7 +87,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 val workManager = WorkManager.getInstance(context)
                 val policy = if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
                         workManager,
-                        ThreemaApplication.WORKER_PERIODIC_WORK_SYNC,
+                        WorkerNames.WORKER_PERIODIC_WORK_SYNC,
                         schedulePeriodMs,
                     )
                 ) {
@@ -120,12 +97,12 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 }
                 logger.info(
                     "{}: {} existing periodic work",
-                    ThreemaApplication.WORKER_PERIODIC_WORK_SYNC,
+                    WorkerNames.WORKER_PERIODIC_WORK_SYNC,
                     policy,
                 )
                 val workRequest = buildPeriodicWorkRequest(schedulePeriodMs)
                 workManager.enqueueUniquePeriodicWork(
-                    ThreemaApplication.WORKER_PERIODIC_WORK_SYNC,
+                    WorkerNames.WORKER_PERIODIC_WORK_SYNC,
                     policy,
                     workRequest,
                 )
@@ -137,7 +114,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         suspend fun cancelPeriodicWorkSyncAwait(context: Context) {
             WorkManagerUtil.cancelUniqueWorkAwait(
                 context,
-                ThreemaApplication.WORKER_PERIODIC_WORK_SYNC,
+                WorkerNames.WORKER_PERIODIC_WORK_SYNC,
             )
         }
 
@@ -191,7 +168,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         ) {
             val workRequest = buildOneTimeWorkRequest(forceUpdate, tag)
             WorkManager.getInstance(context).enqueueUniqueWork(
-                ThreemaApplication.WORKER_WORK_SYNC,
+                WorkerNames.WORKER_WORK_SYNC,
                 ExistingWorkPolicy.REPLACE,
                 workRequest,
             )
@@ -227,33 +204,31 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                     }
                 }
             workManager.enqueueUniqueWork(
-                ThreemaApplication.WORKER_WORK_SYNC,
+                WorkerNames.WORKER_WORK_SYNC,
                 ExistingWorkPolicy.REPLACE,
                 workRequest,
             )
         }
     }
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         val forceUpdate: Boolean = inputData.getBoolean(EXTRA_FORCE_UPDATE, false)
         val newWorkContacts: MutableList<ContactModel> = mutableListOf()
 
         logger.info("Refreshing work data. Force = {}", forceUpdate)
 
-        if (licenseService == null ||
-            notificationService == null ||
-            contactService == null ||
-            apiConnector == null ||
-            preferenceService == null ||
-            userService == null ||
-            multiDeviceManager == null ||
-            taskCreator == null ||
-            lifetimeService == null ||
-            contactModelRepository == null
-        ) {
-            logger.info("Services not available")
-            return Result.failure()
-        }
+        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+            ?: return Result.failure()
+
+        val contactService = serviceManager.contactService
+        val preferenceService = serviceManager.preferenceService
+        val fileService = serviceManager.fileService
+        val licenseService = serviceManager.licenseService
+        val apiConnector = serviceManager.apiConnector
+        val notificationService = serviceManager.notificationService
+        val userService = serviceManager.userService
+        val identityStore = serviceManager.identityStore
+        val contactModelRepository = serviceManager.modelRepositories.contacts
 
         if (!ConfigUtils.isWorkBuild()) {
             logger.info("Not allowed to run in a non work environment")
@@ -336,9 +311,9 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         Thread(
             UpdateAppLogoRoutine(
                 /* fileService = */
-                this.fileService,
+                fileService,
                 /* preferenceService = */
-                this.preferenceService,
+                preferenceService,
                 /* lightUrl = */
                 workData.logoLight,
                 /* darkUrl = */
@@ -394,25 +369,19 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         }
     }
 
-    override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
-        val notification =
-            NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_WORK_SYNC)
-                .setSound(null)
-                .setSmallIcon(R.drawable.ic_sync_notification)
-                .setContentTitle(context.getString(R.string.wizard1_sync_work))
-                .setProgress(0, 0, true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setAutoCancel(true)
-                .setLocalOnly(true)
-                .setOnlyAlertOnce(true)
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                .build()
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val notification = NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_WORK_SYNC)
+            .setSound(null)
+            .setSmallIcon(R.drawable.ic_sync_notification)
+            .setContentTitle(context.getString(R.string.wizard1_sync_work))
+            .setProgress(0, 0, true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setAutoCancel(true)
+            .setLocalOnly(true)
+            .setOnlyAlertOnce(true)
+            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+            .build()
 
-        return Futures.immediateFuture(
-            ForegroundInfo(
-                ThreemaApplication.WORK_SYNC_NOTIFICATION_ID,
-                notification,
-            ),
-        )
+        return ForegroundInfo(NotificationIDs.WORK_SYNC_NOTIFICATION_ID, notification)
     }
 }

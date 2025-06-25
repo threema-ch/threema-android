@@ -26,7 +26,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.editMessage
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import kotlin.random.Random.Default.nextBytes
 import kotlin.test.Test
@@ -38,7 +38,7 @@ class EditMessageTest {
      *
      *  (message id bytes (8)) + (updated content text (unlimited))
      */
-    private val messageIdToUpdate: MessageId = MessageId()
+    private val messageIdToUpdate = MessageId.random()
     private val updatedMessageText: String = "Edited"
 
     private val bytesProtoMessageData: ByteArray = editMessage {

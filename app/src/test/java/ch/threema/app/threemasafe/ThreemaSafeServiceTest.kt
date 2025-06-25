@@ -22,13 +22,13 @@
 package ch.threema.app.threemasafe
 
 import ch.threema.app.BuildConfig
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ApiService
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.DistributionListService
+import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.IdListService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.stores.IdentityStore
 import ch.threema.base.utils.JSONUtil
 import ch.threema.base.utils.Utils
@@ -63,7 +63,7 @@ class ThreemaSafeServiceTest {
     private val identityStoreMock: IdentityStore = mockk()
     private val apiService: ApiService = mockk()
     private val blockedIdentitiesServiceMock: BlockedIdentitiesService = mockk()
-    private val excludedSyncIdentitiesServiceMock: IdListService = mockk()
+    private val excludedSyncIdentitiesServiceMock: ExcludedSyncIdentitiesService = mockk()
 
     private val contactModelRepository: ContactModelRepository = ContactModelRepository(
         cache = ModelTypeCache(),
@@ -99,7 +99,7 @@ class ThreemaSafeServiceTest {
         excludedSyncIdentitiesServiceMock,
         /* profilePicRecipientsService = */
         mockk(),
-        /* databaseServiceNew = */
+        /* databaseService = */
         mockk(),
         /* identityStore = */
         identityStoreMock,
@@ -122,7 +122,7 @@ class ThreemaSafeServiceTest {
     fun prepareMocks() {
         every { identityStoreMock.privateKey } returns TEST_PRIVATE_KEY_BYTES
         every { blockedIdentitiesServiceMock.getAllBlockedIdentities() } returns emptySet()
-        every { excludedSyncIdentitiesServiceMock.all } returns emptyArray()
+        every { excludedSyncIdentitiesServiceMock.getExcludedIdentities() } returns emptySet()
 
         every { threemaSafeServiceImpl.threemaSafeBackupId } answers { callOriginal() }
         every { threemaSafeServiceImpl.threemaSafeEncryptionKey } answers { callOriginal() }
@@ -236,9 +236,9 @@ class ThreemaSafeServiceTest {
     fun testSafeJsonContainsContactValues() {
         // arrange
         every { contactServiceMock.all } returns listOf(
-            ContactModel("HELLO123", nonSecureRandomArray(32)).setLastUpdate(null),
-            ContactModel("HELLO234", nonSecureRandomArray(32)).setLastUpdate(testDate1),
-            ContactModel("HELLO345", nonSecureRandomArray(32)).setLastUpdate(testDate2),
+            ContactModel.create("HELLO123", nonSecureRandomArray(32)).setLastUpdate(null),
+            ContactModel.create("HELLO234", nonSecureRandomArray(32)).setLastUpdate(testDate1),
+            ContactModel.create("HELLO345", nonSecureRandomArray(32)).setLastUpdate(testDate2),
         )
 
         // act
@@ -264,27 +264,27 @@ class ThreemaSafeServiceTest {
     fun testSafeJsonDoesNotContainRemovedContacts() {
         // arrange
         // Contact 1 - not removed, in no common group
-        val contact1 = ContactModel("CONTACT1", nonSecureRandomArray(32)).apply {
+        val contact1 = ContactModel.create("CONTACT1", nonSecureRandomArray(32)).apply {
             setAcquaintanceLevel(ContactModel.AcquaintanceLevel.DIRECT)
         }
 
         // Contact 2 - not removed, in a common group
-        val contact2 = ContactModel("CONTACT2", nonSecureRandomArray(32)).apply {
+        val contact2 = ContactModel.create("CONTACT2", nonSecureRandomArray(32)).apply {
             setAcquaintanceLevel(ContactModel.AcquaintanceLevel.DIRECT)
         }
 
         // Contact 3 - removed, in a common group
-        val contact3 = ContactModel("CONTACT3", nonSecureRandomArray(32)).apply {
+        val contact3 = ContactModel.create("CONTACT3", nonSecureRandomArray(32)).apply {
             setAcquaintanceLevel(ContactModel.AcquaintanceLevel.GROUP)
         }
 
         // Contact 4 - removed, in no common group
-        val contact4 = ContactModel("CONTACT4", nonSecureRandomArray(32)).apply {
+        val contact4 = ContactModel.create("CONTACT4", nonSecureRandomArray(32)).apply {
             setAcquaintanceLevel(ContactModel.AcquaintanceLevel.GROUP)
         }
 
         // Contact 5 - removed, in no common group
-        val contact5 = ContactModel("CONTACT5", nonSecureRandomArray(32)).apply {
+        val contact5 = ContactModel.create("CONTACT5", nonSecureRandomArray(32)).apply {
             setAcquaintanceLevel(ContactModel.AcquaintanceLevel.GROUP)
         }
 
@@ -426,8 +426,8 @@ class ThreemaSafeServiceTest {
     @Test
     fun testSafeJsonSettingsContainsSyncExcludedIds() {
         // arrange
-        val syncExcludedIds = arrayOf("ECHOECHO", "OCHEOCHE")
-        every { excludedSyncIdentitiesServiceMock.all } returns syncExcludedIds
+        val syncExcludedIds = setOf("ECHOECHO", "OCHEOCHE")
+        every { excludedSyncIdentitiesServiceMock.getExcludedIdentities() } returns syncExcludedIds
 
         // act
         val settings: JSONObject = requireParsedThreemaSafeJson().getJSONObject("settings")
@@ -435,7 +435,7 @@ class ThreemaSafeServiceTest {
 
         // assert
         assertContentEquals(
-            expected = syncExcludedIds,
+            expected = syncExcludedIds.toTypedArray(),
             actual = JSONUtil.getStringArray(identities),
         )
     }

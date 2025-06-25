@@ -72,7 +72,7 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.backuprestore.BackupRestoreDataConfig;
 import ch.threema.app.backuprestore.RandomUtil;
 import ch.threema.app.collections.Functional;
@@ -83,7 +83,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.utils.BackupUtils;
@@ -103,7 +103,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.identitybackup.IdentityBackupGenerator;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -163,7 +163,7 @@ public class BackupService extends Service {
     private GroupService groupService;
     private BallotService ballotService;
     private DistributionListService distributionListService;
-    private DatabaseServiceNew databaseServiceNew;
+    private DatabaseService databaseService;
     private PreferenceService preferenceService;
     private PowerManager.WakeLock wakeLock;
     private NotificationManagerCompat notificationManagerCompat;
@@ -310,7 +310,7 @@ public class BackupService extends Service {
 
         try {
             fileService = serviceManager.getFileService();
-            databaseServiceNew = serviceManager.getDatabaseServiceNew();
+            databaseService = serviceManager.getDatabaseService();
             contactService = serviceManager.getContactService();
             groupService = serviceManager.getGroupService();
             distributionListService = serviceManager.getDistributionListService();
@@ -385,15 +385,15 @@ public class BackupService extends Service {
 
             logger.info("Count required steps for backup creation");
 
-            long requiredStepsContactsAndMessages = this.databaseServiceNew.getContactModelFactory().count()
-                + this.databaseServiceNew.getMessageModelFactory().count()
-                + this.databaseServiceNew.getGroupModelFactory().count()
-                + this.databaseServiceNew.getGroupMessageModelFactory().count();
+            long requiredStepsContactsAndMessages = this.databaseService.getContactModelFactory().count()
+                + this.databaseService.getMessageModelFactory().count()
+                + this.databaseService.getGroupModelFactory().count()
+                + this.databaseService.getGroupMessageModelFactory().count();
 
-            long requiredStepsDistributionLists = this.databaseServiceNew.getDistributionListModelFactory().count()
-                + this.databaseServiceNew.getDistributionListMessageModelFactory().count();
+            long requiredStepsDistributionLists = this.databaseService.getDistributionListModelFactory().count()
+                + this.databaseService.getDistributionListMessageModelFactory().count();
 
-            long requiredStepsBallots = this.databaseServiceNew.getBallotModelFactory().count();
+            long requiredStepsBallots = this.databaseService.getBallotModelFactory().count();
 
             long requiredBackupSteps = (this.config.backupIdentity() ? 1 : 0)
                 + (this.config.backupContactAndMessages() ?
@@ -408,11 +408,11 @@ public class BackupService extends Service {
                     Set<MessageType> fileTypes = this.config.backupMedia() ? MessageUtil.getFileTypes() : MessageUtil.getLowProfileMessageModelTypes();
                     MessageType[] fileTypesArray = fileTypes.toArray(new MessageType[0]);
 
-                    long requiredStepsMedia = this.databaseServiceNew.getMessageModelFactory().countByTypes(fileTypesArray);
-                    requiredStepsMedia += this.databaseServiceNew.getGroupMessageModelFactory().countByTypes(fileTypesArray);
+                    long requiredStepsMedia = this.databaseService.getMessageModelFactory().countByTypes(fileTypesArray);
+                    requiredStepsMedia += this.databaseService.getGroupMessageModelFactory().countByTypes(fileTypesArray);
 
                     if (this.config.backupDistributionLists()) {
-                        requiredStepsMedia += this.databaseServiceNew.getDistributionListMessageModelFactory().countByTypes(fileTypesArray);
+                        requiredStepsMedia += this.databaseService.getDistributionListMessageModelFactory().countByTypes(fileTypesArray);
                     }
 
                     requiredBackupSteps += (requiredStepsMedia * getStepFactorMedia());
@@ -687,7 +687,7 @@ public class BackupService extends Service {
                     try (final ByteArrayOutputStream messageBuffer = new ByteArrayOutputStream()) {
                         try (final CSVWriter messageCsv = new CSVWriter(new OutputStreamWriter(messageBuffer), messageCsvHeader)) {
 
-                            List<MessageModel> messageModels = this.databaseServiceNew
+                            List<MessageModel> messageModels = this.databaseService
                                 .getMessageModelFactory()
                                 .getByIdentityUnsorted(contactModel.getIdentity());
 
@@ -857,7 +857,7 @@ public class BackupService extends Service {
                     // Back up group messages
                     try (final ByteArrayOutputStream groupMessageBuffer = new ByteArrayOutputStream()) {
                         try (final CSVWriter groupMessageCsv = new CSVWriter(new OutputStreamWriter(groupMessageBuffer), groupMessageCsvHeader)) {
-                            List<GroupMessageModel> groupMessageModels = this.databaseServiceNew
+                            List<GroupMessageModel> groupMessageModels = this.databaseService
                                 .getGroupMessageModelFactory()
                                 .getByGroupIdUnsorted(groupModel.getId());
 
@@ -1185,7 +1185,7 @@ public class BackupService extends Service {
                             .write();
 
 
-                        final List<BallotChoiceModel> ballotChoiceModels = this.databaseServiceNew
+                        final List<BallotChoiceModel> ballotChoiceModels = this.databaseService
                             .getBallotChoiceModelFactory()
                             .getByBallotId(ballotModel.getId());
                         for (BallotChoiceModel ballotChoiceModel : ballotChoiceModels) {
@@ -1203,7 +1203,7 @@ public class BackupService extends Service {
 
                         }
 
-                        final List<BallotVoteModel> ballotVoteModels = this.databaseServiceNew
+                        final List<BallotVoteModel> ballotVoteModels = this.databaseService
                             .getBallotVoteModelFactory()
                             .getByBallotId(ballotModel.getId());
                         for (final BallotVoteModel ballotVoteModel : ballotVoteModels) {
@@ -1423,7 +1423,7 @@ public class BackupService extends Service {
                     try (final ByteArrayOutputStream messageBuffer = new ByteArrayOutputStream()) {
                         try (final CSVWriter distributionListMessageCsv = new CSVWriter(new OutputStreamWriter(messageBuffer), distributionListMessageCsvHeader)) {
 
-                            final List<DistributionListMessageModel> distributionListMessageModels = this.databaseServiceNew
+                            final List<DistributionListMessageModel> distributionListMessageModels = this.databaseService
                                 .getDistributionListMessageModelFactory()
                                 .getByDistributionListIdUnsorted(distributionListModel.getId());
                             for (DistributionListMessageModel distributionListMessageModel : distributionListMessageModels) {

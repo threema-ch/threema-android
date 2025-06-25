@@ -51,4 +51,8 @@ interface ActiveTask<out R> : Task<R, ActiveTaskCodec>
  */
 interface PassiveTask<out R> : Task<R, PassiveTaskCodec>
 
-interface TransactionTask<out R> : Task<R, ActiveTaskCodec>
+/**
+ * A task that will be dropped when the current primary connection (i.e. a connection to the Chat Server / Mediator Server) becomes closed. This task
+ * will be immediately completed (exceptionally) when there is no connection at the time of being scheduled.
+ */
+interface DropOnDisconnectTask<out R> : Task<R, ActiveTaskCodec>

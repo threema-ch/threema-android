@@ -24,6 +24,7 @@ package ch.threema.data.repositories
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.EmojiReactionData
@@ -39,14 +40,14 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
 import java.util.Date
 import java.util.UUID
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.fail
 import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
 
 class EmojiReactionsRepositoryTest {
     private lateinit var testCoreServiceManager: TestCoreServiceManager
@@ -54,11 +55,11 @@ class EmojiReactionsRepositoryTest {
     private lateinit var emojiReactionsRepository: EmojiReactionsRepository
     private lateinit var emojiReactionDao: EmojiReactionsDao
 
-    @Before
+    @BeforeTest
     fun before() {
         databaseService = TestDatabaseService()
         testCoreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),

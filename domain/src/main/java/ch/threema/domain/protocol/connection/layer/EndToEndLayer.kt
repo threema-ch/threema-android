@@ -138,7 +138,7 @@ internal class EndToEndLayer(
     private fun handleInboundClose(closeReason: ServerSocketCloseReason) {
         logger.debug("Handle inbound close: Pausing task manager because of {}", closeReason)
         CoroutineScope(connectionController.dispatcher.coroutineContext).launch {
-            taskManager.pauseRunningTasks()
+            taskManager.pauseRunningTasks(closeReason)
         }
     }
 }

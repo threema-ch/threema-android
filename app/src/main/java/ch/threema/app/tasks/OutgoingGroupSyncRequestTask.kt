@@ -29,7 +29,7 @@ import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContact
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
@@ -56,10 +56,10 @@ class OutgoingGroupSyncRequestTask(
     messageId: MessageId?,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val messageId = messageId ?: MessageId()
+    private val messageId = messageId ?: MessageId.random()
     private val apiConnector by lazy { serviceManager.apiConnector }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val outgoingGroupSyncRequestLogModelFactory by lazy { serviceManager.databaseServiceNew.outgoingGroupSyncRequestLogModelFactory }
+    private val outgoingGroupSyncRequestLogModelFactory by lazy { serviceManager.databaseService.outgoingGroupSyncRequestLogModelFactory }
     private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
 
     override val type: String = "OutgoingGroupSyncRequestTask"
@@ -76,7 +76,7 @@ class OutgoingGroupSyncRequestTask(
         )
 
         // Only send a group sync request once in an hour for a specific group
-        val groupSyncRequestLogModel = outgoingGroupSyncRequestLogModelFactory.get(groupIdentity)
+        val groupSyncRequestLogModel = outgoingGroupSyncRequestLogModelFactory[groupIdentity]
         val oneHourAgo = Date(System.currentTimeMillis() - DateUtils.HOUR_IN_MILLIS)
         val lastSyncRequest = groupSyncRequestLogModel?.lastRequest ?: Date(0)
         if (lastSyncRequest.after(oneHourAgo)) {

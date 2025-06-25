@@ -3,17 +3,17 @@
     android:name="seekbar_thumb_pressed_to_unpressed"
     android:width="18dp"
     android:height="18dp"
-    android:viewportWidth="18"
-    android:viewportHeight="18"
-    android:tint="?attr/colorPrimary"
     android:opticalInsetLeft="6dp"
-    android:opticalInsetRight="6dp">
+    android:opticalInsetRight="6dp"
+    android:tint="?attr/colorSecondary"
+    android:viewportWidth="18"
+    android:viewportHeight="18">
     <group
         android:name="thumb"
-        android:translateX="9"
-        android:translateY="9"
         android:scaleX="1.5"
-        android:scaleY="1.5">
+        android:scaleY="1.5"
+        android:translateX="9"
+        android:translateY="9">
         <path
             android:name="thumb_path"
             android:fillColor="#FF000000"

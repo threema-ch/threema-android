@@ -48,7 +48,7 @@ public abstract class AbstractMessage implements MessageTypeProperties, MessageF
 
     public AbstractMessage() {
         this.date = new Date();
-        this.messageId = new MessageId();
+        this.messageId = MessageId.random();
         this.forwardSecurityMode = ForwardSecurityMode.NONE;
         this.messageFlags = getMessageTypeDefaultFlags();
     }
@@ -138,13 +138,13 @@ public abstract class AbstractMessage implements MessageTypeProperties, MessageF
     }
 
     /**
-     * Check whether the message has the given flags.
+     * Check whether the message has the given flag.
      *
-     * @param messageFlags the flags that are checked
-     * @return true if all the flags are set, false if at least one is missing
+     * @param messageFlag the flag that is checked
+     * @return true if the flag is set, false otherwise
      */
-    public boolean hasFlags(int messageFlags) {
-        return (this.messageFlags & messageFlags) != 0;
+    public boolean hasFlag(int messageFlag) {
+        return (this.messageFlags & messageFlag) != 0;
     }
 
     /**

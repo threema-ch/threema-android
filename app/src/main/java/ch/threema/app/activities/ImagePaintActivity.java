@@ -97,13 +97,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiPicker;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.motionviews.FaceItem;
@@ -125,7 +125,7 @@ import ch.threema.app.motionviews.widget.TextEntity;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.ui.LockableScrollView;
@@ -288,7 +288,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         Intent intent = new Intent(context, ImagePaintActivity.class);
         intent.putExtra(EXTRA_ACTIVITY_MODE, ActivityMode.EDIT_IMAGE.name());
         intent.putExtra(Intent.EXTRA_STREAM, mediaItem);
-        intent.putExtra(ThreemaApplication.EXTRA_OUTPUT_FILE, Uri.fromFile(outputFile));
+        intent.putExtra(AppConstants.EXTRA_OUTPUT_FILE, Uri.fromFile(outputFile));
         return intent;
     }
 
@@ -314,7 +314,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         Intent intent = new Intent(context, ImagePaintActivity.class);
         intent.putExtra(EXTRA_ACTIVITY_MODE, ActivityMode.IMAGE_REPLY.name());
         intent.putExtra(Intent.EXTRA_STREAM, mediaItem);
-        intent.putExtra(ThreemaApplication.EXTRA_OUTPUT_FILE, Uri.fromFile(outputFile));
+        intent.putExtra(AppConstants.EXTRA_OUTPUT_FILE, Uri.fromFile(outputFile));
         intent.putExtra(ImagePaintActivity.EXTRA_IMAGE_REPLY, true);
         if (groupModel != null) {
             intent.putExtra(EXTRA_GROUP_ID, groupModel.getDatabaseId());
@@ -481,7 +481,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
             return;
         }
 
-        this.outputUri = intent.getParcelableExtra(ThreemaApplication.EXTRA_OUTPUT_FILE);
+        this.outputUri = intent.getParcelableExtra(AppConstants.EXTRA_OUTPUT_FILE);
 
         setSupportActionBar(getToolbar());
         ActionBar actionBar = getSupportActionBar();
@@ -647,7 +647,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
     private File createDrawingInputFile() {
         try {
             return serviceManager.getFileService().createTempFile(".blank", ".png");
-        } catch (IOException | FileSystemNotPresentException e) {
+        } catch (IOException e) {
             logger.error("Error while creating temporary drawing input file");
             return null;
         }
@@ -659,7 +659,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
     private File createDrawingOutputFile() {
         try {
             return serviceManager.getFileService().createTempFile(".drawing", ".png");
-        } catch (IOException | FileSystemNotPresentException e) {
+        } catch (IOException e) {
             logger.error("Error while creating temporary drawing output file", e);
             return null;
         }
@@ -1367,7 +1367,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
                         !ConfigUtils.isTabletLayout()) {
                         emojiPicker.hide();
                     } else {
-                        openSoftKeyboard(emojiPicker, captionEditText);
+                        openSoftKeyboard(captionEditText);
                         runOnSoftKeyboardOpen(() -> emojiPicker.hide());
                     }
                 }
@@ -1421,7 +1421,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
                 groupModel,
                 null
             );
-        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+        } catch (MasterKeyLockedException e) {
             logger.error("Cannot enable mention popup", e);
         }
     }
@@ -1451,7 +1451,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         emojiButton.setColorFilter(getResources().getColor(android.R.color.white));
 
         emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
-        emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService(), false);
+        emojiPicker.init(this, ThreemaApplication.requireServiceManager().getEmojiService(), false);
         emojiButton.attach(this.emojiPicker);
         emojiPicker.setEmojiKeyListener(emojiKeyListener);
 
@@ -1497,7 +1497,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
                         !ConfigUtils.isTabletLayout()) {
                         emojiPicker.hide();
                     } else {
-                        openSoftKeyboard(emojiPicker, captionEditText);
+                        openSoftKeyboard(captionEditText);
                         runOnSoftKeyboardOpen(() -> emojiPicker.hide());
                     }
                 } else {
@@ -1626,15 +1626,15 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
             intent.setData(imageUri);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cropFile));
             // The rotation and flip to load the image 'correctly'
-            intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, mediaItem.getRotation());
-            intent.putExtra(ThreemaApplication.EXTRA_FLIP, mediaItem.getFlip());
+            intent.putExtra(AppConstants.EXTRA_ORIENTATION, mediaItem.getRotation());
+            intent.putExtra(AppConstants.EXTRA_FLIP, mediaItem.getFlip());
             // The rotation and flip that has been applied in the image paint activity
             intent.putExtra(CropImageActivity.EXTRA_ADDITIONAL_ORIENTATION, currentOrientation.getRotation());
             intent.putExtra(CropImageActivity.EXTRA_ADDITIONAL_FLIP, currentOrientation.getFlip());
             intent.putExtra(CropImageActivity.FORCE_DARK_THEME, true);
 
             cropResultLauncher.launch(intent);
-        } catch (FileSystemNotPresentException | IOException e) {
+        } catch (IOException e) {
             logger.debug("Unable to create temp file for crop");
         }
     }

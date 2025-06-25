@@ -81,7 +81,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
     /**
      * create a local (unsaved) db model for the given message type
      */
-    AbstractMessageModel createLocalModel(MessageType type, @MessageContentsType int contentsType, Date postedAt);
+    M createLocalModel(MessageType type, @MessageContentsType int contentsType, Date postedAt);
 
     /**
      * create a db model for the given message type and save it
@@ -201,6 +201,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
     @Deprecated
     int getUniqueId();
 
+    @NonNull
     String getUniqueIdString();
 
     /**

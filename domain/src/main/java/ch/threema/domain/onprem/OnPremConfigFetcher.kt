@@ -22,8 +22,8 @@
 package ch.threema.domain.onprem
 
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.TimeProvider
-import ch.threema.base.utils.minus
+import ch.threema.common.TimeProvider
+import ch.threema.common.minus
 import ch.threema.domain.protocol.ProtocolStrings
 import java.io.IOException
 import java.net.HttpURLConnection.HTTP_FORBIDDEN

@@ -41,7 +41,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -56,8 +56,8 @@ import ch.threema.storage.models.data.media.VideoDataModel;
 abstract class AbstractMessageModelFactory extends ModelFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("AbstractMessageModelFactory");
 
-    AbstractMessageModelFactory(DatabaseServiceNew databaseServiceNew, String tableName) {
-        super(databaseServiceNew, tableName);
+    AbstractMessageModelFactory(DatabaseService databaseService, String tableName) {
+        super(databaseService, tableName);
     }
 
     void convert(final AbstractMessageModel messageModel, CursorHelper cursorFactory) {
@@ -228,7 +228,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
         values.put(AbstractMessageModel.COLUMN_STATE, MessageState.SENDFAILED.toString());
 
         try {
-            int updated = this.databaseService.getWritableDatabase().update(
+            int updated = getWritableDatabase().update(
                 this.getTableName(),
                 values,
                 AbstractMessageModel.COLUMN_TYPE + " =?"
@@ -258,13 +258,13 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
                 " & ~" + DISPLAY_TAG_STARRED +
                 ") WHERE (" + AbstractMessageModel.COLUMN_DISPLAY_TAGS + " & " + DISPLAY_TAG_STARRED + ") > 0";
 
-        SQLiteStatement statement = this.databaseService.getWritableDatabase().compileStatement(query);
+        SQLiteStatement statement = getWritableDatabase().compileStatement(query);
         return statement.executeUpdateDelete();
     }
 
     @WorkerThread
     public long countStarredMessages() throws SQLiteException {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE (" + AbstractMessageModel.COLUMN_DISPLAY_TAGS + " & " + DISPLAY_TAG_STARRED + ") > 0",
             null

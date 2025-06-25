@@ -21,9 +21,9 @@
 
 package ch.threema.app.emojis
 
+import android.app.Activity
 import android.content.Context
 import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -31,15 +31,20 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
+import ch.threema.app.ui.SimpleTextWatcher
 import ch.threema.app.utils.EditTextUtil
+import ch.threema.app.utils.getCurrentInsets
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class EmojiSearchWidget : ConstraintLayout {
+    lateinit var activity: Activity
     lateinit var searchInput: EditText
     lateinit var clearSearchButton: AppCompatImageButton
 
@@ -58,7 +63,8 @@ class EmojiSearchWidget : ConstraintLayout {
         defStyleAttr,
     )
 
-    fun init(listener: EmojiSearchListener, emojiService: EmojiService) {
+    fun init(activity: Activity, listener: EmojiSearchListener, emojiService: EmojiService) {
+        this.activity = activity
         this.listener = listener
         this.emojiService = emojiService
 
@@ -80,33 +86,39 @@ class EmojiSearchWidget : ConstraintLayout {
         configureSearchResults()
 
         diverseEmojiPopup = DiverseEmojiPopup(context, this)
-        diverseEmojiPopup.setListener(object : DiverseEmojiPopup.DiverseEmojiPopupListener {
-            override fun onDiverseEmojiClick(
-                parentEmojiSequence: String?,
-                emojiSequence: String?,
-            ) {
-                onEmojiClick(emojiSequence)
-                if (parentEmojiSequence != null && emojiSequence != null) {
-                    emojiService.setDiverseEmojiPreference(parentEmojiSequence, emojiSequence)
+        diverseEmojiPopup.setListener(
+            object : DiverseEmojiPopup.DiverseEmojiPopupListener {
+                override fun onDiverseEmojiClick(
+                    parentEmojiSequence: String?,
+                    emojiSequence: String?,
+                ) {
+                    onEmojiClick(emojiSequence)
+                    if (parentEmojiSequence != null && emojiSequence != null) {
+                        emojiService.setDiverseEmojiPreference(parentEmojiSequence, emojiSequence)
+                    }
                 }
-            }
 
-            override fun onOpen() {
-                // noop
-            }
+                override fun onOpen() {
+                    // noop
+                }
 
-            override fun onClose() {
-                // noop
-            }
-        })
+                override fun onClose() {
+                    // noop
+                }
+            },
+        )
     }
 
-    override fun isShown(): Boolean {
-        return visibility == VISIBLE
-    }
+    override fun isShown(): Boolean = isVisible
 
     fun show() {
-        visibility = VISIBLE
+        activity.getCurrentInsets(
+            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+        ).let {
+            setPadding(0, 0, 0, it.bottom)
+        }
+        isVisible = true
+        searchInput.requestFocus()
     }
 
     fun hide() {
@@ -116,28 +128,18 @@ class EmojiSearchWidget : ConstraintLayout {
     }
 
     private fun configureEmojiSearch() {
-        searchInput.addTextChangedListener(object : TextWatcher {
-            private var ongoingJob: Job? = null
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // noop
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // noop
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                ongoingJob?.cancel()
-                ongoingJob = MainScope().launch {
-                    setSearchResults(emojiService.search(s.toString()))
+        searchInput.addTextChangedListener(
+            object : SimpleTextWatcher() {
+                private var ongoingJob: Job? = null
+                override fun afterTextChanged(s: Editable) {
+                    ongoingJob?.cancel()
+                    ongoingJob = MainScope().launch {
+                        setSearchResults(emojiService.search(s.toString()))
+                    }
+                    clearSearchButton.isVisible = s.toString().isNotEmpty()
                 }
-                clearSearchButton.visibility = if (s.toString().isEmpty()) {
-                    View.GONE
-                } else {
-                    View.VISIBLE
-                }
-            }
-        })
+            },
+        )
         searchInput.setOnEditorActionListener { v, i, _ ->
             if (i == EditorInfo.IME_ACTION_SEARCH) {
                 EditTextUtil.hideSoftKeyboard(v)

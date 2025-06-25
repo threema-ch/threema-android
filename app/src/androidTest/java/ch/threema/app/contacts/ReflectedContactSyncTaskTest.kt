@@ -27,6 +27,7 @@ import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.processors.reflectedd2dsync.ReflectedContactSyncTask
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -57,6 +58,7 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.google.protobuf.kotlin.toByteString
 import com.neilalexander.jnacl.NaCl
 import java.util.Date
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -64,7 +66,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -101,12 +102,12 @@ class ReflectedContactSyncTaskTest {
         notificationTriggerPolicyOverride = null,
     )
 
-    @Before
+    @BeforeTest
     fun before() {
         databaseService = TestDatabaseService()
         taskCodec = TransactionAckTaskCodec()
         coreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
             multiDeviceManager = TestMultiDeviceManager(

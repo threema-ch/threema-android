@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,8 +21,8 @@
             style="?attr/collapsingToolbarLayoutLargeStyle"
             android:layout_width="match_parent"
             android:layout_height="@dimen/contact_detail_avatar_height"
-            android:fitsSystemWindows="true"
             android:importantForAccessibility="no"
+            app:collapsedTitleTextColor="@android:color/white"
             app:contentScrim="?android:attr/colorBackground"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
@@ -33,16 +34,17 @@
                 android:contentDescription="@string/profile_picture"
                 android:fitsSystemWindows="true"
                 android:importantForAccessibility="no"
-                app:layout_collapseMode="parallax" />
+                app:layout_collapseMode="parallax"
+                tools:background="@android:color/holo_red_light" />
 
             <!-- Nickname and - potentially - the Threema Work icon. -->
             <LinearLayout
+                android:id="@+id/collapsing_bottom_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|left"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="32dp"
+                android:layout_marginHorizontal="@dimen/grid_unit_x2"
+                android:layout_marginBottom="@dimen/grid_unit_x6"
                 android:gravity="bottom"
                 android:importantForAccessibility="no"
                 android:orientation="horizontal">
@@ -56,7 +58,8 @@
                     android:contentDescription="@string/threema_work_contact"
                     android:foreground="@drawable/selector_avatar"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/ic_badge_work" />
+                    app:srcCompat="@drawable/ic_badge_work"
+                    tools:visibility="visible" />
 
                 <ch.threema.app.emojis.EmojiTextView
                     android:id="@+id/contact_title"
@@ -66,7 +69,8 @@
                     android:maxLines="2"
                     android:textAppearance="@style/Threema.TextAppearance.DetailTitle"
                     app:layout_anchor="@id/appbar"
-                    app:layout_anchorGravity="bottom|left" />
+                    app:layout_anchorGravity="bottom|left"
+                    tools:text="Firstname Lastname" />
             </LinearLayout>
 
             <View
@@ -81,7 +85,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:titleTextColor="@android:color/white"
+                tools:menu="@menu/activity_contact_detail"
+                tools:navigationIcon="@drawable/ic_arrow_back_24"
+                tools:title="Name" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -91,15 +99,17 @@
         android:id="@+id/contact_group_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:importantForAccessibility="no"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_contact_detail" />
 
     <!-- FAB for editing contact -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/spacing_two_grid_unit"
+        android:layout_marginHorizontal="@dimen/grid_unit_x2"
         android:layout_marginBottom="-40dp"
         android:contentDescription="@string/edit_name_only"
         app:fabSize="normal"

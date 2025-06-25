@@ -27,7 +27,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.BlockedIdentitiesService;
@@ -36,7 +35,7 @@ import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
@@ -63,8 +62,7 @@ public abstract class Converter {
     protected static ContactService getContactService() throws ConversionException {
         try {
             return getServiceManager().getContactService();
-        } catch (NullPointerException | MasterKeyLockedException |
-                 FileSystemNotPresentException e) {
+        } catch (NullPointerException | MasterKeyLockedException e) {
             throw new ConversionException(e);
         }
     }
@@ -85,8 +83,7 @@ public abstract class Converter {
     protected static GroupService getGroupService() throws ConversionException {
         try {
             return getServiceManager().getGroupService();
-        } catch (NullPointerException | MasterKeyLockedException |
-                 FileSystemNotPresentException e) {
+        } catch (NullPointerException | MasterKeyLockedException e) {
             throw new ConversionException(e);
         }
     }
@@ -94,8 +91,7 @@ public abstract class Converter {
     protected static DistributionListService getDistributionListService() throws ConversionException {
         try {
             return getServiceManager().getDistributionListService();
-        } catch (NullPointerException | MasterKeyLockedException | NoIdentityException |
-                 FileSystemNotPresentException e) {
+        } catch (NullPointerException | MasterKeyLockedException | NoIdentityException e) {
             throw new ConversionException(e);
         }
     }
@@ -111,7 +107,7 @@ public abstract class Converter {
     protected static FileService getFileService() throws ConversionException {
         try {
             return getServiceManager().getFileService();
-        } catch (NullPointerException | FileSystemNotPresentException e) {
+        } catch (NullPointerException e) {
             throw new ConversionException(e);
         }
     }

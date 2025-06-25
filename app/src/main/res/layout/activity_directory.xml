@@ -2,9 +2,9 @@
   ~ Copyright (c) 2018-2025 Threema GmbH
   ~ All rights reserved.
   -->
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,26 +15,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:visibility="invisible">
 
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginVertical="@dimen/grid_unit_x4"
             android:src="@drawable/ic_contacts_outline"
-            app:tint="?attr/colorOnSurface"
-            android:layout_gravity="center_horizontal" />
+            app:tint="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/explain_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
+            android:layout_marginHorizontal="@dimen/grid_unit_x2"
             android:gravity="center_horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
             android:text="@string/directory_explain_text"
+            android:textAlignment="center"
             android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
 
     </LinearLayout>
@@ -43,59 +42,61 @@
         android:id="@+id/results_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?android:attr/colorBackground"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="?android:attr/colorBackground"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:visibility="visible">
 
         <HorizontalScrollView
+            android:id="@+id/chip_group_scroll_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbarSize="0dp"
-            android:scrollbars="none"
+            android:fadingEdgeLength="@dimen/grid_unit_x5"
             android:requiresFadingEdge="horizontal"
-            android:fadingEdgeLength="40dp">
+            android:scrollbarSize="0dp"
+            android:scrollbars="none">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chip_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
+                android:layout_marginHorizontal="@dimen/grid_unit_x2"
+                android:animateLayoutChanges="true"
                 android:paddingTop="14dp"
+                android:paddingBottom="10dp"
                 android:visibility="gone"
-                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingHorizontal="@dimen/grid_unit_x0_5"
                 app:chipSpacingVertical="0dp"
-                app:singleLine="true"
-                android:animateLayoutChanges="true" />
+                app:singleLine="true" />
 
         </HorizontalScrollView>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-            android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+            android:layout_marginLeft="@dimen/tablet_additional_padding_horizontal"
+            android:layout_marginRight="@dimen/tablet_additional_padding_horizontal"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <TextView
                 android:id="@+id/empty_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:textAlignment="center"
+                android:layout_marginTop="@dimen/grid_unit_x4"
                 android:gravity="center_horizontal"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
+                android:paddingHorizontal="@dimen/grid_unit_x2"
                 android:text=""
+                android:textAlignment="center"
                 android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
 
             <ch.threema.app.ui.EmptyRecyclerView
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="@dimen/grid_unit_x0_5"
+                android:clipToPadding="false"
+                tools:listitem="@layout/item_directory" />
 
         </FrameLayout>
 
@@ -129,9 +130,9 @@
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progress_bar"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

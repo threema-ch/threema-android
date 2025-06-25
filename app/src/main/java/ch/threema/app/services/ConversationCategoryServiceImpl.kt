@@ -25,6 +25,7 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.stores.PreferenceStoreInterface
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ContactUtil

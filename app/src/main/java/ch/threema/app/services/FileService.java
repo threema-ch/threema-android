@@ -73,6 +73,7 @@ public interface FileService {
     /**
      * get the path of the application
      */
+    @NonNull
     File getAppDataPath();
 
     /**
@@ -102,6 +103,7 @@ public interface FileService {
 
     File getIntTmpPath();
 
+    @NonNull
     File getExtTmpPath();
 
     /**
@@ -115,7 +117,12 @@ public interface FileService {
      * cleanup temporary directory
      */
     @WorkerThread
-    void cleanTempDirs();
+    default void cleanTempDirs() {
+        cleanTempDirs(0);
+    }
+
+    @WorkerThread
+    void cleanTempDirs(long ageThresholdMillis);
 
     String getWallpaperFilePath(MessageReceiver messageReceiver);
 
@@ -468,8 +475,9 @@ public interface FileService {
 
     void saveMedia(final AppCompatActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, boolean quiet);
 
-    void saveAppLogo(File logo, @ConfigUtils.AppThemeSetting String theme);
+    void saveAppLogo(@Nullable File logo, @ConfigUtils.AppThemeSetting String theme);
 
+    @NonNull
     File getAppLogo(@ConfigUtils.AppThemeSetting String theme);
 
     @NonNull

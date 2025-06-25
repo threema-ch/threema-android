@@ -41,15 +41,15 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.group.GroupInviteModel;
 import java8.util.Optional;
 
 public class GroupInviteModelFactory extends ModelFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupInviteModelFactory");
 
-    public GroupInviteModelFactory(DatabaseServiceNew databaseServiceNew) {
-        super(databaseServiceNew, GroupInviteModel.TABLE);
+    public GroupInviteModelFactory(DatabaseService databaseService) {
+        super(databaseService, GroupInviteModel.TABLE);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class GroupInviteModelFactory extends ModelFactory {
     public Result<GroupInviteModel, Exception> insert(GroupInviteModel groupInviteModel) {
         ContentValues contentValues = buildContentValues(groupInviteModel);
         try {
-            long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+            long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
 
             if (newId < 0) {
                 return Result.failure(new IOException("Database returned invalid id for new record: " + newId));
@@ -99,7 +99,7 @@ public class GroupInviteModelFactory extends ModelFactory {
 
     public boolean update(GroupInviteModel groupInviteModel) throws SQLException {
         ContentValues contentValues = buildContentValues(groupInviteModel);
-        int rowsAffected = this.databaseService.getWritableDatabase().update(this.getTableName(),
+        int rowsAffected = getWritableDatabase().update(this.getTableName(),
             contentValues,
             GroupInviteModel.COLUMN_ID + "=?",
             new String[]{
@@ -108,13 +108,13 @@ public class GroupInviteModelFactory extends ModelFactory {
 
         logger.debug("rowsAffected {}", rowsAffected);
         if (rowsAffected != 1) {
-            throw new SQLException(NO_RECORD_MSG + groupInviteModel.getId());
+            throw new SQLException(ModelFactory.noRecordsMessage(groupInviteModel.getId()));
         }
         return true;
     }
 
     private void update(int id, final @NonNull ContentValues values) throws SQLException {
-        int rowsAffected = this.databaseService.getWritableDatabase().update(
+        int rowsAffected = getWritableDatabase().update(
             this.getTableName(),
             values,
             GroupInviteModel.COLUMN_ID + "=?",
@@ -124,7 +124,7 @@ public class GroupInviteModelFactory extends ModelFactory {
         );
 
         if (rowsAffected != 1) {
-            throw new SQLException(NO_RECORD_MSG + id);
+            throw new SQLException(ModelFactory.noRecordsMessage(id));
         }
     }
 
@@ -205,7 +205,7 @@ public class GroupInviteModelFactory extends ModelFactory {
     }
 
     public @NonNull Optional<GroupInviteModel> getDefaultByGroupApiId(GroupId groupId) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().rawQuery(
+        final Cursor cursor = getReadableDatabase().rawQuery(
             "SELECT * FROM " + getTableName() +
                 " WHERE " + GroupInviteModel.COLUMN_DEFAULT_FLAG + " =" + 1 +
                 " AND " + GroupInviteModel.COLUMN_GROUP_ID + "=\"" + groupId.toString() + "\"" +
@@ -218,7 +218,7 @@ public class GroupInviteModelFactory extends ModelFactory {
         @NonNull String selection,
         @NonNull String[] selectionArgs
     ) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().query(
+        final Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -248,7 +248,7 @@ public class GroupInviteModelFactory extends ModelFactory {
         @Nullable String selection,
         @Nullable String[] selectionArgs
     ) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().query(
+        final Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

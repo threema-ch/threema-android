@@ -22,7 +22,7 @@
 package ch.threema.app.processors.reflectedd2dsync
 
 import ch.threema.app.managers.ListenerManager
-import ch.threema.app.services.ApiService
+import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
 import ch.threema.app.services.ConversationTagService
@@ -31,6 +31,7 @@ import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_ME
 import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.UserService
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.base.crypto.SymmetricEncryptionService
@@ -41,10 +42,11 @@ import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.GroupAlreadyExistsException
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.data.repositories.GroupStoreException
+import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.Common.Blob
 import ch.threema.protobuf.Common.DeltaImage
@@ -65,6 +67,7 @@ import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.ConversationTag
 import java.util.Collections
 import java.util.Date
+import okhttp3.OkHttpClient
 
 private val logger = LoggingUtil.getThreemaLogger("ReflectedGroupSyncTask")
 
@@ -73,8 +76,10 @@ class ReflectedGroupSyncTask(
     private val groupModelRepository: GroupModelRepository,
     private val groupService: GroupService,
     private val fileService: FileService,
-    private val apiService: ApiService,
+    private val okHttpClient: OkHttpClient,
+    private val serverAddressProvider: ServerAddressProvider,
     private val symmetricEncryptionService: SymmetricEncryptionService,
+    private val multiDeviceManager: MultiDeviceManager,
     private val conversationCategoryService: ConversationCategoryService,
     private val conversationService: ConversationService,
     private val conversationTagService: ConversationTagService,
@@ -174,10 +179,7 @@ class ReflectedGroupSyncTask(
             when (group.profilePicture.imageCase) {
                 DeltaImage.ImageCase.REMOVED -> removeGroupAvatar(groupModel)
 
-                DeltaImage.ImageCase.UPDATED -> loadAndPersistBlob(
-                    groupModel,
-                    group.profilePicture.updated.blob,
-                )
+                DeltaImage.ImageCase.UPDATED -> group.profilePicture.updated.blob.loadGroupProfilePictureAndMarkAsDone(groupModel)
 
                 DeltaImage.ImageCase.IMAGE_NOT_SET -> logger.warn("Profile picture image case not set")
 
@@ -289,7 +291,7 @@ class ReflectedGroupSyncTask(
                             ConversationTag.PINNED,
                             TriggerSource.SYNC,
                         )
-                        conversationModel.setIsPinTagged(false)
+                        conversationModel.isPinTagged = false
                     } else {
                         logger.error("The conversation intended to have normal visibility was not found.")
                     }
@@ -299,7 +301,7 @@ class ReflectedGroupSyncTask(
                     val conversationModel = getConversationModel(groupModel.getDatabaseId())
                     if (conversationModel != null) {
                         conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-                        conversationModel.setIsPinTagged(false)
+                        conversationModel.isPinTagged = false
                         conversationService.archive(conversationModel, TriggerSource.SYNC)
                     } else if (getArchivedConversationModel(groupModel.getDatabaseId()) != null) {
                         logger.warn("Conversation already is archived")
@@ -316,7 +318,7 @@ class ReflectedGroupSyncTask(
                     val conversationModel = getConversationModel(groupModel.getDatabaseId())
                     if (conversationModel != null) {
                         conversationTagService.addTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-                        conversationModel.setIsPinTagged(true)
+                        conversationModel.isPinTagged = true
                     } else {
                         logger.error("The conversation intended to be pinned was not found.")
                     }
@@ -377,36 +379,45 @@ class ReflectedGroupSyncTask(
         }
     }
 
-    private fun loadAndPersistBlob(groupModel: GroupModel, blob: Blob) {
-        val blobId = blob.id.toByteArray()
-        val blobLoader = apiService.createLoader(blobId)
-        val encryptedBlob = {
-            blobLoader.load(BlobScope.Local)
-        }.catchAllExceptNetworkException { e: Exception ->
-            logger.error("Could not download blob", e)
-            return
-        }
-        val profilePicture = symmetricEncryptionService.decrypt(
-            encryptedBlob,
-            blob.key.toByteArray(),
-            blob.nonce.toByteArray().let { nonceBytes ->
-                if (nonceBytes.isEmpty()) {
-                    ProtocolDefines.GROUP_PHOTO_NONCE
-                } else {
-                    nonceBytes
-                }
-            },
+    private fun Blob.loadGroupProfilePictureAndMarkAsDone(groupModel: GroupModel) {
+        val blobLoadingResult = loadAndMarkAsDone(
+            okHttpClient = okHttpClient,
+            version = AppVersionProvider.appVersion,
+            serverAddressProvider = serverAddressProvider,
+            multiDevicePropertyProvider = multiDeviceManager.propertiesProvider,
+            symmetricEncryptionService = symmetricEncryptionService,
+            fallbackNonce = ProtocolDefines.GROUP_PHOTO_NONCE,
+            downloadBlobScope = BlobScope.Local,
+            markAsDoneBlobScope = BlobScope.Local,
         )
-        if (profilePicture == null) {
-            logger.error("Could not load profile picture blob")
-            return
+        when (blobLoadingResult) {
+            is ReflectedBlobDownloader.BlobLoadingResult.Success -> {
+                fileService.writeGroupAvatar(groupModel, blobLoadingResult.blobBytes)
+                ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
+                ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.BlobMirrorNotAvailable -> {
+                logger.warn("Cannot download blob because blob mirror is not available", blobLoadingResult.exception)
+                throw ProtocolException("Blob mirror not available")
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.DecryptionFailed -> {
+                logger.error("Could not decrypt group profile picture blob", blobLoadingResult.exception)
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.BlobNotFound -> {
+                logger.error("Could not download group profile picture because the blob was not found")
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.BlobDownloadCancelled -> {
+                logger.error("Could not download profile picture because the download was cancelled")
+            }
+
+            is ReflectedBlobDownloader.BlobLoadingResult.Other -> {
+                logger.error("Could not download profile picture because of an exception", blobLoadingResult.exception)
+            }
         }
-
-        fileService.writeGroupAvatar(groupModel, profilePicture)
-        ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
-        ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
-
-        blobLoader.markAsDone(blobId, BlobScope.Local)
     }
 
     private fun Group.toNewGroupModelData(): GroupModelData = GroupModelData(

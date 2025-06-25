@@ -28,11 +28,8 @@ import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
-import ch.threema.base.utils.LoggingUtil
-import org.slf4j.Logger
 
 object NotificationChannels {
-    val logger: Logger = LoggingUtil.getThreemaLogger("NotificationChannels")
 
     /*
      * static notification channels

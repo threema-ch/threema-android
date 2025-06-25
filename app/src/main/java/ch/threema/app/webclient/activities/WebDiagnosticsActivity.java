@@ -87,11 +87,12 @@ import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.asynctasks.SendToSupportBackgroundTask;
 import ch.threema.app.asynctasks.SendToSupportResult;
 import ch.threema.app.dialogs.TextEntryDialog;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -187,6 +188,15 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
     }
 
     @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content_container),
+            InsetSides.lbr()
+        );
+    }
+
+    @Override
     protected boolean initActivity(Bundle savedInstanceState) {
         logger.trace("initActivity");
         if (!super.initActivity(savedInstanceState)) {
@@ -196,7 +206,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
         // Initialize services
         try {
             this.contactService = this.serviceManager.getContactService();
-        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+        } catch (MasterKeyLockedException e) {
             logger.error("Could not initialize services", e);
         }
 
@@ -969,14 +979,6 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
         if (DIALOG_TAG_SEND_VOIP_DEBUG.equals(tag)) {
             sendToSupport(text);
         }
-    }
-
-    @Override
-    public void onNo(String tag) {
-    }
-
-    @Override
-    public void onNeutral(String tag) {
     }
 
     @Override

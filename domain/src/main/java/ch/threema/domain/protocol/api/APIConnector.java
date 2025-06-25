@@ -1326,7 +1326,7 @@ public class APIConnector {
 
         String data = this.postJson(getWorkServerUrl() + "identities", request);
 
-        if (data == null || data.length() == 0) {
+        if (data == null || data.isEmpty()) {
             return contactsList;
         }
 
@@ -1375,7 +1375,7 @@ public class APIConnector {
         request.put("query", filter.getQuery());
 
         // Filter category
-        if (filter.getCategories() != null && filter.getCategories().size() > 0) {
+        if (filter.getCategories() != null && !filter.getCategories().isEmpty()) {
             JSONArray jsonCategories = new JSONArray();
             for (WorkDirectoryCategory category : filter.getCategories()) {
                 jsonCategories.put(category.id);
@@ -1405,7 +1405,7 @@ public class APIConnector {
         String data = this.postJson(getWorkServerUrl() + "directory", request);
 
         // Verify request
-        if (data == null || data.length() == 0) {
+        if (data == null || data.isEmpty()) {
             return null;
         }
 

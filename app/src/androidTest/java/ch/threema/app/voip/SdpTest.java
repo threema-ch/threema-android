@@ -39,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
-import androidx.test.runner.AndroidJUnit4;
 import ch.threema.app.voip.util.SdpPatcher;
 
 import static junit.framework.Assert.assertEquals;
@@ -160,18 +160,17 @@ public class SdpTest {
                 "a=extmap:10 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\n" +
                 "a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\n" +
                 "a=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\n" +
+                "a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\n" +
                 "a=extmap:16 urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r\n" +
                 "a=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r\n" +
                 "a=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\r\n" +
                 "a=extmap:5 urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id\r\n" +
                 "a=extmap:6 urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id\r\n" +
-                "a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\n" +
                 "a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid\r\n" +
-                "a=extmap:18 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id\r\n" +
-                "a=extmap:19 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id\r\n" +
                 "a=sendrecv\r\n" +
                 "a=msid:3MACALL 3MACALLa0\r\n" +
                 "a=rtcp-mux\r\n" +
+                "a=rtcp-rsize\r\n" +
                 "a=rtpmap:111 opus/48000/2\r\n" +
                 "a=rtcp-fb:111 transport-cc\r\n" +
                 "a=fmtp:111 minptime=10;useinbandfec=1\r\n" +
@@ -202,14 +201,12 @@ public class SdpTest {
                 "a=setup:actpass\r\n" +
                 "a=mid:1\r\n" +
                 "a=extmap:25 urn:ietf:params:rtp-hdrext:encrypt http://tools.ietf.org/html/draft-ietf-avtext-framemarking-07\r\n" +
-                "a=extmap:26 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/color-space\r\n" +
                 "a=extmap:14 urn:ietf:params:rtp-hdrext:toffset\r\n" +
                 "a=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\n" +
                 "a=extmap:13 urn:3gpp:video-orientation\r\n" +
                 "a=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r\n" +
                 "a=extmap:12 http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\r\n" +
                 "a=extmap:7 http://www.webrtc.org/experiments/rtp-hdrext/video-timing\r\n" +
-                "a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid\r\n" +
                 "a=extmap:8 http://tools.ietf.org/html/draft-ietf-avtext-framemarking-07\r\n" +
                 "a=extmap:9 http://www.webrtc.org/experiments/rtp-hdrext/color-space\r\n" +
                 "a=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\r\n" +
@@ -222,7 +219,9 @@ public class SdpTest {
                 "a=extmap:22 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\r\n" +
                 "a=extmap:23 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-content-type\r\n" +
                 "a=extmap:24 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-timing\r\n" +
+                "a=extmap:26 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/color-space\r\n" +
                 "a=extmap:11 http://www.webrtc.org/experiments/rtp-hdrext/video-content-type\r\n" +
+                "a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid\r\n" +
                 "a=extmap:18 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id\r\n" +
                 "a=extmap:19 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id\r\n" +
                 "a=sendrecv\r\n" +
@@ -323,6 +322,7 @@ public class SdpTest {
                 "a=sendrecv\r\n" +
                 "a=msid:3MACALL 3MACALLa0\r\n" +
                 "a=rtcp-mux\r\n" +
+                "a=rtcp-rsize\r\n" +
                 "a=rtpmap:111 opus/48000/2\r\n" +
                 "a=rtcp-fb:111 transport-cc\r\n" +
                 "a=fmtp:111 minptime=10;useinbandfec=1\r\n" +
@@ -386,6 +386,7 @@ public class SdpTest {
         matches.add("^a=sendrecv$");
         matches.add("^a=msid:3MACALL 3MACALLa0");
         matches.add("^a=rtcp-mux$");
+        matches.add("^a=rtcp-rsize$");
         matches.add("^a=rtpmap:\\d+ opus/48000/2$");
         matches.add("^a=rtcp-fb:\\d+ transport-cc$");
         matches.add("^a=fmtp:\\d+ minptime=10;useinbandfec=1;stereo=0;sprop-stereo=0;cbr=1$");
@@ -558,7 +559,7 @@ public class SdpTest {
 
         // Compare SDP
         assertNotNull(events.localSdp);
-        assertEquals(events.localSdp.type, SessionDescription.Type.OFFER);
+        assertEquals(SessionDescription.Type.OFFER, events.localSdp.type);
         this.validateDescription(events.localSdp, videoEnabled, true);
     }
 
@@ -612,7 +613,7 @@ public class SdpTest {
 
         // Compare SDP
         assertNotNull(events.localSdp);
-        assertEquals(events.localSdp.type, SessionDescription.Type.ANSWER);
+        assertEquals(SessionDescription.Type.ANSWER, events.localSdp.type);
         this.validateDescription(events.localSdp, videoEnabled, false);
     }
 

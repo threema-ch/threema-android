@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textSize="20sp"
-        tools:text="&#128522;"
-        tools:visibility="visible" />
+        tools:text="&#128522;" />
 
     <TextView
         android:id="@+id/count"
@@ -21,7 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:textSize="12sp"
-        tools:text="3"
-        tools:visibility="visible" />
+        tools:text="3" />
 
 </LinearLayout>

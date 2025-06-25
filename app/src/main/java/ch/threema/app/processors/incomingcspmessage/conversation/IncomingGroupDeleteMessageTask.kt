@@ -30,9 +30,8 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingGroupDeleteMessageTask")
+private val logger = LoggingUtil.getThreemaLogger("IncomingGroupDeleteMessageTask")
 
 class IncomingGroupDeleteMessageTask(
     message: GroupDeleteMessage,

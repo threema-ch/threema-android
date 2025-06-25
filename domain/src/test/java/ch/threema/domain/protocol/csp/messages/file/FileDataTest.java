@@ -21,8 +21,8 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -102,62 +102,62 @@ public class FileDataTest {
         try {
             result = FileData.parse(testFile);
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
 
-        Assert.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
-        Assert.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
-        Assert.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
+        Assertions.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
+        Assertions.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
+        Assertions.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
 
-        Assert.assertEquals("image/jpg", result.getMimeType());
-        Assert.assertEquals("testfile.jpg", result.getFileName());
-        Assert.assertEquals(123, result.getFileSize());
-        Assert.assertNull(result.getCorrelationId());
-        Assert.assertNull(result.getMetaData());
-        Assert.assertEquals(FileData.RENDERING_DEFAULT, result.getRenderingType());
+        Assertions.assertEquals("image/jpg", result.getMimeType());
+        Assertions.assertEquals("testfile.jpg", result.getFileName());
+        Assertions.assertEquals(123, result.getFileSize());
+        Assertions.assertNull(result.getCorrelationId());
+        Assertions.assertNull(result.getMetaData());
+        Assertions.assertEquals(FileData.RENDERING_DEFAULT, result.getRenderingType());
 
         result = null;
         try {
             result = FileData.parse(testFileCorrelation);
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
 
-        Assert.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
-        Assert.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
-        Assert.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
+        Assertions.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
+        Assertions.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
+        Assertions.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
 
-        Assert.assertEquals("image/jpg", result.getMimeType());
-        Assert.assertEquals("testfile.jpg", result.getFileName());
-        Assert.assertEquals(123, result.getFileSize());
-        Assert.assertEquals("1234567890", result.getCorrelationId());
-        Assert.assertNull(result.getMetaData());
-        Assert.assertEquals(FileData.RENDERING_DEFAULT, result.getRenderingType());
+        Assertions.assertEquals("image/jpg", result.getMimeType());
+        Assertions.assertEquals("testfile.jpg", result.getFileName());
+        Assertions.assertEquals(123, result.getFileSize());
+        Assertions.assertEquals("1234567890", result.getCorrelationId());
+        Assertions.assertNull(result.getMetaData());
+        Assertions.assertEquals(FileData.RENDERING_DEFAULT, result.getRenderingType());
 
         result = null;
         try {
             result = FileData.parse(testFileMetaData);
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
 
-        Assert.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
-        Assert.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
-        Assert.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
+        Assertions.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
+        Assertions.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
+        Assertions.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
 
-        Assert.assertEquals("image/jpg", result.getMimeType());
-        Assert.assertEquals("testfile.jpg", result.getFileName());
-        Assert.assertEquals(123, result.getFileSize());
-        Assert.assertNull(result.getCorrelationId());
-        Assert.assertNotNull(result.getMetaData());
+        Assertions.assertEquals("image/jpg", result.getMimeType());
+        Assertions.assertEquals("testfile.jpg", result.getFileName());
+        Assertions.assertEquals(123, result.getFileSize());
+        Assertions.assertNull(result.getCorrelationId());
+        Assertions.assertNotNull(result.getMetaData());
 
-        Assert.assertEquals(1, result.getMetaData().get("a"));
-        Assert.assertEquals(1.2, result.getMetaData().get("b"));
-        Assert.assertEquals("drei", result.getMetaData().get("c"));
-        Assert.assertEquals(FileData.RENDERING_DEFAULT, result.getRenderingType());
+        Assertions.assertEquals(1, result.getMetaData().get("a"));
+        Assertions.assertEquals(1.2, result.getMetaData().get("b"));
+        Assertions.assertEquals("drei", result.getMetaData().get("c"));
+        Assertions.assertEquals(FileData.RENDERING_DEFAULT, result.getRenderingType());
     }
 
 
@@ -165,7 +165,7 @@ public class FileDataTest {
     public void parseInvalidString() {
         try {
             FileData.parse("i want to be a hippie");
-            Assert.fail("invalid string parsed");
+            Assertions.fail("invalid string parsed");
         } catch (BadMessageException e) {
             //ok! exception received
         }
@@ -188,9 +188,9 @@ public class FileDataTest {
         ;
         try {
             FileData b = FileData.parse(testFile);
-            Assert.assertEquals(b.generateString(), d.generateString());
+            Assertions.assertEquals(b.generateString(), d.generateString());
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
 
         d = new FileData();
@@ -208,9 +208,9 @@ public class FileDataTest {
         ;
         try {
             FileData b = FileData.parse(testFileCorrelation);
-            Assert.assertEquals(b.generateString(), d.generateString());
+            Assertions.assertEquals(b.generateString(), d.generateString());
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
 
 
@@ -235,9 +235,9 @@ public class FileDataTest {
         ;
         try {
             FileData b = FileData.parse(testFileMetaData);
-            Assert.assertEquals(b.generateString(), d.generateString());
+            Assertions.assertEquals(b.generateString(), d.generateString());
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 
@@ -252,13 +252,13 @@ public class FileDataTest {
         fileDataWithEmptyCaption.setCaption("");
 
         try {
-            Assert.assertEquals(fileDataWithoutCaption.generateString(), fileDataWithEmptyCaption.generateString());
+            Assertions.assertEquals(fileDataWithoutCaption.generateString(), fileDataWithEmptyCaption.generateString());
 
             fileDataWithoutCaption.write(noCaptionOutput);
             fileDataWithEmptyCaption.write(emptyCaptionOutput);
-            Assert.assertArrayEquals(noCaptionOutput.toByteArray(), emptyCaptionOutput.toByteArray());
+            Assertions.assertArrayEquals(noCaptionOutput.toByteArray(), emptyCaptionOutput.toByteArray());
         } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 
@@ -272,13 +272,13 @@ public class FileDataTest {
 
         FileData fileDataWithoutCaption = getExampleFileDataWithoutCaption();
         try {
-            Assert.assertEquals(fileDataWithoutCaption.generateString(), fileDataWithBlankCaption.generateString());
+            Assertions.assertEquals(fileDataWithoutCaption.generateString(), fileDataWithBlankCaption.generateString());
 
             fileDataWithoutCaption.write(noCaptionOutput);
             fileDataWithBlankCaption.write(blankCaptionOutput);
-            Assert.assertArrayEquals(noCaptionOutput.toByteArray(), blankCaptionOutput.toByteArray());
+            Assertions.assertArrayEquals(noCaptionOutput.toByteArray(), blankCaptionOutput.toByteArray());
         } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 

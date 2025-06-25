@@ -45,7 +45,6 @@ import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.anim.AnimatedVisibilityNow
 import ch.threema.app.compose.message.MessageBubble
 import ch.threema.app.compose.theme.AppTypography
-import ch.threema.app.compose.theme.customColorScheme
 import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.data.models.EditHistoryEntryData
@@ -67,7 +66,7 @@ fun EditHistoryTimelineItem(
     VerticalTimelineItem(
         modifier = modifier
             .semantics(mergeDescendants = true) { },
-        color = if (isOutbox) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.customColorScheme.messageBubbleContainerReceive,
+        color = if (isOutbox) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceContainer,
         shouldFadeOutLineTop = shouldFadeOutTimeLineTop,
         shouldFadeOutLineBottom = shouldFadeOutTimeLineBottom,
         labelContent = {

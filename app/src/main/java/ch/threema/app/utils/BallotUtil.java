@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ballot.BallotMatrixActivity;
@@ -162,7 +163,7 @@ public class BallotUtil {
                 if (targetFragment != null) {
                     dialog.setTargetFragment(targetFragment, 0);
                 }
-                dialog.show(fragmentManager, ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT);
+                dialog.show(fragmentManager, AppConstants.CONFIRM_TAG_CLOSE_BALLOT);
             } else {
                 SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_not_connected);
                 dialog.show(fragmentManager, "na");
@@ -219,7 +220,8 @@ public class BallotUtil {
      *                              title)
      * @param ballotType            the type of the ballot (with intermediate results or not)
      * @param ballotAssessment      the assessment (single vs multiple choice)
-     * @param ballotChoiceModelList the choices that are available
+     * @param ballotChoiceModelList the choices that are available. Note that the apiChoiceId must
+     *                              be unique for each item.
      * @param ballotId              the ballot id must be a random id, except when the ballot is
      *                              created as a result of a reflected outgoing poll setup message
      * @param messageId             the message id needs to be specified to potentially match the
@@ -274,35 +276,6 @@ public class BallotUtil {
                     break;
                 default:
                     throw new NotAllowedException("not allowed");
-            }
-
-            //generate ids
-            Random r = new SecureRandom();
-
-            int[] ids = new int[ballotChoiceModelList.size()];
-            for (int n = 0; n < ids.length; n++) {
-                int rId;
-                boolean exists;
-                do {
-                    exists = false;
-                    rId = Math.abs(r.nextInt());
-                    for (int id : ids) {
-                        if (id == rId) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                }
-                while (exists);
-                ids[n] = rId;
-
-                BallotChoiceModel b = ballotChoiceModelList.get(n);
-                if (b != null) {
-                    b.setOrder(n + 1);
-                    if (b.getApiBallotChoiceId() <= 0) {
-                        b.setApiBallotChoiceId(rId);
-                    }
-                }
             }
 
             //add choices

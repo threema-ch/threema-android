@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="@dimen/spacing_three_grid_unit"
-        android:paddingBottom="@dimen/spacing_two_grid_unit"
+        android:paddingTop="@dimen/grid_unit_x3"
+        android:paddingBottom="@dimen/grid_unit_x2"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbars="vertical">
 
@@ -19,7 +19,7 @@
             android:id="@+id/platform_icon_Iv"
             android:layout_width="@dimen/md_drop_device_dialog_platform_icon_size"
             android:layout_height="@dimen/md_drop_device_dialog_platform_icon_size"
-            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:layout_marginHorizontal="@dimen/grid_unit_x3"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_platform_android" />
 
@@ -27,8 +27,8 @@
             android:id="@+id/device_label_Tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
-            android:layout_marginTop="@dimen/spacing_three_grid_unit"
+            android:layout_marginHorizontal="@dimen/grid_unit_x3"
+            android:layout_marginTop="@dimen/grid_unit_x3"
             android:textAppearance="@style/Threema.TextAppearance.Subtitle"
             tools:text="Threema Green Beta for Desktop" />
 
@@ -36,7 +36,7 @@
             android:id="@+id/device_version_Tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:layout_marginHorizontal="@dimen/grid_unit_x3"
             android:layout_marginTop="12dp"
             android:textAppearance="@style/Threema.TextAppearance.BodySmall"
             tools:text="2.0-beta46-dev-20241220 - Electron 34 on macOS" />
@@ -45,7 +45,7 @@
             android:id="@+id/device_timestamp_Tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
+            android:layout_marginHorizontal="@dimen/grid_unit_x3"
             android:layout_marginTop="12dp"
             android:textAppearance="@style/Threema.TextAppearance.BodySmall"
             tools:text="Last connected: yesterday" />
@@ -55,8 +55,8 @@
             style="@style/Threema.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/spacing_one_grid_unit"
-            android:layout_marginTop="@dimen/spacing_two_grid_unit"
+            android:layout_marginHorizontal="@dimen/grid_unit_x1"
+            android:layout_marginTop="@dimen/grid_unit_x2"
             android:ellipsize="end"
             android:maxLines="2"
             android:text="@string/md_drop_device_dialog_drop_button"
@@ -72,8 +72,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginHorizontal="@dimen/spacing_three_grid_unit"
-            android:layout_marginTop="@dimen/spacing_one_and_a_half_grid_unit"
+            android:layout_marginHorizontal="@dimen/grid_unit_x3"
+            android:layout_marginTop="@dimen/grid_unit_x1_5"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/md_drop_device_dialog_close_button" />

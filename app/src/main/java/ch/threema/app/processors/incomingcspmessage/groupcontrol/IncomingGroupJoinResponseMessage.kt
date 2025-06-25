@@ -43,7 +43,7 @@ class IncomingGroupJoinResponseMessage(
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupJoinResponseMessage>(message, triggerSource, serviceManager) {
     private val outgoingGroupJoinRequestModelFactory =
-        serviceManager.databaseServiceNew.outgoingGroupJoinRequestModelFactory
+        serviceManager.databaseService.outgoingGroupJoinRequestModelFactory
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         val responseData: GroupJoinResponseData = message.data

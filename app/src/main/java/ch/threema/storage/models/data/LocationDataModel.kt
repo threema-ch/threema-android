@@ -31,9 +31,8 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.jsonPrimitive
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("LocationDataModel")
+private val logger = LoggingUtil.getThreemaLogger("LocationDataModel")
 
 data class LocationDataModel(
     @JvmField val latitude: Double,

@@ -291,6 +291,11 @@ abstract class ReflectContactSyncUpdateTask(
      * Invoke the task. Note that the reflected changes must already be written to the database.
      */
     final override suspend fun invoke(handle: ActiveTaskCodec) {
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Cannot reflect contact sync update of type {} when md is not active", type)
+            return
+        }
+
         reflectContactSync(handle)
     }
 

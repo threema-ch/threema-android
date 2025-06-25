@@ -479,7 +479,7 @@ public class PeerConnectionClient {
     private void createPeerConnectionFactoryInternal(@NonNull CompletableFuture<Boolean> future) {
         logger.info("Create peer connection factory");
         if (this.factory != null) {
-            logger.error("Peer connetion factory already initialized");
+            logger.error("Peer connection factory already initialized");
             future.complete(false);
             return;
         }
@@ -1066,21 +1066,6 @@ public class PeerConnectionClient {
     }
 
     @AnyThread
-    public void removeRemoteIceCandidates(final IceCandidate[] candidates) {
-        executor.execute(() -> {
-            if (peerConnection == null || isError) {
-                logger.debug("skipping removeRemoteIceCandidates()");
-                return;
-            }
-            // Drain the queued remote candidates if there is any so that
-            // they are processed in the proper order.
-            drainCandidates();
-            logger.debug("removeRemoteIceCandidates()");
-            peerConnection.removeIceCandidates(candidates);
-        });
-    }
-
-    @AnyThread
     public void setRemoteDescription(final SessionDescription sdp) {
         executor.execute(() -> {
             if (peerConnection == null || isError) {
@@ -1091,11 +1076,15 @@ public class PeerConnectionClient {
             String sdpDescription = sdp.description;
 
             // Set codec preferences
-            // TODO(ANDR-1109): Move this into SDPUtil!
             sdpDescription = preferCodec(this.logger, sdpDescription, AUDIO_CODEC_OPUS, true);
+
+            final SdpPatcher.Type sdpPatcherType =
+                isInitiator ?
+                    SdpPatcher.Type.REMOTE_ANSWER :
+                    SdpPatcher.Type.REMOTE_OFFER;
             try {
                 sdpDescription = PeerConnectionClient.this.sdpPatcher
-                    .patch(SdpPatcher.Type.LOCAL_ANSWER_OR_REMOTE_SDP, sdpDescription);
+                    .patch(sdpPatcherType, sdpDescription);
             } catch (SdpPatcher.InvalidSdpException e) {
                 this.reportError("Invalid remote SDP: " + e.getMessage(), e, true);
                 return;
@@ -1106,7 +1095,7 @@ public class PeerConnectionClient {
 
             SessionDescription sdpRemote = new SessionDescription(sdp.type, sdpDescription);
             logger.debug("Set remote SDP from {}", sdpRemote.type.canonicalForm());
-            logger.debug("SDP:\n{}", sdpRemote.description);
+            logger.debug("Remote SDP:\n{}", sdpRemote.description);
             peerConnection.setRemoteDescription(sdpObserver, sdpRemote);
         });
     }
@@ -1522,7 +1511,7 @@ public class PeerConnectionClient {
             final SdpPatcher.Type sdpPatcherType =
                 isInitiator ?
                     SdpPatcher.Type.LOCAL_OFFER :
-                    SdpPatcher.Type.LOCAL_ANSWER_OR_REMOTE_SDP;
+                    SdpPatcher.Type.LOCAL_ANSWER;
             try {
                 sdpDescription = PeerConnectionClient.this.sdpPatcher
                     .patch(sdpPatcherType, origSdp.description);
@@ -1538,7 +1527,7 @@ public class PeerConnectionClient {
             executor.execute(() -> {
                 if (peerConnection != null && !isError) {
                     logger.debug("Set local SDP from {}", sdp.type.canonicalForm());
-                    logger.debug("SDP:\n{}", sdp.description);
+                    logger.debug("Local SDP:\n{}", sdp.description);
                     peerConnection.setLocalDescription(sdpObserver, sdp);
                 }
             });

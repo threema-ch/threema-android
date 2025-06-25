@@ -36,7 +36,6 @@ import org.slf4j.helpers.MessageFormatter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +46,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.FileService;
 import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.base.utils.LoggingUtil;
@@ -56,7 +54,9 @@ import java8.util.concurrent.CompletableFuture;
 
 /**
  * A logging backend that logs to the debug log file.
- * This backend is only enabled if the user enabled the debug log.
+ * This backend is enabled initially to ensure that any crashes during app
+ * startup are logged. Afterwards, it is disabled unless the the user enabled the debug log
+ * explicitly in the settings.
  * The log file is deleted when calling `setEnabled(false)`.
  * A zipped log file can be requested with `getZipFile()`.
  */
@@ -67,7 +67,7 @@ public class DebugLogFileBackend implements LogBackend {
     private static final String FALLBACK_LOGFILE_NAME = "fallback_debug_log.txt";
 
     // Static variables
-    private static boolean enabled = false;
+    private static boolean enabled = true;
     private static File logFile = null;
     private static File fallbackLogFile = null;
     private static boolean hasSuccessFullyWrittenLogLine = false;
@@ -334,9 +334,9 @@ public class DebugLogFileBackend implements LogBackend {
     }
 
     @Nullable
-    public static File getZipFile(FileService fileService) {
+    public static File getZipFile(@NonNull File tempDirectory) {
         // Delete old debug log archive
-        final File tempDebugLogArchive = new File(fileService.getExtTmpPath(), "debug_log.zip");
+        final File tempDebugLogArchive = new File(tempDirectory, "debug_log.zip");
         deleteIfExists(tempDebugLogArchive);
 
         // Create and return ZIP

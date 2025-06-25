@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Creado el: %1$s (%2$s)</string>
     <string name="webclient_active_since">Activa desde: %s</string>
     <string name="webclient_enable">Habilitar aplicación de escritorio/cliente web</string>
-    <string name="webclient_no_sessions_found">Para conectarse, descargue la aplicación de escritorio (<b>https://threema.ch/download</b>) o abra el cliente web (<b>%s</b>) en su equipo y toque el botón bajo este texto para escanear el código QR que aparece en la pantalla del equipo.</string>
+    <string name="webclient_no_sessions_found">Para conectarse, descargue la aplicación de escritorio (<b>https://threema.com/download</b>) o abra el cliente web (<b>%s</b>) en su equipo y toque el botón bajo este texto para escanear el código QR que aparece en la pantalla del equipo.</string>
     <string name="webclient_session_rename">Renombrar sesión</string>
     <string name="webclient_session_label">Nuevo nombre</string>
     <string name="webclient_session_start">Comenzar sesión</string>

@@ -35,7 +35,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -44,12 +44,12 @@ import ch.threema.storage.models.ballot.GroupBallotModel;
 import ch.threema.storage.models.ballot.IdentityBallotModel;
 
 public class BallotModelFactory extends ModelFactory {
-    public BallotModelFactory(DatabaseServiceNew databaseService) {
+    public BallotModelFactory(DatabaseService databaseService) {
         super(databaseService, BallotModel.TABLE);
     }
 
     public List<BallotModel> getAll() {
-        return convertList(this.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -73,7 +73,7 @@ public class BallotModelFactory extends ModelFactory {
         String orderBy) {
         queryBuilder.setTables(this.getTableName());
         return convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             args,
@@ -152,7 +152,7 @@ public class BallotModelFactory extends ModelFactory {
 
         boolean insert = true;
         if (ballotModel.getId() > 0) {
-            Cursor cursor = this.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 BallotModel.COLUMN_ID + "=?",
@@ -199,7 +199,7 @@ public class BallotModelFactory extends ModelFactory {
 
     public boolean create(BallotModel ballotModel) {
         ContentValues contentValues = buildContentValues(ballotModel);
-        long newId = this.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             ballotModel.setId((int) newId);
             return true;
@@ -209,7 +209,7 @@ public class BallotModelFactory extends ModelFactory {
 
     public boolean update(BallotModel ballotModel) {
         ContentValues contentValues = buildContentValues(ballotModel);
-        this.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             BallotModel.COLUMN_ID + "=?",
             new String[]{
@@ -219,7 +219,7 @@ public class BallotModelFactory extends ModelFactory {
     }
 
     public int delete(BallotModel ballotModel) {
-        return this.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             BallotModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(ballotModel.getId())
@@ -228,7 +228,7 @@ public class BallotModelFactory extends ModelFactory {
 
     @Nullable
     protected BallotModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -355,10 +355,10 @@ public class BallotModelFactory extends ModelFactory {
                 args.add(filter.createdOrNotVotedByIdentity());
             }
 
-            if (where.size() > 0) {
+            if (!where.isEmpty()) {
                 String whereStatement = "";
                 for (String s : where) {
-                    whereStatement += (whereStatement.length() > 0 ? ") AND (" : "");
+                    whereStatement += (!whereStatement.isEmpty() ? ") AND (" : "");
                     whereStatement += s;
                 }
                 query += " WHERE (" + whereStatement + ")";
@@ -367,7 +367,7 @@ public class BallotModelFactory extends ModelFactory {
             query += " ORDER BY b." + BallotModel.COLUMN_CREATED_AT + " DESC";
         }
 
-        return this.getReadableDatabase().rawQuery(query,
+        return getReadableDatabase().rawQuery(query,
             DatabaseUtil.convertArguments(args));
     }
 }

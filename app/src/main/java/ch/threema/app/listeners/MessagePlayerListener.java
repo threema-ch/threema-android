@@ -32,6 +32,4 @@ public interface MessagePlayerListener {
     @AnyThread
     default void onAudioPlayEnded(AbstractMessageModel messageModel, ListenableFuture<MediaController> mediaControllerFuture) {
     }
-
-    ;
 }

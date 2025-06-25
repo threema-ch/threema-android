@@ -22,11 +22,11 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.common.now
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import java.util.Date
 
 class OutgoingVoipCallHangupMessageTask(
     private val voipCallHangupData: VoipCallHangupData,
@@ -39,7 +39,14 @@ class OutgoingVoipCallHangupMessageTask(
         val message = VoipCallHangupMessage().apply {
             this.data = voipCallHangupData
         }
-        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
+        sendContactMessage(
+            message = message,
+            messageModel = null,
+            toIdentity = toIdentity,
+            messageId = MessageId.random(),
+            createdAt = now(),
+            handle = handle,
+        )
     }
 
     // We do not need to persist this message

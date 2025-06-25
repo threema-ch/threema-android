@@ -34,9 +34,8 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.storage.models.ContactModel
 import com.bumptech.glide.Glide
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("WorkUserMemberListFragment")
+private val logger = LoggingUtil.getThreemaLogger("WorkUserMemberListFragment")
 
 class WorkUserMemberListFragment : MemberListFragment() {
     override fun getBundleName(): String = "WorkerUserMemberListState"

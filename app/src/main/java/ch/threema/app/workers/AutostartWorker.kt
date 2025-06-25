@@ -27,28 +27,31 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.activities.HomeActivity
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.home.HomeActivity
 import ch.threema.app.notifications.NotificationChannels
+import ch.threema.app.notifications.NotificationIDs
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
+import kotlin.time.Duration.Companion.seconds
 
-class AutostartWorker(val context: Context, workerParameters: WorkerParameters) :
-    Worker(context, workerParameters) {
-    private val logger = LoggingUtil.getThreemaLogger("AutostartWorker")
+private val logger = LoggingUtil.getThreemaLogger("AutostartWorker")
+
+class AutostartWorker(
+    val context: Context,
+    workerParameters: WorkerParameters,
+) :
+    CoroutineWorker(context, workerParameters) {
 
     @SuppressLint("MissingPermission")
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         logger.info("Processing AutoStart - start")
 
         val masterKey = ThreemaApplication.getMasterKey()
-        if (masterKey == null) {
-            logger.error("Unable to launch app")
-            return Result.failure()
-        }
 
         // check if masterkey needs a password and issue a notification if necessary
         if (masterKey.isLocked) {
@@ -77,16 +80,13 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
             )
             notificationCompat.setContentIntent(pendingIntent)
             NotificationManagerCompat.from(context).notify(
-                ThreemaApplication.MASTER_KEY_LOCKED_NOTIFICATION_ID,
+                NotificationIDs.MASTER_KEY_LOCKED_NOTIFICATION_ID,
                 notificationCompat.build(),
             )
         }
 
-        val serviceManager = ThreemaApplication.getServiceManager()
-        if (serviceManager == null) {
-            logger.error("Service manager not available")
-            return Result.retry()
-        }
+        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+            ?: return Result.retry()
 
         // fixes https://issuetracker.google.com/issues/36951052
         val preferenceService = serviceManager.preferenceService

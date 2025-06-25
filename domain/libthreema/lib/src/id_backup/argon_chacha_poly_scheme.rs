@@ -11,16 +11,15 @@
 use libthreema_macros::concat_fixed_bytes;
 
 use super::{
-    decode_backup_data, BackupData, BackupKey, BackupVersion, IdentityBackupError,
-    IdentityBackupResult, Salt,
+    BackupData, BackupKey, BackupVersion, IdentityBackupError, IdentityBackupResult, Salt, decode_backup_data,
 };
 use crate::{
     common::{ClientKey, ThreemaId},
     crypto::{
-        aead::AeadInPlace,
+        aead::AeadInPlace as _,
         argon2::{Argon2, Argon2id, Params},
         chacha20::ChaCha20Poly1305,
-        cipher::KeyInit,
+        cipher::KeyInit as _,
     },
 };
 
@@ -66,10 +65,8 @@ pub(super) fn encrypt(
     backup_data: &BackupData,
 ) -> IdentityBackupResult<[u8; ENCRYPTED_LENGTH]> {
     // Encode backup data
-    let backup_data: [u8; DATA_LENGTH] = concat_fixed_bytes!(
-        *backup_data.threema_id.as_bytes(),
-        *backup_data.ck.as_bytes()
-    );
+    let backup_data: [u8; DATA_LENGTH] =
+        concat_fixed_bytes!(backup_data.threema_id.to_bytes(), *backup_data.ck.as_bytes());
     let mut backup_data = backup_data.to_vec();
 
     // Encrypt backup data
@@ -89,10 +86,7 @@ pub(super) fn encrypt(
     Ok(concat_fixed_bytes!(associated_data, backup_data))
 }
 
-pub(super) fn decrypt(
-    password: &str,
-    mut encrypted_backup: Vec<u8>,
-) -> IdentityBackupResult<BackupData> {
+pub(super) fn decrypt(password: &str, mut encrypted_backup: Vec<u8>) -> IdentityBackupResult<BackupData> {
     // Extract associated data and encrypted data
     let (associated_data, mut encrypted_data) = {
         if encrypted_backup.len() != ENCRYPTED_LENGTH {
@@ -133,7 +127,7 @@ pub(super) fn decrypt(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::id_backup::tests::{backup_data, PASSWORD};
+    use crate::id_backup::tests::{PASSWORD, backup_data};
 
     #[test]
     fn test_constants() {

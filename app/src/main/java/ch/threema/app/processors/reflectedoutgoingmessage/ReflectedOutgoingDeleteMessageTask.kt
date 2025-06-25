@@ -28,32 +28,25 @@ import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D
 
 internal class ReflectedOutgoingDeleteMessageTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.DELETE_MESSAGE,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<DeleteMessage>(
+    outgoingMessage = outgoingMessage,
+    message = DeleteMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.DELETE_MESSAGE,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val deleteMessage: DeleteMessage by lazy { DeleteMessage.fromReflected(message) }
-
-    override val storeNonces: Boolean
-        get() = deleteMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean
-        get() = deleteMessage.bumpLastUpdate()
-
     override fun processOutgoingMessage() {
         runCommonDeleteMessageReceiveSteps(
-            deleteMessage = deleteMessage,
+            deleteMessage = message,
             receiver = messageReceiver,
             messageService = messageService,
         )?.let { validatedMessageModelToDelete ->
             messageService.deleteMessageContentsAndRelatedData(
                 validatedMessageModelToDelete,
-                deleteMessage.date,
+                message.date,
             )
         }
     }

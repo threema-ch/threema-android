@@ -37,7 +37,6 @@ import androidx.core.app.Person;
 import androidx.core.graphics.drawable.IconCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
@@ -269,11 +268,7 @@ public class ConversationNotificationUtil {
                     FileService fileService = null;
 
                     if (ThreemaApplication.getServiceManager() != null) {
-                        try {
-                            fileService = ThreemaApplication.getServiceManager().getFileService();
-                        } catch (FileSystemNotPresentException e) {
-                            logger.error("FileSystemNotPresentException", e);
-                        }
+                        fileService = ThreemaApplication.getServiceManager().getFileService();
                     }
 
                     if (fileService != null) {

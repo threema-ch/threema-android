@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
-    <string name="transition_name_dots" translatable="false">transition:DOTS</string>
-    <string name="transition_name_logo" translatable="false">transition:LOGO</string>
-</resources>

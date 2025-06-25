@@ -34,7 +34,7 @@ import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ServerMessageModel;
 
 public class DeviceCookieManagerImpl implements DeviceCookieManager {
@@ -45,14 +45,14 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
     @NonNull
     private final PreferenceStoreInterface preferenceStore;
     @NonNull
-    private final DatabaseServiceNew databaseService;
+    private final DatabaseService databaseService;
     @Nullable
     private NotificationService notificationService;
     private boolean skipNextIndication;
 
     public DeviceCookieManagerImpl(
         @NonNull PreferenceStoreInterface preferenceStore,
-        @NonNull DatabaseServiceNew databaseService
+        @NonNull DatabaseService databaseService
     ) {
         this.preferenceStore = preferenceStore;
         this.databaseService = databaseService;

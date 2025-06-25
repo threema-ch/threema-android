@@ -34,15 +34,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.groupflows.GroupDisbandIntent;
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupLeaveIntent;
 import ch.threema.app.services.GroupFlowDispatcher;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 @WorkerThread
@@ -154,59 +158,68 @@ public class DeleteGroupHandler extends MessageReceiver {
     }
 
     private void leaveGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
-        Deferred<Boolean> result = groupFlowDispatcher.runLeaveGroupFlow(
-            null,
+        Deferred<GroupFlowResult> result = groupFlowDispatcher.runLeaveGroupFlow(
             GroupLeaveIntent.LEAVE,
             groupModel
         );
-        awaitResult(result, temporaryId);
+        handleGroupFlowResult(result, temporaryId);
     }
 
     private void disbandGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
-        Deferred<Boolean> result = groupFlowDispatcher.runDisbandGroupFlow(
-            null,
+        Deferred<GroupFlowResult> result = groupFlowDispatcher.runDisbandGroupFlow(
             GroupDisbandIntent.DISBAND,
             groupModel
         );
-        awaitResult(result, temporaryId);
+        handleGroupFlowResult(result, temporaryId);
     }
 
     private void leaveAndRemoveGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
-        Deferred<Boolean> result = groupFlowDispatcher.runLeaveGroupFlow(
-            null,
+        Deferred<GroupFlowResult> result = groupFlowDispatcher.runLeaveGroupFlow(
             GroupLeaveIntent.LEAVE_AND_REMOVE,
             groupModel
         );
-        awaitResult(result, temporaryId);
+        handleGroupFlowResult(result, temporaryId);
     }
 
     private void disbandAndRemoveGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
-        Deferred<Boolean> result = groupFlowDispatcher.runDisbandGroupFlow(
-            null,
+        Deferred<GroupFlowResult> result = groupFlowDispatcher.runDisbandGroupFlow(
             GroupDisbandIntent.DISBAND_AND_REMOVE,
             groupModel
         );
-        awaitResult(result, temporaryId);
+        handleGroupFlowResult(result, temporaryId);
     }
 
     private void removeGroup(@NonNull GroupModel groupModel, @NonNull String temporaryId) {
-        Deferred<Boolean> result = groupFlowDispatcher.runRemoveGroupFlow(
-            null,
+        Deferred<GroupFlowResult> result = groupFlowDispatcher.runRemoveGroupFlow(
             groupModel
         );
-        awaitResult(result, temporaryId);
+        handleGroupFlowResult(result, temporaryId);
     }
 
-    private void awaitResult(@NonNull Deferred<Boolean> deferredResult, @NonNull String temporaryId) {
-        deferredResult.invokeOnCompletion(throwable -> {
-            Boolean result = deferredResult.getCompleted();
-            if (Boolean.TRUE.equals(result)) {
-                this.success(temporaryId);
-            } else {
-                this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
+    private void handleGroupFlowResult(
+        @NonNull Deferred<GroupFlowResult> groupFlowResultDeferred,
+        @NonNull String temporaryId
+    ) {
+        CoroutinesExtensionKt.onCompleted(
+            groupFlowResultDeferred,
+            exception -> {
+                logger.error("group-flow was completed exceptionally", exception);
+                RuntimeUtil.runOnWorkerThread(() -> {
+                    failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
+                });
+                return Unit.INSTANCE;
+            },
+            result -> {
+                RuntimeUtil.runOnWorkerThread(() -> {
+                    if (result instanceof GroupFlowResult.Success) {
+                        success(temporaryId);
+                    } else if (result instanceof GroupFlowResult.Failure) {
+                        failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
+                    }
+                });
+                return Unit.INSTANCE;
             }
-            return null;
-        });
+        );
     }
 
     /**

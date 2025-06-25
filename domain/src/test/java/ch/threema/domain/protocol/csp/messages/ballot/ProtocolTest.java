@@ -21,8 +21,8 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
@@ -84,25 +84,25 @@ public class ProtocolTest {
         MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
         MessageBox boxmsg = messageCoder.encode(b, nonceFactory.nextNonce(NonceScope.CSP));
-        Assert.assertNotNull("BoxMessage failed", boxmsg);
+        Assertions.assertNotNull(boxmsg, "BoxMessage failed");
 
         //now decode again
         AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
-        Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-        Assert.assertTrue(decodedBoxMessage instanceof GroupPollSetupMessage);
+        Assertions.assertNotNull(decodedBoxMessage, "decodedBox failed");
+        Assertions.assertInstanceOf(GroupPollSetupMessage.class, decodedBoxMessage);
 
         GroupPollSetupMessage db = (GroupPollSetupMessage) decodedBoxMessage;
 
         BallotData d = db.getBallotData();
-        Assert.assertNotNull(d);
+        Assertions.assertNotNull(d);
 
-        Assert.assertEquals(BallotData.State.OPEN, d.getState());
-        Assert.assertEquals(BallotData.AssessmentType.SINGLE, d.getAssessmentType());
-        Assert.assertEquals(BallotData.Type.RESULT_ON_CLOSE, d.getType());
-        Assert.assertEquals(10, b.getBallotData().getChoiceList().size());
-        Assert.assertEquals("Choice 7", b.getBallotData().getChoiceList().get(6).getName());
-        Assert.assertEquals(1, (int) b.getBallotData().getChoiceList().get(2).getResult(0));
-        Assert.assertEquals(0, (int) b.getBallotData().getChoiceList().get(2).getResult(1));
+        Assertions.assertEquals(BallotData.State.OPEN, d.getState());
+        Assertions.assertEquals(BallotData.AssessmentType.SINGLE, d.getAssessmentType());
+        Assertions.assertEquals(BallotData.Type.RESULT_ON_CLOSE, d.getType());
+        Assertions.assertEquals(10, b.getBallotData().getChoiceList().size());
+        Assertions.assertEquals("Choice 7", b.getBallotData().getChoiceList().get(6).getName());
+        Assertions.assertEquals(1, (int) b.getBallotData().getChoiceList().get(2).getResult(0));
+        Assertions.assertEquals(0, (int) b.getBallotData().getChoiceList().get(2).getResult(1));
     }
 
 
@@ -144,24 +144,24 @@ public class ProtocolTest {
         NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
         MessageBox boxmsg = messageCoder.encode(pollSetupMessage, nonceFactory.nextNonce(NonceScope.CSP));
-        Assert.assertNotNull("BoxMessage failed", boxmsg);
+        Assertions.assertNotNull(boxmsg, "BoxMessage failed");
 
         //now decode again
         AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
-        Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-        Assert.assertTrue(decodedBoxMessage instanceof PollSetupMessage);
+        Assertions.assertNotNull(decodedBoxMessage, "decodedBox failed");
+        Assertions.assertInstanceOf(PollSetupMessage.class, decodedBoxMessage);
 
         PollSetupMessage db = (PollSetupMessage) decodedBoxMessage;
 
         BallotData ballotData = db.getBallotData();
-        Assert.assertNotNull(ballotData);
+        Assertions.assertNotNull(ballotData);
 
-        Assert.assertEquals(BallotData.State.OPEN, ballotData.getState());
-        Assert.assertEquals(BallotData.AssessmentType.SINGLE, ballotData.getAssessmentType());
-        Assert.assertEquals(BallotData.Type.RESULT_ON_CLOSE, ballotData.getType());
-        Assert.assertEquals(10, pollSetupMessage.getBallotData().getChoiceList().size());
-        Assert.assertEquals("Choice 7", pollSetupMessage.getBallotData().getChoiceList().get(6).getName());
-        Assert.assertEquals(1, (int) pollSetupMessage.getBallotData().getChoiceList().get(2).getResult(0));
-        Assert.assertEquals(0, (int) pollSetupMessage.getBallotData().getChoiceList().get(2).getResult(1));
+        Assertions.assertEquals(BallotData.State.OPEN, ballotData.getState());
+        Assertions.assertEquals(BallotData.AssessmentType.SINGLE, ballotData.getAssessmentType());
+        Assertions.assertEquals(BallotData.Type.RESULT_ON_CLOSE, ballotData.getType());
+        Assertions.assertEquals(10, pollSetupMessage.getBallotData().getChoiceList().size());
+        Assertions.assertEquals("Choice 7", pollSetupMessage.getBallotData().getChoiceList().get(6).getName());
+        Assertions.assertEquals(1, (int) pollSetupMessage.getBallotData().getChoiceList().get(2).getResult(0));
+        Assertions.assertEquals(0, (int) pollSetupMessage.getBallotData().getChoiceList().get(2).getResult(1));
     }
 }

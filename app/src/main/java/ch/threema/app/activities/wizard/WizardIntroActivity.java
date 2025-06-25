@@ -27,7 +27,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -36,7 +35,6 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -48,12 +46,16 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.PrivacyPolicyActivity;
-import ch.threema.app.activities.SimpleWebViewActivity;
+import ch.threema.app.webviews.PrivacyPolicyActivity;
+import ch.threema.app.webviews.SimpleWebViewActivity;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -67,7 +69,6 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIntroActivity");
 
     private static final int ACTIVITY_RESULT_PRIVACY_POLICY = 9442;
-    private AnimationDrawable frameAnimation;
 
     private final ActivityResultLauncher<Void> backupResult = registerForActivityResult(new ActivityResultContract<>() {
         @NonNull
@@ -98,6 +99,20 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         logScreenVisibility(this, logger);
         setContentView(R.layout.activity_wizard_intro);
 
+        // Not every layout variation file of this activity has this company_logo ImageView
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.company_logo),
+            InsetSides.top(),
+            SpacingValues.top(R.dimen.grid_unit_x4)
+        );
+
+        final LinearLayout buttonsLayout = findViewById(R.id.button_layout);
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            buttonsLayout,
+            InsetSides.bottom(),
+            SpacingValues.all(R.dimen.grid_unit_x2)
+        );
+
         if (ConfigUtils.isWorkRestricted()) {
             // Skip privacy policy check if admin pre-set a backup to restore - either Safe or ID
             if (ThreemaSafeMDMConfig.getInstance().isRestoreForced()) {
@@ -109,8 +124,8 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
                 String backupPassword = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__id_backup_password));
                 if (!TestUtil.isEmptyOrNull(backupString) && !TestUtil.isEmptyOrNull(backupPassword)) {
                     Intent intent = new Intent(this, WizardBackupRestoreActivity.class);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
+                    intent.putExtra(AppConstants.INTENT_DATA_ID_BACKUP, backupString);
+                    intent.putExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW, backupPassword);
                     startActivity(intent);
                     overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     finish();
@@ -119,17 +134,10 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
             }
         }
 
-        LinearLayout buttonLayout = findViewById(R.id.button_layout);
-        if (savedInstanceState == null) {
-            buttonLayout.setVisibility(View.GONE);
-            buttonLayout.postDelayed(() -> AnimationUtil.slideInFromBottomOvershoot(buttonLayout), 200);
+        if (savedInstanceState == null && buttonsLayout != null) {
+            buttonsLayout.setVisibility(View.GONE);
+            buttonsLayout.postDelayed(() -> AnimationUtil.slideInFromBottomOvershoot(buttonsLayout), 200);
         }
-
-        ImageView imageView = findViewById(R.id.three_dots);
-        imageView.setBackgroundResource(R.drawable.animation_wizard2);
-        frameAnimation = (AnimationDrawable) imageView.getBackground();
-        frameAnimation.setOneShot(false);
-        frameAnimation.start();
 
         TextView privacyPolicyExplainText = findViewById(R.id.wizard_privacy_policy_explain);
         if (TestUtil.isEmptyOrNull(ThreemaApplication.getAppContext().getString(R.string.privacy_policy_url)) ||
@@ -189,17 +197,6 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         }
         backupResult.launch(null);
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (frameAnimation != null) {
-            if (hasFocus) {
-                frameAnimation.start();
-            } else {
-                frameAnimation.stop();
-            }
-        }
     }
 
     @Override

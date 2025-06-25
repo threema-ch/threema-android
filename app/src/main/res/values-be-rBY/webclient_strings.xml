@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Створана: %1$s (%2$s)</string>
     <string name="webclient_active_since">Актыўна з: %s</string>
     <string name="webclient_enable">Уключыць праграму для ПК / вэб-кліент</string>
-    <string name="webclient_no_sessions_found">Для падлучэння загрузіце праграму для ПК (<b>https://threema.ch/download</b>) або адкрыйце вэб-кліент (<b>%s</b>) на камп’ютары і націсніце кнопку ніжэй, каб адсканіраваць QR-код на экране камп’ютара.</string>
+    <string name="webclient_no_sessions_found">Для падлучэння загрузіце праграму для ПК (<b>https://threema.com/download</b>) або адкрыйце вэб-кліент (<b>%s</b>) на камп’ютары і націсніце кнопку ніжэй, каб адсканіраваць QR-код на экране камп’ютара.</string>
     <string name="webclient_session_rename">Перайменаваць сесію</string>
     <string name="webclient_session_label">Новае імя</string>
     <string name="webclient_session_start">Пачаць сесію</string>

@@ -28,8 +28,8 @@ import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
 import ch.threema.domain.protocol.csp.messages.ReactionMessageData
 import ch.threema.protobuf.csp.e2e.Reaction
 import ch.threema.protobuf.csp.e2e.reaction
-import ch.threema.testutils.willThrow
-import ch.threema.testutils.withMessage
+import ch.threema.testhelpers.willThrow
+import ch.threema.testhelpers.withMessage
 import com.google.protobuf.kotlin.toByteStringUtf8
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -40,7 +40,7 @@ class GroupReactionMessageTest {
 
     private val dragonEmoji: String = Character.toString(128_009) // 🐉
 
-    private val testMessageId = MessageId()
+    private val testMessageId = MessageId.random()
     private val testReactionMessageApplying: Reaction = reaction {
         this.messageId = testMessageId.messageIdLong
         this.apply = dragonEmoji.toByteStringUtf8()

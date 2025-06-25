@@ -61,7 +61,7 @@ public class NotificationSettings extends Converter {
         final RingtoneService ringtoneService = serviceManager.getRingtoneService();
 
         // Conversation UID
-        final String uid = conversation.getReceiver().getUniqueIdString();
+        final String uid = conversation.messageReceiver.getUniqueIdString();
 
         // Sound settings
         if (ringtoneService.hasCustomRingtone(uid)
@@ -72,7 +72,7 @@ public class NotificationSettings extends Converter {
         }
 
         // DND settings
-        final @Nullable NotificationTriggerPolicyOverride notificationTriggerPolicyOverride = conversation.getReceiver().getNotificationTriggerPolicyOverrideOrNull();
+        final @Nullable NotificationTriggerPolicyOverride notificationTriggerPolicyOverride = conversation.messageReceiver.getNotificationTriggerPolicyOverrideOrNull();
         if (notificationTriggerPolicyOverride != null) {
             if (notificationTriggerPolicyOverride instanceof NotificationTriggerPolicyOverride.NotMuted) {
                 dnd.put(MODE, MODE_OFF);

@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -120,7 +121,7 @@ public class ContentCommitComposeEditText extends ComposeEditText {
 
                         Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(getContext(), SendMediaActivity.class), messageReceivers);
                         intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
-                        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+                        intent.putExtra(AppConstants.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
                         getContext().startActivity(intent);
 
                     } else {

@@ -1,4 +1,10 @@
-use logging::{init_logging, init_panic_dispatcher, LogDispatcher, LogLevel, PanicDispatcher};
+#![allow(
+    clippy::allow_attributes,
+    reason = "https://github.com/rust-lang/rust-clippy/issues/14008"
+)]
+
+//! WASM (FFI) bindings.
+use logging::{LogDispatcher, LogLevel, PanicDispatcher, init_logging, init_panic_dispatcher};
 use wasm_bindgen::prelude::*;
 
 // The crypto dependencies require getrandom and we need to explicitly list it as a dependency
@@ -8,11 +14,9 @@ mod external_crate_false_positives {
     use getrandom as _;
 }
 
-/// Logging utility to forward logging.
-pub mod logging;
-
-/// Bindings for the _Connection Rendezvous Protocol_.
+pub mod crypto;
 pub mod d2d_rendezvous;
+pub mod logging;
 
 /// Initialise libthreema.
 ///

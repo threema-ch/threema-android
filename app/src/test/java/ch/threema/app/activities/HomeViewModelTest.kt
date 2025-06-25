@@ -23,10 +23,9 @@ package ch.threema.app.activities
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.services.PreferenceService
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.tasks.TaskCreator
-import ch.threema.base.utils.TimeProvider
-import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.common.TimeProvider
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.clearMocks
@@ -58,9 +57,6 @@ internal class HomeViewModelTest {
 
     @MockK
     lateinit var taskCreatorMock: TaskCreator
-
-    @MockK
-    lateinit var handleMock: ActiveTaskCodec
 
     private val testTimeProvider = TimeProvider { Instant.ofEpochMilli(1737121377325L) }
 
@@ -104,7 +100,8 @@ internal class HomeViewModelTest {
         // assert
         verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
         verify(exactly = 1) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
-        coVerify(exactly = 0) { multiDeviceManagerMock.deactivate(serviceManagerMock, handleMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(serviceManagerMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.enableForwardSecurity(serviceManagerMock) }
         coVerify(exactly = 0) { taskCreatorMock.scheduleDeactivateMultiDeviceIfAloneTask() }
     }
 
@@ -127,7 +124,8 @@ internal class HomeViewModelTest {
         verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
         verify(exactly = 0) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
         verify(exactly = 0) { multiDeviceManagerMock.isMultiDeviceActive }
-        coVerify(exactly = 0) { multiDeviceManagerMock.deactivate(serviceManagerMock, handleMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(serviceManagerMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.enableForwardSecurity(serviceManagerMock) }
         coVerify(exactly = 0) { taskCreatorMock.scheduleDeactivateMultiDeviceIfAloneTask() }
     }
 
@@ -150,7 +148,8 @@ internal class HomeViewModelTest {
         verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
         verify(exactly = 1) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
         verify(exactly = 1) { multiDeviceManagerMock.isMultiDeviceActive }
-        coVerify(exactly = 0) { multiDeviceManagerMock.deactivate(serviceManagerMock, handleMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(serviceManagerMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.enableForwardSecurity(serviceManagerMock) }
         coVerify(exactly = 0) { taskCreatorMock.scheduleDeactivateMultiDeviceIfAloneTask() }
     }
 
@@ -174,7 +173,8 @@ internal class HomeViewModelTest {
         verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
         verify(exactly = 1) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
         verify(exactly = 1) { multiDeviceManagerMock.isMultiDeviceActive }
-        coVerify(exactly = 0) { multiDeviceManagerMock.deactivate(serviceManagerMock, handleMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(serviceManagerMock) }
+        coVerify(exactly = 0) { multiDeviceManagerMock.enableForwardSecurity(serviceManagerMock) }
         coVerify(exactly = 1) { taskCreatorMock.scheduleDeactivateMultiDeviceIfAloneTask() }
     }
 }

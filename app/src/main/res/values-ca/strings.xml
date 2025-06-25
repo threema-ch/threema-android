@@ -165,7 +165,6 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
 escollit, poden ser utilitzats per restaurar la vostra ID en un altre dispositiu. Hauríeu de copiar-lo en un lloc adient, compartir-lo per
 correu electrònic o escanejar el codi QR utilitzant un altre dispositiu.</string>
     <string name="support">Ajuda</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">La següent cadena de text es pot utilitzar conjuntament amb la contrasenya escollida per
 restaurar la vostra ID de ${app_name_short}.</string>
@@ -329,7 +328,6 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="state_dialog_status">Estat</string>
     <string name="no_recent_conversations">No s\'han trobat xats</string>
     <string name="save_changes">Desar</string>
-    <string name="group_created_confirm">Grup creat correctament</string>
     <string name="creating_group">Creant el grup</string>
     <string name="updating_group">Actualitzant el grup</string>
     <string name="status_create_group">Grup creat.</string>
@@ -706,7 +704,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="clone_group_message">Això crearà un clon d\'aquest grup amb vós com a administrador. Continuar?</string>
     <string name="prefs_proximity_sensor">Usar sensor de proximitat</string>
     <string name="prefs_proximity_sensor_explain">Utilitzar l\'auricular per reproduir missatges de veu si el sensor de proximitat està cobert</string>
-    <string name="error_creating_group">Error creant/actualitzant el grup</string>
     <string name="no_media_found_generic">No s\'ha trobat multimèdia en aquest xat</string>
     <string name="max_images_reached">Es poden editar com a màxim %d elements a la vegada</string>
     <string name="enter_description">Descriviu l\'error/problema aquí.</string>
@@ -814,8 +811,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Desant fitxers multimèdia grans a una còpia de seguretat local en ZIP podria superar la capacitat de la CPU i de la memòria del vostre dispositiu i podria trigar molt. ${app_name} no enviarà i rebrà missatges mentre la còpia de seguretat estigui en curs. Continuar de totes maneres?</string>
     <string name="backup_data_cancelled">Còpia cancel·lada</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">No es pot iniciar ${app_name}. Apagueu el vostre dispositiu i torneu a provar-ho.</string>
     <string name="message_sent">Missatge enviat</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">Trucada ${app_name_short}</string>
@@ -1171,9 +1166,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="permission_camera_videocall_required">Per videotrucades, permeteu l\'accés a la càmera</string>
     <string name="tooltip_voip_enable_speakerphone">Toqueu aquí per activar l\'altaveu</string>
     <string name="ballot_open">Enquestes obertes</string>
-    <string name="translators">Traductors</string>
-    <string name="credits">Crèdits</string>
-    <string name="translators_thanks">Moltes gràcies als nostres traductors voluntaris:\n%s</string>
     <string name="ballot_window_hide">Amaga enquestes en curs</string>
     <string name="ballot_window_show">Mostra enquestes en curs</string>
     <string name="tooltip_voip_other_party_video_on">L\'altra part ha iniciat una videotrucada. Toqueu aquí per activar la vostra càmera també.</string>
@@ -1450,8 +1442,8 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
@@ -1469,6 +1461,9 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacte</item>
         <item quantity="other">%d contactes</item>

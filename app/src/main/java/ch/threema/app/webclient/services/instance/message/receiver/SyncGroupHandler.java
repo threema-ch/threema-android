@@ -34,14 +34,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 @WorkerThread
@@ -116,16 +120,28 @@ public class SyncGroupHandler extends MessageReceiver {
             return;
         }
 
-        Deferred<Boolean> result = groupFlowDispatcher.runGroupResyncFlow(newGroupModel);
+        Deferred<GroupFlowResult> resyncGroupFlowResultDeferred = groupFlowDispatcher.runGroupResyncFlow(newGroupModel);
 
-        result.invokeOnCompletion(throwable -> {
-            if (result.getCompleted() == Boolean.TRUE) {
-                this.success(temporaryId);
-            } else {
-                this.failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);
+        CoroutinesExtensionKt.onCompleted(
+            resyncGroupFlowResultDeferred,
+            exception -> {
+                logger.error("resync-group-flow was completed exceptionally", exception);
+                RuntimeUtil.runOnWorkerThread(() -> {
+                    failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);
+                });
+                return Unit.INSTANCE;
+            },
+            result -> {
+                RuntimeUtil.runOnWorkerThread(() -> {
+                    if (result instanceof GroupFlowResult.Success) {
+                        success(temporaryId);
+                    } else if (result instanceof GroupFlowResult.Failure) {
+                        failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);
+                    }
+                });
+                return Unit.INSTANCE;
             }
-            return null;
-        });
+        );
     }
 
     private void success(String temporaryId) {

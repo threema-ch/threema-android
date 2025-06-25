@@ -33,9 +33,8 @@ import ch.threema.data.storage.EditHistoryDao
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
 import java.util.Date
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("EditHistoryRepository")
+private val logger = LoggingUtil.getThreemaLogger("EditHistoryRepository")
 
 class EditHistoryRepository(
     private val cache: ModelTypeCache<String, EditHistoryListModel>,

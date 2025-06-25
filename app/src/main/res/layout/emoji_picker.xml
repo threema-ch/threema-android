@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/emoji_picker_background_main"
     android:gravity="center"
     android:orientation="vertical">
@@ -20,9 +19,9 @@
 
     <ch.threema.app.emojis.EmojiSearchWidget
         android:id="@+id/emoji_search"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/emoji_picker_header"
@@ -32,18 +31,18 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/sliding_tabs"
-            android:background="?attr/emoji_picker_background_top"
             android:layout_width="match_parent"
             android:layout_height="39dp"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/additions_layout"
+            android:background="?attr/emoji_picker_background_top"
             app:tabGravity="start"
-            app:tabMode="scrollable"
-            app:tabMaxWidth="@dimen/emoji_picker_tab_width"
-            app:tabPaddingStart="0dp"
-            app:tabPaddingEnd="0dp"
+            app:tabIconTint="?attr/colorOnSurface"
             app:tabIndicatorHeight="2dp"
-            app:tabIconTint="?attr/colorOnSurface" />
+            app:tabMaxWidth="@dimen/emoji_picker_tab_width"
+            app:tabMode="scrollable"
+            app:tabPaddingEnd="0dp"
+            app:tabPaddingStart="0dp" />
 
         <View
             android:layout_width="match_parent"
@@ -56,10 +55,10 @@
             android:id="@+id/additions_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:orientation="horizontal"
-            android:background="?attr/emoji_picker_background_main">
+            android:layout_centerVertical="true"
+            android:background="?attr/emoji_picker_background_main"
+            android:orientation="horizontal">
 
             <View
                 android:layout_width="1dp"
@@ -71,28 +70,28 @@
                 android:id="@+id/search_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/emoji_category_search"
                 android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="@string/emoji_search"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
+                android:src="@drawable/emoji_category_search"
                 android:visibility="gone"
-                android:contentDescription="@string/emoji_search"
                 app:tint="?attr/colorOnSurface" />
 
             <LinearLayout
                 android:id="@+id/backspace_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
 
                 <ImageView
                     android:id="@+id/backspace_button_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginRight="16dp"
                     android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:contentDescription="@string/delete"
                     app:srcCompat="@drawable/ic_backspace_outline"
                     app:tint="?attr/colorOnSurface" />

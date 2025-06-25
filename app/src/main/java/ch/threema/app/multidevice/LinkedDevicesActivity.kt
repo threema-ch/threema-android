@@ -55,6 +55,10 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.multidevice.wizard.LinkNewDeviceWizardActivity
 import ch.threema.app.ui.DebouncedOnClickListener
 import ch.threema.app.ui.EmptyRecyclerView
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
+import ch.threema.app.ui.applyDeviceInsetsAsMargin
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.HiddenChatUtil
 import ch.threema.app.utils.linkifyWeb
@@ -146,6 +150,28 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
 
         startObservers()
         startPreferenceListener()
+    }
+
+    override fun handleDeviceInsets() {
+        super.handleDeviceInsets()
+        findViewById<EmptyRecyclerView>(R.id.devices_list).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.lbr(),
+            ownPadding = SpacingValues(
+                top = R.dimen.grid_unit_x1_5,
+                bottom = R.dimen.grid_unit_x10,
+            ),
+        )
+        findViewById<TextView>(R.id.empty_text).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides(top = false, right = true, bottom = true, left = true),
+            ownPadding = SpacingValues.symmetric(
+                vertical = R.dimen.grid_unit_x10,
+                horizontal = R.dimen.grid_unit_x2,
+            ),
+        )
+        findViewById<ExtendedFloatingActionButton>(R.id.link_device_button).applyDeviceInsetsAsMargin(
+            insetSides = InsetSides.all(),
+            ownMargin = SpacingValues.all(R.dimen.grid_unit_x2),
+        )
     }
 
     override fun onResume() {

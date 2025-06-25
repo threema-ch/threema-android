@@ -21,40 +21,44 @@
 
 package ch.threema.domain.protocol.csp.messages.voip;
 
-import ch.threema.domain.protocol.csp.messages.voip.features.*;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import ch.threema.domain.protocol.csp.messages.voip.features.CallFeature;
+import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
+import ch.threema.domain.protocol.csp.messages.voip.features.SimpleCallFeature;
+import ch.threema.domain.protocol.csp.messages.voip.features.UnknownCallFeature;
+import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 
 public class FeatureListTest {
     @Test
-    public void testToJsonEmpty() throws JSONException {
+    void testToJsonEmpty() {
         final String json = new FeatureList().toJSON().toString();
-        Assert.assertEquals("{}", json);
+        Assertions.assertEquals("{}", json);
     }
 
     @Test
-    public void testToJsonSingle() throws JSONException {
+    void testToJsonSingle() {
         final String json = new FeatureList()
             .addFeature(new SimpleCallFeature("foo"))
             .toJSON()
             .toString();
-        Assert.assertEquals("{\"foo\":null}", json);
+        Assertions.assertEquals("{\"foo\":null}", json);
     }
 
     @Test
-    public void testToJsonWithParams() throws JSONException {
+    void testToJsonWithParams() {
         final String json = new FeatureList()
             .addFeature(new UnknownCallFeature("bar", new JSONObject()))
             .toJSON()
             .toString();
-        Assert.assertEquals("{\"bar\":{}}", json);
+        Assertions.assertEquals("{\"bar\":{}}", json);
     }
 
     @Test
-    public void testToJsonWithComplexParams() throws JSONException {
+    void testToJsonWithComplexParams() throws JSONException {
         final JSONObject values = new JSONObject();
         values.put("a", 42);
         values.put("b", true);
@@ -62,69 +66,69 @@ public class FeatureListTest {
             .addFeature(new UnknownCallFeature("values", values))
             .toJSON()
             .toString();
-        Assert.assertEquals("{\"values\":{\"a\":42,\"b\":true}}", json);
+        Assertions.assertEquals("{\"values\":{\"a\":42,\"b\":true}}", json);
     }
 
     @Test
-    public void parseEmpty() throws JSONException {
+    void parseEmpty() throws JSONException {
         final JSONObject o = new JSONObject();
         final FeatureList list = FeatureList.parse(o);
-        Assert.assertTrue(list.isEmpty());
+        Assertions.assertTrue(list.isEmpty());
     }
 
     @Test
-    public void parseVideo() throws JSONException {
+    void parseVideo() throws JSONException {
         final JSONObject o = new JSONObject();
         o.put("video", JSONObject.NULL);
         final FeatureList list = FeatureList.parse(o);
-        Assert.assertEquals(1, list.size());
-        Assert.assertTrue(list.getList().get(0) instanceof VideoFeature);
+        Assertions.assertEquals(1, list.size());
+        Assertions.assertInstanceOf(VideoFeature.class, list.getList().get(0));
     }
 
     @Test
-    public void parseUnknownNull() throws JSONException {
+    void parseUnknownNull() throws JSONException {
         final JSONObject o = new JSONObject();
         o.put("asdf", JSONObject.NULL);
         final FeatureList list = FeatureList.parse(o);
-        Assert.assertEquals(1, list.size());
+        Assertions.assertEquals(1, list.size());
         final CallFeature feature = list.getList().get(0);
-        Assert.assertTrue(feature instanceof UnknownCallFeature);
-        Assert.assertEquals("asdf", feature.getName());
-        Assert.assertNull(feature.getParams());
+        Assertions.assertInstanceOf(UnknownCallFeature.class, feature);
+        Assertions.assertEquals("asdf", feature.getName());
+        Assertions.assertNull(feature.getParams());
     }
 
     @Test
-    public void parseUnknownEmpty() throws JSONException {
+    void parseUnknownEmpty() throws JSONException {
         final JSONObject o = new JSONObject();
         o.put("asdf", new JSONObject());
         final FeatureList list = FeatureList.parse(o);
-        Assert.assertEquals(1, list.size());
+        Assertions.assertEquals(1, list.size());
         final CallFeature feature = list.getList().get(0);
-        Assert.assertTrue(feature instanceof UnknownCallFeature);
-        Assert.assertEquals("asdf", feature.getName());
-        Assert.assertEquals(0, feature.getParams().length());
+        Assertions.assertInstanceOf(UnknownCallFeature.class, feature);
+        Assertions.assertEquals("asdf", feature.getName());
+        Assertions.assertEquals(0, feature.getParams().length());
     }
 
     @Test
-    public void parseUnknownWithParams() throws JSONException {
+    void parseUnknownWithParams() throws JSONException {
         final JSONObject o = new JSONObject();
         final JSONObject p = new JSONObject();
         p.put("xyz", false);
         p.put("aaa", 123);
         o.put("asdf", p);
         final FeatureList list = FeatureList.parse(o);
-        Assert.assertEquals(1, list.size());
+        Assertions.assertEquals(1, list.size());
         final CallFeature feature = list.getList().get(0);
-        Assert.assertTrue(feature instanceof UnknownCallFeature);
-        Assert.assertEquals("asdf", feature.getName());
-        Assert.assertEquals(2, feature.getParams().length());
+        Assertions.assertInstanceOf(UnknownCallFeature.class, feature);
+        Assertions.assertEquals("asdf", feature.getName());
+        Assertions.assertEquals(2, feature.getParams().length());
     }
 
     /**
      * Smoke test.
      */
     @Test
-    public void parseMixed() throws JSONException {
+    void parseMixed() throws JSONException {
         final JSONObject o = new JSONObject();
 
         final JSONObject p = new JSONObject();
@@ -137,17 +141,17 @@ public class FeatureListTest {
         o.put("unknown-params", p);
 
         final FeatureList list = FeatureList.parse(o);
-        Assert.assertEquals(4, list.size());
+        Assertions.assertEquals(4, list.size());
     }
 
     @Test
-    public void toStringEmpty() {
+    void toStringEmpty() {
         final String string = new FeatureList().toString();
-        Assert.assertEquals("FeatureList[]", string);
+        Assertions.assertEquals("FeatureList[]", string);
     }
 
     @Test
-    public void toStringMixed() throws JSONException {
+    void toStringMixed() throws JSONException {
         final JSONObject params = new JSONObject();
         params.put("a", 3);
         params.put("b", false);
@@ -155,11 +159,11 @@ public class FeatureListTest {
             .addFeature(new VideoFeature())
             .addFeature(new UnknownCallFeature("hullo", params))
             .toString();
-        Assert.assertEquals("FeatureList[video, hullo({\"a\":3,\"b\":false})]", string);
+        Assertions.assertEquals("FeatureList[video, hullo({\"a\":3,\"b\":false})]", string);
     }
 
     @Test
-    public void hasFeature() throws JSONException {
+    void hasFeature() throws JSONException {
         final JSONObject params = new JSONObject();
         params.put("a", 3);
         params.put("b", false);
@@ -168,11 +172,11 @@ public class FeatureListTest {
             .addFeature(new VideoFeature())
             .addFeature(new UnknownCallFeature("hullo", params))
             .addFeature(new SimpleCallFeature("argh"));
-        Assert.assertTrue(features.hasFeature("video"));
-        Assert.assertTrue(features.hasFeature("hullo"));
-        Assert.assertTrue(features.hasFeature("argh"));
-        Assert.assertFalse(features.hasFeature("arg"));
-        Assert.assertFalse(features.hasFeature(""));
-        Assert.assertFalse(features.hasFeature("videoo"));
+        Assertions.assertTrue(features.hasFeature("video"));
+        Assertions.assertTrue(features.hasFeature("hullo"));
+        Assertions.assertTrue(features.hasFeature("argh"));
+        Assertions.assertFalse(features.hasFeature("arg"));
+        Assertions.assertFalse(features.hasFeature(""));
+        Assertions.assertFalse(features.hasFeature("videoo"));
     }
 }

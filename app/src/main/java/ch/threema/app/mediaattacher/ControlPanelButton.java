@@ -45,7 +45,6 @@ import ch.threema.app.utils.ConfigUtils;
 public class ControlPanelButton extends FrameLayout {
     private AppCompatImageView labelImageView;
     private TextView labelTextView;
-    private ConstraintLayout container;
 
     public ControlPanelButton(Context context) {
         this(context, null);
@@ -64,7 +63,6 @@ public class ControlPanelButton extends FrameLayout {
     private void init(Context context, AttributeSet attrs) {
         ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.button_media_attach, this);
 
-        this.container = findViewById(R.id.container);
         this.labelImageView = findViewById(R.id.image);
         this.labelTextView = findViewById(R.id.label);
 

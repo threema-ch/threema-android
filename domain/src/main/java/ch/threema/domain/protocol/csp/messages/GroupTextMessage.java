@@ -140,6 +140,13 @@ public class GroupTextMessage extends AbstractGroupMessage {
     }
 
     @NonNull
+    public static GroupTextMessage fromReflected(MdD2D.OutgoingMessage message) throws BadMessageException {
+        GroupTextMessage textMessage = fromByteArray(message.getBody().toByteArray());
+        textMessage.initializeCommonProperties(message);
+        return textMessage;
+    }
+
+    @NonNull
     public static GroupTextMessage fromByteArray(@NonNull byte[] data) throws BadMessageException {
         return fromByteArray(data, 0, data.length);
     }

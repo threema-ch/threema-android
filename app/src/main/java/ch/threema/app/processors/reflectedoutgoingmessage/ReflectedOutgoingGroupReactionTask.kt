@@ -30,37 +30,30 @@ import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
 
 internal class ReflectedOutgoingGroupReactionTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_REACTION,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupReactionMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupReactionMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.GROUP_REACTION,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
     private val contactService by lazy { serviceManager.contactService }
 
-    private val groupReactionMessage by lazy { GroupReactionMessage.fromReflected(message) }
-
-    override val storeNonces: Boolean
-        get() = groupReactionMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean
-        get() = groupReactionMessage.bumpLastUpdate()
-
     override fun processOutgoingMessage() {
-        check(message.conversation.hasGroup()) {
+        check(outgoingMessage.conversation.hasGroup()) {
             "The message does not have a group identity set"
         }
 
         val targetMessage: AbstractMessageModel = runCommonReactionMessageReceiveSteps(
-            reactionMessage = groupReactionMessage,
+            reactionMessage = message,
             receiver = messageReceiver,
             messageService = messageService,
         ) ?: return
 
         val emojiSequence: String = runCommonReactionMessageReceiveEmojiSequenceConversion(
-            emojiSequenceBytes = groupReactionMessage.data.emojiSequenceBytes,
+            emojiSequenceBytes = message.data.emojiSequenceBytes,
         ) ?: return
 
         messageService.saveEmojiReactionMessage(
@@ -69,7 +62,7 @@ internal class ReflectedOutgoingGroupReactionTask(
             /* senderIdentity = */
             contactService.me.identity,
             /* actionCase = */
-            groupReactionMessage.data.actionCase,
+            message.data.actionCase,
             /* emojiSequence = */
             emojiSequence,
         )

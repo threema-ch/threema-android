@@ -21,8 +21,8 @@
 
 package ch.threema.domain.protocol.csp.messages.fs;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
@@ -49,7 +49,7 @@ public class ForwardSecurityMessageTest {
     @Test
     public void makeBoxTest() throws ThreemaException {
         final MessageBox boxedMessage = boxMessage(getEnvelopeMessageTestInstance());
-        Assert.assertNotNull(boxedMessage);
+        Assertions.assertNotNull(boxedMessage);
     }
 
     @Test
@@ -57,8 +57,8 @@ public class ForwardSecurityMessageTest {
         final MessageBox boxedMessage = boxMessage(getEnvelopeMessageTestInstance());
 
         final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
-        Assert.assertTrue(decodedMessage instanceof ForwardSecurityEnvelopeMessage);
+        Assertions.assertInstanceOf(ForwardSecurityEnvelopeMessage.class, decodedMessage);
         final ForwardSecurityEnvelopeMessage msg = (ForwardSecurityEnvelopeMessage) decodedMessage;
-        Assert.assertArrayEquals(msg.getData().toProtobufBytes(), getDataTestInstance().toProtobufBytes());
+        Assertions.assertArrayEquals(msg.getData().toProtobufBytes(), getDataTestInstance().toProtobufBytes());
     }
 }

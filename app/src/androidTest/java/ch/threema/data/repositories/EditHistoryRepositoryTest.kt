@@ -25,6 +25,7 @@ import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.testutils.TestHelpers
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.storage.EditHistoryDao
 import ch.threema.data.storage.EditHistoryDaoImpl
@@ -34,17 +35,17 @@ import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
 import java.util.UUID
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
 
 class EditHistoryRepositoryTest {
     private lateinit var databaseService: TestDatabaseService
     private lateinit var editHistoryRepository: EditHistoryRepository
     private lateinit var editHistoryDao: EditHistoryDao
 
-    @Before
+    @BeforeTest
     fun before() {
         TestHelpers.setIdentity(
             ThreemaApplication.requireServiceManager(),
@@ -53,7 +54,7 @@ class EditHistoryRepositoryTest {
 
         databaseService = TestDatabaseService()
         val testCoreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),

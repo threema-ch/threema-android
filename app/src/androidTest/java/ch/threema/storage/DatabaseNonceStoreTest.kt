@@ -30,10 +30,10 @@ import ch.threema.base.crypto.NonceStore
 import ch.threema.domain.stores.IdentityStoreInterface
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import org.junit.After
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 
 class DatabaseNonceStoreTest {
     private lateinit var tempDbFileName: String
@@ -42,7 +42,7 @@ class DatabaseNonceStoreTest {
     private val store: NonceStore
         get() = _store
 
-    @Before
+    @BeforeTest
     fun setup() {
         tempDbFileName = "threema-nonce-test-${System.currentTimeMillis()}.db"
         val identityStore = TestIdentityStore()
@@ -53,7 +53,7 @@ class DatabaseNonceStoreTest {
         )
     }
 
-    @After
+    @AfterTest
     fun teardown() {
         _store.close()
         ApplicationProvider

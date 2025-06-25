@@ -133,7 +133,7 @@ public class MessageUpdateHandler extends MessageUpdater {
     public boolean unregister(ch.threema.app.messagereceiver.MessageReceiver receiver) {
         boolean removed = this.receivers.remove(receiver);
         // Unregister if no receivers exist
-        if (this.receivers.size() == 0) {
+        if (this.receivers.isEmpty()) {
             this.unregister();
         }
         return removed;

@@ -5,6 +5,6 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:nestedScrollingEnabled="true"
-    android:paddingVertical="8dp"
+    android:paddingVertical="@dimen/grid_unit_x1"
     android:scrollbarSize="@dimen/scrollbar_size"
     android:scrollbars="vertical" />

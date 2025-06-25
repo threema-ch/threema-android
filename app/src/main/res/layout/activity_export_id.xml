@@ -14,8 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:paddingLeft="@dimen/tablet_additional_padding_left_right"
-        android:paddingRight="@dimen/tablet_additional_padding_left_right">
+        android:paddingLeft="@dimen/tablet_additional_padding_horizontal"
+        android:paddingRight="@dimen/tablet_additional_padding_horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"

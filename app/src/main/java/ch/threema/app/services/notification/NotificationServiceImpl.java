@@ -63,14 +63,16 @@ import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.LocusIdCompat;
 import androidx.core.graphics.drawable.IconCompat;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.BackupAdminActivity;
 import ch.threema.app.activities.ComposeMessageActivity;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.ServerMessageActivity;
 import ch.threema.app.collections.Functional;
+import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.managers.ServiceManager;
@@ -98,7 +100,7 @@ import ch.threema.app.utils.WidgetUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.activities.GroupCallActivity;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -111,7 +113,7 @@ import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
 import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
 import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
-import static ch.threema.app.ThreemaApplication.WORK_SYNC_NOTIFICATION_ID;
+import static ch.threema.app.notifications.NotificationIDs.WORK_SYNC_NOTIFICATION_ID;
 import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 import static ch.threema.app.utils.TextExtensionsKt.truncate;
@@ -258,7 +260,7 @@ public class NotificationServiceImpl implements NotificationService {
         );
 
         Intent notificationIntent = new Intent(context, ComposeMessageActivity.class);
-        notificationIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, group.getId());
+        notificationIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, group.getId());
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
         PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
 
@@ -301,7 +303,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         String tag = "" + group.getId();
         try {
-            notificationManagerCompat.notify(tag, ThreemaApplication.INCOMING_GROUP_CALL_NOTIFICATION_ID, builder.build());
+            notificationManagerCompat.notify(tag, NotificationIDs.INCOMING_GROUP_CALL_NOTIFICATION_ID, builder.build());
         } catch (Exception e) {
             logger.error("Exception when notifying", e);
         }
@@ -313,7 +315,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (joinIntent != null) {
             joinIntent.cancel();
         }
-        notificationManagerCompat.cancel("" + groupId, ThreemaApplication.INCOMING_GROUP_CALL_NOTIFICATION_ID);
+        notificationManagerCompat.cancel("" + groupId, NotificationIDs.INCOMING_GROUP_CALL_NOTIFICATION_ID);
     }
 
     private PendingIntent getGroupCallJoinPendingIntent(int groupId, int flags) {
@@ -491,13 +493,13 @@ public class NotificationServiceImpl implements NotificationService {
             Intent ackIntent = new Intent(context, NotificationActionService.class);
             ackIntent.setAction(NotificationActionService.ACTION_ACK);
             IntentDataUtil.addMessageReceiverToIntent(ackIntent, currentNotificationsGroup.messageReceiver);
-            ackIntent.putExtra(ThreemaApplication.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
+            ackIntent.putExtra(AppConstants.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
             PendingIntent ackPendingIntent = PendingIntent.getService(context, conversationId + 2, ackIntent, pendingIntentFlags);
 
             Intent decIntent = new Intent(context, NotificationActionService.class);
             decIntent.setAction(NotificationActionService.ACTION_DEC);
             IntentDataUtil.addMessageReceiverToIntent(decIntent, currentNotificationsGroup.messageReceiver);
-            decIntent.putExtra(ThreemaApplication.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
+            decIntent.putExtra(AppConstants.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
             PendingIntent decPendingIntent = PendingIntent.getService(context, conversationId + 3, decIntent, pendingIntentFlags);
 
             long timestamp = System.currentTimeMillis();
@@ -686,7 +688,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (notificationPreferenceService.isShowMessagePreview() && !conversationCategoryService.isPrivateChat(uniqueId)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                RemoteInput remoteInput = new RemoteInput.Builder(ThreemaApplication.EXTRA_VOICE_REPLY)
+                RemoteInput remoteInput = new RemoteInput.Builder(AppConstants.EXTRA_VOICE_REPLY)
                     .setLabel(context.getString(R.string.compose_message_and_enter))
                     .build();
 
@@ -773,7 +775,7 @@ public class NotificationServiceImpl implements NotificationService {
     ) {
 
         String replyLabel = String.format(context.getString(R.string.wearable_reply_label), newestGroup.name);
-        RemoteInput remoteInput = new RemoteInput.Builder(ThreemaApplication.EXTRA_VOICE_REPLY)
+        RemoteInput remoteInput = new RemoteInput.Builder(AppConstants.EXTRA_VOICE_REPLY)
             .setLabel(replyLabel)
             .setChoices(context.getResources().getStringArray(R.array.wearable_reply_choices))
             .build();
@@ -856,7 +858,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
         // hack to detect active conversation Notifications by checking for active pending Intent
         else if (isConversationNotificationVisible()) {
-            cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
+            cancel(NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID);
             showDefaultPinLockedNewMessageNotification();
         }
     }
@@ -907,7 +909,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void cancelAllCachedConversationNotifications() {
-        this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
+        this.cancel(NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID);
 
         synchronized (this.conversationNotificationsCache) {
             if (!conversationNotificationsCache.isEmpty()) {
@@ -944,7 +946,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void cancel(ConversationModel conversationModel) {
         if (conversationModel != null) {
-            this.cancel(conversationModel.getReceiver());
+            this.cancel(conversationModel.messageReceiver);
         }
     }
 
@@ -956,7 +958,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             this.cancel(id, uniqueIdString);
         }
-        this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
+        this.cancel(NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID);
     }
 
     @Override
@@ -1002,7 +1004,7 @@ public class NotificationServiceImpl implements NotificationService {
         Intent notificationIntent = new Intent(context, ComposeMessageActivity.class);
         PendingIntent test = PendingIntent.getActivity(
             context,
-            ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID,
+            NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID,
             notificationIntent,
             PendingIntent.FLAG_NO_CREATE | PENDING_INTENT_FLAG_IMMUTABLE
         );
@@ -1035,7 +1037,7 @@ public class NotificationServiceImpl implements NotificationService {
             builder.setVibrate(NotificationChannels.VIBRATE_PATTERN_REGULAR);
         }
 
-        this.notify(ThreemaApplication.NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID, builder, null, channelId);
+        this.notify(NotificationIDs.NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID, builder, null, channelId);
 
         showIconBadge(0);
 
@@ -1073,7 +1075,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         this.notify(
-            ThreemaApplication.NEW_MESSAGE_LOCKED_NOTIFICATION_ID,
+            NotificationIDs.NEW_MESSAGE_LOCKED_NOTIFICATION_ID,
             builder,
             null,
             NotificationChannels.NOTIFICATION_CHANNEL_CHATS_DEFAULT
@@ -1084,7 +1086,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private void cancelPinLockedNewMessagesNotification() {
         logger.debug("cancel Pin Locked New Messages");
-        this.cancel(ThreemaApplication.NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID);
+        this.cancel(NotificationIDs.NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID);
     }
 
     @Override
@@ -1107,7 +1109,7 @@ public class NotificationServiceImpl implements NotificationService {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true);
 
-        this.notify(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE);
+        this.notify(NotificationIDs.SERVER_MESSAGE_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE);
     }
 
     private PendingIntent createPendingIntentWithTaskStack(@NonNull Intent intent) {
@@ -1134,7 +1136,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             PendingIntent sendPendingIntent = PendingIntent.getBroadcast(
                 context,
-                ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID,
+                NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID,
                 sendIntent,
                 this.pendingIntentFlags
             );
@@ -1152,7 +1154,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             PendingIntent cancelSendingMessages = PendingIntent.getBroadcast(
                 context,
-                ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID,
+                NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID,
                 cancelIntent,
                 this.pendingIntentFlags
             );
@@ -1173,9 +1175,9 @@ public class NotificationServiceImpl implements NotificationService {
                     .setDeleteIntent(cancelSendingMessages)
                     .addAction(R.drawable.ic_refresh_white_24dp, context.getString(R.string.try_again), sendPendingIntent);
 
-            this.notify(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
+            this.notify(NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
         } else {
-            this.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
+            this.cancel(NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID);
         }
     }
 
@@ -1202,12 +1204,12 @@ public class NotificationServiceImpl implements NotificationService {
             .setContentText(content)
             .setStyle(new NotificationCompat.BigTextStyle().bigText(content));
 
-        this.notify(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
+        this.notify(NotificationIDs.SAFE_FAILED_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
     }
 
     @Override
     public void cancelSafeBackupFailed() {
-        this.cancel(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID);
+        this.cancel(NotificationIDs.SAFE_FAILED_NOTIFICATION_ID);
     }
 
     @Override
@@ -1257,7 +1259,7 @@ public class NotificationServiceImpl implements NotificationService {
             }
 
             this.notify(
-                ThreemaApplication.NEW_SYNCED_CONTACTS_NOTIFICATION_ID,
+                NotificationIDs.NEW_SYNCED_CONTACTS_NOTIFICATION_ID,
                 builder,
                 null,
                 NotificationChannels.NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS
@@ -1304,10 +1306,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void cancel(int notificationId) {
         //make sure that pending intent is also cancelled to allow to check for active conversation notifications pre SDK 23
         Intent intent = new Intent(context, ComposeMessageActivity.class);
-        if (notificationId == ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID) {
+        if (notificationId == NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID) {
             PendingIntent pendingConversationIntent = PendingIntent.getActivity(
                 context,
-                ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID,
+                NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID,
                 intent,
                 this.pendingIntentFlags
             );
@@ -1345,7 +1347,7 @@ public class NotificationServiceImpl implements NotificationService {
             }
             showIconBadge(conversationNotificationsCache.size());
         }
-        this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
+        this.cancel(NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID);
 
         WidgetUtil.updateWidgets(context);
     }
@@ -1435,7 +1437,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .setContentTitle(this.context.getString(R.string.app_name))
                 .setContentText(msg)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
-        this.notify(ThreemaApplication.WEB_RESUME_FAILED_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE);
+        this.notify(NotificationIDs.WEB_RESUME_FAILED_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE);
     }
 
     @Override
@@ -1451,7 +1453,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void showGroupJoinResponseNotification(@NonNull OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,
                                                   @NonNull OutgoingGroupJoinRequestModel.Status status,
-                                                  @NonNull DatabaseServiceNew databaseService) {
+                                                  @NonNull DatabaseService databaseService) {
         /* stub */
     }
 

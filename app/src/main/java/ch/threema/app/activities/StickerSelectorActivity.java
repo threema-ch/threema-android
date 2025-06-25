@@ -28,8 +28,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.slf4j.Logger;
@@ -40,8 +38,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.adapters.StickerSelectorAdapter;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -60,19 +62,25 @@ public class StickerSelectorActivity extends ThreemaToolbarActivity implements L
         logScreenVisibility(this, logger);
 
         gridView = findViewById(R.id.grid_view);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (adapter != null) {
-                    Intent intent = new Intent();
-                    intent.putExtra(EXTRA_STICKER_PATH, adapter.getItem(i));
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
+        gridView.setOnItemClickListener((adapterView, view, i, l) -> {
+            if (adapter != null) {
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_STICKER_PATH, adapter.getItem(i));
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
 
         getLoaderManager().initLoader(0, null, this).forceLoad();
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.grid_view),
+            InsetSides.all(),
+            SpacingValues.symmetric(R.dimen.grid_unit_x4, R.dimen.grid_unit_x1)
+        );
     }
 
     private static class StickerLoader extends AsyncTaskLoader<String[]> {
@@ -80,6 +88,7 @@ public class StickerSelectorActivity extends ThreemaToolbarActivity implements L
             super(context);
         }
 
+        @NonNull
         @Override
         public String[] loadInBackground() {
             // AssetManager.getAssets().list is notoriously slow on some phones, so we use a list file to get the filenames quickly
@@ -107,11 +116,9 @@ public class StickerSelectorActivity extends ThreemaToolbarActivity implements L
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
         }
         return false;
     }

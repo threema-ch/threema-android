@@ -29,6 +29,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -82,6 +83,11 @@ public class StateBitmapUtil {
         this.messageStateDescriptionMap.put(MessageState.FS_KEY_MISMATCH, R.string.fs_key_mismatch);
 
         this.warningColor = context.getResources().getColor(R.color.material_red);
+    }
+
+    @ColorRes
+    public int getWarningColor() {
+        return warningColor;
     }
 
     @Nullable

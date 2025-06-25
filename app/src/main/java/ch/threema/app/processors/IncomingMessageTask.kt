@@ -28,12 +28,11 @@ import ch.threema.app.processors.push.IncomingWebSessionResumeMessageTask
 import ch.threema.app.protocol.runIdentityBlockedSteps
 import ch.threema.app.services.ContactServiceImpl
 import ch.threema.app.tasks.ActiveComposableTask
-import ch.threema.app.tasks.OutgoingContactDeliveryReceiptMessageTask
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
 import ch.threema.data.models.ModelDeletedException
@@ -221,10 +220,29 @@ class IncomingMessageTask(
                 logger.info("Reflecting incoming message {}", message.messageId)
                 reflectMessage(message, messageBox.nonce, handle)
             } else {
-                Date().time.toULong()
+                now().time.toULong()
             }
 
-        updateReceivedTimestamp(message, receivedTimestamp ?: Date().time.toULong())
+        updateReceivedTimestamp(message, receivedTimestamp ?: now().time.toULong())
+
+        // If the message type requires automatic delivery receipts and the message does not contain
+        // the "no delivery receipt" flag, schedule the sending a delivery receipt
+        if (message.sendAutomaticDeliveryReceipt() &&
+            !message.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
+        ) {
+            contactService.getByIdentity(message.fromIdentity)?.let { contactModel ->
+                contactService.createReceiver(contactModel).sendDeliveryReceipt(
+                    ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED,
+                    arrayOf(message.messageId),
+                    now().time,
+                )
+                logger.info(
+                    "Enqueued delivery receipt (delivered) message for message ID {} from {}",
+                    message.messageId,
+                    message.fromIdentity,
+                )
+            }
+        }
 
         // Acknowledge the message
         acknowledgeMessage(
@@ -233,25 +251,6 @@ class IncomingMessageTask(
             peerRatchetIdentifier,
             handle,
         )
-
-        // If the message type requires automatic delivery receipts and the message does not contain
-        // the no delivery receipt flag, send a delivery receipt
-        if (message.sendAutomaticDeliveryReceipt() &&
-            !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
-        ) {
-            OutgoingContactDeliveryReceiptMessageTask(
-                ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED,
-                arrayOf(message.messageId),
-                Date().time,
-                message.fromIdentity,
-                serviceManager,
-            ).invoke(handle)
-            logger.info(
-                "Sent delivery receipt (delivered) message for message ID {} from {}",
-                message.messageId,
-                message.fromIdentity,
-            )
-        }
     }
 
     private suspend fun decryptMessage(
@@ -338,7 +337,7 @@ class IncomingMessageTask(
         handle: ActiveTaskCodec,
     ) {
         // If the no-server-ack message flag is not set, send a message-ack to the server
-        if ((messageBox.flags and ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK) == 0) {
+        if (!messageBox.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK)) {
             sendAck(messageBox.messageId, messageBox.fromIdentity, handle)
         }
 

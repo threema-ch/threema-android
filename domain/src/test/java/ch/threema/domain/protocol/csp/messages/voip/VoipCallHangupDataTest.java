@@ -21,13 +21,12 @@
 
 package ch.threema.domain.protocol.csp.messages.voip;
 
-import ch.threema.domain.protocol.csp.messages.BadMessageException;
-
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
+
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class VoipCallHangupDataTest {
 
@@ -40,18 +39,18 @@ public class VoipCallHangupDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertEquals("{\"callId\":1234}", json);
+        Assertions.assertEquals("{\"callId\":1234}", json);
     }
 
     @Test
     public void parseHangupWithCallId() throws BadMessageException {
         final VoipCallHangupData parsed = VoipCallHangupData.parse("{\"callId\":1337}");
-        Assert.assertEquals(Long.valueOf(1337), parsed.getCallId());
+        Assertions.assertEquals(Long.valueOf(1337), parsed.getCallId());
     }
 
     @Test
     public void parseHangupWithoutCallId() throws BadMessageException {
         final VoipCallHangupData parsed = VoipCallHangupData.parse("{}");
-        Assert.assertNull(parsed.getCallId());
+        Assertions.assertNull(parsed.getCallId());
     }
 }

@@ -22,6 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -30,6 +31,8 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.getEncryptedIncomingGroupMessageUpdateReadEnvelope
 import kotlinx.serialization.Serializable
 
+private val logger = LoggingUtil.getThreemaLogger("OutboundIncomingGroupMessageUpdateReadTask")
+
 class OutboundIncomingGroupMessageUpdateReadTask(
     private val messageIds: Set<MessageId>,
     private val timestamp: Long,
@@ -37,7 +40,8 @@ class OutboundIncomingGroupMessageUpdateReadTask(
     private val creatorIdentity: String,
     serviceManager: ServiceManager,
 ) : OutboundD2mMessageTask<Unit>, PersistableTask {
-    private val multiDeviceProperties by lazy { serviceManager.multiDeviceManager.propertiesProvider.get() }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val multiDeviceProperties by lazy { multiDeviceManager.propertiesProvider.get() }
     private val deviceId by lazy { multiDeviceProperties.mediatorDeviceId }
     private val multiDeviceKeys by lazy { multiDeviceProperties.keys }
 
@@ -46,6 +50,11 @@ class OutboundIncomingGroupMessageUpdateReadTask(
     override val type: String = "OutboundIncomingGroupMessageUpdateReadTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Multi device is not active")
+            return
+        }
+
         val encryptedEnvelopeResult = getEncryptedIncomingGroupMessageUpdateReadEnvelope(
             messageIds,
             timestamp,

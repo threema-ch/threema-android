@@ -11,8 +11,7 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/message_block"
-        style="@style/Threema.CardView.Bubble.Status"
-        app:cardBackgroundColor="@color/bubble_status_colorstatelist">
+        style="@style/Threema.CardView.Bubble.Status">
 
         <ch.threema.app.emojis.EmojiConversationTextView
             android:id="@+id/text_view"
@@ -20,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:alpha="0.6"
             android:autoLink="none"
             android:ellipsize="end"
             android:gravity="center_horizontal"

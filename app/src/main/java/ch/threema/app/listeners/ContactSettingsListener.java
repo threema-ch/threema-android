@@ -25,17 +25,17 @@ import androidx.annotation.AnyThread;
 
 public interface ContactSettingsListener {
     @AnyThread
-    void onSortingChanged();
+    default void onSortingChanged() {}
 
     @AnyThread
-    void onNameFormatChanged();
+    default void onNameFormatChanged() {}
 
     @AnyThread
-    void onAvatarSettingChanged();
+    default void onAvatarSettingChanged() {}
 
     @AnyThread
-    void onInactiveContactsSettingChanged();
+    default void onInactiveContactsSettingChanged() {}
 
     @AnyThread
-    void onNotificationSettingChanged(String uid);
+    default void onNotificationSettingChanged(String uid) {}
 }

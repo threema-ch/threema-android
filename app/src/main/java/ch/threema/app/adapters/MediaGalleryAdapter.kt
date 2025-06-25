@@ -217,7 +217,7 @@ class MediaGalleryAdapter(
             holder.messageId = messageModel.id
             (holder.itemView as CheckableFrameLayout).isChecked = checkedItems.get(position)
 
-            holder.itemView.setOnClickListener { v: View? ->
+            holder.itemView.setOnClickListener {
                 clickListener.onClick(
                     messageModel,
                     holder.itemView,

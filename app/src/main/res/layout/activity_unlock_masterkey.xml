@@ -4,46 +4,46 @@
     android:id="@+id/top_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
-    android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-    android:background="?android:attr/colorBackground">
+    android:background="?android:attr/colorBackground"
+    android:clipToPadding="false"
+    android:paddingHorizontal="@dimen/grid_unit_x2">
 
     <RelativeLayout
         android:id="@+id/layout_parent_top"
-        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="24dp">
+        android:orientation="vertical"
+        android:paddingVertical="@dimen/grid_unit_x3">
 
         <TextView
-            style="@style/Threema.TextAppearance.Headline"
             android:id="@+id/unlock_masterkey_title"
+            style="@style/Threema.TextAppearance.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/masterkey_title"
-            android:gravity="center_horizontal"
             android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            android:text="@string/masterkey_title"
             android:textColor="?attr/colorOnBackground" />
 
         <TextView
-            style="@style/Threema.TextAppearance.BodyLarge"
             android:id="@+id/layout_top"
-            android:layout_below="@id/unlock_masterkey_title"
+            style="@style/Threema.TextAppearance.BodyLarge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:layout_below="@id/unlock_masterkey_title"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:text="@string/masterkey_body"
-            android:paddingBottom="5dp" />
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:gravity="center_horizontal"
+            android:paddingBottom="5dp"
+            android:text="@string/masterkey_body" />
 
         <LinearLayout
             android:id="@+id/unlock_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center_vertical"
             android:layout_below="@id/layout_top"
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
@@ -51,8 +51,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_marginRight="@dimen/grid_unit_x1"
                 android:layout_marginBottom="3dp"
-                android:layout_marginRight="8dp"
                 app:srcCompat="@drawable/ic_key_outline"
                 app:tint="?attr/colorOnSurface" />
 
@@ -60,20 +60,20 @@
                 android:id="@+id/passphrase_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginTop="5dp"
                 android:layout_weight="2"
-                android:layout_gravity="center_vertical"
                 android:hint="@string/masterkey_passphrase_hint"
                 app:counterEnabled="false"
-                app:passwordToggleEnabled="true"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                app:passwordToggleEnabled="true">
 
                 <ch.threema.app.ui.ThreemaTextInputEditText
+                    android:id="@+id/passphrase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/passphrase"
-                    android:inputType="textPassword|textNoSuggestions"
                     android:imeOptions="actionGo"
+                    android:inputType="textPassword|textNoSuggestions"
                     android:singleLine="true">
 
                     <requestFocus />
@@ -82,30 +82,30 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Threema.MaterialButton.Icon"
                 android:id="@+id/unlock_button"
+                style="@style/Threema.MaterialButton.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="2dp"
                 android:layout_gravity="center_vertical"
-                app:icon="@drawable/ic_arrow_left"
-                android:rotation="180"
+                android:layout_marginLeft="@dimen/grid_unit_x1"
+                android:layout_marginBottom="2dp"
                 android:contentDescription="@string/label_continue"
-                android:enabled="false" />
+                android:enabled="false"
+                android:rotation="180"
+                app:icon="@drawable/ic_arrow_left" />
 
         </LinearLayout>
 
         <TextView
-            style="@style/Threema.TextAppearance.BodyMedium"
             android:id="@+id/unlock_info"
+            style="@style/Threema.TextAppearance.BodyMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/unlock_layout"
             android:layout_marginBottom="5dp"
+            android:drawablePadding="10dp"
             android:text="@string/masterkey_lock_explain"
-            app:drawableLeftCompat="@drawable/ic_info_outline"
-            android:drawablePadding="10dp" />
+            app:drawableLeftCompat="@drawable/ic_info_outline" />
 
     </RelativeLayout>
 

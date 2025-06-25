@@ -29,34 +29,27 @@ import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
 
 internal class ReflectedOutgoingGroupEditMessageTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_EDIT_MESSAGE,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupEditMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupEditMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.GROUP_EDIT_MESSAGE,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val groupEditMessage by lazy { GroupEditMessage.fromReflected(message) }
-
-    override val storeNonces: Boolean
-        get() = groupEditMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean
-        get() = groupEditMessage.bumpLastUpdate()
-
     override fun processOutgoingMessage() {
-        check(message.conversation.hasGroup()) { "The message does not have a group identity set" }
+        check(outgoingMessage.conversation.hasGroup()) { "The message does not have a group identity set" }
         runCommonEditMessageReceiveSteps(
-            editMessage = groupEditMessage,
+            editMessage = message,
             receiver = messageReceiver,
             messageService = messageService,
         )?.let { validEditMessageModel: AbstractMessageModel ->
             messageService.saveEditedMessageText(
                 validEditMessageModel,
-                groupEditMessage.data.text,
-                groupEditMessage.date,
+                message.data.text,
+                message.date,
             )
         }
     }

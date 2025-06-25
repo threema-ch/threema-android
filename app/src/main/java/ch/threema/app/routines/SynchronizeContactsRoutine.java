@@ -47,9 +47,9 @@ import ch.threema.app.asynctasks.AddContactBackgroundTask;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeviceService;
-import ch.threema.app.services.IdListService;
+import ch.threema.app.services.ExcludedSyncIdentitiesService;
 import ch.threema.app.services.LocaleService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.stores.MatchTokenStore;
 import ch.threema.app.utils.AndroidContactUtil;
@@ -82,7 +82,8 @@ public class SynchronizeContactsRoutine implements Runnable {
     private final ContactModelRepository contactModelRepository;
     private final LocaleService localeService;
     private final ContentResolver contentResolver;
-    private final IdListService excludedSyncList;
+    @NonNull
+    private final ExcludedSyncIdentitiesService excludedSyncIdentitiesService;
     private final DeviceService deviceService;
     private final PreferenceService preferenceService;
     private final IdentityStoreInterface identityStore;
@@ -118,7 +119,7 @@ public class SynchronizeContactsRoutine implements Runnable {
         UserService userService,
         LocaleService localeService,
         ContentResolver contentResolver,
-        IdListService excludedSyncList,
+        @NonNull ExcludedSyncIdentitiesService excludedSyncIdentitiesService,
         DeviceService deviceService,
         PreferenceService preferenceService,
         IdentityStoreInterface identityStore,
@@ -131,7 +132,7 @@ public class SynchronizeContactsRoutine implements Runnable {
         this.contactModelRepository = contactModelRepository;
         this.localeService = localeService;
         this.contentResolver = contentResolver;
-        this.excludedSyncList = excludedSyncList;
+        this.excludedSyncIdentitiesService = excludedSyncIdentitiesService;
         this.deviceService = deviceService;
         this.preferenceService = preferenceService;
         this.identityStore = identityStore;
@@ -251,7 +252,7 @@ public class SynchronizeContactsRoutine implements Runnable {
                 }
 
                 // Do not sync contacts on exclude list
-                if (this.excludedSyncList != null && this.excludedSyncList.has(id.getKey())) {
+                if (this.excludedSyncIdentitiesService.isExcluded(id.getKey())) {
                     logger.info("Identity {} is on exclude list", id.getKey());
                     continue;
                 }

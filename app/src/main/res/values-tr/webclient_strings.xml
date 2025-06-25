@@ -7,7 +7,7 @@
     <string name="webclient_created_at">%1$s (%2$s) oluşturuldu</string>
     <string name="webclient_active_since">Şu tarihten beri aktif: %s</string>
     <string name="webclient_enable">Masaüstü uygulaması / web istemcisini etkinleştir</string>
-    <string name="webclient_no_sessions_found">Bağlantı kurmak için masaüstü uygulamasını indirin (<b>https://threema.ch/download</b>) veya web istemcisini açın (<b>%s</b>) ve ekranda görüntülenen kare kodunu taramak için düğmeye basın.</string>
+    <string name="webclient_no_sessions_found">Bağlantı kurmak için masaüstü uygulamasını indirin (<b>https://threema.com/download</b>) veya web istemcisini açın (<b>%s</b>) ve ekranda görüntülenen kare kodunu taramak için düğmeye basın.</string>
     <string name="webclient_session_rename">Oturumu yeniden isimlendir</string>
     <string name="webclient_session_label">Yeni isim</string>
     <string name="webclient_session_start">Oturumu başlat</string>

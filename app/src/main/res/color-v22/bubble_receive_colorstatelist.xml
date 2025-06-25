@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TODO(ANDR-3888) Move to to default color folder -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="?attr/colorSecondaryContainer" android:state_pressed="true" />
+    <item android:color="?attr/colorPrimaryContainer" android:state_activated="true" />
+    <item android:color="?attr/colorSurfaceContainer" />
+</selector>

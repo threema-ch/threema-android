@@ -29,9 +29,11 @@ import org.slf4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -55,12 +57,14 @@ public class SdpPatcher {
         Pattern.compile("a=extmap:[^ ]+ (.*)");
 
     /**
-     * Whether this SDP is created locally and it is the offer, a local answer
+     * Whether this SDP is a local offer, a local answer
      * or a remote SDP.
      */
     public enum Type {
+        REMOTE_OFFER,
+        REMOTE_ANSWER,
         LOCAL_OFFER,
-        LOCAL_ANSWER_OR_REMOTE_SDP,
+        LOCAL_ANSWER,
     }
 
     /**
@@ -81,12 +85,12 @@ public class SdpPatcher {
         }
     }
 
+    // RTP extensions of the remote offer to be replayed in the local answer
+    private @NonNull final RtpExtensionReplayer rtpExtensionsInRemoteOffer = new RtpExtensionReplayer();
+
     // Configuration fields
-    @NonNull
-    private Logger logger = LogUtil.NULL_LOGGER;
-    @NonNull
-    private RtpHeaderExtensionConfig rtpHeaderExtensionConfig =
-        RtpHeaderExtensionConfig.DISABLE;
+    private @NonNull Logger logger = LogUtil.NULL_LOGGER;
+    private @NonNull RtpHeaderExtensionConfig rtpHeaderExtensionConfig = RtpHeaderExtensionConfig.DISABLE;
 
     /**
      * Set a logger instance.
@@ -144,9 +148,9 @@ public class SdpPatcher {
         // Iterate over all lines
         final StringBuilder lines = new StringBuilder();
         final BufferedReader reader = new BufferedReader(new StringReader(sdp));
-        String lineStr;
-        while ((lineStr = reader.readLine()) != null) {
-            SdpPatcher.handleLine(context, reader, lines, lineStr);
+        String line;
+        while ((line = reader.readLine()) != null) {
+            SdpPatcher.handleLine(context, reader, lines, new Line(line));
         }
 
         // Done, return lines
@@ -191,11 +195,6 @@ public class SdpPatcher {
         }
 
         @NonNull
-        String get() {
-            return this.line;
-        }
-
-        @NonNull
         LineAction accept() {
             if (this.action != null) {
                 throw new IllegalArgumentException("LineAction.action already set");
@@ -204,8 +203,7 @@ public class SdpPatcher {
             return this.action;
         }
 
-        @NonNull
-        LineAction reject() {
+        @NonNull LineAction reject() {
             if (this.action != null) {
                 throw new IllegalArgumentException("LineAction.action already set");
             }
@@ -213,8 +211,7 @@ public class SdpPatcher {
             return this.action;
         }
 
-        @NonNull
-        LineAction rewrite(@NonNull final String line) {
+        @NonNull LineAction rewrite(@NonNull final String line) {
             if (this.action != null) {
                 throw new IllegalArgumentException("LineAction.action already set");
             }
@@ -223,9 +220,44 @@ public class SdpPatcher {
             return this.action;
         }
 
-        @NonNull
-        LineAction rewrite(@NonNull final StringBuilder builder) {
+        @NonNull LineAction rewrite(@NonNull final StringBuilder builder) {
             return this.rewrite(builder.toString());
+        }
+    }
+
+
+    /**
+     * RTP extension replayer. For replaying remote offer extensions in a local answer.
+     */
+    private static class RtpExtensionReplayer {
+        private enum MediaSection {
+            AUDIO,
+            VIDEO,
+        }
+
+        static @Nullable MediaSection fromSdpSection(final @NonNull SdpSection section) {
+            switch (section) {
+                case MEDIA_AUDIO:
+                    return MediaSection.AUDIO;
+                case MEDIA_VIDEO:
+                    return MediaSection.VIDEO;
+                default:
+                    return null;
+            }
+        }
+
+        private final @NonNull Map<MediaSection, List<String>> extensions = new HashMap<>();
+
+        void add(final @NonNull MediaSection section, final @NonNull String line) {
+            this.extensions.computeIfAbsent(section, mediaSection -> new ArrayList<>()).add(line);
+        }
+
+        @NonNull List<String> replay(final @NonNull MediaSection section) {
+            final List<String> lines = this.extensions.remove(section);
+            if (lines == null) {
+                return new ArrayList<>();
+            }
+            return lines;
         }
     }
 
@@ -234,8 +266,8 @@ public class SdpPatcher {
      */
     private static class RtpExtensionIdRemapper {
         private int currentId;
-        private int maxId;
-        private @NonNull Map<String, Integer> extensionIdMap = new HashMap<>();
+        private final int maxId;
+        private final @NonNull Map<String, Integer> extensionIdMap = new HashMap<>();
 
         private RtpExtensionIdRemapper(@NonNull final SdpPatcher config) {
             // See: RFC 5285 sec 4.2, sec 4.3
@@ -282,14 +314,10 @@ public class SdpPatcher {
      * SDP patcher context storage.
      */
     private static class SdpPatcherContext {
-        private @NonNull
-        final Type type;
-        private @NonNull
-        final SdpPatcher config;
-        private @NonNull
-        final String payloadTypeOpus;
-        private @NonNull
-        final RtpExtensionIdRemapper rtpExtensionIdRemapper;
+        private @NonNull final Type type;
+        private @NonNull final SdpPatcher config;
+        private @NonNull final String payloadTypeOpus;
+        private @NonNull final RtpExtensionIdRemapper rtpExtensionsInLocalOfferIdRemapper;
         private @NonNull SdpSection section;
 
         private SdpPatcherContext(
@@ -300,7 +328,7 @@ public class SdpPatcher {
             this.type = type;
             this.config = config;
             this.payloadTypeOpus = payloadTypeOpus;
-            this.rtpExtensionIdRemapper = new RtpExtensionIdRemapper(config);
+            this.rtpExtensionsInLocalOfferIdRemapper = new RtpExtensionIdRemapper(config);
             this.section = SdpSection.GLOBAL;
         }
     }
@@ -312,14 +340,13 @@ public class SdpPatcher {
         @NonNull final SdpPatcherContext context,
         @NonNull final BufferedReader reader,
         @NonNull final StringBuilder lines,
-        @NonNull String lineStr
+        @NonNull final Line line
     ) throws InvalidSdpException, IOException {
         final SdpSection current = context.section;
-        final Line line = new Line(lineStr);
         final LineAction action;
 
         // Introduce a new section or forward depending on the section type
-        if (lineStr.startsWith("m=")) {
+        if (line.line.startsWith("m=")) {
             action = SdpPatcher.handleSectionLine(context, line);
         } else {
             switch (context.section) {
@@ -333,7 +360,7 @@ public class SdpPatcher {
                     action = SdpPatcher.handleVideoLine(context, line);
                     break;
                 case MEDIA_DATA_CHANNEL:
-                    action = SdpPatcher.handleDataChannelLine(context, line);
+                    action = SdpPatcher.handleDataChannelLine(line);
                     break;
                 default:
                     // Note: This also swallows `MEDIA_UNKNOWN`. Since we reject these lines completely,
@@ -347,13 +374,13 @@ public class SdpPatcher {
             case ACCEPT: // fallthrough
             case REWRITE:
                 lines
-                    .append(line.get())
+                    .append(line.line)
                     .append("\r\n");
                 break;
             case REJECT:
                 // Log
                 if (context.config.logger.isDebugEnabled()) {
-                    context.config.logger.debug("Rejected line: {}", line.get());
+                    context.config.logger.debug("Rejected line: {}", line.line);
                 }
                 break;
             default:
@@ -364,18 +391,19 @@ public class SdpPatcher {
         // we need to reject the remainder of the section.
         if (current != context.section && action == LineAction.REJECT) {
             final StringBuilder debug = context.config.logger.isDebugEnabled() ? new StringBuilder() : null;
-            while ((lineStr = reader.readLine()) != null && !lineStr.startsWith("m=")) {
+            String rejectedLine;
+            while ((rejectedLine = reader.readLine()) != null && !rejectedLine.startsWith("m=")) {
                 if (debug != null) {
-                    debug.append(line.get());
+                    debug.append(rejectedLine);
                 }
             }
             if (debug != null) {
                 context.config.logger.debug("Rejected section:\n{}", debug);
             }
-            if (lineStr != null) {
+            if (rejectedLine != null) {
                 // Since we've already read the beginning of the section and can't push it back to
                 // the reader, we need to handle it here.
-                SdpPatcher.handleLine(context, reader, lines, lineStr);
+                SdpPatcher.handleLine(context, reader, lines, new Line(rejectedLine));
             }
         }
     }
@@ -387,11 +415,10 @@ public class SdpPatcher {
         @NonNull final SdpPatcherContext context,
         @NonNull final Line line
     ) throws InvalidSdpException {
-        String lineStr = line.get();
         final Matcher matcher;
 
         // Audio section
-        if ((matcher = SDP_MEDIA_AUDIO_ANY_RE.matcher(lineStr)).matches()) {
+        if ((matcher = SDP_MEDIA_AUDIO_ANY_RE.matcher(line.line)).matches()) {
             // Mark current section
             context.section = SdpSection.MEDIA_AUDIO;
 
@@ -414,14 +441,14 @@ public class SdpPatcher {
         }
 
         // Video section
-        if (lineStr.startsWith("m=video")) {
+        if (line.line.startsWith("m=video")) {
             // Accept
             context.section = SdpSection.MEDIA_VIDEO;
             return line.accept();
         }
 
         // Data channel section
-        if (lineStr.startsWith("m=application") && lineStr.contains("DTLS/SCTP")) {
+        if (line.line.startsWith("m=application") && line.line.contains("DTLS/SCTP")) {
             // Accept
             context.section = SdpSection.MEDIA_DATA_CHANNEL;
             return line.accept();
@@ -449,12 +476,10 @@ public class SdpPatcher {
         @NonNull final SdpPatcherContext context,
         @NonNull final Line line
     ) {
-        final String lineStr = line.get();
-
         // Reject one-/two-byte RTP header mixed mode, if requested
         if (
             context.config.rtpHeaderExtensionConfig != RtpHeaderExtensionConfig.ENABLE_WITH_ONE_AND_TWO_BYTE_HEADER &&
-                lineStr.startsWith("a=extmap-allow-mixed")
+                line.line.startsWith("a=extmap-allow-mixed")
         ) {
             return line.reject();
         }
@@ -470,11 +495,10 @@ public class SdpPatcher {
         @NonNull final SdpPatcherContext context,
         @NonNull final Line line
     ) throws InvalidSdpException {
-        final String lineStr = line.get();
         Matcher matcher;
 
         // RTP mappings
-        if ((matcher = SDP_RTPMAP_ANY_RE.matcher(lineStr)).matches()) {
+        if ((matcher = SDP_RTPMAP_ANY_RE.matcher(line.line)).matches()) {
             final String payloadType = Objects.requireNonNull(matcher.group(1));
 
             // Accept Opus RTP mappings, reject the rest
@@ -486,7 +510,7 @@ public class SdpPatcher {
         }
 
         // RTP format parameters
-        if ((matcher = SDP_FMTP_ANY_RE.matcher(lineStr)).matches()) {
+        if ((matcher = SDP_FMTP_ANY_RE.matcher(line.line)).matches()) {
             final String payloadType = Objects.requireNonNull(matcher.group(1));
             final String paramString = Objects.requireNonNull(matcher.group(2));
             if (!payloadType.equals(context.payloadTypeOpus)) {
@@ -518,11 +542,18 @@ public class SdpPatcher {
 
             // Write our custom params
             builder.append("stereo=0;sprop-stereo=0;cbr=1");
+
             return line.rewrite(builder);
         }
 
+        // For local answers, inject the accepted remote offer RTP header extensions after the MID
+        // in a hacky ugly AF way
+        if (context.type == Type.LOCAL_ANSWER && line.line.startsWith("a=mid:")) {
+            return SdpPatcher.handleRtpHeaderExtensionInjectionAfterMid(context, line);
+        }
+
         // Handle RTP header extensions
-        if ((matcher = SDP_EXTMAP_ANY_RE.matcher(lineStr)).matches()) {
+        if ((matcher = SDP_EXTMAP_ANY_RE.matcher(line.line)).matches()) {
             final String uriAndAttributes = Objects.requireNonNull(matcher.group(1));
             return SdpPatcher.handleRtpHeaderExtensionLine(context, line, uriAndAttributes);
         }
@@ -538,11 +569,16 @@ public class SdpPatcher {
         @NonNull final SdpPatcherContext context,
         @NonNull final Line line
     ) throws InvalidSdpException {
-        final String lineStr = line.get();
         Matcher matcher;
 
+        // For local answers, inject the accepted remote offer RTP header extensions after the MID
+        // in a hacky ugly AF way
+        if (context.type == Type.LOCAL_ANSWER && line.line.startsWith("a=mid:")) {
+            return SdpPatcher.handleRtpHeaderExtensionInjectionAfterMid(context, line);
+        }
+
         // Handle RTP header extensions
-        if ((matcher = SDP_EXTMAP_ANY_RE.matcher(lineStr)).matches()) {
+        if ((matcher = SDP_EXTMAP_ANY_RE.matcher(line.line)).matches()) {
             final String uriAndAttributes = Objects.requireNonNull(matcher.group(1));
             return SdpPatcher.handleRtpHeaderExtensionLine(context, line, uriAndAttributes);
         }
@@ -555,7 +591,6 @@ public class SdpPatcher {
      * Handle data channel section line.
      */
     private static @NonNull LineAction handleDataChannelLine(
-        @NonNull final SdpPatcherContext context,
         @NonNull final Line line
     ) {
         // Data channel <3
@@ -583,30 +618,59 @@ public class SdpPatcher {
             return line.reject();
         }
 
-        // Require encryption for the remainder of headers
-        if (uriAndAttributes.startsWith("urn:ietf:params:rtp-hdrext:encrypt")) {
-            return SdpPatcher.remapRtpHeaderExtensionIfOutbound(context, line, uriAndAttributes);
-        }
+        switch (context.type) {
+            // Only allow encrypted extensions and remember them so they can be copied into the local answer
+            case REMOTE_OFFER:
+                if (!uriAndAttributes.startsWith("urn:ietf:params:rtp-hdrext:encrypt")) {
+                    return line.reject();
+                }
+                final RtpExtensionReplayer.MediaSection section = RtpExtensionReplayer.fromSdpSection(context.section);
+                if (section != null) {
+                    context.config.rtpExtensionsInRemoteOffer.add(section, line.line);
+                }
+                return line.accept();
 
-        // Reject the rest
-        return line.reject();
+            // Only allow encrypted extensions
+            case REMOTE_ANSWER:
+                if (!uriAndAttributes.startsWith("urn:ietf:params:rtp-hdrext:encrypt")) {
+                    return line.reject();
+                }
+                return line.accept();
+
+            // Remap and enforce encrypted extensions
+            case LOCAL_OFFER:
+                if (uriAndAttributes.startsWith("urn:ietf:params:rtp-hdrext:encrypt")) {
+                    // We don't expect any encrypted extensions since they are no longer generated
+                    // by default. Not having to handle duplicates makes this code simpler.
+                    return line.reject();
+                }
+                return line.rewrite(String.format(
+                    Locale.US,
+                    "a=extmap:%d urn:ietf:params:rtp-hdrext:encrypt %s",
+                    context.rtpExtensionsInLocalOfferIdRemapper.assignId(uriAndAttributes),
+                    uriAndAttributes
+                ));
+
+            // We don't expect any extensions since all encrypted header extensions are stripped
+            // by the SDP engine, because Google decided so.
+            case LOCAL_ANSWER:
+                return line.reject();
+
+            default:
+                return line.reject();
+        }
     }
 
-    private static @NonNull LineAction remapRtpHeaderExtensionIfOutbound(
-        @NonNull final SdpPatcherContext context,
-        @NonNull final Line line,
-        @NonNull final String uriAndAttributes
-    ) throws InvalidSdpException {
-        // Rewrite if local offer, otherwise accept
-        if (context.type == Type.LOCAL_OFFER) {
-            return line.rewrite(String.format(
-                Locale.US,
-                "a=extmap:%d %s",
-                context.rtpExtensionIdRemapper.assignId(uriAndAttributes),
-                uriAndAttributes
-            ));
-        } else {
+    private static LineAction handleRtpHeaderExtensionInjectionAfterMid(
+        @NonNull SdpPatcherContext context,
+        @NonNull Line line
+    ) {
+        final RtpExtensionReplayer.MediaSection section = RtpExtensionReplayer.fromSdpSection(context.section);
+        if (section == null) {
             return line.accept();
         }
+        final List<String> replayedRtpExtensions = context.config.rtpExtensionsInRemoteOffer.replay(section);
+        replayedRtpExtensions.add(0, line.line);
+        return line.rewrite(String.join("\r\n", replayedRtpExtensions));
     }
 }

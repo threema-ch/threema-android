@@ -37,7 +37,6 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.FileService;
 import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.ListReader;
 import ch.threema.app.utils.RuntimeUtil;
@@ -47,7 +46,7 @@ import ch.threema.logging.LoggerManager;
 import ch.threema.logging.backend.DebugLogFileBackend;
 import ch.threema.logging.backend.DebugToasterBackend;
 import ch.threema.storage.DatabaseNonceStore;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.BallotModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.RejectedGroupMessageFactory;
@@ -79,6 +78,10 @@ public class LayerDependenciesTest {
         )
         .ignoreDependency(
             nameMatching("ch\\.threema\\.storage\\..*"),
+            nameMatching("ch\\.threema\\.app\\.preference\\.service\\..*")
+        )
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.storage\\..*"),
             nameMatching("ch\\.threema\\.app\\.utils\\..*")
         )
         // Data layer may access listeners, utils, multi-device, and reflection tasks
@@ -106,7 +109,7 @@ public class LayerDependenciesTest {
         // Data layer needs to access "ThreemaApplication.getServiceManager()" to get old service
         .ignoreDependency(
             nameMatching("ch\\.threema\\.data\\..*"),
-            nameMatching("ch\\.threema\\.app\\.ThreemaApplication")
+            nameMatching("ch\\.threema\\.app\\.ThreemaApplication.*")
         )
         // TODO(ANDR-3037): Check if this is still necessary after this ticket
         // Data layer needs to access old services to keep caches in sync
@@ -134,8 +137,8 @@ public class LayerDependenciesTest {
             nameMatching("ch\\.threema\\.data\\.repositories\\.EmojiReactionsRepository"),
             nameMatching("ch\\.threema\\.app\\.emojis\\.EmojiUtil")
         )
-        .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationFailedException.class)
-        .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationLockedException.class)
+        .ignoreDependency(DatabaseService.class, DatabaseMigrationFailedException.class)
+        .ignoreDependency(DatabaseService.class, DatabaseMigrationLockedException.class)
         .ignoreDependency(DatabaseNonceStore.class, DatabaseMigrationFailedException.class)
         .ignoreDependency(ConversationModel.class, MessageReceiver.class)
         .ignoreDependency(ConversationModel.class, GroupMessageReceiver.class)
@@ -150,7 +153,6 @@ public class LayerDependenciesTest {
         .ignoreDependency(LoggerManager.class, BuildFlavor.Companion.getClass())
         .ignoreDependency(LoggerManager.class, ThreemaApplication.class)
         .ignoreDependency(DebugToasterBackend.class, RuntimeUtil.class)
-        .ignoreDependency(DebugLogFileBackend.class, FileService.class)
         .ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
         .ignoreDependency(DebugLogFileBackend.class, FileHandlingZipOutputStream.class)
         .ignoreDependency(DebugLogFileBackend.class, ThreemaApplication.class); // TODO(ANDR-1439): Refactor
@@ -172,7 +174,7 @@ public class LayerDependenciesTest {
 
     @ArchTest
     public static final ArchRule domainLayerAccess = getLayeredArchitecture()
-        .whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE);
+        .whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE, LOCALCRYPTO);
 
     @ArchTest
     public static final ArchRule baseLayerAccess = getLayeredArchitecture()

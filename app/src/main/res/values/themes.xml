@@ -54,17 +54,23 @@
         </item>
 
         <!-- deprecated color mappings -->
-        <item name="colorPrimaryDark">@color/md_theme_light_secondary
-        </item> <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorAccent">@color/md_theme_light_primary
-        </item> <!--   theme UI controls like checkboxes and text fields -->
-        <item name="android:windowBackground">@color/md_theme_light_background
-        </item> <!-- action mode appears on top of tool bar -->
-        <item name="android:textColorPrimary">@color/md_theme_light_onBackground</item>
-        <item name="android:textColorSecondary">@color/md_theme_light_secondary
-        </item> <!-- used to tint menu/hamburger icons in action bar -->
-        <item name="textColorPrimary">@color/md_theme_light_onBackground</item>
-        <item name="textColorSecondary">@color/md_theme_light_secondary</item>
+        <!-- darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/md_theme_light_secondary</item>
+        <!-- theme UI controls like checkboxes and text fields -->
+        <item name="colorAccent">@color/md_theme_light_primary</item>
+
+        <item name="android:windowBackground">@color/md_theme_light_background</item>
+
+        <!-- action mode appears on top of tool bar -->
+        <item name="android:textColorPrimary">@color/md_theme_light_onSurface</item>
+        <item name="textColorPrimary">@color/md_theme_light_onSurface</item>
+
+        <!-- used to tint menu/hamburger icons in action bar -->
+        <item name="android:textColorSecondary">@color/md_theme_light_onSurface</item>
+        <item name="textColorSecondary">@color/md_theme_light_onSurface</item>
+
+        <item name="android:colorControlNormal">@color/md_theme_light_onSurface</item>
+        <item name="colorControlNormal">@color/md_theme_light_onSurface</item>
 
         <!-- Status bar and navigation bar color -->
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
@@ -94,6 +100,7 @@
         <item name="textAppearanceTitleMedium">@style/Threema.TextAppearance.Subtitle</item>
 
         <!-- local styles -->
+        <item name="appBarLayoutStyle">@style/Threema.AppBarLayoutStyle</item>
         <item name="searchViewStyle">@style/Threema.SearchView</item>
         <item name="toolbarStyle">@style/Threema.ToolbarStyle</item>
         <item name="materialButtonStyle">@style/Threema.MaterialButtonStyle</item>
@@ -102,6 +109,7 @@
         <item name="bottomSheetDialogTheme">@style/Threema.BottomSheetDialog</item>
         <item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>
         <item name="radioButtonStyle">@style/Threema.RadioButton</item>
+        <item name="materialSwitchStyle">@style/Threema.Switch</item>
         <item name="shapeAppearanceMediumComponent">@style/Threema.ShapeAppearance.MediumComponent
         </item>
         <item name="shapeAppearanceLargeComponent">@style/Threema.ShapeAppearance.LargeComponent
@@ -205,6 +213,7 @@
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowAnimationStyle">@style/Threema.Animation.None</item>
         <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
     </style>
 
     <style name="Theme.Threema.BiometricUnlock" parent="Theme.Threema.WithToolbar">
@@ -228,9 +237,11 @@
 
     <!-- AGNOSTIC themes -->
 
-    <style name="SplashTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
+    <style name="Theme.Threema.Splash" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.Threema.WithToolbar</item>
     </style>
 
     <style name="Theme.Threema.Wizard" parent="Theme.Material3.Dark">
@@ -240,8 +251,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="colorPrimary">@color/color_wizard_primary</item>
-        <item name="colorOnPrimary">@color/color_wizard_on_primary</item>
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
         <item name="colorSecondary">@color/md_theme_dark_secondary</item>
@@ -269,21 +280,26 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
 
         <!-- deprecated color mappings -->
-        <item name="colorPrimaryDark">@color/md_theme_dark_secondary
-        </item> <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorAccent">@color/md_theme_dark_primary
-        </item> <!--   theme UI controls like checkboxes and text fields -->
-        <item name="android:windowBackground">@color/md_theme_dark_background
-        </item> <!-- action mode appears on top of tool bar -->
-        <item name="android:textColorPrimary">@color/md_theme_dark_onBackground</item>
-        <item name="android:textColorSecondary">@color/md_theme_dark_secondary
-        </item> <!-- used to tint menu/hamburger icons in action bar -->
-        <item name="textColorPrimary">@color/md_theme_dark_onBackground</item>
-        <item name="textColorSecondary">@color/md_theme_dark_secondary</item>
+        <!-- darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/md_theme_dark_secondary</item>
+        <!-- theme UI controls like checkboxes and text fields -->
+        <item name="colorAccent">@color/md_theme_dark_primary</item>
+        <item name="android:windowBackground">@color/md_theme_dark_background</item>
+
+        <!-- action mode appears on top of tool bar -->
+        <item name="android:textColorPrimary">@color/md_theme_dark_onSurface</item>
+        <item name="textColorPrimary">@color/md_theme_dark_onSurface</item>
+
+        <!-- used to tint menu/hamburger icons in action bar -->
+        <item name="android:textColorSecondary">@color/md_theme_dark_onSurface</item>
+        <item name="textColorSecondary">@color/md_theme_dark_onSurface</item>
+
+        <item name="colorControlNormal">@color/md_theme_dark_onSurface</item>
+        <item name="android:colorControlNormal">@color/md_theme_dark_onSurface</item>
 
         <!-- mapping for system styles -->
-        <item name="textAppearanceHeadlineSmall">@style/Threema.TextAppearance.Headline
-        </item> <!-- ie. dialog titles -->
+        <!-- ie. dialog titles -->
+        <item name="textAppearanceHeadlineSmall">@style/Threema.TextAppearance.Headline</item>
         <item name="textAppearanceBodyLarge">@style/Threema.TextAppearance.BodyLarge</item>
         <item name="textAppearanceBodyMedium">@style/Threema.TextAppearance.BodyMedium</item>
         <item name="textAppearanceBodySmall">@style/Threema.TextAppearance.BodySmall</item>
@@ -362,17 +378,23 @@
         </item>
 
         <!-- deprecated colors mapping -->
-        <item name="colorPrimaryDark">@color/md_theme_dark_secondary
-        </item> <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorAccent">@color/md_theme_dark_primary
-        </item> <!--   theme UI controls like checkboxes and text fields -->
-        <item name="android:windowBackground">@color/md_theme_dark_background
-        </item> <!-- action mode appears on top of tool bar -->
-        <item name="android:textColorPrimary">@color/md_theme_dark_onBackground</item>
-        <item name="android:textColorSecondary">@color/md_theme_dark_secondary
-        </item> <!-- used to tint menu/hamburger icons in action bar -->
-        <item name="textColorPrimary">@color/md_theme_dark_onBackground</item>
-        <item name="textColorSecondary">@color/md_theme_dark_secondary</item>
+        <!-- darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/md_theme_dark_secondary</item>
+        <!-- theme UI controls like checkboxes and text fields -->
+        <item name="colorAccent">@color/md_theme_dark_primary</item>
+
+        <item name="android:windowBackground">@color/md_theme_dark_background</item>
+
+        <!-- action mode appears on top of tool bar -->
+        <item name="android:textColorPrimary">@color/md_theme_dark_onSurface</item>
+        <item name="textColorPrimary">@color/md_theme_dark_onSurface</item>
+
+        <!-- used to tint menu/hamburger icons in action bar -->
+        <item name="android:textColorSecondary">@color/md_theme_dark_onSurface</item>
+        <item name="textColorSecondary">@color/md_theme_dark_onSurface</item>
+
+        <item name="colorControlNormal">@color/md_theme_dark_onSurface</item>
+        <item name="android:colorControlNormal">@color/md_theme_dark_onSurface</item>
 
         <!-- mapping for system styles -->
         <item name="textAppearanceHeadlineSmall">@style/Threema.TextAppearance.Headline

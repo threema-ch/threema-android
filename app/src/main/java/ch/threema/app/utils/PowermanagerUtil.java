@@ -76,7 +76,7 @@ public class PowermanagerUtil {
     private static boolean isCallable(Context context, Intent intent) {
         List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent,
             PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size() > 0;
+        return !list.isEmpty();
     }
 
     private static Intent getPowermanagerIntent(Context context) {

@@ -8,12 +8,12 @@
     <include layout="@layout/background_new_wizard" />
 
     <LinearLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
-        android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
         android:layout_marginBottom="72dp"
         android:orientation="vertical"
+        android:paddingHorizontal="@dimen/wizard_contents_padding_horizontal"
         android:paddingTop="@dimen/wizard_contents_padding">
 
         <TextView
@@ -114,13 +114,13 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
-        android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
-        android:layout_marginBottom="@dimen/wizard_contents_padding"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/wizard_contents_padding_horizontal"
+        android:paddingBottom="@dimen/wizard_contents_padding">
 
         <ch.threema.app.activities.wizard.components.WizardButtonXml
             android:id="@+id/wizard_cancel_compose"

@@ -41,8 +41,8 @@ import androidx.core.graphics.applyCanvas
 import androidx.transition.ChangeClipBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
+import ch.threema.app.ExecutorServices
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.cache.ThumbnailCache
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
@@ -367,7 +367,7 @@ class AudioProgressBarView :
                 this@AudioProgressBarView,
             )
 
-            ThreemaApplication.voiceMessageThumbnailExecutorService.execute(
+            ExecutorServices.voiceMessageThumbnailExecutorService.execute(
                 Thread(
                     waveFormTask,
                     "WaveformGenerator",

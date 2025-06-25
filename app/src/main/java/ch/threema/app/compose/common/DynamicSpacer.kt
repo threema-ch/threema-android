@@ -34,25 +34,25 @@ import ch.threema.app.R
 
 @Composable
 fun DynamicSpacerSize1() {
-    Spacer(Modifier.size(dimensionResource(R.dimen.spacing_one_grid_unit)))
+    Spacer(Modifier.size(dimensionResource(R.dimen.grid_unit_x1)))
 }
 
 @Composable
 fun DynamicSpacerSize1_5() {
-    Spacer(Modifier.size(dimensionResource(R.dimen.spacing_one_and_a_half_grid_unit)))
+    Spacer(Modifier.size(dimensionResource(R.dimen.grid_unit_x1_5)))
 }
 
 @Composable
 fun DynamicSpacerSize2() {
-    Spacer(Modifier.size(dimensionResource(R.dimen.spacing_two_grid_unit)))
+    Spacer(Modifier.size(dimensionResource(R.dimen.grid_unit_x2)))
 }
 
 @Composable
 fun DynamicSpacerSize3() {
-    Spacer(Modifier.size(dimensionResource(R.dimen.spacing_three_grid_unit)))
+    Spacer(Modifier.size(dimensionResource(R.dimen.grid_unit_x3)))
 }
 
 @Composable
 fun DynamicSpacerSize4() {
-    Spacer(Modifier.size(dimensionResource(R.dimen.spacing_four_grid_unit)))
+    Spacer(Modifier.size(dimensionResource(R.dimen.grid_unit_x4)))
 }

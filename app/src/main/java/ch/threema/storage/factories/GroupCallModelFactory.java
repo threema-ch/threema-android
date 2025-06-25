@@ -39,13 +39,13 @@ import java.util.List;
 
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.GroupCallModel;
 
 public class GroupCallModelFactory extends ModelFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupCallModelFactory");
 
-    public GroupCallModelFactory(DatabaseServiceNew databaseService) {
+    public GroupCallModelFactory(DatabaseService databaseService) {
         super(databaseService, GroupCallModel.TABLE);
     }
 
@@ -74,7 +74,7 @@ public class GroupCallModelFactory extends ModelFactory {
             GroupCallModel.COLUMN_STARTED_AT,
             GroupCallModel.COLUMN_PROCESSED_AT,
         };
-        Cursor cursor = databaseService.getReadableDatabase()
+        Cursor cursor = getReadableDatabase()
             .query(getTableName(), columns, null, null, null, null, null);
         try (cursor) {
             List<GroupCallModel> calls = convertList(cursor);
@@ -97,7 +97,7 @@ public class GroupCallModelFactory extends ModelFactory {
         contentValues.put(GroupCallModel.COLUMN_PROCESSED_AT, call.getProcessedAt());
 
         try {
-            long id = databaseService.getWritableDatabase()
+            long id = getWritableDatabase()
                 .insertWithOnConflict(getTableName(), null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
             logger.debug("Insert or update call: {}", id);
         } catch (SQLiteException e) {
@@ -107,7 +107,7 @@ public class GroupCallModelFactory extends ModelFactory {
 
     public void delete(GroupCallModel call) {
         try {
-            int count = databaseService.getWritableDatabase().delete(
+            int count = getWritableDatabase().delete(
                 getTableName(),
                 GroupCallModel.COLUMN_CALL_ID + "=?",
                 new String[]{call.getCallId()}
@@ -153,6 +153,6 @@ public class GroupCallModelFactory extends ModelFactory {
                 ? null
                 : new GroupCallModel(protocolVersion, callId, groupId, baseUrl, gck, startedAt, processedAt);
         };
-        return new CursorHelper(cursor, columnIndexCache).current(converter);
+        return new CursorHelper(cursor, getColumnIndexCache()).current(converter);
     }
 }

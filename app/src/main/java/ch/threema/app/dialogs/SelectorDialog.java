@@ -103,20 +103,12 @@ public class SelectorDialog extends ThreemaDialogFragment {
         default void onCancel(String tag) {
         }
 
-        ;
-
         default void onNo(String tag) {
         }
-
-        ;
     }
 
     public interface SelectorDialogInlineClickListener extends Parcelable {
         void onClick(String tag, int which, Object data);
-
-        void onCancel(String tag);
-
-        void onNo(String tag);
     }
 
     @Override
@@ -130,9 +122,7 @@ public class SelectorDialog extends ThreemaDialogFragment {
     public void onCancel(@NonNull DialogInterface dialogInterface) {
         super.onCancel(dialogInterface);
 
-        if (inlineCallback != null) {
-            inlineCallback.onCancel(this.getTag());
-        } else {
+        if (inlineCallback == null) {
             callback.onCancel(this.getTag());
         }
     }
@@ -157,6 +147,7 @@ public class SelectorDialog extends ThreemaDialogFragment {
         if (title != null) {
             EmojiTextView emojiTextView = new EmojiTextView(new ContextThemeWrapper(getContext(), R.style.MaterialAlertDialog_Material3_Title_Text));
             emojiTextView.setText(title);
+            emojiTextView.setSingleLine(false);
             emojiTextView.setMaxLines(2);
             int padding = getResources().getDimensionPixelSize(R.dimen.edittext_padding);
             int paddingRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
@@ -206,9 +197,7 @@ public class SelectorDialog extends ThreemaDialogFragment {
         if (negative != null) {
             builder.setNegativeButton(negative, (dialog, which) -> {
                 dialog.dismiss();
-                if (inlineCallback != null) {
-                    inlineCallback.onNo(fragmentTag);
-                } else {
+                if (inlineCallback == null) {
                     callback.onNo(fragmentTag);
                 }
             });

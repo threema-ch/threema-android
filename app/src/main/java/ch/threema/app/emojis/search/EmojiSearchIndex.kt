@@ -26,7 +26,7 @@ import android.database.sqlite.SQLiteConstraintException
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import au.com.bytecode.opencsv.CSVReader
-import ch.threema.app.services.PreferenceService
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.base.utils.LoggingUtil
 import java.io.File
 import java.io.IOException

@@ -36,6 +36,8 @@ import ch.threema.base.utils.LoggingUtil
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+private val logger = LoggingUtil.getThreemaLogger("VideoTimelineThumbnailTask")
+
 class VideoTimelineThumbnailTask(
     private val context: Context,
     private val mediaItem: MediaItem,
@@ -44,8 +46,6 @@ class VideoTimelineThumbnailTask(
     private val targetHeight: Int,
     private val listener: VideoTimelineListener,
 ) : Runnable {
-    private val logger = LoggingUtil.getThreemaLogger("VideoTimelineThumbnailTask")
-
     interface VideoTimelineListener {
         fun onMetadataReady()
         fun onError(errorMessage: String?)

@@ -1,5 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,76 +11,82 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <View
-        android:id="@+id/divider"
+    <FrameLayout
+        android:id="@+id/bottom_container_animation_parent"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="@dimen/wizard_footer_height"
-        android:background="?android:attr/dividerHorizontal" />
+        android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/wizard_footer_height"
-        android:layout_gravity="bottom">
-
-        <FrameLayout
-            android:layout_width="wrap_content"
+        <!-- Ignoring uselessParent because we need this wrapper view to apply insets padding -->
+        <RelativeLayout
+            android:id="@+id/bottom_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/strip">
+            android:layout_gravity="bottom"
+            android:background="?android:attr/colorBackground"
+            tools:ignore="UselessParent">
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/dividerHorizontal" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/strip">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/copy_ballot"
+                    style="@style/Threema.MaterialButton.Borderless.Wizard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:maxWidth="250dp"
+                    android:text="@string/ballot_copy"
+                    android:visibility="visible"
+                    app:icon="@drawable/ic_content_copy_outline"
+                    app:iconGravity="start" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/prev_page_button"
+                    style="@style/Threema.MaterialButton.Borderless.Wizard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:maxWidth="250dp"
+                    android:text="@string/back"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_keyboard_arrow_left"
+                    app:iconGravity="start" />
+
+            </FrameLayout>
+
+            <ch.threema.app.ui.StepPagerStrip
+                android:id="@+id/strip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="10dp"
+                app:nextColor="?attr/colorOnSurface"
+                app:previousColor="?attr/colorOnSurface"
+                app:selectedColor="?attr/colorPrimary" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/copy_ballot"
+                android:id="@+id/next_page_button"
                 style="@style/Threema.MaterialButton.Borderless.Wizard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center_vertical"
+                android:layout_alignParentRight="true"
                 android:maxWidth="250dp"
-                android:text="@string/ballot_copy"
+                android:text="@string/next"
                 android:visibility="visible"
-                app:icon="@drawable/ic_content_copy_outline"
-                app:iconGravity="start" />
+                app:icon="@drawable/ic_keyboard_arrow_right"
+                app:iconGravity="end" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/prev_page_button"
-                style="@style/Threema.MaterialButton.Borderless.Wizard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center_vertical"
-                android:maxWidth="250dp"
-                android:text="@string/back"
-                android:visibility="gone"
-                app:icon="@drawable/ic_keyboard_arrow_left"
-                app:iconGravity="start" />
+        </RelativeLayout>
 
-        </FrameLayout>
-
-        <ch.threema.app.ui.StepPagerStrip
-            android:id="@+id/strip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:padding="10dp"
-            app:nextColor="?attr/colorOnSurface"
-            app:previousColor="?attr/colorOnSurface"
-            app:selectedColor="?attr/colorPrimary" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/next_page_button"
-            style="@style/Threema.MaterialButton.Borderless.Wizard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:maxWidth="250dp"
-            android:text="@string/next"
-            android:visibility="visible"
-            app:icon="@drawable/ic_keyboard_arrow_right"
-            app:iconGravity="end" />
-
-    </RelativeLayout>
+    </FrameLayout>
 
 </FrameLayout>

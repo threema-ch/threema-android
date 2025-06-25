@@ -42,7 +42,7 @@ import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.ContactStore;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
 
@@ -53,7 +53,7 @@ import ch.threema.storage.models.ContactModel;
 public class DatabaseContactStore implements ContactStore {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseContactStore");
 
-    private final @NonNull DatabaseServiceNew databaseServiceNew;
+    private final @NonNull DatabaseService databaseService;
 
     /**
      * This map contains the special contacts.
@@ -67,10 +67,10 @@ public class DatabaseContactStore implements ContactStore {
     private final @NonNull Map<String, BasicContact> contactCache = new HashMap<>();
 
     public DatabaseContactStore(
-        @NonNull DatabaseServiceNew databaseServiceNew,
+        @NonNull DatabaseService databaseService,
         @NonNull ServerAddressProvider serverAddressProvider
     ) {
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
 
         try {
             // Add special contact '*3MAPUSH'
@@ -90,15 +90,11 @@ public class DatabaseContactStore implements ContactStore {
 
     @Override
     public @Nullable ContactModel getContactForIdentity(@NonNull String identity) {
-        return this.databaseServiceNew.getContactModelFactory().getByIdentity(identity);
-    }
-
-    public @Nullable ContactModel getContactModelForPublicKey(final byte[] publicKey) {
-        return this.databaseServiceNew.getContactModelFactory().getByPublicKey(publicKey);
+        return this.databaseService.getContactModelFactory().getByIdentity(identity);
     }
 
     public @Nullable ContactModel getContactModelForLookupKey(final String lookupKey) {
-        return this.databaseServiceNew.getContactModelFactory().getByLookupKey(lookupKey);
+        return this.databaseService.getContactModelFactory().getByLookupKey(lookupKey);
     }
 
     @Override
@@ -133,7 +129,7 @@ public class DatabaseContactStore implements ContactStore {
         ContactModel contactModel = (ContactModel) contact;
         boolean isUpdate = false;
 
-        ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();
+        ContactModelFactory contactModelFactory = this.databaseService.getContactModelFactory();
         //get db record
         ContactModel existingModel = contactModelFactory.getByIdentity(contactModel.getIdentity());
 
@@ -186,8 +182,6 @@ public class DatabaseContactStore implements ContactStore {
     }
 
     private void fireOnModifiedContact(final String identity) {
-        ListenerManager.contactListeners.handle(listener -> {
-            listener.onModified(identity);
-        });
+        ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
     }
 }

@@ -35,10 +35,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -63,21 +71,34 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
+import ch.threema.app.compose.common.SpacerVertical
+import ch.threema.app.compose.common.text.conversation.ConversationText
+import ch.threema.app.compose.common.text.conversation.ConversationTextDefaults
+import ch.threema.app.compose.common.text.conversation.MentionFeature
+import ch.threema.app.compose.common.text.conversation.ThreemaTextPreviewProvider
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.ThreemaThemePreview
-import ch.threema.app.compose.theme.customColorScheme
+import ch.threema.app.compose.theme.dimens.GridUnit
+import ch.threema.app.preference.service.PreferenceService.EmojiStyle_ANDROID
+import ch.threema.app.preference.service.PreferenceService.EmojiStyle_DEFAULT
+import ch.threema.app.utils.Toaster
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 class PatternLibraryActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             ThreemaTheme {
                 Scaffold(
+                    contentWindowInsets = WindowInsets.safeDrawing,
                     topBar = {
                         TopAppBar(
-                            modifier = Modifier.shadow(elevation = 8.dp),
+                            windowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
+                                WindowInsetsSides.Horizontal + WindowInsetsSides.Top,
+                            ),
+                            modifier = Modifier.shadow(elevation = GridUnit.x1),
                             title = {
                                 Text("Pattern Library")
                             },
@@ -93,7 +114,7 @@ class PatternLibraryActivity : AppCompatActivity() {
                             },
                         )
                     },
-                ) { padding ->
+                ) { scaffoldContentPadding ->
 
                     val colorCategories: List<ColorSection> = listOf(
                         ColorSection(
@@ -170,16 +191,11 @@ class PatternLibraryActivity : AppCompatActivity() {
                                 MaterialTheme.colorScheme.onErrorContainer to "onErrorContainer",
                             ),
                         ),
-                        ColorSection(
-                            "Custom",
-                            listOf(
-                                MaterialTheme.customColorScheme.messageBubbleContainerReceive to "messageBubbleContainerReceive",
-                            ),
-                        ),
                     )
 
                     LazyColumn(
-                        modifier = Modifier.padding(padding),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = scaffoldContentPadding,
                     ) {
                         item {
                             TopLevelSectionHeader(name = "Color Scheme")
@@ -196,7 +212,7 @@ class PatternLibraryActivity : AppCompatActivity() {
                                     Text(
                                         modifier = Modifier.padding(
                                             vertical = 12.dp,
-                                            horizontal = 16.dp,
+                                            horizontal = GridUnit.x2,
                                         ),
                                         color = MaterialTheme.colorScheme.onSurface,
                                         text = colorSection.name,
@@ -207,7 +223,7 @@ class PatternLibraryActivity : AppCompatActivity() {
                             items(colorSection.colors.size) { index ->
                                 ColorSpot(
                                     modifier = Modifier.padding(
-                                        vertical = 4.dp,
+                                        vertical = GridUnit.x0_5,
                                         horizontal = 12.dp,
                                     ),
                                     color = colorSection.colors[index].first,
@@ -218,19 +234,233 @@ class PatternLibraryActivity : AppCompatActivity() {
 
                         item {
                             Column {
-                                Spacer(modifier = Modifier.height(24.dp))
+                                Spacer(modifier = Modifier.height(GridUnit.x3))
                                 TopLevelSectionHeader(name = "Typography")
                             }
                         }
 
                         item {
                             Text(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                                modifier = Modifier.padding(horizontal = GridUnit.x2, vertical = GridUnit.x2),
                                 text = "Not yet implemented",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontStyle = FontStyle.Italic,
                                 ),
                             )
+                        }
+
+                        item {
+                            TopLevelSectionHeader(name = "Components")
+                        }
+
+                        stickyHeader {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(
+                                            vertical = GridUnit.x2,
+                                            horizontal = GridUnit.x2,
+                                        ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    text = "ThreemaText - Emojis Default",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                            }
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "This text does not contain any emojies.")
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "One emoji at the end: \uD83C\uDF36")
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "\uD83C\uDF36")
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "\uD83C\uDF36\uD83C\uDFD4\uD83D\uDC9A")
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "\uD83C\uDF36\uD83C\uDFD4\uD83D\uDC9A\uD83D\uDC1F")
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "Just \uD83C\uDF36 in \uD83D\uDC1F between \uD83D\uDC9A the text.")
+                        }
+
+                        item {
+                            SpacerVertical(GridUnit.x2)
+                        }
+
+                        stickyHeader {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(
+                                        vertical = GridUnit.x2,
+                                        horizontal = GridUnit.x2,
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    text = "ThreemaText - Emojis Android",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                            }
+                        }
+
+                        item {
+                            SpacerVertical(GridUnit.x1)
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "This text does not contain any emojies.", useAndroidEmojis = true)
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "One emoji at the end: \uD83C\uDF36", useAndroidEmojis = true)
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "\uD83C\uDF36", useAndroidEmojis = true)
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "\uD83C\uDF36\uD83C\uDFD4\uD83D\uDC9A", useAndroidEmojis = true)
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(rawInput = "\uD83C\uDF36\uD83C\uDFD4\uD83D\uDC9A\uD83D\uDC1F", useAndroidEmojis = true)
+                        }
+
+                        item {
+                            ThreemaTextEmojiShowcase(
+                                rawInput = "Just \uD83C\uDF36 in \uD83D\uDC1F between \uD83D\uDC9A the text.",
+                                useAndroidEmojis = true,
+                            )
+                        }
+
+                        item {
+                            SpacerVertical(GridUnit.x2)
+                        }
+
+                        stickyHeader {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(
+                                        vertical = GridUnit.x2,
+                                        horizontal = GridUnit.x2,
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    text = "ThreemaText - Mentions (clickable)",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                            }
+                        }
+
+                        item {
+                            SpacerVertical(GridUnit.x1)
+                        }
+
+                        item {
+                            ThreemaTextMentionShowcase(rawInput = "No mentions at all in this text")
+                        }
+                        item {
+                            ThreemaTextMentionShowcase(rawInput = "Hey @[0123ABCD], how are you?")
+                        }
+                        item {
+                            ThreemaTextMentionShowcase(rawInput = "Hey @[@@@@@@@@], how are you all?")
+                        }
+                        item {
+                            ThreemaTextMentionShowcase(rawInput = "Hey @[0123ABCD] and @[3210DCBA], how are the two of you?")
+                        }
+                        item {
+                            ThreemaTextMentionShowcase(rawInput = "@[0123ABCD] Mention at start")
+                        }
+                        item {
+                            ThreemaTextMentionShowcase(rawInput = "Mention at end @[0123ABCD]")
+                        }
+                        item {
+                            ThreemaTextMentionShowcase(
+                                rawInput = "Chained mentions: @[0123ABCD] @[3210DCBA] @[@@@@@@@@] @[0123ABCD] @[3210DCBA] @[@@@@@@@@] " +
+                                    "@[0123ABCD] @[3210DCBA] @[@@@@@@@@] @[0123ABCD] ",
+                            )
+                        }
+                        item {
+                            ThreemaTextMentionShowcase(rawInput = "Mention with an asterisks identity: @[*0123456]")
+                        }
+
+                        item {
+                            SpacerVertical(GridUnit.x2)
+                        }
+
+                        stickyHeader {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(
+                                            vertical = GridUnit.x2,
+                                            horizontal = GridUnit.x2,
+                                        ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    text = "ThreemaText - All Features",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                            }
+                        }
+
+                        item {
+                            SpacerVertical(GridUnit.x1)
+                        }
+
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .padding(
+                                        vertical = GridUnit.x1,
+                                        horizontal = GridUnit.x2,
+                                    ),
+                            ) {
+                                ConversationText(
+                                    modifier = Modifier.padding(horizontal = GridUnit.x0_5),
+                                    rawInput = "Just \uD83C\uDF36 emojis \uD83D\uDC1F between \uD83D\uDC9A ongoing text also mentioning " +
+                                        "@[0123ABCD] @[3210DCBA] \uD83C\uDFD4 @[@@@@@@@@] and not to forget @[*0123456] \uD83C\uDFD4 ",
+                                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    ),
+                                    emojiSettings = ConversationTextDefaults.EmojiSettings,
+                                    mentionFeature = MentionFeature.On(
+                                        ownIdentity = "01234567",
+                                        identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
+                                    ),
+                                    onClickedMention = { identity ->
+                                        Toaster.showToast(
+                                            message = "Clicked on mention for identity $identity",
+                                        )
+                                    },
+                                )
+                            }
+                        }
+
+                        item {
+                            SpacerVertical(GridUnit.x2)
                         }
                     }
                 }
@@ -247,7 +477,7 @@ class PatternLibraryActivity : AppCompatActivity() {
             modifier = modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceContainer)
-                .padding(vertical = 24.dp, horizontal = 16.dp),
+                .padding(vertical = GridUnit.x3, horizontal = GridUnit.x2),
             text = name,
             style = MaterialTheme.typography.headlineSmall,
         )
@@ -286,10 +516,10 @@ private fun ColorSpot(
 
         Box(
             modifier = Modifier
-                .padding(all = 8.dp)
+                .padding(all = GridUnit.x1)
                 .size(size = 100.dp)
                 .shadow(
-                    elevation = 4.dp,
+                    elevation = GridUnit.x0_5,
                     shape = tearShape,
                 )
                 .clip(tearShape)
@@ -303,7 +533,7 @@ private fun ColorSpot(
                 .background(color),
         ) { }
 
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(GridUnit.x3))
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -320,6 +550,71 @@ private fun ColorSpot(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ThreemaTextEmojiShowcase(
+    rawInput: String,
+    useAndroidEmojis: Boolean = false,
+) {
+    Box(
+        modifier = Modifier
+            .padding(
+                vertical = GridUnit.x1,
+                horizontal = GridUnit.x2,
+            )
+            .clip(
+                RoundedCornerShape(GridUnit.x0_5),
+            )
+            .background(
+                color = MaterialTheme.colorScheme.surfaceContainer,
+            ),
+    ) {
+        ConversationText(
+            modifier = Modifier.padding(horizontal = GridUnit.x0_5),
+            rawInput = rawInput,
+            textStyle = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            emojiSettings = ConversationTextDefaults.EmojiSettings.copy(
+                style = when (useAndroidEmojis) {
+                    true -> EmojiStyle_ANDROID
+                    false -> EmojiStyle_DEFAULT
+                },
+            ),
+            mentionFeature = MentionFeature.On(
+                ownIdentity = "01234567",
+                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun ThreemaTextMentionShowcase(rawInput: String) {
+    Box(
+        modifier = Modifier
+            .padding(
+                vertical = GridUnit.x1,
+                horizontal = GridUnit.x2,
+            ),
+    ) {
+        ConversationText(
+            modifier = Modifier.padding(horizontal = GridUnit.x0_5),
+            rawInput = rawInput,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            ),
+            onClickedMention = { identity ->
+                Toaster.showToast(
+                    message = "Clicked on mention for identity $identity",
+                )
+            },
+            mentionFeature = MentionFeature.On(
+                ownIdentity = "01234567",
+                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
+            ),
+        )
     }
 }
 

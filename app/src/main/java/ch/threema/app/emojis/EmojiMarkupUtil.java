@@ -170,10 +170,10 @@ public class EmojiMarkupUtil {
 
                 if (ConfigUtils.isDefaultEmojiStyle() || overrideEmojiStyleSetting) {
                     for (Pair<EmojiParser.ParseResult, Integer> result : results) {
-                        Drawable drawable = EmojiManager.getInstance(context).getEmojiDrawable(result.first.coords);
+                        EmojiDrawable emojiDrawable = EmojiManager.getInstance(context).getEmojiDrawableAsync(result.first.coords);
 
-                        if (drawable != null) {
-                            builder.setSpan(new EmojiImageSpan(drawable, textView, scaleFactor),
+                        if (emojiDrawable != null) {
+                            builder.setSpan(new EmojiImageSpan(emojiDrawable, textView, scaleFactor),
                                 result.second, result.second + result.first.length,
                                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         }

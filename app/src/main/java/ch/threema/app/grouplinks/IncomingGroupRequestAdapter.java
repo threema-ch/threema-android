@@ -44,7 +44,7 @@ import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import java8.util.Optional;
@@ -58,7 +58,7 @@ public class IncomingGroupRequestAdapter extends RecyclerView.Adapter<IncomingGr
     private List<IncomingGroupJoinRequestModel> groupRequestModels;
     private final IncomingGroupRequestViewModel viewModel;
     private final ContactService contactService;
-    private final DatabaseServiceNew databaseServiceNew;
+    private final DatabaseService databaseService;
 
     IncomingGroupRequestAdapter(Context context, IncomingGroupRequestViewModel viewModel) throws ThreemaException {
         this.context = context;
@@ -69,7 +69,7 @@ public class IncomingGroupRequestAdapter extends RecyclerView.Adapter<IncomingGr
             throw new ThreemaException("Missing serviceManager");
         }
         this.contactService = serviceManager.getContactService();
-        this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
+        this.databaseService = serviceManager.getDatabaseService();
     }
 
     static class IncomingGroupRequestViewHolder extends RecyclerView.ViewHolder {
@@ -120,7 +120,7 @@ public class IncomingGroupRequestAdapter extends RecyclerView.Adapter<IncomingGr
             )
         );
 
-        Optional<GroupInviteModel> groupInviteModel = databaseServiceNew.getGroupInviteModelFactory()
+        Optional<GroupInviteModel> groupInviteModel = databaseService.getGroupInviteModelFactory()
             .getById(groupJoinRequestModel.getGroupInviteId());
 
         if (groupInviteModel.isPresent()) {

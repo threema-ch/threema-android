@@ -28,8 +28,8 @@ import androidx.work.BackoffPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.workers.AutostartWorker
+import ch.threema.app.workers.WorkerNames
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.TimeUnit
 
@@ -43,7 +43,7 @@ class AutoStartNotifyReceiver : BroadcastReceiver() {
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
                 .build()
             WorkManager.getInstance(context)
-                .enqueueUniqueWork(ThreemaApplication.WORKER_AUTOSTART, ExistingWorkPolicy.REPLACE, workRequest)
+                .enqueueUniqueWork(WorkerNames.WORKER_AUTOSTART, ExistingWorkPolicy.REPLACE, workRequest)
         }
     }
 }

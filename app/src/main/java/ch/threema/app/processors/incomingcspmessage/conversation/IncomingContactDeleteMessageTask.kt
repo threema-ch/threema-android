@@ -29,9 +29,8 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingContactDeleteMessageTask")
+private val logger = LoggingUtil.getThreemaLogger("IncomingContactDeleteMessageTask")
 
 class IncomingContactDeleteMessageTask(
     message: DeleteMessage,

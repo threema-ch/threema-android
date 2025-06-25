@@ -44,7 +44,6 @@ import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.utils.ContactUtil;
@@ -69,7 +68,6 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
     private static final String ARG_GROUP_ID = "groupId";
 
     private static final String BUNDLE_CROPPED_AVATAR_FILE = "cropped_avatar_file";
-    ;
 
     public static int CONTACT_AVATAR_HEIGHT_PX = 512;
     public static int CONTACT_AVATAR_WIDTH_PX = 512;
@@ -222,7 +220,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
         ContactService contactService = null;
         try {
             contactService = ThreemaApplication.getServiceManager().getContactService();
-        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+        } catch (MasterKeyLockedException e) {
             logger.error("Exception", e);
         }
 

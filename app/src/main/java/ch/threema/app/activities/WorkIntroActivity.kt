@@ -24,6 +24,7 @@ package ch.threema.app.activities
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
@@ -31,6 +32,9 @@ import androidx.core.text.HtmlCompat
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.activities.wizard.components.WizardButtonXml
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
+import ch.threema.app.ui.applyDeviceInsetsAsMargin
 import ch.threema.app.utils.LinkifyUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -53,6 +57,20 @@ class WorkIntroActivity : ThreemaActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_work_intro)
+
+        findViewById<View>(R.id.work_intro_login).applyDeviceInsetsAsMargin(
+            insetSides = InsetSides.top(),
+            ownMargin = SpacingValues.top(R.dimen.grid_unit_x2),
+        )
+        findViewById<View>(R.id.work_intro_consumer_notice_icl).applyDeviceInsetsAsMargin(
+            insetSides = InsetSides.bottom(),
+            ownMargin = SpacingValues(
+                top = R.dimen.grid_unit_x6,
+                left = R.dimen.grid_unit_x2,
+                right = R.dimen.grid_unit_x2,
+                bottom = R.dimen.grid_unit_x2,
+            ),
+        )
 
         initLoginButton()
         initWorkInfoLink()

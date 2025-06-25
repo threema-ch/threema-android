@@ -66,11 +66,11 @@ import ch.threema.app.asynctasks.AddOrUpdateWorkIdentityBackgroundTask;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.glide.AvatarOptions;
-import ch.threema.app.listeners.ContactTypingListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.license.LicenseService;
@@ -103,7 +103,7 @@ import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.factories.ContactModelFactory;
@@ -124,7 +124,7 @@ public class ContactServiceImpl implements ContactService {
     private final Context context;
     private final AvatarCacheService avatarCacheService;
     private final DatabaseContactStore contactStore;
-    private final DatabaseServiceNew databaseServiceNew;
+    private final DatabaseService databaseService;
     private final UserService userService;
     private final IdentityStore identityStore;
     private final PreferenceService preferenceService;
@@ -178,7 +178,7 @@ public class ContactServiceImpl implements ContactService {
         Context context,
         DatabaseContactStore contactStore,
         AvatarCacheService avatarCacheService,
-        DatabaseServiceNew databaseServiceNew,
+        DatabaseService databaseService,
         UserService userService,
         IdentityStore identityStore,
         PreferenceService preferenceService,
@@ -197,7 +197,7 @@ public class ContactServiceImpl implements ContactService {
         this.context = context;
         this.avatarCacheService = avatarCacheService;
         this.contactStore = contactStore;
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.userService = userService;
         this.identityStore = identityStore;
         this.preferenceService = preferenceService;
@@ -219,7 +219,7 @@ public class ContactServiceImpl implements ContactService {
     @NonNull
     public ContactModel getMe() {
         if (this.me == null && this.userService.getIdentity() != null) {
-            this.me = new ContactModel(
+            this.me = ContactModel.create(
                 this.userService.getIdentity(),
                 this.userService.getPublicKey()
             );
@@ -291,7 +291,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @NonNull
     public List<ContactModel> find(Filter filter) {
-        ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();
+        ContactModelFactory contactModelFactory = this.databaseService.getContactModelFactory();
         // TODO(ANDR-XXXX): move this to database factory!
         QueryBuilder queryBuilder = new QueryBuilder();
         List<String> placeholders = new ArrayList<>();
@@ -464,7 +464,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public int countIsWork() {
         int count = 0;
-        Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery(
+        Cursor c = this.databaseService.getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM contacts " +
                 "WHERE " + ContactModel.COLUMN_IS_WORK + " = 1 " +
                 "AND " + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + " = 0", null);
@@ -522,7 +522,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Nullable
     public List<String> getSynchronizedIdentities() {
-        Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery("" +
+        Cursor c = this.databaseService.getReadableDatabase().rawQuery("" +
                 "SELECT identity FROM contacts " +
                 "WHERE androidContactId IS NOT NULL AND androidContactId != ?",
             new String[]{""});
@@ -542,7 +542,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Nullable
     public List<String> getIdentitiesByVerificationLevel(VerificationLevel verificationLevel) {
-        Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery("" +
+        Cursor c = this.databaseService.getReadableDatabase().rawQuery("" +
                 "SELECT identity FROM contacts " +
                 "WHERE verificationLevel = ?",
             new String[]{String.valueOf(verificationLevel.getCode())});
@@ -557,12 +557,6 @@ public class ContactServiceImpl implements ContactService {
         }
 
         return null;
-    }
-
-    @Override
-    @Nullable
-    public ContactModel getByPublicKey(byte[] publicKey) {
-        return this.contactStore.getContactModelForPublicKey(publicKey);
     }
 
     @Override
@@ -591,12 +585,7 @@ public class ContactServiceImpl implements ContactService {
             }
         }
 
-        ListenerManager.contactTypingListeners.handle(new ListenerManager.HandleListener<ContactTypingListener>() {
-            @Override
-            public void handle(ContactTypingListener listener) {
-                listener.onContactIsTyping(contact, isTyping);
-            }
-        });
+        ListenerManager.contactTypingListeners.handle(listener -> listener.onContactIsTyping(contact, isTyping));
 
         // schedule a new timer task to reset typing state after timeout if necessary
         if (isTyping) {
@@ -608,12 +597,7 @@ public class ContactServiceImpl implements ContactService {
                             typingIdentities.remove(identity);
                         }
 
-                        ListenerManager.contactTypingListeners.handle(new ListenerManager.HandleListener<ContactTypingListener>() {
-                            @Override
-                            public void handle(ContactTypingListener listener) {
-                                listener.onContactIsTyping(contact, false);
-                            }
-                        });
+                        ListenerManager.contactTypingListeners.handle(listener -> listener.onContactIsTyping(contact, false));
 
                         synchronized (typingTimerTasks) {
                             typingTimerTasks.remove(identity);
@@ -651,7 +635,7 @@ public class ContactServiceImpl implements ContactService {
                 sendTypingIndicator = false;
                 break;
             default:
-                sendTypingIndicator = preferenceService.isTypingIndicator();
+                sendTypingIndicator = preferenceService.isTypingIndicatorEnabled();
                 break;
         }
 
@@ -721,7 +705,7 @@ public class ContactServiceImpl implements ContactService {
         if (getByIdentity(identity) != null) {
             Date lastUpdate = new Date();
             invalidateCache(identity);
-            databaseServiceNew.getContactModelFactory().setLastUpdate(identity, lastUpdate);
+            databaseService.getContactModelFactory().setLastUpdate(identity, lastUpdate);
             ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
         } else {
             logger.warn(
@@ -731,11 +715,22 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
+    @Nullable
+    @Override
+    public Date getLastUpdate(@NonNull String identity) {
+        ContactModel contactModel = getByIdentity(identity);
+        if (contactModel != null) {
+            return contactModel.getLastUpdate();
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void clearLastUpdate(@NonNull String identity) {
         if (getByIdentity(identity) != null) {
             invalidateCache(identity);
-            databaseServiceNew.getContactModelFactory().setLastUpdate(identity, null);
+            databaseService.getContactModelFactory().setLastUpdate(identity, null);
             ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
         }
     }
@@ -774,7 +769,7 @@ public class ContactServiceImpl implements ContactService {
             };
         } else {
             boolean isInGroup = false;
-            Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery(
+            Cursor c = this.databaseService.getReadableDatabase().rawQuery(
                 DatabaseUtil.IS_GROUP_MEMBER_QUERY,
                 identity
             );
@@ -893,7 +888,7 @@ public class ContactServiceImpl implements ContactService {
             contact,
             this,
             serviceManager,
-            this.databaseServiceNew,
+            this.databaseService,
             this.identityStore,
             this.blockedIdentitiesService,
             serviceManager.getModelRepositories().getContacts()
@@ -1367,6 +1362,7 @@ public class ContactServiceImpl implements ContactService {
         );
     }
 
+    @Override
     @NonNull
     public Set<String> getRemovedContacts() {
         /*
@@ -1377,7 +1373,7 @@ public class ContactServiceImpl implements ContactService {
         final @NonNull String query = "SELECT " + ContactModel.COLUMN_IDENTITY + " FROM " + ContactModel.TABLE + " AS co WHERE "
             + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + " = " + AcquaintanceLevel.GROUP.ordinal() + " AND NOT EXISTS ("
             + "SELECT 1 FROM " + GroupMemberModel.TABLE + " AS gm WHERE gm." + GroupMemberModel.COLUMN_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY + ");";
-        final @Nullable Cursor cursor = this.databaseServiceNew
+        final @Nullable Cursor cursor = this.databaseService
             .getReadableDatabase()
             .rawQuery(query);
         if (cursor == null) {

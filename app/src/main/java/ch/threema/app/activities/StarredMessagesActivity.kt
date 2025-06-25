@@ -46,6 +46,7 @@ import ch.threema.app.fragments.ComposeMessageFragment.EXTRA_OVERRIDE_BACK_TO_HO
 import ch.threema.app.globalsearch.GlobalSearchAdapter
 import ch.threema.app.globalsearch.GlobalSearchViewModel
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
@@ -53,11 +54,13 @@ import ch.threema.app.services.MessageServiceImpl.FILTER_CHATS
 import ch.threema.app.services.MessageServiceImpl.FILTER_GROUPS
 import ch.threema.app.services.MessageServiceImpl.FILTER_INCLUDE_ARCHIVED
 import ch.threema.app.services.MessageServiceImpl.FILTER_STARRED_ONLY
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.ui.EmptyRecyclerView
 import ch.threema.app.ui.EmptyView
+import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SelectorDialogItem
+import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.ThreemaSearchView
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.logScreenVisibility
@@ -148,6 +151,13 @@ class StarredMessagesActivity :
         }
     }
 
+    override fun handleDeviceInsets() {
+        super.handleDeviceInsets()
+        findViewById<EmptyRecyclerView>(R.id.recycler_chats).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.lbr(),
+        )
+    }
+
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
         if (!super.initActivity(savedInstanceState)) {
             return false
@@ -169,48 +179,50 @@ class StarredMessagesActivity :
                     }
                 }
                 bar.setOnClickListener { searchView?.isIconified = false }
-                ConfigUtils.adjustSearchBarTextViewMargin(this, bar)
             }
         }
+
         chatsAdapter = GlobalSearchAdapter(
             this,
             Glide.with(this),
             R.layout.item_starred_messages,
             50,
         )
-        chatsAdapter?.setOnClickItemListener(object : GlobalSearchAdapter.OnClickItemListener {
-            override fun onClick(
-                messageModel: AbstractMessageModel?,
-                itemView: View,
-                position: Int,
-            ) {
-                if (actionMode != null) {
-                    logger.info("Starred message selection toggled")
+        chatsAdapter?.setOnClickItemListener(
+            object : GlobalSearchAdapter.OnClickItemListener {
+                override fun onClick(
+                    messageModel: AbstractMessageModel?,
+                    itemView: View,
+                    position: Int,
+                ) {
+                    if (actionMode != null) {
+                        logger.info("Starred message selection toggled")
+                        chatsAdapter?.toggleChecked(position)
+                        if ((chatsAdapter?.checkedItemsCount ?: 0) > 0) {
+                            actionMode?.invalidate()
+                        } else {
+                            actionMode?.finish()
+                        }
+                    } else {
+                        logger.info("Starred message clicked")
+                        showMessage(messageModel)
+                    }
+                }
+
+                override fun onLongClick(
+                    messageModel: AbstractMessageModel?,
+                    itemView: View,
+                    position: Int,
+                ): Boolean {
+                    actionMode?.finish()
                     chatsAdapter?.toggleChecked(position)
                     if ((chatsAdapter?.checkedItemsCount ?: 0) > 0) {
-                        actionMode?.invalidate()
-                    } else {
-                        actionMode?.finish()
+                        actionMode = startSupportActionMode(actionModeCallback)
                     }
-                } else {
-                    logger.info("Starred message clicked")
-                    showMessage(messageModel)
+                    return true
                 }
-            }
-
-            override fun onLongClick(
-                messageModel: AbstractMessageModel?,
-                itemView: View,
-                position: Int,
-            ): Boolean {
-                actionMode?.finish()
-                chatsAdapter?.toggleChecked(position)
-                if ((chatsAdapter?.checkedItemsCount ?: 0) > 0) {
-                    actionMode = startSupportActionMode(actionModeCallback)
-                }
-                return true
-            }
-        })
+            },
+        )
         val recyclerView = findViewById<EmptyRecyclerView>(R.id.recycler_chats)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.itemAnimator = DefaultItemAnimator()
@@ -224,6 +236,11 @@ class StarredMessagesActivity :
         recyclerView.emptyView = emptyView
         emptyView.setLoading(true)
         recyclerView.adapter = chatsAdapter
+
+        emptyView.applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.lbr(),
+            ownPadding = SpacingValues.all(R.dimen.grid_unit_x2),
+        )
 
         globalSearchViewModel =
             ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->
@@ -261,7 +278,7 @@ class StarredMessagesActivity :
             it.setOnCloseListener {
                 searchBar?.setHint(R.string.starred_messages)
                 sortMenuItem?.isVisible = true
-                removeStarsMenuItem?.isVisible = (((chatsAdapter?.itemCount ?: 0) > 0))
+                removeStarsMenuItem?.isVisible = (chatsAdapter?.itemCount ?: 0) > 0
                 false
             }
         }
@@ -285,7 +302,7 @@ class StarredMessagesActivity :
                 .show(supportFragmentManager, "rem")
             false
         }
-        removeStarsMenuItem?.isVisible = (((chatsAdapter?.itemCount ?: 0) > 0))
+        removeStarsMenuItem?.isVisible = (chatsAdapter?.itemCount ?: 0) > 0
         return true
     }
 

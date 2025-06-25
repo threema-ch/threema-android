@@ -70,11 +70,13 @@ import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.CheckableConstraintLayout;
 import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
@@ -159,6 +161,11 @@ public abstract class RecipientListFragment extends ListFragment implements List
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            view,
+            InsetSides.horizontal()
+        );
+
         getListView().setDividerHeight(0);
         getListView().setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
 
@@ -166,13 +173,10 @@ public abstract class RecipientListFragment extends ListFragment implements List
             View headerView = View.inflate(activity, R.layout.header_recipient_list, null);
             ((ImageView) headerView.findViewById(R.id.avatar_view)).setImageResource(getAddIcon());
             ((TextView) headerView.findViewById(R.id.text_view)).setText(getAddText());
-            headerView.findViewById(R.id.container).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = getAddIntent();
-                    if (intent != null) {
-                        startActivity(intent);
-                    }
+            headerView.findViewById(R.id.container).setOnClickListener(v -> {
+                Intent intent = getAddIntent();
+                if (intent != null) {
+                    startActivity(intent);
                 }
             });
             getListView().addHeaderView(headerView);
@@ -191,52 +195,8 @@ public abstract class RecipientListFragment extends ListFragment implements List
                 }
             });
 
-            if (multiSelectIdentity) {
-                floatingActionButton.setIcon(getResources().getDrawable(R.drawable.ic_keyboard_arrow_right));
-                floatingActionButton.setText(R.string.label_continue);
-
-                if (preferenceService.getMultipleRecipientsTooltipCount() < 1) {
-                    preferenceService.incrementMultipleRecipientsTooltipCount();
-
-                    getListView().post(() -> {
-                        try {
-                            int[] location = new int[2];
-                            getListView().getLocationOnScreen(location);
-
-                            int itemHeight = getResources().getDimensionPixelSize(R.dimen.messagelist_item_height);
-
-                            Rect rect = new Rect(
-                                location[0] + 200,
-                                location[1] + itemHeight,
-                                location[0] + 200 + itemHeight,
-                                location[1] + (itemHeight * 2));
-
-                            final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnPrimary);
-
-                            TapTargetView.showFor(requireActivity(),
-                                TapTarget.forBounds(rect, getString(R.string.tooltip_multiple_recipients_title), getString(R.string.tooltip_multiple_recipients_text))
-                                    .outerCircleColorInt(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary))      // Specify a color for the outer circle
-                                    .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
-                                    .targetCircleColor(android.R.color.transparent)   // Specify a color for the target circle
-                                    .titleTextSize(24)                  // Specify the size (in sp) of the title text
-                                    .titleTextColorInt(textColor)      // Specify the color of the title text
-                                    .descriptionTextSize(18)            // Specify the size (in sp) of the description text
-                                    .descriptionTextColorInt(textColor)  // Specify the color of the description text
-                                    .textColorInt(textColor)            // Specify a color for both the title and description text
-                                    .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                                    .dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
-                                    .drawShadow(true)                   // Whether to draw a drop shadow or not
-                                    .cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
-                                    .tintTarget(true)                   // Whether to tint the target view's color
-                                    .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
-                                    .targetRadius(50),                  // Specify the target radius (in dp)
-                                null);
-                        } catch (Exception ignore) {
-                            // catch null typeface exception on CROSSCALL Action-X3
-                        }
-                    });
-                }
-            }
+            floatingActionButton.setIconResource(R.drawable.ic_keyboard_arrow_right);
+            floatingActionButton.setText(R.string.label_continue);
         } else {
             floatingActionButton.hide();
         }
@@ -385,7 +345,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 
     protected void restoreCheckedItems(ArrayList<Integer> checkedItemPositions) {
         // restore previously checked items
-        if (checkedItemPositions != null && checkedItemPositions.size() > 0) {
+        if (checkedItemPositions != null && !checkedItemPositions.isEmpty()) {
             startMultiSelect();
             updateMultiSelect();
         }
@@ -449,7 +409,71 @@ public abstract class RecipientListFragment extends ListFragment implements List
                 getListView().setEmptyView(emptyView);
             } catch (IllegalStateException ignored) {
             }
+
+            showTooltipIfNeeded();
         }
+    }
+
+    private void showTooltipIfNeeded() {
+        if (
+            !isMultiSelectAllowed() ||
+                !multiSelectIdentity ||
+                floatingActionButton == null ||
+                preferenceService.getMultipleRecipientsTooltipCount() >= 1
+        ) {
+            return;
+        }
+
+        getListView().post(() -> {
+            try {
+                var listView = getListView();
+                if (listView.getCount() < 3) {
+                    // We want at least 3 items, the first one being the "New contact" button,
+                    // the second one the one we center the tooltip on, and we want a third one as the tooltip message only makes
+                    // sense if there actually are multiple recipients that can be selected.
+                    return;
+                }
+
+                preferenceService.incrementMultipleRecipientsTooltipCount();
+
+                int[] location = new int[2];
+                listView.getLocationOnScreen(location);
+
+                int itemHeight = getResources().getDimensionPixelSize(R.dimen.messagelist_item_height);
+
+                Rect rect = new Rect(
+                    location[0] + 200,
+                    location[1] + itemHeight,
+                    location[0] + 200 + itemHeight,
+                    location[1] + (itemHeight * 2)
+                );
+
+                final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(requireContext(), R.attr.colorOnPrimary);
+
+                TapTargetView.showFor(
+                    requireActivity(),
+                    TapTarget.forBounds(rect, getString(R.string.tooltip_multiple_recipients_title), getString(R.string.tooltip_multiple_recipients_text))
+                        .outerCircleColorInt(ConfigUtils.getColorFromAttribute(requireContext(), R.attr.colorPrimary))
+                        .outerCircleAlpha(0.96f)
+                        .targetCircleColor(android.R.color.transparent)
+                        .titleTextSize(24)
+                        .titleTextColorInt(textColor)
+                        .descriptionTextSize(18)
+                        .descriptionTextColorInt(textColor)
+                        .textColorInt(textColor)
+                        .textTypeface(Typeface.SANS_SERIF)
+                        .dimColor(android.R.color.black)
+                        .drawShadow(true)
+                        .cancelable(true)
+                        .tintTarget(true)
+                        .transparentTarget(true)
+                        .targetRadius(50),
+                    null
+                );
+            } catch (Exception ignore) {
+                // catch null typeface exception on CROSSCALL Action-X3
+            }
+        });
     }
 
     @Override

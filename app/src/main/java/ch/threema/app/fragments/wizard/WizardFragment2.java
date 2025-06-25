@@ -27,7 +27,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +40,7 @@ import java.util.Objects;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -73,15 +73,7 @@ public class WizardFragment2 extends WizardFragment {
             nicknameText.setEnabled(false);
             rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
         } else {
-            nicknameText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
+            nicknameText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     Activity activity = requireActivity();

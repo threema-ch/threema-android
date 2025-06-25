@@ -54,7 +54,7 @@ public class GroupLinkViewModel extends ViewModel {
         this.groupApiId = groupId;
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager != null) {
-            this.repository = serviceManager.getDatabaseServiceNew().getGroupInviteModelFactory();
+            this.repository = serviceManager.getDatabaseService().getGroupInviteModelFactory();
             if (this.repository != null) {
                 groupInviteModels = new MutableLiveData<List<GroupInviteModel>>() {
                     @NonNull

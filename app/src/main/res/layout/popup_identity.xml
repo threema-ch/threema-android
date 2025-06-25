@@ -11,16 +11,14 @@
         android:id="@+id/card_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="12dp"
-        app:cardBackgroundColor="?attr/colorSurface"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="12dp"
+        app:cardBackgroundColor="?attr/colorSurfaceContainer"
         app:cardElevation="8dp"
-        app:contentPaddingBottom="16dp"
+        app:contentPaddingBottom="8dp"
         app:contentPaddingLeft="16dp"
         app:contentPaddingRight="16dp"
-        app:contentPaddingTop="10dp"
+        app:contentPaddingTop="12dp"
         app:strokeWidth="0dp">
 
         <ScrollView
@@ -38,8 +36,8 @@
                     android:id="@+id/share_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="-1dp"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginBottom="-1dp"
                     android:background="@drawable/selector_compose_button"
                     android:clickable="true"
                     android:contentDescription="@string/share_via"
@@ -96,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:contentDescription="@string/my_id"
-                    android:textColor="?attr/colorOnBackground"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="24sp"
                     app:layout_constraintBottom_toTopOf="@+id/barrier_above_qr_container_and_button_container"
                     app:layout_constraintEnd_toStartOf="@+id/share_button"
@@ -107,28 +105,6 @@
                     app:lineHeight="24sp"
                     tools:text="00000000" />
 
-                <TextView
-                    android:id="@+id/web_label"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="?selectableItemBackground"
-                    android:clickable="true"
-                    android:ellipsize="end"
-                    android:focusable="true"
-                    android:maxLines="1"
-                    android:paddingBottom="6dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="2dp"
-                    android:paddingTop="6dp"
-                    android:text="@string/webclient"
-                    android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/web_enable"
-                    app:layout_constraintLeft_toRightOf="@+id/web_enable"
-                    app:layout_constraintRight_toRightOf="parent"
-                    tools:text="slakdjalkjdlkasjdkljaskljdklsajdkjaskldjklasjdklasjdkalksjdklsajdalksdjklasjdkljaslkdjlkasjd" />
-
-                <!-- material switch currently has theming problems -->
-
                 <androidx.constraintlayout.widget.Barrier
                     android:id="@+id/barrier_above_qr_container_and_button_container"
                     android:layout_width="wrap_content"
@@ -136,32 +112,17 @@
                     app:barrierDirection="top"
                     app:constraint_referenced_ids="qr_container,button_container" />
 
-                <androidx.constraintlayout.widget.Barrier
-                    android:id="@+id/barrier_below_qr_container_and_button_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:barrierDirection="bottom"
-                    app:constraint_referenced_ids="qr_container,button_container" />
-
-
-                <androidx.constraintlayout.widget.Group
-                    android:id="@+id/web_controls"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    app:constraint_referenced_ids="web_enable, web_label" />
-
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/qr_container"
                     android:layout_width="108dp"
                     android:layout_height="108dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
                     app:cardElevation="-8dp"
                     app:contentPadding="4dp"
-                    app:layout_constraintBottom_toTopOf="@+id/web_enable"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/identity_label"
-                    app:strokeColor="@color/material_green"
+                    app:strokeColor="?attr/colorPrimary"
                     app:strokeWidth="2dp">
 
                     <ImageView
@@ -178,18 +139,6 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/web_enable"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:contentDescription="@string/webclient_enable"
-                    android:minHeight="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/barrier_below_qr_container_and_button_container"
-                    app:switchPadding="0dp" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </ScrollView>
@@ -204,7 +153,7 @@
         android:layout_gravity="left|top"
         android:layout_marginLeft="@dimen/identity_popup_arrow_inset_left"
         android:importantForAccessibility="no"
-        app:cardBackgroundColor="?attr/colorSurface"
+        app:cardBackgroundColor="?attr/colorSurfaceContainer"
         app:cardElevation="8dp"
         app:shapeAppearance="@style/Threema.ShapeAppearance.Arrow.Up"
         app:strokeWidth="0dp" />

@@ -23,6 +23,7 @@ package ch.threema.domain.taskmanager
 
 import ch.threema.domain.protocol.connection.ConnectionLock
 import ch.threema.domain.protocol.connection.data.InboundMessage
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -137,6 +138,10 @@ internal class TaskQueue(
         return queueEntity
     }
 
+    internal suspend fun removeDropOnDisconnectTasks(closeReason: ServerSocketCloseReason?) {
+        localTaskQueue.removeDropOnDisconnectTasks(closeReason)
+    }
+
     /**
      * Get the next task or incoming message if available. Otherwise null is returned.
      */
@@ -163,6 +168,11 @@ internal class TaskQueue(
          * counted towards this limit.
          */
         val maximumNumberOfExecutions: Int
+
+        /**
+         * Whether this task should be completed exceptionally and removed from the task queue in case of a disconnect.
+         */
+        val shouldDropOnDisconnect: Boolean
 
         /**
          * Run the task.

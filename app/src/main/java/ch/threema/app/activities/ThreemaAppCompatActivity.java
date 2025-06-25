@@ -28,32 +28,26 @@ import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.slf4j.Logger;
-
-import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
 
 public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
-
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaAppCompatActivity");
 
     protected int savedDayNightMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         savedDayNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
@@ -94,11 +88,7 @@ public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
             // Reset avatar cache on theme change so that the default avatars are loaded with the correct (themed) color
             ServiceManager sm = ThreemaApplication.getServiceManager();
             if (sm != null) {
-                try {
-                    sm.getAvatarCacheService().clear();
-                } catch (FileSystemNotPresentException e) {
-                    logger.error("Couldn't get avatar cache service to reset cached avatars", e);
-                }
+                sm.getAvatarCacheService().clear();
             }
             recreate();
         }

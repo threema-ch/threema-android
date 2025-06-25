@@ -28,8 +28,8 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingCancelledException
 import ch.threema.app.multidevice.linking.DeviceLinkingDataCollector
 import ch.threema.app.multidevice.linking.DeviceLinkingException
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactsSyncAdapterService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.webclient.services.instance.DisconnectContext
 import ch.threema.app.workers.AutoDeleteWorker
 import ch.threema.app.workers.ContactUpdateWorker

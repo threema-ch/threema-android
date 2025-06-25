@@ -37,14 +37,17 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.text.HtmlCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.QRCodeService;
 import ch.threema.app.services.QRCodeServiceImpl;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -69,13 +72,21 @@ public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
     @Override
     protected void initServices() {
         super.initServices();
-        try {
-            this.fileService = serviceManager.getFileService();
-            this.qrCodeService = serviceManager.getQRCodeService();
-        } catch (FileSystemNotPresentException e) {
-            logger.error("Exception, required services not available... finishing", e);
-            finish();
-        }
+        this.fileService = serviceManager.getFileService();
+        this.qrCodeService = serviceManager.getQRCodeService();
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.main_content),
+            InsetSides.ltr()
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.qr_container_backup),
+            InsetSides.bottom(),
+            SpacingValues.bottom(R.dimen.grid_unit_x2)
+        );
     }
 
     @Override
@@ -134,7 +145,7 @@ public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             finish();

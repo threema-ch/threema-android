@@ -37,6 +37,7 @@ interface DatabaseBackend {
      * Insert a new contact.
      *
      * @throws SQLiteException if insertion fails due to a conflict
+     * @throws IllegalArgumentException if the length of the identity or public key is invalid
      */
     fun createContact(contact: DbContact)
 

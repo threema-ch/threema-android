@@ -24,9 +24,9 @@ package ch.threema.storage.factories
 import android.content.ContentValues
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.MessageId
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 
-class RejectedGroupMessageFactory(databaseService: DatabaseServiceNew) :
+class RejectedGroupMessageFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, "rejected_group_messages") {
     companion object {
         private const val COLUMN_MESSAGE_ID = "messageId"

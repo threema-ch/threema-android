@@ -43,9 +43,9 @@ import ch.threema.app.R
 import ch.threema.app.adapters.MentionSelectorAdapter
 import ch.threema.app.collections.Functional
 import ch.threema.app.collections.IPredicateNonNull
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.AnimationUtil
 import ch.threema.app.utils.ConfigUtils
@@ -73,18 +73,15 @@ class MentionSelectorPopup(
     private var filterText: String = ""
     private var filterStart: Int = 0
     private val recyclerView: RecyclerView
-    private val allContactModel: ContactModel =
-        ContactModel(ContactService.ALL_USERS_PLACEHOLDER_ID, byteArrayOf())
+    private val allContactModel: ContactModel = ContactModel.createUnchecked(ContactService.ALL_USERS_PLACEHOLDER_ID, byteArrayOf())
     private var editText: ComposeEditText? = null
     private val popupLayout: MaterialCardView
     private var viewableSpaceHeight = 0
     private var overlayMode = false // whether this popup is shown on top of another popupwindow
-    private val textWatcher: TextWatcher = object : TextWatcher {
+    private val textWatcher: TextWatcher = object : SimpleTextWatcher() {
         private fun run() {
             dismiss()
         }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             try {

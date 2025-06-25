@@ -69,10 +69,10 @@ class PredefinedMessageIds private constructor(
     private val messageIdBytes4: ByteArray,
 ) {
     constructor() : this(
-        MessageId().messageId,
-        MessageId().messageId,
-        MessageId().messageId,
-        MessageId().messageId,
+        MessageId.random().messageId,
+        MessageId.random().messageId,
+        MessageId.random().messageId,
+        MessageId.random().messageId,
     )
 
     val messageId1 by lazy { MessageId(messageIdBytes1) }

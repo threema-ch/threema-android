@@ -43,15 +43,15 @@ import ch.threema.storage.models.GroupModel
 import com.neilalexander.jnacl.NaCl
 import java.util.Date
 import junit.framework.TestCase
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -497,11 +497,11 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         // the database).
         assertEquals(
             expectedMemberCount,
-            serviceManager.databaseServiceNew.groupMemberModelFactory.getByGroupId(group.id).size + 1,
+            serviceManager.databaseService.groupMemberModelFactory.getByGroupId(group.id).size + 1,
         )
         assertEquals(
             expectedMemberCount,
-            serviceManager.databaseServiceNew.groupMemberModelFactory.countMembersWithoutUser(group.id)
+            serviceManager.databaseService.groupMemberModelFactory.countMembersWithoutUser(group.id)
                 .toInt() + 1,
         )
 
@@ -639,7 +639,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         }
     }
 
-    @After
+    @AfterTest
     fun removeAllGroupListeners() {
         GroupSetupTracker.stopAllListeners()
     }

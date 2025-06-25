@@ -29,9 +29,8 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import org.apache.commons.io.EndianUtils
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("AudioMessage")
+private val logger = LoggingUtil.getThreemaLogger("AudioMessage")
 
 /**
  * A message that has an audio recording (stored on the blob server) as its content.

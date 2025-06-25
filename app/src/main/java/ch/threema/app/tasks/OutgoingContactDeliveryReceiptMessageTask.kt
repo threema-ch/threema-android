@@ -45,7 +45,7 @@ class OutgoingContactDeliveryReceiptMessageTask(
             it.receiptMessageIds = messageIds
         }
 
-        sendContactMessage(message, null, toIdentity, MessageId(), Date(date), handle)
+        sendContactMessage(message, null, toIdentity, MessageId.random(), Date(date), handle)
     }
 
     override fun serialize(): SerializableTaskData = OutgoingDeliveryReceiptMessageData(

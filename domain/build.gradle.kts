@@ -1,3 +1,24 @@
+/*  _____ _
+ * |_   _| |_  _ _ ___ ___ _ __  __ _
+ *   | | | ' \| '_/ -_) -_) '  \/ _` |_
+ *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
+ *
+ * Threema for Android
+ * Copyright (c) 2021-2025 Threema GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import utils.getGitVersion
 
@@ -11,6 +32,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":common"))
+
     api(libs.kotlin.stdlib)
     api(libs.kotlinx.coroutines.core)
     api(libs.libphonenumber)
@@ -49,6 +72,9 @@ sourceSets {
 }
 
 tasks.withType<Test> {
+    // Necessary to load the dynamic libthreema library in unit tests
+    systemProperty("jna.library.path", "${project.projectDir}/libthreema/target/release")
+
     useJUnitPlatform()
 }
 
@@ -163,4 +189,10 @@ tasks.clean.dependsOn("libthreemaCleanUp")
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+    }
 }

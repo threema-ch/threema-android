@@ -7,12 +7,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginRight="@dimen/tooltip_layout_margin_right"
-    android:layout_marginBottom="8dp"
     android:layout_marginLeft="@dimen/tooltip_layout_margin_left"
     android:layout_marginTop="2dp"
-    android:elevation="0dp"
-    android:background="@android:color/transparent">
+    android:layout_marginRight="@dimen/tooltip_layout_margin_right"
+    android:layout_marginBottom="8dp"
+    android:background="@android:color/transparent"
+    android:elevation="0dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/content"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
-        app:cardBackgroundColor="?attr/colorTertiaryContainer"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
         app:cardElevation="6dp"
         app:contentPaddingBottom="6dp"
         app:contentPaddingLeft="12dp"
@@ -42,18 +42,18 @@
                 app:srcCompat="@drawable/ic_badge_work_24dp" />
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <ch.threema.app.emojis.EmojiTextView
                     android:id="@+id/title"
                     style="@style/Threema.TextAppearance.BodyMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="?colorOnTertiaryContainer"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="@dimen/tooltip_title_size"
                     android:textStyle="bold"
                     tools:text="Tooltip Title" />
@@ -63,15 +63,15 @@
                     style="@style/Threema.TextAppearance.BodyMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="?colorOnTertiaryContainer"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="@dimen/tooltip_text_size"
                     tools:text="Tooltip Text" />
 
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Threema.MaterialButton.Minimal"
                 android:id="@+id/close_button"
+                style="@style/Threema.MaterialButton.Minimal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
@@ -79,7 +79,7 @@
                 android:layout_marginTop="1dp"
                 android:contentDescription="@string/close"
                 app:icon="@drawable/ic_close"
-                app:iconTint="?colorOnTertiaryContainer" />
+                app:iconTint="?attr/colorOnSurface" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -92,7 +92,7 @@
         android:layout_marginLeft="@dimen/tooltip_popup_arrow_inset"
         android:importantForAccessibility="no"
         android:visibility="gone"
-        app:cardBackgroundColor="?attr/colorTertiaryContainer"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
         app:cardElevation="6dp"
         app:shapeAppearance="@style/Threema.ShapeAppearance.Arrow.Up"
         app:strokeWidth="0dp" />
@@ -105,7 +105,7 @@
         android:layout_marginRight="@dimen/tooltip_popup_arrow_inset"
         android:importantForAccessibility="no"
         android:visibility="gone"
-        app:cardBackgroundColor="?attr/colorTertiaryContainer"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
         app:cardElevation="6dp"
         app:shapeAppearance="@style/Threema.ShapeAppearance.Arrow.Up"
         app:strokeWidth="0dp" />
@@ -118,7 +118,7 @@
         android:layout_marginLeft="@dimen/tooltip_popup_arrow_inset"
         android:importantForAccessibility="no"
         android:visibility="gone"
-        app:cardBackgroundColor="?attr/colorTertiaryContainer"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
         app:cardElevation="6dp"
         app:shapeAppearance="@style/Threema.ShapeAppearance.Arrow.Down"
         app:strokeWidth="0dp" />
@@ -131,9 +131,10 @@
         android:layout_marginRight="@dimen/tooltip_popup_arrow_inset"
         android:importantForAccessibility="no"
         android:visibility="gone"
-        app:cardBackgroundColor="?attr/colorTertiaryContainer"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
         app:cardElevation="6dp"
         app:shapeAppearance="@style/Threema.ShapeAppearance.Arrow.Down"
-        app:strokeWidth="0dp" />
+        app:strokeWidth="0dp"
+        tools:visibility="visible" />
 
 </FrameLayout>

@@ -1,9 +1,10 @@
+//! Shared encryption/decryption utilities for RIDAK/RRDAK and RIDTK/RRDTK.
 use libthreema_macros::concat_fixed_bytes;
 
 use super::RendezvousProtocolError;
 use crate::crypto::{
     aead::{AeadInPlace as _, Buffer},
-    chacha20::ChaCha20Poly1305,
+    chacha20::{self, ChaCha20Poly1305},
     cipher::KeyInit as _,
 };
 
@@ -41,19 +42,16 @@ pub(super) struct Decrypt {
 }
 
 impl Encrypt {
-    pub(super) fn new(pid: u32, sequence_number: u32, key: chacha20poly1305::Key) -> Self {
+    pub(super) fn new(pid: u32, sequence_number: u32, key: chacha20::Key) -> Self {
         let cipher = ChaCha20Poly1305::new(&key);
         Self {
-            base: Base {
-                pid,
-                sequence_number,
-            },
+            base: Base { pid, sequence_number },
             cipher,
         }
     }
 
-    #[allow(clippy::needless_pass_by_value)]
-    pub(super) fn new_from(current: Encrypt, key: chacha20poly1305::Key) -> Self {
+    #[expect(clippy::needless_pass_by_value, reason = "Prevent key re-use")]
+    pub(super) fn new_from(current: Encrypt, key: chacha20::Key) -> Self {
         Self::new(current.base.pid, current.base.sequence_number, key)
     }
 
@@ -74,19 +72,16 @@ impl Encrypt {
 }
 
 impl Decrypt {
-    pub(super) fn new(pid: u32, sequence_number: u32, key: chacha20poly1305::Key) -> Self {
+    pub(super) fn new(pid: u32, sequence_number: u32, key: chacha20::Key) -> Self {
         let cipher = ChaCha20Poly1305::new(&key);
         Self {
-            base: Base {
-                pid,
-                sequence_number,
-            },
+            base: Base { pid, sequence_number },
             cipher,
         }
     }
 
-    #[allow(clippy::needless_pass_by_value)]
-    pub(super) fn new_from(current: Decrypt, key: chacha20poly1305::Key) -> Self {
+    #[expect(clippy::needless_pass_by_value, reason = "Prevent key re-use")]
+    pub(super) fn new_from(current: Decrypt, key: chacha20::Key) -> Self {
         Self::new(current.base.pid, current.base.sequence_number, key)
     }
 

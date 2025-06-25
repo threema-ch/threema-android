@@ -21,12 +21,12 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import ch.threema.domain.protocol.csp.messages.BadMessageException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class BallotVoteTest {
 
@@ -51,9 +51,9 @@ public class BallotVoteTest {
         String correct = "[10,1]";
 
         try {
-            Assert.assertNotNull(BallotVote.parse(new JSONArray(correct)));
+            Assertions.assertNotNull(BallotVote.parse(new JSONArray(correct)));
         } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 
@@ -67,7 +67,7 @@ public class BallotVoteTest {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Assert.fail("wrong type parsed");
+            Assertions.fail("wrong type parsed");
         } catch (BadMessageException e) {
             //cool!
         }
@@ -77,7 +77,7 @@ public class BallotVoteTest {
     public void parseInvalidString() {
         try {
             BallotDataChoice.parse("i want to be a hippie");
-            Assert.fail("invalid string parsed");
+            Assertions.fail("invalid string parsed");
         } catch (BadMessageException e) {
             //ok! exception received
         }
@@ -89,12 +89,9 @@ public class BallotVoteTest {
 
         try {
             JSONArray o = new JSONArray("[100, 1]");
-            Assert.assertEquals(
-                o.toString(),
-                v.toString()
-            );
+            Assertions.assertEquals(o.toString(), v.toString());
         } catch (JSONException e) {
-            Assert.fail("internal error");
+            Assertions.fail("internal error");
         }
     }
 }

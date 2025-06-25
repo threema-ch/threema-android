@@ -22,9 +22,9 @@
 package ch.threema.domain.onprem
 
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.minus
-import ch.threema.base.utils.plus
-import ch.threema.testutils.TestTimeProvider
+import ch.threema.common.minus
+import ch.threema.common.plus
+import ch.threema.testhelpers.TestTimeProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

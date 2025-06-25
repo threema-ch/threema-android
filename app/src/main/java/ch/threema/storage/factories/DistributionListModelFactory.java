@@ -31,17 +31,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import ch.threema.app.services.DistributionListService;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListModelFactory extends ModelFactory {
-    public DistributionListModelFactory(DatabaseServiceNew databaseService) {
+    public DistributionListModelFactory(DatabaseService databaseService) {
         super(databaseService, DistributionListModel.TABLE);
     }
 
     public List<DistributionListModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -63,7 +63,7 @@ public class DistributionListModelFactory extends ModelFactory {
         String orderBy) {
         queryBuilder.setTables(this.getTableName());
         return convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             null,
@@ -92,7 +92,7 @@ public class DistributionListModelFactory extends ModelFactory {
             final DistributionListModel c = new DistributionListModel();
 
             //convert default
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
                 public boolean next(CursorHelper cursorHelper) {
                     c
@@ -116,7 +116,7 @@ public class DistributionListModelFactory extends ModelFactory {
     public boolean createOrUpdate(DistributionListModel distributionListModel) {
         boolean insert = true;
         if (distributionListModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 DistributionListModel.COLUMN_ID + "=?",
@@ -172,14 +172,14 @@ public class DistributionListModelFactory extends ModelFactory {
 
         contentValues.put(DistributionListModel.COLUMN_ID, distributionListId);
 
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         distributionListModel.setId(newId);
         return newId > 0;
     }
 
     public boolean update(DistributionListModel distributionListModel) {
         ContentValues contentValues = buildContentValues(distributionListModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             DistributionListModel.COLUMN_ID + "=?",
             new String[]{
@@ -189,7 +189,7 @@ public class DistributionListModelFactory extends ModelFactory {
     }
 
     public int delete(DistributionListModel distributionListModel) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             DistributionListModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(distributionListModel.getId())
@@ -197,7 +197,7 @@ public class DistributionListModelFactory extends ModelFactory {
     }
 
     private DistributionListModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -256,7 +256,7 @@ public class DistributionListModelFactory extends ModelFactory {
     }
 
     private boolean doesIdExist(long id) {
-        return this.databaseService.getReadableDatabase().query(
+        return getReadableDatabase().query(
             getTableName(),
             null,
             DistributionListModel.COLUMN_ID + "=?",

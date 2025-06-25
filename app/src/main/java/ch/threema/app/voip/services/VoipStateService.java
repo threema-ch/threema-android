@@ -103,7 +103,7 @@ import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
-import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
+import static ch.threema.app.notifications.NotificationIDs.INCOMING_CALL_NOTIFICATION_ID;
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
@@ -1503,7 +1503,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                     .setContentTitle(appContext.getString(R.string.voip_notification_title))
                     .setContentText(appContext.getString(R.string.notification_hidden_text))
                     .setSmallIcon(R.drawable.ic_phone_locked_white_24dp)
-                    .setColor(appContext.getResources().getColor(R.color.md_theme_light_primary))
                     .setGroup(NotificationGroups.CALLS)
                     .setGroupSummary(false)
                     .build()

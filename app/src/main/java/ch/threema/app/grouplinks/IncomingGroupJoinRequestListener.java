@@ -29,5 +29,5 @@ public interface IncomingGroupJoinRequestListener {
     @AnyThread
     void onReceived(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel);
 
-    void onRespond();
+    default void onRespond() {}
 }

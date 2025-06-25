@@ -44,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
@@ -56,11 +57,15 @@ import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
@@ -95,7 +100,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             // Restore backup even if permission is not granted as we do not strictly require the
             // notification permission.
-            if (isGranted) {
+            if (Boolean.TRUE.equals(isGranted)) {
                 logger.info("Notification permission granted, starting restore");
             } else {
                 logger.info("Notification permission not granted, starting restore anyway");
@@ -104,38 +109,40 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         });
 
     @Override
-    protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
         // directly forward to ID restore activity
         Intent intent = getIntent();
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP) &&
-            intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW)) {
+        if (intent.hasExtra(AppConstants.INTENT_DATA_ID_BACKUP) &&
+            intent.hasExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW)) {
 
-            restoreIDExport(intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP),
-                intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW));
+            restoreIDExport(intent.getStringExtra(AppConstants.INTENT_DATA_ID_BACKUP),
+                intent.getStringExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW));
         }
 
         initServices();
         initLayout();
+
+        cleanTempDirectories();
     }
 
     @Override
     protected void onPause() {
-        ThreemaApplication.activityPaused(this);
+        ActivityService.activityPaused(this);
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        ThreemaApplication.activityResumed(this);
+        ActivityService.activityResumed(this);
         super.onResume();
     }
 
     @Override
     public void onUserInteraction() {
-        ThreemaApplication.activityUserInteract(this);
+        ActivityService.activityUserInteract(this);
         super.onUserInteraction();
     }
 
@@ -158,6 +165,12 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
     private void initLayout() {
         setContentView(R.layout.activity_backup_restore);
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content),
+            InsetSides.all(),
+            SpacingValues.symmetric(R.dimen.wizard_contents_padding, R.dimen.wizard_contents_padding_horizontal)
+        );
 
         String faqURL = String.format(getString(R.string.backup_faq_url), LocaleUtil.getAppLanguage());
         TextView backupSubtitle = findViewById(R.id.backup_restore_subtitle);
@@ -189,6 +202,16 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         });
     }
 
+    private void cleanTempDirectories() {
+        if (fileService != null) {
+            RuntimeUtil.runOnWorkerThread(() -> {
+                // Clean the temp directories to ensure that any backup files
+                // from previous restore attempts are deleted.
+                fileService.cleanTempDirs();
+            });
+        }
+    }
+
     private void restoreSafe() {
         startActivity(new Intent(this, WizardSafeRestoreActivity.class));
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
@@ -198,8 +221,8 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         Intent intent = new Intent(this, WizardIDRestoreActivity.class);
 
         if (!TestUtil.isEmptyOrNull(backupString) && !TestUtil.isEmptyOrNull(backupPassword)) {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
+            intent.putExtra(AppConstants.INTENT_DATA_ID_BACKUP, backupString);
+            intent.putExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW, backupPassword);
         }
         startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_RESTORE_KEY);
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
@@ -212,12 +235,12 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
             new Thread(() -> {
                 final File file;
-                final File externalFile = fileService.copyUriToTempFile(uri, "file", "zip", true);
+                final File externalFile = fileService.copyUriToTempFile(uri, "backup_restore", ".zip", true);
                 if (externalFile != null) {
                     file = externalFile;
                 } else {
                     logger.warn("Could not copy the backup file to temp file; trying to copy it to internal storage instead.");
-                    file = fileService.copyUriToTempFile(uri, "file", "zip", false);
+                    file = fileService.copyUriToTempFile(uri, "backup_restore", ".zip", false);
                 }
 
                 RuntimeUtil.runOnUiThread(() -> {
@@ -271,8 +294,8 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
             R.string.password_hint,
             R.string.ok,
             R.string.cancel,
-            ThreemaApplication.MIN_PW_LENGTH_BACKUP,
-            ThreemaApplication.MAX_PW_LENGTH_BACKUP,
+            AppConstants.MIN_PW_LENGTH_BACKUP,
+            AppConstants.MAX_PW_LENGTH_BACKUP,
             0, 0, 0, PasswordEntryDialog.ForgotHintType.PIN_PASSPHRASE);
         dialogFragment.setData(file);
         dialogFragment.show(getSupportFragmentManager(), "restorePW");

@@ -24,8 +24,8 @@ package ch.threema.app.groupmanagement
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import ch.threema.app.R
-import ch.threema.app.activities.HomeActivity
 import ch.threema.app.adapters.MessageListAdapter
+import ch.threema.app.home.HomeActivity
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import junit.framework.TestCase
@@ -62,7 +62,7 @@ abstract class GroupConversationListTest<T : AbstractGroupMessage> : GroupContro
 
         val actualGroupNames = (0 until adapter.itemCount)
             .mapNotNull { adapter.getEntity(it) }
-            .map { it.receiver.displayName }
+            .map { it.messageReceiver.displayName }
             .toSet()
 
         TestCase.assertEquals(errorMessage, expectedGroupNames, actualGroupNames)

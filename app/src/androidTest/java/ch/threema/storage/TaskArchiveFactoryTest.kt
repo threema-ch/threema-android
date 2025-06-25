@@ -24,21 +24,21 @@ package ch.threema.storage
 import ch.threema.app.ThreemaApplication
 import ch.threema.storage.factories.TaskArchiveFactory
 import junit.framework.TestCase.assertEquals
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 class TaskArchiveFactoryTest {
     private lateinit var taskArchiveFactory: TaskArchiveFactory
 
-    @Before
+    @BeforeTest
     fun setup() {
         taskArchiveFactory =
-            ThreemaApplication.requireServiceManager().databaseServiceNew.taskArchiveFactory
+            ThreemaApplication.requireServiceManager().databaseService.taskArchiveFactory
         taskArchiveFactory.deleteAll()
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         taskArchiveFactory.deleteAll()
     }

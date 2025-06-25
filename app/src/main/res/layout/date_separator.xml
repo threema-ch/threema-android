@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_block"
     style="@style/Threema.CardView.Bubble.Status"
-    app:cardBackgroundColor="@color/date_separator_bg_color">
+    app:contentPaddingLeft="@dimen/grid_unit_x2"
+    app:contentPaddingRight="@dimen/grid_unit_x2"
+    app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
 
     <TextView
         android:id="@+id/text_view"

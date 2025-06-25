@@ -35,7 +35,7 @@ fun Preference.onClick(action: () -> Unit) {
 }
 
 fun Preference.onChange(action: () -> Unit) {
-    onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue: Any? ->
+    onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
         action()
         true
     }

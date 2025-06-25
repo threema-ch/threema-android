@@ -56,9 +56,8 @@ import ch.threema.app.notifications.migrations.Version3Migration
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RingtoneUtil
 import ch.threema.base.utils.LoggingUtil
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("NotificationChannelMigrator")
+private val logger = LoggingUtil.getThreemaLogger("NotificationChannelMigrator")
 
 class NotificationChannelSetup(
     private val appContext: Context,
@@ -76,15 +75,19 @@ class NotificationChannelSetup(
                     // or the version number was lost because the app was reset
                     migrate(fromVersion = 0)
                 }
+                storeNotificationChannelsVersion(NOTIFICATION_CHANNELS_VERSION)
             }
-            in 0 until NOTIFICATION_CHANNELS_VERSION -> migrate(fromVersion = version)
-            NOTIFICATION_CHANNELS_VERSION -> return
-            else -> {
-                logger.error("Unexpected notification channel version {}", version)
-                return
+            in 0 until NOTIFICATION_CHANNELS_VERSION -> {
+                migrate(fromVersion = version)
+                storeNotificationChannelsVersion(NOTIFICATION_CHANNELS_VERSION)
             }
+            NOTIFICATION_CHANNELS_VERSION -> {
+                // notification channels likely already exist, but might have been reset (via the Android system settings),
+                // thus we recreate them if needed
+                createNotificationChannelsFromScratch()
+            }
+            else -> logger.error("Unexpected notification channel version {}", version)
         }
-        storeNotificationChannelsVersion(NOTIFICATION_CHANNELS_VERSION)
     }
 
     private fun getNotificationChannelsVersion(): Int =
@@ -95,8 +98,7 @@ class NotificationChannelSetup(
     }
 
     /**
-     * Creates all required notification channels and notification channel groups.
-     * This assumes that none of the channels existed before.
+     * Ensures that all required notification channels and notification channel groups exist by creating them if needed.
      * If you need to make changes here, make sure to also create an appropriate migration to account for existing app installations.
      */
     private fun createNotificationChannelsFromScratch() = with(notificationManager) {

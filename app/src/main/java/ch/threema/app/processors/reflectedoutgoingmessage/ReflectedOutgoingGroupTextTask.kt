@@ -26,47 +26,45 @@ import androidx.core.util.component2
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.QuoteUtil
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
-import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.MessageContentsType
-import java.util.Date
+
+private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupTextTask")
 
 internal class ReflectedOutgoingGroupTextTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_TEXT,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupTextMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupTextMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.GROUP_TEXT,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val groupTextMessage by lazy { GroupTextMessage.fromByteArray(message.body.toByteArray()) }
-
-    override val storeNonces: Boolean
-        get() = groupTextMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean = true
-
     override fun processOutgoingMessage() {
-        if (!message.conversation.hasGroup()) {
-            throw IllegalStateException("The message does not have a group identity set")
+        check(outgoingMessage.conversation.hasGroup()) {
+            "The message does not have a group identity set"
         }
 
-        val messageModel = messageReceiver.createLocalModel(
+        messageService.getMessageModelByApiMessageIdAndReceiver(message.messageId.toString(), messageReceiver)?.run {
+            // It is possible that a message gets reflected twice when the reflecting task gets restarted.
+            logger.info("Skipping message {} as it already exists.", message.messageId)
+            return
+        }
+
+        val messageModel = createMessageModel(
             MessageType.TEXT,
             MessageContentsType.TEXT,
-            Date(message.createdAt),
         )
-        initializeMessageModelsCommonFields(messageModel)
 
-        val (body, messageId) = QuoteUtil.getBodyAndQuotedMessageId(groupTextMessage.text)
+        val (body, messageId) = QuoteUtil.getBodyAndQuotedMessageId(message.text)
         messageModel.body = body
         messageModel.quotedMessageId = messageId
-        messageModel.state = MessageState.SENT
         messageService.save(messageModel)
         ListenerManager.messageListeners.handle { it.onNew(messageModel) }
     }

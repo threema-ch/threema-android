@@ -39,7 +39,7 @@ function print_usage() {
     echo ""
     echo "Options:"
     echo "  -n <version-name>    The version name. Example: '4.43k'"
-    echo "  -v <variant>         Variant to verify: Either googleplay, threemashop, libre or hms"
+    echo "  -v <variant>         Variant to verify: Either googleplay_private, threemashop_private, libre_private or hms_private"
     echo "  -p <published-apk>   Path to the APK file extracted from the phone"
     echo "  -l <local-apk>       Optional: Path to the locally built APK"
     echo "  -h,--help            Print this help and exit"
@@ -110,13 +110,13 @@ fi
 published_apk=$(realpath "$published_apk")
 if [[ "$variant" == "" ]]; then
     log_error 'Please set a valid build variant with "-v <variant>".'
-    fail 'Example: "-v googleplay" or "-v threemashop"'
+    fail 'Example: "-v googleplay_private" or "-v threemashop_private"'
 fi
 case "$variant" in
-    googleplay) variant_name="store_google" ;;
-    threemashop) variant_name="store_threema" ;;
-    libre) variant_name="libre" ;;
-    hms) variant_name="hms" ;;
+    googleplay_private) variant_name="store_google" ;;
+    threemashop_private) variant_name="store_threema" ;;
+    libre_private) variant_name="libre" ;;
+    hms_private) variant_name="hms" ;;
     *) fail "Invalid build variant: $variant" ;;
 esac
 

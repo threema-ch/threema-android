@@ -28,13 +28,16 @@ import ch.threema.domain.protocol.connection.data.InboundMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import kotlin.math.min
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -115,7 +118,7 @@ internal class TaskRunner(
         private fun logReflect(
             debugInfo: MultiDeviceKeys.EncryptedEnvelopeResult.DebugInfo,
             reflectId: UInt,
-            flags: UShort,
+            @Suppress("SameParameterValue") flags: UShort,
         ) {
             logger.run {
                 info("--> SENDING outbound D2D reflect message ${debugInfo.protoContentCaseName}")
@@ -134,6 +137,38 @@ internal class TaskRunner(
      */
     private val bypassTaskCodec: BypassTaskCodec = BypassTaskCodec { taskCodec }
 
+    enum class State {
+        /**
+         * The task runner is currently running.
+         */
+        RUNNING,
+
+        /**
+         * The task runner is still running, but the current task is being cancelled and no new tasks will be run.
+         */
+        STOPPING,
+
+        /**
+         * The task runner has been stopped and no task is currently running.
+         */
+        STOPPED,
+    }
+
+    /**
+     * The current state of the task runner.
+     */
+    val state: State
+        get() =
+            if (layer5Codec == null) {
+                if (executorJob?.isActive == true) {
+                    State.STOPPING
+                } else {
+                    State.STOPPED
+                }
+            } else {
+                State.RUNNING
+            }
+
     /**
      * Start the task runner after the connection has been established.
      *
@@ -149,7 +184,7 @@ internal class TaskRunner(
         // messages anymore
         if (executorJob?.isActive == true) {
             logger.info("Stopping previous executor job")
-            stopTaskRunner()
+            stopTaskRunner(null)
         }
 
         // Acquire the executor semaphore during startup
@@ -159,7 +194,7 @@ internal class TaskRunner(
         // semaphore
         if (executorJob?.isActive == true) {
             logger.info("Old executor job is still active. Stopping it.")
-            stopTaskRunner()
+            stopTaskRunner(null)
         }
 
         this.layer5Codec = layer5Codec
@@ -214,6 +249,8 @@ internal class TaskRunner(
                     else -> {
                         logger.error("Task manager failed", cause)
                         CoroutineScope(scheduleCoroutineContext).launch {
+                            // To avoid a busy loop, we delay the restarting of the task runner a bit here
+                            delay(10.seconds)
                             startTaskRunner(layer5Codec, incomingMessageProcessor)
                         }
                     }
@@ -238,7 +275,7 @@ internal class TaskRunner(
      * Stop the task runner. Call this method only when the connection has been lost or a new
      * connection has been established while the task runner is still running (should not happen).
      */
-    internal suspend fun stopTaskRunner() {
+    internal suspend fun stopTaskRunner(closeReason: ServerSocketCloseReason?) {
         layer5Codec = null
 
         if (executorJob == null) {
@@ -246,10 +283,12 @@ internal class TaskRunner(
             return
         }
 
-        logger.info("Stopping task runner")
+        logger.info("Stopping task runner with reason {}", closeReason)
 
-        executorJob?.cancelAndJoin(ConnectionStoppedException("The server connection has been ended"))
+        executorJob?.cancelAndJoin(ConnectionStoppedException("The server connection has been ended", closeReason))
         logger.info("Executor job canceled and joined")
+
+        taskQueue.removeDropOnDisconnectTasks(closeReason)
     }
 
     private suspend fun runNextTask() {
@@ -264,7 +303,12 @@ internal class TaskRunner(
                 taskQueueElement.run(taskCodec)
             } catch (exception: Exception) {
                 when (exception) {
-                    is NetworkException -> throw exception
+                    is NetworkException -> {
+                        if (taskQueueElement.shouldDropOnDisconnect) {
+                            taskQueueElement.completeExceptionally(exception)
+                        }
+                        throw exception
+                    }
                     else -> {
                         logger.error(
                             "Error occurred on attempt $executionAttempts when running task",
@@ -313,13 +357,21 @@ sealed class NetworkException(message: String) : CancellationException(message)
  * This exception is only thrown by the task manager, when a new connection is being established or
  * the current connection has been stopped or lost. Tasks may catch this exception, if they can
  * continue without server connection.
+ *
+ * In case the socket has been properly closed, a [closeReason] is available.
  */
-class ConnectionStoppedException internal constructor(message: String) : NetworkException(message) {
+class ConnectionStoppedException internal constructor(message: String, val closeReason: ServerSocketCloseReason?) : NetworkException(message) {
     /**
      * Note that this constructor should only be used in tests.
      */
-    constructor() : this("Test")
+    constructor() : this("Test", null)
 }
+
+/**
+ * This exception indicates that the task has not been scheduled because there is no connection available. It is only thrown for
+ * [DropOnDisconnectTask]s as other task will be scheduled anyways.
+ */
+class ConnectionUnavailableException : NetworkException("No connection available")
 
 /**
  * This exception must be thrown by tasks to enforce a reconnection to the server. The tasks are
@@ -343,6 +395,17 @@ suspend inline fun <R, reified T> (suspend () -> R).catchExceptNetworkException(
         }
     }
 }
+
+/**
+ * Runs this code and catches all exceptions except [NetworkException].
+ * This method is intended to be used within tasks where [NetworkException]s must not be caught.
+ */
+@Throws(NetworkException::class)
+inline fun <R> runCatchingExceptNetworkException(block: () -> R): Result<R> =
+    runCatching(block)
+        .onFailure {
+            if (it is NetworkException) throw it
+        }
 
 /**
  * Runs this code and catches all exceptions except [NetworkException]. This method is intended to

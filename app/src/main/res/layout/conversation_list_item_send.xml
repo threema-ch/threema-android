@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/msg_list_item_send"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -41,7 +42,8 @@
                     android:layout_gravity="bottom"
                     android:background="@drawable/bubble_fade_send_selector"
                     android:paddingTop="36dp"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/read_on_button"
@@ -49,6 +51,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:elevation="2dp"
                         android:text="@string/read_on" />
 
                 </FrameLayout>

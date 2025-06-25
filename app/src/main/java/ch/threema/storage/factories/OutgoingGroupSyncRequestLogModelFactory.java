@@ -32,11 +32,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel;
 
 public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
-    public OutgoingGroupSyncRequestLogModelFactory(DatabaseServiceNew databaseService) {
+    public OutgoingGroupSyncRequestLogModelFactory(DatabaseService databaseService) {
         super(databaseService, OutgoingGroupSyncRequestLogModel.TABLE);
     }
 
@@ -73,13 +73,13 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
 
     public boolean create(@NonNull GroupIdentity groupIdentity, @Nullable Date lastRequest) {
         ContentValues contentValues = buildValues(groupIdentity, lastRequest);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         return newId > 0;
     }
 
     public boolean update(OutgoingGroupSyncRequestLogModel outgoingGroupSyncRequestLogModel) {
         ContentValues contentValues = buildValues(outgoingGroupSyncRequestLogModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             OutgoingGroupSyncRequestLogModel.COLUMN_ID + "=?",
             new String[]{
@@ -111,7 +111,7 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
     }
 
     private OutgoingGroupSyncRequestLogModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -137,7 +137,7 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
             return null;
         }
 
-        CursorHelper cursorHelper = new CursorHelper(cursor, columnIndexCache);
+        CursorHelper cursorHelper = new CursorHelper(cursor, getColumnIndexCache());
 
         return new OutgoingGroupSyncRequestLogModel(
             Objects.requireNonNull(cursorHelper.getInt(OutgoingGroupSyncRequestLogModel.COLUMN_ID)),

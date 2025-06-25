@@ -34,8 +34,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 
-import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.UserService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.ClientInfo;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;

@@ -21,16 +21,10 @@
 
 package ch.threema.app.multidevice.wizard.steps
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import ch.threema.app.R
 import ch.threema.app.multidevice.wizard.LinkNewDeviceWizardViewModel
-import ch.threema.app.utils.getStatusBarHeightPxCompat
-import ch.threema.app.utils.withCurrentWindowInsets
 
 open class LinkNewDeviceFragment : Fragment() {
     val viewModel: LinkNewDeviceWizardViewModel by activityViewModels()
@@ -39,16 +33,5 @@ open class LinkNewDeviceFragment : Fragment() {
         viewModel.setCurrentFragment(this)
 
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        // Add extra vertical top padding to prevent ui elements being overlapped
-        // by the system status bar when the bottom-sheet is fully expanded
-        withCurrentWindowInsets { _, insets ->
-            view?.findViewById<View>(R.id.parent_layout)?.updatePadding(
-                top = insets.getStatusBarHeightPxCompat(),
-            )
-        }
-        super.onConfigurationChanged(newConfig)
     }
 }

@@ -124,7 +124,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
      */
     @Override
     public void onBindViewHolder(@NonNull MediaGalleryHolder holder, int position) {
-        if (mediaAttachItems.size() > 0) {
+        if (!mediaAttachItems.isEmpty()) {
             final MediaAttachItem mediaAttachItem = mediaAttachItems.get(position);
             // required item ID to check on recycling
             holder.itemId = mediaAttachItem.getId();

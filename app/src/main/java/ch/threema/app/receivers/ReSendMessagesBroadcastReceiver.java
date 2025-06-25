@@ -35,8 +35,8 @@ import java.util.List;
 
 import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -62,9 +62,9 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
                 ArrayList<AbstractMessageModel> failedMessages = IntentDataUtil.getAbstractMessageModels(intent, messageService);
 
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-                notificationManager.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
+                notificationManager.cancel(NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID);
 
-                if (failedMessages.size() > 0) {
+                if (!failedMessages.isEmpty()) {
                     // we need to make sure there's a connection during delivery
                     lifetimeService.acquireConnection(TAG);
 
@@ -87,7 +87,7 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
                             receiverIdentities.add(failedMessage.getIdentity());
                         }
                         try {
-                            messageService.resendMessage(failedMessage, messageReceiver, null, receiverIdentities, new MessageId(), TriggerSource.LOCAL);
+                            messageService.resendMessage(failedMessage, messageReceiver, null, receiverIdentities, MessageId.random(), TriggerSource.LOCAL);
                             notificationService.cancel(messageReceiver);
                         } catch (Exception e) {
                             RuntimeUtil.runOnUiThread(new Runnable() {

@@ -47,11 +47,13 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.IdentityListAdapter;
 import ch.threema.app.dialogs.TextEntryDialog;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
@@ -90,15 +92,17 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
 
         try {
             contactService = ThreemaApplication.requireServiceManager().getContactService();
-        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+        } catch (MasterKeyLockedException e) {
             finish();
         }
 
         this.savedInstanceState = savedInstanceState;
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(this.getTitleText());
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(this.getTitleText());
+        }
 
         recyclerView = this.findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
@@ -134,8 +138,28 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
             }
         });
 
-        this.updateListAdapter();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            emptyView,
+            InsetSides.horizontal(),
+            SpacingValues.horizontal(R.dimen.grid_unit_x2)
+        );
 
+        this.updateListAdapter();
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.recycler),
+            InsetSides.lbr(),
+            new SpacingValues(null, R.dimen.tablet_additional_padding_horizontal, R.dimen.grid_unit_x10, R.dimen.tablet_additional_padding_horizontal)
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.floating),
+            InsetSides.all(),
+            SpacingValues.all(R.dimen.grid_unit_x2)
+        );
     }
 
     @Override
@@ -307,9 +331,5 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
         if (text.length() == ProtocolDefines.IDENTITY_LEN) {
             excludeIdentity(text);
         }
-    }
-
-    @Override
-    public void onNo(String tag) {
     }
 }

@@ -23,8 +23,8 @@ package ch.threema.domain.protocol.csp.messages.fs;
 
 import com.google.protobuf.ByteString;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
@@ -46,8 +46,8 @@ public class ForwardSecurityDataInitTest {
         .build();
 
     private static void assertEqualsTestProperties(ForwardSecurityDataInit data) {
-        Assert.assertEquals(TEST_SESSION_ID, data.getSessionId());
-        Assert.assertArrayEquals(TEST_EPHEMERAL_PUBLIC_KEY, data.getEphemeralPublicKey());
+        Assertions.assertEquals(TEST_SESSION_ID, data.getSessionId());
+        Assertions.assertArrayEquals(TEST_EPHEMERAL_PUBLIC_KEY, data.getEphemeralPublicKey());
     }
 
     @Test
@@ -68,6 +68,6 @@ public class ForwardSecurityDataInitTest {
         final ForwardSecurityDataInit data = new ForwardSecurityDataInit(TEST_SESSION_ID, SUPPORTED_VERSION_RANGE, TEST_EPHEMERAL_PUBLIC_KEY);
         final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
-        Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
+        Assertions.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
     }
 }

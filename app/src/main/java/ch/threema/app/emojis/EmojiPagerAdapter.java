@@ -22,7 +22,7 @@
 package ch.threema.app.emojis;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,14 +34,17 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import ch.threema.app.R;
 import ch.threema.app.emojireactions.EmojiReactionsGridAdapter;
+import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.data.models.EmojiReactionData;
 
 public class EmojiPagerAdapter extends PagerAdapter {
 
-    private final Context context;
+    private final Activity activity;
     private final EmojiGridAdapter.KeyClickListener listener;
     private final EmojiReactionsGridAdapter.KeyClickListener reactionsListener;
     private final EmojiPicker emojiPicker;
@@ -50,20 +53,20 @@ public class EmojiPagerAdapter extends PagerAdapter {
     private final List<EmojiReactionData> emojiReactions;
 
     EmojiPagerAdapter(
-        Context context,
+        Activity activity,
         EmojiPicker emojiPicker,
         EmojiService emojiService,
         EmojiGridAdapter.KeyClickListener listener,
         EmojiReactionsGridAdapter.KeyClickListener reactionsListener,
         List<EmojiReactionData> emojiReactions
     ) {
-        this.context = context;
+        this.activity = activity;
         this.listener = listener;
         this.reactionsListener = reactionsListener;
         this.emojiPicker = emojiPicker;
         this.emojiService = emojiService;
         this.emojiReactions = emojiReactions;
-        this.layoutInflater = LayoutInflater.from(context);
+        this.layoutInflater = LayoutInflater.from(activity);
     }
 
     @Override
@@ -86,14 +89,21 @@ public class EmojiPagerAdapter extends PagerAdapter {
             recentsGridView = (GridView) layout;
         }
 
+        final @NonNull Insets insets = ActivityExtensionsKt.getCurrentInsets(
+            activity,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        layout.setPadding(0, 0, 0, insets.bottom);
+
         new AsyncTask<Void, Void, EmojiGridAdapter>() {
             @Override
             protected EmojiGridAdapter doInBackground(Void... params) {
                 return new EmojiGridAdapter(
-                    context,
+                    activity,
                     position,
                     emojiService,
-                    listener);
+                    listener
+                );
             }
 
             @Override
@@ -139,9 +149,10 @@ public class EmojiPagerAdapter extends PagerAdapter {
                 @Override
                 protected EmojiReactionsGridAdapter doInBackground(Void... params) {
                     return new EmojiReactionsGridAdapter(
-                        context,
+                        activity,
                         emojiReactions,
-                        reactionsListener);
+                        reactionsListener
+                    );
                 }
 
                 @Override

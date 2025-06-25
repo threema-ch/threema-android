@@ -29,9 +29,8 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingGroupLocationMessageTask")
+private val logger = LoggingUtil.getThreemaLogger("IncomingGroupLocationMessageTask")
 
 class IncomingGroupLocationMessageTask(
     private val groupLocationMessage: GroupLocationMessage,

@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.AppConstants;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
@@ -44,7 +45,7 @@ import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -56,16 +57,16 @@ import ch.threema.storage.models.data.MessageContentsType;
 public class DistributionListMessageReceiver implements MessageReceiver<DistributionListMessageModel> {
     private final List<ContactMessageReceiver> affectedMessageReceivers = new ArrayList<>();
 
-    private final DatabaseServiceNew databaseServiceNew;
+    private final DatabaseService databaseService;
     private final DistributionListModel distributionListModel;
     private final DistributionListService distributionListService;
 
     public DistributionListMessageReceiver(
-        DatabaseServiceNew databaseServiceNew,
+        DatabaseService databaseService,
         ContactService contactService,
         DistributionListModel distributionListModel,
         DistributionListService distributionListService) {
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.distributionListModel = distributionListModel;
         this.distributionListService = distributionListService;
 
@@ -121,7 +122,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 
     @Override
     public void saveLocalModel(final DistributionListMessageModel save) {
-        this.databaseServiceNew.getDistributionListMessageModelFactory().createOrUpdate(save);
+        this.databaseService.getDistributionListMessageModelFactory().createOrUpdate(save);
     }
 
     private void initializeMessageModel() {
@@ -187,7 +188,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 
     @Override
     public List<DistributionListMessageModel> loadMessages(MessageService.MessageFilter filter) {
-        return this.databaseServiceNew.getDistributionListMessageModelFactory().find(
+        return this.databaseService.getDistributionListMessageModelFactory().find(
             this.distributionListModel.getId(),
             filter
         );
@@ -195,7 +196,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 
     @Override
     public long getMessagesCount() {
-        return this.databaseServiceNew.getDistributionListMessageModelFactory().countMessages(
+        return this.databaseService.getDistributionListMessageModelFactory().countMessages(
             this.distributionListModel.getId());
     }
 
@@ -227,7 +228,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 
     @Override
     public void prepareIntent(Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, this.getDistributionList().getId());
+        intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, this.getDistributionList().getId());
     }
 
     @Override
@@ -246,6 +247,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
         return 0;
     }
 
+    @NonNull
     @Override
     public String getUniqueIdString() {
         return this.distributionListService.getUniqueIdString(this.distributionListModel);

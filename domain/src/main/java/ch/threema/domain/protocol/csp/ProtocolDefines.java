@@ -84,7 +84,7 @@ public class ProtocolDefines {
         - OVERHEAD_MSG_HDR
         - OVERHEAD_BOX_HDR
         - OVERHEAD_MAXPADDING;
-    public static final int MAX_TEXT_MESSAGE_LEN = 3500;  // Until ANDR-998 and IOS-865 are resolved
+    public static final int MAX_TEXT_MESSAGE_LEN = 6000;
     public static final int MIN_MESSAGE_PADDED_LEN = 32;
 
     /* message type */

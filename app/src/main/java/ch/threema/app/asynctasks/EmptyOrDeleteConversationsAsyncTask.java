@@ -39,6 +39,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.groupflows.GroupDisbandIntent;
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupLeaveIntent;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
@@ -49,12 +50,14 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 /**
@@ -213,40 +216,48 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
 
         // Decide whether the group must be additionally left or disbanded. Note that we do not need
         // to provide a fragment manager as this task already shows a progress dialog.
-        Deferred<Boolean> groupRemoveResult;
+        Deferred<GroupFlowResult> groupRemoveResultDeferred;
         if (!groupModelData.isMember()) {
             // In the case where the user is not a member anymore, we can just remove the group.
-            groupRemoveResult = groupFlowDispatcher.runRemoveGroupFlow(null, group);
+            groupRemoveResultDeferred = groupFlowDispatcher.runRemoveGroupFlow(
+                group
+            );
         } else if (myIdentity.equals(groupModelData.groupIdentity.getCreatorIdentity())) {
             // In the case where the user is the creator, we need to disband and remove the group.
-            groupRemoveResult = groupFlowDispatcher.runDisbandGroupFlow(
-                null, GroupDisbandIntent.DISBAND_AND_REMOVE, group
+            groupRemoveResultDeferred = groupFlowDispatcher.runDisbandGroupFlow(
+                GroupDisbandIntent.DISBAND_AND_REMOVE,
+                group
             );
         } else {
             // Otherwise, we need to leave and remove the group.
-            groupRemoveResult = groupFlowDispatcher.runLeaveGroupFlow(
-                null, GroupLeaveIntent.LEAVE_AND_REMOVE, group
+            groupRemoveResultDeferred = groupFlowDispatcher.runLeaveGroupFlow(
+                GroupLeaveIntent.LEAVE_AND_REMOVE,
+                group
             );
         }
 
-        // Await the result
         CountDownLatch latch = new CountDownLatch(1);
-
-        groupRemoveResult.invokeOnCompletion(throwable -> {
-            // TODO(ANDR-3631): Would an exception here halt the async task forever?
-            Boolean result = groupRemoveResult.getCompleted();
-            if (result == null || !result) {
-                logger.error("Could not remove group", throwable);
+        CoroutinesExtensionKt.onCompleted(
+            groupRemoveResultDeferred,
+            exception -> {
+                latch.countDown(); // Release the latch
+                logger.error("Could not remove group", exception);
+                return Unit.INSTANCE;
+            },
+            result -> {
+                latch.countDown(); // Release the latch
+                if (!(result instanceof GroupFlowResult.Success)) {
+                    logger.error("Could not remove group");
+                }
+                return Unit.INSTANCE;
             }
+        );
 
-            latch.countDown();
-            return null;
-        });
-
+        // Await the result
         try {
             latch.await();
-        } catch (InterruptedException e) {
-            logger.error("Deleting group interrupted", e);
+        } catch (InterruptedException exception) {
+            logger.error("Removing group was interrupted", exception);
         }
     }
 

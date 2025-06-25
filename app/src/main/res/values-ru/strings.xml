@@ -101,6 +101,7 @@
     <string name="next">Далее</string>
     <string name="finish">Закончить</string>
     <string name="please_wait">Подождите…</string>
+    <string name="please_wait_timeout">Это занимает больше времени, чем ожидалось</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Создание вашего ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">Выполняется синхронизация контактов…</string>
@@ -164,6 +165,7 @@
     <string name="delete_id_message">Если у вас нет созданной или экспортированной резервной копии этого ID, вы больше никогда не сможете отправлять или получать сообщения, используя этот ID.\n\nЕсли вы больше не хотите использовать этот ID, рекомендуется задать пароль аннулирования и отозвать ID на сайте myid.threema.ch/revoke перед его удалением.</string>
     <string name="delete_id_message2">Последнее предупреждение: вы действительно хотите удалить свой ID?</string>
     <string name="delete_id_sum">Навсегда удалить свой ID и все данные на этом устройстве</string>
+    <string name="delete_all_data_prompt">Удалить все данные?</string>
     <string name="backup_password_summary">Ваш экспорт ID будет зашифрован паролем. Используйте сочетание латинских букв, цифр и специальных символов. Не забудьте записать или запомнить свой новый пароль!</string>
     <string name="backup_password_again_summary">Введите пароль ещё раз</string>
     <string name="password_hint">Пароль</string>
@@ -171,7 +173,6 @@
     <string name="backup_id_title">Ваш экспорт ID</string>
     <string name="backup_id_summary">Текстовая строка, показанная выше, или QR-код вместе с паролем, который вы выбрали, могут использоваться для восстановления вашего ID на другом устройстве. Вы можете скопировать его в подходящее место, передать по электронной почте или отсканировать QR-код с помощью другого устройства.</string>
     <string name="support">Поддержка</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Следующие резервные копии могут быть использованы вместе с выбранным паролем для восстановления вашего ${app_name_short} ID.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -345,9 +346,12 @@
     <string name="title_tab_recent">Последние</string>
     <string name="no_recent_conversations">Чаты не найдены</string>
     <string name="save_changes">Сохранить</string>
-    <string name="group_created_confirm">Группа успешно создана</string>
     <string name="creating_group">Создание группы</string>
     <string name="updating_group">Обновление группы</string>
+    <string name="leaving_group">Покидание группы</string>
+    <string name="disbanding_group">Роспуск группы</string>
+    <string name="removing_group">Удаление группы</string>
+    <string name="resyncing_group">Пересинхронизация группы</string>
     <string name="status_create_group">Группа создана.</string>
     <string name="status_rename_group">Группа переименована в «%1$s»</string>
     <string name="status_group_new_photo">Аватар группы обновлён.</string>
@@ -431,7 +435,7 @@
     <string name="backup_or_restore_error_body">Невозможно выполнить резервное копирование</string>
     <string name="could_not_download_message">Невозможно загрузить сообщение</string>
     <string name="info">Информация</string>
-    <string name="resync_group">Повторная синхронизация группы</string>
+    <string name="resync_group">Пересинхронизировать группу</string>
     <string name="edit_name">Изменить имя и изображение</string>
     <string name="edit_name_only">Изменить имя</string>
     <string name="group_was_synchronized">Группа синхронизирована.</string>
@@ -739,7 +743,20 @@
     <string name="clone_group_message">Будет создан клон группы с вами в качестве администратора. Продолжить?</string>
     <string name="prefs_proximity_sensor">Использовать датчик приближения</string>
     <string name="prefs_proximity_sensor_explain">Использовать разговорный динамик для воспроизведения голосовых сообщений, если датчик приближения закрыт</string>
-    <string name="error_creating_group">Ошибка создания группы</string>
+    <string name="error_creating_group_network">Невозможно создать группу. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="error_creating_group_internal">Из-за внутренней ошибки группа не была создана. Попробуйте позже.</string>
+    <string name="error_cloning_group_network">Невозможно клонировать группу. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="error_cloning_group_internal">Из-за внутренней ошибки группа не была клонирована. Попробуйте позже.</string>
+    <string name="error_updating_group_network">Невозможно применить изменения. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="error_updating_group_internal">Из-за внутренней ошибки изменения не могут быть применены. Попробуйте позже.</string>
+    <string name="error_leaving_group_network">Невозможно покинуть группу. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="error_leaving_group_internal">Из-за внутренней ошибки группа не была покинута. Попробуйте позже.</string>
+    <string name="error_disbanding_group_network">Невозможно распустить группу. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="error_disbanding_group_internal">Из-за внутренней ошибки группа не была распущена. Попробуйте позже.</string>
+    <string name="error_removing_group_network">Невозможно удалить группу. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="error_removing_group_internal">Из-за внутренней ошибки группа не была удалена. Попробуйте позже.</string>
+    <string name="error_resyncing_group_network">Невозможно пересинхронизировать группу. Проверьте подключение к интернету и повторите попытку.</string>
+    <string name="error_resyncing_group_internal">Из-за внутренней ошибки группа не была пересинхронизирована. Попробуйте позже.</string>
     <string name="no_media_found_generic">Медиафайлов, соответствующих выбору, в этом чате не найдено.</string>
     <string name="max_images_reached">За раз можно отредактировать не более %d изображений</string>
     <string name="enter_description">Опишите ошибку/проблему здесь.</string>
@@ -854,8 +871,6 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">При сохранении больших мультимедийных файлов из локальной резервной копии может быть превышена ёмкость памяти устройства, сохранение также может занять много времени. ${app_name} не будет отправлять и получать сообщения во время резервного копирования. Продолжить?</string>
     <string name="backup_data_cancelled">Резервное копирование отменено</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">База данных повреждена или неполна. Запуск невозможен.</string>
     <string name="message_sent">Сообщение отправлено</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">Звонок ${app_name_short}</string>
@@ -1225,9 +1240,6 @@
     <string name="permission_camera_videocall_required">Для видеосвязи предоставьте доступ к камере</string>
     <string name="tooltip_voip_enable_speakerphone">Нажмите здесь, чтобы включить громкую связь</string>
     <string name="ballot_open">Открытые опросы</string>
-    <string name="translators">Переводчики</string>
-    <string name="credits">Благодарности</string>
-    <string name="translators_thanks">Большое спасибо нашим переводчикам-волонтёрам:\n%s</string>
     <string name="ballot_window_hide">Скрыть открытые опросы</string>
     <string name="ballot_window_show">Показать открытые опросы</string>
     <string name="single_ballot_really_delete">Удалить этот опрос</string>
@@ -1563,7 +1575,7 @@
     <string name="prefs_summary_hibernation_api">Чтобы система не останавливала приложение ${app_name} после его долгого бездействия, отключите системную настройку «Останавливать, если приложение не используется».</string>
     <string name="unable_to_fetch_configuration">Невозможно получить данные от сервера конфигурации. Повторите попытку позже.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Было обнаружено подключение с другого устройства с тем же ${app_name_short} ID. Вы в последнее время использовали свой ${app_name_short} ID на другом устройствe?<br><br>Если использовали, не обращайте внимания на это сообщение.<br><br>Если же нет, возможно, ваш закрытый ключ стал известен другим. Просмотрите <a href="https://threema.ch/en/faq/another_connection">наши рекомендации</a> по защите устройства и данных, после чего создайте новый ID.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Было обнаружено подключение с другого устройства с тем же ${app_name_short} ID. Вы в последнее время использовали свой ${app_name_short} ID на другом устройствe?<br><br>Если использовали, не обращайте внимания на это сообщение.<br><br>Если же нет, возможно, ваш закрытый ключ стал известен другим. Просмотрите <a href="https://threema.com/faq/another_connection">наши рекомендации</a> по защите устройства и данных, после чего создайте новый ID.]]></string>
     <string name="fetch2_failure">Синхронизация с сервером подготовки не выполнена.</string>
     <string name="no_members_support_group_calls">В этой группе нет других участников, которые могут отвечать на групповые звонки</string>
     <string name="group_calls">Групповые звонки</string>
@@ -1596,7 +1608,7 @@
     <string name="forward_security_explanation">Протокол Perfect Forward Secrecy (PFS) защищает записанный обмен данными от ретроактивной расшифровки, даже если безопасность ключа долгосрочной расшифровки нарушена.\n\nЭтот параметр можно активировать, если приложение с обеих сторон поддерживает PFS.</string>
     <string name="group_call_inactivity_left">Групповой звонок окончен из-за отсутствия активности</string>
     <string name="missing_permission_external_storage">Невозможно скопировать файл. Попробуйте выполнить следующие шаги:\n1. Откройте приложение «Настройки».\n2. Перейдите на вкладку «Приложения» и выберите «Специальный доступ приложений».\n3. Нажмите «Доступ ко всем файлам».\n4. Нажмите на три точки в правом верхнем углу и выберите «Показать систему».\n5. Нажмите «Внешнее хранилище» и установите «Разрешить доступ для управления всеми файлами».\n6. Ещё раз попробуйте восстановить резервную копию.</string>
-    <string name="forward_security_downgraded_status_message">Протокол Perfect Forward Secrecy (PFS) в этой беседе отключён, поскольку версия приложения вашего собеседника в чате его не поддерживает.</string>
+    <string name="forward_security_downgraded_status_message">Протокол Perfect Forward Secrecy (PFS) в этой беседе отключён, поскольку версия приложения вашего собеседника в чате его не поддерживает или используется ${app_name_desktop} 2.0 для ПК (бета).</string>
     <string name="forward_security_illegal_session_status_message">Сессия Perfect Forward Secrecy сброшена по причине недействительности.</string>
     <string name="crop_image_title">Аватар группы</string>
     <string name="scroll_to_bottom">Прокрутить вниз</string>
@@ -1702,10 +1714,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Использование батареи приложением установлено на «оптимальное»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Приложению не разрешено поддерживать постоянное подключение к серверам, которое требуется для работы ${app_name_short} Push. Вы не будете получать уведомления о новых сообщениях, когда приложение работает в фоновом режиме. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">Эта версия Android скоро перестанет поддерживаться</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">Вы используете Android-устройство, на которое больше не поступают обновления программного обеспечения. По соображениям безопасности Threema скоро перестанет поддерживать эту версию Android.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">Это приложение больше не обновляется</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">Вы используете устаревшую версию Android, которая больше не поддерживается Threema по соображениям безопасности. Это означает, что вы больше не будете получать обновления для приложения Threema. Чтобы продолжить использовать Threema в полном объёме, пожалуйста, обновите операционную систему до актуальной версии.</string>
     <string name="problemsolver_to_settings">К настройкам</string>
     <string name="prefs_advanced_options">Дополнительные настройки</string>
     <string name="push_service">Push-сервис</string>
@@ -1755,7 +1767,7 @@
     <string name="device_linking_cancel_dialog_continue">Продолжить</string>
     <string name="md_drop_device_dialog_drop_button">Удалить устройство</string>
     <string name="md_drop_device_dialog_close_button">Закрыть</string>
-    <string name="md_drop_device_failed_dialog_title">Не удалось удалить привязанное устройство</string>
+    <string name="md_drop_device_failed_dialog_title">Возможно, не удалось удалить привязанное устройство</string>
     <string name="md_drop_device_failed_dialog_message">Проверьте подключение к интернету и повторите попытку.</string>
     <string name="md_drop_device_failed_dialog_button_close">Закрыть</string>
     <!-- accessibility -->
@@ -1817,12 +1829,20 @@
     <string name="device_linking_error_emoji_mismatch_body">Похоже, при подключении к устройству возникли проблемы. Перезапустите приложение на новом устройстве и повторите попытку.</string>
     <string name="device_linking_error_unexpected_title">Непредвиденная ошибка</string>
     <string name="device_linking_error_unexpected_body">Попробуйте привязать устройство ещё раз. Если проблема не исчезнет, обратитесь в службу поддержки (Главное меню → Поддержка).</string>
+    <string name="device_linking_error_invalid_contact_title">Недействительный контакт</string>
+    <string name="device_linking_error_invalid_contact_body">Контакт %1$s неправильно сохранён на этом устройстве и не позволяет привязать новое устройство. Обратитесь в службу поддержки (Главное меню → Поддержка).</string>
     <string name="device_linking_error_screen_close">Закрыть</string>
     <string name="work_directory_title">Каталог компании</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Поиск в каталоге</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Введите не менее 3 символов имени, чтобы начать поиск в каталоге пользователей ${app_name_short} вашей компании.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Невозможно поделиться некорректным файлом</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Доступен</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Недоступен</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакта</item>

@@ -39,10 +39,11 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.mediaattacher.MediaFilterQuery;
@@ -112,15 +113,15 @@ public class IntentDataUtil {
     }
 
     public static void append(ContactModel contactModel, Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, contactModel.getIdentity());
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, contactModel.getIdentity());
     }
 
     public static void append(String identity, Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
     }
 
     public static void append(GroupModel groupModel, Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
     }
 
     public static void append(GroupInviteModel groupInviteModel, Intent intent) {
@@ -250,22 +251,22 @@ public class IntentDataUtil {
     }
 
     public static int getGroupId(Intent intent) {
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID)) {
-            return intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, -1);
+        if (intent.hasExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
+            return intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, -1);
         }
         return -1;
     }
 
     public static long getDistributionListId(Intent intent) {
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
-            return intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, -1);
+        if (intent.hasExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
+            return intent.getLongExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, -1);
         }
         return -1;
     }
 
     public static String getIdentity(Intent intent) {
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_CONTACT)) {
-            return intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+        if (intent.hasExtra(AppConstants.INTENT_DATA_CONTACT)) {
+            return intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT);
         }
         return null;
     }
@@ -399,21 +400,21 @@ public class IntentDataUtil {
             return null;
         }
 
-        if (extras.containsKey(ThreemaApplication.INTENT_DATA_CONTACT)) {
-            String cIdentity = extras.getString(ThreemaApplication.INTENT_DATA_CONTACT);
+        if (extras.containsKey(AppConstants.INTENT_DATA_CONTACT)) {
+            String cIdentity = extras.getString(AppConstants.INTENT_DATA_CONTACT);
             return contactService.createReceiver(contactService.getByIdentity(cIdentity));
-        } else if (extras.containsKey(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID)) {
+        } else if (extras.containsKey(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
             // TODO(ANDR-3786) - Only read the value as type long
-            int groupId = extras.getInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
+            int groupId = extras.getInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
             if (groupId == 0) {
-                groupId = (int) extras.getLong(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0L);
+                groupId = (int) extras.getLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
             }
             final @Nullable GroupModel groupModel = groupService.getById(groupId);
             if (groupModel != null) {
                 return groupService.createReceiver(groupModel);
             }
-        } else if (extras.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
-            long distId = extras.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
+        } else if (extras.containsKey(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
+            long distId = extras.getLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
             return distributionListService.createReceiver(distributionListService.getById(distId));
         }
 
@@ -469,13 +470,13 @@ public class IntentDataUtil {
     public static Intent addMessageReceiverToIntent(Intent intent, MessageReceiver messageReceiver) {
         switch (messageReceiver.getType()) {
             case MessageReceiver.Type_CONTACT:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
+                intent.putExtra(AppConstants.INTENT_DATA_CONTACT, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
                 break;
             case MessageReceiver.Type_GROUP:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
+                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
                 break;
             case MessageReceiver.Type_DISTRIBUTION_LIST:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
+                intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
                 break;
             default:
                 break;
@@ -512,13 +513,13 @@ public class IntentDataUtil {
             }
         }
 
-        if (contactIds.size() > 0) {
+        if (!contactIds.isEmpty()) {
             intent.putExtra(INTENT_DATA_CONTACT_LIST, contactIds);
         }
-        if (groupIds.size() > 0) {
+        if (!groupIds.isEmpty()) {
             intent.putExtra(INTENT_DATA_GROUP_LIST, groupIds);
         }
-        if (distributionListIds.size() > 0) {
+        if (!distributionListIds.isEmpty()) {
             intent.putExtra(INTENT_DATA_DIST_LIST, distributionListIds);
         }
 
@@ -534,8 +535,8 @@ public class IntentDataUtil {
             return null;
         }
 
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_MESSAGE_ID)) {
-            int id = intent.getIntExtra(ThreemaApplication.INTENT_DATA_MESSAGE_ID, -1);
+        if (intent.hasExtra(AppConstants.INTENT_DATA_MESSAGE_ID)) {
+            int id = intent.getIntExtra(AppConstants.INTENT_DATA_MESSAGE_ID, -1);
 
             if (id >= 0) {
                 if (messageReceiver.getType() == MessageReceiver.Type_CONTACT) {
@@ -560,7 +561,7 @@ public class IntentDataUtil {
             : null;
     }
 
-    public static Intent getShowConversationIntent(ConversationModel conversationModel, Context context) {
+    public static Intent getShowConversationIntent(@Nullable ConversationModel conversationModel, Context context) {
         if (conversationModel == null) {
             return null;
         }
@@ -568,11 +569,11 @@ public class IntentDataUtil {
         Intent intent = new Intent(context, ComposeMessageActivity.class);
 
         if (conversationModel.isGroupConversation()) {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
         } else if (conversationModel.isDistributionListConversation()) {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, conversationModel.getDistributionList().getId());
+            intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, conversationModel.getDistributionList().getId());
         } else {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, conversationModel.getContact().getIdentity());
+            intent.putExtra(AppConstants.INTENT_DATA_CONTACT, conversationModel.getContact().getIdentity());
         }
         return intent;
     }
@@ -582,7 +583,7 @@ public class IntentDataUtil {
 
         if (!receivers.isEmpty()) {
             intent = addMessageReceiverToIntent(new Intent(context, ComposeMessageActivity.class), receivers.get(0));
-            intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+            intent.putExtra(AppConstants.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
         } else {
             intent = new Intent(context, HomeActivity.class);
         }
@@ -590,7 +591,7 @@ public class IntentDataUtil {
         // fix for <4.1 - keeps android from re-using existing intent and stripping extras
         intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_TIMESTAMP, SystemClock.elapsedRealtime());
+        intent.putExtra(AppConstants.INTENT_DATA_TIMESTAMP, SystemClock.elapsedRealtime());
 
         return intent;
     }
@@ -600,11 +601,11 @@ public class IntentDataUtil {
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         if (messageModel instanceof GroupMessageModel) {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageModel) messageModel).getGroupId());
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageModel) messageModel).getGroupId());
         } else if (messageModel instanceof DistributionListMessageModel) {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageModel) messageModel).getDistributionListId());
+            intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageModel) messageModel).getDistributionListId());
         } else {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, messageModel.getIdentity());
+            intent.putExtra(AppConstants.INTENT_DATA_CONTACT, messageModel.getIdentity());
         }
         intent.putExtra(ComposeMessageFragment.EXTRA_API_MESSAGE_ID, messageModel.getApiMessageId());
         intent.putExtra(ComposeMessageFragment.EXTRA_SEARCH_QUERY, " ");

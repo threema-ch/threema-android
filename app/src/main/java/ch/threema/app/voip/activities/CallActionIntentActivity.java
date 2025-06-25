@@ -37,7 +37,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactLookupUtil;
@@ -46,6 +46,7 @@ import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 /**
@@ -88,6 +89,9 @@ public class CallActionIntentActivity extends ThreemaActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         if (!this.requiredInstances()) {
             this.finish();

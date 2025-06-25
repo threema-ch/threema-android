@@ -29,14 +29,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -56,38 +55,45 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.GroupDetailAdapter;
+import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.GroupDescEditDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
+import ch.threema.app.dialogs.loadingtimeout.LoadingWithTimeoutDialogXml;
 import ch.threema.app.emojis.EmojiEditText;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupChanges;
 import ch.threema.app.groupflows.GroupCreateProperties;
 import ch.threema.app.groupflows.GroupDisbandIntent;
 import ch.threema.app.groupflows.GroupLeaveIntent;
 import ch.threema.app.groupflows.ProfilePicture;
 import ch.threema.app.grouplinks.GroupLinkOverviewActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
@@ -104,10 +110,11 @@ import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.GroupCallUtilKt;
 import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -118,17 +125,21 @@ import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
 import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static ch.threema.app.groupflows.GroupFlowResultKt.GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS;
 
 public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener,
     GenericAlertDialog.DialogClickListener,
@@ -143,7 +154,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private static final String DIALOG_TAG_DISSOLVE_GROUP = "dissolveGroup";
     private static final String DIALOG_TAG_QUIT = "quit";
     private static final String DIALOG_TAG_CHOOSE_ACTION = "chooseAction";
-    private static final String DIALOG_TAG_RESYNC_GROUP = "resyncGroup";
     private static final String DIALOG_TAG_DELETE_GROUP = "delG";
     private static final String DIALOG_TAG_CLONE_GROUP = "cg";
     private static final String DIALOG_TAG_CHANGE_GROUP_DESC = "cgDesc";
@@ -173,7 +183,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private String myIdentity;
     private int operationMode;
     private int groupId;
-    private boolean hasMemberChanges = false, hasAvatarChanges = false;
 
     private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
         @Override
@@ -190,7 +199,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         public void onAvatarSet(File avatarFile1) {
             groupDetailViewModel.setAvatarFile(avatarFile1);
             groupDetailViewModel.setIsAvatarRemoved(false);
-            hasAvatarChanges = true;
             updateFloatingActionButtonAndMenu();
         }
 
@@ -199,7 +207,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             groupDetailViewModel.setAvatarFile(null);
             groupDetailViewModel.setIsAvatarRemoved(true);
             avatarEditView.setDefaultAvatar(null, groupModel);
-            hasAvatarChanges = true;
             updateFloatingActionButtonAndMenu();
         }
     };
@@ -212,24 +219,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
     private final ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
         @Override
-        public void onSortingChanged() {
-        }
-
-        @Override
-        public void onNameFormatChanged() {
-        }
-
-        @Override
         public void onAvatarSettingChanged() {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
-        }
-
-        @Override
-        public void onInactiveContactsSettingChanged() {
-        }
-
-        @Override
-        public void onNotificationSettingChanged(String uid) {
         }
     };
 
@@ -296,16 +287,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
             }
         }
-
-        @Override
-        public void onUpdate(@NonNull GroupIdentity groupIdentity) {
-            //ignore
-        }
-
-        @Override
-        public void onLeave(@NonNull GroupIdentity groupIdentity) {
-            // ignore
-        }
     };
 
     @Override
@@ -321,18 +302,43 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             return;
         }
 
-        ConfigUtils.configureTransparentStatusBar(this);
+        final @NonNull CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        this.groupNameEditText = findViewById(R.id.group_title);
+        final @Nullable ImageView avatarEditView = findViewById(R.id.avatar_edit);
+
+        if (getAppBarLayout() != null) {
+            getAppBarLayout().addOnOffsetChangedListener((view, verticalOffset) -> {
+                float expandedPercent = 1f;
+                final float offsetPixels = Math.abs(verticalOffset);
+                final float offsetPixelsWhenCollapsed = (float) view.getTotalScrollRange();
+                if (offsetPixelsWhenCollapsed > 0) {
+                    expandedPercent = 1 - (offsetPixels / offsetPixelsWhenCollapsed);
+                }
+
+                // Fade out contents while collapsing
+                groupNameEditText.setAlpha(expandedPercent);
+                if (avatarEditView != null && avatarEditView.getVisibility() == View.VISIBLE) {
+                    avatarEditView.setAlpha(expandedPercent);
+                }
+
+                // Show the group name as a toolbar title only of we are fully collapsed
+                @NonNull String toolbarTitle = " ";
+                if (groupDetailViewModel != null && expandedPercent == 0.0f) {
+                    toolbarTitle = groupDetailViewModel.getGroupName();
+                }
+                collapsingToolbar.setTitle(toolbarTitle);
+            });
+        }
 
         this.resumePauseHandler = ResumePauseHandler.getByActivity(this, this);
         this.groupDetailViewModel = new ViewModelProvider(this).get(GroupDetailViewModel.class);
 
         final MaterialToolbar toolbar = findViewById(R.id.toolbar);
         this.avatarEditView = findViewById(R.id.avatar_edit_view);
-        CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+
         this.floatingActionButton = findViewById(R.id.floating);
         RecyclerView groupDetailRecyclerView = findViewById(R.id.group_members_list);
         collapsingToolbar.setTitle(" ");
-        this.groupNameEditText = findViewById(R.id.group_title);
 
         // services
         try {
@@ -351,7 +357,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             return;
         }
 
-        groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
+        groupId = getIntent().getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
         if (this.groupId == 0) {
             finish();
         }
@@ -386,22 +392,19 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         }
         this.avatarEditView.setListener(this.avatarEditViewListener);
 
-        ((AppBarLayout) findViewById(R.id.appbar)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (verticalOffset == 0) {
-                    if (!floatingActionButton.isExtended()) {
-                        floatingActionButton.extend();
-                    }
-                } else if (floatingActionButton.isExtended()) {
-                    floatingActionButton.shrink();
+        ((AppBarLayout) findViewById(R.id.appbar)).addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            if (verticalOffset == 0) {
+                if (!floatingActionButton.isExtended()) {
+                    floatingActionButton.extend();
                 }
+            } else if (floatingActionButton.isExtended()) {
+                floatingActionButton.shrink();
             }
         });
 
         this.sortGroupMembers();
         setTitle();
-        setHasMemberChanges(false);
+        updateFloatingActionButtonAndMenu();
 
         if (groupService.isGroupCreator(groupModel) && groupService.isGroupMember(groupModel)) {
             operationMode = MODE_EDIT;
@@ -413,15 +416,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                 saveGroupSettings();
             });
             groupNameEditText.setMaxByteSize(GroupModel.GROUP_NAME_MAX_LENGTH_BYTES);
-            groupNameEditText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
+            groupNameEditText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     updateFloatingActionButtonAndMenu();
@@ -453,7 +448,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
         try {
             setupAdapter();
-        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+        } catch (MasterKeyLockedException e) {
             logger.error("Could not setup group detail adapter", e);
             finish();
             return;
@@ -495,7 +490,50 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         ListenerManager.contactListeners.add(this.contactListener);
     }
 
-    private void setupAdapter() throws MasterKeyLockedException, FileSystemNotPresentException {
+    @Override
+    public void handleDeviceInsets(){
+        // As the CollapsingToolbarLayout will consume the window insets internally, we have to apply the window insets to every our child views
+        // with one inset listener from the root layout
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_content), (view, windowInsets) -> {
+            final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+
+            // Apply the window insets to our MaterialToolbar
+            ViewExtensionsKt.setMargin(getToolbar(), insets.left, 0, insets.right, 0);
+
+            // Apply horizontal insets to the group name edittext
+            final int ownMarginHorizontal = getResources().getDimensionPixelSize(R.dimen.grid_unit_x2);
+            final int ownMarginBottom = getResources().getDimensionPixelSize(R.dimen.grid_unit_x4);
+            ViewExtensionsKt.setMargin(
+                findViewById(R.id.group_title),
+                insets.left + ownMarginHorizontal,
+                0,
+                insets.right + ownMarginHorizontal,
+                ownMarginBottom
+            );
+
+            // Apply horizontal and bottom insets to the listview
+            findViewById(R.id.group_members_list).setPadding(
+                insets.left,
+                0,
+                insets.right,
+                insets.bottom
+            );
+
+            // Place the floating action button
+            final int ownMargin = getResources().getDimensionPixelSize(R.dimen.grid_unit_x2);
+            ViewExtensionsKt.setMargin(
+                findViewById(R.id.floating),
+                insets.left + ownMargin,
+                0,
+                insets.right + ownMargin,
+                insets.bottom + ownMargin
+            );
+
+            return windowInsets;
+        });
+    }
+
+    private void setupAdapter() throws MasterKeyLockedException {
         Runnable onCloneGroupRunnable = null;
         if (groupService.isOrphanedGroup(groupModel) && groupService.countMembersWithoutUser(groupModel) > 0) {
             onCloneGroupRunnable = this::showCloneDialog;
@@ -531,7 +569,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private void launchContactDetail(View view, String identity) {
         if (!this.myIdentity.equals(identity)) {
             Intent intent = new Intent(GroupDetailActivity.this, ContactDetailActivity.class);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+            intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
             ActivityCompat.startActivityForResult(this, intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL, options.toBundle());
@@ -566,13 +604,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private void removeMemberFromGroup(final ContactModel contactModel) {
         if (contactModel != null) {
             this.groupDetailViewModel.removeGroupContact(contactModel);
-            setHasMemberChanges(true);
+            updateFloatingActionButtonAndMenu();
         }
-    }
-
-    private void setHasMemberChanges(boolean hasChanges) {
-        this.hasMemberChanges = hasChanges;
-        updateFloatingActionButtonAndMenu();
     }
 
     @Override
@@ -666,14 +699,14 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             return true;
         } else if (itemId == R.id.menu_group_links_manage) {
             Intent groupLinkOverviewIntent = new Intent(this, GroupLinkOverviewActivity.class);
-            groupLinkOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
+            groupLinkOverviewIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupId);
             startActivityForResult(groupLinkOverviewIntent, ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS);
         } else if (itemId == R.id.action_send_message) {
             if (groupModel != null) {
                 Intent intent = new Intent(this, ComposeMessageActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
-                intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupId);
+                intent.putExtra(AppConstants.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
                 startActivity(intent);
                 finish();
             }
@@ -730,7 +763,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                 !conversationCategoryService.isPrivateChat(GroupUtil.getUniqueIdString(this.groupModel))
             ) {
                 Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
-                mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
+                mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupId);
                 startActivity(mediaGalleryIntent);
             }
         } else if (itemId == R.id.menu_group_call) {
@@ -760,89 +793,213 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private void leaveOrDeleteGroupAndQuit(GroupLeaveIntent intent) {
         ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
         if (newGroupModel == null) {
+            logger.error("Could not leave or delete group: group model missing");
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_leaving_group_internal)
+                .show(getSupportFragmentManager());
             return;
         }
 
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
-            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runLeaveGroupFlow(
-                getSupportFragmentManager(),
-                intent,
-                newGroupModel
-            );
-
-            result.invokeOnCompletion(throwable -> {
-                if (result.getCompleted() != Boolean.TRUE) {
-                    logger.error("Could not leave group", throwable);
-                    return null;
-                }
-
-                navigateHome();
-                return null;
-            });
-        } catch (ThreemaException e) {
-            logger.error("Could not leave group", e);
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException exception) {
+            logger.error("Failed to leave group", exception);
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_leaving_group_internal)
+                .show(getSupportFragmentManager());
+            return;
         }
+
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.leaving_group
+        );
+        loadingDialog.show(getSupportFragmentManager());
+
+        Deferred<GroupFlowResult> leaveGroupFlowResultDeferred = groupFlowDispatcher
+            .runLeaveGroupFlow(intent, newGroupModel);
+
+        CoroutinesExtensionKt.onCompleted(
+            leaveGroupFlowResultDeferred,
+            exception -> {
+                logger.error("leave-group-flow was completed exceptionally", exception);
+                onLeaveGroupFailed(GroupFlowResult.Failure.Other.INSTANCE, loadingDialog);
+                return Unit.INSTANCE;
+            },
+            result -> {
+                if (result instanceof GroupFlowResult.Success) {
+                    onLeaveGroupSuccess(loadingDialog);
+                } else if (result instanceof GroupFlowResult.Failure) {
+                    onLeaveGroupFailed((GroupFlowResult.Failure) result, loadingDialog);
+                }
+                return Unit.INSTANCE;
+            }
+        );
+    }
+
+    @AnyThread
+    private void onLeaveGroupSuccess(@NonNull LoadingWithTimeoutDialogXml loadingDialog) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            navigateHome();
+        });
+    }
+
+    @AnyThread
+    private void onLeaveGroupFailed(
+        @NonNull GroupFlowResult.Failure failureResult,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (failureResult instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_leaving_group_network;
+            } else {
+                errorMessageRes = R.string.error_leaving_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getSupportFragmentManager());
+        });
     }
 
     private void disbandOrDeleteGroupAndQuit(GroupDisbandIntent intent) {
         ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
         if (newGroupModel == null) {
+            logger.error("Could not disband or delete group: group model missing");
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_disbanding_group_internal)
+                .show(getSupportFragmentManager());
             return;
         }
 
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
-            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runDisbandGroupFlow(
-                getSupportFragmentManager(),
-                intent,
-                newGroupModel
-            );
-
-            result.invokeOnCompletion(throwable -> {
-                if (result.getCompleted() != Boolean.TRUE) {
-                    logger.error("Could not disband or delete group", throwable);
-                }
-
-                finish();
-
-                return null;
-            });
-        } catch (ThreemaException e) {
-            logger.error("Could not leave group", e);
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException exception) {
+            logger.error("Failed to disband group", exception);
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_disbanding_group_internal)
+                .show(getSupportFragmentManager());
+            return;
         }
+
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.disbanding_group
+        );
+        loadingDialog.show(getSupportFragmentManager());
+
+        Deferred<GroupFlowResult> disbandGroupFlowResultDeferred = groupFlowDispatcher
+            .runDisbandGroupFlow(intent, newGroupModel);
+
+        CoroutinesExtensionKt.onCompleted(
+            disbandGroupFlowResultDeferred,
+            exception -> {
+                logger.error("disband-group-flow was completed exceptionally", exception);
+                onDisbandGroupFailed(GroupFlowResult.Failure.Other.INSTANCE, loadingDialog);
+                return Unit.INSTANCE;
+            },
+            result -> {
+                if (result instanceof GroupFlowResult.Success) {
+                    RuntimeUtil.runOnUiThread(this::finish);
+                } else if (result instanceof GroupFlowResult.Failure) {
+                    onDisbandGroupFailed((GroupFlowResult.Failure) result, loadingDialog);
+                }
+                return Unit.INSTANCE;
+            }
+        );
+    }
+
+    @AnyThread
+    private void onDisbandGroupFailed(
+        @NonNull GroupFlowResult.Failure failureResult,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (failureResult instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_disbanding_group_network;
+            } else {
+                errorMessageRes = R.string.error_disbanding_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getSupportFragmentManager());
+        });
     }
 
     private void removeGroupAndQuit() {
         ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
         if (newGroupModel == null) {
+            logger.error("Cannot remove group: group model is null");
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_removing_group_internal)
+                .show(getSupportFragmentManager());
             return;
         }
 
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
-            Deferred<Boolean> result = serviceManager.getGroupFlowDispatcher().runRemoveGroupFlow(
-                getSupportFragmentManager(),
-                newGroupModel
-            );
-
-            result.invokeOnCompletion(throwable -> {
-                if (throwable != null) {
-                    logger.error("Could not remove group", throwable);
-                } else {
-                    try {
-                        if (result.getCompleted() != Boolean.TRUE) {
-                            logger.error("Failed to remove group");
-                        }
-                    } catch (Exception e) {
-                        logger.error("Could not check group removal result", e);
-                    }
-                }
-
-                finish();
-
-                return null;
-            });
-        } catch (ThreemaException e) {
-            logger.error("Could not remove group", e);
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
+        } catch (ThreemaException exception) {
+            logger.error("Failed to remove group", exception);
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_removing_group_internal)
+                .show(getSupportFragmentManager());
+            return;
         }
+
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.removing_group
+        );
+        loadingDialog.show(getSupportFragmentManager());
+
+        Deferred<GroupFlowResult> removeGroupFlowResultDeferred = groupFlowDispatcher
+            .runRemoveGroupFlow(newGroupModel);
+
+        CoroutinesExtensionKt.onCompleted(
+            removeGroupFlowResultDeferred,
+            exception -> {
+                logger.error("remove-group-flow was completed exceptionally", exception);
+                RuntimeUtil.runOnUiThread(this::finish);
+                return Unit.INSTANCE;
+            },
+            groupFlowResult -> {
+                if (groupFlowResult instanceof GroupFlowResult.Success) {
+                    RuntimeUtil.runOnUiThread(this::finish);
+                } else if (groupFlowResult instanceof GroupFlowResult.Failure) {
+                    onRemoveGroupFailed(
+                        (GroupFlowResult.Failure) groupFlowResult,
+                        loadingDialog
+                    );
+                }
+                return Unit.INSTANCE;
+            }
+        );
+    }
+
+    @AnyThread
+    private void onRemoveGroupFailed(
+        @NonNull GroupFlowResult.Failure removeGroupFlowResultFailure,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (removeGroupFlowResultFailure instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_removing_group_network;
+            } else {
+                errorMessageRes = R.string.error_removing_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getSupportFragmentManager());
+        });
     }
 
     @Nullable
@@ -860,7 +1017,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void cloneGroup(final String newGroupName) {
-        GroupFlowDispatcher groupFlowDispatcher;
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
             groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
         } catch (ThreemaException e) {
@@ -868,37 +1025,86 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             return;
         }
 
-        Deferred<ch.threema.data.models.GroupModel> groupAddResult =
-            groupFlowDispatcher.runCreateGroupFlow(
-                getSupportFragmentManager(),
-                this,
-                new GroupCreateProperties(
-                    newGroupName,
-                    new ProfilePicture(groupService.getAvatar(groupModel, true, false)),
-                    Set.of(groupService.getGroupMemberIdentities(groupModel))
-                )
-            );
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.creating_group
+        );
+        loadingDialog.show(getSupportFragmentManager(), null);
 
-        // TODO(ANDR-3631): Improve result type handling including handling of the throwable
-        groupAddResult.invokeOnCompletion(throwable -> {
-            ch.threema.data.models.GroupModel groupModel = groupAddResult.getCompleted();
-            if (groupModel != null) {
-                Intent intent = new Intent(GroupDetailActivity.this, ComposeMessageActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getDatabaseId());
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(GroupDetailActivity.this, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
+        Deferred<GroupFlowResult> cloneGroupFlowResultDeferred = groupFlowDispatcher.runCreateGroupFlow(
+            this,
+            new GroupCreateProperties(
+                newGroupName,
+                new ProfilePicture(groupService.getAvatar(groupModel, true, false)),
+                Set.of(groupService.getGroupMemberIdentities(groupModel))
+            )
+        );
+
+        CoroutinesExtensionKt.onCompleted(
+            cloneGroupFlowResultDeferred,
+            exception -> {
+                logger.error("The create-group-flow failed exceptionally", exception);
+                onGroupCloneFailed(
+                    GroupFlowResult.Failure.Other.INSTANCE,
+                    loadingDialog
+                );
+                return Unit.INSTANCE;
+            },
+            groupFlowResult -> {
+                if (groupFlowResult instanceof GroupFlowResult.Success) {
+                    onGroupClonedSuccessfully(
+                        ((GroupFlowResult.Success) groupFlowResult).getGroupModel(),
+                        loadingDialog
+                    );
+                } else if (groupFlowResult instanceof GroupFlowResult.Failure) {
+                    onGroupCloneFailed(
+                        (GroupFlowResult.Failure) groupFlowResult,
+                        loadingDialog
+                    );
+                }
+                return Unit.INSTANCE;
             }
-            return null;
+        );
+    }
+
+    @AnyThread
+    private void onGroupClonedSuccessfully(
+        @NonNull ch.threema.data.models.GroupModel groupModel,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            Intent intent = new Intent(GroupDetailActivity.this, ComposeMessageActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getDatabaseId());
+            startActivity(intent);
+            finish();
+        });
+    }
+
+    @AnyThread
+    private void onGroupCloneFailed(
+        @NonNull GroupFlowResult.Failure createGroupFlowResultFailure,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (createGroupFlowResultFailure instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_cloning_group_network;
+            } else {
+                errorMessageRes = R.string.error_cloning_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getSupportFragmentManager());
         });
     }
 
     private void showConversation(String identity) {
         Intent intent = new Intent(this, ComposeMessageActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
         startActivity(intent);
     }
 
@@ -910,43 +1116,76 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void syncGroup() {
-        ch.threema.data.models.GroupModel newGroupModel =
-            groupModelRepository.getByCreatorIdentityAndId(groupModel.getCreatorIdentity(),
-                groupModel.getApiGroupId());
+        ch.threema.data.models.GroupModel newGroupModel = groupModelRepository.getByCreatorIdentityAndId(
+            groupModel.getCreatorIdentity(),
+            groupModel.getApiGroupId()
+        );
         if (newGroupModel == null) {
-            logger.error("New group model is null");
+            logger.error("Failed to resync group: New group model is null");
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_resyncing_group_internal)
+                .show(getSupportFragmentManager());
             return;
         }
 
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
-            GroupFlowDispatcher groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
-
-            GenericProgressDialog.newInstance(R.string.resync_group, R.string.please_wait)
-                .show(getSupportFragmentManager(), DIALOG_TAG_RESYNC_GROUP);
-
-            Deferred<Boolean> result = groupFlowDispatcher.runGroupResyncFlow(newGroupModel);
-
-            result.invokeOnCompletion(throwable -> {
-                try {
-                    if (result.getCompleted() == Boolean.TRUE) {
-                        RuntimeUtil.runOnUiThread(() -> Toast.makeText(
-                            GroupDetailActivity.this,
-                            R.string.group_was_synchronized,
-                            Toast.LENGTH_SHORT
-                        ).show());
-                    } else {
-                        logger.error("Could not synchronize group", throwable);
-                        RuntimeUtil.runOnUiThread(() -> Toast.makeText(GroupDetailActivity.this
-                            , R.string.error, Toast.LENGTH_SHORT).show());
-                    }
-                } finally {
-                    DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_RESYNC_GROUP, true);
-                }
-                return null;
-            });
+            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
         } catch (ThreemaException exception) {
-            logger.error("Error while manual group resync", exception);
+            logger.error("Failed to resync group", exception);
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, R.string.error_resyncing_group_internal)
+                .show(getSupportFragmentManager());
+            return;
         }
+
+        Deferred<GroupFlowResult> resyncGroupFlowResultDeferred = groupFlowDispatcher
+            .runGroupResyncFlow(newGroupModel);
+
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.resyncing_group
+        );
+        loadingDialog.show(getSupportFragmentManager());
+
+        CoroutinesExtensionKt.onCompleted(
+            resyncGroupFlowResultDeferred,
+            exception -> {
+                logger.error("resync-group-flow was completed exceptionally", exception);
+                onResyncGroupFailed(GroupFlowResult.Failure.Other.INSTANCE, loadingDialog);
+                return Unit.INSTANCE;
+            },
+            result -> {
+                if (result instanceof GroupFlowResult.Success) {
+                    RuntimeUtil.runOnUiThread(() -> {
+                        loadingDialog.dismiss();
+                        Toast.makeText(GroupDetailActivity.this, R.string.group_was_synchronized, Toast.LENGTH_SHORT).show();
+                    });
+                } else if (result instanceof GroupFlowResult.Failure) {
+                    onResyncGroupFailed((GroupFlowResult.Failure) result, loadingDialog);
+                }
+                return Unit.INSTANCE;
+            }
+        );
+    }
+
+    @AnyThread
+    private void onResyncGroupFailed(
+        @NonNull GroupFlowResult.Failure failureResult,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (failureResult instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_resyncing_group_network;
+            } else {
+                errorMessageRes = R.string.error_resyncing_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getSupportFragmentManager());
+        });
     }
 
     private void saveGroupSettings() {
@@ -958,12 +1197,14 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         );
         if (newGroupModel == null) {
             logger.error("Group model does not exist");
+            showGroupUpdateErrorInternal();
             return;
         }
 
         GroupModelData groupModelData = newGroupModel.getData().getValue();
         if (groupModelData == null) {
             logger.warn("Group model data is null");
+            showGroupUpdateErrorInternal();
             return;
         }
 
@@ -989,24 +1230,74 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
         } catch (ThreemaException exception) {
             logger.error("Could not get group flow dispatcher");
+            showGroupUpdateErrorInternal();
             return;
         }
 
-        Deferred<Boolean> updateResult = groupFlowDispatcher.runUpdateGroupFlow(
-            getSupportFragmentManager(),
-            groupChanges,
-            newGroupModel
+        final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            R.string.updating_group
         );
+        loadingDialog.show(getSupportFragmentManager());
 
-        updateResult.invokeOnCompletion(throwable -> {
-            Boolean result = updateResult.getCompleted();
-            if (Boolean.TRUE.equals(result)) {
-                finish();
-            } else {
-                SimpleStringAlertDialog.newInstance(R.string.updating_group, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required)).show(getSupportFragmentManager(), "er");
+        Deferred<GroupFlowResult> updateResultDeferred = groupFlowDispatcher.runUpdateGroupFlow(groupChanges, newGroupModel);
+
+        CoroutinesExtensionKt.onCompleted(
+            updateResultDeferred,
+            exception -> {
+                logger.error("The update-group-flow failed exceptionally", exception);
+                onGroupUpdateFailed(
+                    GroupFlowResult.Failure.Other.INSTANCE,
+                    loadingDialog
+                );
+                return Unit.INSTANCE;
+            },
+            groupFlowResult -> {
+                if (groupFlowResult instanceof GroupFlowResult.Success) {
+                    onGroupUpdateSucceeded(loadingDialog);
+                } else if (groupFlowResult instanceof GroupFlowResult.Failure) {
+                    onGroupUpdateFailed(
+                        (GroupFlowResult.Failure) groupFlowResult,
+                        loadingDialog
+                    );
+                }
+                return Unit.INSTANCE;
             }
-            return null;
+        );
+    }
+
+    @AnyThread
+    private void onGroupUpdateSucceeded(@NonNull LoadingWithTimeoutDialogXml loadingDialog) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            finish();
         });
+    }
+
+    @AnyThread
+    private void onGroupUpdateFailed(
+        @NonNull GroupFlowResult.Failure resultFailed,
+        @NonNull LoadingWithTimeoutDialogXml loadingDialog
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            loadingDialog.dismiss();
+            final @StringRes int errorMessageRes;
+            if (resultFailed instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_updating_group_network;
+            } else {
+                errorMessageRes = R.string.error_updating_group_internal;
+            }
+            SimpleStringAlertDialog
+                .newInstance(R.string.error, errorMessageRes)
+                .show(getSupportFragmentManager());
+        });
+    }
+
+    @UiThread
+    private void showGroupUpdateErrorInternal() {
+        SimpleStringAlertDialog
+            .newInstance(R.string.error, R.string.error_updating_group_internal)
+            .show(getSupportFragmentManager());
     }
 
     @Nullable
@@ -1024,7 +1315,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
     @Nullable
     private ProfilePictureChange getProfilePictureChange(ch.threema.data.models.GroupModel groupModel) {
-        if (!hasAvatarChanges) {
+        if (!groupDetailViewModel.hasAvatarChanges()) {
             return null;
         }
 
@@ -1053,14 +1344,14 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
     private void showCloneDialog() {
         TextEntryDialog.newInstance(
-                R.string.action_clone_group,
-                R.string.name,
-                R.string.ok,
-                R.string.cancel,
-                groupModel.getName(),
-                0,
-                0)
-            .show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP);
+            R.string.action_clone_group,
+            R.string.name,
+            R.string.ok,
+            R.string.cancel,
+            groupModel.getName(),
+            0,
+            0
+        ).show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP);
     }
 
     @Override
@@ -1070,7 +1361,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                 // some users were added
                 groupDetailViewModel.addGroupContacts(IntentDataUtil.getContactIdentities(data));
                 sortGroupMembers();
-                setHasMemberChanges(true);
             } else if (this.groupService.isGroupCreator(this.groupModel) && requestCode == ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS) {
                 // make sure we reset the default link switch if the default link was deleted
                 groupDetailAdapter.notifyDataSetChanged();
@@ -1237,7 +1527,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private boolean hasChanges() {
-        return hasMemberChanges || hasGroupNameChanges() || hasAvatarChanges;
+        return groupDetailViewModel.hasMemberChanges() || hasGroupNameChanges() || groupDetailViewModel.hasAvatarChanges();
     }
 
     private boolean hasGroupNameChanges() {
@@ -1261,48 +1551,11 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         }
 
         if (this.groupService.isGroupCreator(this.groupModel) && hasChanges()) {
-            this.floatingActionButton.show(new ExtendedFloatingActionButton.OnChangedCallback() {
-                @Override
-                public void onShown(ExtendedFloatingActionButton extendedFab) {
-                    super.onShown(extendedFab);
-                    adjustEditTextLocation(true);
-                }
-            });
+            this.floatingActionButton.show();
         } else {
-            this.floatingActionButton.hide(new ExtendedFloatingActionButton.OnChangedCallback() {
-                @Override
-                public void onHidden(ExtendedFloatingActionButton extendedFab) {
-                    super.onHidden(extendedFab);
-                    adjustEditTextLocation(false);
-                }
-            });
+            this.floatingActionButton.hide();
         }
         invalidateOptionsMenu();
-    }
-
-    synchronized private void adjustEditTextLocation(boolean show) {
-        floatingActionButton.post(() -> {
-            // check if FAB overlaps the group name
-            if (show) {
-                int[] editTextLocation = new int[2];
-                int[] fabLocation = new int[2];
-
-                groupNameEditText.getLocationInWindow(editTextLocation);
-                floatingActionButton.getLocationInWindow(fabLocation);
-
-                Rect editTextRect = new Rect(editTextLocation[0], editTextLocation[1],
-                    editTextLocation[0] + groupNameEditText.getMeasuredWidth(), editTextLocation[1] + groupNameEditText.getMeasuredHeight());
-                Rect fabRect = new Rect(fabLocation[0], fabLocation[1],
-                    fabLocation[0] + floatingActionButton.getMeasuredWidth(), fabLocation[1] + floatingActionButton.getMeasuredHeight());
-
-                if (editTextRect.intersect(fabRect)) {
-                    // place above fab
-                    groupNameEditText.setTranslationY((float) fabRect.top - editTextRect.bottom - getResources().getDimensionPixelSize(R.dimen.floating_button_margin));
-                }
-            } else {
-                groupNameEditText.setTranslationY(0F);
-            }
-        });
     }
 
     private void navigateHome() {

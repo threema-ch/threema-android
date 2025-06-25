@@ -22,7 +22,7 @@
 package ch.threema.domain.fs;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.helpers.DummyUsers;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;

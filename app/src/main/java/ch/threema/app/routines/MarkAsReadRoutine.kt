@@ -32,9 +32,8 @@ import ch.threema.app.utils.MessageUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("MarkAsReadRoutine")
+private val logger = LoggingUtil.getThreemaLogger("MarkAsReadRoutine")
 
 class MarkAsReadRoutine @JvmOverloads constructor(
     private val conversationService: ConversationService? = ThreemaApplication.getServiceManager()?.getConversationService(),

@@ -27,17 +27,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 
 public class IdentityListAdapter extends AbstractRecyclerAdapter<IdentityListAdapter.Entity, IdentityListAdapter.ViewHolder> {
     private OnItemClickListener onItemClickListener;
-    private final Context context;
     private final LayoutInflater inflater;
 
     public IdentityListAdapter(Context context) {
-        this.context = context;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -48,21 +48,19 @@ public class IdentityListAdapter extends AbstractRecyclerAdapter<IdentityListAda
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(android.R.id.text1);
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(entity);
-                    }
+            textView.setOnClickListener(v -> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(entity);
                 }
             });
         }
 
-        public void bind(Entity entity) {
+        public void bind(@NonNull Entity entity) {
             this.entity = entity;
             this.textView.setText(entity.getText());
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "PlacesViewHolder{" + textView.getText() + "}";
@@ -108,11 +106,7 @@ public class IdentityListAdapter extends AbstractRecyclerAdapter<IdentityListAda
 
             Entity entity = (Entity) o;
 
-            if (text != null ? !text.equals(entity.text) : entity.text != null) {
-                return false;
-            }
-
-            return true;
+            return Objects.equals(text, entity.text);
         }
 
         @Override

@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.widget.EditText;
@@ -49,15 +48,18 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.restrictions.AppRestrictionService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.license.SerialCredentials;
 import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
@@ -67,6 +69,7 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 // this should NOT extend ThreemaToolbarActivity
@@ -92,6 +95,9 @@ public class EnterSerialActivity extends ThreemaActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         if (!ConfigUtils.isSerialLicensed()) {
             finish();
@@ -100,32 +106,17 @@ public class EnterSerialActivity extends ThreemaActivity {
 
         setContentView(R.layout.activity_enter_serial);
 
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-        if (serviceManager == null) {
-            // Hide keyboard to make error message visible on low resolution displays
-            EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
-            Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        try {
-            licenseService = serviceManager.getLicenseService();
-            preferenceService = serviceManager.getPreferenceService();
-        } catch (NullPointerException | FileSystemNotPresentException e) {
-            logger.error("Exception", e);
-            Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        if (licenseService == null) {
-            finish();
-            return;
-        }
+        ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
+        licenseService = serviceManager.getLicenseService();
+        preferenceService = serviceManager.getPreferenceService();
 
         checkForValidCredentialsInBackground();
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.layout_parent_top),
+            InsetSides.vertical(),
+            SpacingValues.symmetric(R.dimen.wizard_contents_padding, R.dimen.wizard_contents_padding_horizontal)
+        );
 
         stateTextView = findViewById(R.id.unlock_state);
         licenseKeyOrUsernameText = findViewById(R.id.license_key);
@@ -328,15 +319,7 @@ public class EnterSerialActivity extends ThreemaActivity {
         }
     }
 
-    private class PasswordWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
+    private class PasswordWatcher extends SimpleTextWatcher {
         @Override
         public void afterTextChanged(Editable s) {
             String initial = s.toString();
@@ -352,15 +335,7 @@ public class EnterSerialActivity extends ThreemaActivity {
         }
     }
 
-    public class TextChangeWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
+    public class TextChangeWatcher extends SimpleTextWatcher {
         @Override
         public void afterTextChanged(Editable s) {
             if (stateTextView != null) {

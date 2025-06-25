@@ -50,6 +50,8 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -136,7 +138,15 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 
         this.setupList();
         this.updateList();
+    }
 
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(android.R.id.list),
+            InsetSides.lbr()
+        );
     }
 
     @Override

@@ -40,7 +40,7 @@ public abstract class DialogUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DialogUtil");
 
     public static void dismissDialog(FragmentManager fragmentManager, String tag, boolean allowStateLoss) {
-        logger.debug("dismissDialog: " + tag);
+        logger.debug("dismissDialog: {}", tag);
 
         if (fragmentManager == null) {
             return;

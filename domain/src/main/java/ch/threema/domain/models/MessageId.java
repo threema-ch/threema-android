@@ -21,6 +21,7 @@
 
 package ch.threema.domain.models;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Utils;
@@ -49,26 +50,31 @@ public class MessageId implements Serializable {
         if (messageId == null) {
             throw new ThreemaException("Message id is null");
         }
-        return new MessageId(Utils.hexStringToByteArray(messageId));
+        try {
+            return new MessageId(Utils.hexStringToByteArray(messageId));
+        } catch (BadMessageIdException e) {
+            throw new ThreemaException("Message id is invalid", e);
+        }
     }
 
     /**
      * Create a new random MessageId.
      */
-    public MessageId() {
-        messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
-        SecureRandom rnd = new SecureRandom();
-        rnd.nextBytes(messageId);
+    @NonNull
+    public static MessageId random() {
+        var messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
+        new SecureRandom().nextBytes(messageId);
+        return new MessageId(messageId);
     }
 
     /**
      * Create a MessageId from an 8-byte array.
      *
-     * @throws ThreemaException If the source array has the wrong length.
+     * @throws BadMessageIdException If the source array has the wrong length.
      */
-    public MessageId(byte[] messageId) throws BadMessageIdException {
+    public MessageId(@NonNull byte[] messageId) throws BadMessageIdException {
         if (messageId.length != ProtocolDefines.MESSAGE_ID_LEN) {
-            throw new BadMessageIdException("Invalid message ID length");
+            throw new BadMessageIdException();
         }
         this.messageId = messageId;
     }
@@ -85,7 +91,7 @@ public class MessageId implements Serializable {
      * Create a MessageId from an (unsigned) long in little-endian format
      */
     public MessageId(long messageIdLong) {
-        messageId = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(messageIdLong).array();
+        messageId = ByteBuffer.allocate(ProtocolDefines.MESSAGE_ID_LEN).order(ByteOrder.LITTLE_ENDIAN).putLong(messageIdLong).array();
     }
 
     public byte[] getMessageId() {
@@ -119,9 +125,5 @@ public class MessageId implements Serializable {
         return messageId[0] << 24 | (messageId[1] & 0xFF) << 16 | (messageId[2] & 0xFF) << 8 | (messageId[3] & 0xFF);
     }
 
-    public static class BadMessageIdException extends ThreemaException {
-        public BadMessageIdException(String msg) {
-            super(msg);
-        }
-    }
+    public static class BadMessageIdException extends IllegalArgumentException {}
 }

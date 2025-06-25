@@ -70,7 +70,7 @@ import androidx.media3.ui.PlayerView;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;

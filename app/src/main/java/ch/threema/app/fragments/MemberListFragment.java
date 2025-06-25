@@ -55,8 +55,11 @@ import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.ContactModel;
@@ -142,6 +145,13 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
         getListView().setDividerHeight(0);
         getListView().setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        getListView().setClipToPadding(false);
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            getListView(),
+            new InsetSides(false, true, true, true),
+            SpacingValues.bottom(R.dimen.grid_unit_x10)
+        );
 
         progressBar = view.findViewById(R.id.progress);
 

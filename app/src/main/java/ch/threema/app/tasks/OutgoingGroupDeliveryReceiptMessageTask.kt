@@ -53,7 +53,7 @@ class OutgoingGroupDeliveryReceiptMessageTask(
             return
         }
 
-        val messageId = MessageId()
+        val messageId = MessageId.random()
 
         sendGroupMessage(
             group,

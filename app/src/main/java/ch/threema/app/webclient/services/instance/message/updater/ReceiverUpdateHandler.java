@@ -48,7 +48,7 @@ import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupIdentity;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -81,7 +81,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
     private final @NonNull MessageDispatcher dispatcher;
 
     // Services
-    private final @NonNull DatabaseServiceNew databaseServiceNew;
+    private final @NonNull DatabaseService databaseService;
     private final @NonNull SynchronizeContactsService synchronizeContactsService;
     private final @NonNull GroupService groupService;
 
@@ -89,14 +89,14 @@ public class ReceiverUpdateHandler extends MessageUpdater {
     public ReceiverUpdateHandler(
         @NonNull HandlerExecutor handler,
         @NonNull MessageDispatcher dispatcher,
-        @NonNull DatabaseServiceNew databaseServiceNew,
+        @NonNull DatabaseService databaseService,
         @NonNull SynchronizeContactsService synchronizeContactsService,
         @NonNull GroupService groupService
     ) {
         super(Protocol.SUB_TYPE_RECEIVER);
         this.handler = handler;
         this.dispatcher = dispatcher;
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.synchronizeContactsService = synchronizeContactsService;
         this.groupService = groupService;
         this.contactListener = new ContactListener();
@@ -263,7 +263,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
 
         @Nullable
         private ContactModel getContactModelByIdentity(@NonNull String identity) {
-            return databaseServiceNew.getContactModelFactory().getByIdentity(identity);
+            return databaseService.getContactModelFactory().getByIdentity(identity);
         }
     }
 

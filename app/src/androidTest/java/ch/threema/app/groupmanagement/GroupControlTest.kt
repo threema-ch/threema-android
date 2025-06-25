@@ -29,7 +29,7 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers
 import ch.threema.app.R
-import ch.threema.app.activities.HomeActivity
+import ch.threema.app.home.HomeActivity
 import ch.threema.app.processors.MessageProcessorProvider
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage

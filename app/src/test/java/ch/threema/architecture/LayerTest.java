@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_ANNOTATION;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_APP;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_BASE;
+import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_COMMON;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_DATA;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_DOMAIN;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_LOCALCRYPTO;
@@ -52,6 +53,7 @@ public class LayerTest {
         PACKAGE_BASE + "..",
         PACKAGE_DATA + "..",
         PACKAGE_DOMAIN + "..",
+        PACKAGE_COMMON + "..",
         PACKAGE_LOCALCRYPTO + "..",
         PACKAGE_LOGGING + "..",
         PACKAGE_STORAGE + ".."

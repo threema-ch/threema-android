@@ -63,6 +63,8 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -200,6 +202,15 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
     }
 
     @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content_container),
+            InsetSides.lbr()
+        );
+    }
+
+    @Override
     public int getLayoutResource() {
         return R.layout.activity_webrtc_debug;
     }
@@ -234,7 +245,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
         this.addToLog("----------------");
 
         // Show settings
-        this.addToLog("Enabled: calls=" + preferenceService.isVoipEnabled() + " video=" + preferenceService.isVideoCallsEnabled());
+        this.addToLog("Enabled: calls=" + preferenceService.isVoipEnabled() + " video=" + preferenceService.areVideoCallsEnabled());
         this.addToLog("Settings: aec=" + preferenceService.getAECMode() +
             " video_codec=" + preferenceService.getVideoCodec() +
             " video_profile=" + preferenceService.getVideoCallsProfile() +
@@ -448,12 +459,6 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
         }
     }
 
-    @Override
-    public void onNo(String tag) { /* Unused */ }
-
-    @Override
-    public void onNeutral(String tag) { /* Unused */ }
-
     @SuppressLint("StaticFieldLeak")
     private void sendToSupport(@NonNull String caption) {
         if (
@@ -521,11 +526,10 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

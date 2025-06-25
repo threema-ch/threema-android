@@ -21,7 +21,6 @@
 
 package ch.threema.logging;
 
-import android.content.Context;
 import android.util.Log;
 
 import org.slf4j.Logger;
@@ -94,11 +93,11 @@ public class LoggerManager {
 
         // Initialize backends
         final List<LogBackend> backends = new ArrayList<>();
-        if (BuildConfig.DEBUG || BuildFlavor.getCurrent().isSandbox()) {
-            // Enable logging to logcat only for debug and sandbox builds
+        if ((BuildConfig.DEBUG || BuildFlavor.getCurrent().isSandbox()) && (!isInTest() || isInDeviceTest())) {
+            // Enable logging to logcat only for debug and sandbox builds, but not for unit tests
             backends.add(new LogcatBackend(Log.VERBOSE));
         }
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && !isInTest()) {
             backends.add(new DebugToasterBackend(ThreemaApplication::getAppContext, Log.ERROR));
         }
         backends.add(new DebugLogFileBackend(minLogLevel));
@@ -110,5 +109,23 @@ public class LoggerManager {
         }
 
         return logger;
+    }
+
+    /** @noinspection BooleanMethodIsAlwaysInverted*/
+    private static boolean isInTest() {
+        return isClassAvailable("org.junit.Test");
+    }
+
+    private static boolean isInDeviceTest() {
+        return isClassAvailable("ch.threema.app.ThreemaTestRunner");
+    }
+
+    private static boolean isClassAvailable(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }

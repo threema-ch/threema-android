@@ -21,7 +21,9 @@
 
 package ch.threema.testhelpers
 
+import app.cash.turbine.TurbineTestContext
 import kotlin.random.Random
+import kotlin.test.assertEquals
 
 /**
  * Generate an array of length `length` and fill it using a non-cryptographically-secure
@@ -54,3 +56,7 @@ fun Any.loadResource(file: String): String =
     javaClass.classLoader.getResourceAsStream(file).use {
         it.readAllBytes().toString(Charsets.UTF_8)
     }
+
+suspend fun <T> TurbineTestContext<T>.expectItem(expected: T) {
+    assertEquals(expected, awaitItem())
+}

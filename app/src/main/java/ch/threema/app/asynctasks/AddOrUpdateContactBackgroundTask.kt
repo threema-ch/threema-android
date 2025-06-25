@@ -29,7 +29,7 @@ import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex

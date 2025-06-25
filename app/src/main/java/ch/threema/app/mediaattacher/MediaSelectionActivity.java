@@ -54,7 +54,9 @@ import ch.threema.app.R;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.ui.DebouncedOnClickListener;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -136,7 +138,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
         mediaAttachViewModel.getCurrentMedia().observe(this, new Observer<List<MediaAttachItem>>() {
             @Override
             public void onChanged(List<MediaAttachItem> mediaAttachItems) {
-                if (mediaAttachItems.size() != 0) {
+                if (!mediaAttachItems.isEmpty()) {
                     mediaAttachViewModel.getCurrentMedia().removeObserver(this);
                 }
             }
@@ -176,7 +178,12 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 
         this.controlPanel = findViewById(R.id.control_panel);
         controlPanel.setVisibility(View.GONE);
-        controlPanel.setTranslationY(controlPanel.getHeight());
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            controlPanel,
+            InsetSides.bottom()
+        );
+
         ConstraintLayout selectPanel = findViewById(R.id.select_panel);
         this.cancelButton = selectPanel.findViewById(R.id.cancel);
         this.selectButton = selectPanel.findViewById(R.id.select);

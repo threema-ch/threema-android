@@ -23,6 +23,7 @@ package ch.threema.app.activities.notificationpolicy
 
 import android.os.Bundle
 import android.view.View
+import ch.threema.app.AppConstants
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.TestUtil
@@ -42,7 +43,7 @@ class ContactNotificationsActivity : NotificationsActivity() {
     }
 
     private val contactIdentity: String? by lazy {
-        intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT)
+        intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT)
     }
 
     private val contactModel: ch.threema.data.models.ContactModel? by lazy {

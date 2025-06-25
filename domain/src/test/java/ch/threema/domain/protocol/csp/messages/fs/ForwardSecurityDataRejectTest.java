@@ -23,8 +23,8 @@ package ch.threema.domain.protocol.csp.messages.fs;
 
 import com.google.protobuf.ByteString;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.MessageId;
@@ -35,7 +35,7 @@ import ch.threema.protobuf.csp.e2e.fs.Reject;
 
 public class ForwardSecurityDataRejectTest {
     private static final DHSessionId TEST_SESSION_ID = new DHSessionId();
-    private static final MessageId TEST_REJECTED_MESSAGE_ID = new MessageId();
+    private static final MessageId TEST_REJECTED_MESSAGE_ID = MessageId.random();
     private static final Reject.Cause TEST_CAUSE = Reject.Cause.UNKNOWN_SESSION;
 
     private static final Envelope TEST_PROTOBUF_MESSAGE = Envelope.newBuilder()
@@ -48,9 +48,9 @@ public class ForwardSecurityDataRejectTest {
         .build();
 
     private static void assertEqualsTestProperties(ForwardSecurityDataReject data) {
-        Assert.assertEquals(TEST_SESSION_ID, data.getSessionId());
-        Assert.assertEquals(TEST_REJECTED_MESSAGE_ID, data.getRejectedApiMessageId());
-        Assert.assertEquals(TEST_CAUSE, data.getCause());
+        Assertions.assertEquals(TEST_SESSION_ID, data.getSessionId());
+        Assertions.assertEquals(TEST_REJECTED_MESSAGE_ID, data.getRejectedApiMessageId());
+        Assertions.assertEquals(TEST_CAUSE, data.getCause());
     }
 
     @Test
@@ -71,6 +71,6 @@ public class ForwardSecurityDataRejectTest {
         final ForwardSecurityDataReject data = new ForwardSecurityDataReject(TEST_SESSION_ID, TEST_REJECTED_MESSAGE_ID, null, null, TEST_CAUSE);
         final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
-        Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
+        Assertions.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
     }
 }

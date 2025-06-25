@@ -21,7 +21,7 @@
 
 package ch.threema.app.contacts
 
-import androidx.annotation.AnyThread
+import androidx.annotation.WorkerThread
 import ch.threema.app.DangerousTest
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestMultiDevicePropertyProvider
@@ -32,15 +32,14 @@ import ch.threema.app.asynctasks.DeleteContactServices
 import ch.threema.app.asynctasks.MarkContactAsDeletedBackgroundTask
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.multidevice.LinkedDevice
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.multidevice.PersistedMultiDeviceProperties
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
-import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.tasks.TaskCreator
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModelData
@@ -56,6 +55,7 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.protocol.connection.data.DeviceId
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
@@ -66,17 +66,16 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 import com.neilalexander.jnacl.NaCl
 import java.util.Date
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 
 @DangerousTest
 class MarkContactAsDeletedBackgroundTaskTest {
@@ -113,8 +112,8 @@ class MarkContactAsDeletedBackgroundTaskTest {
         override val propertiesProvider = TestMultiDevicePropertyProvider
         override val socketCloseListener: D2mSocketCloseListener = D2mSocketCloseListener { }
 
-        @AnyThread
-        override suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec) {
+        @WorkerThread
+        override fun removeMultiDeviceLocally(serviceManager: ServiceManager) {
             MUST_NOT_BE_CALLED()
         }
 
@@ -130,15 +129,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
             MUST_NOT_BE_CALLED()
         }
 
-        override suspend fun dropDevice(
-            deviceId: DeviceId,
-            taskCreator: TaskCreator,
-            timeout: Duration,
-        ): DropDeviceResult {
-            MUST_NOT_BE_CALLED()
-        }
-
-        override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>> {
+        override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<Map<DeviceId, DevicesInfo.AugmentedDeviceInfo>> {
             MUST_NOT_BE_CALLED()
         }
 
@@ -157,6 +148,10 @@ class MarkContactAsDeletedBackgroundTaskTest {
             fsMessageProcessor: ForwardSecurityMessageProcessor,
             taskCreator: TaskCreator,
         ) {
+            MUST_NOT_BE_CALLED()
+        }
+
+        override fun enableForwardSecurity(serviceManager: ServiceManager) {
             MUST_NOT_BE_CALLED()
         }
     }
@@ -190,13 +185,13 @@ class MarkContactAsDeletedBackgroundTaskTest {
         notificationTriggerPolicyOverride = null,
     )
 
-    @Before
+    @BeforeTest
     fun before() {
         databaseService = TestDatabaseService()
         val serviceManager = ThreemaApplication.requireServiceManager()
         testTaskCodec = TransactionAckTaskCodec()
         coreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = serviceManager.preferenceStore,
             multiDeviceManager = multiDeviceManager,
@@ -214,7 +209,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
             serviceManager.excludedSyncIdentitiesService,
             serviceManager.dhSessionStore,
             serviceManager.notificationService,
-            serviceManager.databaseServiceNew,
+            serviceManager.databaseService,
         )
         contactModelRepository = ModelRepositories(coreServiceManager).contacts
 

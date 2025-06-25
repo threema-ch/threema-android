@@ -27,7 +27,7 @@ import ch.threema.protobuf.d2d.conversationId
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.protobuf.groupIdentity
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import kotlin.random.Random.Default.nextBytes
 import kotlin.test.Test

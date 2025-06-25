@@ -23,7 +23,6 @@ package ch.threema.app.activities.ballot;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +37,9 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -54,8 +55,7 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
     private CheckBox typeCheckbox;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         ViewGroup rootView = (ViewGroup) inflater.inflate(
             R.layout.fragment_ballot_wizard0, container, false);
@@ -72,7 +72,7 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
                 return false;
             }
         });
-        this.editText.addTextChangedListener(new TextWatcher() {
+        this.editText.addTextChangedListener(new SimpleTextWatcher() {
             public void afterTextChanged(Editable s) {
                 if (getBallotActivity() != null) {
                     getBallotActivity().setBallotDescription(editText.getText().toString());
@@ -80,12 +80,6 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
                 if (s != null && s.length() > 0) {
                     textInputLayout.setError(null);
                 }
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
 
@@ -158,5 +152,4 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
             this.editText.setFocusable(true);
         }
     }
-
 }

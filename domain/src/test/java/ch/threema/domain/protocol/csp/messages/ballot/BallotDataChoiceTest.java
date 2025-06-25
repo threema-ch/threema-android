@@ -21,16 +21,16 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import ch.threema.domain.protocol.csp.messages.BadMessageException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class BallotDataChoiceTest {
 
-    class BallotDataChoiceString extends BallotDataChoice {
+    static class BallotDataChoiceString extends BallotDataChoice {
         public BallotDataChoiceString(int resultSize) {
             super(resultSize);
         }
@@ -57,9 +57,9 @@ public class BallotDataChoiceTest {
         try {
             result = BallotDataChoice.parse(correct);
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class BallotDataChoiceTest {
 
         try {
             BallotDataChoice.parse(correct);
-            Assert.fail("wrong type parsed");
+            Assertions.fail("wrong type parsed");
         } catch (BadMessageException e) {
             //cool!
         }
@@ -83,7 +83,7 @@ public class BallotDataChoiceTest {
     public void parseInvalidString() {
         try {
             BallotDataChoice.parse("i want to be a hippie");
-            Assert.fail("invalid string parsed");
+            Assertions.fail("invalid string parsed");
         } catch (BadMessageException e) {
             //ok! exception received
         }
@@ -105,12 +105,9 @@ public class BallotDataChoiceTest {
 
         try {
             JSONObject o = new JSONObject("{\"i\":100,\"n\":\"Test\",\"o\":123, \"r\": [1,0,0,1], \"t\":4}");
-            Assert.assertEquals(
-                o.toString(),
-                c.toString()
-            );
+            Assertions.assertEquals(o.toString(), c.toString());
         } catch (JSONException e) {
-            Assert.fail("internal error");
+            Assertions.fail("internal error");
         }
 
     }

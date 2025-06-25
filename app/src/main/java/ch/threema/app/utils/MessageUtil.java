@@ -40,7 +40,6 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.decorators.GroupStatusAdapterDecorator;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
@@ -82,7 +81,7 @@ public class MessageUtil {
         MessageType.IMAGE,
         MessageType.VOICEMESSAGE);
 
-    public static String getDisplayDate(Context context, AbstractMessageModel messageModel, boolean full) {
+    public static String getDisplayDate(@NonNull Context context, @Nullable AbstractMessageModel messageModel, boolean full) {
         if (messageModel == null) {
             return "";
         }
@@ -324,7 +323,7 @@ public class MessageUtil {
         allReceivers.add(messageReceiver);
 
         List<MessageReceiver> affectedReceivers = messageReceiver.getAffectedMessageReceivers();
-        if (affectedReceivers != null && affectedReceivers.size() > 0) {
+        if (affectedReceivers != null && !affectedReceivers.isEmpty()) {
             allReceivers.addAll(Functional.filter(affectedReceivers, new IPredicateNonNull<>() {
                 @Override
                 public boolean apply(@NonNull MessageReceiver type) {
@@ -611,7 +610,7 @@ public class MessageUtil {
                     if (serviceManager != null) {
                         try {
                             contactService = serviceManager.getContactService();
-                        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                        } catch (MasterKeyLockedException e) {
                             logger.error("Could not get contact service", e);
                             // Don't abort: if the contact service cannot be created, then the
                             // status messages only show the threema id instead of the display name

@@ -26,9 +26,7 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
-import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -41,12 +39,16 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.annotation.IdRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import ch.threema.app.R
 import ch.threema.app.mediaattacher.ContactEditViewModel
 import ch.threema.app.ui.VCardPropertyView
+import ch.threema.app.ui.setMargin
 import ch.threema.app.utils.VCardExtractor
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -56,7 +58,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.google.android.material.shape.MaterialShapeDrawable
 import ezvcard.property.StructuredName
 
 private val logger = LoggingUtil.getThreemaLogger("EditSendContactActivity")
@@ -76,88 +77,102 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
     private lateinit var bottomSheet: View
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
+    override fun handleDeviceInsets() {
+        val rootCoordinator: CoordinatorLayout = findViewById(R.id.edit_send_contact_coordinator)
+        val toolbar: MaterialToolbar = findViewById(R.id.toolbar_contact)
+        val floatingActionButton: FloatingActionButton = findViewById(R.id.send_contact)
+        val nestedScrollView: NestedScrollView = findViewById(R.id.nested_scroll_view)
+        ViewCompat.setOnApplyWindowInsetsListener(rootCoordinator) { _: View, windowInsets: WindowInsetsCompat ->
+
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+
+            toolbar.setMargin(insets.left, insets.top, insets.right, 0)
+
+            // Set correct top margin depending on the toolbar height and window insets
+            rootCoordinator.viewTreeObserver.addOnGlobalLayoutListener(
+                object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        rootCoordinator.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                        val topMargin = (insets.top + toolbar.height) - resources.getDimensionPixelSize(R.dimen.drag_handle_height)
+
+                        val bottomSheetContainer: CoordinatorLayout = findViewById(R.id.bottom_sheet_coordinator)
+                        bottomSheetContainer.setMargin(0, topMargin, 0, 0)
+
+                        if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
+                            bottomSheetBehavior.peekHeight = ((bottomSheetContainer.height / 16f) * 9f).toInt()
+                        } else if (resources.configuration.orientation == ORIENTATION_PORTRAIT) {
+                            bottomSheetBehavior.peekHeight = -1
+                        }
+
+                        if (viewModel.bottomSheetExpanded) {
+                            onBottomSheetExpand()
+                        } else {
+                            onBottomSheetCollapse()
+                        }
+                    }
+                },
+            )
+
+            val ownFabMargin = resources.getDimensionPixelSize(R.dimen.grid_unit_x2)
+            floatingActionButton.setMargin(
+                left = insets.left + ownFabMargin,
+                top = insets.top + ownFabMargin,
+                right = insets.right + ownFabMargin,
+                bottom = insets.bottom + ownFabMargin,
+            )
+
+            // prevent fab from overlapping last item
+            nestedScrollView.updatePadding(
+                bottom = insets.bottom + resources.getDimensionPixelSize(R.dimen.grid_unit_x10),
+            )
+
+            windowInsets
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // set status bar color
-        window.statusBarColor = Color.TRANSPARENT
-
         toolbar = findViewById(R.id.toolbar_contact)
         appBarLayout = findViewById(R.id.appbar_layout_contact)
         viewModel = ViewModelProvider(this)[ContactEditViewModel::class.java]
 
         // Finish activity when chat activity (in "background") is clicked
-        (
-            (findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator).parent as ViewGroup)
-                .parent as ViewGroup
-            ).setOnClickListener { cancelAndFinish() }
+        ((findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator).parent as ViewGroup).parent as ViewGroup).setOnClickListener {
+            cancelAndFinish()
+        }
 
         // Finish activity when bottom sheet gets hidden and adapt status bar color on expand/drag
-        bottomSheet = findViewById<View>(R.id.bottom_sheet)
+        bottomSheet = findViewById(R.id.bottom_sheet)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
-            addBottomSheetCallback(object : BottomSheetCallback() {
-                override fun onStateChanged(view: View, i: Int) {
-                    when (i) {
-                        BottomSheetBehavior.STATE_HIDDEN -> cancelAndFinish()
-                        BottomSheetBehavior.STATE_EXPANDED -> {
-                            onBottomSheetExpand()
-                            viewModel.bottomSheetExpanded = true
-                        }
+            addBottomSheetCallback(
+                object : BottomSheetCallback() {
+                    override fun onStateChanged(view: View, i: Int) {
+                        when (i) {
+                            BottomSheetBehavior.STATE_HIDDEN -> cancelAndFinish()
+                            BottomSheetBehavior.STATE_EXPANDED -> {
+                                onBottomSheetExpand()
+                                viewModel.bottomSheetExpanded = true
+                            }
 
-                        BottomSheetBehavior.STATE_SETTLING -> {}
-                        BottomSheetBehavior.STATE_HALF_EXPANDED -> {}
-                        else -> {
-                            onBottomSheetCollapse()
-                            viewModel.bottomSheetExpanded = false
+                            BottomSheetBehavior.STATE_SETTLING -> {}
+                            BottomSheetBehavior.STATE_HALF_EXPANDED -> {}
+                            else -> {
+                                onBottomSheetCollapse()
+                                viewModel.bottomSheetExpanded = false
+                            }
                         }
                     }
-                }
 
-                override fun onSlide(view: View, v: Float) {}
-            })
+                    override fun onSlide(view: View, v: Float) {}
+                },
+            )
         }
 
         toolbar.setNavigationOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
             onBottomSheetCollapse()
         }
-
-        // Set correct top margin depending on the toolbar height
-        val rootCoordinator = findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator)
-        rootCoordinator.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                rootCoordinator.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
-                val topMargin =
-                    toolbar.height - resources.getDimensionPixelSize(R.dimen.drag_handle_height)
-
-                val bottomSheetContainer =
-                    findViewById<CoordinatorLayout>(R.id.bottom_sheet_coordinator)
-                val bottomSheetContainerLayoutParams =
-                    bottomSheetContainer.layoutParams as CoordinatorLayout.LayoutParams
-                bottomSheetContainerLayoutParams.setMargins(0, topMargin, 0, 0)
-                bottomSheetContainer.layoutParams = bottomSheetContainerLayoutParams
-
-                if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
-                    bottomSheetBehavior.peekHeight =
-                        ((bottomSheetContainer.height / 16f) * 9f).toInt()
-                } else if (resources.configuration.orientation == ORIENTATION_PORTRAIT) {
-                    bottomSheetBehavior.peekHeight = -1
-                }
-
-                if (viewModel.bottomSheetExpanded) {
-                    onBottomSheetExpand()
-                } else {
-                    onBottomSheetCollapse()
-                }
-            }
-        })
-
-        // Set the correct toolbar width
-        val toolbarLayoutParams = toolbar.layoutParams
-        toolbarLayoutParams.width = bottomSheetBehavior.maxWidth
-        toolbar.layoutParams = toolbarLayoutParams
 
         if (viewModel.bottomSheetExpanded) {
             onBottomSheetExpand()
@@ -189,8 +204,10 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
 
         // Expand bottom sheet when the focused edit text is hidden behind the soft keyboard
         bottomSheet.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            Handler(Looper.getMainLooper())
-                .postDelayed({ editTexts.forEach { it.checkVisibility() } }, 20)
+            Handler(Looper.getMainLooper()).postDelayed(
+                { editTexts.forEach { it.checkVisibility() } },
+                20,
+            )
         }
 
         viewModel.getProperties().observe(this) { properties ->
@@ -209,8 +226,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             }
 
             // Hide progress bar
-            findViewById<CircularProgressIndicator>(R.id.progress_bar_parsing).visibility =
-                View.GONE
+            findViewById<CircularProgressIndicator>(R.id.progress_bar_parsing).visibility = View.GONE
 
             // Send the possibly modified VCard as file
             findViewById<FloatingActionButton>(R.id.send_contact).apply {
@@ -243,41 +259,31 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         appBarLayout.alpha = 0f
         appBarLayout.visibility = View.VISIBLE
         appBarLayout.animate().alpha(1f).setDuration(100)
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    appBarLayout.visibility = View.VISIBLE
-                }
-            })
-        appBarLayout.postDelayed({
-            val background: Drawable = bottomSheet.getBackground()
-            if (background is MaterialShapeDrawable) {
-                window.statusBarColor = background.resolvedTintColor
-            } else {
-                window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_expanded)
-            }
-        }, 100)
+            .setListener(
+                object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        appBarLayout.visibility = View.VISIBLE
+                    }
+                },
+            )
     }
 
-    /**
-     * Hides the toolbar and adapts the status bar color.
-     */
     private fun onBottomSheetCollapse() {
         appBarLayout.animation?.cancel()
         appBarLayout.alpha = 1f
         appBarLayout.animate().alpha(0f).setDuration(100)
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    appBarLayout.visibility = View.INVISIBLE
-                    window.statusBarColor = Color.TRANSPARENT
-                }
+            .setListener(
+                object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {}
+                    override fun onAnimationEnd(animation: Animator) {
+                        appBarLayout.visibility = View.INVISIBLE
+                    }
 
-                override fun onAnimationCancel(animation: Animator) {
-                    window.statusBarColor = Color.TRANSPARENT
-                }
+                    override fun onAnimationCancel(animation: Animator) {}
 
-                override fun onAnimationRepeat(animation: Animator) {}
-            })
+                    override fun onAnimationRepeat(animation: Animator) {}
+                },
+            )
     }
 
     /**

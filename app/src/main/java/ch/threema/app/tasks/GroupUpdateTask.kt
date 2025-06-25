@@ -130,8 +130,7 @@ class GroupUpdateTask(
                     logger.warn("Group sync race occurred: Different group avatar is persisted")
                 }
             }
-
-            is RemoveProfilePicture -> {
+            RemoveProfilePicture -> {
                 if (persistedGroupAvatar != null) {
                     logger.warn("Group sync race occurred: Group avatar is persisted")
                 }

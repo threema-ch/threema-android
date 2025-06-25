@@ -23,16 +23,52 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.work.*
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.base.utils.LoggingUtil
+import kotlin.time.Duration.Companion.seconds
 
 private val logger = LoggingUtil.getThreemaLogger("ConnectivityChangeWorker")
 
-class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+class ConnectivityChangeWorker(
+    context: Context,
+    workerParameters: WorkerParameters,
+) : CoroutineWorker(context, workerParameters) {
+
+    override suspend fun doWork(): Result {
+        val networkState = inputData.getString(EXTRA_NETWORK_STATE)
+
+        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+            ?: return Result.success()
+
+        val preferenceService = serviceManager.preferenceService
+        val isOnline = serviceManager.deviceService.isOnline
+        val wasOnline = preferenceService.lastOnlineStatus
+        preferenceService.lastOnlineStatus = isOnline
+
+        logger.info("Network state = {}", networkState)
+        if (isOnline == wasOnline) {
+            return Result.success()
+        }
+
+        logger.info("Device is now {}", if (isOnline) "ONLINE" else "OFFLINE")
+
+        // if there are pending messages in the queue, go online for a moment to send them
+        try {
+            if (isOnline && serviceManager.taskManager.hasPendingTasks()) {
+                logger.info("Messages in queue; acquiring connection")
+                serviceManager.lifetimeService.acquireConnection(SOURCE_TAG)
+                serviceManager.lifetimeService.releaseConnectionLinger(SOURCE_TAG, MESSAGE_SEND_TIME)
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to process pending tasks", e)
+        }
+        return Result.success()
+    }
 
     companion object {
         private const val MESSAGE_SEND_TIME = 30L * 1000L
         private const val EXTRA_NETWORK_STATE = "NETWORK_STATE"
+        private const val SOURCE_TAG = "connectivityChange"
 
         fun buildOneTimeWorkRequest(networkState: String): OneTimeWorkRequest {
             val data = Data.Builder()
@@ -40,42 +76,8 @@ class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParamet
                 .build()
 
             return OneTimeWorkRequestBuilder<ConnectivityChangeWorker>()
-                .apply { setInputData(data) }
+                .setInputData(data)
                 .build()
         }
-    }
-
-    override fun doWork(): Result {
-        var wasOnline = false
-        val networkState = inputData.getString(EXTRA_NETWORK_STATE)
-
-        val serviceManager = ThreemaApplication.getServiceManager()
-        if (serviceManager != null) {
-            val preferenceService = serviceManager.preferenceService
-            val online = serviceManager.deviceService.isOnline
-            wasOnline = preferenceService.lastOnlineStatus
-            preferenceService.lastOnlineStatus = online
-
-            logger.info("Network state = {}", networkState)
-
-            if (online != wasOnline) {
-                logger.info("Device is now {}", if (online) "ONLINE" else "OFFLINE")
-
-                /* if there are pending messages in the queue, go online for a moment to send them */
-                try {
-                    if (serviceManager.taskManager.hasPendingTasks()) {
-                        logger.info("Messages in queue; acquiring connection")
-                        serviceManager.lifetimeService.acquireConnection("connectivityChange")
-                        serviceManager.lifetimeService.releaseConnectionLinger(
-                            "connectivityChange",
-                            MESSAGE_SEND_TIME,
-                        )
-                    }
-                } catch (e: Exception) {
-                    logger.error("Error", e)
-                }
-            }
-        }
-        return Result.success()
     }
 }

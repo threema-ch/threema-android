@@ -377,17 +377,18 @@ properties:
     required:
       - url
       - blob
-  # TODO(DESK-1299): Finalize this schema
-  #updates:
-  #  type: object
-  #  description: URLs for update checks
-  #  properties:
-  #    desktop:
-  #      type: object
-  #      properties:
-  #        check:
-  #          type: string
-  #          description: URL to the Threema Desktop update check
+  updates:
+    type: object
+    description: URLs for update checks
+    properties:
+      desktop:
+        type: object
+        properties:
+          autoUpdate:
+            type: boolean
+            description:
+              Whether or not the Threema Servers should be called to check if an
+              update is available
 required:
   - version
   - signatureKey

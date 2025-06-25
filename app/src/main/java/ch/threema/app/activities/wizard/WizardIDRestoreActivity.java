@@ -31,7 +31,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -40,12 +39,16 @@ import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.services.QRCodeServiceImpl;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
@@ -61,6 +64,11 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     private static final String DIALOG_TAG_RESTORE_PROGRESS = "rp";
     private static final int PERMISSION_REQUEST_CAMERA = 1;
 
+    /**
+     * extremely ancient versions of the app on some platform accepted four-letter passwords when generating ID exports
+     */
+    private static final int MIN_PW_LENGTH_ID_EXPORT_LEGACY = 4;
+
     private EditText backupIdText;
     private EditText passwordEditText;
     private boolean passwordOK = false;
@@ -75,41 +83,47 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 
         setContentView(R.layout.activity_wizard_restore_id);
 
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content),
+            InsetSides.top(),
+            new SpacingValues(
+                R.dimen.wizard_contents_padding,
+                R.dimen.wizard_contents_padding_horizontal,
+                null,
+                R.dimen.wizard_contents_padding_horizontal
+            )
+        );
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.buttons),
+            InsetSides.bottom(),
+            new SpacingValues(
+                null,
+                R.dimen.wizard_contents_padding_horizontal,
+                R.dimen.wizard_contents_padding,
+                R.dimen.wizard_contents_padding_horizontal
+            )
+        );
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         backupIdText = findViewById(R.id.restore_id_edittext);
         backupIdText.setImeOptions(EditorInfo.IME_ACTION_SEND);
         backupIdText.setRawInputType(InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-        backupIdText.addTextChangedListener(new TextWatcher() {
+        backupIdText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 idOK = s.length() > 0 && s.toString().trim().length() == BACKUP_STRING_LENGTH;
                 setRestoreButtonEnabled(idOK && passwordOK);
             }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
         });
 
         passwordEditText = findViewById(R.id.restore_password);
-        passwordEditText.addTextChangedListener(new TextWatcher() {
+        passwordEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                passwordOK = s.length() >= ThreemaApplication.MIN_PW_LENGTH_ID_EXPORT_LEGACY;
+                passwordOK = s.length() >= MIN_PW_LENGTH_ID_EXPORT_LEGACY;
                 setRestoreButtonEnabled(idOK && passwordOK);
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
 
@@ -126,10 +140,10 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
         });
 
         Intent intent = getIntent();
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP) &&
-            intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW)) {
-            backupIdText.setText(intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP));
-            passwordEditText.setText(intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW));
+        if (intent.hasExtra(AppConstants.INTENT_DATA_ID_BACKUP) &&
+            intent.hasExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW)) {
+            backupIdText.setText(intent.getStringExtra(AppConstants.INTENT_DATA_ID_BACKUP));
+            passwordEditText.setText(intent.getStringExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW));
             restoreID();
         }
     }

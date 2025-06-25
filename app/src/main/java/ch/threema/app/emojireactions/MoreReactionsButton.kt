@@ -30,6 +30,7 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.TextView
 import ch.threema.app.R
+import ch.threema.common.consume
 import com.google.android.material.card.MaterialCardView
 
 class MoreReactionsButton : MaterialCardView {
@@ -40,43 +41,24 @@ class MoreReactionsButton : MaterialCardView {
         GestureDetector(
             context,
             object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapUp(e: MotionEvent): Boolean {
-                    onMoreReactionsButtonClickListener?.onMoreReactionsButtonClick()
+                override fun onSingleTapUp(e: MotionEvent) = consume {
                     performClick()
-                    return true
                 }
 
                 override fun onLongPress(e: MotionEvent) {
-                    onMoreReactionsButtonClickListener?.onMoreReactionsButtonLongClick()
                     performLongClick()
                 }
             },
         )
 
-    private lateinit var labelView: TextView
+    private val labelView: TextView
 
-    constructor(context: Context) : super(
-        context,
-    ) {
-        init()
-    }
+    @JvmOverloads
+    constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(
-        context,
-        attrs,
-    ) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr,
-    ) {
-        init()
-    }
-
-    private fun init() {
+    init {
         layoutParams = LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -95,16 +77,23 @@ class MoreReactionsButton : MaterialCardView {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(event: MotionEvent) = consume {
         gestureDetector.onTouchEvent(event)
-
         if (event.action == MotionEvent.ACTION_UP) {
             isPressed = false
         } else if (event.action == MotionEvent.ACTION_DOWN) {
             isPressed = true
         }
+    }
 
-        return true
+    override fun performClick(): Boolean {
+        onMoreReactionsButtonClickListener?.onMoreReactionsButtonClick()
+        return super.performClick()
+    }
+
+    override fun performLongClick(): Boolean {
+        onMoreReactionsButtonClickListener?.onMoreReactionsButtonLongClick()
+        return super.performLongClick()
     }
 
     fun setButtonData(text: String) {

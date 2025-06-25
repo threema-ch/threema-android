@@ -23,7 +23,6 @@ package ch.threema.app.camera
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Size
@@ -42,11 +41,14 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import ch.threema.app.AppConstants
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.services.QRCodeServiceImpl.QRCodeColor
 import ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ANY
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.SoundUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -94,7 +96,6 @@ class QRScannerActivity : ThreemaActivity() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        window.statusBarColor = Color.TRANSPARENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // we want dark icons, i.e. a light status bar
             window.decorView.systemUiVisibility =
@@ -112,8 +113,16 @@ class QRScannerActivity : ThreemaActivity() {
         }
 
         // set hint text
-        findViewById<TextView>(R.id.hint_view)?.let {
+        val hintView = findViewById<TextView>(R.id.hint_view)
+        hintView?.let {
             it.text = hint
+            it.applyDeviceInsetsAsPadding(
+                insetSides = InsetSides.horizontal(),
+                ownPadding = SpacingValues.symmetric(
+                    vertical = R.dimen.grid_unit_x1,
+                    horizontal = R.dimen.grid_unit_x2,
+                ),
+            )
         }
 
         // set viewfinder color
@@ -140,13 +149,16 @@ class QRScannerActivity : ThreemaActivity() {
 
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener({
-            // CameraProvider
-            cameraProvider = cameraProviderFuture.get()
+        cameraProviderFuture.addListener(
+            {
+                // CameraProvider
+                cameraProvider = cameraProviderFuture.get()
 
-            // Build and bind the camera use cases
-            bindCameraUseCases()
-        }, ContextCompat.getMainExecutor(this))
+                // Build and bind the camera use cases
+                bindCameraUseCases()
+            },
+            ContextCompat.getMainExecutor(this),
+        )
     }
 
     @SuppressLint("ClickableViewAccessibility", "WrongConstant")
@@ -257,7 +269,7 @@ class QRScannerActivity : ThreemaActivity() {
             SoundUtil.play(R.raw.qrscanner_beep)
 
             val intent = Intent()
-            intent.putExtra(ThreemaApplication.INTENT_DATA_QRCODE, qrCodeData)
+            intent.putExtra(AppConstants.INTENT_DATA_QRCODE, qrCodeData)
             setResult(RESULT_OK, intent)
         } else {
             setResult(RESULT_CANCELED)

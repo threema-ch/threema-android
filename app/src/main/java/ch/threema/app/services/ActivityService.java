@@ -32,6 +32,7 @@ import java.lang.ref.WeakReference;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.PinLockActivity;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -62,7 +63,7 @@ public class ActivityService {
         logger.debug("handLockedState currentActivity: " + currentActivityReference.get());
 
         MasterKey masterKey = ThreemaApplication.getMasterKey();
-        if (masterKey != null && masterKey.isLocked()) {
+        if (masterKey.isLocked()) {
             return;
         }
 
@@ -131,5 +132,38 @@ public class ActivityService {
             }
         }
         return false;
+    }
+
+    public static boolean activityResumed(Activity currentActivity) {
+        logger.debug("*** App ActivityResumed");
+        var serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            serviceManager.getActivityService().resume(currentActivity);
+            return true;
+        }
+        return false;
+    }
+
+    public static void activityPaused(Activity pausedActivity) {
+        logger.debug("*** App ActivityPaused");
+        var serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            serviceManager.getActivityService().pause(pausedActivity);
+        }
+    }
+
+    public static void activityDestroyed(Activity destroyedActivity) {
+        logger.debug("*** App ActivityDestroyed");
+        var serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            serviceManager.getActivityService().destroy(destroyedActivity);
+        }
+    }
+
+    public static void activityUserInteract(Activity interactedActivity) {
+        var serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            serviceManager.getActivityService().userInteract(interactedActivity);
+        }
     }
 }

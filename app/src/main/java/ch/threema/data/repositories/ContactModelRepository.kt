@@ -34,9 +34,11 @@ import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelDataFactory
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.data.storage.DbContact
+import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
+import com.neilalexander.jnacl.NaCl
 
 private val logger = LoggingUtil.getThreemaLogger("data.ContactModelRepository")
 
@@ -68,6 +70,8 @@ class ContactModelRepository(
      * @throws ContactStoreException if inserting the contact in the database failed
      */
     suspend fun createFromLocal(contactModelData: ContactModelData): ContactModel {
+        requireValidContact(contactModelData)
+
         val createContactLocally: () -> ContactModel = {
             createContactLocally(contactModelData)
         }
@@ -102,6 +106,8 @@ class ContactModelRepository(
         contactModelData: ContactModelData,
         handle: ActiveTaskCodec,
     ): ContactModel {
+        requireValidContact(contactModelData)
+
         val createContactLocally: () -> ContactModel = {
             createContactLocally(contactModelData)
         }
@@ -147,8 +153,10 @@ class ContactModelRepository(
     fun createFromSync(contactModelData: ContactModelData): ContactModel {
         try {
             databaseBackend.createContact(ContactModelDataFactory.toDbType(contactModelData))
-        } catch (e: SQLiteException) {
-            throw ContactStoreException(e)
+        } catch (exception: SQLiteException) {
+            throw ContactStoreException(exception)
+        } catch (exception: IllegalArgumentException) {
+            throw InvalidContactException(exception = exception)
         }
 
         notifyDeprecatedListenersOnNew(contactModelData.identity)
@@ -171,6 +179,9 @@ class ContactModelRepository(
                 // Note that in case the insertion fails, this is most likely because the identity
                 // already exists.
                 throw ContactStoreException(exception)
+            } catch (exception: IllegalArgumentException) {
+                // In this case the identity or public key of the contact is invalid.
+                throw InvalidContactException(exception = exception)
             }
 
             getByIdentity(contactModelData.identity)
@@ -180,6 +191,16 @@ class ContactModelRepository(
         notifyDeprecatedListenersOnNew(contactModelData.identity)
 
         return contactModel
+    }
+
+    @Throws(InvalidContactException::class)
+    private fun requireValidContact(contactModelData: ContactModelData) {
+        if (contactModelData.identity.length != ProtocolDefines.IDENTITY_LEN) {
+            throw InvalidContactException("Invalid identity: ${contactModelData.identity}")
+        }
+        if (contactModelData.publicKey.size != NaCl.PUBLICKEYBYTES) {
+            throw InvalidContactException("Invalid public key size (${contactModelData.publicKey.size}) for identity ${contactModelData.identity}")
+        }
     }
 
     /**
@@ -236,6 +257,11 @@ class ContactReflectException(e: TransactionScope.TransactionException) :
  */
 class ContactStoreException(e: SQLiteException) :
     ContactCreateException("Failed to store the contact", e)
+
+/**
+ * This exception is thrown if the contact could not be added due to an invalid identity or public key.
+ */
+class InvalidContactException(message: String = "Invalid contact", exception: Exception? = null) : ContactCreateException(message, exception)
 
 /**
  * This exception is thrown if an unexpected contact should have been added.

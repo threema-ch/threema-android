@@ -12,21 +12,22 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+        android:layout_marginHorizontal="@dimen/tablet_additional_padding_horizontal"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/floating"
-        app:icon="@android:drawable/ic_input_add"
-        android:text="@string/menu_add_contact"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_margin="@dimen/floating_button_margin"
-        app:layout_anchor="@+id/recycler"
-        app:layout_anchorGravity="bottom|right|end"
+        android:layout_margin="@dimen/grid_unit_x2"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/add"
         android:visibility="visible"
-        android:clickable="true" />
+        app:icon="@android:drawable/ic_input_add"
+        app:layout_anchor="@+id/recycler"
+        app:layout_anchorGravity="bottom|right|end" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

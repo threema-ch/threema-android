@@ -25,7 +25,7 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData

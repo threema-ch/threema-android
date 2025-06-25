@@ -102,6 +102,7 @@
     <string name="next">Далі</string>
     <string name="finish">Готово</string>
     <string name="please_wait">Зачекайте…</string>
+    <string name="please_wait_timeout">Процес триває довше, ніж очікувалось</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Створення ID ${app_name_short}…</string>
     <string name="wizard1_sync_contacts">Синхронізація контактів…</string>
@@ -168,6 +169,7 @@
 		повідомлення.\n\nЯкщо ви більше не хочете використовувати цей ID, радимо встановити пароль для відкликання та відкликати ID на сторінці myid.threema.ch/revoke, перш ніж видаляти його.</string>
     <string name="delete_id_message2">Останнє попередження: справді видалити ID із цього пристрою?</string>
     <string name="delete_id_sum">Остаточно видалити ID ${app_name_short} й усі дані із цього пристрою</string>
+    <string name="delete_all_data_prompt">Видалити всі дані додатка?</string>
     <string name="backup_password_summary">Ваш експортований ID буде зашифровано за допомогою пароля. Використовуйте комбінацію з букв, цифр і спеціальних знаків. Запам\'ятайте цей пароль!</string>
     <string name="backup_password_again_summary">Введіть пароль ще раз</string>
     <string name="password_hint">Пароль</string>
@@ -177,7 +179,6 @@
 		щоб відновити свій ID на іншому пристрої. Скопіюйте цей текст у надійне місце, надішліть його електронною
 		поштою або відскануйте QR-код за допомогою іншого пристрою.</string>
     <string name="support">Довідка</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Використовуйте наведений нижче текстовий рядок і встановлений пароль,
 		щоб відновити свій ID ${app_name_short}.</string>
@@ -357,9 +358,12 @@
     <string name="title_tab_recent">Нещодавні</string>
     <string name="no_recent_conversations">Чатів не знайдено</string>
     <string name="save_changes">Зберегти</string>
-    <string name="group_created_confirm">Групу створено</string>
     <string name="creating_group">Створення групи</string>
     <string name="updating_group">Оновлення групи</string>
+    <string name="leaving_group">Вихід із групи</string>
+    <string name="disbanding_group">Розпускання групи</string>
+    <string name="removing_group">Видалення групи</string>
+    <string name="resyncing_group">Повторна синхронізація групи</string>
     <string name="status_create_group">Групу створено.</string>
     <string name="status_rename_group">Групу перейменовано на \"%1$s\"</string>
     <string name="status_group_new_photo">Фото групи оновлено.</string>
@@ -776,7 +780,20 @@
     <string name="clone_group_message">Цю групу буде клоновано і ви станете її адміністратором. Продовжити?</string>
     <string name="prefs_proximity_sensor">Датчик відстані</string>
     <string name="prefs_proximity_sensor_explain">Відтворювати голосові повідомлення через слуховий динамік, коли ви тримаєте пристрій біля вуха</string>
-    <string name="error_creating_group">Не вдалося створити або оновити групу</string>
+    <string name="error_creating_group_network">Не вдалося створити групу. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="error_creating_group_internal">Не вдалося створити групу через внутрішню помилку. Повторіть спробу пізніше.</string>
+    <string name="error_cloning_group_network">Не вдалося клонувати групу. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="error_cloning_group_internal">Не вдалося клонувати групу через внутрішню помилку. Повторіть спробу пізніше.</string>
+    <string name="error_updating_group_network">Не вдалося застосувати зміни. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="error_updating_group_internal">Не вдалося застосувати зміни через внутрішню помилку. Повторіть спробу пізніше.</string>
+    <string name="error_leaving_group_network">Не вдалося вийти з групи. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="error_leaving_group_internal">Не вдалося вийти з групи через внутрішню помилку. Повторіть спробу пізніше.</string>
+    <string name="error_disbanding_group_network">Не вдалося розпустити групу. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="error_disbanding_group_internal">Не вдалося розпустити групу через внутрішню помилку. Повторіть спробу пізніше.</string>
+    <string name="error_removing_group_network">Не вдалося видалити групу. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="error_removing_group_internal">Не вдалося видалити групу через внутрішню помилку. Повторіть спробу пізніше.</string>
+    <string name="error_resyncing_group_network">Не вдалося повторно синхронізувати групу. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="error_resyncing_group_internal">Не вдалося повторно синхронізувати групу через внутрішню помилку. Повторіть спробу пізніше.</string>
     <string name="no_media_found_generic">У цьому чаті не знайдено відповідні медіафайли.</string>
     <string name="max_images_reached">Макс. кількість об\'єктів для одночасного редагування: %d</string>
     <string name="enter_description">Опишіть несправність.</string>
@@ -891,8 +908,6 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Збереження великих медіафайлів до локальної резервної копії у форматі ZIP може тривати довгий час і вимагати більше ресурсів, ніж доступно вашому пристрою. ${app_name} не надсилатиме й не отримуватиме повідомлення, поки створюється резервна копія. Усе одно продовжити?</string>
     <string name="backup_data_cancelled">Резервне копіювання скасовано</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Не вдалося запустити ${app_name}. Спробуйте перезавантажити пристрій.</string>
     <string name="message_sent">Повідомлення надіслано</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">Виклик ${app_name_short}</string>
@@ -1262,9 +1277,6 @@
     <string name="permission_camera_videocall_required">Щоб здійснювати відеовиклики, надайте доступ до камери.</string>
     <string name="tooltip_voip_enable_speakerphone">Натисніть тут, щоб увімкнути гучний зв\'язок</string>
     <string name="ballot_open">Діючі опитування</string>
-    <string name="translators">Перекладачі</string>
-    <string name="credits">Подяка</string>
-    <string name="translators_thanks">Щиро дякуємо нашим перекладачам-волонтерам:\n%s</string>
     <string name="ballot_window_hide">Приховати діючі опитування</string>
     <string name="ballot_window_show">Показати діючі опитування</string>
     <string name="single_ballot_really_delete">Видалити це опитування</string>
@@ -1600,7 +1612,7 @@
     <string name="prefs_summary_hibernation_api">Щоб система не призупиняла роботу ${app_name} після тривалого періоду неактивності, вимкніть налаштування системи \"Призупинити дії в додатку, якщо він не використовується\".</string>
     <string name="unable_to_fetch_configuration">Не вдалося завантажити дані із сервера конфігурації. Повторіть спробу пізніше.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Сервер виявив підключення з іншого пристрою з ідентичним ID ${app_name_short}. Чи використовували ви нещодавно свій ID ${app_name_short} на іншому пристрої? <br><br> Якщо так, то можете не зважати на це повідомлення. <br><br>Якщо ні, то ваш закритий ключ може бути скомпрометовано. <a href="https://threema.ch/en/faq/another_connection">Скористайтеся нашими порадами</a>, щоб захистити свої пристрій і дані, перш ніж створювати новий ID.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Сервер виявив підключення з іншого пристрою з ідентичним ID ${app_name_short}. Чи використовували ви нещодавно свій ID ${app_name_short} на іншому пристрої? <br><br> Якщо так, то можете не зважати на це повідомлення. <br><br>Якщо ні, то ваш закритий ключ може бути скомпрометовано. <a href="https://threema.com/faq/another_connection">Скористайтеся нашими порадами</a>, щоб захистити свої пристрій і дані, перш ніж створювати новий ID.]]></string>
     <string name="fetch2_failure">Помилка синхронізації із сервером підготовки.</string>
     <string name="no_members_support_group_calls">У цій групі немає інших учасників, які можуть відповідати на групові виклики</string>
     <string name="group_calls">Групові виклики</string>
@@ -1633,7 +1645,7 @@
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) захищає раніше записані розмови від дешифрування, навіть якщо скомпрометовано довгостроковий ключ шифрування.\n\nЦю функцію можна ввімкнути, якщо її підтримує додаток обох сторін.</string>
     <string name="group_call_inactivity_left">Груповий виклик покинуто через неактивність</string>
     <string name="missing_permission_external_storage">Не вдалося скопіювати файл. Спробуйте виконати такі кроки:\n1. Відкрийте додаток \"Налаштування\".\n2. Перейдіть до розділу \"Додатки\" й виберіть \"Спеціальний доступ для додатка\".\n3. Натисніть \"Доступ до всіх файлів\".\n4. Натисніть три крапки праворуч угорі й виберіть \"Показати системні\".\n5. Натисніть \"Зовнішня пам\'ять\" і переконайтеся, що вибрано варіант \"Надати доступ до керування всіма файлами\".\n6. Спробуйте відновити резервну копію ще раз.</string>
-    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy вимкнено в цьому чаті, оскільки версія додатка вашого контакта не підтримує цю функцію.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy вимкнено в цьому чаті, оскільки версія додатка вашого співрозмовника не підтримує цю функцію або використовується ${app_name_desktop} 2.0 для ПК (бета).</string>
     <string name="forward_security_illegal_session_status_message">Сеанс Perfect Forward Secrecy було скинуто як недійсний.</string>
     <string name="crop_image_title">Кадрувати зображення</string>
     <string name="scroll_to_bottom">Прокрутити вниз</string>
@@ -1739,10 +1751,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">\"Використання акумулятора додатком\" – \"Оптимізовано\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Цьому додатку заборонено підтримувати постійне з\'єднання із серверами, що необхідно для роботи ${app_name_short} Push. Ви не отримуватимете сповіщення про нові повідомлення, коли додаток працює у фоновому режимі. Щоб виправити це, натисніть \"Використання акумулятора додатком\" і виберіть \"Необмежено\".</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">Незабаром ми припинимо підтримку цієї версії Android</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">Ви користуєтеся пристроєм Android, який більше не отримує оновлень системи. З міркувань безпеки Threema незабаром припинить підтримку цієї версії Android.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">Цей додаток більше не оновлюється</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">Ви користуєтеся застарілою версією Android, яка більше не підтримується Threema з міркувань безпеки. Це означає, що ви більше не отримуватимете оновлень для додатка Threema. Щоб продовжити користуватися всіма функціями Threema, перейдіть на актуальну версію Android.</string>
     <string name="problemsolver_to_settings">Відкрити налаштування</string>
     <string name="prefs_advanced_options">Розширені налаштування</string>
     <string name="push_service">Сервіс push-сповіщень</string>
@@ -1830,36 +1842,44 @@
     <string name="device_linking_pfs_warning_button_cancel">Скасувати</string>
     <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
     <!-- ${app_name_desktop} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="threema_web_link_to_multi_device_feature_banner_title">Новинка: ${app_name_desktop} 2.0 для ПК (бета-версія)</string>
+    <string name="threema_web_link_to_multi_device_feature_banner_title">Новинка: ${app_name_desktop} 2.0 для ПК (бета)</string>
     <!-- Body shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
     <string name="threema_web_link_to_multi_device_feature_banner_body">Натисніть тут, щоб скористатися новим додатком для ПК з підтримкою кількох пристроїв.</string>
     <!-- Screen reader text on a cross icon button to close a hint banner -->
     <string name="accessibility_dismiss_hint">Закрити підказку</string>
     <string name="device_linking_error_generic_title">Не вдалося надіслати дані</string>
-    <string name="device_linking_error_generic_body">Спробуйте зв\'язати пристрій ще раз. Якщо проблема не зникне, зв\'яжіться з нашою службою підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
+    <string name="device_linking_error_generic_body">Спробуйте зв\'язати пристрій ще раз. Якщо проблема не зникне, зверніться до нашої служби підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
     <string name="device_linking_error_generic_network_title">Немає з\'єднання з Інтернетом</string>
-    <string name="device_linking_error_generic_network_body">Спробуйте зв\'язати пристрій ще раз. Якщо проблема не зникне, зв\'яжіться з нашою службою підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
+    <string name="device_linking_error_generic_network_body">Спробуйте зв\'язати пристрій ще раз. Якщо проблема не зникне, зверніться до нашої служби підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
     <string name="device_linking_error_unknown_qr_code_title">Невідомий QR-код</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_unknown_qr_code_body">Це не схоже на QR-код із додатка ${app_name_desktop} 2.0 для ПК (бета-версія). Завантажте останню бета-версію додатка для ПК з [нашого сайту] та відскануйте QR-код, що відобразиться після запуску додатка.</string>
+    <string name="device_linking_error_unknown_qr_code_body">Це не схоже на QR-код із додатка ${app_name_desktop} 2.0 для ПК (бета). Завантажте останню бета-версію додатка для ПК з [нашого сайту] та відскануйте QR-код, що відобразиться після запуску додатка.</string>
     <string name="device_linking_error_web_qr_code_title">Неправильний QR-код</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_error_web_qr_code_body">Цей QR-код належить веб-клієнту ${app_name_short}.\nЗавантажте останню версію додатка ${app_name_desktop} 2.0 для ПК (бета-версія) з [нашого сайту] та відскануйте QR-код, що відобразиться після запуску додатка.</string>
+    <string name="device_linking_error_web_qr_code_body">Цей QR-код належить веб-клієнту ${app_name_short}.\nЗавантажте останню версію додатка ${app_name_desktop} 2.0 для ПК (бета) з [нашого сайту] та відскануйте QR-код, що відобразиться після запуску додатка.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Несумісна версія</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Установіть останню версію ${app_name} на обох пристроях.</string>
     <string name="device_linking_error_emoji_mismatch_title">Зображення не збігаються?</string>
     <string name="device_linking_error_emoji_mismatch_body">Не вдалося підключитися до пристрою. Перезапустіть додаток на новому пристрої та повторіть спробу.</string>
     <string name="device_linking_error_unexpected_title">Неочікувана помилка</string>
-    <string name="device_linking_error_unexpected_body">Спробуйте зв\'язати пристрій ще раз. Якщо проблема не зникне, зв\'яжіться з нашою службою підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
+    <string name="device_linking_error_unexpected_body">Спробуйте зв\'язати пристрій ще раз. Якщо проблема не зникне, зверніться до нашої служби підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
+    <string name="device_linking_error_invalid_contact_title">Недійсний контакт</string>
+    <string name="device_linking_error_invalid_contact_body">Контакт із даними %1$s неправильно збережено на цьому пристрої, що заважає зв\'язати новий пристрій. Зверніться до нашої служби підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
     <string name="device_linking_error_screen_close">Закрити</string>
     <string name="work_directory_title">Каталог компанії</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Шукати в каталозі</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Введіть принаймні 3 символи імені, щоб почати пошук у каталозі користувачів ${app_name_short} вашої компанії.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Неможливо поділитися недійсним файлом</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Доступний</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Недоступний</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакти</item>

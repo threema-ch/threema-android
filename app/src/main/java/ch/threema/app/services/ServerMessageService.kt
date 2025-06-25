@@ -22,7 +22,7 @@
 package ch.threema.app.services
 
 import ch.threema.app.managers.ListenerManager
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ServerMessageModel
 
 interface ServerMessageService {
@@ -30,7 +30,7 @@ interface ServerMessageService {
 }
 
 class ServerMessageServiceImpl(
-    private val databaseService: DatabaseServiceNew,
+    private val databaseService: DatabaseService,
 ) : ServerMessageService {
     override fun saveIncomingServerMessage(msg: ServerMessageModel) {
         // store message

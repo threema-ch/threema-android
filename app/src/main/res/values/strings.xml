@@ -102,6 +102,7 @@
     <string name="next">Next</string>
     <string name="finish">Finish</string>
     <string name="please_wait">Please wait…</string>
+    <string name="please_wait_timeout">This takes longer than expected</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Creating your ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">Syncing Contacts…</string>
@@ -168,6 +169,7 @@
         messages with this ID again.\n\nIf you don’t want to use this ID anymore, it is recommended to set a revocation password and revoke the ID on myid.threema.ch/revoke before deleting it.</string>
     <string name="delete_id_message2">Last warning: do you really want to delete your ID on this device?</string>
     <string name="delete_id_sum">Permanently delete your ${app_name_short}-ID and all data on this device</string>
+    <string name="delete_all_data_prompt">Delete all app data?</string>
     <string name="backup_password_summary">Your ID export will be encrypted with a password. Use a combination of letters, numbers and symbols. Do not forget what you enter here!</string>
     <string name="backup_password_again_summary">Enter Password again</string>
     <string name="password_hint">Password</string>
@@ -177,7 +179,6 @@
         have chosen, can be used to restore your ID on another device. You should copy it to a suitable place, share it by
         email or scan the QR code using another device.</string>
     <string name="support">Help</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">The following text string can be used together with the chosen password to restore your ${app_name_short} ID.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -356,9 +357,12 @@
     <string name="title_tab_recent">Recents</string>
     <string name="no_recent_conversations">No chats found</string>
     <string name="save_changes">Save</string>
-    <string name="group_created_confirm">Group successfully created</string>
     <string name="creating_group">Creating group</string>
     <string name="updating_group">Updating group</string>
+    <string name="leaving_group">Leaving group</string>
+    <string name="disbanding_group">Dissolving group</string>
+    <string name="removing_group">Deleting group</string>
+    <string name="resyncing_group">Resyncing group</string>
     <string name="status_create_group">Group created.</string>
     <string name="status_rename_group">Group renamed to “%1$s”</string>
     <string name="status_group_new_photo">Group picture updated.</string>
@@ -774,7 +778,20 @@
     <string name="clone_group_message">This will create a clone of this group with you as the administrator. Continue?</string>
     <string name="prefs_proximity_sensor">Use proximity sensor</string>
     <string name="prefs_proximity_sensor_explain">Use earpiece for voice message playback if proximity sensor is covered</string>
-    <string name="error_creating_group">Error creating/updating group</string>
+    <string name="error_creating_group_network">The group was not created. Please check your internet connection and try again.</string>
+    <string name="error_creating_group_internal">Due to an internal error the group was not created. Please try again later.</string>
+    <string name="error_cloning_group_network">The group was not cloned. Please check your internet connection and try again.</string>
+    <string name="error_cloning_group_internal">Due to an internal error the group was not cloned. Please try again later.</string>
+    <string name="error_updating_group_network">The changes could not be applied. Please check your internet connection and try again.</string>
+    <string name="error_updating_group_internal">Due to an internal error the changes could not be applied. Please try again later.</string>
+    <string name="error_leaving_group_network">The group was not left. Please check your internet connection and try again.</string>
+    <string name="error_leaving_group_internal">Due to an internal error the group was not left. Please try again later.</string>
+    <string name="error_disbanding_group_network">The group was not dissolved. Please check your internet connection and try again.</string>
+    <string name="error_disbanding_group_internal">Due to an internal error the group was not dissolved. Please try again later.</string>
+    <string name="error_removing_group_network">The group was not deleted. Please check your internet connection and try again.</string>
+    <string name="error_removing_group_internal">Due to an internal error the group was not deleted. Please try again later.</string>
+    <string name="error_resyncing_group_network">The group was not resynced. Please check your internet connection and try again.</string>
+    <string name="error_resyncing_group_internal">Due to an internal error the group was not resynced. Please try again later.</string>
     <string name="no_media_found_generic">No media found in this chat matching the selection.</string>
     <string name="max_images_reached">Max. %d items can be edited at once</string>
     <string name="enter_description">Please describe bug/problem here.</string>
@@ -889,8 +906,6 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Saving large media files to a local ZIP backup may exceed the CPU and memory capacity of your device and can take a very long time. ${app_name} will not send or receive messages while the backup is running. Continue anyway?</string>
     <string name="backup_data_cancelled">Backup canceled</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Unable to launch ${app_name}. Please turn your device off, then on again.</string>
     <string name="message_sent">Message sent</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short} call</string>
@@ -1262,9 +1277,6 @@
     <string name="permission_camera_videocall_required">For video calling, please allow access to the camera</string>
     <string name="tooltip_voip_enable_speakerphone">Tap here to turn on speakerphone</string>
     <string name="ballot_open">Open polls</string>
-    <string name="translators">Translators</string>
-    <string name="credits">Credits</string>
-    <string name="translators_thanks">Many thanks to our volunteer translators:\n%s</string>
     <string name="ballot_window_hide">Hide open polls</string>
     <string name="ballot_window_show">Show open polls</string>
     <string name="single_ballot_really_delete">Remove this poll</string>
@@ -1600,7 +1612,7 @@
     <string name="prefs_summary_hibernation_api">To prevent that ${app_name} gets paused by the system after longer inactivity, please disable the system setting “Pause app activity if unused”.</string>
     <string name="unable_to_fetch_configuration">Unable to fetch data from configuration server. Try again later.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[A connection from a different device with the same ${app_name_short} ID has been detected. Have you recently used your ${app_name_short} ID on another device? <br><br> If you have, you can ignore this message. <br><br> If you haven\'t, your private key may be compromised. Please <a href="https://threema.ch/en/faq/another_connection">follow our suggestions</a> to protect your device and data before creating a new ID.]]></string>
+    <string name="rogue_device_warning"><![CDATA[A connection from a different device with the same ${app_name_short} ID has been detected. Have you recently used your ${app_name_short} ID on another device? <br><br> If you have, you can ignore this message. <br><br> If you haven\'t, your private key may be compromised. Please <a href="https://threema.com/en/faq/another_connection">follow our suggestions</a> to protect your device and data before creating a new ID.]]></string>
     <string name="fetch2_failure">Synchronization with the provisioning server failed.</string>
     <string name="no_members_support_group_calls">There are no other members in this group that are able to answer group calls</string>
     <string name="group_calls">Group calls</string>
@@ -1633,7 +1645,7 @@
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protects a recorded communication from retroactive decryption even if the long-term encryption key is compromised.\n\nThe option can be enabled if the app on both sides supports PFS.</string>
     <string name="group_call_inactivity_left">Group call left due to inactivity</string>
     <string name="missing_permission_external_storage">Unable to copy the file. Try the following steps:\n1. Open the settings app.\n2. Go to “Apps” and choose “Special app access”.\n3. Tap on “All files access“.\n4. Tap on the three dots in the top right corner and choose “Show system“.\n5. Tap on “External Storage“ and ensure “Allow access to manage all files“ is granted.\n6. Try again restoring the backup.</string>
-    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy has been disabled in this conversation because your chat partner’s app version doesn’t support it.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy has been disabled in this chat because your chat partner’s app version doesn’t support it or ${app_name_desktop} 2.0 for Desktop (beta) is used.</string>
     <string name="forward_security_illegal_session_status_message">The Perfect Forward Secrecy session was reset due to invalidity.</string>
     <string name="crop_image_title">Crop image</string>
     <string name="scroll_to_bottom">Scroll to bottom</string>
@@ -1739,10 +1751,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">App battery usage set to “optimized”</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">The app is not allowed to maintain a permanent connection to the servers which is required for ${app_name_short} Push to work. You will not be informed of new messages when the app is in the background. To fix this, tap on “App battery usage” and select “Unrestricted.”</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">This Android version will soon no longer be supported</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">You are using an Android device that no longer receives software updates. For security reasons, this Android version will soon no longer be supported by Threema.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">This app is no longer updated</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">You are using an outdated version of Android that is no longer supported by Threema for security reasons. This means you will no longer receive updates for the Threema app. To continue using Threema with all its features, please upgrade to a current operating system version.</string>
     <string name="problemsolver_to_settings">To settings</string>
     <string name="prefs_advanced_options">Advanced options</string>
     <string name="push_service">Push service</string>
@@ -1795,7 +1807,7 @@
     <string name="md_drop_device_dialog_drop_button">Remove device</string>
     <string name="md_drop_device_dialog_close_button">Close</string>
 
-    <string name="md_drop_device_failed_dialog_title">Removing linked device failed</string>
+    <string name="md_drop_device_failed_dialog_title">Removing linked device may have failed</string>
     <string name="md_drop_device_failed_dialog_message">Please check the Internet connection and try again.</string>
     <string name="md_drop_device_failed_dialog_button_close">Close</string>
 
@@ -1861,6 +1873,8 @@
     <string name="device_linking_error_emoji_mismatch_body">It seems that there are issues with connecting to the device. Please restart the app on the new device and try again.</string>
     <string name="device_linking_error_unexpected_title">Unexpected Error</string>
     <string name="device_linking_error_unexpected_body">Please retry linking the device. If this problem persists, please contact support (“Main menu > Help”).</string>
+    <string name="device_linking_error_invalid_contact_title">Invalid contact</string>
+    <string name="device_linking_error_invalid_contact_body">The contact with identity %1$s is stored incorrectly on this device and prevents linking the new device. Please contact support (“Main menu > Help”).</string>
 
     <string name="device_linking_error_screen_close">Close</string>
 
@@ -1872,6 +1886,11 @@
 
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">This file is invalid and cannot be shared</string>
+
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Available</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Unavailable</string>
 
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>

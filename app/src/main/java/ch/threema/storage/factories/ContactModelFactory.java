@@ -25,8 +25,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
 
@@ -34,14 +33,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
@@ -49,12 +50,12 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 public class ContactModelFactory extends ModelFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ContactModelFactory");
 
-    public ContactModelFactory(DatabaseServiceNew databaseService) {
+    public ContactModelFactory(DatabaseService databaseService) {
         super(databaseService, ContactModel.TABLE);
     }
 
     public List<ContactModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -72,13 +73,6 @@ public class ContactModelFactory extends ModelFactory {
     }
 
     @Nullable
-    public ContactModel getByPublicKey(byte[] publicKey) {
-        return getFirst(
-            "" + ContactModel.COLUMN_PUBLIC_KEY + " =x'" + Utils.byteArrayToHexString(publicKey) + "'",
-            null);
-    }
-
-    @Nullable
     public ContactModel getByLookupKey(String lookupKey) {
         return getFirst(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + " =?",
             new String[]{
@@ -92,7 +86,7 @@ public class ContactModelFactory extends ModelFactory {
         String orderBy) {
         queryBuilder.setTables(this.getTableName());
         return convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             args,
@@ -104,14 +98,12 @@ public class ContactModelFactory extends ModelFactory {
     private List<ContactModel> convertList(Cursor c) {
         List<ContactModel> result = new ArrayList<>();
         if (c != null) {
-            try {
+            try (c) {
                 while (c.moveToNext()) {
-                    result.add(this.convert(new CursorHelper(c, columnIndexCache)));
+                    result.add(this.convert(new CursorHelper(c, getColumnIndexCache())));
                 }
             } catch (SQLiteException e) {
                 logger.debug("Exception", e);
-            } finally {
-                c.close();
             }
         }
         return result;
@@ -120,7 +112,7 @@ public class ContactModelFactory extends ModelFactory {
     private ContactModel convert(@NonNull CursorHelper cursorFactory) {
         final ContactModel[] cm = new ContactModel[1];
         cursorFactory.current((CursorHelper.Callback) cursorFactory1 -> {
-            ContactModel contactModel = new ContactModel(
+            ContactModel contactModel = ContactModel.createUnchecked(
                 cursorFactory1.getString(ContactModel.COLUMN_IDENTITY),
                 cursorFactory1.getBlob(ContactModel.COLUMN_PUBLIC_KEY)
             );
@@ -198,7 +190,16 @@ public class ContactModelFactory extends ModelFactory {
             logger.error("try to create or update a contact model without identity");
             return false;
         }
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        if (contactModel.getIdentity().length() != ProtocolDefines.IDENTITY_LEN) {
+            logger.error("Cannot add a contact with an invalid identity: {}", contactModel.getIdentity());
+            return false;
+        }
+        if (contactModel.getPublicKey().length != NaCl.PUBLICKEYBYTES) {
+            logger.error("Cannot add a contact with a public key of length {}", contactModel.getPublicKey());
+            return false;
+        }
+
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             ContactModel.COLUMN_IDENTITY + "=?",
@@ -253,13 +254,13 @@ public class ContactModelFactory extends ModelFactory {
         if (insert) {
             //never update identity field
             contentValues.put(ContactModel.COLUMN_IDENTITY, contactModel.getIdentity());
-            this.databaseService.getWritableDatabase().insertOrThrow(
+            getWritableDatabase().insertOrThrow(
                 this.getTableName(),
                 null,
                 contentValues
             );
         } else {
-            this.databaseService.getWritableDatabase().update(
+            getWritableDatabase().update(
                 this.getTableName(),
                 contentValues,
                 ContactModel.COLUMN_IDENTITY + "=?",
@@ -288,7 +289,7 @@ public class ContactModelFactory extends ModelFactory {
     }
 
     public int delete(ContactModel contactModel) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             ContactModel.COLUMN_IDENTITY + "=?",
             new String[]{
                 contactModel.getIdentity()
@@ -296,6 +297,7 @@ public class ContactModelFactory extends ModelFactory {
     }
 
     @Override
+    @NonNull
     public String[] getStatements() {
         return new String[]{
             "CREATE TABLE `" + ContactModel.TABLE + "` (" +
@@ -330,7 +332,7 @@ public class ContactModelFactory extends ModelFactory {
     }
 
     private @Nullable ContactModel getFirst(String selection, String[] selectionArgs) {
-        try (Cursor cursor = this.databaseService.getReadableDatabase().query(
+        try (Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -340,7 +342,7 @@ public class ContactModelFactory extends ModelFactory {
             null
         )) {
             if (cursor != null && cursor.moveToFirst()) {
-                return convert(new CursorHelper(cursor, columnIndexCache));
+                return convert(new CursorHelper(cursor, getColumnIndexCache()));
             }
         } catch (Exception e) {
             logger.error("Exception", e);

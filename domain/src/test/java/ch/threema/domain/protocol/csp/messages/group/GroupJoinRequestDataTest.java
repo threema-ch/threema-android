@@ -23,8 +23,8 @@ package ch.threema.domain.protocol.csp.messages.group;
 
 import com.google.protobuf.ByteString;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.protobuf.csp.e2e.GroupJoinRequest;
@@ -49,30 +49,30 @@ public class GroupJoinRequestDataTest {
         .build();
 
     static void assertEqualsTestProperties(GroupJoinRequestData data) {
-        Assert.assertEquals(TEST_TOKEN_VALID, data.getToken());
-        Assert.assertEquals(TEST_GROUP_NAME, data.getGroupName());
-        Assert.assertEquals(TEST_MESSAGE, data.getMessage());
+        Assertions.assertEquals(TEST_TOKEN_VALID, data.getToken());
+        Assertions.assertEquals(TEST_GROUP_NAME, data.getGroupName());
+        Assertions.assertEquals(TEST_MESSAGE, data.getMessage());
     }
 
     @Test
-    public void testValidData() throws BadMessageException {
+    void testValidData() {
         final GroupJoinRequestData data = new GroupJoinRequestData(TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_MESSAGE);
         assertEqualsTestProperties(data);
     }
 
 
     @Test
-    public void testFromProtobuf() throws BadMessageException {
+    void testFromProtobuf() throws BadMessageException {
         final byte[] rawMessage = TEST_PROTOBUF_MESSAGE.toByteArray();
         final GroupJoinRequestData data = GroupJoinRequestData.fromProtobuf(rawMessage);
         assertEqualsTestProperties(data);
     }
 
     @Test
-    public void testToProtobufMessage() throws BadMessageException {
+    void testToProtobufMessage() {
         final GroupJoinRequestData data = new GroupJoinRequestData(TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_MESSAGE);
         final GroupJoinRequest generatedProtobufMessage = data.toProtobufMessage();
 
-        Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
+        Assertions.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
     }
 }

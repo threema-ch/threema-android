@@ -23,7 +23,6 @@ package ch.threema.app.activities.ballot;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
@@ -33,11 +32,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.elevation.ElevationOverlayProvider;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 
 import org.slf4j.Logger;
@@ -48,13 +45,16 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.adapters.ballot.BallotWizard1Adapter;
 import ch.threema.app.dialogs.FormatTextEntryDialog;
-import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -89,11 +89,9 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        ViewGroup rootView = (ViewGroup) inflater.inflate(
-            R.layout.fragment_ballot_wizard1, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_ballot_wizard1, container, false);
 
         this.choiceRecyclerView = rootView.findViewById(R.id.ballot_list);
         this.choiceRecyclerViewLayoutManager = new LinearLayoutManager(getActivity());
@@ -154,33 +152,14 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
         itemTouchHelper.attachToRecyclerView(choiceRecyclerView);
 
-        // tint the edittext manually as TextInputLayout does not currently support elevation
-        ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(requireContext());
-        TextInputLayout textInputLayout = rootView.findViewById(R.id.textinputlayout_compose);
-        textInputLayout.setBoxBackgroundColor(elevationOverlayProvider.compositeOverlayIfNeeded(
-            ConfigUtils.getColorFromAttribute(requireContext(), R.attr.colorSurface),
-            getResources().getDimension(R.dimen.compose_edittext_elevation)));
         this.createChoiceEditText = rootView.findViewById(R.id.create_choice_name);
-        this.createChoiceEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == getResources().getInteger(R.integer.ime_wizard_add_choice) || actionId == EditorInfo.IME_ACTION_NEXT || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    createChoice();
-                }
-                return false;
+        this.createChoiceEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == getResources().getInteger(R.integer.ime_wizard_add_choice) || actionId == EditorInfo.IME_ACTION_NEXT || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                createChoice();
             }
+            return false;
         });
-        this.createChoiceEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+        this.createChoiceEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s != null && createChoiceButton != null) {
@@ -249,6 +228,29 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
         initAdapter();
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        handleDeviceInsetsAndImeAnimation(view);
+    }
+
+    private void handleDeviceInsetsAndImeAnimation(@NonNull final View fragmentView) {
+        // Display the input field on top of the opened keyboard
+        final @NonNull LinearLayout contentLayout = fragmentView.findViewById(R.id.layout_wizard2);
+        ViewCompat.setOnApplyWindowInsetsListener(contentLayout, (view, windowInsets) -> {
+            final @NonNull Insets imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+            final @NonNull Insets otherInsets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+            );
+            int bottom = getResources().getDimensionPixelSize(R.dimen.wizard_footer_height);
+            if (imeInsets.bottom > 0) {
+                bottom += (imeInsets.bottom - otherInsets.bottom);
+            }
+            view.setPadding(0, 0, 0, bottom);
+            return windowInsets;
+        });
     }
 
     private void createDateChoice(boolean showTime) {

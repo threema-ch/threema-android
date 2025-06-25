@@ -31,7 +31,6 @@ import android.database.SQLException;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -57,14 +56,14 @@ import org.slf4j.Logger;
 
 import java.util.Date;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.emojis.EmojiEditText;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.mediaattacher.ControlPanelButton;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.group.GroupInviteService;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -107,7 +106,7 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
             return false;
         }
 
-        int groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
+        int groupId = getIntent().getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
         GroupModel groupModel = this.groupService.getById(groupId);
 
         if (groupModel == null) {
@@ -144,16 +143,14 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
         try {
             this.groupInviteService = serviceManager.getGroupInviteService();
             this.groupService = serviceManager.getGroupService();
-            this.groupInviteRepository = serviceManager.getDatabaseServiceNew().getGroupInviteModelFactory();
-        } catch (FileSystemNotPresentException | MasterKeyLockedException e) {
+            this.groupInviteRepository = serviceManager.getDatabaseService().getGroupInviteModelFactory();
+        } catch (MasterKeyLockedException e) {
             logger.error("Exception, services not available... finishing", e);
             finish();
         }
     }
 
     private void initLayout() {
-        getWindow().setStatusBarColor(this.getResources().getColor(R.color.attach_status_bar_color_collapsed));
-
         this.textInputLayout = findViewById(R.id.text_input_layout);
         this.newGroupLinkName = findViewById(R.id.link_name);
         this.administrationCheckbox = findViewById(R.id.administration_checkbox);
@@ -172,7 +169,6 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
             FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
             contentFrameLayout.setOnClickListener(v -> finish());
 
-            attacherLayoutParams.width = ThreemaApplication.getAppContext().getResources().getDisplayMetrics().widthPixels * 2 / 3;
             attacherLayoutParams.gravity = Gravity.CENTER;
             bottomSheetContainerParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             bottomSheetContainerParams.gravity = Gravity.CENTER;
@@ -215,21 +211,11 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
             textInputLayout.setEndIconActivated(hasFocus);
         });
 
-        this.newGroupLinkName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // don't bother
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // don't bother
-            }
-
+        this.newGroupLinkName.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 // don't allow empty names
-                boolean hasMessageText = s.toString().trim().length() > 0;
+                boolean hasMessageText = !s.toString().trim().isEmpty();
                 textInputLayout.setEndIconVisible(hasMessageText);
                 textInputLayout.setEndIconActivated(hasMessageText);
             }

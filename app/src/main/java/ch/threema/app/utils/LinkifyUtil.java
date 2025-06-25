@@ -63,10 +63,11 @@ import androidx.core.text.util.LinkifyCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.ContactDetailActivity;
+import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
 import ch.threema.app.dialogs.BottomSheetGridDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -361,7 +362,7 @@ public class LinkifyUtil {
 
                                 if (!clickableSpan.getText().equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {
                                     Intent intent = new Intent(context, ContactDetailActivity.class);
-                                    intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, clickableSpan.getText());
+                                    intent.putExtra(AppConstants.INTENT_DATA_CONTACT, clickableSpan.getText());
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                     context.startActivity(intent);
                                 }

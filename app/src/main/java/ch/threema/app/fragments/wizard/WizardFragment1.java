@@ -27,7 +27,6 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +47,7 @@ import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
@@ -154,16 +154,8 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
         // no action
     }
 
-    private class PasswordWatcher implements TextWatcher {
+    private class PasswordWatcher extends SimpleTextWatcher {
         private PasswordWatcher() {
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
         }
 
         @Override
@@ -189,7 +181,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
         boolean lengthOk = getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(getContext()) ? 1 : MIN_PW_LENGTH);
         boolean passwordsMatch = password1Text != null && password1Text.equals(password2Text);
 
-        if (!lengthOk && password1Text != null && password1Text.length() > 0) {
+        if (!lengthOk && password1Text != null && !password1Text.isEmpty()) {
             this.password1layout.setError(getString(R.string.password_too_short_generic));
             this.password2layout.setError(null);
         } else {

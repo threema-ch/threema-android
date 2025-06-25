@@ -24,7 +24,6 @@ package ch.threema.app.ui;
 import android.content.Context;
 import android.text.Editable;
 import android.text.Selection;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 
 public class PrefixEditText extends ThreemaTextInputEditText {
@@ -50,17 +49,7 @@ public class PrefixEditText extends ThreemaTextInputEditText {
 
         Selection.setSelection(getText(), getText().length());
 
-        addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-            }
-
+        addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if (prefix != null && s.toString().startsWith(prefix + prefix)) {

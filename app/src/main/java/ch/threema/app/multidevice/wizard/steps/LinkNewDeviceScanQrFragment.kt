@@ -43,16 +43,15 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import androidx.core.view.updatePadding
 import ch.threema.app.R
 import ch.threema.app.camera.DecodeQRCodeState
 import ch.threema.app.camera.QRCodeAnalyzer
 import ch.threema.app.multidevice.wizard.LinkingResult
+import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.LongToast
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.RuntimeUtil
-import ch.threema.app.utils.getStatusBarHeightPxCompat
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.withCurrentWindowInsets
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -97,13 +96,9 @@ class LinkNewDeviceScanQrFragment : LinkNewDeviceFragment() {
             setUpCamera()
         }
 
-        // Add extra vertical top padding to prevent ui elements being overlapped
-        // by the system status bar when the bottom-sheet is fully expanded
-        withCurrentWindowInsets { _, insets ->
-            view.findViewById<View>(R.id.parent_layout).updatePadding(
-                top = insets.getStatusBarHeightPxCompat(),
-            )
-        }
+        view.findViewById<View>(R.id.parent_layout).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.vertical(),
+        )
     }
 
     private fun setUpCamera() {

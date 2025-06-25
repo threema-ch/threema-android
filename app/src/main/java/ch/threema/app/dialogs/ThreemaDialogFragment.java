@@ -53,13 +53,28 @@ public class ThreemaDialogFragment extends DialogFragment {
      * @param tag     Arbitrary tag for this DialogFragment
      */
     @Override
-    public void show(@Nullable FragmentManager manager, String tag) {
+    public void show(@Nullable FragmentManager manager, @Nullable String tag) {
         if (manager != null) {
             try {
                 super.show(manager, tag);
             } catch (IllegalStateException e) {
                 FragmentTransaction ft = manager.beginTransaction();
                 ft.add(this, tag);
+                ft.commitAllowingStateLoss();
+            }
+        }
+    }
+
+    /**
+     * Shows a DialogFragment. Can be used from onActivityResult() without provoking "IllegalStateException: Can not perform this action after onSaveInstanceState"
+     */
+    public void show(@Nullable FragmentManager manager) {
+        if (manager != null) {
+            try {
+                super.show(manager, null);
+            } catch (IllegalStateException e) {
+                FragmentTransaction ft = manager.beginTransaction();
+                ft.add(this, null);
                 ft.commitAllowingStateLoss();
             }
         }

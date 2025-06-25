@@ -37,6 +37,7 @@ import android.widget.LinearLayout.LayoutParams
 import android.widget.Space
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -44,9 +45,10 @@ import androidx.preference.PreferenceManager
 import ch.threema.app.BuildConfig
 import ch.threema.app.R
 import ch.threema.app.activities.PermissionRequestActivity.Companion.INTENT_PERMISSION_REQUESTS
+import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.PermissionIconView
 import ch.threema.app.ui.PermissionIconView.PermissionIconState
-import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.PermissionRequest
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -109,8 +111,6 @@ class PermissionRequestActivity : ThreemaActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        ConfigUtils.configureSystemBars(this)
-
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -186,6 +186,14 @@ class PermissionRequestActivity : ThreemaActivity() {
 
         logger.info("Initialized PermissionRequestActivity for the following permission requests")
         logPermissionStates()
+
+        handleDeviceInsets()
+    }
+
+    fun handleDeviceInsets() {
+        findViewById<CoordinatorLayout>(R.id.parent_layout).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.all(),
+        )
     }
 
     override fun onStart() {
@@ -423,12 +431,6 @@ class PermissionRequestActivity : ThreemaActivity() {
         } else {
             PermissionIconState.REQUIRED_OR_UNDECIDED
         }
-
-    private fun visibleOrInvisible(visible: Boolean): Int = if (visible) {
-        View.VISIBLE
-    } else {
-        View.INVISIBLE
-    }
 
     private fun visibleOrGone(visible: Boolean): Int = if (visible) {
         View.VISIBLE

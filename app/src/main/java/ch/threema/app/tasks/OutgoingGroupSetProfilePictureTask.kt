@@ -55,7 +55,7 @@ class OutgoingGroupSetProfilePictureTask(
 
     override val type = "OutgoingGroupSetProfilePictureTask"
 
-    override val messageId = messageId ?: MessageId()
+    override val messageId = messageId ?: MessageId.random()
 
     override fun createGroupMessage(): AbstractGroupMessage {
         val (blobId, encryptionKey, size) = groupPhotoUploadResult

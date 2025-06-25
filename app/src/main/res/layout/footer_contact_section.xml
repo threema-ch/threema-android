@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:clickable="false"
     android:orientation="vertical"
-    android:paddingBottom="12dp"
-    android:paddingTop="8dp">
+    android:paddingTop="@dimen/grid_unit_x1"
+    android:paddingBottom="@dimen/grid_unit_x1_5">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/contact_counter_text"

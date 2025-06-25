@@ -81,7 +81,7 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
 
     private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
         @Override
-        public void onStateChanged(State state) {
+        public void onStateChanged(@NonNull State state) {
             if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
                 PlayerView playerView = videoViewRef.get();
                 if (playerView != null && playerView.isControllerFullyVisible()) {
@@ -110,7 +110,7 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logger.debug("onCreateView");
 
-        this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
+        this.isImmediatePlay = getArguments() != null && getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
 
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
@@ -170,16 +170,18 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
             this.previewImageViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.image));
 
             this.videoViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_view));
-            this.videoViewRef.get().setControllerVisibilityListener((PlayerControlView.VisibilityListener) visibility -> VideoViewFragment.this.showUi(visibility == View.VISIBLE));
+            this.videoViewRef.get().setControllerVisibilityListener((PlayerControlView.VisibilityListener) visibility ->
+                VideoViewFragment.this.showUi(visibility == View.VISIBLE)
+            );
             this.videoViewRef.get().setVisibility(View.GONE);
             this.videoViewRef.get().setPlayer(this.videoPlayer);
             this.videoViewRef.get().setControllerHideOnTouch(true);
             this.videoViewRef.get().setControllerShowTimeoutMs(MediaViewerActivity.ACTIONBAR_TIMEOUT);
             this.videoViewRef.get().setControllerAutoShow(true);
 
-            logger.debug("View Type: " + (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
+            logger.debug("View Type: {}", (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
 
-            ConfigUtils.adjustExoPlayerControllerMargins(getContext(), this.videoViewRef.get());
+            ConfigUtils.adjustExoPlayerControllerMargins(requireContext(), this.videoViewRef.get());
 
             this.progressBarRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.progress_bar));
         }
@@ -217,7 +219,10 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
         logger.debug("loadVideo");
 
         if (this.videoPlayer != null) {
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), getContext().getString(R.string.app_name)));
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(
+                requireContext(),
+                Util.getUserAgent(requireContext(), requireContext().getString(R.string.app_name))
+            );
             MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(videoUri));
 
             this.videoPlayer.setPlayWhenReady(this.isImmediatePlay);
@@ -264,7 +269,7 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
 
     @Override
     public void onPlaybackStateChanged(int playbackState) {
-        logger.debug("onPlaybackStateChanged = " + playbackState);
+        logger.debug("onPlaybackStateChanged = {}", playbackState);
 
         if (isPreparing && playbackState == Player.STATE_READY) {
             isPreparing = false;
@@ -281,8 +286,8 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
     }
 
     @Override
-    public void onPlayerError(PlaybackException error) {
-        logger.info("ExoPlaybackException = " + error.getMessage());
+    public void onPlayerError(@NonNull PlaybackException error) {
+        logger.error("ExoPlayer failed to play video with error code {}", error.getErrorCodeName(), error);
 
         this.progressBarRef.get().setVisibility(View.GONE);
 
@@ -291,15 +296,12 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        logger.debug("setUserVisibleHint = " + isVisibleToUser);
+        logger.debug("setUserVisibleHint = {}", isVisibleToUser);
 
         // stop player if fragment comes out of view
-        if (!isVisibleToUser && this.videoPlayer != null &&
-            (this.videoPlayer.isLoading() || this.videoPlayer.isPlaying())) {
+        if (!isVisibleToUser && this.videoPlayer != null && (this.videoPlayer.isLoading() || this.videoPlayer.isPlaying())) {
             this.videoPlayer.setPlayWhenReady(false);
             this.videoPlayer.pause();
         }
     }
-
-
 }

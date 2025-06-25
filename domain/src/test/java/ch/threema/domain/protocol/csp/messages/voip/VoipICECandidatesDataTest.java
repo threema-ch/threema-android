@@ -23,8 +23,8 @@ package ch.threema.domain.protocol.csp.messages.voip;
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 
@@ -48,11 +48,11 @@ public class VoipICECandidatesDataTest {
                 || candidate.getCandidate().equals("c5");
         });
 
-        Assert.assertNotNull(data.getCandidates());
-        Assert.assertEquals("3 candidates expected", 3, data.getCandidates().length);
-        Assert.assertEquals("c1", data.getCandidates()[0].getCandidate());
-        Assert.assertEquals("c3", data.getCandidates()[1].getCandidate());
-        Assert.assertEquals("c5", data.getCandidates()[2].getCandidate());
+        Assertions.assertNotNull(data.getCandidates());
+        Assertions.assertEquals(3, data.getCandidates().length, "3 candidates expected");
+        Assertions.assertEquals("c1", data.getCandidates()[0].getCandidate());
+        Assertions.assertEquals("c3", data.getCandidates()[1].getCandidate());
+        Assertions.assertEquals("c5", data.getCandidates()[2].getCandidate());
     }
 
     @Test
@@ -75,14 +75,14 @@ public class VoipICECandidatesDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertTrue(json, json.contains("\"callId\":9001"));
-        Assert.assertTrue(json, json.contains("\"removed\":false"));
+        Assertions.assertTrue(json.contains("\"callId\":9001"), json);
+        Assertions.assertTrue(json.contains("\"removed\":false"), json);
 
-        Assert.assertTrue(json, json.contains("\"candidates\":["));
-        Assert.assertTrue(json, json.contains("\"candidate\":\"c1\""));
-        Assert.assertTrue(json, json.contains("\"sdpMid\":\"c1\""));
-        Assert.assertTrue(json, json.contains("\"sdpMLineIndex\":0"));
-        Assert.assertTrue(json, json.contains("\"ufrag\":\"c1\""));
+        Assertions.assertTrue(json.contains("\"candidates\":["), json);
+        Assertions.assertTrue(json.contains("\"candidate\":\"c1\""), json);
+        Assertions.assertTrue(json.contains("\"sdpMid\":\"c1\""), json);
+        Assertions.assertTrue(json.contains("\"sdpMLineIndex\":0"), json);
+        Assertions.assertTrue(json.contains("\"ufrag\":\"c1\""), json);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class VoipICECandidatesDataTest {
         final VoipICECandidatesData parsed = VoipICECandidatesData.parse(
             "{\"callId\":42,\"candidates\":[{\"sdpMLineIndex\":0,\"candidate\":\"c1\",\"ufrag\":\"c1\",\"sdpMid\":\"c1\"}],\"removed\":false}"
         );
-        junit.framework.Assert.assertEquals(Long.valueOf(42), parsed.getCallId());
+        Assertions.assertEquals(Long.valueOf(42), parsed.getCallId());
     }
 
     @Test
@@ -98,6 +98,6 @@ public class VoipICECandidatesDataTest {
         final VoipICECandidatesData parsed = VoipICECandidatesData.parse(
             "{\"candidates\":[{\"sdpMLineIndex\":0,\"candidate\":\"c1\",\"ufrag\":\"c1\",\"sdpMid\":\"c1\"}],\"removed\":false}"
         );
-        junit.framework.Assert.assertNull(parsed.getCallId());
+        Assertions.assertNull(parsed.getCallId());
     }
 }

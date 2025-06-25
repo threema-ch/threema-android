@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import androidx.biometric.BiometricManager;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.BiometricLockActivity;
@@ -83,7 +84,7 @@ public class BiometricUtil {
         logger.debug("launch BiometricLockActivity");
         Intent intent = new Intent(activity != null ? activity : fragment.getActivity(), BiometricLockActivity.class);
         if (testOnly) {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, true);
+            intent.putExtra(AppConstants.INTENT_DATA_CHECK_ONLY, true);
         }
         if (authType != null) {
             intent.putExtra(INTENT_DATA_AUTHENTICATION_TYPE, authType);

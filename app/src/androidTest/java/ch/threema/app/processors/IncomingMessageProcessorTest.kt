@@ -118,7 +118,7 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
 
     @Test
     fun testIncomingDeliveryReceipt() = runTest {
-        val messageId = MessageId()
+        val messageId = MessageId.random()
 
         // Test 'received'
         assertSuccessfulMessageProcessing(
@@ -171,7 +171,7 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         assertSuccessfulMessageProcessing(
             DeliveryReceiptMessage().also {
                 it.receiptType = DELIVERYRECEIPT_MSGRECEIVED
-                it.receiptMessageIds = Array(100) { MessageId() }
+                it.receiptMessageIds = Array(100) { MessageId.random() }
                 it.messageId = MessageId(0)
             }.enrich(),
             contactA,
@@ -195,7 +195,7 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         val badMessage = TextMessage().also {
             it.fromIdentity = contactA.identity
             it.toIdentity = myContact.identity
-            it.messageId = MessageId()
+            it.messageId = MessageId.random()
             it.date = Date()
             it.text = "" // Bad message; cannot be decoded due to invalid length
         }
@@ -214,7 +214,7 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         val messageToB = TextMessage().also {
             it.fromIdentity = contactA.identity
             it.toIdentity = contactB.identity
-            it.messageId = MessageId()
+            it.messageId = MessageId.random()
             it.date = Date()
             it.text = "This message is for contact B!"
         }
@@ -233,18 +233,18 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         )
 
         val expectDeliveryReceiptSent = message.sendAutomaticDeliveryReceipt() &&
-            !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
+            !message.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
+
+        val sentMessage = sentMessagesNewTask.poll()
         if (expectDeliveryReceiptSent) {
-            val deliveryReceiptMessage = sentMessagesInsideTask.poll()
-            if (deliveryReceiptMessage is DeliveryReceiptMessage) {
-                assertContentEquals(
-                    messageId.messageId,
-                    deliveryReceiptMessage.receiptMessageIds[0].messageId,
-                )
-                assertEquals(DELIVERYRECEIPT_MSGRECEIVED, deliveryReceiptMessage.receiptType)
+            if (sentMessage is DeliveryReceiptMessage) {
+                assertContentEquals(messageId.messageId, sentMessage.receiptMessageIds[0].messageId)
+                assertEquals(DELIVERYRECEIPT_MSGRECEIVED, sentMessage.receiptType)
             } else {
-                fail("Instead of delivery receipt we got $deliveryReceiptMessage")
+                fail("Instead of delivery receipt we got $sentMessage")
             }
+        } else if (sentMessage != null) {
+            fail("Expected no message but got $sentMessage")
         }
 
         assertTrue(sentMessagesInsideTask.isEmpty())
@@ -267,7 +267,7 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
     private fun AbstractMessage.enrich(): AbstractMessage {
         toIdentity = myContact.identity
         date = Date()
-        messageId = MessageId()
+        messageId = MessageId.random()
         return this
     }
 }

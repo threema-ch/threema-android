@@ -32,23 +32,16 @@ private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingContactSetPr
 internal class ReflectedOutgoingContactSetProfilePictureTask(
     message: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<SetProfilePictureMessage>(
+    outgoingMessage = message,
+    message = SetProfilePictureMessage.fromReflected(message),
+    type = Common.CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE,
+    serviceManager = serviceManager,
 ) {
-    private val setProfilePictureMessage by lazy {
-        SetProfilePictureMessage.fromReflected(message)
-    }
-
-    override val shouldBumpLastUpdate: Boolean = setProfilePictureMessage.bumpLastUpdate()
-
-    override val storeNonces: Boolean = setProfilePictureMessage.protectAgainstReplay()
-
     override fun processOutgoingMessage() {
         val identity = messageReceiver.contact.identity
         contactModelRepository.getByIdentity(identity)
-            ?.setProfilePictureBlobId(setProfilePictureMessage.blobId)
+            ?.setProfilePictureBlobId(message.blobId)
             ?: logger.error("Received reflected outgoing message to unknown contact {}", identity)
     }
 }

@@ -23,7 +23,7 @@ package ch.threema.app.adapters
 
 import androidx.annotation.DrawableRes
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.drafts.DraftManager
 import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.services.ContactService
@@ -51,11 +51,10 @@ class MessageListAdapterItem(
 
     val isContactConversation = conversationModel.isContactConversation
     val isGroupConversation = conversationModel.isGroupConversation
-    private val isDistributionListConversation = conversationModel.isDistributionListConversation
     fun isNotesGroup() = groupModel?.isNotesGroup() ?: false
     fun isGroupMember() = groupModel?.data?.value?.isMember ?: false
 
-    private val uniqueId = conversationModel.receiver?.uniqueIdString ?: ""
+    private val uniqueId = conversationModel.messageReceiver.uniqueIdString
     val uid: String = conversationModel.uid
 
     val isPrivateChat: Boolean
@@ -68,7 +67,7 @@ class MessageListAdapterItem(
     private var lastDraftPadded: CharSequence? = getDraft()
 
     fun getDraft(): CharSequence? {
-        val draft = ThreemaApplication.getMessageDraft(uniqueId)
+        val draft = DraftManager.getMessageDraft(uniqueId)
         if (draft == lastDraft) {
             return lastDraftPadded
         }
@@ -132,41 +131,11 @@ class MessageListAdapterItem(
             ""
         }
 
-    val deliveryIconResource = run {
-        if (isContactConversation) {
-            if (latestMessage != null) {
-                if (latestMessage.type == MessageType.VOIP_STATUS) {
-                    // Always show the phone icon for voip status messages
-                    R.drawable.ic_phone_locked
-                } else {
-                    if (!latestMessage.isOutbox) {
-                        R.drawable.ic_reply_filled
-                    } else {
-                        ConversationModel.NO_RESOURCE
-                    }
-                    // Note that the icon for outbox messages is handled directly in the view holder
-                }
-            } else {
-                ConversationModel.NO_RESOURCE
-            }
-        } else if (isGroupConversation) {
-            if (isNotesGroup()) {
-                R.drawable.ic_spiral_bound_booklet_outline
-            } else {
-                R.drawable.ic_group_filled
-            }
-        } else if (isDistributionListConversation) {
-            R.drawable.ic_distribution_list_filled
-        } else {
-            ConversationModel.NO_RESOURCE
-        }
-    }
-
     val muteStatusDrawableRes: Int?
         @DrawableRes
         get() {
             var iconRes: Int? = null
-            val messageReceiver = conversationModel.receiver
+            val messageReceiver = conversationModel.messageReceiver
             if (messageReceiver is ContactMessageReceiver) {
                 iconRes = messageReceiver.contact.currentNotificationTriggerPolicyOverride().iconResRightNow
             } else if (messageReceiver is GroupMessageReceiver) {

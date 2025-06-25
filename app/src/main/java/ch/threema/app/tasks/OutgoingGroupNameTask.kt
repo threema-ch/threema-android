@@ -39,7 +39,7 @@ class OutgoingGroupNameTask(
 ) : OutgoingCspGroupControlMessageTask(serviceManager) {
     override val type: String = "OutgoingGroupNameTask"
 
-    override val messageId = messageId ?: MessageId()
+    override val messageId = messageId ?: MessageId.random()
 
     override fun createGroupMessage() = GroupNameMessage().also { it.groupName = groupName }
 

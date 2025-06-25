@@ -43,8 +43,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
@@ -53,7 +53,6 @@ import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
@@ -62,7 +61,10 @@ import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.services.group.OutgoingGroupJoinRequestService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SelectorDialogItem;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.LogUtil;
@@ -77,7 +79,7 @@ import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.protobuf.url_payloads.GroupInvite;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
@@ -106,7 +108,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
     private UserService userService;
     private GroupService groupService;
     private ContactService contactService;
-    private DatabaseServiceNew databaseService;
+    private DatabaseService databaseService;
     private APIConnector apiConnector;
     private ContactModelRepository contactModelRepository;
 
@@ -121,8 +123,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 
     private final GroupJoinResponseListener groupJoinResponseListener = new GroupJoinResponseListener() {
         @Override
-        public void onReceived(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,
-                               OutgoingGroupJoinRequestModel.Status status) {
+        public void onReceived(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel, OutgoingGroupJoinRequestModel.Status status) {
             RuntimeUtil.runOnUiThread(() -> viewModel.onDataChanged());
         }
     };
@@ -135,6 +136,15 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
         if (getIntent().getStringExtra(EXTRA_QR_RESULT) != null) {
             parseQrResult(getIntent().getStringExtra(EXTRA_QR_RESULT));
         }
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.recycler),
+            InsetSides.lbr()
+        );
     }
 
     @Override
@@ -155,10 +165,10 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
             return false;
         }
 
-        if (getIntent().hasExtra(ThreemaApplication.INTENT_DATA_GROUP_LINK)) {
+        if (getIntent().hasExtra(AppConstants.INTENT_DATA_GROUP_LINK)) {
             try {
                 this.groupInvite = groupInviteService.decodeGroupInviteLink(
-                    getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_GROUP_LINK)
+                    getIntent().getStringExtra(AppConstants.INTENT_DATA_GROUP_LINK)
                 );
             } catch (IOException | IllegalStateException |
                      GroupInviteToken.InvalidGroupInviteTokenException e) {
@@ -184,10 +194,10 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
             this.contactService = serviceManager.getContactService();
             this.userService = serviceManager.getUserService();
             this.groupService = serviceManager.getGroupService();
-            this.databaseService = serviceManager.getDatabaseServiceNew();
+            this.databaseService = serviceManager.getDatabaseService();
             this.apiConnector = serviceManager.getAPIConnector();
             this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+        } catch (MasterKeyLockedException e) {
             logger.error("Exception, services not available... finishing");
             finish();
         }
@@ -212,6 +222,15 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 
         EmptyView emptyView = new EmptyView(this, ConfigUtils.getActionBarSize(this));
         emptyView.setup(getString(R.string.group_requests_none_outgoing));
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            emptyView,
+            InsetSides.lbr(),
+            SpacingValues.symmetric(
+                R.dimen.grid_unit_x1,
+                R.dimen.grid_unit_x3
+            )
+        );
 
         EmptyRecyclerView recyclerView = this.findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
@@ -289,7 +308,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             this.finish();
             return true;
@@ -365,7 +384,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
         }
     }
 
-    private void delete(List<OutgoingGroupJoinRequestModel> checkedItems) {
+    private void delete(@NonNull List<OutgoingGroupJoinRequestModel> checkedItems) {
         Integer amountOfOutgoingRequests = checkedItems.size();
         String confirmText = String.format(ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_outgoing_request, amountOfOutgoingRequests, amountOfOutgoingRequests));
         String reallyDeleteGroupRequestTitle = getString(amountOfOutgoingRequests > 1 ? R.string.really_delete_group_request_title_plural : R.string.really_delete_group_request_title_singular);
@@ -402,7 +421,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 
     private void forwardToGroup(int groupId) {
         Intent intent = new Intent(this, ComposeMessageActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupId);
         startActivity(intent);
     }
 
@@ -478,7 +497,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 
     // start generic alert dialog callbacks
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@NonNull String tag, Object data) {
         switch (tag) {
             case DIALOG_TAG_REALLY_DELETE_REQUEST:
                 reallyDelete((List<OutgoingGroupJoinRequestModel>) data);
@@ -493,11 +512,6 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
                 break;
 
         }
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
-        // fall though, delete action aborted
     }
     // end generic alert dialog callbacks
 
@@ -534,7 +548,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 
     public class RequestsActions implements ActionMode.Callback {
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        public boolean onCreateActionMode(@NonNull ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.action_group_request, menu);
             return true;
         }
@@ -550,7 +564,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(ActionMode mode, @NonNull MenuItem item) {
             int id = item.getItemId();
             if (id == R.id.menu_select_all) {
                 if (viewModel.selectAll()) {

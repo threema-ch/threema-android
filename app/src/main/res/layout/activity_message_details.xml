@@ -2,13 +2,13 @@
   ~ Copyright (c) 2020 Threema GmbH
   ~ All rights reserved.
   -->
-
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -24,8 +24,8 @@
                 style="@style/Threema.ToolbarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:navigationIcon="?attr/homeAsUpIndicator"
-                app:menu="@menu/activity_message_details" />
+                app:menu="@menu/activity_message_details"
+                app:navigationIcon="?attr/homeAsUpIndicator" />
 
             <include layout="@layout/connection_indicator" />
 
@@ -36,11 +36,7 @@
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/message_details_compose_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

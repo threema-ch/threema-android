@@ -27,9 +27,8 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("VoipICECandidatesMessage")
+private val logger = LoggingUtil.getThreemaLogger("VoipICECandidatesMessage")
 
 class VoipICECandidatesMessage : VoipMessage() {
     var data: VoipICECandidatesData? = null

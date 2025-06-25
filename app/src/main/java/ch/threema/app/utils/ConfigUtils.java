@@ -40,7 +40,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -86,6 +85,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
@@ -115,31 +115,26 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.onprem.OnPremSSLSocketFactoryProvider;
 import ch.threema.app.restrictions.AppRestrictionService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeConfigureActivity;
 import ch.threema.app.workers.RestartWorker;
 import ch.threema.base.utils.LoggingUtil;
 
 import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
-import static android.os.Build.VERSION_CODES.O_MR1;
-import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-import static android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
-import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
 import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
+import static ch.threema.app.preference.service.PreferenceService.EmojiStyle_DEFAULT;
 import static ch.threema.app.services.notification.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
@@ -158,11 +153,11 @@ public class ConfigUtils {
     public static final String THEME_DARK = "1";
     public static final String THEME_FOLLOW_SYSTEM = "2";
 
-    public static final int EMOJI_DEFAULT = 0;
-    public static final int EMOJI_ANDROID = 1;
-
     private static Integer miuiVersion = null;
-    private static int emojiStyle = 0;
+
+    @PreferenceService.EmojiStyle
+    public static int emojiStyle = 0;
+
     private static Boolean isTablet = null, isBiggerSingleEmojis = null;
     private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1, currentDayNightMode;
     private static WeakReference<MapLibre> mapLibreWeakReference = null;
@@ -294,7 +289,7 @@ public class ConfigUtils {
 
         if (serviceManager != null) {
             return BuildConfig.VIDEO_CALLS_ENABLED
-                && serviceManager.getPreferenceService().isVideoCallsEnabled()
+                && serviceManager.getPreferenceService().areVideoCallsEnabled()
                 && !AppRestrictionUtil.isVideoCallsDisabled();
         }
         return BuildConfig.VIDEO_CALLS_ENABLED;
@@ -304,7 +299,7 @@ public class ConfigUtils {
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
         return serviceManager != null
-            && serviceManager.getPreferenceService().isGroupCallsEnabled()
+            && serviceManager.getPreferenceService().areGroupCallsEnabled()
             && !AppRestrictionUtil.isGroupCallsDisabled()
             && !AppRestrictionUtil.isCallsDisabled();
     }
@@ -534,7 +529,7 @@ public class ConfigUtils {
     }
 
     public static boolean isDefaultEmojiStyle() {
-        return emojiStyle == EMOJI_DEFAULT;
+        return emojiStyle == EmojiStyle_DEFAULT;
     }
 
     /**
@@ -771,12 +766,8 @@ public class ConfigUtils {
                 }
             }
 
-            try {
-                LicenseService<?> licenseService = serviceManager.getLicenseService();
-                return isSerialLicensed() && licenseService.hasCredentials() && licenseService.isLicensed();
-            } catch (FileSystemNotPresentException e) {
-                logger.error("Exception", e);
-            }
+            LicenseService<?> licenseService = serviceManager.getLicenseService();
+            return isSerialLicensed() && licenseService.hasCredentials() && licenseService.isLicensed();
         }
         return false;
     }
@@ -805,7 +796,7 @@ public class ConfigUtils {
     public static void setScreenshotsAllowed(@NonNull Activity activity, @Nullable PreferenceService preferenceService, @Nullable LockAppService lockAppService) {
         // call this before setContentView
         if (getScreenshotsDisabled(preferenceService, lockAppService) ||
-            (preferenceService != null && preferenceService.isDisableScreenshots()) ||
+            (preferenceService != null && preferenceService.areScreenshotsDisabled()) ||
             activity instanceof ThreemaSafeConfigureActivity) {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         } else {
@@ -943,6 +934,7 @@ public class ConfigUtils {
     /**
      * @return The resolved height of attribute {@code R.attr.actionBarSize} in pixels.
      */
+    @Px
     public static int getActionBarSize(@NonNull Context context) {
         TypedValue typedValue = new TypedValue();
         if (context.getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
@@ -1351,64 +1343,6 @@ public class ConfigUtils {
         }
     }
 
-    /**
-     * Configure navigation and status bar color and style of provided activity to look nice on all kinds of older android version.
-     * Must be called before super.onCreate(). Thanks for the mess, Google.
-     */
-    public static void configureSystemBars(Activity activity) {
-        @ColorInt int statusBarColor = getColorFromAttribute(activity, android.R.attr.colorBackground);
-        @ColorInt int navigationBarColor = statusBarColor;
-        if (Build.VERSION.SDK_INT < O_MR1) {
-            int activityTheme;
-            try {
-                activityTheme = activity.getPackageManager().getActivityInfo(activity.getComponentName(), 0).theme;
-            } catch (Exception e) {
-                logger.error("Exception", e);
-                return;
-            }
-
-            if (ConfigUtils.isTheDarkSide(activity)) {
-                if (activityTheme != R.style.Theme_Threema_TransparentStatusbar) {
-                    activity.getWindow().addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    statusBarColor = Color.BLACK;
-                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-                        View decorView = activity.getWindow().getDecorView();
-                        decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS & ~SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                    }
-                }
-            } else {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    navigationBarColor = Color.BLACK;
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                        statusBarColor = Color.BLACK;
-                    } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-                        View decorView = activity.getWindow().getDecorView();
-                        decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                    }
-                } else if (activityTheme != R.style.Theme_Threema_MediaViewer && activityTheme != R.style.Theme_Threema_Transparent_Background) {
-                    View decorView = activity.getWindow().getDecorView();
-                    decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
-                        SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                }
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            activity.getWindow().getAttributes().layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-        }
-
-        activity.getWindow().setStatusBarColor(statusBarColor);
-        activity.getWindow().setNavigationBarColor(navigationBarColor);
-    }
-
-    public static void configureTransparentStatusBar(AppCompatActivity activity) {
-        activity.getWindow().setStatusBarColor(activity.getResources().getColor(R.color.status_bar_detail));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity.getWindow().getDecorView().setSystemUiVisibility(
-                activity.getWindow().getDecorView().getSystemUiVisibility() & ~SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
-    }
-
     public static int getPreferredThumbnailWidth(Context context, boolean reset) {
         if (preferredThumbnailWidth == -1 || reset) {
             if (context != null) {
@@ -1728,22 +1662,17 @@ public class ConfigUtils {
         return new int[]{x, y, viewableHeight};
     }
 
-    public static boolean isInstalledFromStore(@Nullable Context context) {
+    public static boolean isInstalledFromStore(@NonNull Context context) {
         String installerPackageName = getInstallerPackageName(context);
         return "com.android.vending".equals(installerPackageName) || "com.huawei.appmarket".equals(installerPackageName);
     }
 
-    public static boolean isInstalledFromPlayStore(@Nullable Context context) {
+    public static boolean isInstalledFromPlayStore(@NonNull Context context) {
         String installerPackageName = getInstallerPackageName(context);
         return "com.android.vending".equals(installerPackageName);
     }
 
-    private static @Nullable String getInstallerPackageName(@Nullable Context context) {
-        if (context == null) {
-            logger.warn("Could not get context.");
-            return null;
-        }
-
+    public static @Nullable String getInstallerPackageName(@NonNull Context context) {
         try {
             String installerPackageName;
             PackageManager packageManager = context.getPackageManager();

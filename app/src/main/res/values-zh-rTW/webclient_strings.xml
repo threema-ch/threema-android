@@ -7,7 +7,7 @@
     <string name="webclient_created_at">建立於：%1$s（%2$s）</string>
     <string name="webclient_active_since">活動時間：%s</string>
     <string name="webclient_enable">開啟桌面版應用程式/網頁版</string>
-    <string name="webclient_no_sessions_found">如要進行連結，請先下載桌面版應用程式 (<b>https://threema.ch/download</b>) 或開啟網頁版 (<b>%s</b>)，然後點擊下面的按鈕，掃描電腦螢幕上的QR碼。</string>
+    <string name="webclient_no_sessions_found">如要進行連結，請先下載桌面版應用程式 (<b>https://threema.com/download</b>) 或開啟網頁版 (<b>%s</b>)，然後點擊下面的按鈕，掃描電腦螢幕上的QR碼。</string>
     <string name="webclient_session_rename">重新命名工作階段</string>
     <string name="webclient_session_label">新名稱</string>
     <string name="webclient_session_start">開始工作階段</string>

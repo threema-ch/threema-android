@@ -25,9 +25,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
+import kotlin.test.Test
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**

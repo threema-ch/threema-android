@@ -90,14 +90,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import ch.threema.annotation.SameThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.BackgroundErrorNotification;
 import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.notifications.NotificationGroups;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.utils.CloseableLock;
@@ -857,7 +856,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
         ContactModel newContact = null;
         try {
             newContact = getServiceManager().getContactService().getByIdentity(contactIdentity);
-        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+        } catch (MasterKeyLockedException e) {
             logCallError(callId, "Could not get contact model", e);
         }
         if (newContact == null) {

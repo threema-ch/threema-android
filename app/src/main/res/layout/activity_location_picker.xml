@@ -16,143 +16,137 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:titleEnabled="false">
+            app:titleEnabled="false"
+            tools:layout_height="500dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="?android:attr/colorBackground"
                 android:fitsSystemWindows="true"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.4">
+                android:orientation="vertical"
+                app:layout_collapseMode="parallax">
 
                 <FrameLayout
-                    android:id="@+id/map_container"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    app:layout_constraintBottom_toTopOf="@+id/send_location_container"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_weight="1">
 
-                    <org.maplibre.android.maps.MapView
-                        android:id="@+id/map"
-                        app:maplibre_cameraZoom="16"
-                        app:maplibre_uiCompass="false"
+                    <FrameLayout
+                        android:id="@+id/map_container"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent">
 
-                    <ImageView
+                        <org.maplibre.android.maps.MapView
+                            android:id="@+id/map"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:maplibre_cameraZoom="16"
+                            app:maplibre_uiCompass="false"
+                            tools:background="@android:color/holo_red_light" />
+
+                        <ImageView
+                            android:id="@+id/location_marker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="3dp"
+                            android:layout_marginBottom="22dp"
+                            android:clickable="false"
+                            android:contentDescription="@string/location_placeholder"
+                            android:focusable="false"
+                            app:srcCompat="@drawable/ic_map_center_marker" />
+
+                        <TextView
+                            android:id="@+id/copyright_label"
+                            style="@style/Threema.TextAppearance.BodyMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left|bottom"
+                            android:background="#AAFFFFFF"
+                            android:paddingHorizontal="@dimen/grid_unit_x0_5"
+                            android:paddingVertical="2dp"
+                            android:text="@string/lp_map_copyright"
+                            android:textColor="#FF111111"
+                            android:textSize="11dp" />
+
+                    </FrameLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/center_map"
+                        style="@style/Threema.MaterialButton.Icon.Circle.Filled"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="22dp"
-                        android:clickable="false"
-                        android:focusable="false"
-                        app:srcCompat="@drawable/ic_map_center_marker"
-                        android:contentDescription="@string/location_placeholder" />
-
-                    <TextView
-                        style="@style/Threema.TextAppearance.BodyMedium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left|bottom"
-                        android:textSize="11dp"
-                        android:paddingTop="2dp"
-                        android:paddingBottom="2dp"
-                        android:paddingLeft="4dp"
-                        android:paddingRight="4dp"
-                        android:background="#AAFFFFFF"
-                        android:textColor="#FF111111"
-                        android:text="@string/lp_map_copyright" />
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="@dimen/grid_unit_x2"
+                        android:elevation="1dp"
+                        app:backgroundTint="?attr/colorSurface"
+                        app:icon="@drawable/ic_gps_fixed"
+                        app:iconTint="?attr/colorOnSurface"
+                        tools:ignore="ContentDescription" />
 
                 </FrameLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    style="@style/Threema.MaterialButton.Icon.Circle.Filled"
-                    android:id="@+id/center_map"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/lp_default_margin"
-                    android:layout_marginBottom="@dimen/lp_default_margin"
-                    app:layout_constraintBottom_toBottomOf="@id/map_container"
-                    app:layout_constraintRight_toRightOf="@id/map_container"
-                    app:icon="@drawable/ic_gps_fixed"
-                    app:backgroundTint="?attr/colorSurface"
-                    app:iconTint="?attr/colorOnSurface"
-                    android:elevation="1dp"
-                    tools:ignore="ContentDescription" />
-
-                <FrameLayout
+                <LinearLayout
                     android:id="@+id/send_location_container"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/send_location_container_height"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintLeft_toRightOf="parent"
                     android:background="?attr/selectableItemBackground"
-                    android:contentDescription="@string/lp_select_this_place"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:contentDescription="@string/lp_select_this_place"
+                    android:focusable="true"
+                    android:paddingHorizontal="@dimen/grid_unit_x2">
 
                     <ImageView
                         android:id="@+id/send_location_icon"
                         android:layout_width="@dimen/lp_icon_size_small"
                         android:layout_height="@dimen/lp_icon_size_small"
-                        android:layout_marginLeft="@dimen/lp_guide_start_margin"
-                        android:contentDescription="@string/lp_select_this_place"
                         android:layout_gravity="left|center_vertical"
+                        android:clickable="false"
+                        android:contentDescription="@string/lp_select_this_place"
                         app:srcCompat="@drawable/ic_map_marker_outline"
-                        app:tint="?attr/colorOnSurface"
-                        android:clickable="false" />
+                        app:tint="?attr/colorOnSurface" />
 
                     <TextView
-                        style="@style/Threema.TextAppearance.Subtitle"
                         android:id="@+id/send_location_text"
-                        android:layout_width="wrap_content"
+                        style="@style/Threema.TextAppearance.Subtitle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/lp_guide_content_margin"
-                        android:text="@string/lp_select_this_place"
-                        android:textColor="?attr/colorOnBackground"
                         android:layout_gravity="left|center_vertical"
-                        android:clickable="false" />
+                        android:layout_marginLeft="@dimen/grid_unit_x2"
+                        android:layout_weight="1"
+                        android:clickable="false"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/lp_select_this_place"
+                        android:textColor="?attr/colorOnBackground" />
 
                     <com.google.android.material.progressindicator.CircularProgressIndicator
                         android:id="@+id/loading_progressbar"
                         android:layout_width="@dimen/lp_icon_size_small"
                         android:layout_height="@dimen/lp_icon_size_small"
-                        android:layout_marginRight="@dimen/lp_guide_end_margin"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_marginLeft="@dimen/grid_unit_x2"
                         android:indeterminate="true"
                         android:visibility="gone"
-                        android:layout_gravity="right|center_vertical"
+                        app:minHideDelay="500"
                         app:showDelay="500"
-                        app:minHideDelay="500" />
+                        tools:visibility="visible" />
 
-                </FrameLayout>
+                </LinearLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:title="@string/send_location" />
+            </LinearLayout>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/search_container"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/lp_card_search_height"
-                android:layout_marginLeft="@dimen/lp_card_search_margin_horizontal"
-                android:layout_marginTop="@dimen/lp_card_search_margin_top"
-                android:layout_marginRight="@dimen/lp_card_search_margin_horizontal"
+                android:layout_margin="@dimen/grid_unit_x2"
                 app:cardCornerRadius="@dimen/edittext_bubble_border_radius"
-                app:cardBackgroundColor="?android:attr/colorBackground"
                 app:cardElevation="1dp"
-                app:strokeWidth="0dp"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.7">
+                app:strokeWidth="0dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -160,8 +154,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/lp_card_search_content_start_margin"
                     android:contentDescription="@string/search"
-                    app:tint="?attr/colorOnSurface"
-                    app:srcCompat="@drawable/ic_search_outline" />
+                    app:srcCompat="@drawable/ic_search_outline"
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -174,14 +168,23 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:title="@string/send_location" />
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorOnSurfaceInverse"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -204,7 +207,6 @@
                 android:id="@+id/poi_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:listitem="@layout/item_location_picker_place" />
 
         </LinearLayout>

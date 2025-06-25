@@ -31,21 +31,14 @@ import ch.threema.storage.models.ContactModel
 private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingDeleteProfilePictureTask")
 
 internal class ReflectedOutgoingDeleteProfilePictureTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<DeleteProfilePictureMessage>(
+    outgoingMessage = outgoingMessage,
+    message = DeleteProfilePictureMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE,
+    serviceManager = serviceManager,
 ) {
-    private val deleteProfilePictureMessage by lazy {
-        DeleteProfilePictureMessage.fromReflected(message)
-    }
-
-    override val shouldBumpLastUpdate: Boolean = deleteProfilePictureMessage.bumpLastUpdate()
-
-    override val storeNonces: Boolean = deleteProfilePictureMessage.protectAgainstReplay()
-
     override fun processOutgoingMessage() {
         val identity = messageReceiver.contact.identity
         contactModelRepository.getByIdentity(identity)

@@ -136,7 +136,7 @@ public class IntTrie<T> {
             }
             currentNode = foundNode;
         }
-        return new Value<>(currentNode.value, currentNode.children.size() == 0);
+        return new Value<>(currentNode.value, currentNode.children.isEmpty());
     }
 
     /**
@@ -153,7 +153,7 @@ public class IntTrie<T> {
             }
             currentNode = foundNode;
         }
-        return new Value<>(currentNode.value, currentNode.children.size() == 0);
+        return new Value<>(currentNode.value, currentNode.children.isEmpty());
     }
 
     /**
@@ -163,14 +163,4 @@ public class IntTrie<T> {
         final Value value = this.get(path);
         return value != null && value.getValue() != null;
     }
-
-    /**
-     * Return the trie contains an element at the specified path.
-     * The path may not contain any null values!
-     */
-    public boolean contains(@NonNull Iterable<Integer> path) {
-        final Value value = this.get(path);
-        return value != null && value.getValue() != null;
-    }
-
 }

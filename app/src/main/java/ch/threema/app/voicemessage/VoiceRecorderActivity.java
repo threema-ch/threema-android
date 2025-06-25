@@ -73,9 +73,10 @@ import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -132,7 +133,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     private final Runnable keepAliveTask = new Runnable() {
         @Override
         public void run() {
-            ThreemaApplication.activityUserInteract(VoiceRecorderActivity.this);
+            ActivityService.activityUserInteract(VoiceRecorderActivity.this);
             keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
         }
     };
@@ -144,13 +145,6 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getLifecycle().addObserver(this);
-
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-            getWindow().setNavigationBarColor(Color.TRANSPARENT);
-        }
-
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
@@ -170,8 +164,6 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             this.finish();
             return;
         }
-
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         if (preferenceService == null || messageService == null || fileService == null) {
             logger.info("Services missing.");

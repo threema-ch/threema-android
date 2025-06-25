@@ -44,7 +44,6 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.MediaItem;
@@ -56,7 +55,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.utils.MimeUtil.MIME_TYPE_AUDIO_OGG;
 import static ch.threema.app.utils.MimeUtil.MIME_TYPE_IMAGE_JPEG;
 import static ch.threema.app.utils.MimeUtil.MIME_TYPE_IMAGE_JPG;

@@ -65,6 +65,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
@@ -79,8 +80,11 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LockableViewPager;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -99,8 +103,7 @@ import ch.threema.storage.models.data.MessageContentsType;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
-public class MediaViewerActivity extends ThreemaToolbarActivity implements
-    ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
+public class MediaViewerActivity extends ThreemaToolbarActivity implements ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
     private static final Logger logger = LoggingUtil.getThreemaLogger("MediaViewerActivity");
 
@@ -142,6 +145,16 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.caption_container),
+            InsetSides.bottom(),
+            SpacingValues.bottom(R.dimen.mediaviewer_caption_border_bottom)
+        );
+    }
+
+    @Override
     protected boolean initActivity(Bundle savedInstanceState) {
         logger.debug("initActivity");
 
@@ -175,23 +188,12 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
         this.actionBar.setDisplayHomeAsUpEnabled(true);
         this.actionBar.setTitle(" ");
 
-        ViewCompat.setOnApplyWindowInsetsListener(getToolbar(), (v, insets) -> {
-            Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) v.getLayoutParams();
-            lp.topMargin = systemInsets.top;
-            lp.leftMargin = systemInsets.left;
-            lp.rightMargin = systemInsets.right;
-            v.setLayoutParams(lp);
-
-            return insets;
-        });
         getToolbar().setTitleTextAppearance(this, R.style.Threema_TextAppearance_MediaViewer_Title);
         getToolbar().setSubtitleTextAppearance(this, R.style.Threema_TextAppearance_MediaViewer_SubTitle);
 
         this.caption = findViewById(R.id.caption);
         ViewCompat.setOnApplyWindowInsetsListener(this.caption, (v, insets) -> {
-            Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
 
             // limit height so that caption doesn't overlap UI elements such as the play button
             final int lineHeight = ((TextView) v).getLineHeight();
@@ -208,16 +210,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
         });
 
         this.captionContainer = findViewById(R.id.caption_container);
-        ViewCompat.setOnApplyWindowInsetsListener(this.captionContainer, (v, insets) -> {
-            Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) v.getLayoutParams();
-            lp.leftMargin = systemInsets.left + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_horizontal);
-            lp.rightMargin = systemInsets.right + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_horizontal);
-            lp.bottomMargin = systemInsets.bottom + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_bottom);
-            v.setLayoutParams(lp);
-
-            return insets;
-        });
 
         this.currentMessageModel = IntentDataUtil.getAbstractMessageModel(intent, messageService);
         try {
@@ -521,13 +513,13 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
             mediaGalleryIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             switch (this.currentReceiver.getType()) {
                 case MessageReceiver.Type_CONTACT:
-                    mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, messageModel.getIdentity());
+                    mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_CONTACT, messageModel.getIdentity());
                     break;
                 case MessageReceiver.Type_GROUP:
-                    mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageModel) messageModel).getGroupId());
+                    mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageModel) messageModel).getGroupId());
                     break;
                 case MessageReceiver.Type_DISTRIBUTION_LIST:
-                    mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageModel) messageModel).getDistributionListId());
+                    mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageModel) messageModel).getDistributionListId());
                     break;
             }
             IntentDataUtil.append(messageModel, mediaGalleryIntent);

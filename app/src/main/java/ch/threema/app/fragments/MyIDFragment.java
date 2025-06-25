@@ -21,8 +21,8 @@
 
 package ch.threema.app.fragments;
 
-import static ch.threema.app.ThreemaApplication.EMAIL_LINKED_PLACEHOLDER;
-import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.AppConstants.EMAIL_LINKED_PLACEHOLDER;
+import static ch.threema.app.AppConstants.PHONE_LINKED_PLACEHOLDER;
 
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
@@ -79,13 +79,15 @@ import ch.threema.app.services.ContactService.ProfilePictureSharePolicy;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LocaleService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.ui.AvatarEditView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.HiddenChatUtil;
@@ -94,7 +96,6 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -167,32 +168,30 @@ public class MyIDFragment extends MainFragment
 
     private final ProfileListener profileListener = new ProfileListener() {
         @Override
-        public void onAvatarChanged() {
+        public void onAvatarChanged(@NonNull TriggerSource triggerSource) {
             // a profile picture has been set so it's safe to assume user wants others to see his pic
-            if (!isDisabledProfilePicReleaseSettings) {
-                if (preferenceService != null && preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_NOBODY) {
-                    preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_EVERYONE);
-                    // Sync new policy setting to device group (if md is active)
-                    if (serviceManager.getMultiDeviceManager().isMultiDeviceActive()) {
-                        taskCreator.scheduleReflectUserProfileShareWithPolicySyncTask(ProfilePictureSharePolicy.Policy.EVERYONE);
-                    }
-                    RuntimeUtil.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isAdded() && !isDetached() && fragmentView != null) {
-                                MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
-                                if (spinner != null) {
-                                    spinner.setText((CharSequence) spinner.getAdapter().getItem(preferenceService.getProfilePicRelease()), false);
-                                }
+            if (triggerSource == TriggerSource.LOCAL &&
+                !isDisabledProfilePicReleaseSettings &&
+                preferenceService != null &&
+                preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_NOBODY
+            ) {
+                preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_EVERYONE);
+                // Sync new policy setting to device group (if md is active)
+                if (serviceManager.getMultiDeviceManager().isMultiDeviceActive()) {
+                    taskCreator.scheduleReflectUserProfileShareWithPolicySyncTask(ProfilePictureSharePolicy.Policy.EVERYONE);
+                }
+                RuntimeUtil.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isAdded() && !isDetached() && fragmentView != null) {
+                            MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
+                            if (spinner != null) {
+                                spinner.setText((CharSequence) spinner.getAdapter().getItem(preferenceService.getProfilePicRelease()), false);
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
-        }
-
-        @Override
-        public void onAvatarRemoved() {
         }
 
         @Override
@@ -228,12 +227,18 @@ public class MyIDFragment extends MainFragment
         if (fragmentView == null) {
             fragmentView = inflater.inflate(R.layout.fragment_my_id, container, false);
 
+
             this.updatePendingState(fragmentView, true);
 
             LayoutTransition l = new LayoutTransition();
             l.enableTransitionType(LayoutTransition.CHANGING);
             ViewGroup viewGroup = fragmentView.findViewById(R.id.fragment_id_container);
             viewGroup.setLayoutTransition(l);
+
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                viewGroup,
+                InsetSides.horizontal()
+            );
 
             if (ConfigUtils.isWorkRestricted()) {
                 Boolean value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__readonly_profile));
@@ -782,10 +787,6 @@ public class MyIDFragment extends MainFragment
     }
 
     @Override
-    public void onNo(String tag, Object data) {
-    }
-
-    @Override
     public void onYes(@NonNull String tag, @NonNull String text) {
         switch (tag) {
             case DIALOG_TAG_LINKED_MOBILE:
@@ -880,8 +881,6 @@ public class MyIDFragment extends MainFragment
                 this.profilePicRecipientsService = this.serviceManager.getProfilePicRecipientsService();
             } catch (MasterKeyLockedException e) {
                 logger.debug("Master Key locked!");
-            } catch (ThreemaException e) {
-                logger.error("Exception", e);
             }
         }
     }

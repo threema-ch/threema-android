@@ -31,6 +31,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
+import ch.threema.app.preference.service.KeyboardDataCollectionPolicySetting;
 
 public class ThreemaTextInputEditText extends TextInputEditText {
 
@@ -55,7 +56,9 @@ public class ThreemaTextInputEditText extends TextInputEditText {
     private void init(Context context) {
         // PreferenceService may not yet be available at this time
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if (sharedPreferences != null && sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false)) {
+        if (sharedPreferences != null && sharedPreferences.getBoolean(getResources().getString(
+            KeyboardDataCollectionPolicySetting.getPreferenceKeyStringRes()
+        ), false)) {
             setImeOptions(getImeOptions() | 0x1000000);
         }
     }

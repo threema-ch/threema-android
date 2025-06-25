@@ -5,6 +5,7 @@
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,8 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/starred_messages"
-                app:navigationIcon="?attr/homeAsUpIndicator"
-                android:outlineProvider="none" />
+                android:outlineProvider="none"
+                app:navigationIcon="?attr/homeAsUpIndicator" />
 
             <include layout="@layout/connection_indicator" />
 
@@ -37,9 +38,11 @@
         android:id="@+id/recycler_chats"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+        android:layout_marginLeft="@dimen/tablet_additional_padding_horizontal"
+        android:layout_marginRight="@dimen/tablet_additional_padding_horizontal"
         android:background="?android:attr/colorBackground"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_starred_messages" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

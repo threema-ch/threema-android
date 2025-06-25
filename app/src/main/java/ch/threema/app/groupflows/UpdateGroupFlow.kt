@@ -21,9 +21,6 @@
 
 package ch.threema.app.groupflows
 
-import androidx.fragment.app.FragmentManager
-import ch.threema.app.R
-import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.protocol.PredefinedMessageIds
 import ch.threema.app.protocol.ProfilePictureChange
@@ -35,11 +32,8 @@ import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.tasks.GroupPhotoUploadResult
 import ch.threema.app.tasks.GroupUpdateTask
 import ch.threema.app.tasks.ReflectLocalGroupUpdate
-import ch.threema.app.tasks.ReflectionFailed
-import ch.threema.app.tasks.ReflectionPreconditionFailed
-import ch.threema.app.tasks.ReflectionSuccess
+import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.tasks.tryUploadingGroupPhoto
-import ch.threema.app.utils.DialogUtil
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.executor.BackgroundTask
@@ -48,12 +42,12 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.GroupModelRepository
+import ch.threema.domain.protocol.connection.ConnectionState
+import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("UpdateGroupFlow")
-
-private const val DIALOG_TAG_UPDATE_GROUP = "groupUpdate"
 
 class GroupChanges(
     /**
@@ -87,10 +81,10 @@ class GroupChanges(
         updatedMembers: Set<String>,
         groupModelData: GroupModelData,
     ) : this(
-        name,
-        profilePictureChange,
-        updatedMembers - groupModelData.otherMembers,
-        groupModelData.otherMembers - updatedMembers,
+        name = name,
+        profilePictureChange = profilePictureChange,
+        addMembers = updatedMembers - groupModelData.otherMembers,
+        removeMembers = groupModelData.otherMembers - updatedMembers,
     )
 }
 
@@ -100,7 +94,6 @@ class GroupChanges(
  * group flows are not executed concurrently.
  */
 class UpdateGroupFlow(
-    private val fragmentManager: FragmentManager?,
     private val groupChanges: GroupChanges,
     private val groupModel: GroupModel,
     private val groupModelRepository: GroupModelRepository,
@@ -109,88 +102,102 @@ class UpdateGroupFlow(
     private val apiService: ApiService,
     private val fileService: FileService,
     private val taskManager: TaskManager,
-) : BackgroundTask<Boolean> {
+    private val connection: ServerConnection,
+) : BackgroundTask<GroupFlowResult> {
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
     private val myIdentity by lazy { outgoingCspMessageServices.identityStore.identity }
 
-    override fun runBefore() {
-        fragmentManager?.let {
-            GenericProgressDialog.newInstance(R.string.updating_group, R.string.please_wait)
-                .show(it, DIALOG_TAG_UPDATE_GROUP)
-        }
-    }
-
-    override fun runInBackground(): Boolean {
+    override fun runInBackground(): GroupFlowResult {
         logger.info("Running update group flow")
         val groupModelData = groupModel.data.value ?: run {
             logger.warn("Cannot edit group where data is null")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
         if (groupModelData.groupIdentity.creatorIdentity != myIdentity) {
             logger.error("Group cannot be edited as the user is not the creator")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
-        if (multiDeviceManager.isMultiDeviceActive) {
+        val groupFlowResult = if (multiDeviceManager.isMultiDeviceActive) {
+            if (connection.connectionState != ConnectionState.LOGGEDIN) {
+                return GroupFlowResult.Failure.Network
+            }
             runBlocking {
-                val reflectionResult = taskManager.schedule(
+                val reflectionResult: ReflectionResult<Unit> = taskManager.schedule(
                     ReflectLocalGroupUpdate(
-                        groupChanges.name,
-                        groupChanges.addMembers,
-                        groupChanges.removeMembers,
-                        groupChanges.profilePictureChange,
-                        uploadGroupPhoto = { p -> uploadGroupPicture(p) },
-                        finishGroupUpdate = { finishGroupUpdate(it) },
-                        groupModel,
-                        outgoingCspMessageServices.nonceFactory,
-                        outgoingCspMessageServices.contactModelRepository,
-                        multiDeviceManager,
+                        updatedName = groupChanges.name,
+                        addMembers = groupChanges.addMembers,
+                        removeMembers = groupChanges.removeMembers,
+                        profilePictureChange = groupChanges.profilePictureChange,
+                        uploadGroupPhoto = ::uploadGroupPicture,
+                        finishGroupUpdate = ::finishGroupUpdate,
+                        groupModel = groupModel,
+                        nonceFactory = outgoingCspMessageServices.nonceFactory,
+                        contactModelRepository = outgoingCspMessageServices.contactModelRepository,
+                        multiDeviceManager = multiDeviceManager,
                     ),
                 ).await()
 
                 when (reflectionResult) {
-                    is ReflectionSuccess -> logger.info("Group update successful")
+                    is ReflectionResult.Success -> {
+                        logger.info("Group update successful")
+                        GroupFlowResult.Success(groupModel)
+                    }
 
-                    is ReflectionPreconditionFailed -> logger.warn(
-                        "Precondition for updating group failed",
-                        reflectionResult.transactionException,
-                    )
+                    is ReflectionResult.PreconditionFailed -> {
+                        logger.warn("Precondition for updating group failed", reflectionResult.transactionException)
+                        GroupFlowResult.Failure.Other
+                    }
 
-                    is ReflectionFailed -> logger.error(
-                        "Group update failed",
-                        reflectionResult.exception,
-                    )
+                    is ReflectionResult.Failed -> {
+                        logger.error("Group update failed", reflectionResult.exception)
+                        GroupFlowResult.Failure.Other
+                    }
+
+                    is ReflectionResult.MultiDeviceNotActive -> {
+                        // Note that this is a very rare edge case that should not be possible at all. If it happens, we need to return a failure as
+                        // the changes are not persisted and not sent to the members.
+                        logger.warn("Reflection failed because multi device is not active")
+                        GroupFlowResult.Failure.Other
+                    }
                 }
             }
         } else {
-            val groupPhotoUploadResult = uploadGroupPicture(groupChanges.profilePictureChange)
+            val groupPhotoUploadResult =
+                runCatching {
+                    uploadGroupPicture(groupChanges.profilePictureChange)
+                }.getOrElse { exception ->
+                    logger.error("Failed to upload the group photo", exception)
+                    // While this could also have internal reasons, a network failure is more likely
+                    // TODO(ANDR-3823): Distinguish between different failures from uploading process
+                    return GroupFlowResult.Failure.Network
+                }
             finishGroupUpdate(groupPhotoUploadResult)
         }
 
-        return true
+        return groupFlowResult
     }
 
-    override fun runAfter(result: Boolean) {
-        fragmentManager?.let {
-            DialogUtil.dismissDialog(
-                it,
-                DIALOG_TAG_UPDATE_GROUP,
-                true,
-            )
-        }
-    }
-
-    private fun uploadGroupPicture(profilePictureChange: ProfilePictureChange?): GroupPhotoUploadResult? {
-        return if (profilePictureChange is SetProfilePicture) {
+    private fun uploadGroupPicture(profilePictureChange: ProfilePictureChange?): GroupPhotoUploadResult? =
+        if (profilePictureChange is SetProfilePicture) {
             tryUploadingGroupPhoto(profilePictureChange.profilePicture, apiService)
         } else {
             null
         }
-    }
 
-    private fun finishGroupUpdate(groupPhotoUploadResult: GroupPhotoUploadResult?) {
+    /**
+     *  TODO(ANDR-3823): Remove this warning once corrected
+     *
+     *  Warning: At this point, before `ANDR-3823` is implemented, *any* specific type of [GroupFlowResult.Failure]
+     *  returned from this method will effectively result in a [GroupFlowResult.Failure.Other] *if MD is active*.
+     */
+    private fun finishGroupUpdate(groupPhotoUploadResult: GroupPhotoUploadResult?): GroupFlowResult {
+        if (groupChanges.profilePictureChange is SetProfilePicture && groupPhotoUploadResult == null) {
+            logger.error("Group photo upload result must not be null. Continuing anyway.")
+        }
+
         groupCallManager.removeGroupCallParticipants(groupChanges.removeMembers, groupModel)
 
         persistChanges()
@@ -199,21 +206,15 @@ class UpdateGroupFlow(
             outgoingCspMessageServices.groupService.runRejectedMessagesRefreshSteps(groupModel)
         }
 
-        val profilePictureChange = if (groupChanges.profilePictureChange is SetProfilePicture) {
-            if (groupPhotoUploadResult == null) {
-                logger.error("Group photo upload result must not be null")
+        val profilePictureChange =
+            when (groupChanges.profilePictureChange) {
+                is SetProfilePicture -> SetProfilePicture(groupChanges.profilePictureChange.profilePicture, groupPhotoUploadResult)
+                else -> RemoveProfilePicture
             }
-            SetProfilePicture(
-                groupChanges.profilePictureChange.profilePicture,
-                groupPhotoUploadResult,
-            )
-        } else {
-            RemoveProfilePicture
-        }
 
         val members = groupModel.data.value?.otherMembers ?: run {
             logger.error("Group model data expected to exist")
-            return
+            return GroupFlowResult.Failure.Other
         }
 
         taskManager.schedule(
@@ -232,6 +233,8 @@ class UpdateGroupFlow(
                 groupModelRepository,
             ),
         )
+
+        return GroupFlowResult.Success(groupModel)
     }
 
     private fun persistChanges() {

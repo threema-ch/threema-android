@@ -41,8 +41,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 public class PushRegistrationWorker extends Worker {
     private final Logger logger = LoggingUtil.getThreemaLogger("PushRegistrationWorker");
 
-    private final Context appContext;
-
     /**
      * Constructor for the PushRegistrationWorker.
      * <p>
@@ -50,12 +48,12 @@ public class PushRegistrationWorker extends Worker {
      */
     public PushRegistrationWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
-        this.appContext = appContext;
     }
 
     @NonNull
     @Override
     public Result doWork() {
+        var appContext = getApplicationContext();
         Data workerFlags = getInputData();
         final boolean clearToken = workerFlags.getBoolean(PushService.EXTRA_CLEAR_TOKEN, false);
         final boolean withCallback = workerFlags.getBoolean(PushService.EXTRA_WITH_CALLBACK, false);

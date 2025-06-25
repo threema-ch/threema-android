@@ -22,7 +22,6 @@
 package ch.threema.app.utils
 
 import ch.threema.data.models.GroupModel
-import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
 
 object ConversationUtil {
@@ -71,10 +70,6 @@ object ConversationUtil {
             return null
         }
         return groupId.toLongOrNull()
-    }
-
-    fun ContactModel.getConversationUid(): String {
-        return getIdentityConversationUid(identity)
     }
 
     fun GroupModel.getConversationUid(): String {

@@ -1,15 +1,14 @@
 #[cfg(test)]
 use libthreema_macros::concat_fixed_bytes;
 
-use super::{
-    decode_backup_data, BackupData, BackupKey, IdentityBackupError, IdentityBackupResult, Salt,
-};
+use super::{BackupData, BackupKey, IdentityBackupError, IdentityBackupResult, Salt, decode_backup_data};
 use crate::{
     common::{ClientKey, ThreemaId},
     crypto::{
-        cipher::{KeyIvInit, StreamCipher},
+        cipher::{KeyIvInit as _, StreamCipher as _},
         deprecated::{pbkdf2::pbkdf2_hmac_array, salsa20::XSalsa20},
-        sha2::{Digest, Sha256},
+        digest::Digest as _,
+        sha2::Sha256,
     },
 };
 
@@ -43,7 +42,7 @@ fn derive_key(password: &str, salt: Salt) -> BackupKey {
 /// Client Key.
 fn get_digest(threema_id: ThreemaId, ck: &ClientKey) -> [u8; HASH_LENGTH] {
     let hash = Sha256::new()
-        .chain_update(threema_id.as_bytes())
+        .chain_update(threema_id.to_bytes())
         .chain_update(ck.as_bytes())
         .finalize();
     hash.get(..HASH_LENGTH)
@@ -56,7 +55,7 @@ fn get_digest(threema_id: ThreemaId, ck: &ClientKey) -> [u8; HASH_LENGTH] {
 pub(super) fn encrypt(password: &str, backup_data: &BackupData) -> [u8; ENCRYPTED_LENGTH] {
     // Encode backup data
     let mut data: [u8; DATA_LENGTH + HASH_LENGTH] = concat_fixed_bytes!(
-        backup_data.threema_id.0,
+        backup_data.threema_id.to_bytes(),
         *backup_data.ck.as_bytes(),
         get_digest(backup_data.threema_id, &backup_data.ck),
     );
@@ -72,10 +71,7 @@ pub(super) fn encrypt(password: &str, backup_data: &BackupData) -> [u8; ENCRYPTE
     concat_fixed_bytes!(salt.0, data)
 }
 
-pub(super) fn decrypt(
-    password: &str,
-    encrypted_backup: &mut [u8],
-) -> IdentityBackupResult<BackupData> {
+pub(super) fn decrypt(password: &str, encrypted_backup: &mut [u8]) -> IdentityBackupResult<BackupData> {
     // Extract salt and encrypted data
     let (salt, encrypted_data) = {
         if encrypted_backup.len() != ENCRYPTED_LENGTH {
@@ -131,11 +127,10 @@ pub(super) fn decrypt(
 mod tests {
     use super::*;
     use crate::{
-        common::ClientKeyPublic,
-        crypto::x25519::PublicKey,
+        common::PublicKey,
         id_backup::{
             decode_chunked_base32,
-            tests::{backup_data, PASSWORD},
+            tests::{PASSWORD, backup_data},
         },
     };
 
@@ -163,20 +158,18 @@ mod tests {
     fn test_generated_backup() -> anyhow::Result<()> {
         let threema_id = ThreemaId::try_from("0ZAHXXHB").expect("Threema ID should be valid");
         let public_key = PublicKey::from([
-            0xac, 0xfc, 0xc3, 0x93, 0xc8, 0x80, 0x0a, 0x25, 0xbc, 0x79, 0x2e, 0x52, 0x90, 0x53,
-            0xc4, 0xe9, 0x82, 0xb8, 0xad, 0x10, 0x43, 0xfb, 0xf0, 0x73, 0x3b, 0x8c, 0x8c, 0x74,
-            0x09, 0x0f, 0x4a, 0x56,
+            0xac, 0xfc, 0xc3, 0x93, 0xc8, 0x80, 0x0a, 0x25, 0xbc, 0x79, 0x2e, 0x52, 0x90, 0x53, 0xc4, 0xe9,
+            0x82, 0xb8, 0xad, 0x10, 0x43, 0xfb, 0xf0, 0x73, 0x3b, 0x8c, 0x8c, 0x74, 0x09, 0x0f, 0x4a, 0x56,
         ]);
         let password = "testpassword";
-        let encrypted_backup =
-            "4K4M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-\
+        let encrypted_backup = "4K4M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-\
             WLEU-5DS4-XF7S-OPH4-CTCL-N2CF-3C4C-HPB7-YZWW-U3S6";
 
         let backup_data = decrypt(password, &mut decode_chunked_base32(encrypted_backup)?)?;
-        let public_key_derived = ClientKeyPublic::from(&backup_data.ck);
+        let public_key_derived = backup_data.ck.public_key();
 
         assert_eq!(threema_id, backup_data.threema_id);
-        assert_eq!(public_key, public_key_derived.0);
+        assert_eq!(public_key, public_key_derived);
 
         Ok(())
     }

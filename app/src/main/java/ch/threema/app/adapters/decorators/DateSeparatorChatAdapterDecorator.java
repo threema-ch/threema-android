@@ -29,6 +29,7 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
@@ -44,7 +45,7 @@ public class DateSeparatorChatAdapterDecorator extends ChatAdapterDecorator {
     ) {
         super.applyContentColor(viewHolder, contentColor);
         viewHolder.bodyTextView.setTextColor(
-            getContext().getResources().getColor(R.color.date_separator_text_color)
+            ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface)
         );
     }
 

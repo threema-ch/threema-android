@@ -26,9 +26,8 @@ import ch.threema.domain.protocol.csp.messages.voip.features.CallFeature;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -52,7 +51,7 @@ public class VoipCallOfferDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertEquals("{\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}}", json);
+        Assertions.assertEquals("{\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}}", json);
     }
 
     @Test
@@ -60,7 +59,7 @@ public class VoipCallOfferDataTest {
         final VoipCallOfferData.OfferData offerData = new VoipCallOfferData.OfferData();
         offerData.setSdpType("offer");
         offerData.setSdp("sdpsdp");
-        Assert.assertEquals("OfferData{sdpType='offer', sdp='sdpsdp'}", offerData.toString());
+        Assertions.assertEquals("OfferData{sdpType='offer', sdp='sdpsdp'}", offerData.toString());
     }
 
     /**
@@ -80,7 +79,7 @@ public class VoipCallOfferDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertEquals("{\"offer\":{\"sdpType\":\"rollback\",\"sdp\":null}}", json);
+        Assertions.assertEquals("{\"offer\":{\"sdpType\":\"rollback\",\"sdp\":null}}", json);
     }
 
     /**
@@ -92,7 +91,7 @@ public class VoipCallOfferDataTest {
             VoipCallOfferData.parse(
                 "{\"offer\":{\"sdpType\":\"answer\",\"sdp\":\"sdpsdp\"}}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -105,7 +104,7 @@ public class VoipCallOfferDataTest {
             VoipCallOfferData.parse(
                 "{\"offer\":{\"sdpType\":\"pranswer\",\"sdp\":\"sdpsdp\"}}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -118,7 +117,7 @@ public class VoipCallOfferDataTest {
             VoipCallOfferData.parse(
                 "{\"offer\":{\"sdpType\":\"offer\",\"sdp\":null}}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -146,7 +145,7 @@ public class VoipCallOfferDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertEquals("{\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"},\"features\":{\"video\":null}}", json);
+        Assertions.assertEquals("{\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"},\"features\":{\"video\":null}}", json);
     }
 
     @Test
@@ -154,9 +153,9 @@ public class VoipCallOfferDataTest {
         final VoipCallOfferData parsed = VoipCallOfferData.parse(
             "{\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}}"
         );
-        Assert.assertNotNull(parsed.getOfferData());
-        Assert.assertEquals("offer", parsed.getOfferData().getSdpType());
-        Assert.assertTrue(parsed.getFeatures().isEmpty());
+        Assertions.assertNotNull(parsed.getOfferData());
+        Assertions.assertEquals("offer", parsed.getOfferData().getSdpType());
+        Assertions.assertTrue(parsed.getFeatures().isEmpty());
     }
 
     @Test
@@ -170,10 +169,10 @@ public class VoipCallOfferDataTest {
                 "}" +
                 "}"
         );
-        Assert.assertNotNull(parsed.getOfferData());
-        Assert.assertEquals("offer", parsed.getOfferData().getSdpType());
+        Assertions.assertNotNull(parsed.getOfferData());
+        Assertions.assertEquals("offer", parsed.getOfferData().getSdpType());
         final FeatureList features = parsed.getFeatures();
-        Assert.assertEquals(2, features.size());
+        Assertions.assertEquals(2, features.size());
 
         final List<String> names = features
             .getList()
@@ -181,8 +180,8 @@ public class VoipCallOfferDataTest {
             .map(CallFeature::getName)
             .sorted()
             .collect(Collectors.toList());
-        Assert.assertEquals(names.get(0), "superextension");
-        Assert.assertEquals(names.get(1), "video");
+        Assertions.assertEquals("superextension", names.get(0));
+        Assertions.assertEquals("video", names.get(1));
     }
 
     @Test
@@ -199,7 +198,7 @@ public class VoipCallOfferDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertEquals("{\"callId\":1337,\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}}", json);
+        Assertions.assertEquals("{\"callId\":1337,\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}}", json);
     }
 
     @Test
@@ -213,7 +212,7 @@ public class VoipCallOfferDataTest {
         try {
             // Call ID must be positive
             new VoipCallOfferData().setCallId(-1);
-            Assert.fail("IllegalArgumentException not thrown");
+            Assertions.fail("IllegalArgumentException not thrown");
         } catch (IllegalArgumentException e) { /* ok */ }
     }
 
@@ -222,7 +221,7 @@ public class VoipCallOfferDataTest {
         try {
             // Call ID must fit in a 32 bit integer
             new VoipCallOfferData().setCallId(4294967296L);
-            Assert.fail("IllegalArgumentException not thrown");
+            Assertions.fail("IllegalArgumentException not thrown");
         } catch (IllegalArgumentException e) { /* ok */ }
     }
 
@@ -234,9 +233,9 @@ public class VoipCallOfferDataTest {
                 "\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}" +
                 "}"
         );
-        Assert.assertNotNull(parsed.getOfferData());
-        Assert.assertEquals("offer", parsed.getOfferData().getSdpType());
-        Assert.assertEquals(Long.valueOf(1337), parsed.getCallId());
+        Assertions.assertNotNull(parsed.getOfferData());
+        Assertions.assertEquals("offer", parsed.getOfferData().getSdpType());
+        Assertions.assertEquals(Long.valueOf(1337), parsed.getCallId());
     }
 
     @Test
@@ -244,9 +243,9 @@ public class VoipCallOfferDataTest {
         final VoipCallOfferData parsed = VoipCallOfferData.parse(
             "{\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}}"
         );
-        Assert.assertNotNull(parsed.getOfferData());
-        Assert.assertEquals("offer", parsed.getOfferData().getSdpType());
-        Assert.assertNull(parsed.getCallId());
+        Assertions.assertNotNull(parsed.getOfferData());
+        Assertions.assertEquals("offer", parsed.getOfferData().getSdpType());
+        Assertions.assertNull(parsed.getCallId());
     }
 
     @Test
@@ -258,7 +257,7 @@ public class VoipCallOfferDataTest {
                     "\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}" +
                     "}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -272,7 +271,7 @@ public class VoipCallOfferDataTest {
                     "\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}" +
                     "}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -286,7 +285,7 @@ public class VoipCallOfferDataTest {
                     "\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}" +
                     "}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 
@@ -299,7 +298,7 @@ public class VoipCallOfferDataTest {
                     "\"offer\":{\"sdpType\":\"offer\",\"sdp\":\"sdpsdp\"}" +
                     "}"
             );
-            Assert.fail("BadMessageException not thrown");
+            Assertions.fail("BadMessageException not thrown");
         } catch (BadMessageException e) { /* ok */ }
     }
 }

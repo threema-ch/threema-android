@@ -28,7 +28,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +46,7 @@ import java.util.Objects;
 
 import ch.threema.app.R;
 import ch.threema.app.motionviews.widget.TextEntity;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -122,15 +122,7 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
                 return false;
             }
         });
-        textEntry.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
+        textEntry.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 onUserInteraction();

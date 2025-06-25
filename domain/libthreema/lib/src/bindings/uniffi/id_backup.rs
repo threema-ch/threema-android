@@ -1,3 +1,4 @@
+//! Bindings for the Threema ID backup.
 use crate::{
     common::{ClientKey, ThreemaId},
     id_backup::{self, IdentityBackupError},
@@ -16,7 +17,7 @@ pub struct BackupData {
 impl From<id_backup::BackupData> for BackupData {
     fn from(backup_data: id_backup::BackupData) -> Self {
         Self {
-            threema_id: backup_data.threema_id.as_str().to_owned(),
+            threema_id: backup_data.threema_id.into(),
             ck: backup_data.ck.as_bytes().to_vec(),
         }
     }
@@ -31,9 +32,8 @@ impl TryFrom<BackupData> for id_backup::BackupData {
             .try_into()
             .map_err(|_| Self::Error::InvalidParameter("'backup_data.ck' must be 32 bytes"))?;
         Ok(id_backup::BackupData {
-            threema_id: ThreemaId::try_from(backup_data.threema_id.as_str()).map_err(|_| {
-                IdentityBackupError::InvalidParameter("'backup_data.threema_id' invalid")
-            })?,
+            threema_id: ThreemaId::try_from(backup_data.threema_id.as_str())
+                .map_err(|_| IdentityBackupError::InvalidParameter("'backup_data.threema_id' invalid"))?,
             ck: ClientKey::from(ck),
         })
     }
@@ -53,7 +53,7 @@ pub fn encrypt_identity_backup(
 }
 
 /// Binding-friendly version of [`id_backup::decrypt_identity_backup`].
-#[allow(clippy::missing_errors_doc)]
+#[expect(clippy::missing_errors_doc, reason = "Binding-friendly version")]
 #[uniffi::export]
 pub fn decrypt_identity_backup(
     password: &str,

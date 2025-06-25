@@ -44,8 +44,8 @@ public interface MessageListener {
     void onRemoved(List<AbstractMessageModel> removedMessageModels);
 
     @AnyThread
-    void onProgressChanged(AbstractMessageModel messageModel, int newProgress);
+    default void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {}
 
     @AnyThread
-    void onResendDismissed(@NonNull AbstractMessageModel messageModel);
+    default void onResendDismissed(@NonNull AbstractMessageModel messageModel) {}
 }

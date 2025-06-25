@@ -32,6 +32,7 @@ import java.util.Map;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
@@ -39,7 +40,6 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.services.BlockedIdentitiesService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.QuoteUtil;
@@ -47,7 +47,7 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ServerMessageModel;
 
@@ -133,7 +133,7 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
             //enabled only in debug version
             if (BuildConfig.DEBUG) {
                 if (receiver instanceof ContactMessageReceiver) {
-                    if (((ContactMessageReceiver) receiver).getContact().getIdentity().equals(ThreemaApplication.ECHO_USER_IDENTITY)
+                    if (((ContactMessageReceiver) receiver).getContact().getIdentity().equals(AppConstants.ECHO_USER_IDENTITY)
                         && text.startsWith("alert")) {
                         String[] pieces = text.split("\\s+");
                         if (pieces.length >= 2) {
@@ -143,9 +143,9 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
                                 alertMessageTmp.append(pieces[n]).append(n == pieces.length - 1 ? "" : " ");
                             }
                             ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-                            DatabaseServiceNew databaseService = null;
+                            DatabaseService databaseService = null;
                             if (serviceManager != null) {
-                                databaseService = serviceManager.getDatabaseServiceNew();
+                                databaseService = serviceManager.getDatabaseService();
                             }
                             final String alertMessage;
                             ServerMessageModel serverMessageModel;

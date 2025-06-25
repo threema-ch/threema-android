@@ -67,7 +67,7 @@ public interface ThreemaSafeService {
     }
 
     @Nullable
-    byte[] deriveMasterKey(String password, String identity);
+    byte[] deriveMasterKey(@Nullable String password, @Nullable String identity);
 
     boolean storeMasterKey(byte[] masterKey);
 

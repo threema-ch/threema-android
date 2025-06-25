@@ -27,7 +27,7 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.utils.MimeUtil
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.FileMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -37,9 +37,8 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
 import java.util.UUID
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingContactFileMessageTask")
+private val logger = LoggingUtil.getThreemaLogger("IncomingContactFileMessageTask")
 
 class IncomingContactFileMessageTask(
     fileMessage: FileMessage,

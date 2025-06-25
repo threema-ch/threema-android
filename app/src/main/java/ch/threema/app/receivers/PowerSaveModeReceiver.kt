@@ -27,9 +27,8 @@ import android.content.Intent
 import android.os.PowerManager
 import androidx.core.content.getSystemService
 import ch.threema.base.utils.LoggingUtil
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("PowerSaveModeReceiver")
+private val logger = LoggingUtil.getThreemaLogger("PowerSaveModeReceiver")
 
 class PowerSaveModeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {

@@ -25,11 +25,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.ViewModelProvider;
@@ -50,7 +50,11 @@ import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ThreemaEditText;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.NetworkUtil;
@@ -91,8 +95,6 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        ConfigUtils.configureSystemBars(this);
-
         setContentView(R.layout.activity_location_autocomplete);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
@@ -111,15 +113,7 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
         currentLocation.setLongitude(intent.getDoubleExtra(INTENT_DATA_LOCATION_LNG, 0));
 
         ThreemaEditText searchView = findViewById(R.id.search_view);
-        searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
+        searchView.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s != null) {
@@ -142,6 +136,8 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
         ((ViewGroup) recyclerView.getParent()).addView(emptyView);
         recyclerView.setEmptyView(emptyView);
 
+        handleDeviceInsets(emptyView);
+
         // Get the ViewModel.
         viewModel = new ViewModelProvider(this).get(LocationAutocompleteViewModel.class);
 
@@ -162,7 +158,7 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
 
             if (!NetworkUtil.isOnline()) {
                 SimpleStringAlertDialog.newInstance(R.string.send_location, R.string.internet_connection_required).show(getSupportFragmentManager(), DIALOG_TAG_NO_CONNECTION);
-            } else if (places.size() == 0 && (queryText != null && queryText.length() >= QUERY_MIN_LENGTH)) {
+            } else if (places.isEmpty() && (queryText != null && queryText.length() >= QUERY_MIN_LENGTH)) {
                 emptyView.setup(R.string.lp_search_place_no_matches);
             } else {
                 emptyView.setup(R.string.lp_search_place_min_chars);
@@ -172,15 +168,20 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
         setResult(RESULT_CANCELED);
     }
 
+    private void handleDeviceInsets(@NonNull EmptyView emptyView) {
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(findViewById(R.id.appbar), InsetSides.ltr());
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.recycler),
+            InsetSides.lbr(),
+            SpacingValues.horizontal(R.dimen.tablet_additional_padding_horizontal)
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(emptyView, InsetSides.horizontal(), SpacingValues.all(R.dimen.grid_unit_x2));
+    }
+
     private void refreshAdapter(List<Poi> places) {
         if (autocompleteAdapter == null) {
             autocompleteAdapter = new LocationAutocompleteAdapter(places);
-            autocompleteAdapter.setOnItemClickListener(new LocationAutocompleteAdapter.OnItemClickListener() {
-                @Override
-                public void onClick(Poi poi, int position) {
-                    returnResult(poi);
-                }
-            });
+            autocompleteAdapter.setOnItemClickListener((poi, position) -> returnResult(poi));
             recyclerView.setAdapter(autocompleteAdapter);
         } else {
             recyclerView.getRecycledViewPool().clear();
@@ -201,7 +202,7 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             this.finish();
             return true;

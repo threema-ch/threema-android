@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TODO(ANDR-3888) Move to colors-night folder -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="?attr/colorOnSecondaryContainer" android:state_pressed="true" />
+    <item android:color="?attr/colorOnSecondaryContainer" android:state_activated="true" />
+    <item android:color="?attr/colorOnSurface" />
+</selector>

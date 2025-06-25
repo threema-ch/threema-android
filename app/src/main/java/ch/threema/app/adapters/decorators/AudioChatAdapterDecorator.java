@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import java.io.File;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
@@ -311,7 +311,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
                                     updateProgressCount(holder, pos);
 
                                     // make sure pinlock is not activated while playing
-                                    ThreemaApplication.activityUserInteract(helper.getFragment().getActivity());
+                                    ActivityService.activityUserInteract(helper.getFragment().getActivity());
                                 }
                             });
                         }

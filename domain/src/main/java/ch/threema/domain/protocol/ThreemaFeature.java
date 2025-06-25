@@ -28,7 +28,6 @@ import androidx.annotation.LongDef;
 import ch.threema.protobuf.Common;
 
 public class ThreemaFeature {
-    // Feature flags. When adding new flags, also update LATEST_FEATURE!
     public final static long AUDIO = Common.CspFeatureMaskFlag.VOICE_MESSAGE_SUPPORT_VALUE;
     public final static long GROUP_CHAT = Common.CspFeatureMaskFlag.GROUP_SUPPORT_VALUE;
     public final static long BALLOT = Common.CspFeatureMaskFlag.POLL_SUPPORT_VALUE;

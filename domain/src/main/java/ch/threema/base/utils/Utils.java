@@ -183,8 +183,11 @@ public class Utils {
      * an encoded multi-byte character.
      */
     public static @Nullable String truncateUTF8String(@Nullable String str, int maxLen) {
-        if (str == null || str.length() == 0) {
+        if (str == null) {
             return null;
+        }
+        if (str.isEmpty()) {
+            return str;
         }
         try {
             byte[] r = truncateUTF8StringToByteArray(str, maxLen);

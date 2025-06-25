@@ -29,9 +29,8 @@ import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import org.apache.commons.io.EndianUtils
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("ContactSetPhotoMessage")
+private val logger = LoggingUtil.getThreemaLogger("ContactSetPhotoMessage")
 
 /**
  * A profile picture uploaded as a blob

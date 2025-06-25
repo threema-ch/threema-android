@@ -32,6 +32,7 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -47,7 +48,7 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseNonceStore;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 
 public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteIdentityAsyncTask");
@@ -118,10 +119,10 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
                 //
             }
 
-            File aesFile = new File(ThreemaApplication.getAppContext().getFilesDir(), ThreemaApplication.AES_KEY_FILE);
-            File databaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DEFAULT_DATABASE_NAME_V4);
+            File aesFile = new File(ThreemaApplication.getAppContext().getFilesDir(), AppConstants.AES_KEY_FILE);
+            File databaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseService.DEFAULT_DATABASE_NAME_V4);
             File nonceDatabaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseNonceStore.DATABASE_NAME_V4);
-            File backupFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DEFAULT_DATABASE_NAME_V4 + DatabaseServiceNew.DATABASE_BACKUP_EXT);
+            File backupFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseService.DEFAULT_DATABASE_NAME_V4 + DatabaseService.DATABASE_BACKUP_EXT);
             File cacheDirectory = ThreemaApplication.getAppContext().getCacheDir();
             File externalCacheDirectory = ThreemaApplication.getAppContext().getExternalCacheDir();
 
@@ -178,7 +179,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
                 serviceManager.getExcludedSyncIdentitiesService(),
                 serviceManager.getDHSessionStore(),
                 serviceManager.getNotificationService(),
-                serviceManager.getDatabaseServiceNew()
+                serviceManager.getDatabaseService()
             )
         );
     }

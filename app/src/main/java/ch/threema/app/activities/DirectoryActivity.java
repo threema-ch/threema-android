@@ -68,7 +68,9 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.ui.DirectoryDataSourceFactory;
 import ch.threema.app.ui.DirectoryHeaderItemDecoration;
 import ch.threema.app.ui.EmptyRecyclerView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ThreemaSearchView;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LazyProperty;
@@ -166,6 +168,27 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         return R.layout.activity_directory;
     }
 
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.initial_layout),
+            InsetSides.lbr()
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.recycler),
+            InsetSides.lbr()
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.progress_bar),
+            InsetSides.horizontal()
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.chip_group_scroll_container),
+            InsetSides.horizontal()
+        );
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected boolean initActivity(Bundle savedInstanceState) {
@@ -212,7 +235,6 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             Toast.makeText(this, getString(R.string.disabled_by_policy_short), Toast.LENGTH_LONG).show();
             return false;
         }
-
 
         WorkOrganization workOrganization = preferenceService.getWorkOrganization();
         if (workOrganization != null && !TestUtil.isEmptyOrNull(workOrganization.getName())) {
@@ -346,13 +368,14 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         }
 
         categoryList = preferenceService.getWorkDirectoryCategories();
+        categoryList.add(new WorkDirectoryCategory("1", "Name"));
         menu.findItem(R.id.menu_category).setVisible(!categoryList.isEmpty());
 
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             this.finish();
             return true;
@@ -370,7 +393,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         startActivity(intent);
     }
 
-    private void launchContact(final WorkDirectoryContact workDirectoryContact, final int position) {
+    private void launchContact(@NonNull final WorkDirectoryContact workDirectoryContact, final int position) {
         if (workDirectoryContact.threemaId != null) {
             if (contactService.getByIdentity(workDirectoryContact.threemaId) == null) {
                 addContact(workDirectoryContact, () -> {
@@ -403,6 +426,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         );
     }
 
+    @NonNull
     private DirectoryHeaderItemDecoration.HeaderCallback getSectionCallback() {
         return new DirectoryHeaderItemDecoration.HeaderCallback() {
             @Override
@@ -462,13 +486,13 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
         chipGroup.removeAllViews();
 
+        checkedCategories.add(new WorkDirectoryCategory("1", "Name"));
+
         for (WorkDirectoryCategory checkedCategory : checkedCategories) {
             if (!TextUtils.isEmpty(checkedCategory.name)) {
                 activeCategories++;
 
-                Chip chip = (Chip) getLayoutInflater().inflate(
-                    R.layout.chip_directory, null, false
-                );
+                Chip chip = (Chip) getLayoutInflater().inflate(R.layout.chip_directory, null, false);
                 chip.setText(checkedCategory.name);
                 chip.setTag(checkedCategory.id);
                 chip.setOnCloseIconClickListener(v -> {
@@ -535,7 +559,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
     }
 
     @Override
-    public void onYes(String tag, boolean[] checkedItems) {
+    public void onYes(String tag, @NonNull boolean[] checkedItems) {
         checkedCategories.clear();
 
         int numCheckedCategories = 0;

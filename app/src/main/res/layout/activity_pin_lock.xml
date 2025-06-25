@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:paddingTop="32dp"
+        android:paddingTop="@dimen/grid_unit_x4"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/pin_lock_side_margin"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/grid_unit_x1_5"
             android:layout_marginRight="@dimen/pin_lock_side_margin" />
 
         <com.google.android.material.button.MaterialButton
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/pin_lock_side_margin"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/grid_unit_x2"
             android:layout_marginRight="@dimen/pin_lock_side_margin"
             android:text="@string/cancel" />
 
@@ -57,7 +57,6 @@
         app:layout_constraintTop_toBottomOf="@+id/topLayout">
 
         <ch.threema.app.ui.ThreemaEditText
-            android:theme="@style/Threema.EditText.Pin"
             android:id="@+id/password_entry"
             android:layout_width="208dp"
             android:layout_height="wrap_content"
@@ -68,6 +67,7 @@
             android:inputType="textPassword"
             android:singleLine="true"
             android:textSize="16sp"
+            android:theme="@style/Threema.EditText.Pin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -77,19 +77,19 @@
         </ch.threema.app.ui.ThreemaEditText>
 
         <TextView
-            style="@style/Threema.TextAppearance.BodySmall"
             android:id="@+id/errorText"
+            style="@style/Threema.TextAppearance.BodySmall"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginTop="32dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/grid_unit_x4"
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/pin_lock_side_margin"
             android:paddingRight="@dimen/pin_lock_side_margin"
             android:textColor="@color/material_red"
-            app:layout_constraintTop_toBottomOf="@+id/password_entry"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/password_entry" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

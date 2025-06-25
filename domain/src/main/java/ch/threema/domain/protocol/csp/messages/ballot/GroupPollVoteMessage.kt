@@ -32,9 +32,8 @@ import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import org.json.JSONArray
 import org.json.JSONException
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("GroupPollVoteMessage")
+private val logger = LoggingUtil.getThreemaLogger("GroupPollVoteMessage")
 
 /**
  * A group poll vote message.

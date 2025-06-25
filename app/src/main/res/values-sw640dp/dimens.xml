@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- tablet specific dimensions -->
+
     <dimen name="listitem_message_margin_left_right">24dp</dimen>
     <dimen name="listitem_message_margin_top_bottom">12dp</dimen>
     <dimen name="listitem_contacts_margin_left_right">24dp</dimen>
-    <dimen name="tablet_additional_padding_left_right">8dp</dimen>
-    <dimen name="spacing_half_grid_unit">8dp</dimen>
-    <dimen name="spacing_one_grid_unit">16dp</dimen>
-    <dimen name="spacing_one_and_a_half_grid_unit">20dp</dimen>
-    <dimen name="spacing_two_grid_unit">24dp</dimen>
-    <dimen name="spacing_three_grid_unit">32dp</dimen>
-    <dimen name="spacing_four_grid_unit">40dp</dimen>
+    <dimen name="tablet_additional_padding_horizontal">8dp</dimen>
     <dimen name="wizard_contents_padding_horizontal">32dp</dimen>
     <dimen name="wizard_contents_padding">32dp</dimen>
 </resources>

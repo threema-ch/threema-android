@@ -100,7 +100,7 @@ public class WakeLockServiceImpl implements WakeLockService {
     }
 
     private synchronized boolean execute() {
-        if (this.acquiredSessionIds.size() > 0) {
+        if (!this.acquiredSessionIds.isEmpty()) {
             // Create wakelock if it wasn't instantiated yet
             if (this.wakeLock == null) {
                 logger.debug("create new wakelock");

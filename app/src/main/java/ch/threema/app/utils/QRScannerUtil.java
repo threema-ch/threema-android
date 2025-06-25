@@ -25,22 +25,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.slf4j.Logger;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
 import ch.threema.app.services.QRCodeService;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.services.QRCodeServiceImpl.*;
 
 public class QRScannerUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("QRScannerUtil");
@@ -56,17 +55,18 @@ public class QRScannerUtil {
         return sInstance;
     }
 
-    public void initiateScan(@NonNull AppCompatActivity activity, String hint, @QRCodeServiceImpl.QRCodeColor int qrType) {
+    public void initiateScan(@NonNull AppCompatActivity activity, String hint, @QRCodeColor int qrType) {
         logger.info("initiateScan");
 
         Intent intent = getInitiateScanIntent(activity, hint, qrType);
         activity.startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
     }
 
+    @NonNull
     private static Intent getInitiateScanIntent(
         @NonNull Context context,
         @Nullable String hint,
-        @QRCodeServiceImpl.QRCodeColor int qrType
+        @QRCodeColor int qrType
     ) {
         Intent intent = new Intent(context, QRScannerActivity.class);
         if (!TestUtil.isEmptyOrNull(hint)) {
@@ -89,7 +89,7 @@ public class QRScannerUtil {
         }
     }
 
-    private void invalidCodeDialog(AppCompatActivity activity) {
+    private void invalidCodeDialog(@NonNull AppCompatActivity activity) {
         SimpleStringAlertDialog.newInstance(R.string.scan_id, R.string.invalid_barcode).show(activity.getSupportFragmentManager(), "");
     }
 
@@ -97,14 +97,20 @@ public class QRScannerUtil {
         if (requestCode == REQUEST_CODE_QR_SCANNER) {
             if (activity != null) {
                 if (resultCode == Activity.RESULT_OK) {
-                    return intent.getStringExtra(ThreemaApplication.INTENT_DATA_QRCODE);
+                    return intent.getStringExtra(AppConstants.INTENT_DATA_QRCODE);
                 }
             }
         }
         return null;
     }
 
-    public QRCodeService.QRCodeContentResult parseActivityResult(AppCompatActivity activity, int requestCode, int resultCode, Intent intent, QRCodeService qrCodeService) {
+    public QRCodeService.QRCodeContentResult parseActivityResult(
+        AppCompatActivity activity,
+        int requestCode,
+        int resultCode,
+        Intent intent,
+        QRCodeService qrCodeService
+    ) {
         if (activity != null) {
             if (qrCodeService != null) {
                 String scanResult = parseActivityResult(activity, requestCode, resultCode, intent);
@@ -118,41 +124,5 @@ public class QRScannerUtil {
             }
         }
         return null;
-    }
-
-    public interface ScanResultCallback {
-        void onScanResult(@Nullable String payload);
-    }
-
-    static public class QrCodeScanner {
-        private final @NonNull Context context;
-        private final @NonNull ActivityResultLauncher<Intent> launcher;
-
-        private QrCodeScanner(@NonNull Context context, @NonNull ActivityResultLauncher<Intent> launcher) {
-            this.context = context;
-            this.launcher = launcher;
-        }
-
-        public void scan(@Nullable String hint, @QRCodeServiceImpl.QRCodeColor int type) {
-            launcher.launch(getInitiateScanIntent(context, hint, type));
-        }
-    }
-
-    public static QrCodeScanner prepareScanner(
-        @NonNull AppCompatActivity activity,
-        @NonNull ScanResultCallback callback
-    ) {
-        ActivityResultLauncher<Intent> launcher = activity.registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                boolean success = result.getResultCode() == Activity.RESULT_OK;
-                Intent data = result.getData();
-                String payload = success && data != null
-                    ? data.getStringExtra(ThreemaApplication.INTENT_DATA_QRCODE)
-                    : null;
-                callback.onScanResult(payload);
-            }
-        );
-        return new QrCodeScanner(activity, launcher);
     }
 }

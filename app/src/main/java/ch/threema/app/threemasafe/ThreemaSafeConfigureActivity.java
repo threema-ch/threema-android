@@ -29,7 +29,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -46,13 +45,16 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.fragments.wizard.WizardFragment1;
 import ch.threema.app.services.UserService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
@@ -90,6 +92,15 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content_container),
+            InsetSides.lbr()
+        );
     }
 
     @SuppressLint("SetTextI18n")
@@ -177,11 +188,9 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
         return false;
     }
@@ -270,20 +279,12 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
         finish();
     }
 
-    private class PasswordWatcher implements TextWatcher {
+    private class PasswordWatcher extends SimpleTextWatcher {
         private PasswordWatcher() {
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(@NonNull Editable s) {
             boolean passwordOk = getPasswordOK(password1.getText().toString(), password2.getText().toString());
 
             if (passwordOk) {
@@ -300,7 +301,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
         boolean lengthOk = WizardFragment1.getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(this) ? 1 : MIN_PW_LENGTH);
         boolean passwordsMatch = password1Text.equals(password2Text);
 
-        if (!lengthOk && password1Text.length() > 0) {
+        if (!lengthOk && !password1Text.isEmpty()) {
             this.password1layout.setError(getString(R.string.password_too_short_generic));
             this.password2layout.setError(null);
         } else {
@@ -344,11 +345,6 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
                 storeKeyAndFinish((byte[]) data);
             }
         }
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
-        // stay put
     }
 
     @Override

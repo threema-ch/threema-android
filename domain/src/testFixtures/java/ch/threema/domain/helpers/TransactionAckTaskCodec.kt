@@ -29,7 +29,7 @@ import ch.threema.domain.protocol.connection.data.OutboundMessage
  * This task codec is used only for tests. It acts as the server and creates server acknowledgements
  * for sent transaction begin and commit messages. Note that this also acts as [ServerAckTaskCodec].
  */
-class TransactionAckTaskCodec : ServerAckTaskCodec() {
+open class TransactionAckTaskCodec : ServerAckTaskCodec() {
     var transactionBeginCount = 0
     var transactionCommitCount = 0
 

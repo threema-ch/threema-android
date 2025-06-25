@@ -41,7 +41,7 @@ import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
 import java.io.FileNotFoundException
 import java.util.Date
@@ -56,7 +56,7 @@ suspend fun runActiveGroupStateResyncSteps(
     apiService: ApiService,
     fileService: FileService,
     groupCallManager: GroupCallManager,
-    databaseService: DatabaseServiceNew,
+    databaseService: DatabaseService,
     outgoingCspMessageServices: OutgoingCspMessageServices,
     handle: ActiveTaskCodec,
 ) {

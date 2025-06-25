@@ -30,7 +30,6 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.SpannableString;
-import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -52,6 +51,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -132,11 +132,12 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         checkBox.setChecked(false);
     }
 
-
     public interface PasswordEntryDialogClickListener {
         void onYes(String tag, String text, boolean isChecked, Object data);
 
-        void onNo(String tag);
+        default void onNo(String tag) {
+
+        }
     }
 
     @Override
@@ -311,21 +312,13 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         callback.onNo(this.getTag());
     }
 
-    public class PasswordWatcher implements TextWatcher {
+    public class PasswordWatcher extends SimpleTextWatcher {
         private final EditText password1;
         private final EditText password2;
 
         public PasswordWatcher(final EditText password1, final EditText password2) {
             this.password1 = password1;
             this.password2 = password2;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
         }
 
         @Override
@@ -336,7 +329,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
             if (isLengthCheck) {
                 alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(getPasswordOK(password1Text, password2Text));
             } else {
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(password1Text.length() > 0);
+                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!password1Text.isEmpty());
             }
         }
     }

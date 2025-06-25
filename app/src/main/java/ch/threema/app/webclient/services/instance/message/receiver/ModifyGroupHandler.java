@@ -38,11 +38,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.groupflows.GroupChanges;
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.protocol.ProfilePictureChange;
 import ch.threema.app.protocol.SetProfilePicture;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Group;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
@@ -50,10 +52,12 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 @WorkerThread
@@ -176,8 +180,7 @@ public class ModifyGroupHandler extends MessageReceiver {
 
         // Save changes
         try {
-            Deferred<Boolean> updateGroupResult = groupFlowDispatcher.runUpdateGroupFlow(
-                null,
+            Deferred<GroupFlowResult> groupFlowResultDeferred = groupFlowDispatcher.runUpdateGroupFlow(
                 new GroupChanges(
                     name,
                     profilePictureChange,
@@ -187,15 +190,25 @@ public class ModifyGroupHandler extends MessageReceiver {
                 groupModel
             );
 
-            updateGroupResult.invokeOnCompletion(throwable -> {
-                Boolean result = updateGroupResult.getCompleted();
-                if (result == Boolean.TRUE) {
-                    this.success(temporaryId, groupModel);
-                } else {
-                    this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+            CoroutinesExtensionKt.onCompleted(
+                groupFlowResultDeferred,
+                exception -> {
+                    logger.error("The update-group-flow failed exceptionally", exception);
+                    RuntimeUtil.runOnWorkerThread(() -> failed(temporaryId, Protocol.ERROR_INTERNAL));
+                    return Unit.INSTANCE;
+                },
+                groupFlowResult -> {
+                    RuntimeUtil.runOnWorkerThread(() -> {
+                        if (groupFlowResult instanceof GroupFlowResult.Success) {
+                            success(temporaryId, groupModel);
+                        } else if (groupFlowResult instanceof GroupFlowResult.Failure) {
+                            failed(temporaryId, Protocol.ERROR_INTERNAL);
+                        }
+                    });
+                    return Unit.INSTANCE;
                 }
-                return null;
-            });
+            );
+
 
         } catch (Exception e1) {
             this.failed(temporaryId, Protocol.ERROR_INTERNAL);

@@ -62,7 +62,7 @@ import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.CheckableConstraintLayout;
 import ch.threema.app.ui.VerificationLevelImageView;
@@ -149,7 +149,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
             }
         }
 
-        if (recents.size() > 0 && recents.size() < 10) {
+        if (!recents.isEmpty() && recents.size() < 10) {
             // filter latest
             Collections.sort(recents, (o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()));
             this.recentlyAdded = recents.subList(0, Math.min(recents.size(), MAX_RECENTLY_ADDED_CONTACTS));
@@ -258,7 +258,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         String firstLetter, sortingValue;
 
         sortingValue = ContactUtil.getSafeNameString(c, preferenceService.isContactListSortingFirstName());
-        if (sortingValue.length() == 0) {
+        if (sortingValue.isEmpty()) {
             firstLetter = PLACEHOLDER_BLANK_HEADER;
         } else {
             if (ContactUtil.isGatewayContact(c)) {
@@ -467,7 +467,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
     public int getItemViewType(int position) {
         ContactModel c = values.get(position);
 
-        if (recentlyAdded != null && recentlyAdded.size() > 0 && position < recentlyAdded.size() && recentlyAdded.contains(c)) {
+        if (recentlyAdded != null && !recentlyAdded.isEmpty() && position < recentlyAdded.size() && recentlyAdded.contains(c)) {
             return VIEW_TYPE_RECENTLY_ADDED;
         }
         return VIEW_TYPE_NORMAL;
@@ -592,7 +592,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
     @Override
     public ContactModel getClickedItem(View v) {
-        if (ovalues.size() > 0) {
+        if (!ovalues.isEmpty()) {
             return ovalues.get(getClickedItemPosition(v));
         }
         return null;

@@ -19,7 +19,7 @@
     type: string
     minLength: 8
     maxLength: 8
-    pattern: ^([0-9A-Z\\*][0-9A-Z]{7}|\\*)$
+    pattern: ^[0-9A-Z*]{1}[0-9A-Z]{7}$
     example: ECHOECHO
 
   public-key: &public-key
@@ -211,6 +211,142 @@
             )
           )
           ```
+
+  blob-credentials-request: &blob-credentials-request
+    type: object
+    required:
+      - identity
+    properties:
+      identity: *identity
+
+  blob-credentials-response:
+    ok: &blob-credentials-response-ok
+      description: |-
+        Blob server authentication credentials retrieved successfully.
+      type: object
+      required:
+        - success
+        - token
+        - expiration
+      properties:
+        success:
+          type: boolean
+          const: true
+        token:
+          description: |-
+            An opaque token used to authenticate against the blob server.
+
+            HTTP requests towards the the blob server must include it as a
+            header in the following way: `Authorization: ThreemaBlobToken
+            <token>`
+          type: string
+        expiration:
+          <<: *u64
+          description: |-
+            Amount of seconds until the token expires and must be discarded.
+      example:
+        success: true
+        token: givemeaccessplz
+        expiration: 600
+
+    error: &blob-credentials-response-error
+      description: |-
+        Blob server authentication credentials could not be retrieved.
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          type: string
+      example:
+        sucess: false
+        error: 'Identity not found'
+
+  id-revocation-request: &id-revocation-request
+    type: object
+    required:
+      - identity
+    properties:
+      identity: *identity
+
+  id-revocation-key-v1: &id-revocation-key-v1
+    <<: *base64
+    minLength: 8
+    maxLength: 8
+    description: |-
+      A legacy (v1) identity revocation key.
+
+      The revocation key is computed as follows (`[:4]` denotes the first four bytes):
+
+      ```text
+      base64(
+        SHA256(revocation-password)[:4]
+      )
+      ```
+
+  id-revocation-request-v1: &id-revocation-request-v1
+    type: object
+    required:
+      - identity
+      - revocationKey
+    properties:
+      identity: *identity
+      revocationKey: *id-revocation-key-v1
+
+  id-revocation-key-check-response:
+    found: &id-revocation-key-check-response-found
+      description: 'ID revocation key was set'
+      required:
+        - revocationKeySet
+        - lastChanged
+      properties:
+        revocationKeySet:
+          type: boolean
+          const: true
+        lastChanged:
+          type: string
+          format: date-time
+      example:
+        revocationKeySet: true
+        lastChanged: '2014-10-29T12:32:54Z'
+
+    empty: &id-revocation-key-check-response-empty
+      description: 'ID revocation key was not set'
+      required:
+        - revocationKeySet
+      properties:
+        revocationKeySet:
+          type: boolean
+          const: false
+
+  id-revocation-response:
+    ok: &id-revocation-response-ok
+      description: 'ID revocation key request was successful'
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          const: true
+
+    error: &id-revocation-response-error
+      description: 'ID revocation key was not successful'
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          type: string
+      example:
+        sucess: false
+        error: 'Identity not found'
 
   sfu-credentials-request: &sfu-credentials-request
     type: object
@@ -574,6 +710,154 @@ servers:
     description: Sandbox server
 
 paths:
+  /identity/blob_cred:
+    post:
+      summary: Blob Server Credentials
+      description: |-
+        Retrieve blob server authentication credentials.
+
+        The first call without the challenge response properties initiates the
+        challenge request. The second call must repeat the exact same properties
+        and the challenge response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - *blob-credentials-request
+                - !merge-objects
+                  - *auth-challenge-response
+                  - *blob-credentials-request
+      responses:
+        '200':
+          description: Success... or not.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *auth-challenge-request
+                  - *blob-credentials-response-ok
+                  - *blob-credentials-response-error
+        '429':
+          description: Rate limit exceeded.
+
+  /identity/revoke:
+    post:
+      summary: ID Revocation by Client Key
+      description: |-
+        Revoke a Threema ID by proofing the knowledge of the client key.
+
+        The first call without the challenge response properties initiates the
+        challenge request. The second call must repeat the exact same properties
+        and the challenge response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - *id-revocation-request
+                - !merge-objects
+                  - *id-revocation-request
+                  - *auth-challenge-response
+      responses:
+        '200':
+          description: Success... or not.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *auth-challenge-request
+                  - *id-revocation-response-ok
+                  - *id-revocation-response-error
+
+  /identity/set_revocation_key:
+    post:
+      summary: Set ID Revocation Key
+      description: |-
+        Set the revocation key for an identity.
+
+        The first call without the challenge response properties initiates the
+        challenge request. The second call must repeat the exact same properties
+        and the challenge response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - *id-revocation-request-v1
+                - !merge-objects
+                  - *id-revocation-request-v1
+                  - *auth-challenge-response
+
+      responses:
+        '200':
+          description: Success... or not.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *auth-challenge-request
+                  - *id-revocation-response-ok
+                  - *id-revocation-response-error
+
+  /identity/check_revocation_key:
+    post:
+      summary: Check ID Revocation Key
+      description: |-
+        Check whether a revocation key is set for a given ID
+
+        The first call without the challenge response properties initiates the
+        challenge request. The second call must repeat the exact same properties
+        and the challenge response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - *id-revocation-request
+                - !merge-objects
+                  - *id-revocation-request-v1
+                  - *auth-challenge-response
+
+      responses:
+        '200':
+          description: Success... or not.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *auth-challenge-request
+                  - *id-revocation-response-error
+                  - *id-revocation-key-check-response-found
+                  - *id-revocation-key-check-response-empty
+
+  /identity/ws/revoke:
+    post:
+      summary: ID Revocation by User-set Key
+      description:
+        Revoke a Threema ID with a user-set key previously derived from a
+        password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - *id-revocation-request-v1
+      responses:
+        '200':
+          description: Success... or not.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *id-revocation-response-ok
+                  - *id-revocation-response-error
+
   /identity/sfu_cred:
     post:
       summary: SFU Information

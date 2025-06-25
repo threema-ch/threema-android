@@ -22,6 +22,7 @@
 package ch.threema.app.groupmanagement
 
 import ch.threema.app.DangerousTest
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.groupflows.GroupLeaveIntent
 import ch.threema.app.tasks.OutgoingGroupLeaveTask
 import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
@@ -45,16 +46,14 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Test
 
 @DangerousTest
 class LeaveGroupFlowTest : GroupFlowTest() {
@@ -117,7 +116,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         userState = UserState.KICKED,
     )
 
-    @Before
+    @BeforeTest
     fun setup() {
         clearDatabaseAndCaches(serviceManager)
 
@@ -389,15 +388,34 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         )
     }
 
+    @Test
+    fun shouldNotLeaveGroupWhenMdActiveButConnectionIsLost() = runTest {
+        // arrange
+        val groupModel = groupModelRepository.getByGroupIdentity(initialGroupModelData.groupIdentity)
+        val taskManager = ControlledTaskManager(emptyList())
+        val groupFlowDispatcher = getGroupFlowDispatcher(
+            setupConfig = SetupConfig.MULTI_DEVICE_ENABLED,
+            taskManager = taskManager,
+            connection = ConnectionDisconnected,
+        )
+
+        // act
+        val groupFlowResult = groupFlowDispatcher
+            .runLeaveGroupFlow(GroupLeaveIntent.LEAVE, groupModel!!)
+            .await()
+
+        // assert
+        assertIs<GroupFlowResult.Failure.Network>(groupFlowResult)
+    }
+
     private suspend fun assertSuccessfulLeave(
         groupModel: GroupModel,
         intent: GroupLeaveIntent,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        assertTrue {
-            runGroupLeave(groupModel, intent, reflectionExpectation)
-        }
-
+        assertIs<GroupFlowResult.Success>(
+            runGroupLeave(groupModel, intent, reflectionExpectation),
+        )
         when (intent) {
             GroupLeaveIntent.LEAVE -> assertEquals(UserState.LEFT, groupModel.data.value?.userState)
             GroupLeaveIntent.LEAVE_AND_REMOVE -> assertNull(groupModel.data.value)
@@ -410,9 +428,9 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         reflectionExpectation: ReflectionExpectation,
     ) {
         val groupModelDataBefore = groupModel.data.value
-        assertFalse {
-            runGroupLeave(groupModel, intent, reflectionExpectation)
-        }
+        assertIs<GroupFlowResult.Failure>(
+            runGroupLeave(groupModel, intent, reflectionExpectation),
+        )
         val groupModelDataAfter = groupModel.data.value
         // Assert that the group model has not changed
         assertEquals(groupModelDataBefore, groupModelDataAfter)
@@ -422,7 +440,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         groupModel: GroupModel,
         intent: GroupLeaveIntent,
         reflectionExpectation: ReflectionExpectation,
-    ): Boolean {
+    ): GroupFlowResult {
         val groupModelData = groupModel.data.value
 
         // Prepare task manager and group flow dispatcher
@@ -435,8 +453,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         )
 
         // Run leave group flow
-        val result = groupFlowDispatcher.runLeaveGroupFlow(
-            null,
+        val groupFlowResult = groupFlowDispatcher.runLeaveGroupFlow(
             intent,
             groupModel,
         ).await()
@@ -447,7 +464,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
             }
         }
 
-        return result
+        return groupFlowResult
     }
 
     private fun getExpectedTaskAssertions(

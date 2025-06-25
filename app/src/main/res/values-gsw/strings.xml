@@ -101,6 +101,7 @@
     <string name="next">Wiiter</string>
     <string name="finish">Abschlüsse</string>
     <string name="please_wait">Bitte warte…</string>
+    <string name="please_wait_timeout">Das gaht länger als erwartet</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Schlüsselpaar wird erzüügt…</string>
     <string name="wizard1_sync_contacts">Kontäkt werded synchronisiert…</string>
@@ -164,6 +165,7 @@
     <string name="delete_id_message">Wenn Sie d’ID nöd gsicheret und keis Backup erstellt händ, werded Sie nüme ide Laag sii, mit dere ID Nachrichte z’verschicke oder z’empfange.\n\nFalls Sie die ID nüme bruche wänd, empfiehlt sich’s, vorem Lösche es ID-Widerruefspasswort z’setze und d’ID uf myid.threema.ch/revoke z’widerrüefe.</string>
     <string name="delete_id_message2">Letschti Warnig: Wänd Sie Ihri ID würklich vo dem Grät lösche?</string>
     <string name="delete_id_sum">${app_name_short}-ID und Chats uf dem Grät lösche</string>
+    <string name="delete_all_data_prompt">All App-Date lösche?</string>
     <string name="backup_password_summary">Ihri ID wird miteme Passwort verschlüsslet. Wähled Sie e Kombination us Buechstabe, Ziffere und Symbol. Merked Sie sich, was Sie da iigebed!</string>
     <string name="backup_password_again_summary">Passwortwiederholig</string>
     <string name="password_hint">Passwort</string>
@@ -171,7 +173,6 @@
     <string name="backup_id_title">Ihre ID-Export</string>
     <string name="backup_id_summary">D’Zeichefolg oder de QR-Code cha zäme mitem gwählte Passwort zum Wiederherstelle vo Ihrere ID ufeme andere Grät bruucht werde. Sie chönd die Date mittels Kopiere und Iifüege amene geeignete Ort ablegge, usdrucke, sich sälber über d’Teile-Funktion per E-Mail schicke oder de QR-Code miteme andere Grät scanne.</string>
     <string name="support">Hilfe</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Di folgendi Zeichefolg cha zäme mitem gwählte Passwort zum Wiederherstelle vo Ihrere ${app_name_short}-ID bruucht werde.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -345,9 +346,12 @@
     <string name="title_tab_recent">Letschti</string>
     <string name="no_recent_conversations">Kei Chats gfunde</string>
     <string name="save_changes">Sichere</string>
-    <string name="group_created_confirm">Gruppe erfolgriich erstellt</string>
     <string name="creating_group">Gruppe wird erstellt</string>
     <string name="updating_group">Gruppe aktualisiere</string>
+    <string name="leaving_group">Gruppe wird verlaa</string>
+    <string name="disbanding_group">Gruppe wird ufglöst</string>
+    <string name="removing_group">Gruppe wird glöscht</string>
+    <string name="resyncing_group">Gruppe wird neu synchronisiert</string>
     <string name="status_create_group">Gruppe erstellt.</string>
     <string name="status_rename_group">Gruppe umbenännt zu «%1$s»</string>
     <string name="status_group_new_photo">Gruppebild aktualisiert.</string>
@@ -736,7 +740,20 @@
     <string name="clone_group_message">Es wird e Kopie vode aktuelle Gruppe mit Ihne als Administrator erstellt. Wiitermache?</string>
     <string name="prefs_proximity_sensor">Nöcherigssensor bruuche</string>
     <string name="prefs_proximity_sensor_explain">Ton vode Sprachnachrichte über d’Hörmuschle uusgeh, wenn de Nöcherigssensor abdeckt isch</string>
-    <string name="error_creating_group">Fehler bim Erstelle/Aktualisiere vode Gruppe</string>
+    <string name="error_creating_group_network">Die Gruppe isch nöd erstellt worde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="error_creating_group_internal">Wägeme interne Fehler hät die Gruppe nöd chöne erstellt werde. Bitte versueched Sie’s spöter nomal.</string>
+    <string name="error_cloning_group_network">Die Gruppe isch nöd klont worde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="error_cloning_group_internal">Wägeme interne Fehler hät die Gruppe nöd chöne klont werde. Bitte versueched Sie’s spöter nomal.</string>
+    <string name="error_updating_group_network">D’Änderige sind nöd übernoh worde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="error_updating_group_internal">Wägeme interne Fehler händ d’Änderige nöd chöne übernoh werde. Bitte versueched Sie’s spöter nomal.</string>
+    <string name="error_leaving_group_network">D’Gruppe isch nöd verlaa worde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="error_leaving_group_internal">Wägeme interne Fehler hät d’Gruppe nöd chöne verlaa werde. Bitte versueched Sie’s spöter nomal.</string>
+    <string name="error_disbanding_group_network">D’Gruppe isch nöd ufglöst worde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="error_disbanding_group_internal">Wägeme interne Fehler hät d’Gruppe nöd chöne ufglöst werde. Bitte versueched Sie’s spöter nomal.</string>
+    <string name="error_removing_group_network">D’Gruppe isch nöd glöscht worde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="error_removing_group_internal">Wägeme interne Fehler hät d’Gruppe nöd chöne glöscht werde. Bitte versueched Sie’s spöter nomal.</string>
+    <string name="error_resyncing_group_network">D’Gruppe isch nöd neu synchronisiert worde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="error_resyncing_group_internal">Wägeme interne Fehler hät d’Gruppe nöd chöne neu synchronisiert werde. Bitte versueched Sie’s spöter nomal.</string>
     <string name="no_media_found_generic">Kei Medie i dem Chat gfunde, wo de Uswahl entspräched.</string>
     <string name="max_images_reached">Es chönd nöd meh als %d Bilder ufs Mal bearbeitet werde</string>
     <string name="enter_description">Bitte beschriibed Sie s’Problem oder de Fehler da.</string>
@@ -851,8 +868,6 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">S’Sichere vo grosse Mediedateie ines ZIP-Backup cha sehr lang duure und d’Prozessor- und Speicherkapazität vo Ihrem Grät überschriite. Währendem Backup chönd kei ${app_name}-Nachrichte empfange werde. Trotzdem wiitermache?</string>
     <string name="backup_data_cancelled">Backup aaghalte</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">App cha nöd gstarted werde. Bitte schalted Sie Ihres Grät vollständig uus und wider ii.</string>
     <string name="message_sent">Nachricht isch gschickt worde</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short}-Aruef</string>
@@ -1221,9 +1236,6 @@
     <string name="permission_camera_videocall_required">Aktiviered Sie d’Kamera-Berächtigung, zum Videoarüef z’tätige</string>
     <string name="tooltip_voip_enable_speakerphone">Da tippe, zum Freispreche z’aktiviere</string>
     <string name="ballot_open">Offeni Umfrage</string>
-    <string name="translators">Übersetzer</string>
-    <string name="credits">Danksägige</string>
-    <string name="translators_thanks">Danke vilmal üsne ehreamtliche Übersetzer: %s</string>
     <string name="ballot_window_hide">Offeni Umfrage verberge</string>
     <string name="ballot_window_show">Offeni Umfrage aazeige</string>
     <string name="single_ballot_really_delete">Die Umfrag lösche</string>
@@ -1559,7 +1571,7 @@
     <string name="prefs_summary_hibernation_api">Zum verhindere, dass ${app_name} bi längerer Inaktivität nüme funktioniert, deaktiviered Sie «App-Aktivität bei Nichtnutzung stoppen» ide Systemiistellige.</string>
     <string name="unable_to_fetch_configuration">Konfiguration cha nöd vom Server glade werde. Versueched Sie’s spöter nomal.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[E Verbindig vomene andere Grät mit dere ${app_name_short}-ID isch erchännt worde. Händ Sie Ihri ${app_name_short}-ID chürzlich ufeme andere Grät bruucht? <br><br> Wenn ja, chönd Sie die Nachricht ignoriere. <br><br> Wenn nei, isch Ihre privat Schlüssel möglicherwiis kompromittiert. Bitte <a href="https://threema.ch/en/faq/another_connection">befolged Sie üsi Empfehlige</a> zum Schutz vo Ihrem Grät und Ihrne Date, bevor Sie e neui ID erstelled.]]></string>
+    <string name="rogue_device_warning"><![CDATA[E Verbindig vomene andere Grät mit dere ${app_name_short}-ID isch erchännt worde. Händ Sie Ihri ${app_name_short}-ID chürzlich ufeme andere Grät bruucht? <br><br> Wenn ja, chönd Sie die Nachricht ignoriere. <br><br> Wenn nei, isch Ihre privat Schlüssel möglicherwiis kompromittiert. Bitte <a href="https://threema.com/de/faq/another_connection">befolged Sie üsi Empfehlige</a> zum Schutz vo Ihrem Grät und Ihrne Date, bevor Sie e neui ID erstelled.]]></string>
     <string name="fetch2_failure">De Abgliich mitem Bereitstelligsserver isch fehlgschlage.</string>
     <string name="no_members_support_group_calls">Keis vode andere Gruppemitglieder cha a Gruppearüef teilneh</string>
     <string name="group_calls">Gruppearüef</string>
@@ -1592,7 +1604,7 @@
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) schützt e uufzeichneti Kommunikation vor nachträglicher Entschlüsslig au bi Kenntnis vom Langziitschlüssel.\n\nDie Option cha aktiviert werde, wenn d’App uf beide Siite PFS unterstützt.</string>
     <string name="group_call_inactivity_left">Gruppearuef wäge Inaktivität verlaa</string>
     <string name="missing_permission_external_storage">Fehler bim Kopiere vode Datei. Versueched Sie folgendi Schritt:\n1. Mached Sie uf Ihrem Handy d’App «Einstellungen» uf.\n2. Navigiered Sie zu «Apps».\n3. Tipped Sie uf «Zugriff auf alle Dateien».\n4. Tipped Sie uf die drü Pünkt obe und wähled Sie «System Apps anzeigen».\n5. Tipped Sie uf «Externer Speicher» und stelled Sie sicher, dass «Zugriff zum Verwalten aller Dateien zulassen» aktiviert isch.\n6. Versueched Sie nomal, s’Date-Backup wiederherzstelle.</string>
-    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy isch i dere Konversation deaktiviert worde, wil d’App-Version vom Chatpartner das nöd unterstützt.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy isch i dem Chat deaktiviert worde, wil d’App-Version vom Chatpartner das nöd unterstützt oder ${app_name_desktop} 2.0 für Desktop (Beta) gnutzt wird.</string>
     <string name="forward_security_illegal_session_status_message">D’Perfect-Forward-Secrecy-Sitzig isch wäge Ungültigkeit zrugggsetzt worde</string>
     <string name="crop_image_title">Bild zueschniide</string>
     <string name="scroll_to_bottom">As Ändi scrolle</string>
@@ -1698,10 +1710,10 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Akkunutzig vode App «optimiert»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">D’App cha kei permanenti Verbindig zude Server ufrächterhalte, was für d’Funktion vo ${app_name_short} Push aber erforderlich isch. Befindet sich d’App im Hindergrund, werded Sie nöd über neui Nachrichte informiert. Zum das z’behebe, tipped Sie uf «Akkunutzung der App» und wähled Sie «Uneingeschränkt».</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">Die Android-Version wird bald nüme unterstützt</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">Sie händ es Android-Grät, wo kei Software-Updates me überchunnt. Us Sicherheitsgründ wird die Android-Version vo Threema bald nüme unterstützt.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">Die App wird nüme aktualisiert</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">Wil Sie e veralteti Android-Version bruuched, wo vo Threema us Sicherheitsgründ nüme unterstützt wird, chömed Sie kei Updates für d’Threema-App über. Zum Threema mit allne Funktione wiiterhin z’nutze, wächsled Sie bitte uf e aktuelli Betriebssystemversion.</string>
     <string name="problemsolver_to_settings">Zude Iistellige</string>
     <string name="prefs_advanced_options">Erwiitereti Optione</string>
     <string name="push_service">Push-Dienst</string>
@@ -1749,7 +1761,7 @@
     <string name="device_linking_cancel_dialog_continue">Wiiter</string>
     <string name="md_drop_device_dialog_drop_button">Grät entferne</string>
     <string name="md_drop_device_dialog_close_button">Schlüsse</string>
-    <string name="md_drop_device_failed_dialog_title">Entferne vom Grät fehlgschlage</string>
+    <string name="md_drop_device_failed_dialog_title">Entferne vom Grät möglicherwiis fehlgschlage</string>
     <string name="md_drop_device_failed_dialog_message">Bitte überprüefed Sie d’Internetverbindig und versueched Sie’s nomal.</string>
     <string name="md_drop_device_failed_dialog_button_close">Schlüsse</string>
     <!-- accessibility -->
@@ -1811,12 +1823,20 @@
     <string name="device_linking_error_emoji_mismatch_body">D’Verbindig zum neue Grät schiint nöd korrekt z’funktioniere. Bitte started Sie d’App ufem neue Grät neu, und versueched Sie’s nomal.</string>
     <string name="device_linking_error_unexpected_title">Unvorhergsehne Fehler</string>
     <string name="device_linking_error_unexpected_body">Bitte versueched Sie nomal, s’Grät z’verchnüpfe. Falls s’Problem wiiterhin bestaht, wänded Sie sich bitte an Support («Hauptmenü &gt; Hilfe»).</string>
+    <string name="device_linking_error_invalid_contact_title">Ungültige Kontakt</string>
+    <string name="device_linking_error_invalid_contact_body">De Kontakt mit de ID %1$s isch ungültig abgspeicheret, drum cha s’Grät nöd verchnüpft werde. Wändet Sie sich bitte an Support («Hauptmenü &gt; Hilfe»).</string>
     <string name="device_linking_error_screen_close">Schlüsse</string>
     <string name="work_directory_title">Unternehmensverzeichnis</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Im Verzeichnis sueche</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Bitte gebed Sie mindestens 3 Zeiche vomene Name ii, zum im Unternehmensverzeichnis vo ${app_name_short} z’sueche.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Die Datei isch ungültig und cha nöd teilt werde</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Verfüegbar</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Nöd verfüegbar</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>

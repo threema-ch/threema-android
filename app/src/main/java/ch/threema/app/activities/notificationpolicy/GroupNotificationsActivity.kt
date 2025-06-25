@@ -24,6 +24,7 @@ package ch.threema.app.activities.notificationpolicy
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.UiThread
+import ch.threema.app.AppConstants
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.logScreenVisibility
@@ -47,7 +48,7 @@ class GroupNotificationsActivity : NotificationsActivity() {
     }
 
     private val localGroupId: Int by lazy {
-        intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, GROUP_ID_NOT_PASSED)
+        intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, GROUP_ID_NOT_PASSED)
     }
 
     private val groupModel: ch.threema.data.models.GroupModel? by lazy {

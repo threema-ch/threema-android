@@ -31,15 +31,21 @@ import ch.threema.app.tasks.ReflectUserProfileIdentityLinksTask
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
+import ch.threema.app.utils.ConversationUtil
 import ch.threema.app.utils.ConversationUtil.getConversationUid
 import ch.threema.app.utils.GroupUtil
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.*
+import ch.threema.data.models.ContactModel
+import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
+import ch.threema.domain.models.ReadReceiptPolicy
+import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.Common.BlobData
 import ch.threema.protobuf.Common.DeltaImage
@@ -84,9 +90,10 @@ import ch.threema.protobuf.groupIdentity
 import ch.threema.protobuf.identities
 import ch.threema.protobuf.image
 import ch.threema.protobuf.unit
-import ch.threema.storage.models.ContactModel
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.DistributionListModel
 import com.google.protobuf.ByteString
+import com.neilalexander.jnacl.NaCl
 import java.nio.ByteBuffer
 
 private val logger = LoggingUtil.getThreemaLogger("DeviceLinkingDataCollector")
@@ -229,6 +236,7 @@ class DeviceLinkingDataCollector(
     private val identityStore by lazy { serviceManager.identityStore }
     private val userService by lazy { serviceManager.userService }
     private val contactService by lazy { serviceManager.contactService }
+    private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
     private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
     private val distributionListService by lazy { serviceManager.distributionListService }
     private val deviceCookieManager by lazy { serviceManager.deviceCookieManager }
@@ -349,7 +357,7 @@ class DeviceLinkingDataCollector(
         val profilePictureData = userService.uploadUserProfilePictureOrGetPreviousUploadData()
 
         val hasProfilePicture = profilePictureData.blobId != null &&
-            !profilePictureData.blobId.contentEquals(ContactModel.NO_PROFILE_PICTURE_BLOB_ID)
+            !profilePictureData.blobId.contentEquals(ch.threema.storage.models.ContactModel.NO_PROFILE_PICTURE_BLOB_ID)
 
         return if (hasProfilePicture) {
             val blobMeta = blob {
@@ -406,12 +414,12 @@ class DeviceLinkingDataCollector(
             } else {
                 Settings.UnknownContactPolicy.ALLOW_UNKNOWN
             }
-            readReceiptPolicy = if (preferenceService.isReadReceipts) {
+            readReceiptPolicy = if (preferenceService.areReadReceiptsEnabled()) {
                 MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
             } else {
                 MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
             }
-            typingIndicatorPolicy = if (preferenceService.isTypingIndicator) {
+            typingIndicatorPolicy = if (preferenceService.isTypingIndicatorEnabled) {
                 MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
             } else {
                 MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
@@ -426,22 +434,22 @@ class DeviceLinkingDataCollector(
             } else {
                 Settings.O2oCallConnectionPolicy.ALLOW_DIRECT_CONNECTION
             }
-            o2OCallVideoPolicy = if (preferenceService.isVideoCallsEnabled) {
+            o2OCallVideoPolicy = if (preferenceService.areVideoCallsEnabled()) {
                 Settings.O2oCallVideoPolicy.ALLOW_VIDEO
             } else {
                 Settings.O2oCallVideoPolicy.DENY_VIDEO
             }
-            groupCallPolicy = if (preferenceService.isGroupCallsEnabled) {
+            groupCallPolicy = if (preferenceService.areGroupCallsEnabled()) {
                 Settings.GroupCallPolicy.ALLOW_GROUP_CALL
             } else {
                 Settings.GroupCallPolicy.DENY_GROUP_CALL
             }
-            screenshotPolicy = if (preferenceService.isDisableScreenshots) {
+            screenshotPolicy = if (preferenceService.areScreenshotsDisabled()) {
                 Settings.ScreenshotPolicy.DENY_SCREENSHOT
             } else {
                 Settings.ScreenshotPolicy.ALLOW_SCREENSHOT
             }
-            keyboardDataCollectionPolicy = if (preferenceService.incognitoKeyboard) {
+            keyboardDataCollectionPolicy = if (preferenceService.isIncognitoKeyboardRequested) {
                 Settings.KeyboardDataCollectionPolicy.DENY_DATA_COLLECTION
             } else {
                 Settings.KeyboardDataCollectionPolicy.ALLOW_DATA_COLLECTION
@@ -459,7 +467,7 @@ class DeviceLinkingDataCollector(
 
     private fun collectExcludeFromSyncIdentities(): Identities {
         return identities {
-            identities += excludeFromSyncService.all.toSet()
+            identities += excludeFromSyncService.getExcludedIdentities()
         }
     }
 
@@ -482,79 +490,41 @@ class DeviceLinkingDataCollector(
     }
 
     private fun collectContacts(conversationsStats: Map<String, ConversationStats>): List<Pair<List<BlobDataProvider>, AugmentedContactProvider>> {
-        return contactService.all
+        return contactModelRepository.getAll()
+            .mapNotNull(this::getAndValidateData)
             .map { mapToAugmentedContact(it, conversationsStats) }
             .also { logger.trace("{} contacts", it.size) }
     }
 
     private fun mapToAugmentedContact(
-        contactModel: ContactModel,
+        contactModelData: ContactModelData,
         conversationsStats: Map<String, ConversationStats>,
     ): Pair<List<BlobDataProvider>, AugmentedContactProvider> {
         val blobDataProviders = mutableListOf<BlobDataProvider>()
 
-        val conversationStats = conversationsStats[contactModel.getConversationUid()]
+        val conversationStats = conversationsStats[ConversationUtil.getIdentityConversationUid(contactModelData.identity)]
 
-        val contactDefinedProfilePictureInfo: Pair<BlobDataProvider, DeltaImage>? = collectContactDefinedProfilePicture(contactModel)
-        val userDefinedProfilePictureInfo: Pair<BlobDataProvider, DeltaImage>? = collectUserDefinedProfilePicture(contactModel)
+        val contactDefinedProfilePictureInfo: Pair<BlobDataProvider, DeltaImage>? = collectContactDefinedProfilePicture(contactModelData)
+        val userDefinedProfilePictureInfo: Pair<BlobDataProvider, DeltaImage>? = collectUserDefinedProfilePicture(contactModelData)
 
         val contact = contact {
-            identity = contactModel.identity
-            publicKey = contactModel.publicKey.toByteString()
-            createdAt = contactModel.dateCreated?.time ?: System.currentTimeMillis()
-            firstName = contactModel.firstName ?: ""
-            lastName = contactModel.lastName ?: ""
-            nickname = contactModel.publicNickName ?: ""
-            verificationLevel = mapVerificationLevel(contactModel)
-            workVerificationLevel = when {
-                contactModel.isWorkVerified -> Contact.WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
-                else -> Contact.WorkVerificationLevel.NONE
-            }
-            identityType = when (contactModel.identityType) {
-                IdentityType.NORMAL -> Contact.IdentityType.REGULAR
-                IdentityType.WORK -> Contact.IdentityType.WORK
-                else -> Contact.IdentityType.UNRECOGNIZED
-            }
-            acquaintanceLevel = when (contactModel.acquaintanceLevel) {
-                ContactModel.AcquaintanceLevel.GROUP -> Contact.AcquaintanceLevel.GROUP_OR_DELETED
-                ContactModel.AcquaintanceLevel.DIRECT -> Contact.AcquaintanceLevel.DIRECT
-            }
-            activityState = when (contactModel.state) {
-                IdentityState.ACTIVE -> Contact.ActivityState.ACTIVE
-                IdentityState.INACTIVE -> Contact.ActivityState.INACTIVE
-                IdentityState.INVALID -> Contact.ActivityState.INVALID
-                else -> throw IllegalStateException("Contact ${contactModel.identity} has missing state")
-            }
-            featureMask = contactModel.featureMask
-            syncState = collectSyncState(contactModel)
-            readReceiptPolicyOverride = readReceiptPolicyOverride {
-                val readReceipts = contactModel.readReceipts
-                if (readReceipts == ContactModel.DEFAULT) {
-                    default = unit {}
-                } else {
-                    policy = when (readReceipts) {
-                        ContactModel.DONT_SEND -> MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
-                        ContactModel.SEND -> MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
-                        else -> throw IllegalStateException("Invalid read receipt policy override $readReceipts for contact ${contactModel.identity}")
-                    }
-                }
-            }
-            typingIndicatorPolicyOverride = typingIndicatorPolicyOverride {
-                if (contactModel.typingIndicators == ContactModel.DEFAULT) {
-                    default = unit {}
-                } else {
-                    policy = when (contactModel.typingIndicators) {
-                        ContactModel.DONT_SEND -> MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
-                        ContactModel.SEND -> MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
-                        else -> throw IllegalStateException(
-                            "Invalid typing indicator policy override ${contactModel.typingIndicators} for contact ${contactModel.identity}",
-                        )
-                    }
-                }
-            }
-            notificationTriggerPolicyOverride =
-                collectContactNotificationTriggerPolicyOverride(contactModel)
-            notificationSoundPolicyOverride = collectNotificationSoundPolicyOverride(contactModel)
+            identity = contactModelData.identity
+            publicKey = contactModelData.publicKey.toByteString()
+            createdAt = contactModelData.createdAt.time
+            firstName = contactModelData.firstName
+            lastName = contactModelData.lastName
+            nickname = contactModelData.nickname ?: ""
+            verificationLevel = mapVerificationLevel(contactModelData)
+            workVerificationLevel = mapWorkVerificationLevel(contactModelData)
+            identityType = mapIdentityState(contactModelData)
+            acquaintanceLevel = mapAcquaintanceLevel(contactModelData)
+            activityState = mapActivityState(contactModelData)
+            featureMask = contactModelData.featureMask.toLong()
+            syncState = collectSyncState(contactModelData)
+            readReceiptPolicyOverride = mapReadReceiptPolicyOverride(contactModelData)
+            typingIndicatorPolicyOverride = mapTypingIndicatorPolicyOverride(contactModelData)
+            notificationTriggerPolicyOverride = collectContactNotificationTriggerPolicyOverride(contactModelData)
+            notificationSoundPolicyOverride = collectNotificationSoundPolicyOverride(contactModelData)
 
             if (contactDefinedProfilePictureInfo != null) {
                 blobDataProviders.add(contactDefinedProfilePictureInfo.first)
@@ -566,7 +536,7 @@ class DeviceLinkingDataCollector(
                 userDefinedProfilePicture = userDefinedProfilePictureInfo.second
             }
 
-            conversationCategory = if (conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(contactModel.identity))) {
+            conversationCategory = if (conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(contactModelData.identity))) {
                 MdD2DSync.ConversationCategory.PROTECTED
             } else {
                 MdD2DSync.ConversationCategory.DEFAULT
@@ -583,7 +553,7 @@ class DeviceLinkingDataCollector(
 
         val augmentedContact = augmentedContact {
             this.contact = contact
-            contactModel.lastUpdate?.let { this.lastUpdateAt = it.time }
+            contactService.getLastUpdate(contactModelData.identity)?.let { this.lastUpdateAt = it.time }
         }
 
         val augmentedContactProvider = AugmentedContactProvider(
@@ -595,20 +565,40 @@ class DeviceLinkingDataCollector(
         return blobDataProviders to augmentedContactProvider
     }
 
-    private fun collectSyncState(contactModel: ContactModel): SyncState {
+    private fun collectSyncState(contactModelData: ContactModelData): SyncState {
         // TODO(ANDR-2327): Consolidate this mechanism
-        return if (contactModel.isLinkedToAndroidContact) {
+        return if (contactModelData.isLinkedToAndroidContact()) {
             SyncState.IMPORTED
-        } else if (contactModel.lastName.isNullOrBlank() && contactModel.firstName.isNullOrBlank()) {
+        } else if (contactModelData.lastName.isBlank() && contactModelData.firstName.isBlank()) {
             SyncState.INITIAL
         } else {
             SyncState.CUSTOM
         }
     }
 
-    private fun collectContactNotificationTriggerPolicyOverride(contactModel: ContactModel): NotificationTriggerPolicyOverride {
+    private fun mapReadReceiptPolicyOverride(contactModelData: ContactModelData): Contact.ReadReceiptPolicyOverride {
+        return readReceiptPolicyOverride {
+            when (contactModelData.readReceiptPolicy) {
+                ReadReceiptPolicy.DEFAULT -> default = unit {}
+                ReadReceiptPolicy.SEND -> policy = MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
+                ReadReceiptPolicy.DONT_SEND -> policy = MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
+            }
+        }
+    }
+
+    private fun mapTypingIndicatorPolicyOverride(contactModelData: ContactModelData): Contact.TypingIndicatorPolicyOverride {
+        return typingIndicatorPolicyOverride {
+            when (contactModelData.typingIndicatorPolicy) {
+                TypingIndicatorPolicy.DEFAULT -> default = unit {}
+                TypingIndicatorPolicy.SEND -> policy = MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
+                TypingIndicatorPolicy.DONT_SEND -> policy = MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
+            }
+        }
+    }
+
+    private fun collectContactNotificationTriggerPolicyOverride(contactModelData: ContactModelData): NotificationTriggerPolicyOverride {
         return ContactKt.notificationTriggerPolicyOverride {
-            when (val modelPolicy = contactModel.currentNotificationTriggerPolicyOverride()) {
+            when (val modelPolicy = contactModelData.currentNotificationTriggerPolicyOverride) {
                 NotMuted -> default = unit {}
 
                 MutedIndefinite -> policy = ContactKt.NotificationTriggerPolicyOverrideKt.policy {
@@ -627,9 +617,9 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun collectNotificationSoundPolicyOverride(contactModel: ContactModel): NotificationSoundPolicyOverride {
+    private fun collectNotificationSoundPolicyOverride(contactModelData: ContactModelData): NotificationSoundPolicyOverride {
         return ContactKt.notificationSoundPolicyOverride {
-            if (ringtoneService.isSilent(contactModel.getUniqueId(), false)) {
+            if (ringtoneService.isSilent(ContactUtil.getUniqueIdString(contactModelData.identity), false)) {
                 policy = MdD2DSync.NotificationSoundPolicy.MUTED
             } else {
                 default = unit {}
@@ -637,21 +627,17 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun ContactModel.getUniqueId(): String {
-        return ContactUtil.getUniqueIdString(identity)
-    }
-
-    private fun collectContactDefinedProfilePicture(contactModel: ContactModel): Pair<BlobDataProvider, DeltaImage>? {
-        return if (fileService.hasContactDefinedProfilePicture(contactModel.identity)) {
-            createJpegBlobAssets { fileService.getContactDefinedProfilePicture(contactModel.identity) }
+    private fun collectContactDefinedProfilePicture(contactModelData: ContactModelData): Pair<BlobDataProvider, DeltaImage>? {
+        return if (fileService.hasContactDefinedProfilePicture(contactModelData.identity)) {
+            createJpegBlobAssets { fileService.getContactDefinedProfilePicture(contactModelData.identity) }
         } else {
             null
         }
     }
 
-    private fun collectUserDefinedProfilePicture(contactModel: ContactModel): Pair<BlobDataProvider, DeltaImage>? {
-        return if (fileService.hasUserDefinedProfilePicture(contactModel.identity)) {
-            createJpegBlobAssets { fileService.getUserDefinedProfilePicture(contactModel.identity) }
+    private fun collectUserDefinedProfilePicture(contactModelData: ContactModelData): Pair<BlobDataProvider, DeltaImage>? {
+        return if (fileService.hasUserDefinedProfilePicture(contactModelData.identity)) {
+            createJpegBlobAssets { fileService.getUserDefinedProfilePicture(contactModelData.identity) }
         } else {
             null
         }
@@ -675,12 +661,53 @@ class DeviceLinkingDataCollector(
         return blobDataProvider to picture
     }
 
-    private fun mapVerificationLevel(contactModel: ContactModel): VerificationLevel {
-        return when (contactModel.verificationLevel) {
+    private fun mapVerificationLevel(contactModelData: ContactModelData): VerificationLevel {
+        return when (contactModelData.verificationLevel) {
             ch.threema.domain.models.VerificationLevel.UNVERIFIED -> VerificationLevel.UNVERIFIED
             ch.threema.domain.models.VerificationLevel.SERVER_VERIFIED -> VerificationLevel.SERVER_VERIFIED
             ch.threema.domain.models.VerificationLevel.FULLY_VERIFIED -> VerificationLevel.FULLY_VERIFIED
         }
+    }
+
+    private fun mapWorkVerificationLevel(contactModelData: ContactModelData): Contact.WorkVerificationLevel {
+        return when (contactModelData.workVerificationLevel) {
+            WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED -> Contact.WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
+            WorkVerificationLevel.NONE -> Contact.WorkVerificationLevel.NONE
+        }
+    }
+
+    private fun mapIdentityState(contactModelData: ContactModelData): Contact.IdentityType {
+        return when (contactModelData.identityType) {
+            IdentityType.NORMAL -> Contact.IdentityType.REGULAR
+            IdentityType.WORK -> Contact.IdentityType.WORK
+            else -> Contact.IdentityType.UNRECOGNIZED
+        }
+    }
+
+    private fun mapAcquaintanceLevel(contactModelData: ContactModelData): Contact.AcquaintanceLevel {
+        return when (contactModelData.acquaintanceLevel) {
+            AcquaintanceLevel.GROUP -> Contact.AcquaintanceLevel.GROUP_OR_DELETED
+            AcquaintanceLevel.DIRECT -> Contact.AcquaintanceLevel.DIRECT
+        }
+    }
+
+    private fun mapActivityState(contactModelData: ContactModelData): Contact.ActivityState {
+        return when (contactModelData.activityState) {
+            IdentityState.ACTIVE -> Contact.ActivityState.ACTIVE
+            IdentityState.INACTIVE -> Contact.ActivityState.INACTIVE
+            IdentityState.INVALID -> Contact.ActivityState.INVALID
+        }
+    }
+
+    private fun getAndValidateData(contactModel: ContactModel): ContactModelData? {
+        val contactModelData = contactModel.data.value ?: return null
+
+        if (contactModelData.publicKey.size != NaCl.PUBLICKEYBYTES) {
+            logger.error("Public key of contact {} has an invalid length: {}", contactModelData.identity, contactModelData.publicKey.size)
+            throw DeviceLinkingInvalidContact(contactModel.identity)
+        }
+
+        return contactModelData
     }
 
     private fun collectGroups(conversationsStats: Map<String, ConversationStats>): List<Pair<List<BlobDataProvider>, AugmentedGroupProvider>> {

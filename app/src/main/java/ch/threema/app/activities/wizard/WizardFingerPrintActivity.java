@@ -38,7 +38,10 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.licensing.StoreLicenseCheck;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.NewWizardFingerPrintView;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
@@ -46,7 +49,9 @@ import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
-public class WizardFingerPrintActivity extends WizardBackgroundActivity implements WizardDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
+public class WizardFingerPrintActivity extends WizardBackgroundActivity
+    implements WizardDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
+
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFingerPrintActivity");
 
     public static final int PROGRESS_MAX = 100;
@@ -62,13 +67,18 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
         logScreenVisibility(this, logger);
         setContentView(R.layout.activity_new_fingerprint);
 
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.new_fingerprint_content),
+            InsetSides.vertical(),
+            SpacingValues.all(R.dimen.grid_unit_x2)
+        );
+
         swipeProgress = findViewById(R.id.wizard1_swipe_progress);
         swipeProgress.setMax(PROGRESS_MAX);
         swipeProgress.setProgress(0);
 
         fingerView = findViewById(R.id.finger_overlay);
-        ImageView infoView = findViewById(R.id.wizard_icon_info);
-        infoView.setOnClickListener(v -> {
+        findViewById(R.id.wizard_icon_info).setOnClickListener(v -> {
             WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_fingerprint, R.string.ok);
             wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_FINGERPRINT_INFO);
         });

@@ -26,6 +26,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
+
 public class LockableScrollView extends ScrollView {
 
     private boolean enableScrolling = true;
@@ -51,17 +53,15 @@ public class LockableScrollView extends ScrollView {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                // if we can scroll pass the event to the superclass
-                if (this.enableScrolling) {
-                    return super.onTouchEvent(ev);
-                }
-                return this.enableScrolling;
-            default:
+    public boolean onTouchEvent(@NonNull MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            // if we can scroll pass the event to the superclass
+            if (this.enableScrolling) {
                 return super.onTouchEvent(ev);
+            }
+            return this.enableScrolling;
         }
+        return super.onTouchEvent(ev);
     }
 
     @Override
@@ -72,5 +72,4 @@ public class LockableScrollView extends ScrollView {
             return super.onInterceptTouchEvent(ev);
         }
     }
-
 }

@@ -183,8 +183,6 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         default void onNo(String tag, Object data) {
         }
 
-        ;
-
         default void onNeutral(String tag, Object data) {
             // optional interface
         }
@@ -249,6 +247,7 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         final String tag = this.getTag();
 
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+
         if (TestUtil.isEmptyOrNull(titleString)) {
             if (title != 0) {
                 builder.setTitle(title);

@@ -34,6 +34,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -45,7 +46,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
@@ -176,36 +177,36 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
                 String sender = "", date = "", count = "";
                 Bitmap avatar = null;
                 Bundle extras = new Bundle();
-                String uniqueId = conversationModel.getReceiver().getUniqueIdString();
+                String uniqueId = conversationModel.messageReceiver.getUniqueIdString();
 
                 if (!this.lockAppService.isLocked() && notificationPreferenceService.isShowMessagePreview()) {
-                    sender = conversationModel.getReceiver().getDisplayName();
+                    sender = conversationModel.messageReceiver.getDisplayName();
 
                     if (conversationModel.isContactConversation()) {
                         avatar = contactService.getAvatar(conversationModel.getContact(), false);
-                        extras.putString(ThreemaApplication.INTENT_DATA_CONTACT, conversationModel.getContact().getIdentity());
+                        extras.putString(AppConstants.INTENT_DATA_CONTACT, conversationModel.getContact().getIdentity());
                     } else if (conversationModel.isGroupConversation()) {
                         avatar = groupService.getAvatar(conversationModel.getGroup(), false);
-                        extras.putInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
+                        extras.putInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
                     } else if (conversationModel.isDistributionListConversation()) {
                         avatar = distributionListService.getAvatar(conversationModel.getDistributionList(), false);
-                        extras.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, conversationModel.getDistributionList().getId());
+                        extras.putLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, conversationModel.getDistributionList().getId());
                     }
 
                     count = Long.toString(conversationModel.getUnreadCount());
 
                     if (conversationCategoryService.isPrivateChat(uniqueId)) {
                         message = context.getString(R.string.private_chat_subject);
-                    } else if (conversationModel.getLatestMessage() != null) {
-                        AbstractMessageModel messageModel = conversationModel.getLatestMessage();
+                    } else if (conversationModel.latestMessage != null) {
+                        AbstractMessageModel messageModel = conversationModel.latestMessage;
                         message = messageService.getMessageString(messageModel, 200).getMessage();
-                        date = MessageUtil.getDisplayDate(context, conversationModel.getLatestMessage(), false);
+                        date = MessageUtil.getDisplayDate(context, conversationModel.latestMessage, false);
                     }
                 } else {
                     sender = context.getString(R.string.new_unprocessed_messages);
                     message = context.getString(R.string.new_unprocessed_messages_description);
-                    if (conversationModel.getLatestMessage() != null) {
-                        date = MessageUtil.getDisplayDate(context, conversationModel.getLatestMessage(), false);
+                    if (conversationModel.latestMessage != null) {
+                        date = MessageUtil.getDisplayDate(context, conversationModel.latestMessage, false);
                     }
                 }
 

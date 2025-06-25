@@ -25,7 +25,7 @@ import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
-import ch.threema.app.activities.HomeActivity
+import ch.threema.app.home.HomeActivity
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage

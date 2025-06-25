@@ -1,18 +1,12 @@
+//! UniFFI bindings.
 use std::sync::Arc;
 
-use logging::{init_logging, LogDispatcher, LogLevel};
+use logging::{LogDispatcher, LogLevel, init_logging};
 
-/// Logging utility to forward logging.
-pub mod logging;
-
-/// High-level crypto bindings.
 pub mod crypto;
-
-/// Bindings for the _Connection Rendezvous Protocol_.
 pub mod d2d_rendezvous;
-
-/// Bindings for the Threema ID backup.
 pub mod id_backup;
+pub mod logging;
 
 /// Used for (foreign) functions that are considered infallible. In case the foreign function fails,
 /// this error will be propagated back.

@@ -21,14 +21,13 @@
 
 package ch.threema.app.activities;
 
-import static ch.threema.app.ThreemaApplication.getMessageDraft;
 import static ch.threema.app.adapters.SendMediaPreviewAdapter.VIEW_TYPE_NORMAL;
-import static ch.threema.app.services.PreferenceService.ImageScale_SEND_AS_FILE;
-import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
-import static ch.threema.app.services.PreferenceService.VideoSize_MEDIUM;
-import static ch.threema.app.services.PreferenceService.VideoSize_ORIGINAL;
-import static ch.threema.app.services.PreferenceService.VideoSize_SEND_AS_FILE;
-import static ch.threema.app.services.PreferenceService.VideoSize_SMALL;
+import static ch.threema.app.preference.service.PreferenceService.ImageScale_SEND_AS_FILE;
+import static ch.threema.app.preference.service.PreferenceService.VideoSize_DEFAULT;
+import static ch.threema.app.preference.service.PreferenceService.VideoSize_MEDIUM;
+import static ch.threema.app.preference.service.PreferenceService.VideoSize_ORIGINAL;
+import static ch.threema.app.preference.service.PreferenceService.VideoSize_SEND_AS_FILE;
+import static ch.threema.app.preference.service.PreferenceService.VideoSize_SMALL;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
@@ -40,7 +39,6 @@ import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_PREVIEW_ADAPTER;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.Manifest;
-import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -58,7 +56,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,7 +63,6 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -80,8 +76,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -99,6 +98,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.SendMediaAdapter;
@@ -107,22 +107,29 @@ import ch.threema.app.camera.CameraActivity;
 import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.dialogs.CallbackTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
+import ch.threema.app.drafts.DraftManager;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiPicker;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.mediaattacher.MediaFilterQuery;
 import ch.threema.app.mediaattacher.MediaSelectionActivity;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.DebouncedOnMenuItemClickListener;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.app.ui.RootViewDeferringInsetsCallback;
 import ch.threema.app.ui.SendButton;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.ui.TranslateDeferringInsetsAnimationCallback;
+import ch.threema.app.ui.ViewExtensionsKt;
+import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -177,12 +184,14 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
     private ImageButton cameraButton;
     private String cameraFilePath, videoFilePath;
     private boolean pickFromCamera, hasChanges = false;
-    private View backgroundLayout;
+    private LinearLayout foregroundContainer;
     private boolean useExternalCamera;
     private MenuItem settingsItem, editFilenameItem;
     private MediaFilterQuery lastMediaFilter;
     private TextView itemCountText;
-    private FrameLayout bottomPanel;
+
+    private RootViewDeferringInsetsCallback rootInsetsDeferringCallback = null;
+    private TranslateDeferringInsetsAnimationCallback keyboardAnimationInsetsCallback = null;
 
     final ItemTouchHelper.SimpleCallback dragCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, 0) {
         @Override
@@ -213,7 +222,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        backgroundLayout = null;
+        foregroundContainer = null;
 
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
@@ -225,21 +234,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             return false;
         }
 
-        if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.activity_parent).getRootView(), (v, insets) -> {
-
-                logger.debug("system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
-                logger.debug("stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
-
-                if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
-                    onSoftKeyboardClosed();
-                } else {
-                    onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
-                }
-                return insets;
-            });
-            addOnSoftKeyboardChangedListener(this);
-        }
+        this.foregroundContainer = findViewById(R.id.foreground_container);
+        this.viewPager = findViewById(R.id.view_pager);
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) {
@@ -262,7 +258,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         this.activityParentLayout = findViewById(R.id.activity_parent);
 
         Intent intent = getIntent();
-        this.pickFromCamera = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, false);
+        this.pickFromCamera = intent.getBooleanExtra(AppConstants.INTENT_DATA_PICK_FROM_CAMERA, false);
         this.useExternalCamera = intent.getBooleanExtra(EXTRA_USE_EXTERNAL_CAMERA, false);
         this.messageReceivers = IntentDataUtil.getMessageReceiversFromIntent(intent);
         // check if we previously filtered media in MediaAttachActivity to reuse the filter when adding additional media items
@@ -308,7 +304,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
         this.mediaAdapterManager = new MediaAdapterManager(this);
 
-        this.viewPager = findViewById(R.id.view_pager);
         this.sendMediaAdapter = new SendMediaAdapter(getSupportFragmentManager(), getLifecycle(), mediaAdapterManager, this.viewPager);
 
         this.sendMediaPreviewAdapter = new SendMediaPreviewAdapter(
@@ -327,22 +322,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         }
 
         itemCountText = findViewById(R.id.item_count);
-        bottomPanel = findViewById(R.id.bottom_panel);
-        bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);
-        bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.APPEARING);
-        bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.DISAPPEARING);
-        bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
-        bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_APPEARING);
 
         this.captionEditText = findViewById(R.id.caption_edittext);
-        this.captionEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+        this.captionEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ThreemaApplication.activityUserInteract(SendMediaActivity.this);
+                ActivityService.activityUserInteract(SendMediaActivity.this);
             }
 
             @Override
@@ -353,13 +338,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                         currentItem.setCaption(s.toString());
                     }
                 }
-            }
-        });
-        this.captionEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                bottomPanel.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-            } else {
-                bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);
             }
         });
 
@@ -383,7 +361,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                     }
                     return insets;
                 });
-            } catch (FileSystemNotPresentException | MasterKeyLockedException e) {
+            } catch (MasterKeyLockedException e) {
                 logger.error("Could not show mention popup", e);
             }
         }
@@ -418,7 +396,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             emojiButton.setOnClickListener(v -> showEmojiPicker());
 
             this.emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
-            this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService(), false);
+            this.emojiPicker.init(this, ThreemaApplication.requireServiceManager().getEmojiService(), true);
             emojiButton.attach(this.emojiPicker);
             this.emojiPicker.setEmojiKeyListener(new EmojiPicker.EmojiKeyListener() {
                 @Override
@@ -461,18 +439,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             this.captionEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.no_emoji_button_padding_left), this.captionEditText.getPaddingTop(), this.captionEditText.getPaddingRight(), this.captionEditText.getPaddingBottom());
         }
 
-        String recipients = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
+        String recipients = getIntent().getStringExtra(AppConstants.INTENT_DATA_TEXT);
         if (!TestUtil.isEmptyOrNull(recipients)) {
             this.captionEditText.setHint(R.string.add_caption_hint);
-            this.captionEditText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
+            this.captionEditText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     if (s == null || s.length() == 0) {
@@ -495,15 +465,14 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                 AnimationUtil.zoomOutAnimate(v);
                 if (emojiPicker != null && emojiPicker.isShown()) {
                     emojiPicker.hide();
+                    addAllInsetsToBottomControlsContainer();
                 }
                 sendMedia();
             }
         });
         sendButton.setEnabled(true);
 
-        this.backgroundLayout = findViewById(R.id.background_layout);
-
-        final ViewTreeObserver observer = backgroundLayout.getViewTreeObserver();
+        final ViewTreeObserver observer = foregroundContainer.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             private boolean appliedSavedInstancePosition = false;
 
@@ -513,12 +482,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                     mediaAdapterManager.changePositionWhenItemsLoaded(savedInstanceState.getInt(STATE_BIGIMAGE_POS, 0));
                     appliedSavedInstancePosition = true;
                 }
-                backgroundLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                initUi(backgroundLayout, initialItems);
+                foregroundContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                initUi(foregroundContainer, initialItems);
                 recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                     @Override
                     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        int bottomHeight = SendMediaActivity.this.findViewById(R.id.bottom_panel).getHeight() + recyclerView.getHeight();
+                        int bottomHeight = SendMediaActivity.this.findViewById(R.id.caption_input_container).getHeight() + recyclerView.getHeight();
                         sendMediaAdapter.setBottomElemHeight(bottomHeight);
                         recyclerView.removeOnLayoutChangeListener(this);
                     }
@@ -526,46 +495,122 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             }
         });
 
+        if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
+            addOnSoftKeyboardChangedListener(this);
+        }
+
         return true;
     }
 
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+
+        // Prevent the actual media content from drawing behind system bars or display cutouts
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            viewPager,
+            new InsetSides(false, true, true, true)
+        );
+
+        // Preventing the the 2 chips from drawing behind any system bars or display cutouts
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.bottom_chips_container),
+            InsetSides.horizontal()
+        );
+
+        final String tag = "send-media-activity";
+
+        // Set inset listener that will effectively apply the final view paddings for the views affected by the keyboard
+        rootInsetsDeferringCallback = new RootViewDeferringInsetsCallback(
+            tag,
+            emojiPicker,
+            this,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        final LinearLayout bottomControlsContainer = findViewById(R.id.bottom_controls_container);
+        ViewCompat.setWindowInsetsAnimationCallback(bottomControlsContainer, rootInsetsDeferringCallback);
+        ViewCompat.setOnApplyWindowInsetsListener(bottomControlsContainer, rootInsetsDeferringCallback);
+
+        // Set inset animation listener to temporarily push up/down the foreground control views while an IME animation is ongoing
+        keyboardAnimationInsetsCallback = new TranslateDeferringInsetsAnimationCallback(
+            tag,
+            foregroundContainer,
+            emojiPicker,
+            WindowInsetsCompat.Type.systemBars(),
+            WindowInsetsCompat.Type.ime(),
+            WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+        );
+        ViewCompat.setWindowInsetsAnimationCallback(foregroundContainer, keyboardAnimationInsetsCallback);
+    }
+
+    /**
+     * If the emoji picker is shown, we have to make sure that no vertical padding insets are applied.
+     * The emoji picker has to handle the vertical insets internally.
+     * <p>
+     * This will remove any vertical padding of {@code bottom_controls_container} while still respecting the horizontal insets.
+     */
+    private void removeVerticalInsetsFromBottomControlsContainer() {
+        final Insets insets = ActivityExtensionsKt.getCurrentInsets(
+            this,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        final LinearLayout bottomControlsContainer = findViewById(R.id.bottom_controls_container);
+        bottomControlsContainer.setPadding(insets.left, 0, insets.right, 0);
+    }
+
+    private void addAllInsetsToBottomControlsContainer() {
+        final Insets insets = ActivityExtensionsKt.getCurrentInsets(
+            this,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        final LinearLayout bottomControlsContainer = findViewById(R.id.bottom_controls_container);
+        bottomControlsContainer.setPadding(insets.left, 0, insets.right, insets.bottom);
+    }
+
     private void closeEmojiPicker() {
-        if (emojiPicker != null) {
-            if (ConfigUtils.isLandscape(this) &&
-                !ConfigUtils.isTabletLayout()) {
-                emojiPicker.hide();
-            } else {
-                runOnSoftKeyboardOpen(() -> emojiPicker.hide());
-            }
+        if (emojiPicker != null && emojiPicker.isShown()) {
+            emojiPicker.hide();
+            addAllInsetsToBottomControlsContainer();
         }
     }
 
     private void showEmojiPicker() {
-        if (isSoftKeyboardOpen()) {
+
+        if (emojiPicker == null) {
+            return;
+        }
+
+        if (isSoftKeyboardOpen() && !emojiPicker.isShown()) {
+            if (rootInsetsDeferringCallback != null && keyboardAnimationInsetsCallback != null) {
+                rootInsetsDeferringCallback.openingEmojiPicker = true;
+                keyboardAnimationInsetsCallback.skipNextAnimation = true;
+            }
+
             runOnSoftKeyboardClose(() -> {
                 if (emojiPicker != null) {
                     emojiPicker.show(loadStoredSoftKeyboardHeight());
+                    removeVerticalInsetsFromBottomControlsContainer();
                 }
             });
             captionEditText.post(() -> EditTextUtil.hideSoftKeyboard(captionEditText));
-        } else {
-            if (emojiPicker != null) {
-                if (emojiPicker.isShown()) {
-                    if (ConfigUtils.isLandscape(this) &&
-                        !ConfigUtils.isTabletLayout()) {
-                        emojiPicker.hide();
-                    } else {
-                        openSoftKeyboard(emojiPicker, captionEditText);
-                        runOnSoftKeyboardOpen(() -> emojiPicker.hide());
-                    }
-                } else {
-                    emojiPicker.show(loadStoredSoftKeyboardHeight());
+        } else if (emojiPicker.isShown()) {
+            if (ConfigUtils.isLandscape(this) && !ConfigUtils.isTabletLayout()) {
+                emojiPicker.hide();
+                addAllInsetsToBottomControlsContainer();
+            } else {
+                if (rootInsetsDeferringCallback != null && keyboardAnimationInsetsCallback != null) {
+                    rootInsetsDeferringCallback.openingEmojiPicker = true;
+                    keyboardAnimationInsetsCallback.skipNextAnimation = true;
                 }
+                openSoftKeyboard(captionEditText);
             }
+        } else {
+            emojiPicker.show(loadStoredSoftKeyboardHeight());
+            removeVerticalInsetsFromBottomControlsContainer();
         }
     }
 
-    private void initUi(View backgroundLayout, List<MediaItem> mediaItems) {
+    private void initUi(LinearLayout foregroundContainer, List<MediaItem> mediaItems) {
         this.recyclerView.setAdapter(this.sendMediaPreviewAdapter);
         this.viewPager.setAdapter(this.sendMediaAdapter);
 
@@ -575,11 +620,11 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         }
 
         if (this.pickFromCamera) {
-            if (this.backgroundLayout != null) {
-                this.backgroundLayout.postDelayed(() -> backgroundLayout.setVisibility(View.VISIBLE), 500);
+            if (this.foregroundContainer != null) {
+                this.foregroundContainer.postDelayed(() -> foregroundContainer.setVisibility(View.VISIBLE), 500);
             }
         } else {
-            this.backgroundLayout.setVisibility(View.VISIBLE);
+            this.foregroundContainer.setVisibility(View.VISIBLE);
         }
     }
 
@@ -855,7 +900,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
     @SuppressLint("StaticFieldLeak")
     private void addItemsByMediaItem(List<MediaItem> incomingMediaItems, boolean prepend) {
-        if (incomingMediaItems.size() > 0) {
+        if (!incomingMediaItems.isEmpty()) {
             new AsyncTask<Void, Void, List<MediaItem>>() {
                 @Override
                 protected List<MediaItem> doInBackground(Void... voids) {
@@ -997,13 +1042,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         messageService.sendMediaAsync(mediaAdapterManager.getItems(), messageReceivers, null);
 
         if (messageReceivers.size() == 1) {
-            String messageDraft = getMessageDraft(messageReceivers.get(0).getUniqueIdString());
+            String messageDraft = DraftManager.getMessageDraft(messageReceivers.get(0).getUniqueIdString());
             if (!TestUtil.isEmptyOrNull(messageDraft)) {
                 for (MediaItem mediaItem : mediaAdapterManager.getItems()) {
                     try {
                         double similarity = new JaroWinklerSimilarity().apply(mediaItem.getCaption(), messageDraft);
                         if (similarity > 0.8D) {
-                            ThreemaApplication.putMessageDraft(messageReceivers.get(0).getUniqueIdString(), null, null);
+                            DraftManager.putMessageDraft(messageReceivers.get(0).getUniqueIdString(), null, null);
                             break;
                         }
                     } catch (IllegalArgumentException ignore) {
@@ -1069,8 +1114,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             Intent intent = new Intent(this, CropImageActivity.class);
             intent.setData(imageUri);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
-            intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, currentItem.getRotation());
-            intent.putExtra(ThreemaApplication.EXTRA_FLIP, currentItem.getFlip());
+            intent.putExtra(AppConstants.EXTRA_ORIENTATION, currentItem.getRotation());
+            intent.putExtra(AppConstants.EXTRA_FLIP, currentItem.getFlip());
             intent.putExtra(CropImageActivity.FORCE_DARK_THEME, true);
 
             startActivityForResult(intent, CropImageActivity.REQUEST_CROP);
@@ -1190,6 +1235,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
     protected void handleOnBackPressed() {
         if (emojiPicker != null && emojiPicker.isShown()) {
             emojiPicker.hide();
+            addAllInsetsToBottomControlsContainer();
         } else if (captionEditText.isMentionPopupShowing()) {
             captionEditText.dismissMentionPopup();
         } else {
@@ -1246,10 +1292,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
     @Override
     public void onYes(String tag, Object data) {
         finish();
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
     }
 
     @Override
@@ -1322,4 +1364,19 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Normally, the activity's state is stored and recreated when the activity is recreated.
+        // However, in the event of a crash, we might lose this state and with that we lose user data.
+        // To mitigate this, we store the caption of the first media item as a draft, so that we can at least restore that.
+        // We only do this if we can uniquely identify the chat that the draft should be stored in.
+        if (!isFinishing()) {
+            var mediaItems = mediaAdapterManager.getItems();
+            if (messageReceivers.size() == 1 && !mediaItems.isEmpty()) {
+                DraftManager.putMessageDraft(messageReceivers.get(0).getUniqueIdString(), mediaItems.get(0).getCaption(), null);
+            }
+        }
+    }
 }

@@ -24,7 +24,7 @@ package ch.threema.app.activities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.TimeProvider
+import ch.threema.common.TimeProvider
 import java.time.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes

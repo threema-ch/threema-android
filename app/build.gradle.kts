@@ -1,3 +1,24 @@
+/*  _____ _
+ * |_   _| |_  _ _ ___ ___ _ __  __ _
+ *   | | | ' \| '_/ -_) -_) '  \/ _` |_
+ *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
+ *
+ * Threema for Android
+ * Copyright (c) 2014-2025 Threema GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import config.PublicKeys
 import config.setProductNames
@@ -26,7 +47,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.0.1"
+val appVersion = "6.1.0"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -35,7 +56,7 @@ val appVersion = "6.0.1"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1074
+val defaultVersionCode = 1082
 
 /**
  * Map with keystore paths (if found).
@@ -58,7 +79,7 @@ android {
     defaultConfig {
         // https://developer.android.com/training/testing/espresso/setup#analytics
         with(testInstrumentationRunnerArguments) {
-            put("notAnnotation", "ch.threema.app.TestFastlaneOnly,ch.threema.app.DangerousTest")
+            put("notAnnotation", "ch.threema.app.DangerousTest")
             put("disableAnalytics", "true")
         }
         minSdk = 21
@@ -111,8 +132,8 @@ android {
         stringBuildConfigField("AVATAR_FETCH_URL", "https://avatar.threema.ch/")
         stringBuildConfigField("SAFE_SERVER_URL", "https://safe-{backupIdPrefix8}.threema.ch/")
         stringBuildConfigField("WEB_SERVER_URL", "https://web.threema.ch/")
-        stringBuildConfigField("APP_RATING_URL", "https://threema.ch/app-rating/android/{rating}")
-        stringBuildConfigField("MAP_STYLES_URL", "https://map.threema.ch/styles/streets/style.json")
+        stringBuildConfigField("APP_RATING_URL", "https://threema.com/app-rating/android/{rating}")
+        stringBuildConfigField("MAP_STYLES_URL", "https://map.threema.ch/styles/threema/style.json")
         stringBuildConfigField("MAP_POI_AROUND_URL", "https://poi.threema.ch/around/{latitude}/{longitude}/{radius}/")
         stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.threema.ch/names/{latitude}/{longitude}/{query}/")
         byteArrayBuildConfigField("THREEMA_PUSH_PUBLIC_KEY", PublicKeys.threemaPush)
@@ -124,6 +145,7 @@ android {
         booleanBuildConfigField("MD_SYNC_DISTRIBUTION_LISTS", false)
         booleanBuildConfigField("EDIT_MESSAGES_ENABLED", true)
         booleanBuildConfigField("DELETE_MESSAGES_ENABLED", true)
+        booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", false)
 
         // config fields for action URLs / deep links
         stringBuildConfigField("uriScheme", "threema")
@@ -221,7 +243,7 @@ android {
             stringBuildConfigField("MEDIA_PATH", "ThreemaWork")
             stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.threema.ch/")
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.threema.ch/")
-            stringBuildConfigField("APP_RATING_URL", "https://threema.ch/app-rating/android-work/{rating}")
+            stringBuildConfigField("APP_RATING_URL", "https://threema.com/app-rating/android-work/{rating}")
             stringBuildConfigField("LOG_TAG", "3mawrk")
             stringBuildConfigField("DEFAULT_APP_THEME", "2")
 
@@ -251,7 +273,10 @@ android {
             stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
             stringBuildConfigField("AVATAR_FETCH_URL", "https://avatar.test.threema.ch/")
-            stringBuildConfigField("APP_RATING_URL", "https://test.threema.ch/app-rating/android/{rating}")
+            stringBuildConfigField("APP_RATING_URL", "https://test.threema.com/app-rating/android/{rating}")
+            stringBuildConfigField("MAP_STYLES_URL", "https://map.test.threema.ch/styles/threema/style.json")
+            stringBuildConfigField("MAP_POI_AROUND_URL", "https://poi.test.threema.ch/around/{latitude}/{longitude}/{radius}/")
+            stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.test.threema.ch/names/{latitude}/{longitude}/{query}/")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
         }
         create("sandbox_work") {
@@ -278,7 +303,10 @@ android {
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
             stringBuildConfigField("AVATAR_FETCH_URL", "https://avatar.test.threema.ch/")
-            stringBuildConfigField("APP_RATING_URL", "https://test.threema.ch/app-rating/android-work/{rating}")
+            stringBuildConfigField("APP_RATING_URL", "https://test.threema.com/app-rating/android-work/{rating}")
+            stringBuildConfigField("MAP_STYLES_URL", "https://map.test.threema.ch/styles/threema/style.json")
+            stringBuildConfigField("MAP_POI_AROUND_URL", "https://poi.test.threema.ch/around/{latitude}/{longitude}/{radius}/")
+            stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.test.threema.ch/names/{latitude}/{longitude}/{query}/")
             stringBuildConfigField("LOG_TAG", "3mawrk")
             stringBuildConfigField("DEFAULT_APP_THEME", "2")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
@@ -360,7 +388,10 @@ android {
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
             stringBuildConfigField("AVATAR_FETCH_URL", "https://avatar.test.threema.ch/")
-            stringBuildConfigField("APP_RATING_URL", "https://test.threema.ch/app-rating/android-work/{rating}")
+            stringBuildConfigField("APP_RATING_URL", "https://test.threema.com/app-rating/android-work/{rating}")
+            stringBuildConfigField("MAP_STYLES_URL", "https://map.test.threema.ch/styles/threema/style.json")
+            stringBuildConfigField("MAP_POI_AROUND_URL", "https://poi.test.threema.ch/around/{latitude}/{longitude}/{radius}/")
+            stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.test.threema.ch/names/{latitude}/{longitude}/{query}/")
             stringBuildConfigField("LOG_TAG", "3mablue")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
 
@@ -390,7 +421,7 @@ android {
             stringBuildConfigField("MEDIA_PATH", "ThreemaWork")
             stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.threema.ch/")
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.threema.ch/")
-            stringBuildConfigField("APP_RATING_URL", "https://threema.ch/app-rating/android-work/{rating}")
+            stringBuildConfigField("APP_RATING_URL", "https://threema.com/app-rating/android-work/{rating}")
             stringBuildConfigField("LOG_TAG", "3mawrk")
             stringBuildConfigField("DEFAULT_APP_THEME", "2")
 
@@ -602,6 +633,8 @@ android {
                 setOf(
                     "META-INF/DEPENDENCIES.txt",
                     "META-INF/LICENSE.txt",
+                    "META-INF/LICENSE.md",
+                    "META-INF/LICENSE-notice.md",
                     "META-INF/NOTICE.txt",
                     "META-INF/NOTICE",
                     "META-INF/LICENSE",
@@ -725,6 +758,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugarJdkLibs)
 
     implementation(project(":domain"))
+    implementation(project(":common"))
 
     implementation(libs.sqlcipher.android)
 
@@ -775,11 +809,13 @@ dependencies {
     implementation(libs.androidx.sharetarget)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.window)
+    implementation(libs.androidx.splashscreen)
     ksp(libs.androidx.room.compiler)
 
     // Jetpack Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.materialIconsExtended)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -841,6 +877,7 @@ dependencies {
     testImplementation(libs.mockito.powermock.junit4)
 
     testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockkAndroid)
 
     // add JSON support to tests without mocking
     testImplementation(libs.json)
@@ -983,6 +1020,11 @@ sonarqube {
 
 androidStem {
     includeLocalizedOnlyTemplates = true
+}
+
+tasks.withType<Test> {
+    // Necessary to load the dynamic libthreema library in unit tests
+    systemProperty("jna.library.path", "${project.projectDir}/../domain/libthreema/target/release")
 }
 
 // Set up Gradle tasks to fetch screenshots on UI test failures

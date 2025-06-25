@@ -96,9 +96,18 @@ public class SimpleStringAlertDialog extends ThreemaDialogFragment {
 
     @Override
     // generally allow state loss for simple string alerts
-    public void show(FragmentManager manager, String tag) {
+    public void show(@Nullable FragmentManager manager, String tag) {
+        if (manager != null) {
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.add(this, tag);
+            ft.commitAllowingStateLoss();
+        }
+    }
+
+    // generally allow state loss for simple string alerts
+    public void show(@NonNull FragmentManager manager) {
         FragmentTransaction ft = manager.beginTransaction();
-        ft.add(this, tag);
+        ft.add(this, null);
         ft.commitAllowingStateLoss();
     }
 

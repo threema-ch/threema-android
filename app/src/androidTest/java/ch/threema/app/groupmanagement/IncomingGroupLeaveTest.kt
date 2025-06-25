@@ -25,7 +25,7 @@ import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
-import ch.threema.app.activities.HomeActivity
+import ch.threema.app.home.HomeActivity
 import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
@@ -37,9 +37,9 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -119,7 +119,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
         assertUnsuccessfulLeave(groupA, contactB)
     }
 
-    @After
+    @AfterTest
     fun removeAllGroupListeners() {
         GroupLeaveTracker.stopAllListeners()
     }

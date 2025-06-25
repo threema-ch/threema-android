@@ -30,25 +30,14 @@ import ch.threema.protobuf.d2d.MdD2D
 private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupSyncRequestTask")
 
 internal class ReflectedOutgoingGroupSyncRequestTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_SYNC_REQUEST,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupSyncRequestMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupSyncRequestMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.GROUP_SYNC_REQUEST,
+    serviceManager = serviceManager,
 ) {
-    override val shouldBumpLastUpdate: Boolean
-        get() = groupSyncRequestMessage.bumpLastUpdate()
-
-    override val storeNonces: Boolean
-        get() = groupSyncRequestMessage.protectAgainstReplay()
-
-    private val groupSyncRequestMessage: GroupSyncRequestMessage by lazy {
-        GroupSyncRequestMessage.fromReflected(
-            message,
-        )
-    }
-
     override fun processOutgoingMessage() {
         logger.info("Discarding reflected outgoing group sync request message")
     }

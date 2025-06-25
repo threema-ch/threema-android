@@ -48,4 +48,4 @@ Threema is not financed by advertising and does not collect user data.
 
 <strong>SUPPORT / CONTACT</strong>
 
-For questions or problems please consult our FAQs: <a href="https://threema.ch/en/faq">https://threema.ch/en/faq</a>
+For questions or problems please consult our FAQs: <a href="https://threema.com/en/faq">https://threema.com/en/faq</a>

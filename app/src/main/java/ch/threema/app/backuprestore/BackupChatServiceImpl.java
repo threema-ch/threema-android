@@ -78,7 +78,7 @@ public class BackupChatServiceImpl implements BackupChatService {
 
         isCanceled = false;
 
-        List<AbstractMessageModel> messages = messageService.getMessagesForReceiver(conversationModel.getReceiver());
+        List<AbstractMessageModel> messages = messageService.getMessagesForReceiver(conversationModel.messageReceiver);
         ListIterator<AbstractMessageModel> listIter = messages.listIterator(messages.size());
         while (listIter.hasPrevious()) {
             m = listIter.previous();

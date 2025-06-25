@@ -43,9 +43,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.BufferedSource
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("BlobLoader")
+private val logger = LoggingUtil.getThreemaLogger("BlobLoader")
 
 /**
  * Helper class that loads blobs (images, videos etc.) from the blob server given a blob ID. No

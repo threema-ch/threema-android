@@ -29,9 +29,8 @@ import ch.threema.base.utils.LoggingUtil
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("StreamUtil")
+private val logger = LoggingUtil.getThreemaLogger("StreamUtil")
 
 @Throws(FileNotFoundException::class)
 fun getFromUri(context: Context, uri: Uri?): InputStream? {

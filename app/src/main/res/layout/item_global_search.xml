@@ -1,93 +1,93 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019-2025 Threema GmbH
   ~ All rights reserved.
   -->
-
 <ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/listitem_globalsearch_height"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="@drawable/listitem_background_selector">
+    android:background="@drawable/listitem_background_selector"
+    android:orientation="vertical">
 
     <ch.threema.app.ui.AvatarView
         android:id="@+id/avatar_view"
         android:layout_width="@dimen/avatar_size_small"
         android:layout_height="@dimen/avatar_size_small"
-        android:layout_marginLeft="16dp"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
         android:clickable="false"
         android:importantForAccessibility="no"
-        android:layout_alignParentLeft="true" />
+        tools:background="@drawable/ic_profile" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/avatar_view"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp">
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@id/avatar_view">
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignWithParentIfMissing="true"
+            android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/thumbnail_view"
             android:ellipsize="end"
             android:singleLine="true"
             android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-            android:text="title" />
+            tools:text="Conversation Name" />
 
         <ch.threema.app.emojis.EmojiTextView
             android:id="@+id/snippet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_below="@id/name"
             android:layout_alignLeft="@id/name"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/thumbnail_view"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_below="@id/name"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+            tools:text="Message contents that were found by query" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
             android:layout_below="@id/snippet"
             android:layout_alignLeft="@+id/snippet"
-            android:layout_alignWithParentIfMissing="true"
             android:ellipsize="none"
             android:singleLine="true"
-            android:text="date"
-            android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
+            android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"
+            tools:text="Today" />
 
         <com.google.android.material.imageview.ShapeableImageView
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small"
             android:id="@+id/thumbnail_view"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
             android:layout_toLeftOf="@+id/next_view"
-            android:layout_centerVertical="true"
+            android:background="?attr/colorSecondaryContainer"
             android:clickable="false"
             android:contentDescription="@string/attach_picture"
             android:visibility="gone"
-            android:background="?attr/colorSecondaryContainer" />
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small" />
 
         <ImageView
             android:id="@+id/next_view"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginRight="-8dp"
-            android:layout_marginLeft="4dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="-8dp"
             android:clickable="false"
             android:importantForAccessibility="no"
             android:visibility="visible"

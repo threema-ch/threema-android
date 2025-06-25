@@ -51,7 +51,7 @@ import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.utils.ConfigUtils;

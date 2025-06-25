@@ -381,7 +381,7 @@ public class BackupServiceTest {
                 serviceManager.getExcludedSyncIdentitiesService(),
                 serviceManager.getDHSessionStore(),
                 serviceManager.getNotificationService(),
-                serviceManager.getDatabaseServiceNew()
+                serviceManager.getDatabaseService()
             )
         );
     }

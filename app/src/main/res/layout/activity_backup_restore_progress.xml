@@ -2,17 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:animateLayoutChanges="true"
+    android:padding="@dimen/grid_unit_x2"
     tools:context=".activities.BackupRestoreProgressActivity">
 
     <TextView
         android:id="@+id/backup_restore_info_title"
+        style="@style/Threema.TextAppearance.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Threema.TextAppearance.Title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,29 +27,29 @@
 
         <TextView
             android:id="@+id/backup_restore_info_summary"
+            style="@style/Threema.TextAppearance.BodyLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/backup_restore_in_progress"
             android:layout_marginTop="16dp"
-            style="@style/Threema.TextAppearance.BodyLarge" />
+            android:text="@string/backup_restore_in_progress" />
 
         <TextView
             android:id="@+id/duration_delimiter"
+            style="@style/Threema.TextAppearance.BodyLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=": "
             android:layout_marginTop="16dp"
+            android:text=": "
             android:visibility="invisible"
-            style="@style/Threema.TextAppearance.BodyLarge"
             tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/duration_text"
+            style="@style/Threema.TextAppearance.BodyLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:visibility="invisible"
-            style="@style/Threema.TextAppearance.BodyLarge" />
+            android:visibility="invisible" />
 
     </LinearLayout>
 
@@ -57,21 +58,21 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
         android:indeterminate="true"
         android:indeterminateBehavior="cycle"
-        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/backup_restore_summary" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/close_button"
+        style="@style/Threema.MaterialButton.Action"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="@string/close"
-        style="@style/Threema.MaterialButton.Action"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

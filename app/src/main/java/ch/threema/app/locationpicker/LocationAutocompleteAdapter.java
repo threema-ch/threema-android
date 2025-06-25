@@ -84,7 +84,7 @@ public class LocationAutocompleteAdapter extends EmptyRecyclerView.Adapter<Empty
 
     @Override
     public int getItemCount() {
-        if (places != null && places.size() > 0) {
+        if (places != null && !places.isEmpty()) {
             return places.size() + 1;
         } else {
             return 0;

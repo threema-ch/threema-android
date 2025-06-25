@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2021 Threema GmbH
+  ~ Copyright (c) 2025 Threema GmbH
   ~ All rights reserved.
   -->
 
@@ -33,13 +33,10 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ch.threema.app.ui.EmptyRecyclerView
-        android:id="@+id/recycler"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/conversation_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:background="?android:attr/colorBackground" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

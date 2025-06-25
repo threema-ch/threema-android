@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -45,6 +44,7 @@ import androidx.core.text.HtmlCompat;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
@@ -101,20 +101,10 @@ public class OutgoingGroupJoinRequestDialog extends ThreemaDialogFragment {
         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ProtocolDefines.GROUP_JOIN_MESSAGE_LEN)});
         editText.setHint(getString(R.string.group_request_hint));
 
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // don't bother
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // don't bother
-            }
-
+        editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(s.toString().trim().length() != 0);
+                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!s.toString().trim().isEmpty());
             }
         });
 

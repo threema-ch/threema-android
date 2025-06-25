@@ -41,6 +41,7 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class MarkupParser {
@@ -81,12 +82,12 @@ public class MarkupParser {
         TILDE
     }
 
-    private class Token {
+    public static class MarkupToken {
         TokenType kind;
         int start;
         int end;
 
-        private Token(TokenType kind, int start, int end) {
+        private MarkupToken(TokenType kind, int start, int end) {
             this.kind = kind;
             this.start = start;
             this.end = end;
@@ -173,9 +174,9 @@ public class MarkupParser {
         return urlStartPattern.matcher(TextUtils.substring(text, position, text.length())).matches();
     }
 
-    private int pushTextBufToken(int tokenLength, int i, ArrayList<Token> tokens) {
+    private int pushTextBufToken(int tokenLength, int i, ArrayList<MarkupToken> markupTokens) {
         if (tokenLength > 0) {
-            tokens.add(new Token(TokenType.TEXT, i - tokenLength, i));
+            markupTokens.add(new MarkupToken(TokenType.TEXT, i - tokenLength, i));
             tokenLength = 0;
         }
         return tokenLength;
@@ -184,10 +185,11 @@ public class MarkupParser {
     /**
      * This function accepts a string and returns a list of tokens.
      */
-    private ArrayList<Token> tokenize(CharSequence text) {
+    @NonNull
+    public ArrayList<MarkupToken> tokenize(@NonNull CharSequence text) {
         int tokenLength = 0;
         boolean matchingUrl = false;
-        ArrayList<Token> tokens = new ArrayList<>();
+        ArrayList<MarkupToken> markupTokens = new ArrayList<>();
 
         for (int i = 0; i < text.length(); i++) {
             char currentChar = text.charAt(i);
@@ -202,7 +204,7 @@ public class MarkupParser {
             if (matchingUrl) {
                 final boolean nextIsUrlBoundary = isUrlBoundary(text, i + 1);
                 if (nextIsUrlBoundary) {
-                    tokenLength = pushTextBufToken(tokenLength, i, tokens);
+                    tokenLength = pushTextBufToken(tokenLength, i, markupTokens);
                     matchingUrl = false;
                 }
                 tokenLength++;
@@ -211,26 +213,26 @@ public class MarkupParser {
                 final boolean nextIsBoundary = isBoundary(text, i + 1);
 
                 if (currentChar == MARKUP_CHAR_BOLD && (prevIsBoundary || nextIsBoundary)) {
-                    tokenLength = pushTextBufToken(tokenLength, i, tokens);
-                    tokens.add(new Token(TokenType.ASTERISK, i, i + 1));
+                    tokenLength = pushTextBufToken(tokenLength, i, markupTokens);
+                    markupTokens.add(new MarkupToken(TokenType.ASTERISK, i, i + 1));
                 } else if (currentChar == MARKUP_CHAR_ITALIC && (prevIsBoundary || nextIsBoundary)) {
-                    tokenLength = pushTextBufToken(tokenLength, i, tokens);
-                    tokens.add(new Token(TokenType.UNDERSCORE, i, i + 1));
+                    tokenLength = pushTextBufToken(tokenLength, i, markupTokens);
+                    markupTokens.add(new MarkupToken(TokenType.UNDERSCORE, i, i + 1));
                 } else if (currentChar == MARKUP_CHAR_STRIKETHRU && (prevIsBoundary || nextIsBoundary)) {
-                    tokenLength = pushTextBufToken(tokenLength, i, tokens);
-                    tokens.add(new Token(TokenType.TILDE, i, i + 1));
+                    tokenLength = pushTextBufToken(tokenLength, i, markupTokens);
+                    markupTokens.add(new MarkupToken(TokenType.TILDE, i, i + 1));
                 } else if (currentChar == '\n') {
-                    tokenLength = pushTextBufToken(tokenLength, i, tokens);
-                    tokens.add(new Token(TokenType.NEWLINE, i, i + 1));
+                    tokenLength = pushTextBufToken(tokenLength, i, markupTokens);
+                    markupTokens.add(new MarkupToken(TokenType.NEWLINE, i, i + 1));
                 } else {
                     tokenLength++;
                 }
             }
         }
 
-        pushTextBufToken(tokenLength - 1, text.length() - 1, tokens);
+        pushTextBufToken(tokenLength - 1, text.length() - 1, markupTokens);
 
-        return tokens;
+        return markupTokens;
     }
 
     private void applySpans(SpannableStringBuilder s, Stack<SpanItem> spanStack) {
@@ -251,7 +253,7 @@ public class MarkupParser {
             }
         }
 
-        if (deletables.size() > 0) {
+        if (!deletables.isEmpty()) {
             Collections.sort(deletables, Collections.reverseOrder());
             for (int deletable : deletables) {
                 s.delete(deletable, deletable + 1);
@@ -277,7 +279,7 @@ public class MarkupParser {
     }
 
     // Helper: Pop the stack, throw an exception if it's empty
-    private Token popStack(Stack<Token> stack) throws MarkupParserException {
+    private MarkupToken popStack(Stack<MarkupToken> stack) throws MarkupParserException {
         try {
             return stack.pop();
         } catch (EmptyStackException e) {
@@ -297,19 +299,19 @@ public class MarkupParser {
         }
     }
 
-    private void parse(ArrayList<Token> tokens, SpannableStringBuilder builder, Editable editable, @ColorInt int markerColor) throws MarkupParserException {
+    private void parse(ArrayList<MarkupToken> markupTokens, SpannableStringBuilder builder, Editable editable, @ColorInt int markerColor) throws MarkupParserException {
         // Process the tokens. Add them to a stack. When a token pair is complete
         // (e.g. the second asterisk is found), pop the stack until you find the
         // matching token and convert everything in between to formatted text.
-        Stack<Token> stack = new Stack<>();
+        Stack<MarkupToken> stack = new Stack<>();
         Stack<SpanItem> spanStack = new Stack<>();
         TokenPresenceMap tokenPresenceMap = new TokenPresenceMap();
 
-        for (Token token : tokens) {
-            switch (token.kind) {
+        for (MarkupToken markupToken : markupTokens) {
+            switch (markupToken.kind) {
                 // Keep text as-is
                 case TEXT:
-                    stack.push(token);
+                    stack.push(markupToken);
                     break;
 
                 // If a markup token is found, try to find a matching token.
@@ -317,37 +319,37 @@ public class MarkupParser {
                 case UNDERSCORE:
                 case TILDE:
                     // Optimization: Only search the stack if a token with this token type exists
-                    if (tokenPresenceMap.get(token.kind)) {
+                    if (tokenPresenceMap.get(markupToken.kind)) {
                         // Pop tokens from the stack. If a matching token was found, apply
                         // markup to the text parts in between those two tokens.
-                        Stack<Token> textParts = new Stack<>();
+                        Stack<MarkupToken> textParts = new Stack<>();
                         while (true) {
-                            Token stackTop = popStack(stack);
+                            MarkupToken stackTop = popStack(stack);
                             if (stackTop.kind == TokenType.TEXT) {
                                 textParts.push(stackTop);
-                            } else if (stackTop.kind == token.kind) {
+                            } else if (stackTop.kind == markupToken.kind) {
                                 int start, end;
-                                if (textParts.size() == 0) {
+                                if (textParts.isEmpty()) {
                                     // no text in between two markups
                                     start = end = stackTop.end;
                                 } else {
                                     start = textParts.get(textParts.size() - 1).start;
                                     end = textParts.get(0).end;
                                 }
-                                spanStack.push(new SpanItem(token.kind, start, end, stackTop.start, token.start));
-                                stack.push(new Token(TokenType.TEXT, start, end));
-                                tokenPresenceMap.put(token.kind, false);
+                                spanStack.push(new SpanItem(markupToken.kind, start, end, stackTop.start, markupToken.start));
+                                stack.push(new MarkupToken(TokenType.TEXT, start, end));
+                                tokenPresenceMap.put(markupToken.kind, false);
                                 break;
                             } else if (isMarkupToken(stackTop.kind)) {
-                                textParts.push(new Token(TokenType.TEXT, stackTop.start, stackTop.end));
+                                textParts.push(new MarkupToken(TokenType.TEXT, stackTop.start, stackTop.end));
                             } else {
-                                throw new MarkupParserException("Unknown token on stack: " + token.kind);
+                                throw new MarkupParserException("Unknown token on stack: " + markupToken.kind);
                             }
                             tokenPresenceMap.put(stackTop.kind, false);
                         }
                     } else {
-                        stack.push(token);
-                        tokenPresenceMap.put(token.kind, true);
+                        stack.push(markupToken);
+                        tokenPresenceMap.put(markupToken.kind, true);
                     }
                     break;
 
@@ -357,7 +359,7 @@ public class MarkupParser {
                     break;
 
                 default:
-                    throw new MarkupParserException("Invalid token kind: " + token.kind);
+                    throw new MarkupParserException("Invalid token kind: " + markupToken.kind);
             }
         }
 
@@ -365,7 +367,7 @@ public class MarkupParser {
         if (builder != null) {
             applySpans(builder, spanStack);
         } else {
-            if (spanStack.size() > 0) {
+            if (!spanStack.isEmpty()) {
                 applySpans(editable, markerColor, spanStack);
             }
         }

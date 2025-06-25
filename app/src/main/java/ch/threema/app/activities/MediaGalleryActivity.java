@@ -27,7 +27,6 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import android.Manifest;
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -45,6 +44,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.view.ActionMode;
@@ -68,6 +68,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.MediaGalleryAdapter;
@@ -87,8 +88,11 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaGridItemDecoration;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
@@ -267,6 +271,21 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content_container),
+            InsetSides.horizontal()
+        );
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.item_list),
+            InsetSides.bottom(),
+            SpacingValues.bottom(R.dimen.grid_unit_x2)
+        );
+    }
+
+    @Override
     protected boolean initActivity(Bundle savedInstanceState) {
         logger.debug("initActivity");
 
@@ -301,9 +320,8 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
         final int cornerRadius = getResources().getDimensionPixelSize(R.dimen.cardview_border_radius);
         final ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
             @Override
-            public void getOutline(View view, Outline outline) {
+            public void getOutline(@NonNull View view, @NonNull Outline outline) {
                 outline.setRoundRect(borderSize, 0, view.getWidth() - borderSize, view.getHeight() + cornerRadius, cornerRadius);
-                ;
             }
         };
 
@@ -392,7 +410,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
             finish();
@@ -402,16 +420,17 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
         return true;
     }
 
-    private @Nullable String processIntent(Intent intent) {
+    @Nullable
+    private String processIntent(@NonNull Intent intent) {
         String actionBarTitle;
 
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID)) {
-            int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
+        if (intent.hasExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
+            int groupId = intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
             GroupModel groupModel = groupService.getById(groupId);
             messageReceiver = groupService.createReceiver(groupModel);
             actionBarTitle = groupModel.getName();
-        } else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
-            DistributionListModel distributionListModel = distributionListService.getById(intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0));
+        } else if (intent.hasExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
+            DistributionListModel distributionListModel = distributionListService.getById(intent.getLongExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, 0));
             try {
                 messageReceiver = distributionListService.createReceiver(distributionListModel);
             } catch (Exception e) {
@@ -419,7 +438,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
             }
             actionBarTitle = distributionListModel.getName();
         } else {
-            String identity = intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+            String identity = intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT);
             if (identity == null) {
                 finish();
             }
@@ -487,7 +506,11 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
             @Override
             protected void onPreExecute() {
                 if (selectedMessages.size() > 10) {
-                    CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_messages, R.string.cancel, selectedMessages.size());
+                    CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(
+                        R.string.deleting_messages,
+                        R.string.cancel,
+                        selectedMessages.size()
+                    );
                     dialog.setOnCancelListener((dialog1, which) -> cancelled = true);
                     dialog.show(getSupportFragmentManager(), DIALOG_TAG_DELETING_MEDIA);
                 }
@@ -632,24 +655,19 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    @TargetApi(23)
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+    @RequiresApi(23)
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            switch (requestCode) {
-                case PERMISSION_REQUEST_SAVE_MESSAGE:
-                    fileService.saveMedia(this, recyclerView, new CopyOnWriteArrayList<>(mediaGalleryAdapter.getCheckedItems()), true);
-                    break;
+            if (requestCode == PERMISSION_REQUEST_SAVE_MESSAGE) {
+                fileService.saveMedia(this, recyclerView, new CopyOnWriteArrayList<>(mediaGalleryAdapter.getCheckedItems()), true);
             }
         } else {
-            switch (requestCode) {
-                case PERMISSION_REQUEST_SAVE_MESSAGE:
-                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        ConfigUtils.showPermissionRationale(this, recyclerView, R.string.permission_storage_required);
-                    }
-                    break;
+            if (requestCode == PERMISSION_REQUEST_SAVE_MESSAGE) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    ConfigUtils.showPermissionRationale(this, recyclerView, R.string.permission_storage_required);
+                }
             }
         }
         actionMode.finish();
@@ -699,7 +717,8 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
         }
     }
 
-    private @Nullable int[] getMediaContentTypeArray() {
+    @Nullable
+    private int[] getMediaContentTypeArray() {
         int[] contentTypeList = new int[checkedContentTypes.length];
         int n = 0;
         for (int i = 0; i < checkedContentTypes.length; i++) {
@@ -717,7 +736,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    public void onYes(String tag, boolean[] checkedItems) {
+    public void onYes(String tag, @NonNull boolean[] checkedItems) {
         int n = 0;
         for (boolean checkedItem : checkedItems) {
             if (checkedItem) {
@@ -812,6 +831,4 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
         }
         return true;
     }
-
 }
-

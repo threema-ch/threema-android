@@ -27,10 +27,12 @@ private const val GRID_BASE = 8
 
 @Suppress("unused")
 object GridUnit {
+    val x0 = 0.dp
     val x0_5 = GRID_BASE.dp / 2 // 4
     val x1 = GRID_BASE.dp // 8
     val x1_5 = GRID_BASE.dp * 1.5f // 12
     val x2 = GRID_BASE.dp * 2 // 16
+    val x2_5 = GRID_BASE.dp * 2.5f // 20
     val x3 = GRID_BASE.dp * 3 // 24
     val x4 = GRID_BASE.dp * 4 // 32
     val x5 = GRID_BASE.dp * 5 // 40

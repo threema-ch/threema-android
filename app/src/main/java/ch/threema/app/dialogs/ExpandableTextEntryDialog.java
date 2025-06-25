@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -44,8 +43,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.ui.ComposeEditText;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -166,18 +166,10 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
             }
         });
 
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+        editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ThreemaApplication.activityUserInteract(activity);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+                ActivityService.activityUserInteract(activity);
             }
         });
 
@@ -222,12 +214,14 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
         }
 
         builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
+                @Override
                 public void onClick(DialogInterface dialog, int whichButton) {
                     callback.onYes(tag, object, editText.getText().toString());
                 }
             }
         );
         builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
+                @Override
                 public void onClick(DialogInterface dialog, int whichButton) {
                     callback.onNo(tag);
                 }

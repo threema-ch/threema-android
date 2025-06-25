@@ -30,7 +30,6 @@ import android.content.Context;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -38,6 +37,7 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.utils.AndroidContactUtil;
@@ -62,7 +62,8 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
     private final IdentityStoreInterface identityStore;
 
     private final List<SynchronizeContactsRoutine> pendingRoutines = new ArrayList<>();
-    private final IdListService excludedIdentityListService;
+    @NonNull
+    private final ExcludedSyncIdentitiesService excludedSyncIdentityListService;
     private final PreferenceService preferenceService;
     private final DeviceService deviceService;
     private final Context context;
@@ -70,15 +71,13 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
     private final BlockedIdentitiesService blockedIdentitiesService;
     private final ApiService apiService;
 
-    private Date latestFullSync;
-
     public SynchronizeContactsServiceImpl(
         Context context, APIConnector apiConnector,
         ContactService contactService,
         @NonNull ContactModelRepository contactModelRepository,
         UserService userService,
         LocaleService localeService,
-        IdListService excludedIdentityListService,
+        @NonNull ExcludedSyncIdentitiesService excludedSyncIdentityListService,
         PreferenceService preferenceService,
         DeviceService deviceService,
         FileService fileService,
@@ -86,7 +85,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
         ApiService apiService
     ) {
-        this.excludedIdentityListService = excludedIdentityListService;
+        this.excludedSyncIdentityListService = excludedSyncIdentityListService;
         this.preferenceService = preferenceService;
         this.deviceService = deviceService;
         this.context = context;
@@ -180,7 +179,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
                 this.userService,
                 this.localeService,
                 this.contentResolver,
-                this.excludedIdentityListService,
+                this.excludedSyncIdentityListService,
                 this.deviceService,
                 this.preferenceService,
                 this.identityStore,
@@ -198,15 +197,6 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
             }
         });
 
-        routine.addOnStarted(new SynchronizeContactsRoutine.OnStarted() {
-            @Override
-            public void started(boolean fullSync) {
-                if (fullSync) {
-                    latestFullSync = new Date();
-                }
-            }
-        });
-
         ListenerManager.synchronizeContactsListeners.handle(new ListenerManager.HandleListener<SynchronizeContactsListener>() {
             @Override
             public void handle(SynchronizeContactsListener listener) {
@@ -219,7 +209,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 
     @Override
     public boolean isSynchronizationInProgress() {
-        return this.pendingRoutines.size() > 0;
+        return !this.pendingRoutines.isEmpty();
     }
 
     @Override
@@ -235,7 +225,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
     }
 
     @Override
-    public boolean enableSync() {
+    public boolean enableSyncFromLocal() {
         boolean success = false;
 
         if (this.userService != null) {
@@ -244,13 +234,13 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
         }
 
         if (success && this.preferenceService != null) {
-            this.preferenceService.setSyncContacts(true);
+            this.preferenceService.getContactSyncPolicySetting().setFromLocal(true);
         }
         return success;
     }
 
     @Override
-    public boolean disableSync(final Runnable runAfterRemovedAccount) {
+    public boolean disableSyncFromLocal(final Runnable runAfterRemovedAccount) {
         if (this.userService != null) {
             //cancel all syncs!
             synchronized (this.pendingRoutines) {
@@ -265,18 +255,18 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
             if (!this.userService.removeAccount(new AccountManagerCallback<Boolean>() {
                 @Override
                 public void run(AccountManagerFuture<Boolean> future) {
-                    disableSyncFinished(runAfterRemovedAccount);
+                    disableSyncFromLocalFinished(runAfterRemovedAccount);
                 }
             })) {
-                this.disableSyncFinished(runAfterRemovedAccount);
+                this.disableSyncFromLocalFinished(runAfterRemovedAccount);
             }
         }
         return true;
     }
 
-    private void disableSyncFinished(Runnable run) {
+    private void disableSyncFromLocalFinished(Runnable run) {
         if (this.preferenceService != null) {
-            this.preferenceService.setSyncContacts(false);
+            this.preferenceService.getContactSyncPolicySetting().setFromLocal(false);
         }
 
         if (contactService != null) {

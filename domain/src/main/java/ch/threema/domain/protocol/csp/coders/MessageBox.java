@@ -197,6 +197,10 @@ public class MessageBox implements Serializable {
         return flags;
     }
 
+    public boolean hasFlag(int flag) {
+        return (this.flags & flag) != 0;
+    }
+
     public void setFlags(int flags) {
         this.flags = flags;
     }

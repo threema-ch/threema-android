@@ -34,11 +34,13 @@ import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,16 +48,21 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.appcompat.app.ActionBar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -89,6 +96,7 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.EmptyRecyclerView;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocationUtil;
@@ -162,8 +170,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
             loadingProgressBar.setVisibility(View.VISIBLE);
         }
 
+        @NonNull
         @Override
-        protected List<Poi> doInBackground(LatLng... latLngs) {
+        protected List<Poi> doInBackground(@NonNull LatLng... latLngs) {
             LatLng latLng = latLngs[0];
 
             logger.debug("NearbyPoiTask: get POIs for {}", latLng);
@@ -184,7 +193,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
             if (pois != null) {
                 // update markers and list
                 bindPlaces(pois);
-                if (pois.size() > 0) {
+                if (!pois.isEmpty()) {
                     poilistDescription.setVisibility(View.VISIBLE);
                     places = pois;
                     return;
@@ -207,13 +216,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        ConfigUtils.configureSystemBars(this);
-
         ConfigUtils.getMapLibreInstance();
 
         setContentView(R.layout.activity_location_picker);
-
-        ConfigUtils.configureTransparentStatusBar(this);
 
         root = findViewById(R.id.coordinator);
         appBarLayout = findViewById(R.id.appbar);
@@ -247,6 +252,44 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
         initUi();
         initMap();
+        handleDeviceInsets();
+    }
+
+    private void handleDeviceInsets() {
+
+        final @NonNull MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        final @NonNull NestedScrollView scrollContainer = findViewById(R.id.scroll_container);
+        final @NonNull MaterialButton centerMapButton = findViewById(R.id.center_map);
+        final @NonNull TextView copyrightLabel = findViewById(R.id.copyright_label);
+        final @NonNull ViewGroup sendLocationContainer = findViewById(R.id.send_location_container);
+
+        // We have to get the insets from the root CoordinatorLayout, as the AppBarLayout and/or the CollapsingToolbarLayout will consume them
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.coordinator), (view, windowInsets) -> {
+            final @NonNull Insets insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            final @Px int spacingOneGridUnit = getResources().getDimensionPixelSize(R.dimen.grid_unit_x1);
+            final @Px int spacingTwoGridUnits = getResources().getDimensionPixelSize(R.dimen.grid_unit_x2);
+
+            toolbar.setPadding(insets.left, 0, insets.right, 0);
+
+            ViewExtensionsKt.setMargin(copyrightLabel, insets.left, 0, 0, 0);
+
+            ViewExtensionsKt.setMargin(
+                centerMapButton,
+                spacingTwoGridUnits,
+                spacingTwoGridUnits,
+                insets.right + spacingTwoGridUnits,
+                spacingTwoGridUnits
+            );
+
+            sendLocationContainer.setPadding(insets.left + spacingTwoGridUnits, 0, insets.right + spacingTwoGridUnits, 0);
+
+            scrollContainer.setPadding(insets.left, 0, insets.right, insets.bottom + spacingOneGridUnit);
+
+            return windowInsets;
+        });
     }
 
     private void initUi() {
@@ -277,27 +320,54 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
         searchView = findViewById(R.id.search_container);
         searchView.setVisibility(View.VISIBLE);
-        ((AppBarLayout) findViewById(R.id.appbar)).addOnOffsetChangedListener(((appBarLayout, verticalOffset) -> {
-            MaterialToolbar toolbar = findViewById(R.id.toolbar);
-            float verticalOffset1 = (float) verticalOffset;
-            toolbar.setAlpha(Math.abs(verticalOffset1 / (float) appBarLayout.getTotalScrollRange()));
+
+        final @NonNull AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        final @NonNull MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        final @NonNull MapView mapView = findViewById(R.id.map);
+        final @NonNull ImageView locationMarker = findViewById(R.id.location_marker);
+        appBarLayout.addOnOffsetChangedListener(((view, verticalOffset) -> {
+            float collapsedPercent = 0f;
+            final float offsetPixels = Math.abs(verticalOffset);
+            final float offsetPixelsWhenCollapsed = (float) view.getTotalScrollRange();
+            if (offsetPixelsWhenCollapsed > 0) {
+                collapsedPercent = offsetPixels / offsetPixelsWhenCollapsed;
+            }
+            toolbar.setAlpha(collapsedPercent);
+
+            mapView.setVisibility((collapsedPercent == 1.0f) ? View.GONE : View.VISIBLE);
+            mapView.getRenderView().setAlpha(1f - collapsedPercent);
+            locationMarker.setAlpha(1f - collapsedPercent);
         }));
 
-        adjustAppBarHeight();
+        setCollapsingToolbarLayoutHeight();
     }
 
-    private void adjustAppBarHeight() {
-        ViewGroup.LayoutParams layoutParams = appBarLayout.getLayoutParams();
+    private void setCollapsingToolbarLayoutHeight() {
 
-        if (layoutParams != null) {
-            CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) layoutParams;
-            AppBarLayout.LayoutParams collapsingToolBarLayoutParams = (AppBarLayout.LayoutParams) collapsingToolbarBarLayout.getLayoutParams();
-            appBarLayoutParams.setBehavior((new AppBarLayout.Behavior()));
-            CoordinatorLayout.Behavior appBarLayoutParamsBehavior = appBarLayoutParams.getBehavior();
+        final @NonNull CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
 
-            if (appBarLayoutParamsBehavior != null) {
-                AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) appBarLayoutParamsBehavior;
-                behavior.setDragCallback((new AppBarLayout.Behavior.DragCallback() {
+        final @Px int windowHeight;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            windowHeight = getWindowManager().getCurrentWindowMetrics().getBounds().height();
+        } else {
+            windowHeight = getResources().getDisplayMetrics().heightPixels;
+        }
+
+        final @Nullable ViewGroup.LayoutParams appBarLayoutLayoutParams = appBarLayout.getLayoutParams();
+
+        if (appBarLayoutLayoutParams != null) {
+
+            final @NonNull CoordinatorLayout.LayoutParams appBarLayoutLayoutParamsCasted = (CoordinatorLayout.LayoutParams) appBarLayoutLayoutParams;
+            final AppBarLayout.LayoutParams collapsingToolBarLayoutParams = (AppBarLayout.LayoutParams) collapsingToolbarBarLayout.getLayoutParams();
+
+            appBarLayoutLayoutParamsCasted.setBehavior((new AppBarLayout.Behavior()));
+            CoordinatorLayout.Behavior coordinatorLayoutBehavior = appBarLayoutLayoutParamsCasted.getBehavior();
+
+            if (coordinatorLayoutBehavior != null) {
+                AppBarLayout.Behavior appBarLayoutBehaviour = (AppBarLayout.Behavior) coordinatorLayoutBehavior;
+
+                // Disable app-bar layout scrolling
+                appBarLayoutBehaviour.setDragCallback((new AppBarLayout.Behavior.DragCallback() {
                     @Override
                     public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
                         return false;
@@ -305,16 +375,16 @@ public class LocationPickerActivity extends ThreemaActivity implements
                 }));
 
                 // Set the size of AppBarLayout to 68% of the total height
-                CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
-                if (ViewCompat.isLaidOut(coordinatorLayout) && !coordinatorLayout.isLayoutRequested()) {
-                    collapsingToolBarLayoutParams.height = coordinatorLayout.getHeight() * APPBAR_HEIGHT_PERCENT / 100 - getResources().getDimensionPixelSize(R.dimen.send_location_container_height);
+                if (coordinatorLayout.isLaidOut() && !coordinatorLayout.isLayoutRequested()) {
+                    collapsingToolBarLayoutParams.height = windowHeight * APPBAR_HEIGHT_PERCENT / 100
+                        - getResources().getDimensionPixelSize(R.dimen.send_location_container_height);
                     collapsingToolbarBarLayout.setLayoutParams(collapsingToolBarLayoutParams);
                 } else {
                     coordinatorLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                         @Override
                         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                             coordinatorLayout.removeOnLayoutChangeListener(this);
-                            collapsingToolBarLayoutParams.height = coordinatorLayout.getHeight() * APPBAR_HEIGHT_PERCENT / 100 - getResources().getDimensionPixelSize(R.dimen.send_location_container_height);
+                            collapsingToolBarLayoutParams.height = windowHeight * APPBAR_HEIGHT_PERCENT / 100 - getResources().getDimensionPixelSize(R.dimen.send_location_container_height);
                             collapsingToolbarBarLayout.setLayoutParams(collapsingToolBarLayoutParams);
                         }
                     });
@@ -616,11 +686,6 @@ public class LocationPickerActivity extends ThreemaActivity implements
             public void onYes(String tag, Object data) {
                 locationEnableLauncher.launch(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             }
-
-            @Override
-            public void onNo(String tag, Object data) {
-                // Don't zoom to location if user does not want to activate location services
-            }
         });
         dialog.show(getSupportFragmentManager(), DIALOG_TAG_ENABLE_LOCATION_SERVICES);
     }
@@ -712,9 +777,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
         if (appBarLayout != null) {
-            appBarLayout.post(this::adjustAppBarHeight);
+            appBarLayout.post(this::setCollapsingToolbarLayoutHeight);
         }
     }
 

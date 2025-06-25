@@ -75,12 +75,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asFlow
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.camera.CameraActivity.KEY_EVENT_ACTION
 import ch.threema.app.camera.CameraActivity.KEY_EVENT_EXTRA
 import ch.threema.app.camera.ShutterButtonView.ShutterButtonListener
-import ch.threema.app.services.PreferenceService
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.ui.LessObnoxiousMediaActionSound
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
@@ -933,7 +934,7 @@ class CameraFragment : Fragment() {
         val bytesPerSecond = CameraConfig.getDefaultVideoBitrate()
             .toFloat() / 8f + CameraConfig.getDefaultAudioBitrate().toFloat() / 8f
         val durationSeconds =
-            floor(((ThreemaApplication.MAX_BLOB_SIZE - 1000000).toFloat() / bytesPerSecond).toDouble()).toLong() // we assume a MP4 overhead of 1 MB
+            floor(((AppConstants.MAX_BLOB_SIZE - 1000000).toFloat() / bytesPerSecond).toDouble()).toLong() // we assume a MP4 overhead of 1 MB
         logger.debug(
             "Calculated video duration: " + LocaleUtil.formatTimerText(
                 durationSeconds * DateUtils.SECOND_IN_MILLIS,

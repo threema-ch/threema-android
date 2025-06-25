@@ -22,7 +22,7 @@
 package ch.threema.app.push
 
 import android.content.Context
-import ch.threema.app.BuildFlavor
+import android.content.pm.PackageManager
 import ch.threema.base.utils.LoggingUtil
 import com.huawei.agconnect.AGConnectOptionsBuilder
 
@@ -32,14 +32,7 @@ object HmsTokenUtil {
     const val TOKEN_SCOPE = "HCM"
 
     private const val APP_ID_CONFIG_FIELD = "client/app_id"
-
-    // TODO(ANDR-3192): Remove hardcoded app-ids when plugin can read them from json config again
-    private val appIdHardcoded: String?
-        get() = when (BuildFlavor.current) {
-            is BuildFlavor.Hms -> "103713829"
-            is BuildFlavor.HmsWork -> "103858571"
-            else -> null
-        }
+    private const val APP_ID_META_DATA_KEY = "com.huawei.hms.client.appid"
 
     /**
      * Obtain the app ID from the `agconnect-services.json` file.
@@ -49,15 +42,15 @@ object HmsTokenUtil {
      */
     @JvmStatic
     fun getHmsAppId(context: Context): String? {
-        return try {
+        val appId = try {
             AGConnectOptionsBuilder()
                 .build(context)
                 .getString(APP_ID_CONFIG_FIELD)
-                ?: appIdHardcoded
         } catch (e: Exception) {
             logger.error("Could not obtain HMS-App-ID from config file. Fallback to hardcoded ID.", e)
-            appIdHardcoded
+            null
         }
+        return appId ?: readAppIdFromManifest(context)
     }
 
     /**
@@ -85,5 +78,21 @@ object HmsTokenUtil {
     fun obtainAndPrependHmsAppId(context: Context, token: String?): String? {
         val appId = getHmsAppId(context)
         return prependHmsAppId(appId, token)
+    }
+
+    private fun readAppIdFromManifest(context: Context): String? {
+        return try {
+            logger.info("Read app id from manifest")
+            val appMetaData = context.packageManager
+                .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+                .metaData
+            return when (val appId = appMetaData.getInt(APP_ID_META_DATA_KEY)) {
+                0 -> null
+                else -> appId.toString()
+            }
+        } catch (exception: Throwable) {
+            logger.error("Could not read app id from manifest", exception)
+            null
+        }
     }
 }

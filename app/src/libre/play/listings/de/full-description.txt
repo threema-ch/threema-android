@@ -48,4 +48,4 @@ Threema ist nicht durch Werbung finanziert und erhebt keinerlei Nutzerdaten.
 
 <strong>HILFE / KONTAKT</strong>
 
-Bei Fragen oder Problemen konsultieren Sie bitte unsere FAQs: <a href="https://threema.ch/de/faq">https://threema.ch/de/faq</a>
+Bei Fragen oder Problemen konsultieren Sie bitte unsere FAQs: <a href="https://threema.com/de/faq">https://threema.com/de/faq</a>

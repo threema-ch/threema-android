@@ -23,12 +23,11 @@ package ch.threema.domain.protocol.csp.messages.fs;
 
 import com.google.protobuf.ByteString;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.protobuf.Common;
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
 import ch.threema.protobuf.csp.e2e.fs.Envelope;
 import ch.threema.protobuf.csp.e2e.fs.Version;
@@ -51,12 +50,12 @@ public class ForwardSecurityDataMessageTest {
         .build();
 
     private static void assertEqualsTestProperties(ForwardSecurityDataMessage data) {
-        Assert.assertEquals(TEST_SESSION_ID, data.getSessionId());
-        Assert.assertEquals(TEST_DH_TYPE, data.getType());
-        Assert.assertEquals(TEST_COUNTER, data.getCounter());
-        Assert.assertEquals(Version.V1_1_VALUE, data.getOfferedVersion());
-        Assert.assertEquals(Version.V1_0_VALUE, data.getAppliedVersion());
-        Assert.assertArrayEquals(TEST_MESSAGE, data.getMessage());
+        Assertions.assertEquals(TEST_SESSION_ID, data.getSessionId());
+        Assertions.assertEquals(TEST_DH_TYPE, data.getType());
+        Assertions.assertEquals(TEST_COUNTER, data.getCounter());
+        Assertions.assertEquals(Version.V1_1_VALUE, data.getOfferedVersion());
+        Assertions.assertEquals(Version.V1_0_VALUE, data.getAppliedVersion());
+        Assertions.assertArrayEquals(TEST_MESSAGE, data.getMessage());
     }
 
     public ForwardSecurityDataMessage makeForwardSecurityDataMessage() {
@@ -82,6 +81,6 @@ public class ForwardSecurityDataMessageTest {
         final ForwardSecurityDataMessage data = makeForwardSecurityDataMessage();
         final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
-        Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
+        Assertions.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
     }
 }

@@ -27,6 +27,7 @@ import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.listeners.ContactListener
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.preference.service.PreferenceServiceImpl
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.helpers.ServerAckTaskCodec
@@ -43,16 +44,17 @@ class BlockedIdentitiesServiceTest {
 
     private val taskManager = TestTaskManager(ServerAckTaskCodec())
 
-    private val preferenceService = PreferenceServiceImpl(
-        ThreemaApplication.getAppContext(),
-        PreferenceStore(
+    private val preferenceService =
+        PreferenceServiceImpl(
             ThreemaApplication.getAppContext(),
-            ThreemaApplication.getMasterKey(),
-        ),
-        taskManager,
-        multiDeviceManager,
-        NonceFactory(TestNonceStore()),
-    )
+            PreferenceStore(
+                ThreemaApplication.getAppContext(),
+                ThreemaApplication.getMasterKey(),
+            ),
+            taskManager,
+            multiDeviceManager,
+            NonceFactory(TestNonceStore()),
+        )
 
     private val blockedIdentitiesService: BlockedIdentitiesService = BlockedIdentitiesServiceImpl(
         preferenceService,

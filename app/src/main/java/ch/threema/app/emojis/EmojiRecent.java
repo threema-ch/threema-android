@@ -23,7 +23,7 @@ package ch.threema.app.emojis;
 
 import java.util.LinkedList;
 
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 
 public class EmojiRecent {
 

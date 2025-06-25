@@ -122,5 +122,14 @@ sealed class LinkingResult(
             titleTextRes = R.string.device_linking_error_unexpected_title,
             bodyTextRes = R.string.device_linking_error_unexpected_body,
         )
+
+        data class InvalidContact(private val invalidIdentity: String) : Failure(
+            titleTextRes = R.string.device_linking_error_invalid_contact_title,
+            bodyTextRes = R.string.device_linking_error_invalid_contact_body,
+        ) {
+            override fun resolveBodyText(context: Context): AnnotatedString {
+                return AnnotatedString(context.getString(bodyTextRes, invalidIdentity))
+            }
+        }
     }
 }

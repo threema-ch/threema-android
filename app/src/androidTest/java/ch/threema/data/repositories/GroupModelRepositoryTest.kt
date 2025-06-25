@@ -25,6 +25,7 @@ import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.testutils.TestHelpers
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelDataFactory
@@ -35,11 +36,11 @@ import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.domain.models.GroupId
 import ch.threema.storage.models.GroupModel
 import java.util.Date
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
-import org.junit.Before
-import org.junit.Test
 
 class GroupModelRepositoryTest {
     private lateinit var databaseService: TestDatabaseService
@@ -65,7 +66,7 @@ class GroupModelRepositoryTest {
         )
     }
 
-    @Before
+    @BeforeTest
     fun before() {
         TestHelpers.setIdentity(
             ThreemaApplication.requireServiceManager(),
@@ -75,7 +76,7 @@ class GroupModelRepositoryTest {
         this.databaseService = TestDatabaseService()
         this.databaseBackend = SqliteDatabaseBackend(databaseService)
         this.coreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),

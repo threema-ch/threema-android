@@ -16,7 +16,7 @@
         android:orientation="vertical"
         android:outlineProvider="none"
         android:visibility="visible"
-        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerHighest"
         app:cardCornerRadius="@dimen/cardview_border_radius"
         app:cardElevation="@dimen/notice_views_elevation"
         app:contentPaddingBottom="6dp"
@@ -40,7 +40,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|start"
                     android:layout_marginTop="0dp"
-                    android:text="@string/ballot_open" />
+                    android:text="@string/ballot_open"
+                    android:textColor="?attr/colorOnSurface" />
 
                 <ImageView
                     android:id="@+id/button_cancel"
@@ -51,7 +52,7 @@
                     android:foreground="@drawable/selector_avatar"
                     android:padding="2dp"
                     android:src="@drawable/ic_close"
-                    app:tint="?attr/colorOnBackground" />
+                    app:tint="?attr/colorOnSurface" />
 
             </FrameLayout>
 
@@ -59,22 +60,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
-                android:scrollbarSize="0dp"
-                android:scrollbars="none"
+                android:fadingEdgeLength="40dp"
                 android:requiresFadingEdge="horizontal"
-                android:fadingEdgeLength="40dp">
+                android:scrollbarSize="0dp"
+                android:scrollbars="none">
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
                     app:chipSpacingHorizontal="4dp"
                     app:chipSpacingVertical="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:singleLine="true"
-                    android:animateLayoutChanges="true" />
+                    app:singleLine="true" />
 
             </HorizontalScrollView>
 

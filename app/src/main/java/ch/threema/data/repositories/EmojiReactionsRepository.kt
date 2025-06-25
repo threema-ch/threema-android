@@ -28,7 +28,7 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.utils.ThrowingConsumer
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.models.EmojiReactionsModel

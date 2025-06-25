@@ -32,7 +32,7 @@ import kotlin.test.assertFailsWith
 class DeliveryReceiptMessageTest {
     @Test
     fun `DeliveryReceiptMessage_fromByteArray can read a valid byte array`() {
-        val messageIds = Array(3) { MessageId() }
+        val messageIds = Array(3) { MessageId.random() }
         val messageBytes = ByteArray(1 + messageIds.size * MESSAGE_ID_LEN)
         messageBytes[0] = DELIVERYRECEIPT_MSGRECEIVED.toByte()
         messageIds.forEachIndexed { index, messageId ->
@@ -47,7 +47,7 @@ class DeliveryReceiptMessageTest {
 
     @Test
     fun `DeliveryReceiptMessage_fromByteArray fails when byte array length is invalid`() {
-        val messageIds = Array(3) { MessageId() }
+        val messageIds = Array(3) { MessageId.random() }
         val messageBytes = ByteArray(1 + messageIds.size * MESSAGE_ID_LEN + 1) // extra byte added, making it invalid
         messageBytes[0] = DELIVERYRECEIPT_MSGRECEIVED.toByte()
         messageIds.forEachIndexed { index, messageId ->
@@ -61,7 +61,7 @@ class DeliveryReceiptMessageTest {
 
     @Test
     fun `DeliveryReceiptMessage_fromByteArray fails when offset is invalid`() {
-        val messageIds = Array(3) { MessageId() }
+        val messageIds = Array(3) { MessageId.random() }
         val messageBytes = ByteArray(1 + messageIds.size * MESSAGE_ID_LEN)
         messageBytes[0] = DELIVERYRECEIPT_MSGRECEIVED.toByte()
         messageIds.forEachIndexed { index, messageId ->

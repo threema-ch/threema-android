@@ -114,7 +114,7 @@ suspend fun runCommonGroupReceiveSteps(
                 OutgoingCspMessageHandle(
                     sender,
                     OutgoingCspGroupMessageCreator(
-                        MessageId(),
+                        MessageId.random(),
                         Date(),
                         groupModelData.groupIdentity,
                     ) {
@@ -130,7 +130,7 @@ suspend fun runCommonGroupReceiveSteps(
                 OutgoingCspMessageHandle(
                     sender,
                     OutgoingCspGroupMessageCreator(
-                        MessageId(),
+                        MessageId.random(),
                         Date(),
                         groupModelData.groupIdentity,
                     ) {
@@ -151,7 +151,7 @@ suspend fun runCommonGroupReceiveSteps(
                 OutgoingCspMessageHandle(
                     sender,
                     OutgoingCspGroupMessageCreator(
-                        MessageId(),
+                        MessageId.random(),
                         Date(),
                         groupModelData.groupIdentity,
                     ) {
@@ -198,7 +198,7 @@ suspend fun runGroupSyncRequestSteps(
     }
 
     // If the group has been recently resynced (less than one hour ago), abort these steps
-    val syncFactory = serviceManager.databaseServiceNew.outgoingGroupSyncRequestLogModelFactory
+    val syncFactory = serviceManager.databaseService.outgoingGroupSyncRequestLogModelFactory
     val syncModel = syncFactory[groupIdentity]
 
     val lastSyncedTimestamp = syncModel?.lastRequest?.time ?: 0
@@ -215,7 +215,7 @@ suspend fun runGroupSyncRequestSteps(
         OutgoingCspMessageHandle(
             groupCreator,
             OutgoingCspGroupMessageCreator(
-                MessageId(),
+                MessageId.random(),
                 Date(),
                 groupIdentity,
             ) {

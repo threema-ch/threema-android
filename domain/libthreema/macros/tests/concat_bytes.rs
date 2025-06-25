@@ -1,8 +1,7 @@
-#![allow(
-    unused_crate_dependencies,
-    clippy::min_ident_chars,
-    clippy::tests_outside_test_module
-)]
+//! Test that the [`libthreema_macros::concat_fixed_bytes`] works as expected.
+#![expect(unused_crate_dependencies, reason = "False positive")]
+#![expect(clippy::min_ident_chars, reason = "Test variable names")]
+#![expect(clippy::tests_outside_test_module, reason = "trybuild tests work that way")]
 
 use libthreema_macros::concat_fixed_bytes;
 
@@ -13,7 +12,7 @@ fn test_correct() {
     let c = [3_u8; 3];
 
     {
-        #[allow(clippy::empty_structs_with_brackets)]
+        #[expect(clippy::empty_structs_with_brackets, reason = "Concatenation of empty slices")]
         let result: [u8; 0] = concat_fixed_bytes!();
         assert_eq!(result, [] as [u8; 0]);
     }

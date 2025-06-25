@@ -49,7 +49,10 @@ import ch.threema.app.services.MessageServiceImpl.FILTER_GROUPS
 import ch.threema.app.services.MessageServiceImpl.FILTER_INCLUDE_ARCHIVED
 import ch.threema.app.ui.EmptyRecyclerView
 import ch.threema.app.ui.EmptyView
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.ThreemaSearchView
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.GroupUtil
@@ -61,9 +64,8 @@ import ch.threema.storage.models.GroupMessageModel
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.search.SearchBar
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity")
+private val logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity")
 
 class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextListener {
     init {
@@ -125,9 +127,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         return true
     }
 
-    override fun getLayoutResource(): Int {
-        return R.layout.activity_global_search
-    }
+    override fun getLayoutResource(): Int = R.layout.activity_global_search
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,6 +139,14 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
             logger.error("Exception", e)
             finish()
         }
+    }
+
+    override fun handleDeviceInsets() {
+        super.handleDeviceInsets()
+
+        findViewById<EmptyRecyclerView>(R.id.recycler_chats).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.lbr(),
+        )
     }
 
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
@@ -159,7 +167,6 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
                     }
                 }
                 bar.setOnClickListener { searchView?.isIconified = false }
-                ConfigUtils.adjustSearchBarTextViewMargin(this, bar)
             }
         }
 
@@ -191,6 +198,14 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         recyclerView.emptyView = emptyView
         emptyView.setLoading(true)
         recyclerView.adapter = chatsAdapter
+
+        emptyView.applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.lbr(),
+            ownPadding = SpacingValues.symmetric(
+                vertical = R.dimen.grid_unit_x1,
+                horizontal = R.dimen.grid_unit_x3,
+            ),
+        )
 
         globalSearchViewModel =
             ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->

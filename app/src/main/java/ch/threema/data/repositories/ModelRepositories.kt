@@ -28,11 +28,11 @@ import ch.threema.data.storage.EditHistoryDaoImpl
 import ch.threema.data.storage.EmojiReactionsDaoImpl
 import ch.threema.data.storage.SqliteDatabaseBackend
 
+private val logger = LoggingUtil.getThreemaLogger("data.ModelRepositories")
+
 class ModelRepositories(
     coreServiceManager: CoreServiceManager,
 ) {
-    private val logger = LoggingUtil.getThreemaLogger("data.ModelRepositories")
-
     private val cache = ModelCache()
     private val databaseBackend = SqliteDatabaseBackend(coreServiceManager.databaseService)
     private val editHistoryDao = EditHistoryDaoImpl(coreServiceManager.databaseService)
@@ -41,8 +41,7 @@ class ModelRepositories(
     val contacts = ContactModelRepository(cache.contacts, databaseBackend, coreServiceManager)
     val groups = GroupModelRepository(cache.groups, databaseBackend, coreServiceManager)
     val editHistory = EditHistoryRepository(cache.editHistory, editHistoryDao, coreServiceManager)
-    val emojiReaction =
-        EmojiReactionsRepository(cache.emojiReaction, emojiReactionDao, coreServiceManager)
+    val emojiReaction = EmojiReactionsRepository(cache.emojiReaction, emojiReactionDao, coreServiceManager)
 
     init {
         logger.debug("Created")

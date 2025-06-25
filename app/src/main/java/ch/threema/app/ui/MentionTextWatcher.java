@@ -22,7 +22,6 @@
 package ch.threema.app.ui;
 
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.style.ReplacementSpan;
 import android.widget.EditText;
 
@@ -32,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import ch.threema.base.utils.LoggingUtil;
 
-public class MentionTextWatcher implements TextWatcher {
+public class MentionTextWatcher extends SimpleTextWatcher {
     private static final Logger logger = LoggingUtil.getThreemaLogger("MentionTextWatcher");
 
     private final EditText editText;
@@ -51,8 +50,6 @@ public class MentionTextWatcher implements TextWatcher {
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//		logger.debug("beforeTextChanged " + s + " start: " + start + " count: " + count + " after: " + after);
-
         if (count == 1) {
             int end = start + count;
             Editable editableText = editText.getEditableText();
@@ -73,15 +70,7 @@ public class MentionTextWatcher implements TextWatcher {
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-//		logger.debug("onTextChanged " + s + " start: " + start + " count: " + count );
-
-    }
-
-    @Override
     public void afterTextChanged(Editable s) {
-//		logger.debug("afterTextChanged " + s);
-
         Editable editableText = editText.getEditableText();
 
         if (editableText == null) {

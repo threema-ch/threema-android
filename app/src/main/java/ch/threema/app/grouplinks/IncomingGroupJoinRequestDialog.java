@@ -43,7 +43,7 @@ import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import java8.util.Optional;
 
@@ -96,10 +96,10 @@ public class IncomingGroupJoinRequestDialog extends ThreemaDialogFragment {
             return returnAnErrorOccuredDialog("Required services not available to handle request");
         }
 
-        DatabaseServiceNew databaseService;
+        DatabaseService databaseService;
         ContactService contactService;
         try {
-            databaseService = serviceManager.getDatabaseServiceNew();
+            databaseService = serviceManager.getDatabaseService();
             this.incomingGroupJoinRequestService = serviceManager.getIncomingGroupJoinRequestService();
             contactService = serviceManager.getContactService();
         } catch (Exception e) {

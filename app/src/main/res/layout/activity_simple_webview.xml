@@ -4,16 +4,14 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
-    android:fitsSystemWindows="true">
+    android:background="?android:attr/colorBackground">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:liftOnScroll="true"
-        app:liftOnScrollTargetViewId="@+id/webview_scroller"
-        android:fitsSystemWindows="true">
+        app:liftOnScrollTargetViewId="@+id/webview_scroller">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -44,6 +42,7 @@
         android:id="@+id/webview_scroller"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:scrollbars="vertical"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
@@ -51,10 +50,9 @@
             android:id="@+id/simple_webview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:background="?android:attr/colorBackground" />
+            android:layout_marginHorizontal="@dimen/grid_unit_x1"
+            android:background="?android:attr/colorBackground"
+            android:scrollbars="none" />
 
     </androidx.core.widget.NestedScrollView>
 

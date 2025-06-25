@@ -27,6 +27,7 @@ import ch.threema.app.R
 import ch.threema.app.listeners.ContactListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.tasks.TaskCreator
 import java.lang.ref.WeakReference
 

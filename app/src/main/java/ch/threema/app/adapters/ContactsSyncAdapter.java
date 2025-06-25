@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
@@ -108,8 +107,6 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
                 // not in a thread: `onPerformSync` is already called in a background thread
                 routine.run();
             }
-        } catch (FileSystemNotPresentException e) {
-            logger.error("Exception", e);
         } catch (MasterKeyLockedException e) {
             logger.debug("MasterKeyLockedException [" + e.getMessage() + "]");
 

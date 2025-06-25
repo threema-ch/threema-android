@@ -38,7 +38,7 @@ class OutgoingGroupDeleteProfilePictureTask(
 ) : OutgoingCspGroupControlMessageTask(serviceManager) {
     override val type: String = "OutgoingGroupDeleteProfilePictureTask"
 
-    override val messageId = messageId ?: MessageId()
+    override val messageId = messageId ?: MessageId.random()
 
     override fun createGroupMessage() = GroupDeleteProfilePictureMessage()
 

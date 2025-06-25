@@ -6,8 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:contentDescription="@string/audio_placeholder"
-    android:minHeight="52dp"
-    tools:background="@color/bubble_receive">
+    android:minHeight="52dp">
 
     <ch.threema.app.ui.ControllerView
         android:id="@+id/controller"
@@ -30,7 +29,7 @@
         android:paddingRight="6dp"
         android:visibility="visible"
         app:barColor="@color/bubble_send_text_colorstatelist"
-        app:barColorActivated="?attr/colorPrimary"
+        app:barColorActivated="?attr/colorSecondary"
         app:barHeight="48dp"
         app:barMinHeight="2dp"
         app:barWidth="3dp"

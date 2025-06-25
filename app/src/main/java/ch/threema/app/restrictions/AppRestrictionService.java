@@ -43,7 +43,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.UpdateWorkInfoRoutine;
 import ch.threema.app.services.license.LicenseServiceUser;
@@ -393,7 +392,7 @@ public class AppRestrictionService {
     private LicenseServiceUser getLicenseService(@NonNull ServiceManager serviceManager) {
         try {
             return (LicenseServiceUser) serviceManager.getLicenseService();
-        } catch (ClassCastException | FileSystemNotPresentException e) {
+        } catch (ClassCastException e) {
             logger.error("Could not get license service", e);
             return null;
         }

@@ -24,17 +24,18 @@ package ch.threema.app.utils
 import androidx.annotation.WorkerThread
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.protocol.runIdentityBlockedSteps
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.common.now
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.BasicContact
@@ -494,7 +495,7 @@ private class OutgoingCspMessageSender(
 
             for ((message, nonce) in fsEncryptionResult.outgoingMessages) {
                 // If a server ack is required, store the message id to await it later on
-                if (!message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK)) {
+                if (!message.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK)) {
                     pendingCspMessageAcks.add(receiverIdentity to message.messageId)
                 }
 
@@ -736,9 +737,9 @@ private fun runProfilePictureDistributionSteps(
 
     val profilePictureMessageCreator =
         OutgoingCspContactMessageCreator(
-            MessageId(),
-            Date(),
-            receiverIdentity,
+            messageId = MessageId.random(),
+            createdAt = now(),
+            identity = receiverIdentity,
         ) {
             if (data.blobId.contentEquals(ContactModel.NO_PROFILE_PICTURE_BLOB_ID)) {
                 DeleteProfilePictureMessage()

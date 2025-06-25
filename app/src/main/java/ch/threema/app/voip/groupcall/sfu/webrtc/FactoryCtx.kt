@@ -27,6 +27,8 @@ import ch.threema.base.utils.LoggingUtil
 import org.webrtc.*
 import org.webrtc.audio.JavaAudioDeviceModule
 
+private val logger = LoggingUtil.getThreemaLogger("GroupCall.FactoryCtx")
+
 class FactoryCtx(
     context: Context,
     val parameters: Parameters,
@@ -50,7 +52,6 @@ class FactoryCtx(
         SurfaceTextureHelper.create("GroupCallVideoCapture", eglBase.eglBaseContext, false)
     private var _factory: PeerConnectionFactory?
 
-    private val logger = LoggingUtil.getThreemaLogger("GroupCall.FactoryCtx")
     internal val eglBase: EglBase
         get() = checkNotNull(_eglBase) { "EglBase already released" }
     internal val surfaceTextureHelper: SurfaceTextureHelper

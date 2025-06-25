@@ -2,43 +2,39 @@
   ~ Copyright (c) 2019-2025 Threema GmbH
   ~ All rights reserved.
   -->
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
-    android:visibility="invisible">
+    android:visibility="invisible"
+    tools:visibility="visible">
 
     <org.maplibre.android.maps.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:maplibre_cameraZoom="4"
-        app:maplibre_uiLogo="false"
         app:maplibre_uiAttribution="false"
         app:maplibre_uiCompass="true"
         app:maplibre_uiCompassFadeFacingNorth="false"
         app:maplibre_uiCompassGravity="top|right"
-        app:maplibre_uiCompassMarginTop="@dimen/map_compass_margin_top"
-        app:maplibre_uiCompassMarginRight="@dimen/map_compass_margin_right" />
+        app:maplibre_uiCompassMarginRight="@dimen/grid_unit_x2"
+        app:maplibre_uiCompassMarginTop="@dimen/grid_unit_x2"
+        app:maplibre_uiLogo="false" />
 
     <RelativeLayout
         android:id="@+id/map_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="6dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_margin="@dimen/grid_unit_x1"
             app:cardElevation="4dp"
             app:strokeWidth="0dp">
 
@@ -46,25 +42,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
+                android:paddingTop="10dp"
                 android:paddingRight="16dp"
-                android:paddingTop="10dp">
+                android:paddingBottom="8dp">
 
                 <TextView
                     android:id="@+id/location_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Location Name"
-                    android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
+                    android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+                    tools:text="Location Name" />
 
                 <TextView
                     android:id="@+id/location_coordinates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Coordinates"
-                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                    tools:text="Coordinates" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/open_button"
@@ -88,34 +84,35 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Ignoring warning SpUsage because we do not want the text to grow with higher
+        system font sizes -->
         <ch.threema.app.ui.VerticalTextView
+            android:id="@+id/copyright_label"
             style="@style/Threema.TextAppearance.BodyMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/cardview"
             android:layout_alignParentLeft="true"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/grid_unit_x1"
             android:background="#AAFFFFFF"
             android:gravity="bottom"
-            android:paddingBottom="2dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingTop="2dp"
+            android:paddingHorizontal="@dimen/grid_unit_x0_5"
+            android:paddingVertical="2dp"
             android:text="@string/lp_map_copyright"
             android:textColor="#FF111111"
-            android:textSize="11dp" />
+            android:textSize="11dp"
+            tools:ignore="SpUsage" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Threema.MaterialButton.Icon.Circle.Filled"
             android:id="@+id/center_map"
+            style="@style/Threema.MaterialButton.Icon.Circle.Filled"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/cardview"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="@dimen/lp_default_margin"
-            android:layout_marginRight="@dimen/lp_default_margin"
-            app:icon="@drawable/ic_gps_fixed"
+            android:layout_margin="@dimen/grid_unit_x2"
             app:backgroundTint="?attr/colorSurface"
+            app:icon="@drawable/ic_gps_fixed"
             app:iconTint="?attr/colorOnSurface"
             tools:ignore="ContentDescription" />
 

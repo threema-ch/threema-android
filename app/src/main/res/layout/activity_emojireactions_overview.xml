@@ -2,7 +2,6 @@
   ~ Copyright (c) 2020 Threema GmbH
   ~ All rights reserved.
   -->
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parent_layout"
@@ -10,22 +9,29 @@
     android:layout_height="match_parent"
     android:background="@color/transparent_activity_overlay">
 
+    <View
+        android:id="@+id/status_bar_background"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/grid_unit_x7"
+        android:background="?attr/colorSurfaceContainerLow"
+        android:visibility="gone" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_sheet"
         style="?attr/bottomSheetStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:clipToPadding="false"
+        android:elevation="2dp"
         android:outlineProvider="none"
         app:behavior_hideable="true"
         app:behavior_saveFlags="all"
-        android:elevation="2dp"
-        android:animateLayoutChanges="true"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <ImageView
-            style="@style/Threema.BottomSheet.DragHandle"
             android:id="@+id/drag_handle"
+            style="@style/Threema.BottomSheet.DragHandle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:importantForAccessibility="no"
@@ -34,18 +40,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.tabs.TabLayout
-            style="@style/Threema.TabLayout.EmojiReactionsOverview"
             android:id="@+id/tab_layout"
+            style="@style/Threema.TabLayout.EmojiReactionsOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:layout_marginTop="4dp"
             android:background="@android:color/transparent"
             android:nestedScrollingEnabled="false"
-            app:tabMode="scrollable"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/drag_handle" />
+            app:layout_constraintTop_toBottomOf="@id/drag_handle"
+            app:tabMode="scrollable" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager"
@@ -54,10 +60,10 @@
             android:layout_marginTop="4dp"
             android:background="@android:color/transparent"
             android:nestedScrollingEnabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tab_layout"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/tab_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

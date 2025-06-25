@@ -63,7 +63,6 @@ import java.util.regex.PatternSyntaxException;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.UserService;
@@ -91,10 +90,7 @@ public class AndroidContactUtil {
 
         if (serviceManager != null) {
             this.userService = serviceManager.getUserService();
-            try {
-                this.fileService = serviceManager.getFileService();
-            } catch (FileSystemNotPresentException ignored) {
-            }
+            this.fileService = serviceManager.getFileService();
         }
     }
 
@@ -431,7 +427,7 @@ public class AndroidContactUtil {
         String displayName = structure.get(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME);
 
         StringBuilder contactFirstName = new StringBuilder();
-        if (prefix != null && prefix.length() > 0) {
+        if (prefix != null && !prefix.isEmpty()) {
             contactFirstName.append(prefix);
         }
         if (firstName != null) {
@@ -440,7 +436,7 @@ public class AndroidContactUtil {
             }
             contactFirstName.append(firstName);
         }
-        if (middleName != null && middleName.length() > 0) {
+        if (middleName != null && !middleName.isEmpty()) {
             if (contactFirstName.length() > 0) {
                 contactFirstName.append(' ');
             }
@@ -451,7 +447,7 @@ public class AndroidContactUtil {
         if (lastName != null) {
             contactLastName.append(lastName);
         }
-        if (suffix != null && suffix.length() > 0) {
+        if (suffix != null && !suffix.isEmpty()) {
             if (contactLastName.length() > 0) {
                 contactLastName.append(", ");
             }

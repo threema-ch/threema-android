@@ -25,37 +25,33 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.CursorHelper
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ServerMessageModel
+import ch.threema.storage.runQuery
 import java.sql.SQLException
 
 private val logger = LoggingUtil.getThreemaLogger("ServerMessageModelFactory")
 
-class ServerMessageModelFactory(databaseService: DatabaseServiceNew) :
+class ServerMessageModelFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, ServerMessageModel.TABLE) {
     fun storeServerMessageModel(serverMessageModel: ServerMessageModel) {
         val contentValues = ContentValues()
         contentValues.put(ServerMessageModel.COLUMN_MESSAGE, serverMessageModel.message)
         contentValues.put(ServerMessageModel.COLUMN_TYPE, serverMessageModel.type)
         try {
-            databaseService.writableDatabase.insertOrThrow(tableName, null, contentValues)
+            writableDatabase.insertOrThrow(tableName, null, contentValues)
         } catch (e: SQLException) {
             logger.error("Could not store server message", e)
         }
     }
 
     fun popServerMessageModel(): ServerMessageModel? {
-        val cursor = databaseService.readableDatabase.query(
-            ServerMessageModel.TABLE,
-            arrayOf(ServerMessageModel.COLUMN_MESSAGE, ServerMessageModel.COLUMN_TYPE),
-            null,
-            null,
-            null,
-            null,
-            null,
-            "1",
+        val cursor = readableDatabase.runQuery(
+            table = ServerMessageModel.TABLE,
+            columns = arrayOf(ServerMessageModel.COLUMN_MESSAGE, ServerMessageModel.COLUMN_TYPE),
+            limit = "1",
         )
-        if (cursor != null && cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             val cursorHelper = CursorHelper(cursor, columnIndexCache)
             return convertAndDelete(cursorHelper)
         }
@@ -63,7 +59,7 @@ class ServerMessageModelFactory(databaseService: DatabaseServiceNew) :
     }
 
     fun delete(message: String) {
-        databaseService.writableDatabase.delete(
+        writableDatabase.delete(
             ServerMessageModel.TABLE,
             "${ServerMessageModel.COLUMN_MESSAGE}=?",
             arrayOf(message),

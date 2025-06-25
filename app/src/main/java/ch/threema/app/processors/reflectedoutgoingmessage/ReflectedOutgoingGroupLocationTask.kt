@@ -23,55 +23,51 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.LocationDataModel
 import ch.threema.storage.models.data.MessageContentsType
 import java.util.Date
 
+private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupLocationTask")
+
 internal class ReflectedOutgoingGroupLocationTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_LOCATION,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupLocationMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupLocationMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.GROUP_LOCATION,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val groupLocationMessage: GroupLocationMessage by lazy {
-        GroupLocationMessage.fromReflected(
-            message,
-        )
-    }
-
-    override val storeNonces: Boolean
-        get() = groupLocationMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean
-        get() = groupLocationMessage.bumpLastUpdate()
-
     override fun processOutgoingMessage() {
-        check(message.conversation.hasGroup()) {
+        check(outgoingMessage.conversation.hasGroup()) {
             "The message does not have a group identity set"
         }
+
+        messageService.getMessageModelByApiMessageIdAndReceiver(message.messageId.toString(), messageReceiver)?.run {
+            // It is possible that a message gets reflected twice when the reflecting task gets restarted.
+            logger.info("Skipping message {} as it already exists.", message.messageId)
+            return
+        }
+
         val groupMessageModel: GroupMessageModel = messageReceiver.createLocalModel(
             MessageType.LOCATION,
             MessageContentsType.LOCATION,
-            Date(message.createdAt),
+            Date(outgoingMessage.createdAt),
         )
-        initializeMessageModelsCommonFields(groupMessageModel)
         groupMessageModel.locationData = LocationDataModel(
-            latitude = groupLocationMessage.latitude,
-            longitude = groupLocationMessage.longitude,
-            accuracy = groupLocationMessage.accuracy,
-            poi = groupLocationMessage.poi,
+            latitude = message.latitude,
+            longitude = message.longitude,
+            accuracy = message.accuracy,
+            poi = message.poi,
         )
-        groupMessageModel.state = MessageState.SENT
         messageService.save(groupMessageModel)
         ListenerManager.messageListeners.handle { it.onNew(groupMessageModel) }
     }

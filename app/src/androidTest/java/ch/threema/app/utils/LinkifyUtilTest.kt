@@ -25,8 +25,8 @@ import android.text.Spanned
 import android.text.style.URLSpan
 import android.widget.TextView
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
-import org.junit.Test
 
 class LinkifyUtilTest {
     /**
@@ -89,16 +89,16 @@ class LinkifyUtilTest {
 
     @Test
     fun testSimpleUrls() {
-        assertSingleSpan("www.threema.ch")
-        assertSingleSpan("a.b.c.d.e.f.threema.ch")
-        assertSingleSpan("https://www.threema.ch")
+        assertSingleSpan("www.threema.com")
+        assertSingleSpan("a.b.c.d.e.f.threema.com")
+        assertSingleSpan("https://www.threema.com")
     }
 
     @Test
     fun testInvalidUrls() {
-        assertNoSpan("www. threema .ch")
-        assertNoSpan("www.threema .ch")
-        assertNoSpan("www,threema,ch")
+        assertNoSpan("www. threema .com")
+        assertNoSpan("www.threema .com")
+        assertNoSpan("www,threema,com")
     }
 
     @Test
@@ -146,7 +146,7 @@ class LinkifyUtilTest {
     fun testMixedGeoUris() {
         assertSpans("geo:1,2 geo:1,2", setOf(0 to 7, 8 to 15))
         assertSpans("geo:1,2\ngeo:1,2", setOf(0 to 7, 8 to 15))
-        assertSpans("geo:1,2\nthreema.ch", setOf(0 to 7, 8 to 18))
+        assertSpans("geo:1,2\nthreema.com", setOf(0 to 7, 8 to 19))
     }
 
     @Test

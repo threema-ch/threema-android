@@ -39,8 +39,6 @@ import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.widget.Toast;
 
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.FileHeader;
 
 import org.apache.commons.io.IOUtils;
@@ -73,7 +71,7 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
 import ch.threema.app.backuprestore.MessageIdCache;
 import ch.threema.app.backuprestore.ZipFileWrapper;
@@ -86,7 +84,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BackupUtils;
 import ch.threema.app.utils.CSVReader;
@@ -113,7 +111,7 @@ import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.GroupModelFactory;
@@ -166,7 +164,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     private ConversationService conversationService;
     private FileService fileService;
     private UserService userService;
-    private DatabaseServiceNew databaseServiceNew;
+    private DatabaseService databaseService;
     private ModelRepositories modelRepositories;
     private PreferenceService preferenceService;
     private NotificationPreferenceService notificationPreferenceService;
@@ -322,7 +320,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
         try {
             fileService = serviceManager.getFileService();
-            databaseServiceNew = serviceManager.getDatabaseServiceNew();
+            databaseService = serviceManager.getDatabaseService();
             modelRepositories = serviceManager.getModelRepositories();
             contactService = serviceManager.getContactService();
             conversationService = serviceManager.getConversationService();
@@ -364,7 +362,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     }
 
     private void logMemoryStatus() {
-        if (activityManager != null) {
+        if (activityManager != null && logger.isInfoEnabled()) {
             ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
             activityManager.getMemoryInfo(memoryInfo);
             logger.info(
@@ -455,19 +453,19 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
                     // clear tables!!
                     logger.info("Clearing current tables");
-                    databaseServiceNew.getMessageModelFactory().deleteAll();
-                    databaseServiceNew.getContactModelFactory().deleteAll();
-                    databaseServiceNew.getGroupMessageModelFactory().deleteAll();
-                    databaseServiceNew.getGroupMemberModelFactory().deleteAll();
-                    databaseServiceNew.getGroupModelFactory().deleteAll();
-                    databaseServiceNew.getDistributionListMessageModelFactory().deleteAll();
-                    databaseServiceNew.getDistributionListMemberModelFactory().deleteAll();
-                    databaseServiceNew.getDistributionListModelFactory().deleteAll();
-                    databaseServiceNew.getBallotModelFactory().deleteAll();
-                    databaseServiceNew.getBallotVoteModelFactory().deleteAll();
-                    databaseServiceNew.getBallotChoiceModelFactory().deleteAll();
-                    databaseServiceNew.getOutgoingGroupSyncRequestLogModelFactory().deleteAll();
-                    databaseServiceNew.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
+                    databaseService.getMessageModelFactory().deleteAll();
+                    databaseService.getContactModelFactory().deleteAll();
+                    databaseService.getGroupMessageModelFactory().deleteAll();
+                    databaseService.getGroupMemberModelFactory().deleteAll();
+                    databaseService.getGroupModelFactory().deleteAll();
+                    databaseService.getDistributionListMessageModelFactory().deleteAll();
+                    databaseService.getDistributionListMemberModelFactory().deleteAll();
+                    databaseService.getDistributionListModelFactory().deleteAll();
+                    databaseService.getBallotModelFactory().deleteAll();
+                    databaseService.getBallotVoteModelFactory().deleteAll();
+                    databaseService.getBallotChoiceModelFactory().deleteAll();
+                    databaseService.getOutgoingGroupSyncRequestLogModelFactory().deleteAll();
+                    databaseService.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
 
                     modelRepositories.getEmojiReaction().deleteAllReactions();
                     // TODO(ANDR-3207): delete all edit history entries// Remove all media files (don't remove recursively, tmp folder contain the restoring files
@@ -570,7 +568,6 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 }
 
                 // Reset the profile pic upload so that the own profile picture is redistributed
-                preferenceService.setProfilePicUploadDate(new Date(0));
                 preferenceService.setProfilePicUploadData(null);
 
                 // If we're restoring a backup that does not yet contain lastUpdate (version <22),
@@ -889,7 +886,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     }
 
     private MessageIdCache<MessageIdCache.ContactMessageKey> createContactMessageIdCache() {
-        MessageModelFactory messageModelFactory = databaseServiceNew.getMessageModelFactory();
+        MessageModelFactory messageModelFactory = databaseService.getMessageModelFactory();
         return new MessageIdCache<>(key ->
             messageModelFactory
                 .getByApiMessageIdAndIdentity(key.getMessageId(), key.getContactIdentity())
@@ -898,8 +895,8 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     }
 
     private MessageIdCache<MessageIdCache.GroupMessageKey> createGroupMessageIdCache() {
-        GroupModelFactory groupModelFactory = databaseServiceNew.getGroupModelFactory();
-        GroupMessageModelFactory groupMessageModelFactory = databaseServiceNew.getGroupMessageModelFactory();
+        GroupModelFactory groupModelFactory = databaseService.getGroupModelFactory();
+        GroupMessageModelFactory groupMessageModelFactory = databaseService.getGroupMessageModelFactory();
 
         return new MessageIdCache<>(key -> {
             @Nullable GroupModel groupModel = groupModelFactory
@@ -1114,21 +1111,21 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             fileHeaders,
             Tags.MESSAGE_MEDIA_FILE_PREFIX,
             Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-            uid -> databaseServiceNew.getMessageModelFactory().getByUid(uid)
+            uid -> databaseService.getMessageModelFactory().getByUid(uid)
         );
 
         count += this.restoreMessageMediaFiles(
             fileHeaders,
             Tags.GROUP_MESSAGE_MEDIA_FILE_PREFIX,
             Tags.GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-            uid -> databaseServiceNew.getGroupMessageModelFactory().getByUid(uid)
+            uid -> databaseService.getGroupMessageModelFactory().getByUid(uid)
         );
 
         count += this.restoreMessageMediaFiles(
             fileHeaders,
             Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_FILE_PREFIX,
             Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-            uid -> databaseServiceNew.getDistributionListMessageModelFactory().getByUid(uid)
+            uid -> databaseService.getDistributionListMessageModelFactory().getByUid(uid)
         );
 
         return count;
@@ -1179,7 +1176,9 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                             FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
                             if (thumbnailFileHeader != null) {
                                 long fileSize = thumbnailFileHeader.getUncompressedSize();
-                                logger.info("Restoring thumbnail from file ({})", formatFileSize(fileSize));
+                                if (logger.isInfoEnabled()) {
+                                    logger.info("Restoring thumbnail from file ({})", formatFileSize(fileSize));
+                                }
                                 if (fileSize < MAX_THUMBNAIL_SIZE_BYTES) {
                                     try (InputStream inputStream = getZipFileInputStream(thumbnailFileHeader)) {
                                         this.fileService.saveThumbnail(model, inputStream);
@@ -1187,11 +1186,13 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                                 }
                             }
                         } else {
-                            logger.info(
-                                "Restoring media from file, with message contents type = {}, {}",
-                                model.getMessageContentsType(),
-                                formatFileSize(fileHeader.getUncompressedSize())
-                            );
+                            if (logger.isInfoEnabled()) {
+                                logger.info(
+                                    "Restoring media from file, with message contents type = {}, {}",
+                                    model.getMessageContentsType(),
+                                    formatFileSize(fileHeader.getUncompressedSize())
+                                );
+                            }
                             try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
                                 this.fileService.writeConversationMedia(model, inputStream);
                             }
@@ -1204,12 +1205,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
                                 // if no thumbnail file exist in backup, generate one
                                 if (thumbnailFileHeader == null) {
-                                    logger.info("Generating thumbnail for media file");
-                                    try (ResettableInputStream inputStream = new ResettableInputStream(() -> getZipFileInputStream(fileHeader))) {
-                                        fileService.writeConversationMediaThumbnail(model, inputStream);
-                                    } catch (Exception e) {
-                                        logger.warn("Failed to generate thumbnail for media file, skipping", e);
-                                    }
+                                    generateThumbnailForMediaFile(fileHeader, model);
                                 }
                             }
                         }
@@ -1229,13 +1225,25 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         return count;
     }
 
+    private void generateThumbnailForMediaFile(
+        @NonNull FileHeader fileHeader,
+        @NonNull AbstractMessageModel model
+    ) {
+        logger.info("Generating thumbnail for media file");
+        try (ResettableInputStream inputStream = new ResettableInputStream(() -> getZipFileInputStream(fileHeader))) {
+            fileService.writeConversationMediaThumbnail(model, inputStream);
+        } catch (Exception e) {
+            logger.warn("Failed to generate thumbnail for media file, skipping", e);
+        }
+    }
+
     private boolean restoreContactFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
         return this.processCsvFile(fileHeader, row -> {
             try {
                 ContactModel contactModel = createContactModel(row, restoreSettings);
                 if (writeToDb) {
                     //set the default color
-                    ContactModelFactory contactModelFactory = databaseServiceNew.getContactModelFactory();
+                    ContactModelFactory contactModelFactory = databaseService.getContactModelFactory();
                     contactModelFactory.createOrUpdate(contactModel);
                 }
             } catch (Exception x) {
@@ -1309,7 +1317,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 GroupModel groupModel = createGroupModel(row, restoreSettings);
 
                 if (groupModel != null && writeToDb) {
-                    databaseServiceNew.getGroupModelFactory().create(
+                    databaseService.getGroupModelFactory().create(
                         groupModel
                     );
 
@@ -1325,17 +1333,26 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     List<GroupMemberModel> groupMemberModels = createGroupMembers(row, groupModel.getId());
 
                     for (GroupMemberModel groupMemberModel : groupMemberModels) {
-                        if (!myIdentity.equals(groupMemberModel.getIdentity())) {
-                            databaseServiceNew.getGroupMemberModelFactory().create(groupMemberModel);
-                        } else {
+                        String memberIdentity = groupMemberModel.getIdentity();
+                        if (myIdentity.equals(memberIdentity)) {
+                            // Don't save the user in member list. Just set the flag for setting
+                            // the user state later.
                             isInMemberList = true;
+                        } else if (contactService.getByIdentity(memberIdentity) != null) {
+                            // In case the contact exists, add the contact as a member
+                            databaseService.getGroupMemberModelFactory().create(groupMemberModel);
+                        } else {
+                            // The contact does not exist. This can happen when the data backup is
+                            // corrupt or the contact hasn't been added due to an invalid public
+                            // key.
+                            logger.warn("Could not add member {} to the group because it is no valid contact", memberIdentity);
                         }
                     }
                     if (restoreSettings.getVersion() < 25) {
                         // In this case the group user state is not included in the backup and we
                         // need to determine the state based on the group member list.
                         groupModel.setUserState(isInMemberList ? MEMBER : LEFT);
-                        databaseServiceNew.getGroupModelFactory().update(groupModel);
+                        databaseService.getGroupModelFactory().update(groupModel);
                     }
                 }
             } catch (Exception x) {
@@ -1350,17 +1367,22 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 DistributionListModel distributionListModel = createDistributionListModel(row);
 
                 if (writeToDb) {
-                    databaseServiceNew.getDistributionListModelFactory().create(
-                        distributionListModel);
+                    databaseService.getDistributionListModelFactory().create(distributionListModel);
                     distributionListIdMap.put(BackupUtils.buildDistributionListUid(distributionListModel), distributionListModel.getId());
                 }
 
                 List<DistributionListMemberModel> distributionListMemberModels = createDistributionListMembers(row, distributionListModel.getId());
                 if (writeToDb) {
                     for (DistributionListMemberModel distributionListMemberModel : distributionListMemberModels) {
-                        databaseServiceNew.getDistributionListMemberModelFactory().create(
-                            distributionListMemberModel
-                        );
+                        String memberIdentity = distributionListMemberModel.getIdentity();
+                        if (contactService.getByIdentity(memberIdentity) != null) {
+                            databaseService.getDistributionListMemberModelFactory().create(distributionListMemberModel);
+                        } else {
+                            // The contact does not exist. This can happen when the data backup is
+                            // corrupt or the contact hasn't been added due to an invalid public
+                            // key.
+                            logger.warn("Could not add member {} to distribution list because it is no valid contact", memberIdentity);
+                        }
                     }
                 }
             } catch (Exception x) {
@@ -1379,9 +1401,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 BallotModel ballotModel = createBallotModel(row);
 
                 if (writeToDb) {
-                    databaseServiceNew.getBallotModelFactory().create(
-                        ballotModel
-                    );
+                    databaseService.getBallotModelFactory().create(ballotModel);
 
                     ballotIdMap.put(BackupUtils.buildBallotUid(ballotModel), ballotModel.getId());
                     ballotOldIdMap.put(row.getInteger(Tags.TAG_BALLOT_ID), ballotModel.getId());
@@ -1395,11 +1415,11 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                         logger.error("link failed");
                     }
                     if (ballotLinkModel instanceof GroupBallotModel) {
-                        databaseServiceNew.getGroupBallotModelFactory().create(
+                        databaseService.getGroupBallotModelFactory().create(
                             (GroupBallotModel) ballotLinkModel
                         );
                     } else if (ballotLinkModel instanceof IdentityBallotModel) {
-                        databaseServiceNew.getIdentityBallotModelFactory().create(
+                        databaseService.getIdentityBallotModelFactory().create(
                             (IdentityBallotModel) ballotLinkModel
                         );
                     } else {
@@ -1416,9 +1436,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             try {
                 BallotChoiceModel ballotChoiceModel = createBallotChoiceModel(row);
                 if (ballotChoiceModel != null && writeToDb) {
-                    databaseServiceNew.getBallotChoiceModelFactory().create(
-                        ballotChoiceModel
-                    );
+                    databaseService.getBallotChoiceModelFactory().create(ballotChoiceModel);
                     ballotChoiceIdMap.put(BackupUtils.buildBallotChoiceUid(ballotChoiceModel), ballotChoiceModel.getId());
                 }
             } catch (Exception e) {
@@ -1431,9 +1449,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             try {
                 BallotVoteModel ballotVoteModel = createBallotVoteModel(row);
                 if (ballotVoteModel != null && writeToDb) {
-                    databaseServiceNew.getBallotVoteModelFactory().create(
-                        ballotVoteModel
-                    );
+                    databaseService.getBallotVoteModelFactory().create(ballotVoteModel);
                 }
             } catch (Exception x) {
                 logger.error("Failed to restore ballot vote file", x);
@@ -1624,9 +1640,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     messageModel.setIdentity(identity);
 
                     // faster, do not make a createOrUpdate to safe queries
-                    boolean success = databaseServiceNew.getMessageModelFactory().create(
-                        messageModel
-                    );
+                    boolean success = databaseService.getMessageModelFactory().create(messageModel);
                     if (success) {
                         tryMapContactAckDecToReaction(row, messageModel);
                     }
@@ -1710,9 +1724,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     Integer groupId = groupUidMap.get(groupUid);
                     if (groupId != null) {
                         groupMessageModel.setGroupId(groupId);
-                        boolean success = databaseServiceNew.getGroupMessageModelFactory().create(
-                            groupMessageModel
-                        );
+                        boolean success = databaseService.getGroupMessageModelFactory().create(groupMessageModel);
                         if (success) {
                             tryMapGroupAckDecToReactions(row, groupMessageModel);
                         }
@@ -1844,7 +1856,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     final Long distributionListId = distributionListIdMap.get(distributionListBackupUid);
                     if (distributionListId != null) {
                         distributionListMessageModel.setDistributionListId(distributionListId);
-                        databaseServiceNew.getDistributionListMessageModelFactory().createOrUpdate(
+                        databaseService.getDistributionListMessageModelFactory().createOrUpdate(
                             distributionListMessageModel
                         );
                     }
@@ -1903,9 +1915,10 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
     private ContactModel createContactModel(CSVRow row, RestoreSettings restoreSettings) throws ThreemaException {
 
-        ContactModel contactModel = new ContactModel(
+        ContactModel contactModel = ContactModel.create(
             row.getString(Tags.TAG_CONTACT_IDENTITY),
-            Utils.hexStringToByteArray(row.getString(Tags.TAG_CONTACT_PUBLIC_KEY)));
+            Utils.hexStringToByteArray(row.getString(Tags.TAG_CONTACT_PUBLIC_KEY))
+        );
 
         String verificationString = row.getString(Tags.TAG_CONTACT_VERIFICATION_LEVEL);
         VerificationLevel verification = VerificationLevel.UNVERIFIED;

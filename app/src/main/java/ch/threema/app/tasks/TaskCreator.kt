@@ -25,7 +25,6 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.Contact
-import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.rendezvous.RendezvousConnection
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -86,10 +85,6 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
         GetLinkedDevicesTask(serviceManager)
     }
 
-    fun scheduleDropDeviceTask(deviceId: DeviceId): Deferred<Unit> = scheduleTaskAsync {
-        DropDeviceTask(deviceId)
-    }
-
     fun scheduleDeactivateMultiDeviceIfAloneTask(): Deferred<Unit> = scheduleTaskAsync {
         DeactivateMultiDeviceIfAloneTask(serviceManager)
     }
@@ -127,6 +122,14 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
             multiDeviceManager = serviceManager.multiDeviceManager,
             nonceFactory = serviceManager.nonceFactory,
             blockedIdentitiesService = serviceManager.blockedIdentitiesService,
+        )
+    }
+
+    fun scheduleReflectExcludeFromSyncIdentitiesTask() = scheduleTaskAsync {
+        ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate(
+            multiDeviceManager = serviceManager.multiDeviceManager,
+            nonceFactory = serviceManager.nonceFactory,
+            excludedSyncIdentitiesService = serviceManager.excludedSyncIdentitiesService,
         )
     }
 

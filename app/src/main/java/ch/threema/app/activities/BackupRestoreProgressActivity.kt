@@ -30,12 +30,17 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.backuprestore.csv.BackupService
 import ch.threema.app.backuprestore.csv.RestoreService
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -87,9 +92,8 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
-        ConfigUtils.configureSystemBars(this)
 
         setContentView(R.layout.activity_backup_restore_progress)
 
@@ -115,6 +119,15 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
         } else {
             finish()
         }
+
+        handleDeviceInsets()
+    }
+
+    private fun handleDeviceInsets() {
+        findViewById<ConstraintLayout>(R.id.parent_layout).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.all(),
+            ownPadding = SpacingValues.all(R.dimen.grid_unit_x2),
+        )
     }
 
     override fun onResume() {

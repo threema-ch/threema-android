@@ -291,9 +291,19 @@ message Contact {
     // The contact was explicitly added by the user or a 1:1 conversation with
     // the contact has been initiated.
     DIRECT = 0;
-    // The contact is part of a group the user is also part of. The contact was
-    // not explicitly added and no 1:1 conversation has been initiated.
-    GROUP = 1;
+    // This level covers the following cases:
+    //
+    // - The contact is part of a group the user is also part of. The contact
+    //   was not explicitly added and no 1:1 conversation has been initiated.
+    // - The contact was part of a group the user was/is also part of before but
+    //   either of them has since been removed from all common groups.
+    // - The contact has been explicitly removed by the user.
+    //
+    // The protocol refers to contacts with this level as either acquaintance
+    // level _group_ or _deleted_. They are interchangeable and there's no
+    // semantic difference between them beyond the context in which they are
+    // referred to.
+    GROUP_OR_DELETED = 1;
   }
   optional AcquaintanceLevel acquaintance_level = 9;
 
@@ -481,10 +491,32 @@ message Group {
     // marked as _left_.
     KICKED = 1;
     // The user left the group. Implies that the group has been marked as
-    // _left_.
+    // _left_. If the user is the creator, this implies that the group has been
+    // disbanded.
     LEFT = 2;
   }
   optional UserState user_state = 6;
+
+  // Group's profile picture as received from the group's creator
+  //
+  // Always optional.
+  common.DeltaImage profile_picture = 7;
+
+  // Group members (**NOT** including the creator and the user itself)
+  //
+  // Required towards a new device and for a new group. Optional for an existing
+  // group.
+  //
+  // The concrete semantic of this list depends on the current `user_state`:
+  //
+  // - `MEMBER`: It contains a list of all **current** group members (with the
+  //   user itself implicitly added).
+  // - `KICKED`/`LEFT`: It contains a list of all **previous** group members up
+  //   to that event. If the list is empty, the group must not be visible in the
+  //   UI.
+  //
+  // An empty list is valid.
+  common.Identities member_identities = 8;
 
   // Notification trigger policy for the group
   //
@@ -534,27 +566,6 @@ message Group {
     }
   }
   NotificationSoundPolicyOverride notification_sound_policy_override = 10;
-
-  // Group's profile picture as received from the group's creator
-  //
-  // Always optional.
-  common.DeltaImage profile_picture = 7;
-
-  // Group members (**NOT** including the user itself)
-  //
-  // Required towards a new device and for a new group. Optional for an existing
-  // group.
-  //
-  // The concrete semantic of this list depends on the current `user_state`:
-  //
-  // - `MEMBER`: It contains a list of all **current** group members (with the
-  //   user itself implicitly added).
-  // - `KICKED`/`LEFT`: It contains a list of all **previous** group members up
-  //   to that event. If the list is empty, the group must not be visible in the
-  //   UI.
-  //
-  // An empty list is valid.
-  common.Identities member_identities = 8;
 
   // Conversation category of the group
   //

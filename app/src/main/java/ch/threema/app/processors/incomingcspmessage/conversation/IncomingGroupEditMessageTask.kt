@@ -31,9 +31,8 @@ import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingGroupEditMessageTask")
+private val logger = LoggingUtil.getThreemaLogger("IncomingGroupEditMessageTask")
 
 class IncomingGroupEditMessageTask(
     editMessage: GroupEditMessage,

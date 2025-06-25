@@ -40,6 +40,7 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.storage.CursorHelper
 import ch.threema.storage.DatabaseUtil
 import ch.threema.storage.models.ContactModel
@@ -48,6 +49,7 @@ import ch.threema.storage.models.GroupMemberModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
+import com.neilalexander.jnacl.NaCl
 import java.util.Collections
 import java.util.Date
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -182,6 +184,13 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
     }
 
     override fun createContact(contact: DbContact) {
+        require(contact.identity.length == ProtocolDefines.IDENTITY_LEN) {
+            "Cannot create contact with invalid identity: ${contact.identity}"
+        }
+        require(contact.publicKey.size == NaCl.PUBLICKEYBYTES) {
+            "Cannot create contact (${contact.identity}) with public key of invalid length: ${contact.publicKey.size}"
+        }
+
         val contentValues = ContentValues()
         contentValues.put(ContactModel.COLUMN_IDENTITY, contact.identity)
         contentValues.put(ContactModel.COLUMN_PUBLIC_KEY, contact.publicKey)

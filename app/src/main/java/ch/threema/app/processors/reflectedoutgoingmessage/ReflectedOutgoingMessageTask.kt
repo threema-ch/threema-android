@@ -27,14 +27,18 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.processors.reflectedoutgoingmessage.groupcall.ReflectedOutgoingGroupCallStartTask
 import ch.threema.base.crypto.Nonce
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.toHexString
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.protobuf.Common.CspE2eMessageType
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
+import ch.threema.storage.models.GroupMessageModel
+import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import java.util.Date
 
@@ -44,28 +48,39 @@ interface ReflectedOutgoingMessageTask {
     fun executeReflectedOutgoingMessageSteps()
 }
 
-internal sealed class ReflectedOutgoingBaseMessageTask<M : MessageReceiver<*>>(
-    protected val message: OutgoingMessage,
+internal sealed class ReflectedOutgoingBaseMessageTask<
+    ModelType : AbstractMessageModel,
+    ReceiverType : MessageReceiver<ModelType>,
+    MessageType : AbstractMessage,
+    >(
+    /**
+     * The reflected outgoing message.
+     */
+    protected val outgoingMessage: OutgoingMessage,
+    /**
+     * The parsed message from the [OutgoingMessage.getBody].
+     */
+    protected val message: MessageType,
+    /**
+     * The type of the message. This is only used to assert that the right message task has been created.
+     */
     type: CspE2eMessageType,
-    serviceManager: ServiceManager,
+    /**
+     * The nonce factory used to handle nonces.
+     */
+    private val nonceFactory: NonceFactory,
 ) : ReflectedOutgoingMessageTask {
-    protected abstract val shouldBumpLastUpdate: Boolean
-
-    protected abstract val messageReceiver: M
-
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
-
-    protected abstract val storeNonces: Boolean
+    protected abstract val messageReceiver: ReceiverType
 
     init {
-        if (message.type != type) {
-            throw IllegalArgumentException("Incompatible types: ${message.type} - $type")
+        require(outgoingMessage.type == type) {
+            "Incompatible types: ${outgoingMessage.type} - $type"
         }
     }
 
     override fun executeReflectedOutgoingMessageSteps() {
-        if (storeNonces) {
-            message.noncesList.forEach {
+        if (message.protectAgainstReplay()) {
+            outgoingMessage.noncesList.forEach {
                 val nonce = Nonce(it.toByteArray())
                 if (nonceFactory.exists(NonceScope.CSP, nonce)) {
                     logger.info("Skip adding preexisting CSP nonce {}", nonce.bytes.toHexString())
@@ -77,56 +92,94 @@ internal sealed class ReflectedOutgoingBaseMessageTask<M : MessageReceiver<*>>(
                 }
             }
         } else {
-            logger.debug("Do not store nonces for message of type {}", message.type)
+            logger.debug("Do not store nonces for message of type {}", outgoingMessage.type)
         }
 
         processOutgoingMessage()
 
-        if (shouldBumpLastUpdate) {
+        if (message.bumpLastUpdate()) {
             messageReceiver.bumpLastUpdate()
         }
     }
 
+    /**
+     * Process the reflected outgoing message. This should include creating and saving message models depending on the message type.
+     */
     protected abstract fun processOutgoingMessage()
 
-    protected fun initializeMessageModelsCommonFields(messageModel: AbstractMessageModel) {
-        messageModel.apiMessageId = MessageId(message.messageId).toString()
+    /**
+     * Create a message model with the given types. Note that all common fields are set and only the message type specific information is missing.
+     */
+    protected fun createMessageModel(messageType: ch.threema.storage.models.MessageType, contentsType: Int): ModelType {
+        val messageModel = messageReceiver.createLocalModel(
+            messageType,
+            contentsType,
+            null,
+        )
+
+        messageModel.apiMessageId = MessageId(outgoingMessage.messageId).toString()
         messageModel.isSaved = true
         messageModel.isOutbox = true
         messageModel.state = MessageState.SENDING
-        messageModel.createdAt = Date(message.createdAt)
+        messageModel.createdAt = Date(outgoingMessage.createdAt)
+        messageModel.forwardSecurityMode = message.forwardSecurityMode
+
+        return messageModel
     }
 }
 
-internal abstract class ReflectedOutgoingContactMessageTask(
-    message: OutgoingMessage,
+internal abstract class ReflectedOutgoingContactMessageTask<MessageType : AbstractMessage>(
+    outgoingMessage: OutgoingMessage,
+    message: MessageType,
     type: CspE2eMessageType,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingBaseMessageTask<ContactMessageReceiver>(message, type, serviceManager) {
+) : ReflectedOutgoingBaseMessageTask<MessageModel, ContactMessageReceiver, MessageType>(outgoingMessage, message, type, serviceManager.nonceFactory) {
     protected val contactService by lazy { serviceManager.contactService }
     protected val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
 
     override val messageReceiver: ContactMessageReceiver by lazy {
-        val contact = contactService.getByIdentity(message.conversation.contact)
+        val contact = contactService.getByIdentity(outgoingMessage.conversation.contact)
             ?: throw IllegalStateException("The contact of a reflected outgoing message must be known")
         contactService.createReceiver(contact)
     }
+
+    init {
+        logger.info(
+            "Created reflected outgoing contact message task for message {} with type {}",
+            MessageId(outgoingMessage.messageId),
+            outgoingMessage.type,
+        )
+    }
 }
 
-internal abstract class ReflectedOutgoingGroupMessageTask(
-    message: OutgoingMessage,
+internal abstract class ReflectedOutgoingGroupMessageTask<MessageType : AbstractMessage>(
+    outgoingMessage: OutgoingMessage,
+    message: MessageType,
     type: CspE2eMessageType,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingBaseMessageTask<GroupMessageReceiver>(message, type, serviceManager) {
+) : ReflectedOutgoingBaseMessageTask<GroupMessageModel, GroupMessageReceiver, MessageType>(
+    outgoingMessage,
+    message,
+    type,
+    serviceManager.nonceFactory,
+) {
     protected val groupService by lazy { serviceManager.groupService }
 
     override val messageReceiver: GroupMessageReceiver by lazy {
-        val groupIdentity = message.conversation.group
+        val groupIdentity = outgoingMessage.conversation.group
         val group = groupService.getByApiGroupIdAndCreator(
             GroupId(groupIdentity.groupId),
             groupIdentity.creatorIdentity,
         ) ?: throw IllegalStateException("The group of a reflected outgoing message must be known")
         groupService.createReceiver(group)
+    }
+
+    init {
+        logger.info(
+            "Created reflected outgoing group message task for message {} with type {}",
+            MessageId(outgoingMessage.messageId),
+            outgoingMessage.type,
+        )
     }
 }
 
@@ -161,7 +214,7 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.CALL_ANSWER,
     CspE2eMessageType.CALL_HANGUP,
     -> ReflectedOutgoingPlaceholderTask(
-        message = this,
+        outgoingMessage = this,
         serviceManager = serviceManager,
         logMessage = "Reflected message of type ${type.name} was received as outgoing",
     )

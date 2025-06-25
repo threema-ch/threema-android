@@ -22,7 +22,7 @@
 package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test

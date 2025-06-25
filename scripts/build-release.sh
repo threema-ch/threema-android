@@ -33,7 +33,7 @@ function print_usage() {
     echo "Usage: $0 -v <variants> [-b] [-k <dir>] [-o <dir>] [--no-image-export] --i-accept-the-android-sdk-license"
     echo ""
     echo "Options:"
-    echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop, libre, work, hms, hmswork, onprem"
+    echo "  -v <variants>        Comma-separated variants to build: googleplay_private, googleplay_work, googleplay_onprem, hms_private, hms_work, threemashop_private, libre_private"
     echo "  -b,--build           (Re)build the Docker image"
     echo "  --no-cache           Clear Docker build cache"
     echo "  -k,--keystore <dir>  Path to the keystore directory"
@@ -106,7 +106,7 @@ releasedir=$(realpath "$releasedir")
 IFS=', ' read -r -a variant_array <<< "$variants"
 for variant in "${variant_array[@]}"; do
     case $variant in
-        googleplay | threemashop | libre | work | hms | hmswork | onprem)
+        googleplay_private | googleplay_work | googleplay_onprem | hms_private | hms_work | threemashop_private | libre_private)
             # Valid
             ;;
         *)
@@ -118,20 +118,22 @@ if [ "$license" != "accepted" ]; then
     fail 'Please accept the license with "--i-accept-the-android-sdk-license"'
 fi
 
-# Determine build version
-app_version_code=$(grep "^\s*val defaultVersionCode = \d*" "$DIR/../app/build.gradle.kts" | sed 's/[^0-9]*//g')
-app_version_name_main=$(grep '^val appVersion = "' "$DIR/../app/build.gradle.kts" | sed 's/^val appVersion = "\([^"]*\)".*/\1/')
-app_version_name_suffix=$(grep '^val betaSuffix = "' "$DIR/../app/build.gradle.kts" | sed 's/^val betaSuffix = "\([^"]*\)".*/\1/')
-app_version_name="${app_version_name_main}${app_version_name_suffix}"
-sdk_version=$(grep "^\s*compileSdk = [0-9]\+" "$DIR/../app/build.gradle.kts" | sed 's/[^0-9]*//g')
-build_tools_version=$(grep "^\s*buildToolsVersion = \"\([0-9]\+\.\?\)\+\"" "$DIR/../app/build.gradle.kts" | sed 's/[^0-9\.]*//g')
+# Determine build version and full name in the form of: "1.1[-beta1]-1000"
+APP_BUILD_GRADLE_FILE="$DIR/../app/build.gradle.kts"
+APP_VERSION_CODE=$(grep "^\s*val defaultVersionCode = \d*" "$APP_BUILD_GRADLE_FILE" | sed 's/[^0-9]*//g')
+APP_VERSION_NAME_MAIN=$(grep '^val appVersion = "' "$APP_BUILD_GRADLE_FILE" | sed 's/^val appVersion = "\([^"]*\)".*/\1/')
+APP_VERSION_NAME_SUFFIX=$(grep '^val betaSuffix = "' "$APP_BUILD_GRADLE_FILE" | sed 's/^val betaSuffix = "\([^"]*\)".*/\1/')
+FULL_APP_VERSION_NAME="${APP_VERSION_NAME_MAIN}${APP_VERSION_NAME_SUFFIX}-${APP_VERSION_CODE}"
+
+sdk_version=$(grep "^\s*compileSdk = [0-9]\+" "$APP_BUILD_GRADLE_FILE" | sed 's/[^0-9]*//g')
+build_tools_version=$(grep "^\s*buildToolsVersion = \"\([0-9]\+\.\?\)\+\"" "$APP_BUILD_GRADLE_FILE" | sed 's/[^0-9\.]*//g')
 rust_version=$(grep channel "$DIR/../domain/libthreema/rust-toolchain.toml" | cut -d'"' -f2)
 
 # Validate target directory
 mkdir -p "$releasedir"
-name=${app_version_name//[^0-9\.a-zA-Z\-_]/}
+name=${FULL_APP_VERSION_NAME//[^0-9\.a-zA-Z\-_]/}
 if [[ "$name" == "" || "$name" == .* ]]; then
-    fail "Could not process app version name ($app_version_name)"
+    fail "Could not process app version name ($FULL_APP_VERSION_NAME)"
 fi
 targetdir="$releasedir/$name"
 log_major "Creating target directory $targetdir"
@@ -143,8 +145,8 @@ mkdir "$targetdir"
 # Build Docker image
 if [ $build -eq 1 ]; then
     log_major "Building Docker image with args:"
-    log_minor "app_version_code=$app_version_code"
-    log_minor "app_version_name=$app_version_name"
+    log_minor "app_version_code=$APP_VERSION_CODE"
+    log_minor "app_version_name=$FULL_APP_VERSION_NAME"
     log_minor "sdk_version=$sdk_version"
     log_minor "build_tools_version=$build_tools_version"
     log_minor "rust_version=$rust_version"
@@ -153,40 +155,40 @@ if [ $build -eq 1 ]; then
         --build-arg BUILD_TOOLS_VERSION="$build_tools_version" \
         --build-arg RUST_VERSION="$rust_version" \
         -t "$DOCKERIMAGE:latest" \
-        -t "$DOCKERIMAGE:$app_version_code"
+        -t "$DOCKERIMAGE:$APP_VERSION_CODE"
 fi
 
 # Build app variant(s)
 for variant in "${variant_array[@]}"; do
     # Determine target and path
     case $variant in
-        googleplay)
+        googleplay_private)
             target=assembleStore_googleRelease
             variant_dir="store_google"
             ;;
-        threemashop)
-            target=assembleStore_threemaRelease
-            variant_dir="store_threema"
-            ;;
-        libre)
-            target=assembleLibreRelease
-            variant_dir="libre"
-            ;;
-        work)
+        googleplay_work)
             target=assembleStore_google_workRelease
             variant_dir="store_google_work"
             ;;
-        hms)
+        googleplay_onprem)
+            target=assembleOnpremRelease
+            variant_dir="onprem"
+            ;;
+        hms_private)
             target=assembleHmsRelease
             variant_dir="hms"
             ;;
-        hmswork)
+        hms_work)
             target=assembleHms_workRelease
             variant_dir="hms_work"
             ;;
-        onprem)
-            target=assembleOnpremRelease
-            variant_dir="onprem"
+        threemashop_private)
+            target=assembleStore_threemaRelease
+            variant_dir="store_threema"
+            ;;
+        libre_private)
+            target=assembleLibreRelease
+            variant_dir="libre"
             ;;
         *)
             fail "Invalid build variant: $variant"
@@ -195,7 +197,12 @@ for variant in "${variant_array[@]}"; do
 
     # Compile
     log_major "Building gradle target $target"
-    run_command="docker run --rm -ti"
+    run_command="docker run --rm"
+    if [ "${CI:-}" = "true" ]; then
+        log_minor "CI detected, running Docker commands non-interactively"
+    else
+        run_command+=" -ti"
+    fi
     run_command+=" -u \"$(id -u):$(id -g)\""
     run_command+=" -v \"$DIR/..\":/code"
     run_command+=" -v /dev/null:/code/local.properties"  # Mask local.properties file
@@ -206,7 +213,7 @@ for variant in "${variant_array[@]}"; do
         keystore_realpath=$(realpath "$keystore")
         run_command+=" -v \"$keystore_realpath:/keystore\""
     fi
-    run_command+=" \"$DOCKERIMAGE:$app_version_code\""
+    run_command+=" \"$DOCKERIMAGE:$APP_VERSION_CODE\""
     run_command+=" /bin/bash -c \"cd /code && ./gradlew clean -PbuildUniversalApk $target\""
     eval "$run_command"
 
@@ -238,16 +245,9 @@ done
 # Export image
 if [ $export_image -eq 1 ]; then
     log_major "Exporting docker image"
-    docker image save -o "$targetdir/docker-image.tar" "$DOCKERIMAGE:$app_version_code"
+    docker image save -o "$targetdir/docker-image.tar" "$DOCKERIMAGE:$APP_VERSION_CODE"
     log_minor "Compressing docker image"
     gzip "$targetdir/docker-image.tar"
 fi
-
-# Generate checksums
-log_major "Generate APK checksums"
-for variant in "${variant_array[@]}"; do
-    log_minor "$variant"
-    (cd "$targetdir/$variant/" && shasum -a 256 ./*.apk > apk-checksums-sha256.txt)
-done
 
 log_major "Done! You can find the resulting files in the '$releasedir' directory."

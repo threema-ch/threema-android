@@ -23,9 +23,8 @@ package ch.threema.domain.protocol.csp.messages.voip;
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 
@@ -40,18 +39,18 @@ public class VoipCallRingingDataTest {
         msg.write(bos);
         final String json = bos.toString();
 
-        Assert.assertEquals("{\"callId\":1234}", json);
+        Assertions.assertEquals("{\"callId\":1234}", json);
     }
 
     @Test
     public void parseRingingWithCallId() throws BadMessageException {
         final VoipCallRingingData parsed = VoipCallRingingData.parse("{\"callId\":42}");
-        Assert.assertEquals(Long.valueOf(42), parsed.getCallId());
+        Assertions.assertEquals(Long.valueOf(42), parsed.getCallId());
     }
 
     @Test
     public void parseRingingWithoutCallId() throws BadMessageException {
         final VoipCallRingingData parsed = VoipCallRingingData.parse("{}");
-        Assert.assertNull(parsed.getCallId());
+        Assertions.assertNull(parsed.getCallId());
     }
 }

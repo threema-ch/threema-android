@@ -116,12 +116,29 @@ to _threema_ and `false` mapping to _external_. For reflected
 
 When this parameter is set:
 
-1. Ensure that entry points for manually adding contacts are disabled if `true`
+1. Ensure that entrypoints for manually adding contacts are disabled if `true`
    or enabled if `false`.¹
 
 When this parameter is unset:
 
-1. Ensure that entry points for manually adding contacts are enabled.
+1. Ensure that entrypoints for manually adding contacts are enabled.
 
 ¹: Contacts can still be added implicitly, e.g. through contact import or when
 receiving a message from an unknown contact.
+
+### th_disable_multidevice (boolean)
+
+When this parameter is set:
+
+1. If `false`, ensure that entrypoints for enabling multi-device and adding new
+   devices are enabled.
+2. If `true`:
+   1. Ensure that entrypoints for enabling multi-device and adding new devices
+      are disabled.
+   2. If multi-device is currently enabled, schedule a persistent task to run
+      the _Drop Devices Steps_ with the intent to _deactivate_ multi-device.
+
+When this parameter is unset:
+
+1. Ensure that entrypoints for enabling multi-device and adding new devices are
+   enabled.

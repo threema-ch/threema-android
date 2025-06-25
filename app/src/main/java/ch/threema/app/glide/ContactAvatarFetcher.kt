@@ -25,9 +25,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.ContactService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.utils.AndroidContactUtil
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.ColorUtil

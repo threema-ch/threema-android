@@ -37,11 +37,12 @@ import org.slf4j.Logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.biometric.BiometricPrompt;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.SystemScreenLockService;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.NavigationUtil;
@@ -81,7 +82,7 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
-        isCheckOnly = getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, false);
+        isCheckOnly = getIntent().getBooleanExtra(AppConstants.INTENT_DATA_CHECK_ONLY, false);
         if (getIntent().hasExtra(INTENT_DATA_AUTHENTICATION_TYPE)) {
             authenticationType = getIntent().getStringExtra(INTENT_DATA_AUTHENTICATION_TYPE);
         }

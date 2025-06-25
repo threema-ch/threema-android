@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,169 +9,197 @@
 
     <include layout="@layout/toolbar_view" />
 
-    <RelativeLayout
-        android:id="@+id/background_layout"
+    <FrameLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:visibility="invisible">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Threema.CardView.MediaViewerCaption"
-            android:id="@+id/item_count_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/bottom_panel"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_alignParentLeft="true"
-            app:contentPaddingBottom="4dp"
-            app:contentPaddingLeft="8dp"
-            app:contentPaddingRight="8dp"
-            app:contentPaddingTop="4dp">
-
-            <TextView
-                android:id="@+id/item_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@android:color/white"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="12sp" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Threema.CardView.MediaViewerCaption"
-            android:id="@+id/recipient_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/bottom_panel"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_alignParentRight="true"
-            app:contentPaddingBottom="4dp"
-            app:contentPaddingLeft="8dp"
-            app:contentPaddingRight="8dp"
-            app:contentPaddingTop="4dp">
-
-            <ch.threema.app.emojis.EmojiTextView
-                android:id="@+id/recipient_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@android:color/white"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="12sp" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <FrameLayout
-            android:id="@+id/bottom_panel"
+        <LinearLayout
+            android:id="@+id/foreground_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/item_list"
-            android:layout_alignWithParentIfMissing="true"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:background="#77000000"
-            android:animateLayoutChanges="true">
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            tools:visibility="visible">
 
-            <ch.threema.app.ui.ComposeEditText
-                android:id="@+id/caption_edittext"
+            <FrameLayout
+                android:id="@+id/bottom_chips_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/item_count_container"
+                    style="@style/Threema.CardView.MediaViewerCaption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_margin="@dimen/grid_unit_x1"
+                    app:contentPaddingBottom="@dimen/grid_unit_x0_5"
+                    app:contentPaddingLeft="@dimen/grid_unit_x1"
+                    app:contentPaddingRight="@dimen/grid_unit_x1"
+                    app:contentPaddingTop="@dimen/grid_unit_x0_5">
+
+                    <TextView
+                        android:id="@+id/item_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        tools:text="1 ausgewählt" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/recipient_container"
+                    style="@style/Threema.CardView.MediaViewerCaption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/grid_unit_x1"
+                    app:contentPaddingBottom="@dimen/grid_unit_x0_5"
+                    app:contentPaddingLeft="@dimen/grid_unit_x1"
+                    app:contentPaddingRight="@dimen/grid_unit_x1"
+                    app:contentPaddingTop="@dimen/grid_unit_x0_5">
+
+                    <ch.threema.app.emojis.EmojiTextView
+                        android:id="@+id/recipient_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        tools:text="Senden an Gruppe" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/dim_background"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                android:paddingTop="3dp"
-                android:paddingLeft="@dimen/emoji_button_width"
-                android:paddingRight="45dp"
-                android:layout_marginRight="56dp"
-                android:layout_gravity="bottom"
-                android:background="@drawable/bubble_compose_dark_outline"
-                android:hint="@string/add_caption_hint"
-                android:maxLength="1000"
-                android:maxLines="@integer/message_edittext_max_lines"
-                android:ellipsize="end"
-                android:minHeight="@dimen/input_text_height"
-                android:nextFocusRight="@+id/attach_button"
-                android:nextFocusLeft="@+id/emoji_button"
-                android:scrollHorizontally="false"
-                android:textSize="16sp">
+                android:background="#77000000">
 
-                <requestFocus />
-            </ch.threema.app.ui.ComposeEditText>
+                <!-- Ignoring uselessParent because we need this wrapper view to apply insets padding -->
+                <LinearLayout
+                    android:id="@+id/bottom_controls_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    tools:ignore="UselessParent">
 
-            <ch.threema.app.emojis.EmojiButton
-                android:id="@+id/emoji_button"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="@dimen/emoji_button_width"
-                android:layout_height="@dimen/emoji_button_width"
-                android:layout_marginBottom="5dp"
-                android:layout_gravity="left|bottom"
-                android:background="@drawable/selector_compose_button"
-                android:contentDescription="@string/select_emoji"
-                android:padding="8dp"
-                android:drawablePadding="0dip"
-                android:focusable="true"
-                android:nextFocusRight="@+id/caption_edittext" />
+                    <FrameLayout
+                        android:id="@+id/caption_input_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/grid_unit_x1"
+                        android:layout_marginTop="@dimen/grid_unit_x1">
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/camera_button"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="@dimen/emoji_button_width"
-                android:layout_height="@dimen/emoji_button_width"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="4dp"
-                android:layout_marginRight="59dp"
-                android:background="@drawable/selector_compose_button"
-                android:contentDescription="@string/take_photo"
-                android:nextFocusRight="@+id/send_button"
-                android:padding="8dp"
-                android:drawablePadding="0dip"
-                android:focusable="true"
-                app:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_camera_outline" />
+                        <ch.threema.app.ui.ComposeEditText
+                            android:id="@+id/caption_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_marginRight="56dp"
+                            android:background="@drawable/bubble_compose_dark_outline"
+                            android:ellipsize="end"
+                            android:hint="@string/add_caption_hint"
+                            android:maxLength="6000"
+                            android:maxLines="@integer/message_edittext_max_lines"
+                            android:minHeight="@dimen/input_text_height"
+                            android:nextFocusLeft="@+id/emoji_button"
+                            android:nextFocusRight="@+id/attach_button"
+                            android:paddingLeft="@dimen/emoji_button_width"
+                            android:paddingTop="3dp"
+                            android:paddingRight="45dp"
+                            android:paddingBottom="4dp"
+                            android:scrollHorizontally="false"
+                            android:textSize="16sp">
 
-            <ch.threema.app.ui.SendButton
-                android:id="@+id/send_button"
-                android:layout_width="@dimen/input_text_height"
-                android:layout_height="@dimen/input_text_height"
-                android:layout_gravity="bottom|right"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="@drawable/selector_avatar"
-                app:buttonTheme="1" />
+                            <requestFocus />
+                        </ch.threema.app.ui.ComposeEditText>
 
-        </FrameLayout>
+                        <ch.threema.app.emojis.EmojiButton
+                            android:id="@+id/emoji_button"
+                            style="?android:attr/borderlessButtonStyle"
+                            android:layout_width="@dimen/emoji_button_width"
+                            android:layout_height="@dimen/emoji_button_width"
+                            android:layout_gravity="left|bottom"
+                            android:layout_marginBottom="5dp"
+                            android:background="@drawable/selector_compose_button"
+                            android:contentDescription="@string/select_emoji"
+                            android:drawablePadding="0dip"
+                            android:focusable="true"
+                            android:nextFocusRight="@+id/caption_edittext"
+                            android:padding="@dimen/grid_unit_x1" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/item_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:layout_alignParentBottom="true"
-            android:scrollbars="none"
-            android:gravity="center"
-            android:background="#77000000" />
+                        <androidx.appcompat.widget.AppCompatImageButton
+                            android:id="@+id/camera_button"
+                            style="?android:attr/borderlessButtonStyle"
+                            android:layout_width="@dimen/emoji_button_width"
+                            android:layout_height="@dimen/emoji_button_width"
+                            android:layout_gravity="bottom|right"
+                            android:layout_marginRight="59dp"
+                            android:layout_marginBottom="@dimen/grid_unit_x0_5"
+                            android:background="@drawable/selector_compose_button"
+                            android:contentDescription="@string/take_photo"
+                            android:drawablePadding="0dip"
+                            android:focusable="true"
+                            android:nextFocusRight="@+id/send_button"
+                            android:padding="@dimen/grid_unit_x1"
+                            app:srcCompat="@drawable/ic_camera_outline"
+                            app:tint="@android:color/white" />
 
-    </RelativeLayout>
+                        <ch.threema.app.ui.SendButton
+                            android:id="@+id/send_button"
+                            android:layout_width="@dimen/input_text_height"
+                            android:layout_height="@dimen/input_text_height"
+                            android:layout_gravity="bottom|right"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="@drawable/selector_avatar"
+                            app:buttonTheme="1" />
 
-    <ViewStub
-        android:id="@+id/emoji_stub"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inflatedId="@+id/emoji_picker"
-        android:layout="@layout/emoji_picker_layout" />
+                    </FrameLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/item_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/grid_unit_x1"
+                        android:paddingVertical="@dimen/grid_unit_x1"
+                        android:scrollbars="none"
+                        tools:itemCount="1"
+                        tools:listitem="@layout/item_send_media_add" />
+
+                    <ViewStub
+                        android:id="@+id/emoji_stub"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inflatedId="@+id/emoji_picker"
+                        android:layout="@layout/emoji_picker_layout" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>

@@ -59,7 +59,7 @@
                 android:id="@+id/call_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/group_caller_container_margin_top"
+                android:layout_marginTop="@dimen/grid_unit_x1"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-light"
                 android:maxLines="1"
@@ -120,7 +120,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_videocam_off_black_outline"
-                app:tint="@android:color/white" />
+                app:tint="@android:color/white"
+                tools:visibility="visible" />
 
             <ImageButton
                 android:id="@+id/button_flip_camera"

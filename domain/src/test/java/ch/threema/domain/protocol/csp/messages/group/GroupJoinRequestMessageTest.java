@@ -21,20 +21,22 @@
 
 package ch.threema.domain.protocol.csp.messages.group;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 
-import static ch.threema.domain.testhelpers.TestHelpers.*;
-
-import org.junit.Assert;
-import org.junit.Test;
+import static ch.threema.domain.testhelpers.TestHelpers.boxMessage;
+import static ch.threema.domain.testhelpers.TestHelpers.decodeMessageFromBox;
+import static ch.threema.domain.testhelpers.TestHelpers.setMessageDefaultSenderAndReceiver;
 
 public class GroupJoinRequestMessageTest {
 
-    static GroupJoinRequestData getDataTestInstance() throws BadMessageException {
+    static GroupJoinRequestData getDataTestInstance() {
         return new GroupJoinRequestData(
             GroupJoinRequestDataTest.TEST_TOKEN_VALID,
             GroupJoinRequestDataTest.TEST_GROUP_NAME,
@@ -42,26 +44,26 @@ public class GroupJoinRequestMessageTest {
         );
     }
 
-    static GroupJoinRequestMessage getMessageTestInstance() throws BadMessageException {
+    static GroupJoinRequestMessage getMessageTestInstance() {
         final GroupJoinRequestMessage msg = new GroupJoinRequestMessage(getDataTestInstance());
         setMessageDefaultSenderAndReceiver(msg);
         return msg;
     }
 
     @Test
-    public void makeBoxTest() throws ThreemaException, BadMessageException {
+    void makeBoxTest() throws ThreemaException {
         final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
-        Assert.assertNotNull(boxedMessage);
+        Assertions.assertNotNull(boxedMessage);
     }
 
     @Test
-    public void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
+    void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
         final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
 
         final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
-        Assert.assertTrue(decodedMessage instanceof GroupJoinRequestMessage);
+        Assertions.assertInstanceOf(GroupJoinRequestMessage.class, decodedMessage);
 
         final GroupJoinRequestMessage msg = (GroupJoinRequestMessage) decodedMessage;
-        Assert.assertEquals(msg.getData(), getDataTestInstance());
+        Assertions.assertEquals(msg.getData(), getDataTestInstance());
     }
 }

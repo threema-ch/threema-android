@@ -24,6 +24,8 @@ package ch.threema.storage.models;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import com.neilalexander.jnacl.NaCl;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
@@ -49,6 +51,7 @@ import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.models.WorkVerificationLevel;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.utils.TextUtil.SPACE;
 import static ch.threema.app.utils.TextUtil.TILDE;
@@ -148,8 +151,42 @@ public class ContactModel extends Contact implements ReceiverModel {
     private @Nullable String department;
     private @Nullable Long notificationTriggerPolicyOverride;
 
-    public ContactModel(String identity, @NonNull byte[] publicKey) {
+    private ContactModel(String identity, @NonNull byte[] publicKey) {
         super(identity, publicKey, VerificationLevel.UNVERIFIED);
+    }
+
+    /**
+     * Create a contact model with the given identity and public key. Note that this method does not
+     * check that the identity is a valid string or that the public key contains
+     * {@link com.neilalexander.jnacl.NaCl.PUBLICKEYBYTES} bytes.
+     * This method should only be used when constructing a contact model from the database as it may
+     * contain invalid data. Use {@link #create(String, byte[])} whenever creating a new contact.
+     */
+    @NonNull
+    public static ContactModel createUnchecked(@NonNull String identity, @NonNull byte[] publicKey) {
+        if (identity.length() != ProtocolDefines.IDENTITY_LEN) {
+            logger.warn("Creating contact with invalid identity: {}", identity);
+        }
+        if (publicKey.length != NaCl.PUBLICKEYBYTES) {
+            logger.warn("Creating contact {} with invalid public key of length {}", identity, publicKey.length);
+        }
+        return new ContactModel(identity, publicKey);
+    }
+
+    /**
+     * Create a contact model with the given identity and public key.
+     * @throws IllegalArgumentException if the identity or the public key is of invalid length
+     */
+    @NonNull
+    public static ContactModel create(@NonNull String identity, @NonNull byte[] publicKey) {
+        if (identity.length() != ProtocolDefines.IDENTITY_LEN) {
+            throw new IllegalArgumentException("Invalid identity: " + identity);
+        }
+        if (publicKey.length != NaCl.PUBLICKEYBYTES) {
+            throw new IllegalArgumentException("Invalid public key of length " + publicKey.length);
+        }
+
+        return new ContactModel(identity, publicKey);
     }
 
     /**

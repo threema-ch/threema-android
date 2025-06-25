@@ -31,14 +31,22 @@ import androidx.preference.PreferenceCategory
 import ch.threema.app.BuildConfig
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
-import ch.threema.app.activities.*
+import ch.threema.app.activities.DownloadApkActivity
 import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.dialogs.SimpleStringAlertDialog
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.license.LicenseService
 import ch.threema.app.services.license.LicenseServiceSerial
-import ch.threema.app.utils.*
+import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.DialogUtil
+import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.app.utils.showToast
+import ch.threema.app.webviews.EulaActivity
+import ch.threema.app.webviews.LicenseActivity
+import ch.threema.app.webviews.PrivacyPolicyActivity
+import ch.threema.app.webviews.TermsOfServiceActivity
 import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsAboutFragment")
@@ -59,11 +67,9 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         initPrivacyPolicyPref()
         initTermsOfServicePref()
         initEndUserLicensePref()
-        initAboutPref()
+        initVersionSection()
         initSelfUpdatePref()
         initServerConfigSection()
-        initDeviceInfoPref()
-        initTranslatorPref()
     }
 
     override fun getPreferenceTitleResource(): Int = R.string.menu_about
@@ -110,26 +116,50 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         }
     }
 
-    private fun initAboutPref() {
-        val aboutPreference = getPref<Preference>(R.string.preferences__about)
-        aboutPreference.title = getVersionNameWithBuildNumber()
-        aboutPreference.setSummary(R.string.about_copyright)
-        aboutPreference.onClick {
-            if (aboutCounter % 2 == 0) {
-                aboutPreference.title = getVersionNameWithVersionCode()
-            } else {
-                aboutPreference.title = getVersionNameWithBuildNumber()
-            }
+    private fun initVersionSection() {
+        initVersionPref()
+        initVersionCodePref()
+        initDeviceInfoPref()
+    }
 
-            if (aboutCounter == ABOUT_REQUIRED_CLICKS) {
-                aboutCounter++
-                val intent = Intent(requireActivity().applicationContext, AboutActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_TASK_ON_HOME
-                startActivity(intent)
-                activity?.finish()
-            } else {
-                aboutCounter++
+    private fun initVersionPref() {
+        val versionPreference = getPref<Preference>(R.string.preferences__version)
+        versionPreference.title = getVersionNameWithBuildNumber()
+        versionPreference.setSummary(R.string.about_copyright)
+        versionPreference.onClick {
+            aboutCounter++
+            if (aboutCounter == 10) {
+                onSecretUnlocked()
             }
+        }
+    }
+
+    private fun onSecretUnlocked() {
+        if (ConfigUtils.isDevBuild() && !preferenceService.showDeveloperMenu()) {
+            preferenceService.setShowDeveloperMenu(true)
+            showToast("Developer settings unlocked")
+        }
+
+        val installerPackage = ConfigUtils.getInstallerPackageName(requireContext())
+        getPref<Preference>(R.string.preferences__installer_package).summary = installerPackage ?: "none"
+        getPref<Preference>(R.string.preferences__hidden_info_section).isVisible = true
+    }
+
+    private fun initVersionCodePref() {
+        val versionCodePreference = getPref<Preference>(R.string.preferences__version_code)
+        versionCodePreference.title = buildString {
+            append(getString(R.string.threema_version_code))
+            append(" ")
+            append(BuildConfig.VERSION_CODE)
+        }
+    }
+
+    private fun initDeviceInfoPref() {
+        getPrefOrNull<Preference>(R.string.preferences__device_info)?.apply {
+            if (Build.MANUFACTURER != null) {
+                title = Build.MANUFACTURER + " " + Build.MODEL
+            }
+            summary = Build.FINGERPRINT
         }
     }
 
@@ -189,34 +219,9 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             ?: "?"
     }
 
-    private fun initDeviceInfoPref() {
-        getPrefOrNull<Preference>(R.string.preferences__device_info)?.apply {
-            if (Build.MANUFACTURER != null) {
-                title = Build.MANUFACTURER + " " + Build.MODEL
-            }
-            summary = Build.FINGERPRINT
-        }
-    }
-
-    private fun initTranslatorPref() {
-        val translatorsPreference = getPref<Preference>(R.string.preferences__translators)
-        translatorsPreference.onClick {
-            SimpleStringAlertDialog.newInstance(
-                R.string.translators,
-                getString(R.string.translators_thanks, getString(R.string.translators_list)),
-            ).show(parentFragmentManager, "tt")
-        }
-    }
-
     private fun getVersionNameWithBuildNumber(): String = buildString {
         appendVersionName()
         appendBuildNumber()
-        appendBuildFlavor()
-    }
-
-    private fun getVersionNameWithVersionCode(): String = buildString {
-        appendVersionName()
-        appendVersionCode()
         appendBuildFlavor()
     }
 
@@ -224,13 +229,6 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         append(getString(R.string.threema_version))
         append(" ")
         append(BuildConfig.VERSION_NAME)
-    }
-
-    private fun StringBuilder.appendVersionCode() {
-        append(" ")
-        append(getString(R.string.threema_version_code))
-        append(" ")
-        append(BuildConfig.VERSION_CODE)
     }
 
     private fun StringBuilder.appendBuildNumber() {
@@ -293,7 +291,6 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     }
 
     companion object {
-        private const val ABOUT_REQUIRED_CLICKS = 10
         private const val DIALOG_TAG_CHECK_UPDATE = "checkup"
     }
 }

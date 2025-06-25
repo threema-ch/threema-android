@@ -56,7 +56,7 @@ public class EmojiItemView extends View implements Drawable.Callback {
 
     public Drawable setEmoji(String emoji, boolean hasDiverse, @ColorInt int diverseColor) {
         this.emoji = emoji;
-        this.drawable = EmojiManager.getInstance(getContext()).getEmojiDrawable(emoji);
+        this.drawable = EmojiManager.getInstance(getContext()).getEmojiDrawableAsync(emoji);
         this.hasDiverse = hasDiverse;
         this.diverseColor = diverseColor;
 

@@ -22,6 +22,7 @@
 package ch.threema.domain.taskmanager
 
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -64,6 +65,21 @@ internal class LocalTaskQueue(private val taskArchiver: TaskArchiver) {
         mutex.withLock { taskQueue.isNotEmpty() }
     }
 
+    internal suspend fun removeDropOnDisconnectTasks(closeReason: ServerSocketCloseReason?) {
+        val tasksToDrop = mutex.withLock {
+            taskQueue.filter { taskQueueElement -> taskQueueElement.shouldDropOnDisconnect }
+        }
+
+        tasksToDrop.forEach { taskQueueElement ->
+            taskQueueElement.completeExceptionally(
+                ConnectionStoppedException(
+                    "Dropping task before its execution because connection has been lost",
+                    closeReason,
+                ),
+            )
+        }
+    }
+
     /**
      * An element of the local task queue. This is a task that has not been initiated by an incoming
      * message but has been scheduled locally.
@@ -73,6 +89,8 @@ internal class LocalTaskQueue(private val taskArchiver: TaskArchiver) {
         private val done: CompletableDeferred<R>,
     ) : TaskQueue.TaskQueueElement {
         override val maximumNumberOfExecutions: Int = 5
+
+        override val shouldDropOnDisconnect = task is DropOnDisconnectTask
 
         override suspend fun run(handle: TaskCodec) {
             logger.info("Running task {}", task.getDebugString())

@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 
 import java.util.Date;
 
+import ch.threema.app.GlobalAppState;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -120,8 +121,8 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
             if (connection != null && connection.getConnectionState() != ConnectionState.LOGGEDIN) {
                 if (lifetimeService != null) {
                     lifetimeService.addListener(() -> {
-                        if (ThreemaApplication.getLastLoggedIn() == null ||
-                            ThreemaApplication.getLastLoggedIn().before(now)) {
+                        var lastLoggedIn = GlobalAppState.getLastLoggedIn();
+                        if (lastLoggedIn == null || lastLoggedIn.before(now)) {
                             //schedule a alarm!
                             logger.info("could not login to threema server, try again in {} milliseconds", milliseconds * 2);
 

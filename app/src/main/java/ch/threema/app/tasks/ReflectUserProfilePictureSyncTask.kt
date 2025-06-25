@@ -25,6 +25,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.NonceFactory
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -44,6 +45,8 @@ import ch.threema.storage.models.ContactModel
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
 
+private val logger = LoggingUtil.getThreemaLogger("ReflectUserProfilePictureSyncTask")
+
 /**
  * This task just reflects the currently stored user profile picture. This is a simple mechanism
  * that is not optimal when other devices also support user profile picture changes as in case of a
@@ -61,8 +64,9 @@ class ReflectUserProfilePictureSyncTask(
     override val type = "ReflectUserProfilePictureSyncTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        check(multiDeviceManager.isMultiDeviceActive) {
-            "Multi device is not active and a user profile picture must not be reflected"
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Cannot reflect profile picture because multi device is not active")
+            return
         }
 
         val profilePictureUploadData = userService.uploadUserProfilePictureOrGetPreviousUploadData()

@@ -40,9 +40,9 @@ import java.util.Date
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.fail
+import kotlin.test.Test
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import org.junit.Test
 
 /**
  * These tests are useful to detect when a task cannot be created out of a persisted representation
@@ -532,6 +532,15 @@ class PersistableTasksTest {
     }
 
     @Test
+    fun testReflectContactSyncPolicyUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectContactSyncPolicySyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectContactSyncPolicySyncUpdate.""" +
+                """ReflectContactSyncPolicySyncUpdateData"}""",
+        )
+    }
+
+    @Test
     fun testReflectUnknownContactPolicyUpdate() {
         assertValidEncoding(
             ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate::class.java,
@@ -558,10 +567,73 @@ class PersistableTasksTest {
     }
 
     @Test
+    fun testReflectO2oCallPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate.""" +
+                """ReflectO2oCallPolicySyncUpdateData"}""",
+        )
+    }
+
+    @Test
+    fun testReflectO2oCallConnectionPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectO2oCallConnectionPolicySyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectO2oCallConnectionPolicySyncUpdate.""" +
+                """ReflectO2oCallConnectionPolicySyncUpdateData"}""",
+        )
+    }
+
+    @Test
+    fun testReflectO2oCallVideoPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectO2oCallVideoPolicySyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectO2oCallVideoPolicySyncUpdate.""" +
+                """ReflectO2oCallVideoPolicySyncUpdateData"}""",
+        )
+    }
+
+    @Test
+    fun testReflectGroupCallPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectGroupCallPolicySyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectGroupCallPolicySyncUpdate.""" +
+                """ReflectGroupCallPolicySyncUpdateData"}""",
+        )
+    }
+
+    @Test
+    fun testReflectScreenshotPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectScreenshotPolicySyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectScreenshotPolicySyncUpdate.""" +
+                """ReflectScreenshotPolicySyncUpdateData"}""",
+        )
+    }
+
+    @Test
+    fun testReflectKeyboardDataCollectionPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate.""" +
+                """ReflectKeyboardDataCollectionPolicySyncUpdateData"}""",
+        )
+    }
+
+    @Test
     fun testReflectBlockedIdentitiesSyncUpdate() {
         assertValidEncoding(
             ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate::class.java,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate.ReflectBlockedIdentitiesSyncUpdateData"}""",
+        )
+    }
+
+    @Test
+    fun testReflectExcludeFromSyncIdentitiesSyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate::class.java,
+            """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate.""" +
+                """ReflectExcludeFromSyncIdentitiesSyncUpdateData"}""",
         )
     }
 

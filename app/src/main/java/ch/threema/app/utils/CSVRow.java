@@ -64,7 +64,7 @@ public class CSVRow {
 
     public Date getDate(int pos) throws ThreemaException {
         String cell = this.getString(pos);
-        if (cell != null && cell.length() > 0) {
+        if (cell != null && !cell.isEmpty()) {
             return new Date(Long.parseLong(cell));
         }
 
@@ -293,7 +293,7 @@ public class CSVRow {
         String result = "";
         if (os != null) {
             for (Object o : os) {
-                if (result.length() > 0) {
+                if (!result.isEmpty()) {
                     result += ';';
                 }
 

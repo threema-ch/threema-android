@@ -5,8 +5,8 @@
     android:id="@+id/reached_max_device_count_Mcv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/spacing_two_grid_unit"
-    android:layout_marginVertical="@dimen/spacing_half_grid_unit"
+    android:layout_marginHorizontal="@dimen/grid_unit_x2"
+    android:layout_marginVertical="@dimen/grid_unit_x0_5"
     app:cardBackgroundColor="?attr/colorSurface"
     app:strokeColor="?attr/colorOnBackground">
 
@@ -15,11 +15,11 @@
         style="@style/Threema.TextAppearance.BodyMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawablePadding="@dimen/spacing_one_and_a_half_grid_unit"
+        android:drawablePadding="@dimen/grid_unit_x1_5"
         android:drawableTint="?attr/colorOnSurface"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_two_grid_unit"
-        android:paddingVertical="@dimen/spacing_one_and_a_half_grid_unit"
+        android:paddingHorizontal="@dimen/grid_unit_x2"
+        android:paddingVertical="@dimen/grid_unit_x1_5"
         app:drawableStartCompat="@drawable/ic_info_outline"
         tools:text="Maximum number of 7 linked devices reached. Removed devices to add new ones." />
 

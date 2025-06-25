@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.RemoteInput;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -123,9 +124,9 @@ public class NotificationActionService extends IntentService {
                             logger.info("Unknown action {}", action);
                     }
                 }
-                IncomingGroupJoinRequestModel incomingGroupJoinRequestModel = (IncomingGroupJoinRequestModel) intent.getSerializableExtra(ThreemaApplication.INTENT_DATA_INCOMING_GROUP_REQUEST);
+                IncomingGroupJoinRequestModel incomingGroupJoinRequestModel = (IncomingGroupJoinRequestModel) intent.getSerializableExtra(AppConstants.INTENT_DATA_INCOMING_GROUP_REQUEST);
                 if (incomingGroupJoinRequestModel != null) {
-                    int notificationId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID, 0);
+                    int notificationId = intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID, 0);
                     logger.info("action {}", action);
                     switch (action) {
                         case ACTION_GROUP_REQUEST_ACCEPT:
@@ -177,7 +178,7 @@ public class NotificationActionService extends IntentService {
         Bundle results = RemoteInput.getResultsFromIntent(intent);
         if (results != null) {
             String message = null;
-            CharSequence messageCs = results.getCharSequence(ThreemaApplication.EXTRA_VOICE_REPLY);
+            CharSequence messageCs = results.getCharSequence(AppConstants.EXTRA_VOICE_REPLY);
             if (messageCs != null) {
                 message = messageCs.toString();
             }

@@ -39,10 +39,10 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.constraintlayout.widget.Group;
+import androidx.annotation.Px;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.lang.ref.WeakReference;
 
@@ -54,24 +54,15 @@ import ch.threema.app.services.QRCodeService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.QRScannerUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
-import ch.threema.app.webclient.activities.SessionsActivity;
-import ch.threema.app.webclient.listeners.WebClientServiceListener;
-import ch.threema.app.webclient.manager.WebClientListenerManager;
-import ch.threema.app.webclient.services.SessionService;
-import ch.threema.base.ThreemaException;
 
 public class IdentityPopup extends DimmingPopupWindow {
 
     private WeakReference<Activity> activityRef = new WeakReference<>(null);
     private ImageView qrCodeView;
     private QRCodeService qrCodeService;
-    private MaterialSwitch webEnableView;
-    private SessionService sessionService;
     private int animationCenterX, animationCenterY;
     private ProfileButtonListener profileButtonListener;
 
@@ -88,26 +79,11 @@ public class IdentityPopup extends DimmingPopupWindow {
 
         qrCodeService = serviceManager.getQRCodeService();
 
-        try {
-            sessionService = serviceManager.getWebClientServiceManager().getSessionService();
-        } catch (ThreemaException e) {
-            dismiss();
-            return;
-        }
-
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         FrameLayout popupLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_identity, null, false);
 
         TextView identityLabelTextView = popupLayout.findViewById(R.id.identity_label);
         this.qrCodeView = popupLayout.findViewById(R.id.qr_image);
-        Group webControls = popupLayout.findViewById(R.id.web_controls);
-        this.webEnableView = popupLayout.findViewById(R.id.web_enable);
-        popupLayout.findViewById(R.id.web_label).setOnClickListener(v -> {
-            Intent intent = new Intent(context, SessionsActivity.class);
-            activityRef.get().startActivity(intent);
-            dismiss();
-        });
-
         if (ConfigUtils.isOnPremBuild()) {
             popupLayout.findViewById(R.id.share_button).setVisibility(View.GONE);
         } else {
@@ -150,17 +126,6 @@ public class IdentityPopup extends DimmingPopupWindow {
         if (qrCodeView != null) {
             qrCodeView.setOnClickListener(this::zoomQR);
         }
-
-        if (webControls != null && webEnableView != null) {
-            if (AppRestrictionUtil.isWebDisabled(context)) {
-                // Webclient is disabled, hide UI elements
-                webEnableView.setEnabled(false);
-                webControls.setVisibility(View.GONE);
-            } else {
-                webEnableView.setChecked(this.isWebClientEnabled());
-                webEnableView.setOnCheckedChangeListener((buttonView, isChecked) -> startWebClient(isChecked));
-            }
-        }
     }
 
     private void scanQR() {
@@ -202,7 +167,7 @@ public class IdentityPopup extends DimmingPopupWindow {
      */
     public void show(
         Activity activity,
-        final View toolbarView,
+        final MaterialToolbar toolbarView,
         int[] location,
         ProfileButtonListener profileButtonListener,
         OnDismissListener onDismissListener
@@ -215,8 +180,10 @@ public class IdentityPopup extends DimmingPopupWindow {
         this.activityRef = new WeakReference<>(activity);
         this.profileButtonListener = profileButtonListener;
 
-        int offsetY = activity.getResources().getDimensionPixelSize(R.dimen.navigation_icon_size) / 2;
-        int offsetX = activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_inset_left) + (activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2);
+        final @Px int offsetX = activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_inset_left) +
+            (activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2);
+
+        final @Px int offsetY = (getContext().getResources().getDimensionPixelSize(R.dimen.navigation_icon_size) / 2);
 
         animationCenterX = offsetX;
         animationCenterY = 0;
@@ -243,7 +210,12 @@ public class IdentityPopup extends DimmingPopupWindow {
                 return;
             }
             try {
-                showAtLocation(toolbarView, Gravity.LEFT | Gravity.TOP, location[0] - offsetX, location[1] + offsetY);
+                showAtLocation(
+                    toolbarView,
+                    Gravity.LEFT | Gravity.TOP,
+                    location[0] - offsetX,
+                    location[1] + offsetY
+                );
             } catch (WindowManager.BadTokenException e) {
                 //
             }
@@ -258,7 +230,6 @@ public class IdentityPopup extends DimmingPopupWindow {
                 }
             });
         }
-        WebClientListenerManager.serviceListener.add(this.webClientServiceListener);
         setOnDismissListener(onDismissListener);
     }
 
@@ -272,43 +243,6 @@ public class IdentityPopup extends DimmingPopupWindow {
                 false,
                 IdentityPopup.super::dismiss
             );
-        }
-        WebClientListenerManager.serviceListener.remove(this.webClientServiceListener);
-    }
-
-    private final WebClientServiceListener webClientServiceListener = new WebClientServiceListener() {
-        @Override
-        public void onEnabled() {
-            this.setEnabled(true);
-        }
-
-        @Override
-        public void onDisabled() {
-            this.setEnabled(false);
-        }
-
-        private void setEnabled(final boolean enabled) {
-            RuntimeUtil.runOnUiThread(() -> {
-                if (webEnableView != null) {
-                    webEnableView.setChecked(enabled);
-                }
-            });
-        }
-    };
-
-    private boolean isWebClientEnabled() {
-        return sessionService.isEnabled();
-    }
-
-    private void startWebClient(boolean shouldStart) {
-        if (getContext() == null) {
-            return;
-        }
-        if (shouldStart && sessionService.getAllSessionModels().isEmpty()) {
-            getContext().startActivity(new Intent(getContext(), SessionsActivity.class));
-            dismiss();
-        } else {
-            sessionService.setEnabled(shouldStart);
         }
     }
 

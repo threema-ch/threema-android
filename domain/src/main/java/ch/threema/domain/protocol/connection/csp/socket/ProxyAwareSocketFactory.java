@@ -39,7 +39,7 @@ public class ProxyAwareSocketFactory {
 
     public static boolean shouldUseProxy(String hostname, int port) {
         List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + hostname + ":" + port + "/"));
-        if (proxies.size() == 0 || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
+        if (proxies.isEmpty() || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
             return false;
         }
         return true;
@@ -48,7 +48,7 @@ public class ProxyAwareSocketFactory {
     @NonNull
     public static Socket makeSocket(InetSocketAddress address) {
         List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + address.getHostName() + ":" + address.getPort() + "/"));
-        if (proxies.size() == 0 || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
+        if (proxies.isEmpty() || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
             // No proxy
             logger.info("No proxy configured");
             return new Socket();

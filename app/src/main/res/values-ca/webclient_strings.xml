@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Creada el: %1$s (%2$s)</string>
     <string name="webclient_active_since">Activa des de: %s</string>
     <string name="webclient_enable">Activar aplicació d\'escriptori / client web</string>
-    <string name="webclient_no_sessions_found">Per connectar, descarregueu l\'aplicació d\'escriptori <b>https://threema.ch/download</b> o obriu el client web (<b>%s</b>) al vostre ordinador, i toqueu el botó de sota per escanejar el codi QR mostrat a la pantalla del vostre ordinador.</string>
+    <string name="webclient_no_sessions_found">Per connectar, descarregueu l\'aplicació d\'escriptori <b>https://threema.com/download</b> o obriu el client web (<b>%s</b>) al vostre ordinador, i toqueu el botó de sota per escanejar el codi QR mostrat a la pantalla del vostre ordinador.</string>
     <string name="webclient_session_rename">Canviar nom de sessió</string>
     <string name="webclient_session_label">Nom nou</string>
     <string name="webclient_session_start">Iniciar la sessió</string>

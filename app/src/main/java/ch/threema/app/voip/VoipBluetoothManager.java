@@ -681,7 +681,7 @@ public class VoipBluetoothManager {
         // Bluetooth SCO should be connecting; check the latest result.
         boolean scoConnected = false;
         final List<BluetoothDevice> devices = bluetoothHeadset.getConnectedDevices();
-        if (devices.size() > 0) {
+        if (!devices.isEmpty()) {
             bluetoothDevice = devices.get(0);
             if (bluetoothHeadset.isAudioConnected(bluetoothDevice)) {
                 logger.debug("SCO connected with {}", bluetoothDevice.getName());

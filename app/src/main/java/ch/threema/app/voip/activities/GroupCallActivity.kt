@@ -21,7 +21,7 @@
 
 package ch.threema.app.voip.activities
 
-import android.Manifest.permission.*
+import android.Manifest.permission.CAMERA
 import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.content.Context
@@ -29,13 +29,23 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.media.AudioManager
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
-import android.view.*
 import android.view.GestureDetector.SimpleOnGestureListener
-import android.widget.*
+import android.view.MotionEvent
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Chronometer
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -44,11 +54,15 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.transition.addListener
-import androidx.core.view.*
+import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ComposeMessageActivity
@@ -61,14 +75,24 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog
 import ch.threema.app.dialogs.ThreemaDialogFragment
 import ch.threema.app.emojis.EmojiTextView
 import ch.threema.app.listeners.SensorListener
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.ActivityService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.LockAppService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.SensorService
+import ch.threema.app.startup.finishAndRestartLaterIfNotReady
 import ch.threema.app.ui.AnimatedEllipsisTextView
 import ch.threema.app.ui.BottomSheetItem
 import ch.threema.app.ui.TooltipPopup
-import ch.threema.app.utils.*
+import ch.threema.app.utils.AudioDevice
+import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.Destroyer.Companion.createDestroyer
+import ch.threema.app.utils.PermissionRegistry
+import ch.threema.app.utils.getIconResource
+import ch.threema.app.utils.getStringResource
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.app.utils.ownedBy
+import ch.threema.app.utils.requestGroupCallPermissions
 import ch.threema.app.voip.CallAudioSelectorButton
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.GroupCallIntention
@@ -78,9 +102,11 @@ import ch.threema.app.voip.viewmodel.GroupCallViewModel
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.GroupModel
 import com.bumptech.glide.Glide
-import java.lang.Runnable
-import java.util.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallActivity")!!
 
@@ -143,6 +169,8 @@ class GroupCallActivity :
         }
     }
 
+    private val destroyer = createDestroyer()
+
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             when (it.resultCode) {
@@ -193,7 +221,7 @@ class GroupCallActivity :
     private val keepAliveHandler = Handler(Looper.getMainLooper())
     private val keepAliveTask: Runnable = object : Runnable {
         override fun run() {
-            ThreemaApplication.activityUserInteract(this@GroupCallActivity)
+            ActivityService.activityUserInteract(this@GroupCallActivity)
             keepAliveHandler.postDelayed(this, KEEP_ALIVE_DELAY)
         }
     }
@@ -201,17 +229,26 @@ class GroupCallActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         logger.debug("Create group call activity")
         super.onCreate(savedInstanceState)
-
-        lockAppService = ThreemaApplication.requireServiceManager().lockAppService
-        preferenceService = ThreemaApplication.requireServiceManager().preferenceService
-        sensorService = ThreemaApplication.requireServiceManager().sensorService
-        groupService = ThreemaApplication.requireServiceManager().groupService
-        permissionRegistry = PermissionRegistry(this)
-
-        if (!isAllowed) {
-            showToast(R.string.master_key_locked)
-            finish()
+        if (finishAndRestartLaterIfNotReady()) {
             return
+        }
+
+        val serviceManager = ThreemaApplication.requireServiceManager()
+        lockAppService = serviceManager.lockAppService
+        preferenceService = serviceManager.preferenceService
+        groupService = serviceManager.groupService
+        permissionRegistry = PermissionRegistry(this)
+        sensorService = destroyer.register(
+            create = { serviceManager.sensorService },
+            destroy = {
+                sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
+                sensorEnabled = false
+            },
+        )
+
+        destroyer.own {
+            // remove lockscreen keepalive
+            keepAliveHandler.removeCallbacksAndMessages(null)
         }
 
         handleIntent(intent)
@@ -220,7 +257,7 @@ class GroupCallActivity :
         setContentView(R.layout.activity_group_call)
         hideSystemUi()
 
-        adjustWindowOffsets()
+        handleWindowInsets()
 
         views = Views()
 
@@ -251,31 +288,34 @@ class GroupCallActivity :
                 views.buttonToggleCamera.visibility = View.VISIBLE
                 views.buttonToggleMic.visibility = View.VISIBLE
                 views.buttonSelectAudioDevice.visibility = View.VISIBLE
-                views.buttonToggleCamera.postDelayed({
-                    if (!viewModel.toggleCameraTooltipShown &&
-                        infoAndControlsShown &&
-                        views.buttonToggleCamera.isVisible &&
-                        views.buttonFlipCamera.visibility != View.VISIBLE
-                    ) {
-                        val location = IntArray(2)
-                        views.buttonToggleCamera.getLocationInWindow(location)
-                        location[0] += (views.buttonToggleCamera.width / 2)
-                        location[1] += views.buttonToggleCamera.height
-                        TooltipPopup(
-                            this,
-                            R.string.preferences__tooltip_gc_camera,
-                            this,
-                        ).show(
-                            activity = this,
-                            anchor = views.buttonToggleCamera,
-                            text = getString(R.string.tooltip_voip_turn_on_camera),
-                            alignment = TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT,
-                            originLocation = location,
-                            timeoutMs = 2500,
-                        )
-                        viewModel.toggleCameraTooltipShown = true
-                    }
-                }, 2000)
+                views.buttonToggleCamera.postDelayed(
+                    {
+                        if (!viewModel.toggleCameraTooltipShown &&
+                            infoAndControlsShown &&
+                            views.buttonToggleCamera.isVisible &&
+                            views.buttonFlipCamera.visibility != View.VISIBLE
+                        ) {
+                            val location = IntArray(2)
+                            views.buttonToggleCamera.getLocationInWindow(location)
+                            location[0] += (views.buttonToggleCamera.width / 2)
+                            location[1] += views.buttonToggleCamera.height
+                            TooltipPopup(
+                                this,
+                                R.string.preferences__tooltip_gc_camera,
+                                this,
+                            ).show(
+                                activity = this,
+                                anchor = views.buttonToggleCamera,
+                                text = getString(R.string.tooltip_voip_turn_on_camera),
+                                alignment = TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT,
+                                originLocation = location,
+                                timeoutMs = 2500,
+                            )
+                            viewModel.toggleCameraTooltipShown = true
+                        }
+                    },
+                    2000,
+                )
             } else {
                 views.buttonToggleCamera.visibility = View.GONE
                 views.buttonFlipCamera.visibility = View.GONE
@@ -345,15 +385,6 @@ class GroupCallActivity :
 
     override fun onDestroy() {
         logger.trace("destroy group call activity")
-
-        // remove lockscreen keepalive
-        keepAliveHandler.removeCallbacksAndMessages(null)
-
-        participantsAdapter.teardown()
-
-        // Unregister sensor listeners
-        sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
-        sensorEnabled = false
 
         // If an intent has been set in this field, we start a new instance
         if (newIntent != null) {
@@ -431,7 +462,7 @@ class GroupCallActivity :
     private fun setFullscreen() {
         // Set window styles for fullscreen-window size. Needs to be done before
         // adding content.
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         window.addFlags(getFullscreenWindowFlags())
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -480,7 +511,6 @@ class GroupCallActivity :
     }
 
     private fun hideSystemUi() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(
             window,
             findViewById(R.id.group_call_layout),
@@ -590,9 +620,7 @@ class GroupCallActivity :
                     }
 
                     val dialog = BottomSheetListDialog.newInstance(0, items, currentDeviceIndex)
-                    dialog.setCallback(fun(tag: String, data: String?) {
-                        viewModel.selectAudioDevice(AudioDevice.values()[tag.toInt()])
-                    })
+                    dialog.setCallback { tag, _ -> viewModel.selectAudioDevice(AudioDevice.entries[tag.toInt()]) }
                     dialog.show(supportFragmentManager, DIALOG_TAG_SELECT_AUDIO_DEVICE)
                 }
         }
@@ -687,8 +715,8 @@ class GroupCallActivity :
         val gutterPx = resources.getDimensionPixelSize(R.dimen.group_call_participants_item_gutter)
 
         val contactService = ThreemaApplication.requireServiceManager().contactService
-        participantsAdapter =
-            GroupCallParticipantsAdapter(contactService, gutterPx, Glide.with(this))
+        participantsAdapter = GroupCallParticipantsAdapter(contactService, gutterPx, Glide.with(this))
+            .ownedBy(destroyer)
         views.participants.layoutManager = participantsLayoutManager
         views.participants.adapter = participantsAdapter
         views.participants.addItemDecoration(VerticalGridLayoutGutterDecoration(gutterPx))
@@ -764,7 +792,7 @@ class GroupCallActivity :
         if (groupModel != null) {
             views.title.setOnClickListener {
                 val intent = Intent(this, ComposeMessageActivity::class.java)
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.id)
+                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.id)
                 startActivity(intent)
             }
         } else {
@@ -823,25 +851,17 @@ class GroupCallActivity :
         Toast.makeText(this, getString(resId, *params), Toast.LENGTH_LONG).show()
     }
 
-    private fun adjustWindowOffsets() {
-        // Support notch
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content_layout)) { v: View, insets: WindowInsetsCompat ->
-                if (!isInPictureInPictureMode) {
-                    if (insets.displayCutout != null) {
-                        v.setPadding(
-                            insets.displayCutout?.safeInsetLeft ?: 0,
-                            insets.displayCutout?.safeInsetTop ?: 0,
-                            insets.displayCutout?.safeInsetRight ?: 0,
-                            insets.displayCutout?.safeInsetBottom ?: 0,
-                        )
-                    }
-                } else {
-                    // reset notch margins for PIP
-                    v.setPadding(0, 0, 0, 0)
-                }
-                insets
+    private fun handleWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content_layout)) { view: View, windowInsets: WindowInsetsCompat ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isInPictureInPictureMode) {
+                view.setPadding(0, 0, 0, 0)
+                return@setOnApplyWindowInsetsListener windowInsets
             }
+            val insets = windowInsets.getInsetsIgnoringVisibility(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+            )
+            view.setPadding(insets.left, insets.top, insets.right, 0)
+            windowInsets
         }
     }
 
@@ -911,9 +931,11 @@ class GroupCallActivity :
     private fun applyInfoAndControlsTransformation(visible: Boolean, constraints: ConstraintSet) {
         val transition = ChangeBounds()
         transition.duration = DURATION_ANIMATE_NAVIGATION_MILLIS
-        transition.addListener(onEnd = {
-            changeGradientVisibility(visible)
-        })
+        transition.addListener(
+            onEnd = {
+                changeGradientVisibility(visible)
+            },
+        )
         TransitionManager.beginDelayedTransition(views.contentLayout, transition)
         constraints.applyTo(views.contentLayout)
     }

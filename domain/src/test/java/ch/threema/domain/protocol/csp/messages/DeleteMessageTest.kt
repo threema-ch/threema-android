@@ -25,7 +25,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import kotlin.random.Random.Default.nextBytes
 import kotlin.test.Test
@@ -37,7 +37,7 @@ class DeleteMessageTest {
      *
      *  (message id bytes (8))
      */
-    private val messageId: MessageId = MessageId()
+    private val messageId = MessageId.random()
     private val protobufMessageId: ByteArray =
         DeleteMessageData(messageId.messageIdLong).toProtobufBytes()
 

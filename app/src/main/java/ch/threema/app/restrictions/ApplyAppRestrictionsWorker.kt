@@ -39,13 +39,18 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.preference.service.GroupCallPolicySetting
+import ch.threema.app.preference.service.KeyboardDataCollectionPolicySetting
+import ch.threema.app.preference.service.O2oCallPolicySetting
+import ch.threema.app.preference.service.O2oCallVideoPolicySetting
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.UnknownContactPolicySetting
 import ch.threema.app.restrictions.ApplyAppRestrictionsWorker.RestrictionToPreferenceValueMapper.Invert
 import ch.threema.app.restrictions.ApplyAppRestrictionsWorker.RestrictionToPreferenceValueMapper.Keep
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy
 import ch.threema.app.services.LifetimeService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.UserService
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
@@ -56,6 +61,7 @@ import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ScreenshotPolicy
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 private val logger = LoggingUtil.getThreemaLogger("ApplyAppRestrictionsWorker")
 
@@ -73,11 +79,11 @@ class ApplyAppRestrictionsWorker(
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
-        val serviceManager = ThreemaApplication.getServiceManager()
-        if (serviceManager == null) {
-            logger.error("Could not apply app restrictions because the service manager is not available")
-            return Result.retry()
-        }
+        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+            ?: run {
+                logger.error("Could not apply app restrictions because the service manager is not available")
+                return Result.retry()
+            }
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         if (sharedPreferences == null) {
@@ -93,6 +99,7 @@ class ApplyAppRestrictionsWorker(
                 multiDeviceManager = serviceManager.multiDeviceManager,
                 taskCreator = serviceManager.taskCreator,
                 lifetimeService = serviceManager.lifetimeService,
+                preferenceService = serviceManager.preferenceService,
                 triggerSource = TriggerSource.LOCAL,
             )
         } catch (e: TransactionScope.TransactionException) {
@@ -126,6 +133,7 @@ class ApplyAppRestrictionsWorker(
         multiDeviceManager: MultiDeviceManager,
         taskCreator: TaskCreator,
         lifetimeService: LifetimeService,
+        preferenceService: PreferenceService,
         @Suppress("SameParameterValue") triggerSource: TriggerSource,
     ) {
         logger.info("Start mapping restrictions to settings")
@@ -173,6 +181,9 @@ class ApplyAppRestrictionsWorker(
         // Then persist the settings
         persistSettings()
 
+        // We need to refresh them as we may have modified the preferences directly.
+        preferenceService.reloadSynchronizedBooleanSettings()
+
         applyProfilePictureChangeRestriction(
             context = context,
             sharedPreferences = sharedPreferences,
@@ -208,7 +219,7 @@ class ApplyAppRestrictionsWorker(
             context = context,
             sharedPreferences = sharedPreferences,
             restrictionKeyRes = R.string.restriction__block_unknown,
-            preferenceKeyRes = R.string.preferences__block_unknown,
+            preferenceKeyRes = UnknownContactPolicySetting.preferenceKeyStringRes,
             restrictionToPreferenceValueMapper = Keep,
             settingsSyncCreator = { settingsBuilder, blockUnknownRestriction ->
                 settingsBuilder.setUnknownContactPolicy(
@@ -227,7 +238,7 @@ class ApplyAppRestrictionsWorker(
             context = context,
             sharedPreferences = sharedPreferences,
             restrictionKeyRes = R.string.restriction__disable_screenshots,
-            preferenceKeyRes = R.string.preferences__hide_screenshots,
+            preferenceKeyRes = KeyboardDataCollectionPolicySetting.preferenceKeyStringRes,
             restrictionToPreferenceValueMapper = Keep,
             settingsSyncCreator = { settingsBuilder, disableScreenshotsRestriction ->
                 settingsBuilder.setScreenshotPolicy(
@@ -270,7 +281,7 @@ class ApplyAppRestrictionsWorker(
             context = context,
             sharedPreferences = sharedPreferences,
             restrictionKeyRes = R.string.restriction__disable_calls,
-            preferenceKeyRes = R.string.preferences__voip_enable,
+            preferenceKeyRes = O2oCallPolicySetting.preferenceKeyStringRes,
             restrictionToPreferenceValueMapper = Invert,
             settingsSyncCreator = { settingsBuilder, disableCallsRestriction ->
                 settingsBuilder.setO2OCallPolicy(
@@ -289,7 +300,7 @@ class ApplyAppRestrictionsWorker(
             context = context,
             sharedPreferences = sharedPreferences,
             restrictionKeyRes = R.string.restriction__disable_video_calls,
-            preferenceKeyRes = R.string.preferences__voip_video_enable,
+            preferenceKeyRes = O2oCallVideoPolicySetting.preferenceKeyStringRes,
             restrictionToPreferenceValueMapper = Invert,
             settingsSyncCreator = { settingsBuilder, disableVideoCallsRestriction ->
                 settingsBuilder.setO2OCallVideoPolicy(
@@ -308,7 +319,7 @@ class ApplyAppRestrictionsWorker(
             context = context,
             sharedPreferences = sharedPreferences,
             restrictionKeyRes = R.string.restriction__disable_group_calls,
-            preferenceKeyRes = R.string.preferences__group_calls_enable,
+            preferenceKeyRes = GroupCallPolicySetting.preferenceKeyStringRes,
             restrictionToPreferenceValueMapper = Invert,
             settingsSyncCreator = { settingsBuilder, disableGroupCallsRestriction ->
                 settingsBuilder.setGroupCallPolicy(

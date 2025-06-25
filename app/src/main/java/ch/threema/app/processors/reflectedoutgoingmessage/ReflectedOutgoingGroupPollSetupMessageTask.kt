@@ -27,30 +27,20 @@ import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D
 
 internal class ReflectedOutgoingGroupPollSetupMessageTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_POLL_SETUP,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupPollSetupMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupPollSetupMessage.fromReflected(outgoingMessage, serviceManager.identityStore.identity),
+    type = Common.CspE2eMessageType.GROUP_POLL_SETUP,
+    serviceManager = serviceManager,
 ) {
-    private val myIdentity by lazy { serviceManager.identityStore.identity }
-
-    private val groupPollSetupMessage: GroupPollSetupMessage by lazy {
-        GroupPollSetupMessage.fromReflected(message, myIdentity)
-    }
-
     private val ballotService by lazy { serviceManager.ballotService }
-
-    override val shouldBumpLastUpdate: Boolean
-        get() = groupPollSetupMessage.bumpLastUpdate()
-    override val storeNonces: Boolean
-        get() = groupPollSetupMessage.protectAgainstReplay()
 
     override fun processOutgoingMessage() {
         handleReflectedOutgoingPoll(
-            groupPollSetupMessage,
-            groupPollSetupMessage.messageId,
+            message,
+            message.messageId,
             messageReceiver,
             ballotService,
         )

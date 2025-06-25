@@ -22,8 +22,6 @@
 package ch.threema.app.activities.wizard;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.HorizontalScrollView;
 
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;

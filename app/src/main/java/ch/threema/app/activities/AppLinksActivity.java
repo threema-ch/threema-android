@@ -29,6 +29,7 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -36,10 +37,10 @@ import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.asynctasks.ContactResult;
+import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.executor.BackgroundExecutor;
@@ -49,6 +50,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.ContactModel;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class AppLinksActivity extends ThreemaToolbarActivity {
@@ -61,6 +63,9 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         checkLock();
     }
@@ -126,7 +131,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     private void handleGroupLinkUrl(Uri appLinkData) {
         logger.info("Handle group link url");
         Intent intent = new Intent(this, OutgoingGroupRequestActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_LINK, appLinkData.getEncodedFragment());
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_LINK, appLinkData.getEncodedFragment());
         startActivity(intent);
     }
 
@@ -138,25 +143,16 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
-                if (resultCode == RESULT_OK) {
-                    lockAppService.unlock(null);
-                    handleIntent();
-                } else {
-                    Toast.makeText(this, getString(R.string.pin_locked_cannot_send), Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                break;
-            case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
-                if (ThreemaApplication.getMasterKey().isLocked()) {
-                    finish();
-                } else {
-                    ConfigUtils.recreateActivity(this, AppLinksActivity.class, getIntent().getExtras());
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ThreemaActivity.ACTIVITY_ID_CHECK_LOCK) {
+            if (resultCode == RESULT_OK) {
+                lockAppService.unlock(null);
+                handleIntent();
+            } else {
+                Toast.makeText(this, R.string.pin_locked_cannot_send, Toast.LENGTH_LONG).show();
+                finish();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -189,12 +185,12 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
                         ComposeMessageActivity.class :
                         ContactDetailActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+                    intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
+                    intent.putExtra(AppConstants.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
 
                     if (text != null) {
                         text = text.trim();
-                        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
+                        intent.putExtra(AppConstants.INTENT_DATA_TEXT, text);
                     }
 
                     startActivity(intent);

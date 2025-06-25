@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/Threema.CardView.Bubble.Status"
     android:id="@+id/message_block"
+    style="@style/Threema.CardView.Bubble.Status"
     android:outlineProvider="background"
-    app:cardBackgroundColor="@color/date_separator_bg_color"
-    app:cardElevation="4dp">
+    app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+    app:cardElevation="4dp"
+    app:contentPaddingLeft="@dimen/grid_unit_x2"
+    app:contentPaddingRight="@dimen/grid_unit_x2">
 
     <TextView
         android:id="@+id/text_view"

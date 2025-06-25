@@ -30,9 +30,8 @@ import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("GroupPollSetupMessage")
+private val logger = LoggingUtil.getThreemaLogger("GroupPollSetupMessage")
 
 /**
  * A group poll creation message.

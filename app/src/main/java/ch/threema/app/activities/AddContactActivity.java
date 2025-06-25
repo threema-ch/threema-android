@@ -44,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -56,6 +57,7 @@ import ch.threema.app.asynctasks.ContactExists;
 import ch.threema.app.asynctasks.ContactModified;
 import ch.threema.app.asynctasks.Failed;
 import ch.threema.app.asynctasks.PolicyViolation;
+import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.NewContactDialog;
@@ -77,6 +79,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ID;
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.domain.protocol.csp.ProtocolDefines.IDENTITY_LEN;
 
@@ -99,14 +102,13 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-        if (serviceManager == null) {
-            finish();
+        if (finishAndRestartLaterIfNotReady(this)) {
             return;
         }
 
+        ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
         try {
             this.qrCodeService = serviceManager.getQRCodeService();
             this.lockAppService = serviceManager.getLockAppService();
@@ -117,8 +119,6 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
             finish();
             return;
         }
-
-        super.onCreate(savedInstanceState);
 
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -296,7 +296,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     private void showContactDetail(String id) {
         Intent intent = new Intent(this, ContactDetailActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, id);
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, id);
         this.startActivity(intent);
         finish();
     }

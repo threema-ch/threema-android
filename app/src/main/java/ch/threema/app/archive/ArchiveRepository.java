@@ -26,6 +26,7 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -57,15 +58,13 @@ class ArchiveRepository {
             } catch (ThreemaException e) {
                 return;
             }
-            if (conversationService != null) {
-                conversationModels = new MutableLiveData<List<ConversationModel>>() {
-                    @Nullable
-                    @Override
-                    public List<ConversationModel> getValue() {
-                        return conversationService.getArchived(null);
-                    }
-                };
-            }
+            conversationModels = new MutableLiveData<>() {
+                @NonNull
+                @Override
+                public List<ConversationModel> getValue() {
+                    return conversationService.getArchived(null);
+                }
+            };
         }
     }
 

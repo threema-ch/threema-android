@@ -23,6 +23,7 @@ package ch.threema.app.groupmanagement
 
 import ch.threema.app.DangerousTest
 import ch.threema.app.groupflows.GroupChanges
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.tasks.GroupUpdateTask
 import ch.threema.app.tasks.ReflectLocalGroupUpdate
 import ch.threema.app.testutils.TestHelpers
@@ -44,17 +45,16 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 
 @DangerousTest
 class UpdateGroupFlowTest : GroupFlowTest() {
@@ -148,7 +148,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         notificationTriggerPolicyOverride = null,
     )
 
-    @Before
+    @BeforeTest
     fun setup() {
         clearDatabaseAndCaches(serviceManager)
 
@@ -167,8 +167,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameModificationMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -186,8 +185,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameModificationNonMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -205,8 +203,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameAndAddedMembersModificationMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
 
         // Assert that the new member is not yet a member of the group
@@ -234,8 +231,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameAndAddedMembersModificationNonMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -257,8 +253,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameAndRemovedMembersModificationMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -278,8 +273,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameAndRemovedMembersModificationNonMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -299,8 +293,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testModificationOfDeletedGroupMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -324,8 +317,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testModificationOfDeletedGroupNonMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -349,8 +341,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameAndAddedMembersModificationOfForeignGroupMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(initialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(initialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -372,8 +363,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
     @Test
     fun testGroupNameAndAddedMembersModificationOfForeignGroupNonMd() = runTest {
-        val groupModel =
-            groupModelRepository.getByGroupIdentity(initialGroupModelData.groupIdentity)
+        val groupModel = groupModelRepository.getByGroupIdentity(initialGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
@@ -393,22 +383,48 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         }
     }
 
+    @Test
+    fun shouldNotUpdateGroupWhenMdActiveButConnectionIsLost() = runTest {
+        // arrange
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val taskManager = ControlledTaskManager(emptyList())
+        val groupFlowDispatcher = getGroupFlowDispatcher(
+            setupConfig = SetupConfig.MULTI_DEVICE_ENABLED,
+            taskManager = taskManager,
+            connection = ConnectionDisconnected,
+        )
+        val groupChangesNewName = GroupChanges(
+            name = "NewGroupName",
+            profilePictureChange = null,
+            updatedMembers = myInitialGroupModelData.otherMembers,
+            groupModelData = myInitialGroupModelData,
+        )
+
+        // act
+        val groupFlowResult = groupFlowDispatcher
+            .runUpdateGroupFlow(groupChangesNewName, groupModel!!)
+            .await()
+
+        // assert
+        assertIs<GroupFlowResult.Failure.Network>(groupFlowResult)
+    }
+
     private suspend fun assertSuccessfulGroupUpdate(
         groupModel: GroupModel,
         groupChanges: GroupChanges,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        assertTrue {
-            runGroupUpdate(
-                groupModel = groupModel,
-                groupChanges = groupChanges,
-                reflectionExpectation = reflectionExpectation,
-                successExpected = true,
-            )
-        }
-        val data = groupModel.data.value
-        assertNotNull(data)
-        data.assertChanges(groupChanges)
+        val groupFlowResult = runGroupUpdate(
+            groupModel = groupModel,
+            groupChanges = groupChanges,
+            reflectionExpectation = reflectionExpectation,
+            successExpected = true,
+        )
+        assertIs<GroupFlowResult.Success>(groupFlowResult)
+
+        val groupModelData = groupModel.data.value
+        assertNotNull(groupModelData)
+        groupModelData.assertChangesApplied(groupChanges)
     }
 
     private suspend fun assertUnsuccessfulGroupUpdate(
@@ -416,14 +432,13 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         groupChanges: GroupChanges,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        assertFalse {
-            runGroupUpdate(
-                groupModel = groupModel,
-                groupChanges = groupChanges,
-                reflectionExpectation = reflectionExpectation,
-                successExpected = false,
-            )
-        }
+        val groupFlowResult = runGroupUpdate(
+            groupModel = groupModel,
+            groupChanges = groupChanges,
+            reflectionExpectation = reflectionExpectation,
+            successExpected = false,
+        )
+        assertIs<GroupFlowResult.Failure>(groupFlowResult)
     }
 
     private suspend fun runGroupUpdate(
@@ -431,7 +446,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         groupChanges: GroupChanges,
         reflectionExpectation: ReflectionExpectation,
         successExpected: Boolean,
-    ): Boolean {
+    ): GroupFlowResult {
         val groupModelData = groupModel.data.value
 
         // Prepare task manager and group flow dispatcher
@@ -444,11 +459,9 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         )
 
         // Run update group flow
-        val result = groupFlowDispatcher.runUpdateGroupFlow(
-            null,
-            groupChanges,
-            groupModel,
-        ).await()
+        val groupFlowResult = groupFlowDispatcher
+            .runUpdateGroupFlow(groupChanges, groupModel)
+            .await()
 
         taskManager.pendingTaskAssertions.size.let { size ->
             if (size > 0) {
@@ -456,7 +469,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
             }
         }
 
-        return result
+        return groupFlowResult
     }
 
     private fun getExpectedTaskAssertions(
@@ -491,13 +504,12 @@ class UpdateGroupFlowTest : GroupFlowTest() {
     }
 
     /**
-     * Assert that the changes have been applied to the group model data.
+     * Assert that the [groupChanges] have been applied to the group model data.
      */
-    private fun GroupModelData.assertChanges(groupChanges: GroupChanges) {
+    private fun GroupModelData.assertChangesApplied(groupChanges: GroupChanges) {
         groupChanges.name?.let { newName ->
             assertEquals(newName, this.name)
         }
-
         assertContainsAll(this.otherMembers, groupChanges.addMembers)
         assertContainsNone(this.otherMembers, groupChanges.removeMembers)
     }

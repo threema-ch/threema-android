@@ -40,6 +40,7 @@ import ch.threema.app.webclient.converter.Profile;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 
 @WorkerThread
 public class ProfileUpdateHandler extends MessageUpdater {
@@ -52,7 +53,7 @@ public class ProfileUpdateHandler extends MessageUpdater {
     private final ProfileListener listener;
 
     // Dispatchers
-    private @NonNull MessageDispatcher updateDispatcher;
+    private final @NonNull MessageDispatcher updateDispatcher;
 
     // Services
     private final @NonNull UserService userService;
@@ -110,7 +111,7 @@ public class ProfileUpdateHandler extends MessageUpdater {
     @AnyThread
     private class Listener implements ProfileListener {
         @Override
-        public void onAvatarChanged() {
+        public void onAvatarChanged(@NonNull TriggerSource triggerSource) {
             handler.post(new Runnable() {
                 @Override
                 @WorkerThread
@@ -118,11 +119,6 @@ public class ProfileUpdateHandler extends MessageUpdater {
                     ProfileUpdateHandler.this.sendProfile(userService.getPublicNickname(), true);
                 }
             });
-        }
-
-        @Override
-        public void onAvatarRemoved() {
-            this.onAvatarChanged();
         }
 
         @Override

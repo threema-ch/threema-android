@@ -23,6 +23,7 @@ package ch.threema.app.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.IdentityState;
@@ -46,10 +48,6 @@ import java8.util.function.Consumer;
 public interface ContactService extends AvatarService<ContactModel> {
 
     String ALL_USERS_PLACEHOLDER_ID = "@@@@@@@@";
-
-    interface ContactProcessor {
-        boolean process(ContactModel contactModel);
-    }
 
     class ProfilePictureUploadData {
         public byte[] bitmapArray;
@@ -316,9 +314,6 @@ public interface ContactService extends AvatarService<ContactModel> {
     @Nullable
     List<String> getIdentitiesByVerificationLevel(VerificationLevel verificationLevel);
 
-    @Nullable
-    ContactModel getByPublicKey(byte[] publicKey);
-
     /**
      * Update the acquaintance level of the given identity if it exists as a contact.
      *
@@ -354,6 +349,12 @@ public interface ContactService extends AvatarService<ContactModel> {
      * This will also save the model and notify listeners.
      */
     void bumpLastUpdate(@NonNull String identity);
+
+    /**
+     * Get the `lastUpdate` field of the specified contact.
+     */
+    @Nullable
+    Date getLastUpdate(@NonNull String identity);
 
     /**
      * Clear the `lastUpdate` field of the specified contact.

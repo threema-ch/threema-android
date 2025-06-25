@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,7 +19,10 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="?attr/actionBarSize"
+                tools:menu="@menu/activity_media_gallery"
+                tools:navigationIcon="@drawable/ic_arrow_left"
+                tools:title="Contact Name" />
 
             <include layout="@layout/connection_indicator" />
 
@@ -26,41 +30,35 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/results_layout"
+    <LinearLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?android:attr/colorBackground"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chip_group"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:paddingLeft="16dp"
-            android:paddingTop="10dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="10dp"
-            android:visibility="visible"
-            app:chipSpacingHorizontal="4dp"
+            android:paddingHorizontal="@dimen/grid_unit_x2"
+            android:paddingVertical="@dimen/grid_unit_x1"
+            app:chipSpacingHorizontal="@dimen/grid_unit_x0_5"
             app:chipSpacingVertical="0dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:lineSpacing="4dp" />
 
         <ch.threema.app.ui.EmptyRecyclerView
             android:id="@+id/item_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:paddingLeft="@dimen/grid_spacing"
-            android:paddingRight="@dimen/grid_spacing"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chip_group" />
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/grid_spacing"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_media_gallery" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,4 +1,3 @@
-- Added Bulgarian localization
-- Fixed a bug that caused Threema 2.0 for desktop not to work on certain devices
-- Fixed a bug in relation to the Threema widget
-- Fixed a vulnerability affecting older Android versions (up to Android 10): a malicious app installed on the same device as Threema could have tricked the user into sending any file to an existing contact (reported by Retr02332)
+- Version 6.1 is the last version to support Android 5 and 6
+- Updated the logo and color scheme to reflect the new corporate design
+- Fixed a bug that could occur when using the web client with older Android versions

@@ -30,11 +30,12 @@ import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.push.PushService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -142,7 +143,7 @@ public class ClientInfo extends Converter {
         // Capabilities
         final MsgpackObjectBuilder capabilities = new MsgpackObjectBuilder();
         capabilities.put(MAX_GROUP_SIZE, BuildConfig.MAX_GROUP_SIZE);
-        capabilities.put(MAX_FILE_SIZE, ThreemaApplication.MAX_BLOB_SIZE);
+        capabilities.put(MAX_FILE_SIZE, AppConstants.MAX_BLOB_SIZE);
         capabilities.put(DISTRIBUTION_LISTS, true);
         capabilities.put(QUOTES_V2, true);
         capabilities.put(EMOJI_REACTIONS, true);

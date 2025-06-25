@@ -21,7 +21,6 @@
 
 package ch.threema.app.multidevice.wizard.steps
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +29,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -44,14 +44,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.dimensionResource
@@ -90,14 +86,6 @@ class LinkNewDevicePFSInfoFragment : LinkNewDeviceFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ThreemaTheme {
-                    // We have to change the current color of the status bar once,
-                    // because the compose threema theme sets it too
-                    val context = LocalContext.current
-                    LaunchedEffect(Unit) {
-                        val window = (context as Activity).window
-                        window.statusBarColor = Color.Transparent.toArgb()
-                    }
-
                     LinkNewDevicePFSInfoContent(
                         modifier = Modifier.fillMaxSize(),
                         onClickedLinkDevice = {
@@ -125,7 +113,7 @@ private fun LinkNewDevicePFSInfoContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    horizontal = dimensionResource(R.dimen.spacing_four_grid_unit),
+                    horizontal = dimensionResource(R.dimen.grid_unit_x4),
                 )
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -157,6 +145,7 @@ private fun LinkNewDevicePFSInfoContent(
             Spacer(Modifier.height(GridUnit.x6))
 
             ButtonPrimary(
+                modifier = Modifier.fillMaxWidth(),
                 onClick = onClickedLinkDevice,
                 text = stringResource(R.string.device_linking_pfs_warning_button_continue),
                 maxLines = 2,

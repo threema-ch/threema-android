@@ -168,7 +168,6 @@ når den første meldingen mottas.</string>
     <string name="backup_id_title">ID eksporten din</string>
     <string name="backup_id_summary">Teksten som er vist ovenfor eller QR-koden, sammen med passordet du har valgt, kan bli brukt til å gjenopprette IDen din på en annen enhet. Du burde kopiere det til et passende sted, del det via e-post eller skann QR-koden med en annen enhet.</string>
     <string name="support">Hjelp</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Den følgende teksten, sammen med det valgte passordet, kan bli brukt til å gjenopprette din ${app_name_short} ID.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -328,7 +327,6 @@ når den første meldingen mottas.</string>
     <string name="state_dialog_status">Status</string>
     <string name="no_recent_conversations">Ingen samtaler funnet</string>
     <string name="save_changes">Lagre</string>
-    <string name="group_created_confirm">Gruppen ble opprettet</string>
     <string name="creating_group">Oppretter gruppe</string>
     <string name="updating_group">Oppdaterer gruppe</string>
     <string name="status_create_group">Gruppe opprettet.</string>
@@ -712,7 +710,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="clone_group_message">Det blir laget en klone av denne gruppen, med deg som administrator. Vil du fortsette?</string>
     <string name="prefs_proximity_sensor">Bruk nærhetssensor</string>
     <string name="prefs_proximity_sensor_explain">Bruk anropshøyttaler for lydmeldinger når nærhetssensoren er tildekket</string>
-    <string name="error_creating_group">Feil ved oppretting/oppdatering av gruppe</string>
     <string name="no_media_found_generic">Ingen medier er funnet i denne samtalen som passer til valg.</string>
     <string name="max_images_reached">Max. %d elementer kan bli redigert samtidig</string>
     <string name="enter_description">Vennligst beskriv bug/problem her.</string>
@@ -820,8 +817,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Å lagre store mediafiler til en lokal ZIP-sikkerhetskopi kan overstige kapasiteten til enhetens prosessor og minne, og det kan ta veldig lang tid å fullføre. ${app_name} vil ikke sende eller motta meldinger mens sikkerhetskopieringen kjører. Fortsette likevel?</string>
     <string name="backup_data_cancelled">Sikkerhetskopi avbrutt</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Klarer ikke å starte ${app_name}. Vennligst skru av enheten din, deretter på igjen.</string>
     <string name="message_sent">Melding er sendt</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short} anrop</string>
@@ -1182,9 +1177,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="permission_camera_videocall_required">For videoanrop, vennligst tillat tilgang til kameraet</string>
     <string name="tooltip_voip_enable_speakerphone">Trykk her for å skru på høyttaler</string>
     <string name="ballot_open">Aktive avstemninger</string>
-    <string name="translators">Oversettere</string>
-    <string name="credits">Anerkjennelse</string>
-    <string name="translators_thanks">Mange takk til våre frivillige oversettere: \n%s</string>
     <string name="ballot_window_hide">Skjul aktive avstemninger</string>
     <string name="ballot_window_show">Vis aktive avstemninger</string>
     <string name="single_ballot_really_delete">Fjern avstemningen</string>
@@ -1522,11 +1514,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="prefs_summary_hibernation_api">For å unngå at ${app_name} blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
     <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Serveren har oppdaget en tilkobling med den samme ${app_name_short} IDen, men fra en annen enhet. Har du nylig brukt ${app_name_short} på en annen enhet?
-
-Om du har gjort det, så kan du ignorere denne meldingen.
-
-Om du ikke har brukt din ${app_name_short} ID på en annen enhet eller brukt en eldre versjon av ${app_name_short}, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.ch/en/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Serveren har oppdaget en tilkobling med den samme ${app_name_short} IDen, men fra en annen enhet. Har du nylig brukt ${app_name_short} på en annen enhet? <br><br>Om du har gjort det, så kan du ignorere denne meldingen. <br><br>Om du ikke har brukt din ${app_name_short} ID på en annen enhet eller brukt en eldre versjon av ${app_name_short}, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.com/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.]]></string>
     <string name="fetch2_failure">Synkronisering med server mislyktes.</string>
     <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
     <string name="group_calls">Gruppesamtaler</string>
@@ -1653,8 +1641,8 @@ Om du ikke har brukt din ${app_name_short} ID på en annen enhet eller brukt en 
     <string name="problemsolver_title_app_battery_usgae_optimized">Batteribruk satt til \"Optimalisert\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Appen har ikke tillatelse til å opprettholde en permanent tilkobling til serverne, noe som er nødvendig for at ${app_name_short} Push skal fungere. Du vil ikke få varsel om nye meldinger så lenge appen er i bakgrunnen. For å løse dette, trykk på \"Batteribruk\" og velg \"Ubegrenset\".</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
     <string name="problemsolver_to_settings">Til innstillinger</string>
     <string name="prefs_advanced_options">Avanserte innstillinger</string>
     <string name="push_service">Push-tjeneste</string>
@@ -1679,6 +1667,9 @@ Om du ikke har brukt din ${app_name_short} ID på en annen enhet eller brukt en 
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>

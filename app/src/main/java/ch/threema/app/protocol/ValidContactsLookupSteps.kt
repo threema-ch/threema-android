@@ -27,7 +27,7 @@ import ch.threema.app.services.license.UserCredentials
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository

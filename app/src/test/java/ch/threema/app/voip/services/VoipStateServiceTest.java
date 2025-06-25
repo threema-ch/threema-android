@@ -111,8 +111,8 @@ public class VoipStateServiceTest {
 
         // Set up return values for contact service
         when(this.mockContactService.getByIdentity("INVALID")).thenReturn(null);
-        when(this.mockContactService.getByIdentity("AAAAAAAA")).thenReturn(new ContactModel("AAAAAAAA", new byte[]{1, 2, 3}));
-        when(this.mockContactService.getByIdentity("BBBBBBBB")).thenReturn(new ContactModel("BBBBBBBB", new byte[]{2, 3, 4}));
+        when(this.mockContactService.getByIdentity("AAAAAAAA")).thenReturn(ContactModel.create("AAAAAAAA", new byte[32]));
+        when(this.mockContactService.getByIdentity("BBBBBBBB")).thenReturn(ContactModel.create("BBBBBBBB", new byte[32]));
         when(this.mockContactService.createReceiver(any(ContactModel.class))).thenReturn(this.contactMessageReceiver);
 
         // Static mocks

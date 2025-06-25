@@ -24,11 +24,11 @@ package ch.threema.app.utils
 import android.os.Looper
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.app.utils.executor.BackgroundTask
+import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Rule
-import org.junit.Test
 import org.junit.rules.Timeout
 
 class BackgroundExecutorTest {

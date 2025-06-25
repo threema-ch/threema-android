@@ -36,9 +36,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class IDColorTest {
-    private val echo = ContactModel("ECHOECHO", nonSecureRandomArray(32))
-    private val abcd1234 = ContactModel("ABCD1234", nonSecureRandomArray(32))
-    private val abcd0123 = ContactModel("ABCD0123", nonSecureRandomArray(32))
+    private val echo = ContactModel.create("ECHOECHO", nonSecureRandomArray(32))
+    private val abcd1234 = ContactModel.create("ABCD1234", nonSecureRandomArray(32))
+    private val abcd0123 = ContactModel.create("ABCD0123", nonSecureRandomArray(32))
 
     private val greenLight = 1
     private val greenDark = 2

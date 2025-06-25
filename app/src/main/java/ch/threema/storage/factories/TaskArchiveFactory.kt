@@ -23,11 +23,12 @@ package ch.threema.storage.factories
 
 import android.content.ContentValues
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
+import ch.threema.storage.runQuery
 
 private val logger = LoggingUtil.getThreemaLogger("TaskArchiveFactory")
 
-class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
+class TaskArchiveFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, "tasks") {
     companion object {
         private const val COLUMN_ID = "id"
@@ -76,24 +77,16 @@ class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
      * Get all tasks currently stored in the queue. The list is ordered ascending, so that the
      * oldest tasks are first.
      */
-    fun getAll(): List<String> {
-        readableDatabase.query(
-            tableName,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "$COLUMN_ID ASC",
-        ).use {
-            val tasks = mutableListOf<String>()
-            val taskColumnId = it.getColumnIndex(COLUMN_TASK)
-            while (it.moveToNext()) {
-                tasks.add(it.getString(taskColumnId))
+    fun getAll(): List<String> =
+        readableDatabase.runQuery(tableName, orderBy = "$COLUMN_ID ASC")
+            .use {
+                buildList {
+                    val taskColumnId = it.getColumnIndex(COLUMN_TASK)
+                    while (it.moveToNext()) {
+                        add(it.getString(taskColumnId))
+                    }
+                }
             }
-            return tasks
-        }
-    }
 
     override fun getStatements() = arrayOf(
         "CREATE TABLE `$tableName` (" +
@@ -102,15 +95,12 @@ class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
     )
 
     private fun getOldestIdForTask(task: String): Long? {
-        readableDatabase.query(
-            tableName,
-            null,
-            "$COLUMN_TASK=?",
-            arrayOf(task.trim()),
-            null,
-            null,
-            "$COLUMN_ID ASC",
-            "1",
+        readableDatabase.runQuery(
+            table = tableName,
+            selection = "$COLUMN_TASK=?",
+            selectionArgs = arrayOf(task.trim()),
+            orderBy = "$COLUMN_ID ASC",
+            limit = "1",
         ).use {
             if (it.moveToFirst()) {
                 return it.getLong(it.getColumnIndexOrThrow(COLUMN_ID))

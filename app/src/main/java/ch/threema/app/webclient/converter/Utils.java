@@ -109,7 +109,7 @@ public class Utils extends Converter {
         }
 
         public static ModelWrapper getModel(ConversationModel conversationModel) throws ConversionException {
-            return getModel(conversationModel.getReceiver());
+            return getModel(conversationModel.messageReceiver);
         }
 
         public static ModelWrapper getModel(MessageReceiver receiver) throws ConversionException {

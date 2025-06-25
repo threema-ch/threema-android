@@ -54,6 +54,7 @@ import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.listeners.SMSVerificationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.UpdateWorkInfoRoutine;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.SerialCredentials;
@@ -83,9 +84,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
-import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.AppConstants.PHONE_LINKED_PLACEHOLDER;
 import static ch.threema.app.utils.StreamUtilKt.toByteArray;
 
 /**
@@ -418,7 +420,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         if (mobileNumber == null) {
 
             String currentMobileNumber = getCurrentMobileNumber();
-            if (currentMobileNumber == null || currentMobileNumber.length() == 0) {
+            if (currentMobileNumber == null || currentMobileNumber.isEmpty()) {
                 throw new ThreemaException("no mobile number linked");
             }
         }
@@ -473,7 +475,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     @Override
     public String getLinkedMobile(boolean returnPendingNumber) {
         String currentMobileNumber = getCurrentMobileNumber();
-        if (currentMobileNumber != null && currentMobileNumber.length() > 0) {
+        if (currentMobileNumber != null && !currentMobileNumber.isEmpty()) {
             return currentMobileNumber;
         }
 
@@ -497,19 +499,56 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
+    public void persistPhoneIdentityLinkFromSync(
+        @Nullable String phoneNumber,
+        @NonNull TriggerSource triggerSource
+    ) {
+        if (triggerSource != TriggerSource.SYNC) {
+            throw new IllegalArgumentException("Cannot persist phone number from " + triggerSource);
+        }
+
+        if (phoneNumber != null) {
+            this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE, phoneNumber);
+        } else {
+            this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE);
+        }
+        this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
+        this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
+
+        ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
+    }
+
+    @Override
+    public void persistEmailIdentityLinkFromSync(
+        @Nullable String email,
+        @NonNull TriggerSource triggerSource
+    ) {
+        if (triggerSource != TriggerSource.SYNC) {
+            throw new IllegalArgumentException("Cannot persist email from " + triggerSource);
+        }
+
+        if (email != null) {
+            this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, email);
+        } else {
+            this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL);
+        }
+
+        this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL_PENDING);
+    }
+
+    @Override
     public String getPublicNickname() {
         return this.identityStore.getPublicNickname();
     }
 
     @Override
-    public String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource) {
+    public String setPublicNickname(@Nullable String publicNickname, @NonNull TriggerSource triggerSource) {
         final @NonNull String oldNickname = this.identityStore.getPublicNickname();
         // truncate string into a 32 byte length string
         // fix #ANDR-530
-        final @Nullable String publicNicknameTruncated = Utils.truncateUTF8String(
-            publicNickname,
-            ProtocolDefines.PUSH_FROM_LEN
-        );
+        final @Nullable String publicNicknameTruncated = publicNickname != null
+            ? Utils.truncateUTF8String(publicNickname, ProtocolDefines.PUSH_FROM_LEN)
+            : "";
         this.identityStore.persistPublicNickname(publicNicknameTruncated);
         // run update work info (only if the app is the work version)
         if (ConfigUtils.isWorkBuild()) {
@@ -543,7 +582,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     public boolean setUserProfilePicture(@NonNull File userProfilePicture, @NonNull TriggerSource triggerSource) {
         try {
             fileService.writeUserDefinedProfilePicture(getIdentity(), userProfilePicture);
-            onUserProfilePictureChanged();
+            onUserProfilePictureChanged(triggerSource);
             if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
                 taskCreator.scheduleReflectUserProfilePictureTask();
             }
@@ -558,7 +597,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     public boolean setUserProfilePicture(@NonNull byte[] userProfilePicture, @NonNull TriggerSource triggerSource) {
         try {
             fileService.writeUserDefinedProfilePicture(getIdentity(), userProfilePicture);
-            onUserProfilePictureChanged();
+            onUserProfilePictureChanged(triggerSource);
             if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
                 taskCreator.scheduleReflectUserProfilePictureTask();
             }
@@ -570,9 +609,27 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
+    public void setUserProfilePictureFromSync(
+        @NonNull ContactService.ProfilePictureUploadData uploadData,
+        @NonNull TriggerSource triggerSource
+    ) throws MasterKeyLockedException, IOException {
+        if (triggerSource != TriggerSource.SYNC) {
+            throw new IllegalArgumentException("This method must only be used from sync");
+        }
+        // Persist the profile picture itself
+        fileService.writeUserDefinedProfilePicture(getIdentity(), uploadData.bitmapArray);
+
+        // Persist the changes regarding blob id and upload date
+        this.preferenceService.setProfilePicUploadData(uploadData);
+
+        // Notify listeners
+        ListenerManager.profileListeners.handle(listener -> listener.onAvatarChanged(triggerSource));
+    }
+
+    @Override
     public void removeUserProfilePicture(@NonNull TriggerSource triggerSource) {
         fileService.removeUserDefinedProfilePicture(getIdentity());
-        onUserProfilePictureChanged();
+        onUserProfilePictureChanged(triggerSource);
         if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
             taskCreator.scheduleReflectUserProfilePictureTask();
         }
@@ -607,7 +664,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
             data.uploadedAt = now.getTime();
 
-            preferenceService.setProfilePicUploadDate(now);
             preferenceService.setProfilePicUploadData(data);
             return data;
         } else {
@@ -653,13 +709,12 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         return data;
     }
 
-    private void onUserProfilePictureChanged() {
+    private void onUserProfilePictureChanged(@NonNull TriggerSource triggerSource) {
         // Reset the last profile picture upload date
-        this.preferenceService.setProfilePicUploadDate(new Date(0));
         this.preferenceService.setProfilePicUploadData(null);
 
         // Notify listeners
-        ListenerManager.profileListeners.handle(ProfileListener::onAvatarChanged);
+        ListenerManager.profileListeners.handle(listener -> listener.onAvatarChanged(triggerSource));
     }
 
     private String getLanguage() {
@@ -703,10 +758,10 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             privateKey
         );
 
-        if (result.email != null && result.email.length() > 0) {
+        if (result.email != null && !result.email.isEmpty()) {
             this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, result.email);
         }
-        if (result.mobileNo != null && result.mobileNo.length() > 0) {
+        if (result.mobileNo != null && !result.mobileNo.isEmpty()) {
             this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE, result.mobileNo);
         }
 

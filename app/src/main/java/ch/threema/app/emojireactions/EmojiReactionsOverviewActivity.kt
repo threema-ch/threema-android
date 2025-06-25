@@ -27,16 +27,16 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsets
-import android.view.WindowMetrics
 import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.Type.displayCutout
+import androidx.core.view.WindowInsetsCompat.Type.systemBars
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -46,7 +46,6 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiTextView
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -56,13 +55,11 @@ import ch.threema.storage.models.AbstractMessageModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
-import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("EmojiReactionOverviewActivity")
+private val logger = LoggingUtil.getThreemaLogger("EmojiReactionOverviewActivity")
 
 class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     init {
@@ -76,12 +73,6 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     private val items = mutableListOf<EmojiReactionItems>()
     private var tabLayoutMediator: TabLayoutMediator? = null
     private var emojiReactionsOverviewAdapter: EmojiReactionsOverviewAdapter? = null
-    private val statusBarColorExpanded: Int by lazy {
-        ContextCompat.getColor(this, R.color.attach_status_bar_color_expanded)
-    }
-    private val statusBarColorCollapsed: Int by lazy {
-        ContextCompat.getColor(this, R.color.attach_status_bar_color_collapsed)
-    }
 
     data class EmojiReactionItems(
         val emojiSequence: String,
@@ -89,15 +80,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         val isMyReaction: Boolean,
     )
 
-    override fun getLayoutResource(): Int {
-        return R.layout.activity_emojireactions_overview
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        super.onCreate(savedInstanceState)
-    }
+    override fun getLayoutResource(): Int = R.layout.activity_emojireactions_overview
 
     @SuppressLint("ClickableViewAccessibility")
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
@@ -136,8 +119,6 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                 return false
             }
 
-            window.statusBarColor = statusBarColorCollapsed
-
             setupParentLayout()
             setupViewPager()
 
@@ -159,6 +140,18 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
             return false
         }
         return true
+    }
+
+    override fun handleDeviceInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById(R.id.status_bar_background),
+        ) { view: View, windowInsets: WindowInsetsCompat ->
+            val insets = windowInsets.getInsets(systemBars() or displayCutout())
+            val layoutParams = view.layoutParams
+            layoutParams.height = insets.top
+            view.layoutParams = layoutParams
+            windowInsets
+        }
     }
 
     private fun onUiStateChanged(
@@ -244,7 +237,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
             )
         }
 
-        determineAvailableDrawingHeight { availableHeight ->
+        determineMaxHeight { availableHeight ->
             bottomSheetBehavior.maxHeight = availableHeight
             bottomSheetBehavior.peekHeight = (availableHeight * 0.4).toInt()
             bottomSheetBehavior.state = STATE_COLLAPSED
@@ -258,15 +251,17 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         viewPager.children.find { it is RecyclerView }?.let {
             (it as RecyclerView).isNestedScrollingEnabled = false
         }
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageScrollStateChanged(state: Int) {
-                super.onPageScrollStateChanged(state)
+        viewPager.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrollStateChanged(state: Int) {
+                    super.onPageScrollStateChanged(state)
 
-                if (state == ViewPager2.SCROLL_STATE_IDLE) {
-                    parentLayout.requestLayout()
+                    if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                        parentLayout.requestLayout()
+                    }
                 }
-            }
-        })
+            },
+        )
     }
 
     /**
@@ -274,7 +269,6 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
      * Also sets accessibility texts for custom views
      */
     private fun setupTabLayout() {
-        val textColor = ConfigUtils.getColorFromAttribute(this, R.attr.textColorPrimary)
         val tabLayout = findViewById<TabLayout>(R.id.tab_layout)
 
         tabLayoutMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -290,16 +284,16 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
             tab.customView?.let {
                 it.findViewById<EmojiTextView>(R.id.emoji).setSingleEmojiSequence(emojiSequence)
                 val countTextView = it.findViewById<TextView>(R.id.count)
-
                 countTextView?.apply {
                     text = emojiCount
                     typeface = if (isMyReaction) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-                }
-                // we use a shadow to achieve a "bolder than bold" effect
-                if (isMyReaction) {
-                    countTextView.setShadowLayer(1f, 2f, 0f, textColor)
-                } else {
-                    countTextView.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+
+                    // we use a shadow to achieve a "bolder than bold" effect
+                    if (isMyReaction) {
+                        setShadowLayer(1f, 2f, 2f, this.currentTextColor)
+                    } else {
+                        setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+                    }
                 }
             }
             tab.contentDescription =
@@ -316,51 +310,27 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
      * Setup bottom sheet and set callback for state changes
      */
     private fun setupBottomSheet(bottomSheetLayout: ConstraintLayout): BottomSheetBehavior<ConstraintLayout> {
-        val dragHandle = findViewById<View>(R.id.drag_handle)
+        val statusBarBackground = findViewById<View>(R.id.status_bar_background)
 
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBehavior.isShouldRemoveExpandedCorners = true
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback() {
-            var previousSlideOffset = -1f
+        bottomSheetBehavior.addBottomSheetCallback(
+            object : BottomSheetCallback() {
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    finish()
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    statusBarBackground.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+                    if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                        finish()
+                    }
                 }
-            }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (slideOffset > previousSlideOffset && slideOffset == 1.0f) {
-                    // fully expanded
-                    dragHandle.visibility = View.INVISIBLE
-                    window.statusBarColor = getBottomSheetBackgroundColor(bottomSheetLayout)
-                }
-                if (previousSlideOffset > slideOffset && previousSlideOffset == 1.0f) {
-                    // dragging
-                    dragHandle.visibility = View.VISIBLE
-                    window.statusBarColor = statusBarColorCollapsed
-                }
-                previousSlideOffset = slideOffset
-            }
-        })
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            bottomSheetLayout.post {
-                window.navigationBarColor = getBottomSheetBackgroundColor(bottomSheetLayout)
-            }
-        }
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            },
+        )
 
         return bottomSheetBehavior
-    }
-
-    private fun getBottomSheetBackgroundColor(bottomSheetLayout: ConstraintLayout): Int {
-        val background = bottomSheetLayout.background
-        if (background is MaterialShapeDrawable) {
-            return background.resolvedTintColor
-        }
-        return statusBarColorExpanded
     }
 
     private fun requiresViewPagerRecreation(
@@ -405,28 +375,23 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         }
     }
 
-    private fun determineAvailableDrawingHeight(onAvailable: (Int) -> Unit) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-            onAvailable(determineAvailableDrawingHeightApi30Impl())
-        } else {
-            val statusBarHeight = ConfigUtils.getStatusBarHeight(this)
-            val navigationBarHeight = ConfigUtils.getNavigationBarHeight(this)
-            val screenHeightWithoutTopInsets =
-                resources.displayMetrics.heightPixels - statusBarHeight + navigationBarHeight
-            onAvailable(screenHeightWithoutTopInsets.coerceAtLeast(0))
+    private fun determineMaxHeight(onAvailable: (Int) -> Unit) {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.parent_layout)) { view: View, windowInsets: WindowInsetsCompat ->
+            val insets = windowInsets.getInsets(systemBars() or displayCutout())
+            val windowHeight: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                windowManager.currentWindowMetrics.bounds.height()
+            } else {
+                // It seems that this height value already excludes the vertical device insets
+                resources.displayMetrics.heightPixels
+            }
+            var maxHeight = windowHeight
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                maxHeight -= insets.top
+            }
+            view.setOnApplyWindowInsetsListener(null)
+            onAvailable(maxHeight.coerceAtLeast(0))
+            windowInsets
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun determineAvailableDrawingHeightApi30Impl(): Int {
-        val metrics: WindowMetrics = windowManager.currentWindowMetrics
-        val windowInsets: WindowInsets = metrics.getWindowInsets()
-        val insetsTop = windowInsets.getInsets(
-            WindowInsets.Type.statusBars() or WindowInsets.Type.displayCutout() or WindowInsets.Type.captionBar(),
-        )
-        val insetsHeightTop = insetsTop.top + insetsTop.bottom
-
-        return (metrics.bounds.height() - insetsHeightTop).coerceAtLeast(0)
     }
 
     companion object {

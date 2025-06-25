@@ -3,7 +3,7 @@ name = "libthreema-macros"
 version = "0.1.0"
 authors = ["Threema GmbH"]
 license = "AGPL-3.0-only"
-edition = "2021"
+edition = "2024"
 
 [lib]
 proc-macro = true
@@ -12,7 +12,7 @@ proc-macro = true
 workspace = true
 
 [dependencies]
-convert_case = "0.6"
+convert_case = "0.8"
 quote = "1"
 syn = "2"
 

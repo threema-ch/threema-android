@@ -23,6 +23,7 @@ package ch.threema.domain.protocol.connection.csp
 
 import ch.threema.base.crypto.NonceCounter
 import ch.threema.base.crypto.ThreemaKDF
+import ch.threema.base.utils.SecureRandomUtil
 import ch.threema.base.utils.TimeMeasureUtil
 import ch.threema.base.utils.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
@@ -45,7 +46,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.security.SecureRandom
 import org.apache.commons.io.EndianUtils
 import ove.crypto.digest.Blake2b
 
@@ -187,6 +187,7 @@ internal class CspSession(
             ByteArrayInputStream(message.bytes).use {
                 readServerCookie(it)
                 val serverHello = decryptServerHello(it)
+                assertClientCookieAndServerCookieNotEqual()
                 assertCorrectClientCookie(serverHello)
                 val serverTempKeyPub = processServerHello(serverHello)
                 logger.info("Server hello successful (rtt: {} ms)", timeMeasureUtil.elapsedTime)
@@ -233,6 +234,12 @@ internal class CspSession(
             }
         }
         return serverHello
+    }
+
+    private fun assertClientCookieAndServerCookieNotEqual() {
+        if (clientCookie.contentEquals(serverCookie)) {
+            throw ServerConnectionException("CCK and SCK must not be equal")
+        }
     }
 
     /**
@@ -287,8 +294,7 @@ internal class CspSession(
     private fun sendClientHello(outbound: InputPipe<in CspLoginMessage, Unit>) {
         dispatcher.assertDispatcherContext()
 
-        clientCookie = ByteArray(ProtocolDefines.COOKIE_LEN)
-        SecureRandom().nextBytes(clientCookie)
+        clientCookie = SecureRandomUtil.generateRandomBytes(ProtocolDefines.COOKIE_LEN)
         if (logger.isDebugEnabled) {
             logger.debug("Client cookie = {}", NaCl.asHex(clientCookie))
         }

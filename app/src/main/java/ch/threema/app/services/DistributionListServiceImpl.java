@@ -52,7 +52,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -63,27 +63,27 @@ public class DistributionListServiceImpl implements DistributionListService {
 
     private final Context context;
     private final AvatarCacheService avatarCacheService;
-    private final DatabaseServiceNew databaseServiceNew;
+    private final DatabaseService databaseService;
     private final ContactService contactService;
     private final @NonNull ConversationTagService conversationTagService;
 
     public DistributionListServiceImpl(
         Context context,
         AvatarCacheService avatarCacheService,
-        DatabaseServiceNew databaseServiceNew,
+        DatabaseService databaseService,
         ContactService contactService,
         @NonNull ConversationTagService conversationTagService
     ) {
         this.context = context;
         this.avatarCacheService = avatarCacheService;
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.contactService = contactService;
         this.conversationTagService = conversationTagService;
     }
 
     @Override
     public DistributionListModel getById(long id) {
-        return this.databaseServiceNew.getDistributionListModelFactory().getById(
+        return this.databaseService.getDistributionListModelFactory().getById(
             id
         );
     }
@@ -109,7 +109,7 @@ public class DistributionListServiceImpl implements DistributionListService {
             .setCreatedAt(now)
             .setLastUpdate(now)
             .setAdHocDistributionList(isAdHocDistributionList);
-        this.databaseServiceNew.getDistributionListModelFactory().create(
+        this.databaseService.getDistributionListModelFactory().create(
             distributionListModel
         );
 
@@ -129,7 +129,7 @@ public class DistributionListServiceImpl implements DistributionListService {
         distributionListModel.setName(name);
 
         //create
-        this.databaseServiceNew.getDistributionListModelFactory().update(
+        this.databaseService.getDistributionListModelFactory().update(
             distributionListModel
         );
 
@@ -174,7 +174,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 
     @Override
     public boolean addMemberToDistributionList(DistributionListModel distributionListModel, String identity) {
-        DistributionListMemberModel distributionListMemberModel = this.databaseServiceNew.getDistributionListMemberModelFactory().getByDistributionListIdAndIdentity(
+        DistributionListMemberModel distributionListMemberModel = this.databaseService.getDistributionListMemberModelFactory().getByDistributionListIdAndIdentity(
             distributionListModel.getId(),
             identity
         );
@@ -187,11 +187,11 @@ public class DistributionListServiceImpl implements DistributionListService {
             .setActive(true);
 
         if (distributionListMemberModel.getId() > 0) {
-            this.databaseServiceNew.getDistributionListMemberModelFactory().update(
+            this.databaseService.getDistributionListMemberModelFactory().update(
                 distributionListMemberModel
             );
         } else {
-            this.databaseServiceNew.getDistributionListMemberModelFactory().create(
+            this.databaseService.getDistributionListMemberModelFactory().create(
                 distributionListMemberModel
             );
         }
@@ -235,7 +235,7 @@ public class DistributionListServiceImpl implements DistributionListService {
         );
 
         // Delete distribution list fully from database
-        this.databaseServiceNew.getDistributionListModelFactory().delete(distributionListModel);
+        this.databaseService.getDistributionListModelFactory().delete(distributionListModel);
 
         // Notify listeners
         ListenerManager.distributionListListeners.handle(listener -> listener.onRemove(distributionListModel));
@@ -245,7 +245,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 
     private boolean removeMembers(DistributionListModel distributionListModel) {
         //remove all members first
-        this.databaseServiceNew.getDistributionListMemberModelFactory().deleteByDistributionListId(
+        this.databaseService.getDistributionListMemberModelFactory().deleteByDistributionListId(
             distributionListModel.getId());
 
         return true;
@@ -254,13 +254,13 @@ public class DistributionListServiceImpl implements DistributionListService {
     @Override
     public boolean removeAll() {
         //remove all members first
-        this.databaseServiceNew.getDistributionListMemberModelFactory().deleteAll();
+        this.databaseService.getDistributionListMemberModelFactory().deleteAll();
 
         //...  messages
-        this.databaseServiceNew.getDistributionListMessageModelFactory().deleteAll();
+        this.databaseService.getDistributionListMessageModelFactory().deleteAll();
 
         //.. remove lists
-        this.databaseServiceNew.getDistributionListModelFactory().deleteAll();
+        this.databaseService.getDistributionListModelFactory().deleteAll();
 
         return true;
     }
@@ -282,7 +282,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 
     @Override
     public List<DistributionListMemberModel> getDistributionListMembers(DistributionListModel distributionListModel) {
-        return this.databaseServiceNew.getDistributionListMemberModelFactory().getByDistributionListId(
+        return this.databaseService.getDistributionListMemberModelFactory().getByDistributionListId(
             distributionListModel.getId()
         );
     }
@@ -294,7 +294,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 
     @Override
     public List<DistributionListModel> getAll(DistributionListFilter filter) {
-        return this.databaseServiceNew.getDistributionListModelFactory().filter(
+        return this.databaseService.getDistributionListModelFactory().filter(
             filter
         );
     }
@@ -328,7 +328,7 @@ public class DistributionListServiceImpl implements DistributionListService {
     @Override
     public DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel) {
         return new DistributionListMessageReceiver(
-            this.databaseServiceNew,
+            this.databaseService,
             this.contactService,
             distributionListModel,
             this);
@@ -371,7 +371,7 @@ public class DistributionListServiceImpl implements DistributionListService {
     }
 
     private void save(DistributionListModel distributionListModel) {
-        this.databaseServiceNew.getDistributionListModelFactory().createOrUpdate(
+        this.databaseService.getDistributionListModelFactory().createOrUpdate(
             distributionListModel
         );
     }

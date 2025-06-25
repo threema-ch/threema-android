@@ -23,8 +23,8 @@ package ch.threema.domain.protocol.csp.messages.fs;
 
 import com.google.protobuf.ByteString;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
@@ -42,7 +42,7 @@ public class ForwardSecurityDataTerminateTest {
         .build();
 
     private static void assertEqualsTestProperties(ForwardSecurityDataTerminate data) {
-        Assert.assertEquals(TEST_SESSION_ID, data.getSessionId());
+        Assertions.assertEquals(TEST_SESSION_ID, data.getSessionId());
     }
 
     @Test
@@ -63,6 +63,6 @@ public class ForwardSecurityDataTerminateTest {
         final ForwardSecurityDataTerminate data = new ForwardSecurityDataTerminate(TEST_SESSION_ID, TEST_CAUSE);
         final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
-        Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
+        Assertions.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
     }
 }

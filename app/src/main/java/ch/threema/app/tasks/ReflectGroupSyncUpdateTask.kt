@@ -21,6 +21,7 @@
 
 package ch.threema.app.tasks
 
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.protocol.ProfilePictureChange
@@ -31,6 +32,7 @@ import ch.threema.app.services.ConversationTagService
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.ConversationUtil
 import ch.threema.app.utils.contentEquals
+import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
@@ -360,6 +362,11 @@ abstract class ReflectGroupSyncUpdateTask(
     }
 
     final override suspend fun invoke(handle: ActiveTaskCodec) {
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Cannot reflect group sync update of type {} if md is not active", type)
+            return
+        }
+
         runTransaction(handle)
     }
 
@@ -614,11 +621,16 @@ abstract class ReflectGroupSyncUpdateFromLocal<T>(
 ),
     ActiveTask<ReflectionResult<Unit>> {
     override suspend fun invoke(handle: ActiveTaskCodec): ReflectionResult<Unit> {
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Cannot reflect group sync update from local of type {} when md is not active", type)
+            return ReflectionResult.MultiDeviceNotActive()
+        }
+
         try {
             return reflectSync(handle)
         } catch (e: TransactionScope.TransactionException) {
             logger.error("Could not reflect as the precondition failed", e)
-            return ReflectionPreconditionFailed(e)
+            return ReflectionResult.PreconditionFailed(e)
         }
     }
 }
@@ -629,7 +641,7 @@ class ReflectLocalGroupUpdate(
     private val removeMembers: Set<String>,
     private val profilePictureChange: ProfilePictureChange?,
     private val uploadGroupPhoto: (ProfilePictureChange?) -> GroupPhotoUploadResult?,
-    private val finishGroupUpdate: (GroupPhotoUploadResult?) -> Unit,
+    private val finishGroupUpdate: (GroupPhotoUploadResult?) -> GroupFlowResult,
     groupModel: GroupModel,
     nonceFactory: NonceFactory,
     private val contactModelRepository: ContactModelRepository,
@@ -698,11 +710,20 @@ class ReflectLocalGroupUpdate(
         reflectGroupSync(handle)
     }
 
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> ReflectionResult<Unit> =
-        {
-            finishGroupUpdate(groupPhotoUploadResult)
-            ReflectionSuccess(Unit)
+    /**
+     *  TODO(ANDR-3823): Rework the result type of this task
+     *
+     *  @throws ThreemaException if the [finishGroupUpdate] block does not return [GroupFlowResult.Success].
+     */
+    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> ReflectionResult<Unit> = {
+        val groupFlowResult = finishGroupUpdate(groupPhotoUploadResult)
+        when (groupFlowResult) {
+            is GroupFlowResult.Success -> ReflectionResult.Success(Unit)
+            is GroupFlowResult.Failure -> throw ThreemaException(
+                "Group update was successfully reflected but we failed to to finish updating the group locally",
+            )
         }
+    }
 
     override fun getMemberStateChanges(): Map<String, MemberStateChange> {
         val memberStateChanges: MutableMap<String, MemberStateChange> = mutableMapOf()
@@ -736,8 +757,9 @@ class ReflectLocalGroupLeaveOrDisband(
         reflectGroupSync(handle)
     }
 
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> ReflectionResult<Unit> =
-        { ReflectionSuccess(Unit) }
+    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> ReflectionResult<Unit> = {
+        ReflectionResult.Success(Unit)
+    }
 
     override fun getMemberStateChanges(): Map<String, MemberStateChange> = emptyMap()
 }

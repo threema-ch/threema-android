@@ -45,6 +45,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.jobs.ReConnectJobService;
@@ -132,7 +133,7 @@ public class PushUtil {
      * @param clearToken boolean whether the token was reset
      */
     public static void signalRegistrationFinished(@Nullable String error, boolean clearToken) {
-        final Intent intent = new Intent(ThreemaApplication.INTENT_PUSH_REGISTRATION_COMPLETE);
+        final Intent intent = new Intent(AppConstants.INTENT_PUSH_REGISTRATION_COMPLETE);
         if (error != null) {
             logger.error("Failed to get push token {}", error);
             intent.putExtra(PushUtil.EXTRA_REGISTRATION_ERROR_BROADCAST, true);
@@ -191,8 +192,7 @@ public class PushUtil {
         PreferenceStore preferenceStore = new PreferenceStore(appContext, null);
         NotificationPreferenceService preferenceService = new NotificationPreferenceServiceImpl(appContext, preferenceStore);
 
-        if (ThreemaApplication.getMasterKey() != null &&
-            ThreemaApplication.getMasterKey().isLocked() &&
+        if (ThreemaApplication.getMasterKey().isLocked() &&
             preferenceService.isMasterKeyNewMessageNotifications()) {
 
             displayAdHocNotification();
@@ -393,9 +393,7 @@ public class PushUtil {
                 });
         }
 
-        if (notificationService != null) {
-            notificationService.showMasterKeyLockedNewMessageNotification();
-        }
+        notificationService.showMasterKeyLockedNewMessageNotification();
     }
 
     private static void sendWebclientNotification(Map<String, String> data) {

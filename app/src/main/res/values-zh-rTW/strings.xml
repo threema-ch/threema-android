@@ -101,6 +101,7 @@
     <string name="next">下一步</string>
     <string name="finish">完成</string>
     <string name="please_wait">請等候…</string>
+    <string name="please_wait_timeout">所需時間比預期長</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">正在建立您的 ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">正在同步通訊錄…</string>
@@ -166,6 +167,7 @@
     <string name="delete_id_message">除非您已建立備份或匯出並儲存了此ID的副本，否則您將永遠無法使用該ID再次傳送或接收訊息。\n\n如果您不想再使用此ID，建議在刪除ID之前，在 myid.threema.ch/revoke 上設定撤銷密碼並撤銷該ID。</string>
     <string name="delete_id_message2">最後警告：您確定要刪除此裝置上的ID嗎？</string>
     <string name="delete_id_sum">永久刪除您的ID和此裝置上的所有資料</string>
+    <string name="delete_all_data_prompt">刪除所有應用程式資料？</string>
     <string name="backup_password_summary">您的ID匯出將使用密碼進行加密。使用字母，數字和符號的組合。千萬不能忘記這裡輸入的內容！</string>
     <string name="backup_password_again_summary">再次輸入密碼</string>
     <string name="password_hint">密碼</string>
@@ -175,7 +177,6 @@
 選擇的密碼，可用於另一部裝置上還原您的ID。您應將其複製至合適的位置，透過
 電子郵件分享或使用其他裝置掃描QR碼。</string>
     <string name="support">説明</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">以下文字字串可以與所選密碼一起使用
         ，以還原您的 ${app_name_short} ID。</string>
@@ -354,9 +355,12 @@
     <string name="title_tab_recent">最近</string>
     <string name="no_recent_conversations">找不到對話記錄</string>
     <string name="save_changes">儲存</string>
-    <string name="group_created_confirm">群組建立成功</string>
     <string name="creating_group">正在建立群組</string>
     <string name="updating_group">正在更新群組</string>
+    <string name="leaving_group">離開群組</string>
+    <string name="disbanding_group">解散群組</string>
+    <string name="removing_group">刪除群組</string>
+    <string name="resyncing_group">重新同步群組</string>
     <string name="status_create_group">群組已建立。</string>
     <string name="status_rename_group">群組名稱變更為「%1$s」</string>
     <string name="status_group_new_photo">群組大頭貼已更新。</string>
@@ -764,7 +768,20 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="clone_group_message">這將建立這個群組的克隆，並由您作為管理員。是否繼續？</string>
     <string name="prefs_proximity_sensor">使用距離感測器</string>
     <string name="prefs_proximity_sensor_explain">如果覆蓋了距離感測器，請使用聽筒播放語音訊息</string>
-    <string name="error_creating_group">建立/更新群組時發生錯誤</string>
+    <string name="error_creating_group_network">群組未能建立，請檢查您的網路連線並再試一次。</string>
+    <string name="error_creating_group_internal">由於內部錯誤，群組未能建立。請稍後再試一次。</string>
+    <string name="error_cloning_group_network">群組未能複製，請檢查您的網路連線並再試一次。</string>
+    <string name="error_cloning_group_internal">由於內部錯誤，群組未能複製。請稍後再試一次。</string>
+    <string name="error_updating_group_network">無法套用變更，請檢查您的網路連線並再試一次。</string>
+    <string name="error_updating_group_internal">由於內部錯誤，無法套用變更。請稍後再試一次。</string>
+    <string name="error_leaving_group_network">未能離開群組，請檢查您的網路連線並再試一次。</string>
+    <string name="error_leaving_group_internal">由於內部錯誤，未能離開群組。請稍後再試一次。</string>
+    <string name="error_disbanding_group_network">群組未能解散，請檢查您的網路連線並再試一次。</string>
+    <string name="error_disbanding_group_internal">由於內部錯誤，群組未能解散。請稍後再試一次。</string>
+    <string name="error_removing_group_network">群組未能刪除，請檢查您的網路連線並再試一次。</string>
+    <string name="error_removing_group_internal">由於內部錯誤，群組未能刪除。請稍後再試一次。</string>
+    <string name="error_resyncing_group_network">群組未能重新同步，請檢查您的網路連線並再試一次。</string>
+    <string name="error_resyncing_group_internal">由於內部錯誤，群組未能重新同步。請稍後再試一次。</string>
     <string name="no_media_found_generic">在此對話中找不到相符已選擇的媒體</string>
     <string name="max_images_reached">一次最多可以編輯%d個專案</string>
     <string name="enter_description">請在這裡描述錯誤/問題。</string>
@@ -879,8 +896,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">將大型媒體檔案儲存至本地 ZIP 備份可能會超過裝置的 CPU 和記憶體容量，並且可能需要很長時間才能完成。在備份運行期間，${app_name} 不能傳送或接收訊息。是否繼續？</string>
     <string name="backup_data_cancelled">備份已取消</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">無法開啟 ${app_name}。請先重新啟動裝置，然後再開啟應用程式。</string>
     <string name="message_sent">訊息已傳送</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short} 通話</string>
@@ -1250,9 +1265,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="permission_camera_videocall_required">請允許取用攝影機以進行視訊通話。</string>
     <string name="tooltip_voip_enable_speakerphone">點擊這裡開啟電話揚聲器</string>
     <string name="ballot_open">開放投票</string>
-    <string name="translators">翻譯人員</string>
-    <string name="credits">鳴謝</string>
-    <string name="translators_thanks">非常感謝我們的翻譯志工：\n%s</string>
     <string name="ballot_window_hide">隱藏公開的投票</string>
     <string name="ballot_window_show">顯示公開的投票</string>
     <string name="single_ballot_really_delete">移除這個投票</string>
@@ -1588,7 +1600,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="prefs_summary_hibernation_api">為防止 ${app_name} 在長時間不使用後被系統暫停，請停用系統設定中的「暫停未使用的應用程式活動」。</string>
     <string name="unable_to_fetch_configuration">無法從配置伺服器取得資料，請稍後再試。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[我們的伺服器檢測到有人試圖從另一台裝置登入現有的 ${app_name_short} ID，您最近是否在其他裝置上登入過您的 ${app_name_short} ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此訊息。&lt;br&gt;&lt;br&gt;如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。]]></string>
+    <string name="rogue_device_warning"><![CDATA[我們的伺服器檢測到有人試圖從另一台裝置登入現有的 ${app_name_short} ID，您最近是否在其他裝置上登入過您的 ${app_name_short} ID？<br><br>如果有，就可以忽略此訊息。<br><br>如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.com/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。]]></string>
     <string name="fetch2_failure">與配置伺服器同步失敗。</string>
     <string name="no_members_support_group_calls">此群組中沒有成員可以接聽群組通話</string>
     <string name="group_calls">群組通話</string>
@@ -1727,10 +1739,10 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">應用程式電池使用量設定為「最佳化」。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">此應用程式被禁止與伺服器永久保持連線，以至 ${app_name_short} Push 無法正常執行。當此應用程式在背景執行時，您將不會收到新訊息的通知。如要解決問題，請先按「應用程式電池使用量」，然後選擇「無限制」。</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">此 Android 版本即將終止支援</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">您使用的 Android 裝置已不能取得軟體更新。基於安全理由，Threema 即將不再支援此 Android 版本。</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">此應用程式不再有更新</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">您使用的是過時的 Android 版本，基於安全理由，Threema 已不再支援該版本。這表示您無法再收到 Threema 應用程式的更新。如需繼續使用 Threema 的所有功能，請升級至最新的作業系統版本。</string>
     <string name="problemsolver_to_settings">前往設定</string>
     <string name="prefs_advanced_options">進階選項</string>
     <string name="push_service">推播服務</string>
@@ -1777,7 +1789,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="device_linking_cancel_dialog_continue">繼續</string>
     <string name="md_drop_device_dialog_drop_button">移除裝置</string>
     <string name="md_drop_device_dialog_close_button">關閉</string>
-    <string name="md_drop_device_failed_dialog_title">移除已連結的裝置失敗</string>
+    <string name="md_drop_device_failed_dialog_title">移除已連結的裝置可能失敗</string>
     <string name="md_drop_device_failed_dialog_message">請檢查您的網路連線並再試一次。</string>
     <string name="md_drop_device_failed_dialog_button_close">關閉</string>
     <!-- accessibility -->
@@ -1839,12 +1851,20 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="device_linking_error_emoji_mismatch_body">連結裝置時似乎存在問題。請在新裝置上重新啟動此應用程式，然後再試一次。</string>
     <string name="device_linking_error_unexpected_title">發生意外的錯誤</string>
     <string name="device_linking_error_unexpected_body">請重試連結裝置。如果問題仍然存在，請聯絡我們的支援人員（「主選單 &gt; 說明」）。</string>
+    <string name="device_linking_error_invalid_contact_title">無效聯絡人</string>
+    <string name="device_linking_error_invalid_contact_body">由於在此裝置上儲存的身份為 %1$s 的聯絡人資訊不正確，導致無法連結至新裝置。請聯絡我們的支援團隊以解決問題（「主選單 &gt; 說明」）。</string>
     <string name="device_linking_error_screen_close">關閉</string>
     <string name="work_directory_title">公司目錄</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">在公司目錄中搜尋</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">請輸入至少3個字元，以便在貴公司的 ${app_name_short} 使用者目錄中搜尋。</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">此檔案為無效，無法分享</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">上線</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">離線</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

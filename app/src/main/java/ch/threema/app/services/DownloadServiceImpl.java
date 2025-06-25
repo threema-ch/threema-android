@@ -293,7 +293,7 @@ public class DownloadServiceImpl implements DownloadService {
     @Override
     public boolean isDownloading() {
         synchronized (this.downloads) {
-            return this.downloads.size() > 0;
+            return !this.downloads.isEmpty();
         }
     }
 

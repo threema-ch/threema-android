@@ -23,18 +23,25 @@ package ch.threema.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.Set;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
+import ch.threema.app.AppConstants;
+import androidx.compose.ui.platform.ComposeView;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.compose.common.interop.ComposeJavaBridge;
+import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupCreateProperties;
 import ch.threema.app.groupflows.ProfilePicture;
 import ch.threema.app.dialogs.ContactEditDialog;
@@ -42,11 +49,14 @@ import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupModel;
+import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static ch.threema.app.groupflows.GroupFlowResultKt.GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS;
 
 public class GroupAdd2Activity extends GroupEditActivity implements ContactEditDialog.ContactEditDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAdd2Activity");
@@ -87,7 +97,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
         @NonNull final Set<String> groupIdentities,
         @Nullable final File avatarFile
     ) {
-        GroupFlowDispatcher groupFlowDispatcher;
+        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
         try {
             groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
         } catch (ThreemaException e) {
@@ -95,42 +105,95 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
             return;
         }
 
-        Deferred<ch.threema.data.models.GroupModel> groupAddResult =
-            groupFlowDispatcher.runCreateGroupFlow(
-                getSupportFragmentManager(),
-                this,
-                new GroupCreateProperties(
-                    groupName,
-                    new ProfilePicture(avatarFile),
-                    groupIdentities
-                )
-            );
+        final @NonNull ComposeView composeDialogView = findViewById(R.id.loading_dialog_container);
+        composeDialogView.setVisibility(View.VISIBLE);
+        ComposeJavaBridge.setLoadingWithTimeoutDialog(
+            composeDialogView,
+            R.string.creating_group,
+            GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+            this::onLoadingDialogDismissRequest,
+            true
+        );
 
-        groupAddResult.invokeOnCompletion(throwable -> {
-            ch.threema.data.models.GroupModel groupModel = groupAddResult.getCompleted();
-            RuntimeUtil.runOnUiThread(() -> {
-                if (groupModel != null) {
-                    creatingGroupDone(groupModel);
-                } else {
-                    Toast.makeText(GroupAdd2Activity.this,
-                        getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
-                    setResult(RESULT_CANCELED);
-                    finish();
+        Deferred<GroupFlowResult> createGroupFlowResultDeferred = groupFlowDispatcher.runCreateGroupFlow(
+            this,
+            new GroupCreateProperties(
+                groupName,
+                new ProfilePicture(avatarFile),
+                groupIdentities
+            )
+        );
+
+        CoroutinesExtensionKt.onCompleted(
+            createGroupFlowResultDeferred,
+            exception -> {
+                logger.error("The create-group-flow failed exceptionally", exception);
+                onGroupCreationFailed(
+                    GroupFlowResult.Failure.Other.INSTANCE,
+                    composeDialogView
+                );
+                return Unit.INSTANCE;
+            },
+            groupFlowResult -> {
+                if (groupFlowResult instanceof GroupFlowResult.Success) {
+                    onGroupCreatedSuccessfully(((GroupFlowResult.Success) groupFlowResult).getGroupModel());
+                } else if (groupFlowResult instanceof GroupFlowResult.Failure) {
+                    onGroupCreationFailed(
+                        (GroupFlowResult.Failure) groupFlowResult,
+                        composeDialogView
+                    );
                 }
-            });
-            return null;
+                return Unit.INSTANCE;
+            }
+        );
+    }
+
+    private Unit onLoadingDialogDismissRequest() {
+        setResult(RESULT_CANCELED);
+        finish();
+        return Unit.INSTANCE;
+    }
+
+    @AnyThread
+    private void onGroupCreatedSuccessfully(@NonNull GroupModel newModel) {
+        RuntimeUtil.runOnUiThread(() -> {
+            Intent intent = new Intent(this, ComposeMessageActivity.class);
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (int) newModel.getDatabaseId());
+            setResult(RESULT_OK);
+            startActivity(intent);
+            finish();
         });
     }
 
-    private void creatingGroupDone(GroupModel newModel) {
-        Toast.makeText(ThreemaApplication.getAppContext(),
-            getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
-
-        Intent intent = new Intent(this, ComposeMessageActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, (int) newModel.getDatabaseId());
-        setResult(RESULT_OK);
-        startActivity(intent);
-        finish();
+    @AnyThread
+    private void onGroupCreationFailed(
+        @NonNull GroupFlowResult.Failure createGroupFlowResultFailure,
+        @NonNull ComposeView composeDialogView
+    ) {
+        RuntimeUtil.runOnUiThread(() -> {
+            ComposeJavaBridge.setLoadingWithTimeoutDialog(
+                composeDialogView,
+                R.string.creating_group,
+                GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
+                this::onLoadingDialogDismissRequest,
+                false
+            );
+            final @StringRes int errorMessageRes;
+            if (createGroupFlowResultFailure instanceof GroupFlowResult.Failure.Network) {
+                errorMessageRes = R.string.error_creating_group_network;
+            } else {
+                errorMessageRes = R.string.error_creating_group_internal;
+            }
+            new MaterialAlertDialogBuilder(GroupAdd2Activity.this)
+                .setTitle(R.string.error)
+                .setMessage(errorMessageRes)
+                .setPositiveButton(R.string.ok, null)
+                .setOnDismissListener((dialog) -> {
+                    setResult(RESULT_CANCELED);
+                    finish();
+                })
+                .show();
+        });
     }
 
     @Override
@@ -145,9 +208,8 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putSerializable(BUNDLE_GROUP_IDENTITIES, groupIdentities);
-
         super.onSaveInstanceState(outState);
     }
 }

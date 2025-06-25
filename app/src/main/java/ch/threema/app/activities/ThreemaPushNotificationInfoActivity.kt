@@ -23,10 +23,15 @@ package ch.threema.app.activities
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ScrollView
 import ch.threema.app.R
-import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
+import ch.threema.app.ui.applyDeviceInsetsAsMargin
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import com.google.android.material.button.MaterialButton
 
 private val logger = LoggingUtil.getThreemaLogger("ThreemaPushNotificationInfoActivity")
 
@@ -41,8 +46,6 @@ class ThreemaPushNotificationInfoActivity : ThreemaActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         logger.debug("onCreate")
 
-        ConfigUtils.configureSystemBars(this)
-
         super.onCreate(savedInstanceState)
 
         // Load layout
@@ -50,5 +53,17 @@ class ThreemaPushNotificationInfoActivity : ThreemaActivity() {
 
         // Set up click handlers
         findViewById<View>(R.id.close_button).setOnClickListener { finish() }
+
+        findViewById<ScrollView>(R.id.scroll_container).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.ltr(),
+            ownPadding = SpacingValues.all(R.dimen.grid_unit_x2),
+        )
+        findViewById<MaterialButton>(R.id.close_button).applyDeviceInsetsAsMargin(
+            insetSides = InsetSides.lbr(),
+            ownMargin = SpacingValues(
+                right = R.dimen.grid_unit_x2,
+                bottom = R.dimen.grid_unit_x2,
+            ),
+        )
     }
 }

@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 
@@ -46,7 +45,9 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.LocaleService;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -208,7 +209,9 @@ public class TextEntryDialog extends ThreemaDialogFragment {
     public interface TextEntryDialogClickListener {
         void onYes(@NonNull String tag, @NonNull String text);
 
-        void onNo(String tag);
+        default void onNo(String tag) {
+
+        }
 
         default void onNeutral(String tag) {
             // optional interface
@@ -279,7 +282,7 @@ public class TextEntryDialog extends ThreemaDialogFragment {
         editTextLayout.setVisibility(View.VISIBLE);
 
         editText.setText(text);
-        if (text != null && text.length() > 0) {
+        if (text != null && !text.isEmpty()) {
             editText.setSelection(text.length());
         }
 
@@ -296,14 +299,10 @@ public class TextEntryDialog extends ThreemaDialogFragment {
             editText.setMaxLines(maxLines);
         }
 
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+        editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ThreemaApplication.activityUserInteract(activity);
+                ActivityService.activityUserInteract(activity);
             }
 
             @Override
@@ -318,15 +317,7 @@ public class TextEntryDialog extends ThreemaDialogFragment {
             editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
         } else if (inputFilterType == INPUT_FILTER_TYPE_PHONE && localeService != null) {
             editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
+            editText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(localeService.validatePhoneNumber(s.toString()));

@@ -21,6 +21,7 @@
 
 package ch.threema.app.services
 
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.base.ThreemaException
 import io.mockk.every
 import io.mockk.mockk

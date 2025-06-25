@@ -37,6 +37,7 @@ import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.app.testutils.clearDatabaseAndCaches
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ForwardSecurityStatusSender
 import ch.threema.base.crypto.HashedNonce
@@ -74,17 +75,17 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.toCspMessage
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupMemberModel
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedQueue
 import junit.framework.TestCase.assertEquals
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.rules.Timeout
 
@@ -293,7 +294,7 @@ open class MessageProcessorProvider {
     /**
      * Asserts that the correct identity is set up and fills the database with the initial data.
      */
-    @Before
+    @BeforeTest
     fun setup() {
         TestHelpers.setIdentity(
             ThreemaApplication.requireServiceManager(),
@@ -301,7 +302,7 @@ open class MessageProcessorProvider {
         )
 
         // Delete persisted tasks as they are not needed for tests
-        serviceManager.databaseServiceNew.taskArchiveFactory.deleteAll()
+        serviceManager.databaseService.taskArchiveFactory.deleteAll()
 
         // Replace original task manager (save a copy of it)
         originalTaskManager = serviceManager.taskManager
@@ -385,7 +386,7 @@ open class MessageProcessorProvider {
     /**
      * Set the original task manager again and wait until the connection has been started again.
      */
-    @After
+    @AfterTest
     fun cleanup() {
         if (this::originalTaskManager.isInitialized) {
             setTaskManager(originalTaskManager)
@@ -413,10 +414,10 @@ open class MessageProcessorProvider {
     private fun setTaskManager(taskManager: TaskManager) {
         val serviceManager = ThreemaApplication.requireServiceManager()
         val coreServiceManager = TestCoreServiceManager(
-            ThreemaApplication.getAppVersion(),
-            serviceManager.databaseServiceNew,
+            AppVersionProvider.appVersion,
+            serviceManager.databaseService,
             serviceManager.preferenceStore,
-            TaskArchiverImpl(serviceManager.databaseServiceNew.taskArchiveFactory),
+            TaskArchiverImpl(serviceManager.databaseService.taskArchiveFactory),
             serviceManager.deviceCookieManager,
             taskManager,
             serviceManager.multiDeviceManager as MultiDeviceManagerImpl,
@@ -455,7 +456,7 @@ open class MessageProcessorProvider {
      * database entries are needed.
      */
     open fun fillDatabase() {
-        val databaseService = serviceManager.databaseServiceNew
+        val databaseService = serviceManager.databaseService
         val contactStore = serviceManager.contactStore
         val fileService = serviceManager.fileService
 
@@ -473,7 +474,7 @@ open class MessageProcessorProvider {
 
     private fun addContactToDatabase(
         testContact: TestContact,
-        databaseService: DatabaseServiceNew,
+        databaseService: DatabaseService,
         contactStore: ContactStore,
         acquaintanceLevel: AcquaintanceLevel = AcquaintanceLevel.DIRECT,
     ) {
@@ -490,7 +491,7 @@ open class MessageProcessorProvider {
 
     private fun addGroupToDatabase(
         testGroup: TestGroup,
-        databaseService: DatabaseServiceNew,
+        databaseService: DatabaseService,
         fileService: FileService,
     ) {
         val groupModel = testGroup.groupModel
@@ -534,7 +535,7 @@ open class MessageProcessorProvider {
 
         // Assert that this message has been acked towards the server
         assertEquals(
-            message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK),
+            message.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK),
             !localTaskCodec.ackedIncomingMessages.contains(message.messageId),
         )
 

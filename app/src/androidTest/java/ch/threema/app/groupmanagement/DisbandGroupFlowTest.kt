@@ -23,6 +23,7 @@ package ch.threema.app.groupmanagement
 
 import ch.threema.app.DangerousTest
 import ch.threema.app.groupflows.GroupDisbandIntent
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.tasks.OutgoingGroupDisbandTask
 import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
 import ch.threema.app.tasks.ReflectLocalGroupLeaveOrDisband
@@ -45,17 +46,15 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Test
 
 @DangerousTest
 class DisbandGroupFlowTest : GroupFlowTest() {
@@ -125,7 +124,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         otherMembers = emptySet(),
     )
 
-    @Before
+    @BeforeTest
     fun setup() {
         clearDatabaseAndCaches(serviceManager)
 
@@ -342,14 +341,34 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         )
     }
 
+    @Test
+    fun shouldNotDisbandGroupWhenMdActiveButConnectionIsLost() = runTest {
+        // arrange
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
+        val taskManager = ControlledTaskManager(emptyList())
+        val groupFlowDispatcher = getGroupFlowDispatcher(
+            setupConfig = SetupConfig.MULTI_DEVICE_ENABLED,
+            taskManager = taskManager,
+            connection = ConnectionDisconnected,
+        )
+
+        // act
+        val groupFlowResult = groupFlowDispatcher
+            .runDisbandGroupFlow(GroupDisbandIntent.DISBAND, groupModel!!)
+            .await()
+
+        // assert
+        assertIs<GroupFlowResult.Failure.Network>(groupFlowResult)
+    }
+
     private suspend fun assertSuccessfulDisband(
         groupModel: GroupModel,
         intent: GroupDisbandIntent,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        assertTrue {
-            runGroupDisband(groupModel, intent, reflectionExpectation)
-        }
+        assertIs<GroupFlowResult.Success>(
+            runGroupDisband(groupModel, intent, reflectionExpectation),
+        )
 
         when (intent) {
             GroupDisbandIntent.DISBAND -> assertEquals(
@@ -367,9 +386,9 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         reflectionExpectation: ReflectionExpectation,
     ) {
         val groupModelDataBefore = groupModel.data.value
-        assertFalse {
-            runGroupDisband(groupModel, intent, reflectionExpectation)
-        }
+        assertIs<GroupFlowResult.Failure>(
+            runGroupDisband(groupModel, intent, reflectionExpectation),
+        )
         val groupModelDataAfter = groupModel.data.value
         // Assert that the group model has not changed
         assertEquals(groupModelDataBefore, groupModelDataAfter)
@@ -379,7 +398,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         groupModel: GroupModel,
         intent: GroupDisbandIntent,
         reflectionExpectation: ReflectionExpectation,
-    ): Boolean {
+    ): GroupFlowResult {
         val groupModelData = groupModel.data.value
 
         // Prepare task manager and group flow dispatcher
@@ -392,8 +411,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         )
 
         // Run disband group flow
-        val result = groupFlowDispatcher.runDisbandGroupFlow(
-            null,
+        val groupFlowResult = groupFlowDispatcher.runDisbandGroupFlow(
             intent,
             groupModel,
         ).await()
@@ -404,7 +422,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
             }
         }
 
-        return result
+        return groupFlowResult
     }
 
     private fun getExpectedTaskAssertions(

@@ -26,7 +26,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.editMessage
 import ch.threema.protobuf.d2d.incomingMessage
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import java.nio.charset.Charset
 import kotlin.random.Random.Default.nextBytes
@@ -43,7 +43,7 @@ class GroupEditMessageTest {
     private val bytesCreatorIdentity: ByteArray = "12345678".toByteArray()
     private val bytesApiGroupId: ByteArray = GroupId().groupId
 
-    private val messageIdToUpdate: MessageId = MessageId()
+    private val messageIdToUpdate = MessageId.random()
     private val updatedMessageText: String = "Edited"
     private val bytesProtoBody: ByteArray = editMessage {
         this.messageId = messageIdToUpdate.messageIdLong

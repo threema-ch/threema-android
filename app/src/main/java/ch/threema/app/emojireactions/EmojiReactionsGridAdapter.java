@@ -59,7 +59,7 @@ public class EmojiReactionsGridAdapter extends BaseAdapter {
         this.context = context;
         this.keyClickListener = listener;
         this.diverseHintColor = context.getResources().getColor(R.color.emoji_picker_hint);
-        if (EmojiManager.getInstance(context).getSpritemapInSampleSize() == 1) {
+        if (EmojiManager.getInstance(context).spritemapInSampleSize == 1) {
             this.emojiItemSize = context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_item_size);
             this.emojiItemPaddingSize = (emojiItemSize - context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_emoji_size)) / 2;
         } else {

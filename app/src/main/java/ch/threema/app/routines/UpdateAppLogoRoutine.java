@@ -37,7 +37,7 @@ import java.util.Date;
 import javax.net.ssl.HttpsURLConnection;
 
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;

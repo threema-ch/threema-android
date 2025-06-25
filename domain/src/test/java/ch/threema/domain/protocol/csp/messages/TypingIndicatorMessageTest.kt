@@ -23,7 +23,7 @@ package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.models.MessageId
 import ch.threema.protobuf.d2d.incomingMessage
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -102,7 +102,7 @@ class TypingIndicatorMessageTest {
     @Test
     fun testMessagePropertiesInitialized() {
         val fromIdentity = "01234567"
-        val messageId = MessageId()
+        val messageId = MessageId.random()
         val createdAt = 42424242L
 
         val incomingTypingIndicatorMessage = incomingMessage {

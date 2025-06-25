@@ -24,7 +24,7 @@ package ch.threema.app.services;
 final public class BrowserDetectionServiceImpl implements BrowserDetectionService {
     @Override
     public Browser detectBrowser(String userAgent) {
-        if (userAgent != null && userAgent.length() > 0) {
+        if (userAgent != null && !userAgent.isEmpty()) {
             final String desc = userAgent.toLowerCase().trim();
             if (desc.contains("threemadesktop")) {
                 return Browser.WEBTOP;

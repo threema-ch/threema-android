@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.glide.AvatarOptions
 import ch.threema.app.services.ContactService
+import ch.threema.app.utils.Destroyable
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.ParticipantSurfaceViewRenderer
 import ch.threema.app.voip.groupcall.sfu.*
@@ -48,7 +49,7 @@ class GroupCallParticipantsAdapter(
     private val contactService: ContactService,
     private val gutterPx: Int,
     private val requestManager: RequestManager,
-) : RecyclerView.Adapter<GroupCallParticipantsAdapter.GroupCallParticipantViewHolder>() {
+) : RecyclerView.Adapter<GroupCallParticipantsAdapter.GroupCallParticipantViewHolder>(), Destroyable {
     private val participants: MutableList<Participant> = mutableListOf()
 
     private var localParticipantViewHolder: GroupCallParticipantViewHolder? = null
@@ -213,7 +214,7 @@ class GroupCallParticipantsAdapter(
      * This will release all video views and cancel pending camera subscriptions.
      */
     @UiThread
-    fun teardown() {
+    override fun destroy() {
         viewHolders.forEach {
             it.cancelCameraSubscription()
             it.videoView.release()

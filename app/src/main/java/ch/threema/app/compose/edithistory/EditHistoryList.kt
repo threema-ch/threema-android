@@ -24,6 +24,7 @@ package ch.threema.app.compose.edithistory
 import android.annotation.SuppressLint
 import android.content.Context.ACCESSIBILITY_SERVICE
 import android.view.accessibility.AccessibilityManager
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -56,6 +57,7 @@ private val ITEM_MAX_HEIGHT = 196.dp
 @SuppressLint("ComposableLambdaParameterNaming")
 fun EditHistoryList(
     modifier: Modifier,
+    contentPadding: PaddingValues,
     editHistoryUiState: EditHistoryUiState,
     isOutbox: Boolean,
     shouldMarkupText: Boolean,
@@ -81,7 +83,10 @@ fun EditHistoryList(
         )
     }
 
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = contentPadding,
+    ) {
         item {
             headerContent?.invoke()
         }
@@ -167,6 +172,9 @@ fun EditHistoryList(
         }
         item {
             footerContent?.invoke()
+        }
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

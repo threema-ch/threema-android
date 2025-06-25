@@ -40,11 +40,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
 import ch.threema.app.activities.MessageTimestampsUiModel
-import ch.threema.app.compose.theme.customColorScheme
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.capitalize
-import ch.threema.base.utils.now
-import ch.threema.base.utils.plus
+import ch.threema.common.now
+import ch.threema.common.plus
 import java.util.Date
 import kotlin.time.Duration.Companion.minutes
 
@@ -55,9 +54,9 @@ fun MessageTimestampsListBox(
     isOutbox: Boolean,
 ) {
     val borderColor = if (isOutbox) {
-        MaterialTheme.colorScheme.secondaryContainer
+        MaterialTheme.colorScheme.tertiaryContainer
     } else {
-        MaterialTheme.customColorScheme.messageBubbleContainerReceive
+        MaterialTheme.colorScheme.surfaceContainer
     }
     MessageTimestampsList(
         modifier = modifier

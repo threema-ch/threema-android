@@ -48,7 +48,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;

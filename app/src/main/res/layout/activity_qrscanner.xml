@@ -53,16 +53,16 @@
         android:id="@+id/camera_viewfinder"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="-8dp"
         android:layout_marginLeft="-8dp"
+        android:layout_marginTop="-8dp"
         android:layout_marginRight="-8dp"
         android:layout_marginBottom="-8dp"
+        android:importantForAccessibility="no"
         android:src="@drawable/ic_qr_scanner_viewfinder"
-        app:layout_constraintLeft_toLeftOf="@+id/camera_preview_container"
-        app:layout_constraintTop_toTopOf="@+id/camera_preview_container"
         app:layout_constraintBottom_toBottomOf="@+id/camera_preview_container"
+        app:layout_constraintLeft_toLeftOf="@+id/camera_preview_container"
         app:layout_constraintRight_toRightOf="@+id/camera_preview_container"
-        android:importantForAccessibility="no" />
+        app:layout_constraintTop_toTopOf="@+id/camera_preview_container" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/camera_preview_container"
@@ -70,8 +70,8 @@
         android:layout_height="0dp"
         android:layout_marginHorizontal="@dimen/qrscanner_masking_margin"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintDimensionRatio="1:1">
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toTopOf="parent">
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -79,15 +79,16 @@
         android:id="@+id/hint_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:gravity="center_horizontal"
+        android:paddingHorizontal="@dimen/grid_unit_x2"
+        android:paddingVertical="@dimen/grid_unit_x1"
         android:textAlignment="center"
         android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/camera_preview_container" />
+        app:layout_constraintTop_toBottomOf="@id/camera_preview_container"
+        tools:text="@string/msg_default_status" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

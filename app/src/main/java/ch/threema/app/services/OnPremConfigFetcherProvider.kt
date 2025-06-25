@@ -21,6 +21,7 @@
 
 package ch.threema.app.services
 
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.base.ThreemaException
 import ch.threema.domain.onprem.OnPremConfigFetcher
 import ch.threema.domain.onprem.OnPremConfigParser

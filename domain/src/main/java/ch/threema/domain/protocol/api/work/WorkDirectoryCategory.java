@@ -24,6 +24,8 @@ package ch.threema.domain.protocol.api.work;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.NonNull;
+
 public class WorkDirectoryCategory {
     public final String id;
     public final String name;
@@ -33,7 +35,7 @@ public class WorkDirectoryCategory {
         this.name = name;
     }
 
-    public WorkDirectoryCategory(JSONObject jsonObject) {
+    public WorkDirectoryCategory(@NonNull JSONObject jsonObject) {
         this.id = jsonObject.optString("id");
         this.name = jsonObject.optString("name");
     }

@@ -24,10 +24,6 @@ package ch.threema.app.groupflows
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.widget.Toast
-import androidx.fragment.app.FragmentManager
-import ch.threema.app.R
-import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.protocol.PredefinedMessageIds
 import ch.threema.app.protocol.ProfilePictureChange
 import ch.threema.app.protocol.RemoveProfilePicture
@@ -38,48 +34,45 @@ import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.tasks.GroupCreateTask
 import ch.threema.app.tasks.ReflectGroupSyncCreateTask
-import ch.threema.app.tasks.ReflectionFailed
-import ch.threema.app.tasks.ReflectionPreconditionFailed
-import ch.threema.app.tasks.ReflectionSuccess
+import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.tasks.tryUploadingGroupPhoto
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.DialogUtil
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.GroupModelRepository
+import ch.threema.domain.protocol.connection.ConnectionState
+import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.domain.taskmanager.catchAllExceptNetworkException
+import ch.threema.domain.taskmanager.runCatchingExceptNetworkException
 import java.io.File
 import java.security.SecureRandom
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("CreateGroupFlow")
 
-private const val DIALOG_TAG_CREATING_GROUP = "groupCreate"
-
 class ProfilePicture(val profilePicture: ByteArray?) {
     constructor(profilePictureFile: File?) : this(
-        if (profilePictureFile != null) {
+        profilePictureFile?.let {
             try {
                 BitmapFactory.decodeFile(profilePictureFile.path)
             } catch (e: Error) {
                 logger.error("Could not decode avatar file", e)
                 null
             }
-        } else {
-            null
         },
     )
 
     constructor(profilePictureBitmap: Bitmap?) : this(
-        profilePictureBitmap?.let { BitmapUtil.bitmapToJpegByteArray(it) },
+        profilePictureBitmap?.let {
+            BitmapUtil.bitmapToJpegByteArray(profilePictureBitmap)
+        },
     )
 }
 
@@ -95,7 +88,6 @@ class GroupCreateProperties(
  * group flows are not executed concurrently.
  */
 class CreateGroupFlow(
-    private val fragmentManager: FragmentManager?,
     private val context: Context,
     private val groupCreateProperties: GroupCreateProperties,
     private val groupModelRepository: GroupModelRepository,
@@ -104,7 +96,8 @@ class CreateGroupFlow(
     private val apiService: ApiService,
     private val fileService: FileService,
     private val taskManager: TaskManager,
-) : BackgroundTask<GroupModel?> {
+    private val connection: ServerConnection,
+) : BackgroundTask<GroupFlowResult> {
     private val contactModelRepository = outgoingCspMessageServices.contactModelRepository
     private val multiDeviceManager = outgoingCspMessageServices.multiDeviceManager
     private val nonceFactory = outgoingCspMessageServices.nonceFactory
@@ -131,115 +124,114 @@ class CreateGroupFlow(
         )
     }
 
-    override fun runBefore() {
-        fragmentManager?.let {
-            GenericProgressDialog.newInstance(R.string.creating_group, R.string.please_wait)
-                .show(it, DIALOG_TAG_CREATING_GROUP)
-        }
-    }
-
-    override fun runInBackground(): GroupModel? {
+    override fun runInBackground(): GroupFlowResult {
         if (ConfigUtils.isWorkBuild() && AppRestrictionUtil.isCreateGroupDisabled(context)) {
-            Toast.makeText(context, R.string.disabled_by_policy_short, Toast.LENGTH_LONG).show()
-            return null
+            return GroupFlowResult.Failure.Other
         }
-
-        val groupModel = if (multiDeviceManager.isMultiDeviceActive) {
+        val groupFlowResult = if (multiDeviceManager.isMultiDeviceActive) {
+            if (connection.connectionState != ConnectionState.LOGGEDIN) {
+                return GroupFlowResult.Failure.Network
+            }
             runBlocking {
-                val reflectionResult = taskManager.schedule(
+                val reflectionResult: ReflectionResult<GroupModel?> = taskManager.schedule(
                     ReflectGroupSyncCreateTask(
-                        groupModelData,
-                        contactModelRepository,
-                        groupModelRepository,
-                        nonceFactory,
-                        uploadGroupPhoto = { uploadGroupPicture() },
-                        finishGroupCreation = { createGroupLocally(it) },
-                        multiDeviceManager,
+                        groupModelData = groupModelData,
+                        contactModelRepository = contactModelRepository,
+                        groupModelRepository = groupModelRepository,
+                        nonceFactory = nonceFactory,
+                        uploadGroupPhoto = ::uploadGroupPicture,
+                        finishGroupCreation = ::createGroupLocally,
+                        multiDeviceManager = multiDeviceManager,
                     ),
                 ).await()
-
                 when (reflectionResult) {
-                    is ReflectionSuccess -> reflectionResult.result
-                    is ReflectionPreconditionFailed -> run {
-                        logger.error(
-                            "Reflection of group sync create failed due to the precondition",
-                            reflectionResult.transactionException,
-                        )
-                        return@runBlocking null
+                    is ReflectionResult.Success -> GroupFlowResult.Success(reflectionResult.result!!)
+                    is ReflectionResult.PreconditionFailed -> {
+                        logger.error("Reflection of group sync create failed due to the precondition", reflectionResult.transactionException)
+                        GroupFlowResult.Failure.Other
                     }
 
-                    is ReflectionFailed -> run {
-                        logger.error(
-                            "Reflection of group sync create failed",
-                            reflectionResult.exception,
-                        )
-                        return@runBlocking null
+                    is ReflectionResult.Failed -> {
+                        logger.error("Reflection of group sync create failed", reflectionResult.exception)
+                        GroupFlowResult.Failure.Other
+                    }
+
+                    is ReflectionResult.MultiDeviceNotActive -> {
+                        // Note that this is a very rare edge case that should not be possible at all. If it happens, we need to return a failure as
+                        // the changes are not persisted and not sent to the members.
+                        logger.warn("Reflection failed because multi device is not active")
+                        GroupFlowResult.Failure.Other
                     }
                 }
             }
         } else {
-            val profilePictureChange = uploadGroupPicture()
+            val profilePictureChange =
+                runCatching {
+                    uploadGroupPicture()
+                }.getOrElse { exception ->
+                    logger.error("Failed to upload the group photo", exception)
+                    // While this could also have internal reasons, a network failure is more likely
+                    // TODO(ANDR-3823): Distinguish between different failures from uploading process
+                    return GroupFlowResult.Failure.Network
+                }
             createGroupLocally(profilePictureChange)
         }
 
-        return groupModel
+        return groupFlowResult
     }
 
-    override fun runAfter(result: GroupModel?) {
-        fragmentManager?.let {
-            DialogUtil.dismissDialog(
-                it,
-                DIALOG_TAG_CREATING_GROUP,
-                true,
-            )
-        }
-    }
-
-    private fun uploadGroupPicture(): ProfilePictureChange? {
-        return groupCreateProperties.profilePicture.profilePicture?.let { profilePicture ->
+    private fun uploadGroupPicture(): ProfilePictureChange? =
+        groupCreateProperties.profilePicture.profilePicture?.let { profilePicture ->
             val uploadResult = tryUploadingGroupPhoto(profilePicture, apiService)
             SetProfilePicture(profilePicture, uploadResult)
         }
-    }
 
-    private fun createGroupLocally(profilePictureChange: ProfilePictureChange?): GroupModel? {
+    /**
+     *  TODO(ANDR-3823): Remove this warning once corrected
+     *
+     *  Warning: At this point, before `ANDR-3823` is implemented, *any* specific type of [GroupFlowResult.Failure]
+     *  returned from this method will effectively result in a [GroupFlowResult.Failure.Other] *if MD is active*.
+     */
+    private fun createGroupLocally(profilePictureChange: ProfilePictureChange?): GroupFlowResult {
         // Persist the new group
         val groupModel = groupModelRepository.persistNewGroup(groupModelData)
 
         // Persist the group photo
-        groupCreateProperties.profilePicture.profilePicture?.let {
-            {
-                fileService.writeGroupAvatar(groupModel, it)
-            }.catchAllExceptNetworkException { e ->
-                logger.error("Could not persist group photo", e)
+        groupCreateProperties.profilePicture.profilePicture?.let { profilePictureBytes ->
+            runCatchingExceptNetworkException {
+                fileService.writeGroupAvatar(groupModel, profilePictureBytes)
+            }.onFailure { throwable ->
+                logger.error("Could not persist group photo", throwable)
             }
         }
 
         // Abort if there are no members
         if (groupCreateProperties.members.isEmpty()) {
-            return groupModel
+            return GroupFlowResult.Success(groupModel)
         }
 
         val groupModelData = groupModel.data.value ?: run {
             logger.error("Group model data expected to exist")
-            return null
+            return GroupFlowResult.Failure.Other
         }
 
+        // Can be suppressed because we do not wait for the task to complete
+        @Suppress("DeferredResultUnused")
         taskManager.schedule(
             GroupCreateTask(
-                groupModelData.name,
-                profilePictureChange ?: RemoveProfilePicture,
-                groupModelData.otherMembers,
-                groupModelData.groupIdentity,
-                PredefinedMessageIds(),
-                outgoingCspMessageServices,
-                groupCallManager,
-                fileService,
-                apiService,
-                groupModelRepository,
+                name = groupModelData.name,
+                profilePictureChange = profilePictureChange ?: RemoveProfilePicture,
+                members = groupModelData.otherMembers,
+                groupIdentity = groupModelData.groupIdentity,
+                predefinedMessageIds = PredefinedMessageIds(),
+                outgoingCspMessageServices = outgoingCspMessageServices,
+                groupCallManager = groupCallManager,
+                fileService = fileService,
+                apiService = apiService,
+                groupModelRepository = groupModelRepository,
             ),
         )
 
-        return groupModel
+        return GroupFlowResult.Success(groupModel)
     }
 }

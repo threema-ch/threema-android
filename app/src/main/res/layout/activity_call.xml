@@ -25,10 +25,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/fullscreen_video_view_gradient"
@@ -66,12 +66,12 @@
             android:layout_margin="@dimen/call_activity_margin"
             android:background="@color/material_grey_300_alpha"
             android:textColor="#ffffff"
-            android:visibility="gone"
             android:textSize="11sp"
-            tools:ignore="SmallSp"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/caller_container" />
+            app:layout_constraintTop_toBottomOf="@id/caller_container"
+            tools:ignore="SmallSp" />
 
         <!-- Caller info plus camera switches -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,6 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/call_activity_margin"
+            android:layout_marginTop="@dimen/grid_unit_x1"
             android:layout_marginRight="0dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -99,15 +100,16 @@
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/button_call_switch_cam"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Firstname Lastname" />
 
             <!-- Verification dots -->
             <ImageView
                 android:id="@+id/call_contact_dots"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginLeft="1dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/call_contact_name"
                 tools:ignore="ContentDescription" />
@@ -150,10 +152,10 @@
                 android:contentDescription="@string/voip_toggle_video"
                 android:focusable="true"
                 android:scaleType="center"
-                app:tint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_videocam_off_black_outline" />
+                app:srcCompat="@drawable/ic_videocam_off_black_outline"
+                app:tint="@android:color/white" />
 
             <ImageView
                 android:id="@+id/button_call_switch_cam"
@@ -165,11 +167,11 @@
                 android:contentDescription="@string/voip_switch_cam"
                 android:focusable="true"
                 android:scaleType="center"
-                app:tint="@android:color/white"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@+id/button_call_toggle_video"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_flip_camera_android" />
+                app:srcCompat="@drawable/ic_flip_camera_android"
+                app:tint="@android:color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -210,8 +212,8 @@
                     android:clickable="true"
                     android:foreground="@drawable/selector_avatar"
                     android:scaleType="center"
-                    app:tint="@color/material_blue"
-                    app:srcCompat="@drawable/ic_ring_volume_outline" />
+                    app:srcCompat="@drawable/ic_ring_volume_outline"
+                    app:tint="@color/material_blue" />
             </FrameLayout>
 
             <FrameLayout
@@ -232,8 +234,8 @@
                     android:focusable="true"
                     android:foreground="@drawable/selector_avatar"
                     android:scaleType="center"
-                    app:tint="@android:color/white"
-                    app:srcCompat="@drawable/ic_call_end_outline" />
+                    app:srcCompat="@drawable/ic_call_end_outline"
+                    app:tint="@android:color/white" />
 
                 <ImageView
                     android:id="@+id/accessibility_answer"
@@ -246,8 +248,8 @@
                     android:focusable="true"
                     android:foreground="@drawable/selector_avatar"
                     android:scaleType="center"
-                    app:tint="@android:color/white"
-                    app:srcCompat="@drawable/ic_phone_locked_outline" />
+                    app:srcCompat="@drawable/ic_phone_locked_outline"
+                    app:tint="@android:color/white" />
             </FrameLayout>
 
         </FrameLayout>
@@ -271,12 +273,12 @@
                 android:contentDescription="@string/enable_picture_in_picture"
                 android:focusable="true"
                 android:scaleType="center"
-                app:tint="@android:color/white"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:srcCompat="@drawable/ic_picture_in_picture" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_picture_in_picture"
+                app:tint="@android:color/white" />
 
             <ImageView
                 android:id="@+id/button_call_disconnect"
@@ -288,11 +290,11 @@
                 android:focusable="true"
                 android:foreground="@drawable/selector_avatar"
                 android:scaleType="center"
-                app:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/ic_call_end_outline" />
+                app:srcCompat="@drawable/ic_call_end_outline"
+                app:tint="@android:color/white" />
 
             <ch.threema.app.voip.AudioSelectorButton
                 android:id="@+id/button_call_toggle_audio_source"
@@ -317,10 +319,10 @@
                 android:contentDescription="@string/voip_toggle_mic"
                 android:focusable="true"
                 android:scaleType="center"
-                app:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/button_call_disconnect"
-                app:srcCompat="@drawable/ic_keyboard_voice_outline" />
+                app:srcCompat="@drawable/ic_keyboard_voice_outline"
+                app:tint="@android:color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

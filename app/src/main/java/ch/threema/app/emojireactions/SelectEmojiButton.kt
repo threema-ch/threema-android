@@ -29,6 +29,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
 import ch.threema.app.R
+import ch.threema.common.consume
 import com.google.android.material.card.MaterialCardView
 
 class SelectEmojiButton : MaterialCardView {
@@ -38,36 +39,18 @@ class SelectEmojiButton : MaterialCardView {
         GestureDetector(
             context,
             object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapUp(e: MotionEvent): Boolean {
-                    onSelectEmojiButtonClickListener?.onSelectButtonClick()
+                override fun onSingleTapUp(e: MotionEvent) = consume {
                     performClick()
-                    return true
                 }
             },
         )
 
-    constructor(context: Context) : super(
-        context,
-    ) {
-        init()
-    }
+    @JvmOverloads
+    constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(
-        context,
-        attrs,
-    ) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr,
-    ) {
-        init()
-    }
-
-    private fun init() {
+    init {
         layoutParams = LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -80,16 +63,18 @@ class SelectEmojiButton : MaterialCardView {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(event: MotionEvent) = consume {
         gestureDetector.onTouchEvent(event)
-
         if (event.action == MotionEvent.ACTION_UP) {
             isPressed = false
         } else if (event.action == MotionEvent.ACTION_DOWN) {
             isPressed = true
         }
+    }
 
-        return true
+    override fun performClick(): Boolean {
+        onSelectEmojiButtonClickListener?.onSelectButtonClick()
+        return super.performClick()
     }
 
     fun interface OnSelectEmojiButtonClickListener {

@@ -21,8 +21,10 @@
 
 package ch.threema.app.tasks
 
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.protocol.ProfilePictureChange
+import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.GroupModel
@@ -42,48 +44,62 @@ class ReflectGroupSyncCreateTask(
     private val groupModelRepository: GroupModelRepository,
     private val nonceFactory: NonceFactory,
     private val uploadGroupPhoto: () -> ProfilePictureChange?,
-    private val finishGroupCreation: (ProfilePictureChange?) -> GroupModel?,
+    private val finishGroupCreation: (ProfilePictureChange?) -> GroupFlowResult,
     multiDeviceManager: MultiDeviceManager,
 ) : ReflectGroupSyncTask<ProfilePictureChange?, GroupModel?>(multiDeviceManager),
     ActiveTask<ReflectionResult<GroupModel?>> {
     override val type = "ReflectGroupSyncCreate"
 
-    override suspend fun invoke(handle: ActiveTaskCodec): ReflectionResult<GroupModel?> =
-        runTransaction(handle)
+    override suspend fun invoke(handle: ActiveTaskCodec): ReflectionResult<GroupModel?> {
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Cannot reflect group sync create of type {} when md is not active", type)
+            return ReflectionResult.MultiDeviceNotActive()
+        }
+
+        return runTransaction(handle)
+    }
 
     override val runPrecondition: () -> Boolean = {
         // Precondition: Group must not exist and members must exist as contacts
         groupModelData.notExists() && groupModelData.otherMembers.existAsContacts()
     }
 
-    override val runInsideTransaction: suspend (handle: ActiveTaskCodec) -> ProfilePictureChange? =
-        { handle ->
-            val profilePictureChange = uploadGroupPhoto()
+    override val runInsideTransaction: suspend (handle: ActiveTaskCodec) -> ProfilePictureChange? = { handle ->
+        val profilePictureChange = uploadGroupPhoto()
 
-            logger.info("Reflecting group sync create for group {}", groupModelData.name)
+        logger.info("Reflecting group sync create for group {}", groupModelData.name)
 
-            val encryptedEnvelopeResult = getEncryptedGroupSyncCreate(
-                groupModelData.toGroupSync(
-                    isPrivateChat = false,
-                    conversationVisibility = MdD2DSync.ConversationVisibility.NORMAL,
-                    profilePictureChange = profilePictureChange,
-                ),
-                multiDeviceManager.propertiesProvider.get(),
+        val encryptedEnvelopeResult = getEncryptedGroupSyncCreate(
+            groupModelData.toGroupSync(
+                isPrivateChat = false,
+                conversationVisibility = MdD2DSync.ConversationVisibility.NORMAL,
+                profilePictureChange = profilePictureChange,
+            ),
+            multiDeviceManager.propertiesProvider.get(),
+        )
+
+        handle.reflectAndAwaitAck(
+            encryptedEnvelopeResult,
+            true,
+            nonceFactory,
+        )
+
+        profilePictureChange
+    }
+
+    /**
+     *  TODO(ANDR-3823): Rework the result type of this task
+     *
+     *  @throws ThreemaException if the [finishGroupCreation] block does not provide a created [GroupModel].
+     */
+    override val runAfterSuccessfulTransaction: (profilePictureChange: ProfilePictureChange?) -> GroupModel? = { profilePictureChange ->
+        when (val createGroupFlowResult = finishGroupCreation(profilePictureChange)) {
+            is GroupFlowResult.Success -> createGroupFlowResult.groupModel
+            is GroupFlowResult.Failure -> throw ThreemaException(
+                "Group creation was successfully reflected but we failed to to finish group creation locally",
             )
-
-            handle.reflectAndAwaitAck(
-                encryptedEnvelopeResult,
-                true,
-                nonceFactory,
-            )
-
-            profilePictureChange
         }
-
-    override val runAfterSuccessfulTransaction: (transactionResult: ProfilePictureChange?) -> GroupModel? =
-        { result ->
-            finishGroupCreation(result)
-        }
+    }
 
     private fun GroupModelData.notExists() =
         groupModelRepository.getByGroupIdentity(groupIdentity) == null

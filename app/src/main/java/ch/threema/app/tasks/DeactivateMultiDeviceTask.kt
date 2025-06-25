@@ -22,6 +22,8 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.unlinking.DropDevicesIntent
+import ch.threema.app.multidevice.unlinking.runDropDevicesSteps
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -36,15 +38,17 @@ private val logger = LoggingUtil.getThreemaLogger("DeactivateMultiDeviceTask")
 class DeactivateMultiDeviceTask(private val serviceManager: ServiceManager) : ActiveTask<Unit>, PersistableTask {
     override val type = "DeactivateMultiDeviceTask"
 
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        if (!multiDeviceManager.isMultiDeviceActive) {
+        if (!serviceManager.multiDeviceManager.isMultiDeviceActive) {
             logger.error("Multi device is already deactivated")
             return
         }
 
-        multiDeviceManager.deactivate(serviceManager, handle)
+        runDropDevicesSteps(
+            intent = DropDevicesIntent.Deactivate,
+            serviceManager = serviceManager,
+            handle = handle,
+        )
     }
 
     @Serializable

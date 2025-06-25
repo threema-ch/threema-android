@@ -30,9 +30,8 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.storage.models.AbstractMessageModel
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("DeleteMessageUtils")
+private val logger = LoggingUtil.getThreemaLogger("DeleteMessageUtils")
 
 fun runCommonDeleteMessageReceiveSteps(
     deleteMessage: DeleteMessage,

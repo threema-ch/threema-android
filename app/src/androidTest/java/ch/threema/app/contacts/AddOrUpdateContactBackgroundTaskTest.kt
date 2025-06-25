@@ -36,6 +36,7 @@ import ch.threema.app.asynctasks.InvalidThreemaId
 import ch.threema.app.asynctasks.RemotePublicKeyMismatch
 import ch.threema.app.asynctasks.UserIdentity
 import ch.threema.app.managers.CoreServiceManager
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.data.TestDatabaseService
@@ -73,7 +74,7 @@ class AddOrUpdateContactBackgroundTaskTest {
         databaseService = TestDatabaseService()
         val serviceManager = ThreemaApplication.requireServiceManager()
         coreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = serviceManager.preferenceStore,
         )

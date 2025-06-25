@@ -29,13 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.DistributionListMemberModel;
 
 public class DistributionListMemberModelFactory extends ModelFactory {
 
-    public DistributionListMemberModelFactory(DatabaseServiceNew databaseService) {
+    public DistributionListMemberModelFactory(DatabaseService databaseService) {
         super(databaseService, DistributionListMemberModel.TABLE);
     }
 
@@ -54,7 +54,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
     }
 
     public List<DistributionListMemberModel> getByDistributionListId(long distributionListId) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "=?",
             new String[]{
@@ -68,7 +68,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
     private DistributionListMemberModel convert(Cursor cursor) {
         if (cursor != null && cursor.getPosition() >= 0) {
             final DistributionListMemberModel distributionListMemberModel = new DistributionListMemberModel();
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
                 public boolean next(CursorHelper cursorHelper) {
                     distributionListMemberModel
@@ -103,7 +103,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
     public boolean createOrUpdate(DistributionListMemberModel distributionListMemberModel) {
         boolean insert = true;
         if (distributionListMemberModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 DistributionListMemberModel.COLUMN_ID + "=?",
@@ -141,7 +141,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
 
     public boolean create(DistributionListMemberModel distributionListMemberModel) {
         ContentValues contentValues = buildContentValues(distributionListMemberModel);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             distributionListMemberModel.setId((int) newId);
             return true;
@@ -151,7 +151,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
 
     public boolean update(DistributionListMemberModel distributionListMemberModel) {
         ContentValues contentValues = buildContentValues(distributionListMemberModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             DistributionListMemberModel.COLUMN_ID + "=?",
             new String[]{
@@ -161,7 +161,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
     }
 
     private DistributionListMemberModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -185,7 +185,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
     }
 
     public int deleteByDistributionListId(long distributionListId) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "=?",
             new String[]{
                 String.valueOf(distributionListId)
@@ -197,7 +197,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
         for (int n = 0; n < modelsToRemove.size(); n++) {
             args[n] = String.valueOf(modelsToRemove.get(n).getId());
         }
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             DistributionListMemberModel.COLUMN_ID + " IN (" + DatabaseUtil.makePlaceholders(args.length) + ")",
             args);
     }

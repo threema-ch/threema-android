@@ -45,7 +45,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.protobuf.url_payloads.GroupInvite;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
@@ -64,7 +64,7 @@ public class GroupInviteServiceImpl implements GroupInviteService {
     public GroupInviteServiceImpl(
         @NonNull UserService userService,
         @NonNull GroupService groupService,
-        @NonNull DatabaseServiceNew databaseService
+        @NonNull DatabaseService databaseService
     ) {
         this.userService = userService;
         this.groupService = groupService;

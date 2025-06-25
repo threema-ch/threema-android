@@ -22,6 +22,7 @@
 package ch.threema.app.groupmanagement
 
 import ch.threema.app.DangerousTest
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.clearDatabaseAndCaches
@@ -42,15 +43,13 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 
 @DangerousTest
 class RemoveGroupFlowTest : GroupFlowTest() {
@@ -114,7 +113,7 @@ class RemoveGroupFlowTest : GroupFlowTest() {
         userState = UserState.LEFT,
     )
 
-    @Before
+    @BeforeTest
     fun setup() {
         clearDatabaseAndCaches(serviceManager)
 
@@ -246,14 +245,33 @@ class RemoveGroupFlowTest : GroupFlowTest() {
         )
     }
 
+    @Test
+    fun shouldNotRemoveGroupWhenMdActiveButConnectionIsLost() = runTest {
+        // arrange
+        val groupModel = groupModelRepository.getByGroupIdentity(myInitialLeftGroupModelData.groupIdentity)
+        val taskManager = ControlledTaskManager(emptyList())
+        val groupFlowDispatcher = getGroupFlowDispatcher(
+            setupConfig = SetupConfig.MULTI_DEVICE_ENABLED,
+            taskManager = taskManager,
+            connection = ConnectionDisconnected,
+        )
+
+        // act
+        val groupFlowResult = groupFlowDispatcher
+            .runRemoveGroupFlow(groupModel!!)
+            .await()
+
+        // assert
+        assertIs<GroupFlowResult.Failure.Network>(groupFlowResult)
+    }
+
     private suspend fun assertSuccessfulRemove(
         groupModel: GroupModel,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        assertTrue {
-            runGroupRemove(groupModel, reflectionExpectation)
-        }
-
+        assertIs<GroupFlowResult.Success>(
+            runGroupRemove(groupModel, reflectionExpectation),
+        )
         assertNull(groupModel.data.value)
     }
 
@@ -261,17 +279,16 @@ class RemoveGroupFlowTest : GroupFlowTest() {
         groupModel: GroupModel,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        assertFalse {
-            runGroupRemove(groupModel, reflectionExpectation)
-        }
-
+        assertIs<GroupFlowResult.Failure>(
+            runGroupRemove(groupModel, reflectionExpectation),
+        )
         assertNotNull(groupModel.data.value)
     }
 
     private suspend fun runGroupRemove(
         groupModel: GroupModel,
         reflectionExpectation: ReflectionExpectation,
-    ): Boolean {
+    ): GroupFlowResult {
         val groupModelData = groupModel.data.value
 
         // Prepare task manager and group flow dispatcher
@@ -284,10 +301,7 @@ class RemoveGroupFlowTest : GroupFlowTest() {
         )
 
         // Run remove group flow
-        val result = groupFlowDispatcher.runRemoveGroupFlow(
-            null,
-            groupModel,
-        ).await()
+        val groupFlowResult = groupFlowDispatcher.runRemoveGroupFlow(groupModel).await()
 
         taskManager.pendingTaskAssertions.size.let { size ->
             if (size > 0) {
@@ -295,7 +309,7 @@ class RemoveGroupFlowTest : GroupFlowTest() {
             }
         }
 
-        return result
+        return groupFlowResult
     }
 
     private fun getExpectedTaskAssertions(

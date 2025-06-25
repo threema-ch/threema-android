@@ -56,7 +56,7 @@ class IncomingForwardSecurityRejectTask(
     private val contactStore by lazy { serviceManager.contactStore }
     private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
     private val groupService by lazy { serviceManager.groupService }
-    private val databaseService by lazy { serviceManager.databaseServiceNew }
+    private val databaseService by lazy { serviceManager.databaseService }
     private val notificationService by lazy { serviceManager.notificationService }
 
     override suspend fun run(handle: ActiveTaskCodec): ForwardSecurityDecryptionResult {

@@ -25,8 +25,8 @@
                 android:id="@+id/content_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="@dimen/chat_bubble_minheight"
                 android:minWidth="150dp"
+                android:minHeight="@dimen/chat_bubble_minheight"
                 android:orientation="vertical"
                 android:paddingLeft="@dimen/chat_bubble_margin_end"
                 android:paddingRight="@dimen/chat_bubble_margin_start">
@@ -34,8 +34,8 @@
                 <include layout="@layout/conversation_list_item_audio" />
 
                 <ch.threema.app.emojis.EmojiConversationTextView
-                    style="@style/Threema.Bubble.Text.Body"
                     android:id="@+id/text_view"
+                    style="@style/Threema.Bubble.Text.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />

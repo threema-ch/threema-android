@@ -35,13 +35,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Objects;
 
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.utils.MimeUtil.MIME_AUDIO;
 import static ch.threema.app.utils.MimeUtil.MIME_VIDEO;
 

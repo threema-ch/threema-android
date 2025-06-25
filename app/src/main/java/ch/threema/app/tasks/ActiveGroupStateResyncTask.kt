@@ -41,7 +41,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 
 private val logger = LoggingUtil.getThreemaLogger("ActiveGroupStateResyncTask")
 
@@ -54,7 +54,7 @@ class ActiveGroupStateResyncTask(
     private val apiService: ApiService,
     private val fileService: FileService,
     private val groupCallManager: GroupCallManager,
-    private val databaseService: DatabaseServiceNew,
+    private val databaseService: DatabaseService,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
 ) : ActiveTask<Boolean> {
     override val type = "ActiveGroupStateResyncTask"
@@ -98,7 +98,12 @@ class ActiveGroupStateResyncTask(
                 contactStore,
                 apiConnector,
             ).toSet(),
-            PreGeneratedMessageIds(MessageId(), MessageId(), MessageId(), MessageId()),
+            PreGeneratedMessageIds(
+                firstMessageId = MessageId.random(),
+                secondMessageId = MessageId.random(),
+                thirdMessageId = MessageId.random(),
+                fourthMessageId = MessageId.random(),
+            ),
             userService,
             apiService,
             fileService,

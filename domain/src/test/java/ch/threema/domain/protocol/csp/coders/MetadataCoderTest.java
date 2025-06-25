@@ -21,21 +21,21 @@
 
 package ch.threema.domain.protocol.csp.coders;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.util.Date;
+
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceScope;
 import ch.threema.base.utils.Utils;
-import ch.threema.domain.models.MessageId;
-import ch.threema.domain.testhelpers.TestHelpers;
-import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.helpers.DummyUsers;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;
-
-import com.google.protobuf.InvalidProtocolBufferException;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.Date;
 
 public class MetadataCoderTest {
 
@@ -49,9 +49,8 @@ public class MetadataCoderTest {
 
     @Test
     public void testEncodeDecode() throws ThreemaException, InvalidProtocolBufferException {
-
         byte[] nonce = TestHelpers.getNoopNonceFactory().nextNonce(NonceScope.CSP);
-        MessageId messageId = new MessageId();
+        MessageId messageId = MessageId.random();
 
         Date createdAt = new Date();
         MessageMetadata metadata = MessageMetadata.newBuilder()
@@ -63,9 +62,9 @@ public class MetadataCoderTest {
 
         MessageMetadata metadataDecoded = new MetadataCoder(identityStoreB).decode(nonce, box, identityStoreA.getPublicKey());
 
-        Assert.assertEquals(TEST_NICKNAME, metadataDecoded.getNickname());
-        Assert.assertEquals(messageId, new MessageId(metadataDecoded.getMessageId()));
-        Assert.assertEquals(createdAt.getTime(), metadataDecoded.getCreatedAt());
+        Assertions.assertEquals(TEST_NICKNAME, metadataDecoded.getNickname());
+        Assertions.assertEquals(messageId, new MessageId(metadataDecoded.getMessageId()));
+        Assertions.assertEquals(createdAt.getTime(), metadataDecoded.getCreatedAt());
     }
 
     @Test
@@ -76,6 +75,6 @@ public class MetadataCoderTest {
             .build();
         MetadataBox box = new MetadataCoder(identityStoreA).encode(metadata, TEST_NONCE, identityStoreB.getPublicKey());
 
-        Assert.assertArrayEquals(TEST_BOX, box.getBox());
+        Assertions.assertArrayEquals(TEST_BOX, box.getBox());
     }
 }

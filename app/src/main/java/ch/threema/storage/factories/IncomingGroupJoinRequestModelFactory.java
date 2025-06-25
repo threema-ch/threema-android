@@ -37,15 +37,15 @@ import ch.threema.base.Result;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import java8.util.Optional;
 
 public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
 
-    public IncomingGroupJoinRequestModelFactory(DatabaseServiceNew databaseServiceNew) {
-        super(databaseServiceNew, IncomingGroupJoinRequestModel.TABLE);
+    public IncomingGroupJoinRequestModelFactory(DatabaseService databaseService) {
+        super(databaseService, IncomingGroupJoinRequestModel.TABLE);
     }
 
     @Override
@@ -68,14 +68,14 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
         final ContentValues contentValues = incomingGroupJoinRequestModelToContentValues(model);
         final long newId;
         try {
-            newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+            newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
             model.setId((int) newId);
         } catch (SQLException e) {
             return Result.failure(e);
         }
 
         if (newId <= 0) {
-            return Result.failure(new Exception(NO_RECORD_MSG + newId));
+            return Result.failure(new Exception(ModelFactory.noRecordsMessage(newId)));
         }
         return Result.success(model);
     }
@@ -106,7 +106,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
      * @param values that should be changed
      */
     public void update(int id, final @NonNull ContentValues values) throws SQLException {
-        int rowsAffected = this.databaseService.getWritableDatabase().update(
+        int rowsAffected = getWritableDatabase().update(
             this.getTableName(),
             values,
             IncomingGroupJoinRequestModel.COLUMN_ID + "=?",
@@ -116,24 +116,24 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
         );
 
         if (rowsAffected != 1) {
-            throw new SQLException(NO_RECORD_MSG + id);
+            throw new SQLException(ModelFactory.noRecordsMessage(id));
         }
     }
 
     public void delete(IncomingGroupJoinRequestModel model) throws SQLException {
-        int rowsAffected = this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        int rowsAffected = getWritableDatabase().delete(this.getTableName(),
             IncomingGroupJoinRequestModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(model.getId())
             });
 
         if (rowsAffected != 1) {
-            throw new SQLException(NO_RECORD_MSG + model.getId());
+            throw new SQLException(ModelFactory.noRecordsMessage(model.getId()));
         }
     }
 
     public void deleteAllForGroupInvite(int groupInviteId) {
-        this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        getWritableDatabase().delete(this.getTableName(),
             IncomingGroupJoinRequestModel.COLUMN_GROUP_INVITE + "=?",
             new String[]{
                 String.valueOf(groupInviteId)
@@ -194,7 +194,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
             IncomingGroupJoinRequestModel.ResponseStatus.OPEN.name()
         };
 
-        Cursor cursor = this.databaseService.getReadableDatabase().rawQuery(selection, selectionArgs);
+        Cursor cursor = getReadableDatabase().rawQuery(selection, selectionArgs);
         return getAllModelsFromCursor(cursor);
     }
 
@@ -207,7 +207,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
             groupId.toString()
         };
 
-        Cursor cursor = this.getReadableDatabase().rawQuery(selection, selectionArgs);
+        Cursor cursor = getReadableDatabase().rawQuery(selection, selectionArgs);
         return getAllModelsFromCursor(cursor);
     }
 
@@ -222,7 +222,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
             IncomingGroupJoinRequestModel.ResponseStatus.OPEN.name()
         };
 
-        Cursor cursor = this.getReadableDatabase().rawQuery(selection, selectionArgs);
+        Cursor cursor = getReadableDatabase().rawQuery(selection, selectionArgs);
         return getAllModelsFromCursor(cursor);
     }
 
@@ -252,7 +252,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
             IncomingGroupJoinRequestModel.ResponseStatus.OPEN.name()
         };
 
-        Cursor cursor = this.getReadableDatabase().rawQuery(selection, selectionArgs);
+        Cursor cursor = getReadableDatabase().rawQuery(selection, selectionArgs);
         return getAllModelsFromCursor(cursor);
     }
 
@@ -260,7 +260,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
         @NonNull String selection,
         @NonNull String[] selectionArgs
     ) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().query(
+        final Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -285,7 +285,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
         @Nullable String selection,
         @Nullable String[] selectionArgs
     ) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().query(this.getTableName(),
+        final Cursor cursor = getReadableDatabase().query(this.getTableName(),
             null,
             selection,
             selectionArgs,

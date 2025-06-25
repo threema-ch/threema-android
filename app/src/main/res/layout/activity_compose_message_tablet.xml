@@ -59,11 +59,4 @@
 
     </LinearLayout>
 
-    <ViewStub
-        android:id="@+id/emoji_stub"
-        android:inflatedId="@+id/emoji_picker"
-        android:layout="@layout/emoji_picker_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
 </LinearLayout>

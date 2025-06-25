@@ -28,7 +28,7 @@
                 android:gravity="left"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_keyboard_arrow_down_outline"
-                app:tint="?attr/colorOnTertiaryContainer" />
+                app:tint="?attr/colorOnSecondaryContainer" />
 
             <TextView
                 android:id="@+id/text_view"
@@ -41,7 +41,7 @@
                 android:gravity="center_horizontal"
                 android:singleLine="true"
                 android:textAllCaps="true"
-                android:textColor="?attr/colorOnTertiaryContainer"
+                android:textColor="?attr/colorOnSecondaryContainer"
                 tools:text="3 ungelesene Nachrichten" />
 
             <ImageView
@@ -52,7 +52,7 @@
                 android:gravity="right"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_keyboard_arrow_down_outline"
-                app:tint="?attr/colorOnTertiaryContainer" />
+                app:tint="?attr/colorOnSecondaryContainer" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

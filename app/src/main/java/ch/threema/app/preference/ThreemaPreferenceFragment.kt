@@ -21,10 +21,8 @@
 
 package ch.threema.app.preference
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.StringRes
@@ -32,6 +30,7 @@ import androidx.annotation.XmlRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.DialogFragment
 import androidx.preference.MultiSelectListPreference
@@ -39,8 +38,14 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.services.*
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.ConversationCategoryService
+import ch.threema.app.services.SystemScreenLockService
+import ch.threema.app.services.WallpaperService
 import ch.threema.app.services.license.LicenseService
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.applyDeviceInsetsAsMargin
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConnectionIndicatorUtil
 import ch.threema.app.utils.RuntimeUtil
@@ -56,7 +61,6 @@ private val logger = LoggingUtil.getThreemaLogger("ThreemaPreferenceFragment")
 /**
  * This fragment provides some tool bar functionality and manages loading the resources.
  */
-@SuppressLint("NewApi")
 abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), ConnectionStateListener {
     private var colorTransparent = 0
     private var initialized = false
@@ -166,18 +170,6 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         }
     }
 
-    protected fun requireSynchronizeContactsService(): SynchronizeContactsService {
-        return checkNotNull(ThreemaApplication.getServiceManager()?.synchronizeContactsService) {
-            "Could not get synchronize contacts service"
-        }
-    }
-
-    protected fun requireContactService(): ContactService {
-        return checkNotNull(ThreemaApplication.getServiceManager()?.contactService) {
-            "Could not get contact service"
-        }
-    }
-
     protected fun requireConversationCategoryService(): ConversationCategoryService {
         return checkNotNull(ThreemaApplication.getServiceManager()?.conversationCategoryService) {
             "Could not get conversation category service"
@@ -209,7 +201,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         super.onCreate(savedInstanceState)
 
         try {
-            serverConnection = ThreemaApplication.getServiceManager()?.getConnection()
+            serverConnection = ThreemaApplication.getServiceManager()?.connection
         } catch (e: java.lang.Exception) {
             // ignore
         }
@@ -220,6 +212,11 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
 
         settingsScrollView = view.findViewById(R.id.settings_contents_view)
         toolbar = view.findViewById(R.id.toolbar)
+
+        toolbar?.applyDeviceInsetsAsMargin(
+            insetSides = InsetSides.ltr(),
+        )
+
         toolbarTitle = view.findViewById(R.id.toolbar_title)
         title = view.findViewById(R.id.title_text_view)
         connectionIndicator = view.findViewById(R.id.connection_indicator)
@@ -248,34 +245,31 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
             }
         }
 
-        settingsScrollView?.let {
+        settingsScrollView?.let { nestedScrollView ->
+
+            nestedScrollView.applyDeviceInsetsAsPadding(
+                insetSides = InsetSides.lbr(),
+            )
+
             if (initialized) {
-                it.post {
-                    it.scrollTo(0, 0)
+                nestedScrollView.post {
+                    nestedScrollView.scrollTo(0, 0)
                 }
             }
             initialized = false
             toolbarTitle?.alpha = 0f
             if (Build.VERSION.SDK_INT >= 24 && !ConfigUtils.isTabletLayout()) {
-                it.setOnScrollChangeListener { _, _, _, _, _ ->
+                nestedScrollView.setOnScrollChangeListener { _, _, _, _, _ ->
                     setToolbarColor()
                 }
             }
         }
 
-        listView?.let {
-            it.setPadding(
-                listView.paddingLeft,
-                listView.paddingTop,
-                listView.paddingRight,
-                listView.paddingBottom +
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        48F,
-                        context?.resources?.displayMetrics,
-                    ).toInt(),
+        listView?.apply {
+            clipToPadding = false
+            updatePadding(
+                bottom = resources.getDimensionPixelSize(R.dimen.grid_unit_x2),
             )
-            it.clipToPadding = false
         }
     }
 

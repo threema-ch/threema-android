@@ -141,8 +141,6 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 
     /**
      * Set a listener to be attached to the cancel button. Do not use, implement {@link ProgressDialogClickListener} listener on the calling activity/fragment instead!
-     *
-     * @param onClickListener
      */
     @Deprecated
     public void setOnCancelListener(DialogInterface.OnClickListener onClickListener) {
@@ -150,7 +148,9 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
     }
 
     public interface ProgressDialogClickListener {
-        void onCancel(String tag, Object object);
+        default void onCancel(String tag, Object object) {
+
+        }
     }
 
     @Override

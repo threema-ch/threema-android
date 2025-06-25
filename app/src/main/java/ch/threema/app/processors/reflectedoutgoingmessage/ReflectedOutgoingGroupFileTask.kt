@@ -33,38 +33,39 @@ import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
-import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupFileTask")
 
 internal class ReflectedOutgoingGroupFileTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_FILE,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupFileMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupFileMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.GROUP_FILE,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val groupFileMessage: GroupFileMessage by lazy { GroupFileMessage.fromByteArray(message.body.toByteArray()) }
-
-    override val storeNonces: Boolean
-        get() = groupFileMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean = true
-
     override fun processOutgoingMessage() {
+        check(outgoingMessage.conversation.hasGroup()) {
+            "The message does not have a group identity set"
+        }
+
         // 1: Check if the group message already exists locally (from previous run(s) of this task).
         //    If so, cancel and accept that the download for the content(s) might not be complete.
         messageService.getGroupMessageModel(
-            groupFileMessage.messageId,
+            message.messageId,
             messageReceiver.group.creatorIdentity,
             messageReceiver.group.apiGroupId,
-        )?.run { return }
+        )?.run {
+            // It is possible that a message gets reflected twice when the reflecting task gets restarted.
+            logger.warn("Skipping message {} as it already exists.", message.messageId)
+            return
+        }
 
-        val fileData: FileData = groupFileMessage.fileData ?: run {
-            logger.warn("Message {} error: missing file data", message.messageId)
+        val fileData: FileData = message.fileData ?: run {
+            logger.warn("Message {} error: missing file data", outgoingMessage.messageId)
             return
         }
 
@@ -73,7 +74,7 @@ internal class ReflectedOutgoingGroupFileTask(
 
         // 3. Create the actual AbstractMessageModel containing the file and receiver information
         val groupMessageModel: GroupMessageModel = createMessageModelFromFileMessage(
-            groupFileMessage = groupFileMessage,
+            groupFileMessage = message,
             fileDataModel = fileDataModel,
             fileData = fileData,
         )
@@ -94,28 +95,23 @@ internal class ReflectedOutgoingGroupFileTask(
      *  @return A new instance of `AbstractMessageModel` with type [MessageType.FILE] containing
      *  the `body` and `dataObject` from the passed file information.
      *  The messages receiver information is set according to the [messageReceiver].
-     *  State will be [MessageState.SENT].
+     *  State will be [MessageState.SENDING].
      */
     private fun createMessageModelFromFileMessage(
         groupFileMessage: GroupFileMessage,
         fileDataModel: FileDataModel,
         fileData: FileData,
     ): GroupMessageModel {
-        val messageModel: GroupMessageModel = messageReceiver.createLocalModel(
+        val messageModel: GroupMessageModel = createMessageModel(
             /* type = */
             MessageType.FILE,
             /* messageContentsType = */
             MimeUtil.getContentTypeFromFileData(fileDataModel),
-            /* postedAt = */
-            Date(message.createdAt),
         )
-        initializeMessageModelsCommonFields(messageModel)
         return messageModel.apply {
             this.fileData = fileDataModel
             messageFlags = groupFileMessage.messageFlags
             correlationId = fileData.correlationId
-            forwardSecurityMode = groupFileMessage.forwardSecurityMode
-            state = MessageState.SENT
         }
     }
 

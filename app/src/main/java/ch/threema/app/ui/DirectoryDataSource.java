@@ -36,7 +36,7 @@ import java.util.List;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -87,7 +87,7 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
     public void loadInitial(@NonNull LoadInitialParams<WorkDirectory> params, @NonNull LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
         logger.debug("loadInitial");
 
-        if (queryCategories.size() > 0) {
+        if (!queryCategories.isEmpty()) {
             if (TestUtil.isEmptyOrNull(queryText)) {
                 queryText = WILDCARD_SEARCH_ALL;
             }

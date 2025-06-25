@@ -48,6 +48,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.SparseArrayCompat;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -79,7 +80,7 @@ import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
@@ -104,7 +105,7 @@ public class GroupServiceImpl implements GroupService {
     private final @NonNull ServiceManager serviceManager;
     private final @NonNull UserService userService;
     private final @NonNull ContactService contactService;
-    private final @NonNull DatabaseServiceNew databaseServiceNew;
+    private final @NonNull DatabaseService databaseService;
     private final @NonNull AvatarCacheService avatarCacheService;
     private final @NonNull FileService fileService;
     private final @NonNull WallpaperService wallpaperService;
@@ -129,7 +130,7 @@ public class GroupServiceImpl implements GroupService {
         @NonNull CacheService cacheService,
         @NonNull UserService userService,
         @NonNull ContactService contactService,
-        @NonNull DatabaseServiceNew databaseServiceNew,
+        @NonNull DatabaseService databaseService,
         @NonNull AvatarCacheService avatarCacheService,
         @NonNull FileService fileService,
         @NonNull WallpaperService wallpaperService,
@@ -144,7 +145,7 @@ public class GroupServiceImpl implements GroupService {
 
         this.userService = userService;
         this.contactService = contactService;
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.avatarCacheService = avatarCacheService;
         this.fileService = fileService;
         this.wallpaperService = wallpaperService;
@@ -170,7 +171,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @NonNull
     public List<GroupModel> getAll(GroupFilter filter) {
-        List<GroupModel> res = new ArrayList<>(this.databaseServiceNew.getGroupModelFactory().filter(filter));
+        List<GroupModel> res = new ArrayList<>(this.databaseService.getGroupModelFactory().filter(filter));
 
         if (filter != null && !filter.includeLeftGroups()) {
             Iterator<GroupModel> iterator = res.iterator();
@@ -235,7 +236,7 @@ public class GroupServiceImpl implements GroupService {
         ballotService.remove(messageReceiver);
 
         // Remove all files that belong to messages of this group
-        for (GroupMessageModel messageModel : this.databaseServiceNew.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getDatabaseId())) {
+        for (GroupMessageModel messageModel : this.databaseService.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getDatabaseId())) {
             this.fileService.removeMessageFiles(messageModel, true);
         }
 
@@ -292,18 +293,18 @@ public class GroupServiceImpl implements GroupService {
         ballotService.remove(createReceiver(groupModel));
 
         // Remove all group invite links and requests
-        final GroupInviteModelFactory groupInviteModelFactory = this.databaseServiceNew.getGroupInviteModelFactory();
-        final IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+        final GroupInviteModelFactory groupInviteModelFactory = this.databaseService.getGroupInviteModelFactory();
+        final IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = this.databaseService.getIncomingGroupJoinRequestModelFactory();
         for (GroupInviteModel groupInviteModel : groupInviteModelFactory.getByGroupApiId(groupModel.getApiGroupId())) {
             incomingGroupJoinRequestModelFactory.deleteAllForGroupInvite(groupInviteModel.getId());
             groupInviteModelFactory.delete(groupInviteModel);
         }
 
         // Remove all messages
-        for (GroupMessageModel messageModel : this.databaseServiceNew.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getId())) {
+        for (GroupMessageModel messageModel : this.databaseService.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getId())) {
             this.fileService.removeMessageFiles(messageModel, true);
         }
-        this.databaseServiceNew.getGroupMessageModelFactory().deleteByGroupId(groupModel.getId());
+        this.databaseService.getGroupMessageModelFactory().deleteByGroupId(groupModel.getId());
 
         // Remove avatar
         this.fileService.removeGroupAvatar(groupModel);
@@ -322,10 +323,10 @@ public class GroupServiceImpl implements GroupService {
         conversationService.removeFromCache(groupModel);
 
         // Delete group members
-        this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupId(groupModel.getId());
+        this.databaseService.getGroupMemberModelFactory().deleteByGroupId(groupModel.getId());
 
         // Delete group fully from database
-        this.databaseServiceNew.getGroupModelFactory().delete(groupModel);
+        this.databaseService.getGroupModelFactory().delete(groupModel);
 
         synchronized (this.groupModelCache) {
             this.groupModelCache.remove(groupModel.getId());
@@ -341,8 +342,8 @@ public class GroupServiceImpl implements GroupService {
         }
         //remove last request sync table
 
-        this.databaseServiceNew.getOutgoingGroupSyncRequestLogModelFactory().deleteAll();
-        this.databaseServiceNew.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
+        this.databaseService.getOutgoingGroupSyncRequestLogModelFactory().deleteAll();
+        this.databaseService.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
     }
 
 
@@ -369,7 +370,7 @@ public class GroupServiceImpl implements GroupService {
                 type -> apiGroupId.toString().equals(type.getApiGroupId().toString()) && creatorIdentity.equals(type.getCreatorIdentity())
             );
             if (model == null) {
-                model = this.databaseServiceNew.getGroupModelFactory().getByApiGroupIdAndCreator(
+                model = this.databaseService.getGroupModelFactory().getByApiGroupIdAndCreator(
                     apiGroupId.toString(),
                     creatorIdentity
                 );
@@ -398,7 +399,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity) {
         Intent intent = new Intent(activity, GroupDetailActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
         return intent;
     }
 
@@ -406,7 +407,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Intent getGroupDetailIntent(@NonNull ch.threema.data.models.GroupModel groupModel, @NonNull Activity activity) {
         Intent intent = new Intent(activity, GroupDetailActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getDatabaseId());
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getDatabaseId());
         return intent;
     }
 
@@ -417,14 +418,14 @@ public class GroupServiceImpl implements GroupService {
             if (existingGroupModel != null) {
                 return existingGroupModel;
             }
-            return this.cache(this.databaseServiceNew.getGroupModelFactory().getById(groupId));
+            return this.cache(this.databaseService.getGroupModelFactory().getById(groupId));
         }
     }
 
     @Override
     public void runRejectedMessagesRefreshSteps(@NonNull ch.threema.data.models.GroupModel groupModel) {
-        RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseServiceNew.getRejectedGroupMessageFactory();
-        GroupMessageModelFactory groupMessageModelFactory = databaseServiceNew.getGroupMessageModelFactory();
+        RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseService.getRejectedGroupMessageFactory();
+        GroupMessageModelFactory groupMessageModelFactory = databaseService.getGroupMessageModelFactory();
         List<GroupMessageModel> updatedMessages;
 
         GroupModelData data = groupModel.liveData().getValue();
@@ -592,7 +593,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @NonNull
     private List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModel groupModel) {
-        List<GroupMemberModel> groupMemberModels = databaseServiceNew
+        List<GroupMemberModel> groupMemberModels = databaseService
             .getGroupMemberModelFactory()
             .getByGroupId(groupModel.getId());
 
@@ -667,7 +668,7 @@ public class GroupServiceImpl implements GroupService {
         return new GroupMessageReceiver(
             groupModel,
             this,
-            this.databaseServiceNew,
+            this.databaseService,
             this.contactService,
             this.contactModelRepository,
             this.groupModelRepository,
@@ -773,7 +774,7 @@ public class GroupServiceImpl implements GroupService {
             }
         }
         int userMemberCount = groupModel.getUserState() == GroupModel.UserState.MEMBER ? 1 : 0;
-        return (int) this.databaseServiceNew.getGroupMemberModelFactory().countMembersWithoutUser(groupModel.getId()) + userMemberCount;
+        return (int) this.databaseService.getGroupMemberModelFactory().countMembersWithoutUser(groupModel.getId()) + userMemberCount;
     }
 
     @Override
@@ -785,7 +786,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public int countMembersWithoutUser(@NonNull GroupModel groupModel) {
-        return (int) this.databaseServiceNew
+        return (int) this.databaseService
             .getGroupMemberModelFactory()
             .countMembersWithoutUser(groupModel.getId());
     }
@@ -796,7 +797,7 @@ public class GroupServiceImpl implements GroupService {
         long groupDatabaseId = model.getDatabaseId();
         Map<String, Integer> colors = this.groupMemberColorCache.get((int) groupDatabaseId);
         if (colors == null || colors.isEmpty()) {
-            colors = this.databaseServiceNew.getGroupMemberModelFactory().getIDColorIndices(groupDatabaseId);
+            colors = this.databaseService.getGroupMemberModelFactory().getIDColorIndices(groupDatabaseId);
 
             this.groupMemberColorCache.put((int) groupDatabaseId, colors);
         }
@@ -808,13 +809,13 @@ public class GroupServiceImpl implements GroupService {
     @NonNull
     public List<GroupModel> getGroupsByIdentity(@Nullable String identity) {
         List<GroupModel> groupModels = new ArrayList<>();
-        if (TestUtil.isEmptyOrNull(identity) || !TestUtil.required(this.databaseServiceNew, this.groupModelCache)) {
+        if (TestUtil.isEmptyOrNull(identity) || !TestUtil.required(this.databaseService, this.groupModelCache)) {
             return groupModels;
         }
 
         identity = identity.toUpperCase();
 
-        List<Integer> res = this.databaseServiceNew.getGroupMemberModelFactory().getGroupIdsByIdentity(
+        List<Integer> res = this.databaseService.getGroupMemberModelFactory().getGroupIdsByIdentity(
             identity);
 
         List<Integer> groupIds = new ArrayList<>();
@@ -830,7 +831,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         if (!groupIds.isEmpty()) {
-            List<GroupModel> groups = this.databaseServiceNew.getGroupModelFactory().getInId(
+            List<GroupModel> groups = this.databaseService.getGroupModelFactory().getInId(
                 groupIds);
 
             for (GroupModel gm : groups) {
@@ -908,7 +909,7 @@ public class GroupServiceImpl implements GroupService {
             groupModel.getCreatorIdentity(),
             groupModel.getApiGroupId().toLong()
         );
-        this.databaseServiceNew.getGroupModelFactory().setLastUpdate(groupIdentity, new Date());
+        this.databaseService.getGroupModelFactory().setLastUpdate(groupIdentity, new Date());
         ListenerManager.groupListeners.handle(listener -> listener.onUpdate(groupIdentity));
     }
 

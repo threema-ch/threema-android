@@ -49,7 +49,7 @@ public class OutgoingGroupRequestViewModel extends ViewModel {
         super();
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager != null) {
-            this.repository = serviceManager.getDatabaseServiceNew().getOutgoingGroupJoinRequestModelFactory();
+            this.repository = serviceManager.getDatabaseService().getOutgoingGroupJoinRequestModelFactory();
             if (this.repository != null) {
                 groupJoinRequestModels = new MutableLiveData<List<OutgoingGroupJoinRequestModel>>() {
                     @Override

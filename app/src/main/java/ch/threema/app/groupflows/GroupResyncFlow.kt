@@ -34,7 +34,7 @@ import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("GroupResyncFlow")
@@ -49,21 +49,21 @@ class GroupResyncFlow(
     private val apiService: ApiService,
     private val fileService: FileService,
     private val groupCallManager: GroupCallManager,
-    private val databaseService: DatabaseServiceNew,
+    private val databaseService: DatabaseService,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
-) : BackgroundTask<Boolean> {
-    override fun runInBackground(): Boolean {
+) : BackgroundTask<GroupFlowResult> {
+    override fun runInBackground(): GroupFlowResult {
         if (!userService.identity.equals(groupModel.groupIdentity.creatorIdentity)) {
             logger.error("Cannot resync group: the user is not the creator")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
         if (groupModel.data.value?.isMember != true) {
             logger.error("Cannot resync group: the group is deleted or disbanded")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
-        return runBlocking {
+        val taskSucceeded = runBlocking {
             taskManager.schedule(
                 ActiveGroupStateResyncTask(
                     groupModel,
@@ -78,6 +78,10 @@ class GroupResyncFlow(
                     outgoingCspMessageServices,
                 ),
             ).await()
+        }
+        return when (taskSucceeded) {
+            true -> GroupFlowResult.Success(groupModel)
+            false -> GroupFlowResult.Failure.Other
         }
     }
 }

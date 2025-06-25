@@ -22,6 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -33,6 +34,8 @@ import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.sync.userProfile
 import kotlinx.serialization.Serializable
+
+private val logger = LoggingUtil.getThreemaLogger("ReflectUserProfileNicknameSyncTask")
 
 class ReflectUserProfileNicknameSyncTask(
     private val newNickname: String,
@@ -46,9 +49,11 @@ class ReflectUserProfileNicknameSyncTask(
     override val type: String = "ReflectUserProfileNicknameSyncTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        check(multiDeviceManager.isMultiDeviceActive) {
-            "Multi device is not active and a user profile nickname change must not be reflected"
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Cannot reflect nickname because multi device is not active")
+            return
         }
+
         handle.createTransaction(
             keys = mdProperties.keys,
             scope = MdD2D.TransactionScope.Scope.USER_PROFILE_SYNC,

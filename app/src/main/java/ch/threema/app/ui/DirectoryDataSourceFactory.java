@@ -36,8 +36,6 @@ public class DirectoryDataSourceFactory extends DataSource.Factory<WorkDirectory
         this.init = true;
     }
 
-    ;
-
     @Override
     public DataSource<WorkDirectory, WorkDirectoryContact> create() {
         DirectoryDataSource dataSource = new DirectoryDataSource();

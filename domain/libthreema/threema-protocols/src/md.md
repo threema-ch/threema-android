@@ -71,3 +71,68 @@ messages and if the decrypted content is parsable, unintended handling logic
 could be triggered on the devices. By using different keys for different scopes,
 they are cryptographically tied to their scope and cannot be confused with
 another.
+
+## Transactions
+
+The multi-device protocol makes heavy use of _transactions_ to be able to
+execute an atomic operation shared across the device group.
+
+Transaction steps always include a _scope_ (mapping to `d2d.TransactionScope`)
+and a _precondition_ function.
+
+A _precondition_ function determines whether following steps should be executed.
+To be precise, if the end of the _precondition_ steps are reached, the
+_precondition_ check was successful and subsequent steps are to be continued. If
+the _precondition_ steps abort a process, they must explicitly define which part
+of the surrounding steps are to be aborted.
+
+It is vital to understand how to implement _precondition_ steps correctly. A
+_precondition_ is executed in the following three cases:
+
+1. Before sending a `d2m.BeginTransaction`. If the _precondition_ aborts, the
+   transaction must not be initiated.
+2. After receiving a `d2m.TransactionRejected`. If the _precondition_ aborts,
+   the transaction must not be initiated again.
+3. After receiving a `d2m.BeginTransactionAck`. If the _precondition_ aborts,
+   the transaction must be ended gracefully by committing it via a
+   `d2m.CommitTransaction`.
+
+Note: When a _precondition_ aborts, the following steps (that would be executed
+inside the transaction) are aborted, too. In most cases, this aborts a whole
+chain of steps.
+
+## Protocol Tasks
+
+### Task
+
+A protocol task is an arbitrary synchronous or asynchronous process that is run
+until completion.
+
+A task has one of the following types:
+
+- _Persistent_: The task must be stored persistently (i.e. on disk), so it is
+  rescheduled when the app is being terminated and restarted. The task exists
+  until it completes.
+- _Volatile_: The task must not be stored persistently (i.e. only exist in
+  memory) but otherwise exists until it completes. When the app is being
+  terminated and restarted, the task will be lost.
+- _Drop On Disconnect_: The task must not be stored persistently (i.e. only
+  exist in memory) and must be discarded when the current primary connection
+  (i.e. a connection to the Chat Server / Mediator Server) becomes closed.
+
+### Task Manager
+
+Protocol tasks are managed sequentially and in order by the use of a single
+protocol task manager with an internal queue. The protocol task manager has the
+same lifetime as the application instance.
+
+Any task that is scheduled in the protocol task manager will not be run until a
+primary connection attempt (i.e. a connection to the Chat Server / Mediator
+Server) is being made, meaning that tasks cannot advance while offline. Whenever
+a task is being aborted exceptionally, the exception must bubble to abort the
+current connection.
+
+Whenever the primary connection closes, the task manager must cancel the
+currently executed task and transfer the current and any other remaining tasks
+of the queue into a new task queue. When doing so, all tasks with type _Drop On
+Disconnect_ must be discarded.

@@ -78,17 +78,11 @@ index: &index
     ## Size Limitations
 
     The chat server protocol currently allows for up to 8192 bytes within a
-    single frame. To elaborate this down to end-to-end encrypted messages,
-    the limitations are:
-
-    - 8192 bytes for frames in total,
-    - 8176 bytes for a payload container struct, before applying transport
-      encryption,
-    - 8172 bytes for a payload struct, before wrapping it with a container,
-    - 8084 bytes for a message payload struct's box, after encryption of a
-      message struct,
-    - 7812 bytes minimum and 8066 bytes maximum (due to the random padding of
-      1 to 255 bytes) for an end-to-end encrypted message struct.
+    single frame. Because we make heavy use of Protobuf messages, the overhead
+    cannot be calculated reliably ahead of time. Therefore, the total amount of
+    user-defined bytes should be constrained to ~7000 bytes. To achieve this,
+    the maximum recommended size of each property will be defined for each
+    message, so that it's total size roughly matches that constraint.
 
 # Handshake structs
 handshake: &handshake
@@ -686,53 +680,42 @@ payload: &payload
       - Copy all other fields of `message-with-metadata-box` to their
         respective counterparts in `legacy-message`
 
-      Creating this payload is only allowed as part of the _Common Send Steps_.
+      Creating this payload is only allowed as part of the _Bundled Messages
+      Send Steps_.
 
       When receiving this payload:
 
-      1. (MD) If the device is currently not declared _leader_, exceptionally
-         abort these steps and the connection.
-      2. If the nonce of `message-and-metadata-nonce` has been used before, log
-         a warning, _Acknowledge_ and discard the message and abort these steps.
-      3. If `receiver-identity` does not equal the user's Threema ID, log a
-         warning, _Acknowledge_ and discard the message and abort these steps.
-      4. If `sender-identity` equals the user's Threema ID, log a warning,
-         _Acknowledge_ and discard the message and abort these steps.
-      5. If `sender-identity` is a _Special Contact_, let `contact-or-init` be
-         that special contact. Otherwise, lookup the contact associated to
-         `sender-identity` and let `contact-or-init` be the result.
-      6. If no contact could be found, lookup the Threema ID on the Directory
-         Server:
-         1. If the server could not be reached or the status code is not `200`
-            or not `404`, exceptionally abort these steps and the connection.
-         2. If the status code is `404` or the contact is marked as _invalid_
-            (never existed or has been revoked), log a warning, _Acknowledge_
-            and discard the message and abort these steps.
-         3. Assign `contact-or-init` all necessary information to create a new
-            contact.
-      7. If `contact-or-init` contains an existing contact and the associated
-         Threema ID is marked as _invalid_ (has been revoked), log a warning,
-         _Acknowledge_ and discard the message and abort these steps.
-      8. If `metadata-length` is greater zero, decrypt the `metadata-container`
-         and let `outer-metadata` be the result. If this fails, log a warning,
-         _Acknowledge_ and discard the message and abort these steps.
-      9. Decrypt the `message-box`, decode it to a
-         [`container`](ref:payload.container) struct and let `outer` be the
-         result. If this fails, log a warning, _Acknowledge_ and discard the
-         message and abort these steps.
-      10. If `outer.type` is `0xff`, log a warning, _Acknowledge_ and
+      1.  (MD) If the device is currently not declared _leader_, exceptionally
+          abort these steps and the connection.
+      2.  If the nonce of `message-and-metadata-nonce` has been used before, log
+          a warning, _Acknowledge_ and discard the message and abort these steps.
+      3.  If `receiver-identity` does not equal the user's Threema ID, log a
+          warning, _Acknowledge_ and discard the message and abort these steps.
+      4.  Run the _Valid Contacts Lookup Steps_ for `sender-identity` and let
+          `contact-or-init` be the result.
+      5.  If `contact-or-init` indicates that the _contact is the user_ or that
+          the _contact is invalid_, log a warning, _Acknowledge_ and discard the
+          message and abort these steps.
+      6.  If `metadata-length` is greater zero, decrypt the `metadata-container`
+          and let `outer-metadata` be the result. If this fails, log a warning,
+          _Acknowledge_ and discard the message and abort these steps.
+      7.  Decrypt the `message-box`, decode it to a
+          [`container`](ref:payload.container) struct and let `outer` be the
+          result. If this fails, log a warning, _Acknowledge_ and discard the
+          message and abort these steps.
+      8.  If `outer.type` is `0xff`, log a warning, _Acknowledge_ and
           discard the message and abort these steps. (Legacy logic, may be
           removed in the future.)
-      11. If `outer.type` is unknown, log a notice, _Acknowledge_ and
+      9.  If `outer.type` is unknown, log a notice, _Acknowledge_ and
           discard the message and abort these steps.
-      12. Decode `outer.padded-data` into the message type associated to
+      10. Decode `outer.padded-data` into the message type associated to
           `outer.type` and let `outer-message` be the result. If this fails, log
           a warning, _Acknowledge_ and discard the message and abort these
           steps.
-      13. If `outer.type` is not `0xa0`, let `inner-metadata` be
+      11. If `outer.type` is not `0xa0`, let `inner-metadata` be
           `outer-metadata`, let `inner-type` be `outer.type` and let
           `inner-message` be `outer-message`.
-      14. If `outer.type` is `0xa0`:
+      12. If `outer.type` is `0xa0`:
           1. Run the receive steps associated to
              `csp-e2e-fs.Envelope` with the decoded `outer-message` and let
              `inner-metadata`, `inner-type`, `inner-message` and `fs-commit-fn`
@@ -741,103 +724,111 @@ payload: &payload
              and abort these steps.
           2. If `inner-metadata` is not defined, set `inner-metadata` to
              `outer-metadata`.
-      15. If `message-id` does not equal `inner-metadata.message_id`, log a
+      13. If `message-id` does not equal `inner-metadata.message_id`, log a
           warning, _Acknowledge_ and discard the message and abort these steps.
-      16. If `message-id` refers to a message that has been received previously
+      14. If `message-id` refers to a message that has been received previously
           from `sender-identity` (including group messages), log a warning,
           _Acknowledge_ and discard the message and abort these steps.
-      17. If `inner-type` is not defined (i.e. handling an FS control message),
+      15. If `inner-type` is not defined (i.e. handling an FS control message),
           log a notice, _Acknowledge_ and discard the message and abort these
           steps.
-      18. If `inner-type` is unknown, log a notice, _Acknowledge_ and
+      16. If `inner-type` is unknown, log a notice, _Acknowledge_ and
           discard the message and abort these steps.
-      19. If `inner-type` is `0xa0` (i.e. FS encapsulation within FS
+      17. If `inner-type` is `0xa0` (i.e. FS encapsulation within FS
           encapsulation), log a warning, _Acknowledge_ and discard the message
           and abort these steps.
-      20. If `sender-identity` is blocked¹ and `inner-type` is not exempted
-          from blocking, _Acknowledge_ and  discard the message and abort these
-          steps.
-      21. If `sender-identity` equals `*3MAPUSH`:
+      18. If `inner-type` is not exempted from blocking, run the _Identity
+          Blocked Steps_ for `sender-identity`. If the result indicates that
+          `sender-identity` is blocked, _Acknowledge_ and discard the message
+          and abort these steps.
+      19. If `sender-identity` equals `*3MAPUSH`:
           1. If `inner-type` is not `0xfe`, log a warning,
              _Acknowledge_ and discard the message and abort these steps.
           2. Run the receive steps associated to `inner-type` with
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      22. If `sender-identity` is not a _Special Contact_:
+      20. If `sender-identity` is not a _Special Contact_:
           1. If `inner-metadata.nickname` is defined, let `nickname` be the
-             value of `inner-metadata.nickname`.²
+             value of `inner-metadata.nickname`.¹
           2. If `inner-metadata` is not defined and _User Profile Distribution_
              was expected for `inner-type`, let `nickname` be the result of
-             decoding the plaintext `legacy-sender-nickname`.²
+             decoding the plaintext `legacy-sender-nickname`.¹
           3. If `nickname` is present, trim any excess whitespaces from the
              beginning and the end of `nickname`.
-          4. If `nickname` is present and `contact-or-init` contains an existing
-             contact:
-             1. Update the contact's nickname with `nickname`. Remove the
-                contact's nickname if `nickname` is empty.
-             2. (MD) If the contact's nickname has been changed, reflect the
-                contact in a transaction (scope: `CONTACT_SYNC`, precondition: a
-                contact for `sender-identity` exists). If this fails,
-                exceptionally abort these steps and the connection.
-             3. (MD) If a contact for `sender-identity` no longer exists, log a
-                warning, _Acknowledge_ and discard the message and abort these
-                steps.³
-          5. If `contact-or-init` does not contain an existing contact:
+          4. If `contact-or-init` does not contain an existing contact:
              1. If `inner-type` does not require to create an implicit
                 _direct_ contact, log a notice, _Acknowledge_ and discard the
                 message and abort these steps.
-             2. Create a new contact with acquaintance level based on the
-                information provided in `contact-or-init` and the provided
-                `nickname`. If this fails, exceptionally abort these steps and
-                the connection.
-             3. (MD) Reflect the contact in a transaction (precondition: a
-                contact for `sender-identity` does not exist). If this fails,
-                exceptionally abort these steps and the connection.
-          6. Run the receive steps associated to `inner-type` with
+             2. (MD) Run the following sub-steps (labelled _add-contact_):
+                1. Begin a transaction with scope `CONTACT_SYNC` and the
+                   following precondition:
+                   1. If the contact for `sender-identity` exists, abort the
+                      _add-contact_ sub-steps.
+                2. Reflect a `ContactSync.Create` with `contact` set from
+                   `contact-or-init` and the following additional properties:
+                   - `created_at` set to now,
+                   - `nickname` set to `nickname`,
+                   - `acquaintance_level` set to `DIRECT`,
+                   - all policies and categories set to their defaults.
+                3. Commit the transaction and await acknowledgement.
+             3. If the contact for `sender-identity` does not exist, persist a
+                new contact from `contact-or-init` and `nickname`.
+             4. TODO(SE-510): Schedule fetching gateway-defined profile picture
+                here, if contact was added and if necessary.
+          5. Lookup the contact associated to `sender-identity` and let
+             `contact` be the result (at this point, `contact` must exist).
+          6. (MD) If the contact's nickname is different to `nickname`:
+            1. Begin a transaction with scope `CONTACT_SYNC` and the
+                following precondition:
+                1. If the contact no longer exists, log an error and
+                  exceptionally abort these steps and the connection.
+            2. Reflect a `ContactSync.Update` with `contact` including the
+               new `nickname`.
+            3. Commit the transaction and await acknowledgement.
+          7. Update the contact's nickname with `nickname`. Remove the
+             contact's nickname if `nickname` is empty.
+          8. Run the receive steps associated to `inner-type` with
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      23. (MD) If the properties associated to `inner-type` require
-          reflecting incoming messages, reflect `outer-type` and `outer-message`
-          to other devices and wait for reflection acknowledgement.⁴ If this
-          fails, exceptionally abort these steps and the connection.
-      24. _Acknowledge_ the message.⁵
-      25. If the properties associated to `type` do not require sending
+      21. (MD) If the properties associated to `inner-type` require
+          reflecting incoming messages, reflect a `d2d.IncomingMessage` from
+          `outer-type` and `outer-message` and the associated conversation to
+          other devices and wait for reflection acknowledgement.² If this fails,
+          exceptionally abort these steps and the connection.³
+      22. _Acknowledge_ the message.⁴
+      23. If the properties associated to `type` do not require sending
           automatic delivery receipts or `flags` contains the _no
           automatic delivery receipts_ (`0x80`) flag, abort these steps.
-      26. Let `delivery-receipt` be a
-          [`delivery-receipt`](ref:e2e.delivery-receipt) message towards
-          `sender-identity` with status _received_ (`0x01`) and the
-          respective `message-id`.
-      27. (MD) Reflect `delivery-receipt` to other devices and
-          wait for reflection acknowledgement. If this fails, exceptionally
-          abort these sub-steps and the connection.
-      28. Send a `delivery-receipt` to `sender-identity` with status
-          _received_ (`0x01`) and the respective `message-id`.
+      24. Run the _Bundled Messages Send Steps_ with the following properties:
+          - `id` being a random message ID,
+          - `created-at` set to the current timestamp,
+          - `receivers` set to `contact`,
+          - to construct a [`delivery-receipt`](ref:e2e.delivery-receipt)
+            message with status _received_ (`0x01`) and the respective
+            `message-id`.
 
-      ¹: A sender can be blocked implicitly or explicitly, see
-      [Blocking](#Blocking).
-
-      ²: Note that the `nickname` of `MessageMetadata` may be undefined (leading
+      ¹: Note that the `nickname` of `MessageMetadata` may be undefined (leading
       to no changes) or defined but explicitly empty (leading to the nickname of
       the contact being removed) which is an important semantic difference.
       Unlike the legacy nickname field which always contains a value and
       therefore cannot represent this semantic difference without having to
       check whether _User Profile Distribution_ was required for the type.
 
-      ³: This a bailout mechanism that handles the extremely unlikely case that
-      another device removed the contact associated to `sender-identity` while
-      we are still processing the message sent from that contact. It is
-      intentionally handled crudely because of its unlikelyness.
-
-      ⁴: We reflect the **outer** message container depending on the unwrapped
+      ²: We reflect the **outer** message container depending on the unwrapped
       **inner** message type, so the forward security properties are untouched
       and all other devices need to go through the same process.
 
-      ⁵: Because the message is already acknowledged towards the server here,
+      ³: Reflection needs to happen after the message has been processed and all
+      side effects have been applied. Otherwise, if the receive process is
+      interrupted and another device takes over, it would discard the message as
+      a duplicate.
+
+      ⁴: Because the message is already acknowledged towards the server here,
       the following steps may not get executed at all if the connection drops
-      or the execution fails.
+      or the execution fails. All following steps must therefore be
+      non-critical.
 
       The following steps are defined as _Acknowledge_ steps for an incoming
       message:
@@ -1088,23 +1079,72 @@ e2e: &e2e
     [`message-with-metadata-box`](ref:payload.message-with-metadata-box)
     struct.
 
-    ### Special Contacts
+    ### Predefined Contacts
 
-    The following contacts are preprovisioned special contacts with its
-    respective public key¹ in hex:
+    A pedefined contacts can be added to the contact list and is automatically
+    initialised with its identity, nickname, hard-coded public key and the verification
+    level _fully verified_. Once a predefined contact is in the contact list, it
+    is treated like any other normal contact (with editable properties like
+    first and last name, etc.).
+
+    A predefined contact may be marked _special_ meaning it follows special
+    logic. These are also known as _Special Contact_s. Even though special
+    contacts should not normally appear in the contact list, there's nothing
+    stopping a user from adding a special contact to its contact list. While
+    they are treated like normal contacts in the contact list, depending on the
+    special handling logic, it may not be possible to send or receive normal
+    messages from them.
+
+    The following list contains all predefined contacts:
 
     - `*3MAPUSH`:
-      `fd711e1a0db0e2f03fcaab6c43da2575b9513664a62a12bd0728d87f7125cc24`
-      (live/sandbox)
+      - Nickname: Threema Push
+      - Public Key:
+        - Production: fd711e1a0db0e2f03fcaab6c43da2575b9513664a62a12bd0728d87f7125cc24
+        - Sandbox: fd711e1a0db0e2f03fcaab6c43da2575b9513664a62a12bd0728d87f7125cc24
+      - Special: Yes
 
-    Even though these contacts should not normally appear in the contact list,
-    to keep it simple, they are handled like normal contacts. This means that
-    they may appear in the contact list when the user explicitly sends a message
-    to it. They could also technically be added to a group. Once they appear,
-    they may be synchronised as part of the D2D protocol and even land in the
-    Threema Safe Backup. This is considered acceptable.
+    - `*3MATOKN`:
+      - Nickname: Threema Token
+      - Public Key:
+        - Production: 04884d12d668f855d00d71fb1d9d413c95f271312f7e077846af671875c4101b
+      - Special: No
 
-    ¹: OnPrem provisions these public keys in the associated OPPF file.
+    - `*3MAWORK`:
+      - Nickname: Threema Work Channel
+      - Public Key:
+        - Production: 9aa0a72a8fb6f0cc53727fea6096f1b7b0ebefcc2650ad39a1e54837bba0bc4b
+        - Sandbox: 9aa0a72a8fb6f0cc53727fea6096f1b7b0ebefcc2650ad39a1e54837bba0bc4b
+      - Special: No
+
+    - `*BETAFBK`:
+      - Nickname: Threema Beta Feedback
+      - Public Key:
+        - Production: 5684d6dcd32a16488df8371095fc9a1fc25baeb6b97366d99fdf2aba00e2bc5c
+      - Special: No
+
+    - `*MY3DATA`:
+      - Nickname: My Threema Data
+      - Public Key:
+        - Production: 3b01854f24736e2d0d2dc387eaf2c0273c5049052147132369bf3960d0a0bf02
+        - Sandbox: 83adfee6558b68ae3cd6bbe2a33f4e4409d5624a7cea23a18975aea6272a0070
+      - Special: No
+
+    - `*SUPPORT`:
+      - Nickname: Threema Support
+      - Public Key:
+        - Production: 0f944d18324b2132c61d8e40afce60a0ebd701bb11e89be94972d4229e94722a
+        - Sandbox: 0f944d18324b2132c61d8e40afce60a0ebd701bb11e89be94972d4229e94722a
+      - Special: No
+
+    - `*THREEMA`:
+      - Nickname: Threema Channel
+      - Public Key:
+        - Production: 3a38650c681435bd1fb8498e213a2919b09388f5803aa44640e0f706326a865c
+        - Sandbox: 3a38650c681435bd1fb8498e213a2919b09388f5803aa44640e0f706326a865c
+      - Special: No
+
+    Note: OnPrem provisions predefined contacts in the associated OPPF file.
 
     ### Mitigating Replay
 
@@ -1173,8 +1213,123 @@ e2e: &e2e
 
     The UI must prevent users from composing or submitting messages towards a
     blocked contact. In practise, this is only relevant for explicitly blocked
-    contacts as implicitly blocked contacts are already part of the contact list
-    when the conversation is being opened.
+    contacts.
+
+    The following steps are defined as the _Identity Blocked Steps_:
+
+    1.  Let `identity` be the Threema ID to be checked.
+    2.  If `identity` is a _Special Contact_, return that it is not blocked.
+    3.  If `identity` is explicitly blocked, return that it is blocked.
+    4.  If the settings indicate that unknown contacts should not be blocked,
+        return that it is not blocked.
+    5.  If `identity` is a _Predefined Contact_, return that it is not blocked.
+    6.  Let `contact` be the associated contact to `identity`.
+    7.  If `contact` is not defined, return that it is blocked.
+    8.  If `contact` has acquaintance level _direct_, return that it is not
+        blocked.
+    9.  If `contact` is part of a group that is not marked as _left_, return
+        that it is not blocked.
+    10. Return that it is blocked.
+
+    ### Contact Flows
+
+    The following steps are defined as the _Valid Contacts Lookup Steps_:
+
+    1.  Let `identities` be the identities to look up.
+    2.  Let `contact-or-inits` be an empty map of Threema IDs to a contact,
+        properties to create a contact from, or _contact is the user_ or
+        _contact is invalid_ marker.
+    3.  Let `unknown-identities` be an empty list.
+    4.  For each `identity` of `identities`:
+        1. If `identity` equals the user's Threema ID, add the information
+           that the _contact is the user_ to the `contact-or-inits` map and
+           abort these sub-steps.
+        2. If `identity` is a _Special Contact_, add that special contact to the
+           `contact-or-inits` map and abort these sub-steps.
+        3. Lookup the contact associated to `identity` and let `contact` be the
+           result.
+        4. If `contact` is defined, add `contact` to the `contact-or-inits` map
+           and abort these sub-steps.
+        5. Lookup the properties to create a contact from associated to
+           `identity` from the _contact lookup cache_ and let `init` be the
+           result.
+        6. If `init` is defined, add `init` to the `contact-or-inits` map and
+           abort these sub-steps.
+        7. Add `identity` to `unknown-identities`.
+    5.  Let `directory-response` be the response of asynchronously looking up
+        `unknown-identities` on the Directory Server.
+    6.  If work build, let `work-directory-response` be the response of
+        asynchronously looking up `unknown-identities` on the Work Contacts API
+        endpoint.
+    7.  Await `directory-response` and `work-directory-response`.
+    8.  Process the result of `directory-response`:
+        1. If the server could not be reached, exceptionally abort these steps.
+        2. If the status code is `429`, exceptionally abort these steps and add
+           a minimum delay of 10s before retrying a connection.
+        3. If the status code is not `200`, exceptionally abort these steps.
+        4. For each contact entry of the result:
+           1. Remove the contact from `unknown-identities`. If it was not
+              present in `unknown-identities`, log a warning and abort these
+              sub-steps.
+           2. If the contact is marked as _invalid_ (never existed or has been
+              revoked), add the information that the _contact is invalid_ to the
+              `contact-or-inits` map and abort these sub-steps.
+           3. If the contact is a _Predefined Contact_:
+              1. If the contact's public key does not equal the _Predefined
+                 Contact_s public key, log a warning and exceptionally abort these
+                 steps.
+              2. Update the contact information with the following information:
+                 - set `verification_level` to `FULLY_VERIFIED`,
+                 - set `nickname` to the nickname of the _Predefined Contact_,
+                 - if _Predefined Contact_ defines a first name, set it
+                   accordingly,
+                 - if _Predefined Contact_ defines a last name, set it
+                   accordingly,
+           3. Add the resulting contact information to the `contact-or-inits` map
+              from which a new contact can be created.
+        5. For each `identity` of `unknown-identities`:
+           1. Add the information that the _contact is invalid_ to the
+              `contact-or-inits` map for `identity`.
+        6. Clear `unknown-identities`.
+    9.  If `work-directory-response` is defined, process its result:
+        1. If the server could not be reached, exceptionally abort these steps.
+        2. If the status code is `401`, exceptionally abort these steps,
+           notify the user that the Work credentials are invalid and request new
+           ones. The connection should not be retried until new Work credentials
+           have been entered and checked for validity.
+        3. If the status code is `429`, exceptionally abort these steps and add a
+           minimum delay of 10s before retrying a connection.
+        4. If the status code is not `200`, exceptionally abort these steps.
+        5. For each `work-contact` of the result:
+           1. If an entry for the `work-contact`'s identity does not exist in
+              `contact-or-inits`, log a warning and abort these sub-steps.
+           2. If `work-contact`'s public key does not equal `contact-or-init`'s
+              public key, log a warning and exceptionally abort these steps.
+           3. Update the contact entry for `work-contact`'s identity in
+              `contact-or-inits` with the following information:
+              - if `verification_level` is not defined or `UNVERIFIED`, set it
+                to `SERVER_VERIFIED`,
+              - set `work_verification_level` to `WORK_SUBSCRIPTION_VERIFIED`,
+              - if `work-contact.first-name` is defined, set the first name
+                accordingly,
+              - if `work-contact.last-name` is defined, set the last name
+                accordingly,
+    10. TODO(SE-173): Run the contact import flow for `contact-or-inits` and
+        update the `verification_level` for all whose associated phone number /
+        email could be matched. Import `first_name` and `last_name` (if not
+        already defined) and set `sync_state` to `IMPORTED`. Clarify precedence
+        regarding Work API.
+    11. For each `init` of `contact-or-inits`:
+        1. If `init` does not contain properties to create a contact from (i.e.
+           it is a contact or any of the special markers), abort these
+           sub-steps.
+        2. If `init.sync_state` is not defined, set it to `INITIAL`.
+        3. If `init.verification_level` is not defined, set it to `UNVERIFIED`.
+        4. If `init.work_verification_level` is not defined, set it to `NONE`.
+    12.  Update the _contact lookup cache_ with the contents of
+        `contact-or-inits`. Each newly added or updated entry has an expiration
+        time of 10m after which the entry is to be removed from the cache.
+    13. Return `contact-or-inits`.
 
     ### Groups
 
@@ -1211,9 +1366,10 @@ e2e: &e2e
     conversation with that contact is being started by either side in which
     case the acquaintance level should be changed to _direct_.
 
-    A contact with acquaintance level _group_ should be removed automatically
-    once the last group the contact appears in is being removed, but only if
-    the associated group chat history is also being removed.
+    A contact with acquaintance level _group_ will remain indefinitely even if
+    the contact is being removed from all groups of the user or if all remaining
+    common groups are marked as _left_. In that case, the contact is implicitly
+    marked as _deleted_ so that it is covered by _block unknown_.
 
     ### Notes Group
 
@@ -1221,7 +1377,7 @@ e2e: &e2e
     are met:
 
     1. The user is the creator of the group.
-    2. The group currently has no members beyond the user itself.
+    2. The group currently has no members (besides the creator).
     3. The group is not marked as _left_.
 
     Messages in a _notes_ group are synchronised across devices but are not
@@ -1241,55 +1397,478 @@ e2e: &e2e
 
     The UI should signal the _notes_ status of a group to the user.
 
+    ### Group Flows
+
+    The following steps are defined as the _Active Group Update Steps_:
+
+    1.  If the user is not the creator of the group or the group is marked as
+        _left_, log an error and abort these steps.
+    2.  Let `message-ids` be a list of four pre-generated message IDs.
+    3.  Let `changes` be the set of expected changes to the group which may
+        contain the following properties:
+        - `profile-picture` is defined if the group's profile picture is
+          expected to be changed and contains either the new profile picture or
+          a _remove_ mark to remove it
+        - `profile-picture.blob` may contain the associated blob information
+          data in case of a changed profile picture.
+        - `add-members` is a set of new members to be added to the group
+        - `remove-members` is a set of existing members to be removed from the
+          group
+    4.  Let `group` be a snapshot of the current group state.
+    5.  Remove all members from `changes.add-members` that are not in
+        `group.members`.
+    6.  Remove all members from `changes.remove-members` that are in
+        `group.members`.
+    7.  Let `messages` be an empty list.
+    8.  If `changes.remove-members` is not empty, add a message entry to
+        `messages` to remove members to be removed with the following
+        properties:
+        - `id` set to the first message ID of `message-ids`,
+        - `created-at` set to the current timestamp,
+        - `receivers` set to `changes.remove-members`,
+        - to construct a [`group-setup`](ref:e2e.group-setup) (wrapped by
+          [`group-creator-container`](ref:e2e.group-creator-container))
+          with an empty members set.
+    9.  If `group.members` is not empty:
+        1. Add a message entry to `messages` to update the group for the
+            members with the following properties:
+            - `id` set to the first message ID of `message-ids`,
+            - `created-at` set to the current timestamp,
+            - `receivers` set to `group.members`,
+            - to construct a [`group-setup`](ref:e2e.group-setup) (wrapped by
+              [`group-creator-container`](ref:e2e.group-creator-container))
+              from `group.members`.
+        2. Add a message entry to `messages` to announce the group's name to
+            the members with the following properties:
+            - `id` set to the second message ID of `message-ids`,
+            - `created-at` set to the current timestamp,
+            - `receivers` set to `group.members`,
+            - to construct a [`group-name`](ref:e2e.group-name) (wrapped by
+              [`group-creator-container`](ref:e2e.group-creator-container))
+              from `group.name`.¹
+        3. If `group.profile-picture` is defined:
+            1. Let `profile-picture-blob` be `changes.profile-picture.blob`.
+            2. If `group.profile-picture` does not equal
+               `changes.profile-picture`, upload `group.profile-picture` to the
+               blob server with the _persist_ flag and set
+               `profile-picture-blob` to the result.
+        4. Add a message entry to `messages` to announce the group's profile
+            picture to the members with the following properties:
+            - `id` set to the third message ID of `message-ids`,
+            - `created-at` set to the current timestamp,
+            - `receivers` set to `group.members`,
+            - to construct a
+              [`set-profile-picture`](ref:e2e.set-profile-picture) (wrapped by
+              [`group-creator-container`](ref:e2e.group-creator-container)) from
+              `profile-picture-blob` if `profile-picture-blob` is defined or
+              [`delete-profile-picture`](ref:e2e.delete-profile-picture)
+              (wrapped by
+              [`group-creator-container`](ref:e2e.group-creator-container))
+              otherwise.¹
+        5. Let `chosen-call` be the result of the most recent invocation of
+            the _Group Call Refresh Steps_ for the group.
+        6. If `chosen-call` is defined, add a message entry to `messages` to
+            announce the ongoing group call to newly added members with the
+            following properties:
+            - `id` set to the fourth message ID of `message-ids`,
+            - `created-at` set to the `started_at` value associated to
+              `chosen-call`,
+            - `receivers` set to `changes.add-members`,
+            - to construct a repeat of `csp-e2e.GroupCallStart` (wrapped by
+              [`group-member-container`](ref:e2e.group-member-container))
+              that is associated to `chosen-call`.
+    10. Run the _Bundled Messages Send Steps_ with `messages`.
+
+    ¹: This results in the group name and the group profile picture being
+    distributed to all members regardless of whether it was changed or not. This
+    is deemed acceptable for the sake of implementation simplicity and
+    reusability.
+
+    The following steps are defined as the _Active Group State Resync Steps_:
+
+    1.  If the user is not the creator of the group or the group is marked as
+        _left_, log an error and abort these steps.
+    2.  Let `message-ids` be a list of four pre-generated message IDs.
+    3.  Let `target-members` be a set of members to receive the resync.
+    4.  Remove all members from `target-members` that are not in
+        `group.members`.
+    5.  If `target-members` is empty, abort these steps.
+    6.  Let `messages` be an empty list.
+    7.  Add a message entry to `messages` to announce the group composition with
+        the following properties:
+        - `id` set to the first message ID of `message-ids`,
+        - `created-at` set to the current timestamp,
+        - `receivers` set to `target-members`,
+        - to construct a [`group-setup`](ref:e2e.group-setup) (wrapped by
+          [`group-creator-container`](ref:e2e.group-creator-container)) from
+          `group.members`.
+    8.  Add a message entry to `messages` to announce the group's name with the
+        following properties:
+        - `id` set to the second message ID of `message-ids`,
+        - `created-at` set to the current timestamp,
+        - `receivers` set to `target-members`,
+        - to construct a [`group-name`](ref:e2e.group-name) (wrapped by
+          [`group-creator-container`](ref:e2e.group-creator-container)) from
+          `group.name`.
+    9.  If `group.profile-picture` is defined, upload `group.profile-picture` to
+        the blob server with the _persist_ flag and let `profile-picture-blob`
+        be the result.
+    10. Add a message entry to `messages` to announce the group's profile
+        picture with the following properties:
+        - `id` set to the third message ID of `message-ids`,
+        - `created-at` set to the current timestamp,
+        - `receivers` set to `target-members`,
+        - to construct a
+          [`set-profile-picture`](ref:e2e.set-profile-picture) (wrapped by
+          [`group-creator-container`](ref:e2e.group-creator-container)) from
+          `profile-picture-blob` if `profile-picture-blob` is defined or
+          [`delete-profile-picture`](ref:e2e.delete-profile-picture) (wrapped by
+          [`group-creator-container`](ref:e2e.group-creator-container))
+          otherwise.
+    11. Let `chosen-call` be the result of the most recent invocation of
+        the _Group Call Refresh Steps_ for the group.
+    12. If `chosen-call` is defined, add a message entry to `messages` to
+        announce the ongoing group call with the following properties:
+        - `id` set to the fourth message ID of `message-ids`,
+        - `created-at` set to the `started_at` value associated to
+              `chosen-call`,
+        - `receivers` set to `target-members`,
+        - to construct a repeat of `csp-e2e.GroupCallStart` (wrapped by
+          [`group-member-container`](ref:e2e.group-member-container)) that is
+          associated to `chosen-call`.
+    13. Run the _Bundled Messages Send Steps_ with `messages`.
+    14. For each member of `target-members`, mark the group as _recently
+        resynced_ for 1h.
+
+    #### Create/Clone Group
+
+    The following steps must be invoked when the user wants to create or clone a
+    group:
+
+    1.  Let `init` contain the following properties to create a group:
+        - `name` of the new group or an empty string
+        - `profile-picture` of the new group or undefined
+        - `members` is a set of initial members to be added to the group¹
+    2.  Let `parameters` be the MDM parameters. If
+        `parameters.th_disable_create_group` is `true`, abort these steps.
+    3.  Let `group-id` be a random group ID.
+    4.  (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+        precondition:
+        1. If a group with `group-id` and the user as creator exists, log an
+           error and abort these steps.
+        2. If `init.members` contains a member that is not an existing
+           contact, log an error and abort these steps.
+    5.  If `init.profile-picture` is defined, upload `init.profile-picture` to
+        the blob server with the _persist_ flag and set
+        `init.profile-picture.blob` to the result.
+    6.  (MD) Reflect a `GroupSync.Create` with `group` set to contain:
+        - `group_identity` being `group-id` and the user as the creator,
+        - `created_at` set to now,
+        - `name` set to `init.name`
+        - `user_state` set to `MEMBER`,
+        - `profile_picture` set from `init.profile-picture.blob`,
+        - `member_identities` set from `init.members`,
+        - all policies and categories set to their defaults.
+    7.  (MD) Commit the transaction and await acknowledgement.
+    8.  Persist the newly created group from `init` and `group-id` to storage.
+    9.  If `init.members` is empty, abort these steps.
+    10. Let `message-ids` be a list of four random message IDs.
+    11. Schedule a persistent task to run the following steps:
+        1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+           precondition:
+           1. If the group does not exist or the group is marked as _left_ or the
+              group has no members, log a warning that a group sync race occurred
+              and abort these steps.
+        2. Let `group` be a snapshot of the current group state.
+        3. If any of the following cases is true, log a warning that a group
+           sync race occurred:
+           - `init.name` is defined and does not equal `group.name`,
+           - `init.profile-picture` does not equal `group.profile-picture`,
+           - `init.members` does not equal `group.members`.
+        4. Run the _Active Group Update Steps_ with `message-ids` and the
+           following expected set of `changes`:
+           - `profile-picture` set to `init.profile-picture`,
+           - `add-members` set to `init.members`,
+           - `remove-members` set to an empty list.
+        5. (MD) Commit the transaction and await acknowledgement.
+
+    ¹: Note that all contacts must be added before they can be added as initial
+    members of the group.
+
+    #### Update Group
+
+    The following steps must be invoked when the user is the creator of a group
+    and intends to apply a change to the group's name, profile picture or
+    add/remove members to/from the group:
+
+    1.  If the user is not the creator of the group or the group is marked as
+        _left_, log an error and abort these steps.
+    2.  Let `changes` be the set of changes to the group which may contain the
+        following properties:
+        - `name` is defined if the group's name is to be changed and contains the
+          new name or an empty string
+        - `profile-picture` is defined if the group's profile picture is to be
+          changed and contains either the new profile picture or a _remove_ mark
+          to remove it
+        - `add-members` is a set of new members to be added to the group¹
+        - `remove-members` is a set of existing members to be removed from the
+          group¹
+    3.  (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+        precondition:
+        1. If `changes.add-members` or `changes.remove-members` contains a
+           member that is not an existing contact, log an error and abort these
+           steps.
+        2. If the group does not exist or the group is marked as _left_, log a
+           warning and abort these steps.
+    4.  Let `updated-members` be a copy of the current member set of the group.
+        Add all `changes.add-members` to this set that are to be added to the
+        group. Remove all `changes.remove-members` from this set that are to be
+        removed from the group.
+    5.  If `changes.profile-picture` is defined and contains a profile picture,
+        upload `changes.profile-picture` to the blob server with the _persist_
+        flag and let `changes.profile-picture.blob` be the result.
+    6.  (MD) Reflect a `GroupSync.Update` with `member_state_changes`
+        constructed from `changes.add-members` and `changes.remove-members` and
+        `group` set to contain:
+        - `name` set to `changes.name`,
+        - `profile_picture` set according to `changes.profile-picture` (and
+          `changes.profile-picture.blob`),
+        - `member_identities` set from `updated-members`.
+    7.  (MD) Commit the transaction and await acknowledgement.
+    8.  If the user is currently participating in a group call of this group,
+        remove all `change.remove-members` participants from the group call
+        (handle them as if they left the call).
+    9.  Persist the `updated-members` and other `changes` to the group.
+    10. If `changes.add-members` or `changes.remove-members` is not empty, run
+        the _Rejected Messages Refresh Steps_ for the group.
+    11. Let `message-ids` be a list of four random message IDs.
+    12. Schedule a persistent task to run the following steps:
+        1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+           precondition:
+           1. If the group does not exist or the group is marked as _left_, log
+              a warning that a group sync race occurred and abort these steps.
+        2. Let `group` be a snapshot of the current group state.
+        3. If any of the following cases is true, log a warning that a group
+           sync race occurred:
+           - `changes.name` is defined and does not equal `group.name`,
+           - `changes.profile-picture` contains a profile picture and does not
+              equal `group.profile-picture`,
+           - `changes.profile-picture` contains the _remove_ mark and
+              `group.profile-picture` is defined,
+           - `updated-members` does not equal `group.members`.
+        4. Run the _Active Group Update Steps_ with `message-ids` and `changes`.
+        5. (MD) Commit the transaction and await acknowledgement.
+
+    ¹: Note that all contacts must be added before they can be added as members
+    to the group. The same applies to members that are being removed, obviously.
+
+    #### Disband/Remove Group
+
+    The following steps must be invoked when the user is the creator of a group
+    and intends to _disband_ or _disband and remove_ the group:
+
+    1.  Let `intent` be the user's intent which can be either to _disband_ or to
+        _disband and remove_ the group.
+    2.  If the user is not the creator of the group or the group is marked as
+        _left_, log an error and abort these steps.
+    3.  (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+        precondition:
+        1. If the group does not exist or the group is marked as _left_, log a
+           warning and abort these steps.
+    4.  (MD) If `intent` is to _disband_, reflect a `GroupSync.Update` with
+        `group` set to contain `user_state` set to `LEFT`.
+    5.  (MD) If `intent` is to _disband and remove_, reflect a
+        `GroupSync.Delete` for this group.
+    6.  (MD) Commit the transaction and await acknowledgement.
+    7.  If the user is participating in a group call of this group, trigger
+        leaving the call.
+    8.  If the `intent` is to _disband_:
+        1. Mark the group as _left_.
+        2. Persist the previous member setup so that the group can be cloned.
+        3. Run the _Rejected Messages Refresh Steps_ for the group.
+    9.  If the `intent` is to _disband and remove_, remove the group and all
+        associated messages from storage.
+    10. Let `message-id` be a random message ID.
+    11. Schedule a persistent task to run the following steps:
+        1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+           precondition:
+           1. If the group exists and is not marked as _left_, log an error that
+              a major group state inconsistency has been detected¹ and abort
+              these steps.
+        2. Let `group` be a snapshot of the current group state.
+        3. Run the _Bundled Messages Send Steps_ with the following properties:
+           - `id` set to `message-id`,
+           - `created-at` set to the current timestamp,
+           - `receivers` set to `group.members`,
+           - to construct a [`group-setup`](ref:e2e.group-setup) (wrapped by
+             [`group-creator-container`](ref:e2e.group-creator-container)) with
+             an empty members set.
+        4. (MD) Commit the transaction and await acknowledgement.
+
+    ¹: Disbanding a group as the creator makes the group strictly non-reusable.
+
+    #### Leave/Remove Group
+
+    The following steps must be invoked when the user is not the creator of a
+    group and intends to _leave_ or _leave and remove_ the group:
+
+    1.  Let `intent` be the user's intent which can be either to _leave_ or to
+        _leave and remove_ the group.
+    2.  If the user is the creator of the group or the group is marked as
+        _left_, log an error and abort these steps.
+    3.  (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+        precondition:
+        1. If the group does not exist or the group is marked as _left_, log a
+           warning and abort these steps.
+    4.  (MD) If `intent` is to _leave_, reflect a `GroupSync.Update` with
+        `group` set to contain `user_state` set to `LEFT`.
+    5.  (MD) If `intent` is to _leave and remove_, reflect a `GroupSync.Delete`
+        for this group.
+    6.  (MD) Commit the transaction and await acknowledgement.
+    7.  If the user is participating in a group call of this group, trigger
+        leaving the call.
+    8.  If the `intent` is to _leave_:
+        1. Mark the group as _left_.
+        2. Persist the previous member setup so that the group can be cloned.
+        3. Run the _Rejected Messages Refresh Steps_ for the group.
+    9.  If the `intent` is to _leave and remove_, remove the group and all
+        associated messages from storage.
+    10. Let `message-id` be a random message ID.
+    11. Schedule a persistent task to run the following steps:
+        1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+           precondition:
+           1. If the group exists and is not marked as _left_, log a warning
+              that a group sync race occurred and abort these steps.
+        2. Let `group` be a snapshot of the current group state.
+        3. Run the _Bundled Messages Send Steps_ with the following properties:
+           - `id` set to `message-id`,
+           - `created-at` set to the current timestamp,
+           - `receivers` set to `group.members`,
+           - to construct a [`group-leave`](ref:e2e.group-leave) (wrapped by
+             [`group-member-container`](ref:e2e.group-member-container))
+        4. (MD) Commit the transaction and await acknowledgement.
+
+    #### Group Resync
+
+    The following steps must be invoked when the user is the creator of a group
+    and intends to resync the group manually:
+
+    1. If the user is not the creator of the group or the group is marked as
+        _left_, log an error and abort these steps.
+    2. Let `message-ids` be a list of four random message IDs.
+    3. Schedule a volatile task to run the following steps:
+       1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+          precondition:
+          1. If the group does not exist or the group is marked as _left_, log a
+             warning and abort these steps.
+       2. Run the _Active Group State Resync Steps_ with `message-ids` and
+          `target-members` being all current group members.¹
+       3. (MD) Commit the transaction and await acknowledgement.
+
+    ¹: This mechanic intentionally bypasses the 1h _recently resynced_ mark due
+    to an explicit manual request by the user to resync the group.
+
+    #### Update Conversation
+
+    The following steps must be invoked when the user intends to change any
+    other synchronised property of the group:
+
+    1. Let `change` be one of the following changes to the group as defined by
+       `sync.Group`:
+       - `notification_trigger_policy_override`
+       - `notification_sound_policy_override`
+       - `conversation_category`
+       - `conversation_visibility`
+    2. Persist the `change` to the group.
+    3. (MD) Schedule a persistent task to run the following steps:
+       1. Begin a transaction with scope `GROUP_SYNC` and the following precondition:
+          1. If the group does not exist, log a warning and abort these steps.
+       2. Reflect a `GroupSync.Update` with `group` set to contain the `change`.
+       3. Commit the transaction and await acknowledgement.
+       4. Persist the `change` to the group (again).
+
     ### Sending
 
-    The following steps are defined as the _Common Send Steps_ and must always
-    be invoked as part of a persistent task:
+    The following steps are defined as the _Bundled Messages Send Steps_ and
+    must always be invoked as part of a task in order to send a message:
 
-    1. Let `message` be the message to be sent. Note: `message` must contain
-       all information to construct a message and must be assigned a stable
-       message ID via `message.id`.¹
-    2. Let `receivers` be the provided list of receivers for `message`.
-    3. If `message` is part of a group conversation, run the _Common Group Send
-       Steps_ with `receivers` and update `receivers` with the result. If the
-       message has been discarded, abort these steps.
-    4. If `message` is not exempted from blocking, remove all receivers from
-       `receivers` who are blocked.
-    5. (MD) If the properties associated to `message` require
-       reflecting outgoing messages, create a `d2d.OutgoingMessage` for
-       `message` and reflect it. Wait for the corresponding `reflect-ack`.²
-    6. Let `pending` be an ordered map with `receivers` as key and the tuple
-       `pending-acks` and `fs-commit-fn` as value.
-    7. For each `receiver` of `receivers`:
-       1. Let `pending-acks` be an empty list.
-       2. If `message` is not of type `0xa0` and both client and `receiver`
-          support FS, run the _FS Encapsulation Steps_ with `message` and let
-          `outgoing-messages` and `fs-commit-fn` be the result.³
-       3. If `outgoing-messages` is not defined, let `outgoing-messages` be a
-          list including only `message`.
-       4. For each `outgoing-message` of `outgoing-messages`:
-          1. Create a `payload.message-with-metadata-box` for `outgoing-message`
-             and let `payload` be the result.
-          2. If `payload.flags` does not contain the _no server acknowledgement_ (`0x04`)
-             flag, add `payload.message-id` to `pending-acks`.
-          3. Send `payload` to the `receiver`
-       5. Add an entry in `pending` for `receiver` with `pending-acks` and
-          `fs-commit-fn`.
-    8. For each value `pending-acks` and `fs-commit-fn` in `pending`:
-       1. Await all `pending-acks`.
-       2. If `fs-commit-fn` is defined, run it.
-    9. (MD) If `message` is eligible for reflecting
-       `OutgoingMessageUpdate.Sent`, reflect an `OutgoingMessageUpdate.Sent` for
-       `message.id`.
+    1.  Let `messages` be a list of messages with each having the following
+        properties:
+        - `id` being the associated message ID¹,
+        - `created-at` timestamp,
+        - `receivers` being the set of receivers for the message²,
+        - the associated conversation,
+        - all necessary information to construct a _canonical_ message from it,
+        - all necessary information to construct a _specific_ message from it,
+          given the specific receiver.
 
-    The following steps are defined as the _Common Group Send Steps_:
-
-    1. Let `receivers` be the provided list of receivers for the message to be
-       sent.
-    2. If the user is no longer part of the group, discard the message and abort
-       these steps.
-    3. Remove all group members from `receivers` who are not part of the group.
-    4. Return the updated `receivers`.
+        Note: If only one set of informations to construct a message is
+        provided, this is considered both the _canonical_ and the _specific_
+        message construction variant.
+    2.  For each `message` of `messages`:
+        1. For each `receiver` of `message.receivers`:
+           1. If `receiver` is the user, log a warning, remove `receiver` from
+              `receivers` and abort these sub-steps.
+           2. If `receiver` is marked as _invalid_, remove `receiver` from
+              `receivers and abort these sub-steps.
+           3. If the properties associated to `message` to be constructed for
+              `receiver` given its feature mask indicates that the message is
+              not exempted from blocking, run the _Identity Blocked Steps_ for
+              `receiver`'s identity. If the result indicates that `receiver` is
+              blocked, remove `receiver` from `receivers` and abort these
+              sub-steps.
+           4. Construct the _specific_ `message` for `receiver` and attach the
+              constructed message to `receiver`.
+           5. Run the _Profile Picture Distribution Steps_ with the constructed
+              _specific_ message for `receiver`'s type and `receiver` and extend
+              `messages` with the result.
+    3.  For each `message` of `messages` attach a random nonce for `message` to
+        each receiver of `message.receivers`.
+    4.  (MD) Let `pending-reflect-acks` be an empty list.
+    5.  (MD) For each `message` of `messages`:
+        1. If the properties associated to the _canonical_ `message` do not
+           require reflecting outgoing messages, abort these sub-steps.
+        2. Construct a `d2d.OutgoingMessage` from the _canonical_ `message` for
+           the associated conversation and reflect it.
+        3. Add the pending acknowledgement to `pending-reflect-acks`.
+    6.  (MD) Await all `pending-reflect-acks`.
+    7.  Let `pending-csp-acks` and `fs-commit-fns` be empty lists.
+    8.  For each `message` of `messages`:
+        1. For each `receiver` of `message.receivers`:
+           1. If the constructed _specific_ message for `receiver` is of type
+              `0xa0`, let `outer-messages` be a list including only the
+              constructed message for `receiver` and `fs-commit-fns` be an empty
+              list.
+           2. If the constructed _specific_ message for `receiver` is not of
+              type `0xa0`, run the _FS Encapsulation Steps_ with the constructed
+              _specific_ message for `receiver` and let `outer-messages` and
+              `fs-commit-fns` be the result.³
+           3. For each `outer-message` of `outer-messages`:
+              1. Create a `payload.message-with-metadata-box` for `outer-message`
+                 with `receiver` and let `payload` be the result.
+              2. If `payload.flags` does not contain the _no server
+                 acknowledgement_ (`0x04`) flag, add `payload.message-id` to
+                 `pending-csp-acks`.
+              3. If the properties associated to `outer-message` requires
+                 protection against replay, mark the nonce of `outer-message` as
+                 used.
+              4. Send `payload`.
+    9.  Await all `pending-csp-acks`.
+    10. Run each function of `fs-commit-fns`.
+    11. (MD) Let `pending-reflect-acks` be an empty list.
+    12. (MD) For each `message` of `messages`:
+        1. If the properties associated to the _canonical_ `message` is eligible
+           for reflecting `OutgoingMessageUpdate.Sent`:
+           1. Create an `OutgoingMessageUpdate.Sent` for `message.id` and the
+              associated conversation and reflect it.
+           2. Add the pending acknowledgement to `pending-reflect-acks`.
+    13. (MD) Await all `pending-reflect-acks`.
+    14. For each `message` of `messages`:
+        1. (MD) If the properties associated to the _canonical_ `message` was
+           eligible for reflecting `OutgoingMessageUpdate.Sent`, mark it as
+           _sent_ with the timestamp from the corresponding `reflect-ack`
+           message.
+        2. (non-MD) Mark `message` as _sent_ with the current timestamp.
 
     ¹: Note that, in groups, this implicitly assigns the same message ID towards
     each group member which in fact is a requirement of the protocol.
@@ -1303,6 +1882,265 @@ e2e: &e2e
     (a newer version potentially increasing security or making more messages
     eligible for FS protection).
 
+    The following steps are defined as the _Messages Submit Steps_ which must be
+    invoked to submit a user-created message in a conversation:
+
+    1. Let `messages` be a list of messages of the user to be added to
+       the conversation with each having the following properties:
+       - `id` set to a random message ID,
+       - `created-at` set to the current timestamp,
+       - `blobs` be an optional set of blobs that must be uploaded prior to
+         being able to construct the message,
+       - all necessary information to construct a _canonical_ message from it,
+       - all necessary information to construct a _specific_ message from it,
+         given the specific receiver.
+
+       Note: If only one set of informations to construct a message is
+       provided, this is considered both the _canonical_ and the _specific_
+       message construction variant.
+    2. If the associated conversation is a 1:1 conversation, run the _1:1
+       Messages Submit Steps_ with `messages`.
+    3. If the associated conversation is a group conversation, run the _Group
+       Messages Submit Steps_ with `messages`.
+    4. If the associated conversation is a distribution list conversation, run
+       the _Distribution List Messages Submit Steps_ with `messages`.
+    5. (Unreachable)
+
+    The following steps are defined as the _1:1 Messages Submit Steps_ which
+    must be invoked to submit a user-created message in a 1:1 conversation:
+
+    1.  Let `messages` be a list of messages of the user to be added to
+        the conversation with each having the following properties:
+        - `id` defaulting to a random message ID,
+        - `created-at` defaulting to the current timestamp,
+        - `blobs` be an optional set of blobs that must be uploaded prior to
+          being able to construct the message,
+        - all necessary information to construct a _canonical_ message from it,
+        - all necessary information to construct a _specific_ message from it,
+          given the specific receiver.
+
+        Note: If only one set of informations to construct a message is
+        provided, this is considered both the _canonical_ and the _specific_
+        message construction variant.
+    2.  Let `receiver` be the conversation's associated contact.
+    3.  If `receiver` has acquaintance level _deleted_, discard `messages`,
+        log a warning and abort these steps.¹
+    4.  Run the _Identity Blocked Steps_ for `receiver`'s identity'. If the
+        result indicates that `receiver` is blocked, discard `messages`, log
+        a warning and abort these steps.¹
+    5.  For each `message` of `messages`, assign a random message ID to
+        `message.id`.
+    6.  Schedule a persistent task to run the following steps:²
+        1. If the contact for `receiver` no longer exists, log an error,
+           discard `messages` and abort these steps.
+        2. For each `message` of `messages`:
+           1. If `message.blob` is not defined, abort these sub-steps.
+           2. Upload all `message.blobs` to the blob server and update
+              `message` with the result (so that the message can be
+              constructed).
+        3. (MD) If `receiver`'s acquaintance level is not _direct_ or if at
+           least one of the `messages` associated properties requires to
+           unarchive the conversation and the associated conversation visibility
+           is set to _archived_:
+           1. Begin a transaction with scope `CONTACT_SYNC` and the following
+              precondition:
+              1. If the contact for `receiver` no longer exists, log an error,
+                 discard `messages` and abort these steps.
+           2. Let `change` be the following changes as defined by
+              `sync.Contact`:
+              - `acquaintance_level` set to `DIRECT`,
+              - `conversation_visibility` set to `NORMAL` if the associated
+                 conversation visibility is currently _archived_,
+           3. Reflect a `ContactSync.Update` with `contact` set from `change`.
+           4. Commit the transaction and await acknowledgement.
+           5. Persist the `change` to the `receiver`.³
+        4. Run the _Bundled Messages Send Steps_ for `messages` with the
+           following additional properties added to each message:
+           - `receivers` set to `receiver`.
+    7.  If the the `receiver`'s acquaintance level is not _direct_, update it to
+        _direct_.
+    8.  If at least one of the `messages` associated properties requires to
+        unarchive the conversation and the associated conversation visibility is
+        set to _archived_, set it to _normal_.
+    9.  For each `message` of `messages`, add `message` to the associated
+        conversation or update a stateful message referred to by `message`
+        respectively.
+    10. If at least one of the `messages` associated properties requires to
+        bump the conversation's _last update_ timestamp, update it to the
+        current timestamp.
+
+    ¹: While the UI should not allow to submit a message in these states,
+    another device may alter the state just prior to submission, allowing to
+    hit these steps in rare circumstances.
+
+    ²: Rationale to not check for acquaintance level _deleted_ or whether the
+    receiver is blocked again is the legitimate use case of the user sending a
+    final message prior to blocking or removing a contact.
+
+    ³: This is intentionally done only for MD since the user may e.g.
+    immediately archive a conversation after submitting a message. This results
+    in both the message and the contact sync being queued as tasks whereas in
+    the non-MD case only the message task would be queued. In the MD case, the
+    conversation briefly flicks back to _unarchived_ once the message has been
+    sent but it immediately flicks back to _archived_ once the contact sync task
+    has been executed. But because no contact sync task is created in the non-MD
+    case, the message task would leave the conversation _unarchived_ which is
+    not intended by the user.
+
+    The following steps are defined as the _Group Messages Submit Steps_ which
+    must be invoked to submit a user-created message in a group conversation:
+
+    1. Let `messages` be a list of messages of the user to be added to
+       the conversation with each having the following properties:
+       - `id` set to a random message ID,
+       - `created-at` set to the current timestamp,
+       - `blobs` be an optional set of blobs that must be uploaded prior to
+         being able to construct the message,
+       - all necessary information to construct a _canonical_ message from it,
+       - all necessary information to construct a _specific_ message from it,
+         given the specific receiver.
+
+       Note: If only one set of informations to construct a message is provided,
+       this is considered both the _canonical_ and the _specific_ message
+       construction variant.
+    2. If the group is marked as _left_, discard `messages`, log a warning and
+       abort these steps.¹
+    3. For each `message` of `messages`, assign a random message ID to
+       `message.id`.
+    4. Schedule a persistent task to run the following steps:²
+       1. If the group does not exist or is marked as _left_, log a warning,
+          discard `messages` and abort these steps.
+       2. For each `message` of `messages`:
+          1. If `message.blob` is not defined, abort these sub-steps.
+          2. Upload all `message.blobs` to the blob server with the _persist_
+             flag and update `message` with the result (so that the message
+             can be constructed).
+       3. (MD) If at least one of the `messages` associated properties requires
+          to unarchive the conversation and the associated conversation
+          visibility is set to _archived_:
+          1. Begin a transaction with scope `GROUP_SYNC` and the following
+             precondition:
+             1. If the group does not exist or is marked as left, log a warning
+                that a group sync race occurred, discard `messages` and abort
+                these steps.
+          2. Let `change` be the following changes as defined by `sync.Group`:
+             - `conversation_visibility` set to `NORMAL` if the associated
+               conversation visibility is currently _archived_,
+          3. Reflect a `GroupSync.Update` with `group` set from `change`.
+          4. Commit the transaction and await acknowledgement.
+          5. Persist the `change` to the group.³
+       4. Run the _Bundled Messages Send Steps_ for `messages` with the
+          following additional properties added to each message:
+          - `receivers` set to the group's members.
+    5. If at least one of the `messages` associated properties requires to
+       unarchive the conversation and the associated conversation visibility is
+       set to _archived_, set it to _normal_.
+    6. For each `message` of `messages`, add `message` to the associated
+       conversation or update a stateful message referred to by `message`
+       respectively.
+    7. If at least one of the `messages` associated properties requires to
+       bump the conversation's _last update_ timestamp, update it to the current
+       timestamp.
+
+    ¹: While the UI should not allow to submit a message in these states,
+    another device may alter the state just prior to submission, allowing to
+    hit these steps in rare circumstances.
+
+    ²: Rationale to not check for acquaintance level _deleted_ or whether the
+    receiver is blocked again is the legitimate use case of the user sending a
+    final message prior to removing a group.
+
+    ³: This is intentionally done only for MD since the user may e.g.
+    immediately archive a conversation after submitting a message. This results
+    in both the message and the group sync being queued as tasks whereas in the
+    non-MD case only the message task would be queued. In the MD case, the
+    conversation briefly flicks back to _unarchived_ once the message has been
+    sent but it immediately flicks back to _archived_ once the group sync task
+    has been executed. But because no group sync task is created in the non-MD
+    case, the message task would leave the conversation _unarchived_ which is
+    not intended by the user.
+
+    The following steps are defined as the _Distribution List Messages Submit
+    Steps_ which must be invoked to submit a user-composed message in a
+    distribution list conversation:
+
+    1. Let `messages` be a list of messages of the user to be added to
+       the conversation with each having the following properties:
+       - `id` set to a random message ID,
+       - `created-at` set to the current timestamp,
+       - `blobs` be an optional set of blobs that must be uploaded prior to
+         being able to construct the message,
+       - all necessary information to construct a _canonical_ message from it,
+       - all necessary information to construct a _specific_ message from it,
+         given the specific receiver.
+
+       Note: If only one set of informations to construct a message is
+       provided, this is considered both the _canonical_ and the _specific_
+       message construction variant.
+    2. For each `message` of `messages`, assign a random message ID to
+       `message.id`.
+    3. Schedule a persistent task to run the following steps:
+       1. If the distribution list does not exist, log a warning, discard
+          `messages` and abort these steps.
+       2. For each `message` of `messages`:
+          1. If `message.blob` is not defined, abort these sub-steps.
+          2. Upload all `message.blobs` to the blob server with the _persist_
+             flag and update `message` with the result (so that the message
+             can be constructed).
+       3. (non-MD) Let `members` be all current members of the distribution
+          list. Remove any members with acquaintance level _deleted_ from
+          `members`.¹
+       4. (MD) If at least one of the `messages` associated properties requires
+          to unarchive the conversation and the associated conversation
+          visibility is set to _archived_:
+          1. Begin a transaction with scope `DISTRIBUTION_LIST_SYNC` and the
+             following precondition:
+             1. If the distribution list does not exist, log a warning that a
+                distribution list sync race occurred, discard `messages` and
+                abort these steps.
+          2. Let `members` be all current members of the distribution list.
+             Remove any members with acquaintance level _deleted_ from `members`.¹
+          3. Let `change` be the following changes as defined by
+             `sync.DistributionList`:
+             - `member_identities` from `members`,
+             - `conversation_visibility` set to `NORMAL` if the associated
+               conversation visibility is currently _archived_,
+          4. Reflect a `DistributionList.Update` with `distribution_list` set from `change`.
+          5. Commit the transaction and await acknowledgement.
+          6. Persist the `change` to the distribution list.²
+       5. Run the _Bundled Messages Send Steps_ for `messages` with the
+          following additional properties added to each message:
+          - `receivers` from `members`.
+    4. If at least one of the `messages` associated properties requires to
+       unarchive the conversation and the associated conversation visibility is
+       set to _archived_, set it to _normal_.
+    5. For each `message` of `messages`, add `message` to the associated
+       conversation or update a stateful message referred to by `message`
+       respectively.
+    6. If at least one of the `messages` associated properties requires to
+       bump the conversation's _last update_ timestamp, let `last-update-at` be
+       the current timestamp.
+    7. If `last-update-at` is defined, update the associated _last update_
+       timestamp of the conversation to `last-update-at`.
+    8. For each `member` of the distribution list:
+       1. Add each message of `messages` to the 1:1 conversation associated to
+          `member`.
+       2. If `last-update-at` is defined, update the associated _last update_
+          timestamp of the 1:1 conversation of `member` to `last-update-at`.
+
+    ¹: There should be no receivers in a distribution list that have
+    acquaintance level _deleted_, so the filtering is only done for safety.
+
+    2: This is intentionally done only for MD since the user may e.g.
+    immediately archive a conversation after submitting a message. This results
+    in both the message and the distribution list sync being queued as tasks
+    whereas in the non-MD case only the message task would be queued. In the MD
+    case, the conversation briefly flicks back to _unarchived_ once the message
+    has been sent but it immediately flicks back to _archived_ once the
+    distribution list sync task has been executed. But because no distribution
+    list sync task is created in the non-MD case, the message task would leave
+    the conversation _unarchived_ which is not intended by the user.
+
     ### Receiving
 
     The following steps are defined as _Common Group Receive Steps_ and will
@@ -1310,22 +2148,41 @@ e2e: &e2e
 
     1. Look up the group.
     2. If the group could not be found:
-        1. If the user is the creator of the group (as alleged by the message),
-           discard the message and abort these steps.
-        2. Send a [`group-sync-request`](ref:e2e.group-sync-request) to the
-           group creator, discard the message and abort these steps.
+       1. If the user is not the creator of the group, run the _Group Sync
+          Request Steps_.
+       2. Discard the message and abort these steps.
     3. If the group is marked as _left_:
-        1. If the user is the creator of the group, send a
-           [`group-setup`](ref:e2e.group-setup) with an empty members list back
-           to the sender, discard the message and abort these steps.
-        2. Send a [`group-leave`](ref:e2e.group-leave) back to the sender,
-           discard the message and abort these steps.
+       1. If the user is the creator of the group, run the _Bundled Messages
+          Send Steps_ with the following properties:
+          - `id` set to a random message ID,
+          - `created-at` set to the current timestamp,
+          - `receivers` set to the sender,
+          - to construct a
+            [`group-setup`](ref:e2e.group-setup) (wrapped by
+            [`group-creator-container`](ref:e2e.group-creator-container)) with
+            an empty members set
+       2. If the user is not the creator of the group, run the _Bundled
+          Messages Send Steps_ with the following properties:
+          - `id` set to a random message ID,
+          - `created-at` set to the current timestamp,
+          - `receivers` set to the sender,
+          - to construct a
+            [`group-leave`](ref:e2e.group-leave) (wrapped by
+            [`group-member-container`](ref:e2e.group-member-container))
+       3. Discard the message and abort these steps.
     4. If the sender is not a member of the group:
-       1. If the user is the creator of the group, send a
-          [`group-setup`](ref:e2e.group-setup) with an empty members list back
-          to the sender, discard the message and abort these steps.
-       2. Send a [`group-sync-request`](ref:e2e.group-sync-request) to the
-          group creator, discard the message and abort these steps.
+       1. If the user is the creator of the group, run the _Bundled Messages
+          Send Steps_ with the following properties:
+          - `id` set to a random message ID,
+          - `created-at` set to the current timestamp,
+          - `receivers` set to the sender,
+          - to construct a
+            [`group-setup`](ref:e2e.group-setup) (wrapped by
+            [`group-creator-container`](ref:e2e.group-creator-container)) with
+            an empty members set
+       2. If the user is not the creator of the group, run the _Group Sync
+          Request Steps_, then discard the message and abort these steps.
+       3. Discard the message and abort these steps.
 
     This rule and any exceptions will be referenced/defined explicitly for each
     message.
@@ -1366,6 +2223,44 @@ e2e: &e2e
 
     When Multi-Device is activated, all Blobs must be downloaded via the
     respective Blob Mirror unless explicitly stated otherwise.
+
+    #### Upload
+
+    The following steps are defined as the _Blob Upload Steps_:
+
+    1. Let `blob` be the following properties:
+       - `data` being the encrypted binary data to be uploaded,
+       - `scope` being either _public_ (for public facing blobs) or _local_ (for
+           device group facing blobs).
+       - `persist` being a mark (primarily for usage within groups).
+    2. (non-MD) Upload to the blob server from `blob`.
+    3. (MD) Upload to the blob mirror server from `blob` and the device group
+       information.
+    4. If the upload stream stalls for more than 10s, exceptionally abort these
+       steps.
+    5. Return the resulting blob ID.
+
+    #### Download
+
+    The following steps are defined as the _Blob Download Steps_:
+
+    1. Let `blob` be the following properties:
+       - `id` being the blob ID,
+       - `scope` being either _public_ (for public facing blobs) or _local_ (for
+           device group facing blobs).
+    2. (non-MD) Download the blob data from the blob server using `blob`.
+    3. (MD) Download the blob data from the blob mirror server using `blob` and
+       the device group information.
+    4. If the download stream stalls for more than 10s, exceptionally abort
+       these steps.
+    5. Schedule a volatile background task to run the following steps:
+       1. (non-MD) Request to mark the blob download from the blob server of
+          `blob.id` as _done_.
+       2. (MD) Request to mark the blob download from the blob mirror server of
+          `blob.id` as _done_ with the device group information.
+       3. If no response could be obtained within 10s or the request was
+          unsuccessful, log a warning.
+    6. Return the resulting blob data.
 
     ### Image, Audio, Video vs. File
 
@@ -1446,28 +2341,63 @@ e2e: &e2e
     Every time a message is being sent to a specific contact or a group of
     contacts, the sender needs to evaluate whether the profile picture needs to
     be sent. If the receiver of the message is a group, the evaluation needs to
-    be done for each contact of that group:
+    be done for each contact of that group.
 
-    1. If the message [does not allow user profile
-       distribution](ref:e2e#user-profile-distribution), abort these steps.
-    2. If the contact's Threema ID is `ECHOECHO` or a Threema Gateway ID
-       (starts with a `*`), abort these steps.
-    3. Ensure the app settings require the profile picture to be distributed to
-       all contacts or to that contact specifically. Otherwise, abort these
-       steps.
-    4. If no cached profile picture blob exists or the cache expired, encrypt
-       the profile picture with a random symmetric key and upload it to the blob
-       server. Cache both the blob ID and the key with an expiration date
-       of seven days.
-    5. If the currently cached blob ID equals the blob ID that was most
-       recently distributed to the contact, abort these steps.
-    6. Send a [`set-profile-picture`](ref:e2e.set-profile-picture) message to
-       the contact using the cached blob ID and key.
-    7. Store the cached blob ID as the most recently used blob ID for that
-       contact.
+    The following steps are defined as the _Profile Picture Distribution Steps_:
 
-    When the user changes the profile picture, remove the cached profile picture
-    (i.e. any associated blob ID and key).
+    1.  Let `type` be a message type associated to a message that is about to be
+        sent.
+    2.  Let `receiver` be the receiver of the message.
+    3.  If the properties associated to `type` do not require _User Profile
+        Distribution_, abort these steps without a message.
+    4.  If `receiver`'s Threema ID is `ECHOECHO` or a Threema Gateway ID (starts
+        with a `*`), abort these steps without a message.
+    5.  Let `cache` be the most recently distributed profile picture message
+        variant towards `receiver`, being either
+        - a blob ID if the user's profile picture was distributed via a
+          [`set-profile-picture`](ref:e2e.set-profile-picture) message, or
+        - a _remove_ mark and a timestamp if the user's profile picture was
+          removed via a
+          [`delete-profile-picture`](ref:e2e.delete-profile-picture) message.
+    6.  If the user has no profile picture or the settings indicate that the
+        user's profile picture should be shared with nobody or the settings
+        associated to `receiver` indicate that the profile picture should not be
+        distributed to it:
+        1. If `cache` is a _remove_ mark and indicates that the most recent
+           [`delete-profile-picture`](ref:e2e.delete-profile-picture) message
+           towards `receiver` was sent less than seven days ago, abort these
+           steps without a message.
+        2. Update the `cache` for `receiver` to a _remove_ mark with the current
+           timestamp.
+        3. Return the following properties:
+           - `id` being a random message ID,
+           - `created-at` set to the current timestamp,
+           - `receivers` set to `receiver`,
+           - to construct a
+           [`delete-profile-picture`](ref:e2e.delete-profile-picture).
+    7.  If there is a cached profile picture of the user and the associated blob
+        was uploaded more than seven days ago, remove the cached profile
+        picture.
+    8.  If `cache` contains a blob ID of the most recent
+        [`set-profile-picture`](ref:e2e.set-profile-picture) message sent
+        towards `receiver` that equals the blob ID of the cached profile
+        picture, abort these steps without a message.
+    9.  If there is no cached profile picture, encrypt the user's profile
+        picture with a random symmetric key and upload it to the blob server.
+        Store the key and the resulting blob ID as the cached profile picture of
+        the user.
+    10. Update the `cache` for `receiver` to the blob ID of the cached profile
+        picture.
+    11. Return the following properties:
+        - `id` being a random message ID,
+        - `created-at` set to the current timestamp,
+        - `receivers` set to `receiver`,
+        - to construct a [`set-profile-picture`](ref:e2e.set-profile-picture)
+          message using the cached profile picture's blob ID and key.
+
+    When the user changes the profile picture, run the steps associated to
+    update the user's profile with the new profile picture or the newly removed
+    profile picture.
 
     #### Profile Picture Sharing Settings
 
@@ -1573,13 +2503,14 @@ e2e: &e2e
        1.  [...]
        2.  Update the user's feature mask on the directory server.
        3.  Let `contacts` be the list of all contacts, including those with an
-           acquaintance level different than `DIRECT`.
+           acquaintance level different than _direct_.
        4.  Refresh the state, type and feature mask of all `contacts` from the
            directory server and make any changes persistent.
        5.  Let `solicited-contacts` be a copy of `contacts` filtered in the
            following way. For each `contact`:
            1. If the `contact`'s activity state is _invalid_ (i.e. it does not
-              exist or has been revoked), remove `contact` from the list.
+              exist or has been revoked), remove `contact` from the list and
+              abort these sub-steps.
            2. If `contact` is part of a group that is not marked as _left_, add
               `contact` to the list and abort these sub-steps.
            3. Lookup the 1:1 conversation with `contact` and let `last-update`
@@ -1589,14 +2520,18 @@ e2e: &e2e
            5. Remove `contact` from the list.
        6.  If FS is supported by the client, run the _FS Refresh Steps_ with
            `solicited-contacts`.
-       7.  Send a `contact-request-profile-picture` message to each
-           contact of `solicited-contacts`.
+       7.  For each `contact` of `solicited-contacts` run the _Bundled Messages
+           Send Steps_ with the following properties:
+           - `id` being a random message ID,
+           - `created-at` set to the current timestamp,
+           - `receivers` set to `contact`,
+           - to construct a
+             [`contact-request-profile-picture`](ref:e2e.contact-request-profile-picture)
        8.  For each group not marked as _left_:
            1. If the user is the creator of the group, trigger a _group sync_
               for that group.
-           2. If the user is not the creator of the group, send a
-              [`group-sync-request`](ref:e2e.group-sync-request) message to the
-              creator of the group.
+           2. If the user is not the creator of the group, run the _Group Sync
+              Request Steps_ for the group.
        9. [...]
     3. Commit the application state and exit the setup phase.
 
@@ -1608,14 +2543,19 @@ e2e: &e2e
 
     1. [...]
     2. Update the user's feature mask on the directory server.
-    3. Let `contacts` be the list of all contacts (regardless of the acquaintance level).
+    3. Let `contacts` be the list of all contacts (regardless of the
+       acquaintance level).
     4. Refresh the state, type and feature mask of all `contacts` from the
        directory server and make any changes persistent.
     5. For each `contact` of `contacts`:
        1. If an associated FS session with `contact` exists and any of the FS
           states is unknown or any of the stored FS versions (local or remote)
-          is unknown, terminate the FS session by sending a
-          `csp-e2e-fs.Terminate` message with cause `RESET`.
+          is unknown, terminate the FS session by running the _Bundled Messages
+          Send Steps_ with the following properties:
+          - `id` being a random message ID,
+          - `created-at` set to the current timestamp,
+          - `receivers` set to `contact`,
+          - to construct a `csp-e2e-fs.Terminate` message with cause `RESET`.
     6. [...]
 
     Note: Reactivation of FS due to disabling multi-device should run the
@@ -1715,15 +2655,20 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: No
         - Outgoing: No
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Send to Threema Gateway ID group creator: N/A
+
+      When the user submits this message in a 1:1, group or distribution list,
+      _Rick Astley - Never Gonna Give You Up_ must be played and looped
+      indefinitely on the user's device.
 
       When receiving this message, a mechanical finger must be unlatched from
       the device and boop the receiving user on the nose.
@@ -1741,13 +2686,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: Yes
-        - Manual: Yes
+      - Delivery receipts: Yes
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: Text
       - Deletable by: User and sender
@@ -1761,21 +2707,47 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: Yes
+      - Delivery receipts: N/A
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: Text
       - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
 
-      When receiving this message as a 1:1 conversation message:
+      When the user submits this message in a 1:1, group or distribution list
+      conversation:
+
+      1. Split the provided text into multiple segments with at most 6000 UTF-8
+         encoded bytes while preserving grapheme clusters at boundaries and let
+         `text-segments` be the result.¹
+      2. Run the _Messages Submit Steps_ with `messages` set from
+         `text-segments` (for a group, wrapped by
+         [`group-member-container`](ref:e2e.group-member-container)).
+
+      ¹: The UI may warn the user that the message will be split if the UTF-8
+      encoded text exceeds 6000 bytes and request confirmation before
+      submission.
+
+      When reflected from another device as an incoming or outgoing 1:1
+      message:
 
       1. Add the message to the associated 1:1 conversation.
+
+      When receiving this message as a 1:1 message:
+
+      1. Add the message to the associated 1:1 conversation.
+
+      When reflected from another device as an incoming or outgoing group
+      message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Add the message to the associated group conversation.
 
       When receiving this message as a group message (wrapped by
       [`group-member-container`](ref:e2e.group-member-container)):
@@ -1795,8 +2767,8 @@ e2e: &e2e
       An image message.
 
       Note: This message is deprecated and may be phased out eventually. When
-            sending images, use the [`file`](ref:e2e.file) message with the
-            rendering type `0x01` (media).
+      sending images, use the [`file`](ref:e2e.file) message with the rendering
+      type `0x01` (media).
 
       **Properties**:
       - Kind: 1:1
@@ -1806,13 +2778,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
-        - Outgoing: Yes
+        - Outgoing: N/A
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: Yes
-        - Manual: Yes
+      - Delivery receipts: Yes
+      - Reactions: Yes
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
@@ -1826,11 +2799,22 @@ e2e: &e2e
             nonce=<deprecated-image.nonce>,
           )
 
+      This message is deprecated and may no longer be submitted.
+
+      When reflected from another device as an incoming message:
+
+      1. Run the _Common Deprecated Image Receive Steps_.
+
       When receiving this message:
 
-      1. If desired, download the image data from the blob server and request
-         the blob to be removed.
-      2. Add the message to the associated 1:1 conversation.
+      1. Run the _Common Deprecated Image Receive Steps_.
+
+      The following steps are defined as the _Common Deprecated Image Receive
+      Steps_:
+
+      1. Add the message to the associated 1:1 conversation.
+      2. If this message is eligible for auto-download, schedule downloading the
+         image data from the blob server and request the blob to be removed.
     fields:
       - _doc: |-
           Blob ID to obtain the image data.
@@ -1851,8 +2835,8 @@ e2e: &e2e
       An image message (only used by groups).
 
       Note: This message is deprecated and may be phased out eventually. When
-            sending images, use the [`file`](ref:e2e.file) message with the
-            rendering type `0x01` (media).
+      sending images, use the [`file`](ref:e2e.file) message with the rendering
+      type `0x01` (media).
 
       **Properties**:
       - Kind: Group
@@ -1862,13 +2846,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
-        - Outgoing: Yes
+        - Outgoing: N/A
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: Yes
+      - Delivery receipts: N/A
+      - Reactions: Yes
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
@@ -1879,14 +2864,27 @@ e2e: &e2e
 
           XSalsa20-Poly1305(key=<deprecated-group-image.key>, nonce=00..01)
 
+      This message is deprecated and may no longer be submitted.
+
+      When reflected from another device as an incoming message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the _Common Deprecated Group Image Receive Steps_.
+
       When receiving this message (wrapped by
       [`group-member-container`](ref:e2e.group-member-container)):
 
       1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
-      2. Download thumbnail and file (if desired) data from the blob server. Do
-         not request the blobs to be removed.
-      3. Add the message to the associated group conversation.
+      2. Run the _Common Deprecated Group Image Receive Steps_.
+
+      The following steps are defined as the _Common Deprecated Group Image
+      Receive Steps_:
+
+      1. Add the message to the associated group conversation.
+      2. If this message is eligible for auto-download, schedule downloading the
+         image data from the blob server but do not request the blob to be
+         removed.
     fields:
       - _doc: |-
           Blob ID to obtain the image data.
@@ -1914,13 +2912,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: Yes
-        - Manual: Yes
+      - Delivery receipts: Yes
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User and sender
@@ -1934,17 +2933,53 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: Yes
+      - Delivery receipts: N/A
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
+
+      When the user submits this message in a 1:1, group or distribution list
+      conversation:
+
+      1. Let `location` be the provided location with the following properties:
+         - `latitude` being a WGS-84 string,
+         - `longitude` being a WGS-84 string,
+         - `accuracy` being a floating point number or undefined,
+         - `address` being an address of a point of interest or undefined,
+         - `name` being a name for the point of interest or undefined,
+      2. If `location.name` is defined but `location.address` is not defined,
+         discard `location`, log an error and abort these steps.¹
+      3. If the UTF-8 encoded bytes of `location.address` or `location.name`
+         exceed 512 bytes, discard `location`, log an error and abort these
+         steps.¹
+      4. Run the _Messages Submit Steps_ with `messages` set from `location`
+         (for a group, wrapped by
+         [`group-member-container`](ref:e2e.group-member-container)).
+
+      ¹: The UI should prevent submission in these cases.
+
+      When reflected from another device as an incoming or outgoing 1:1
+      message:
+
+      1. Add the message to the associated 1:1 conversation.
+
+      When receiving this message as a 1:1 message:
+
+      1. Add the message to the associated 1:1 conversation.
+
+      When reflected from another device as an incoming or outgoing group
+      message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Add the message to the associated group conversation.
 
       When receiving this message as a group message (wrapped by
       [`group-member-container`](ref:e2e.group-member-container)):
@@ -2011,13 +3046,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
-        - Outgoing: Yes
+        - Outgoing: N/A
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: Yes
-        - Manual: Yes
+      - Delivery receipts: Yes
+      - Reactions: Yes
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
@@ -2031,13 +3067,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
-        - Outgoing: Yes
+        - Outgoing: N/A
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: Yes
+      - Delivery receipts: N/A
+      - Reactions: Yes
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
@@ -2047,20 +3084,35 @@ e2e: &e2e
 
           XSalsa20-Poly1305(key=<deprecated-audio.key>, nonce=00..01)
 
-      When receiving this message as a 1:1 conversation message:
+      This message is deprecated and may no longer be submitted.
 
-      1. If desired, download the audio data from the blob server and request
-         the blob to be removed.
-      2. Add the message to the associated 1:1 conversation.
+      When reflected from another device as an incoming 1:1 message:
+
+      1. Run the _Common Deprecated Audio Receive Steps_.
+
+      When receiving this message as a 1:1 message:
+
+      1. Run the _Common Deprecated Audio Receive Steps_.
+
+      When reflected from another device as an incoming group message (wrapped
+      by [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the _Common Deprecated Audio Receive Steps_.
 
       When receiving this message as a group message (wrapped by
       [`group-member-container`](ref:e2e.group-member-container)):
 
       1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
-      2. If desired, download the audio data from the blob server. Do not
-         request the blob to be removed.
-      3. Add the message to the associated group conversation.
+      2. Run the _Common Deprecated Audio Receive Steps_.
+
+      The following steps are defined as the _Common Deprecated Audio Receive
+      Steps_:
+
+      1. Add the message to the associated conversation.
+      2. If this message is eligible for auto-download, schedule downloading the
+         audio data from the blob server. Only request the blob to be removed if
+         the associated conversation is a 1:1 conversation.
     fields:
       - _doc: |-
           Audio duration in seconds.
@@ -2096,13 +3148,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
-        - Outgoing: Yes
+        - Outgoing: N/A
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: Yes
-        - Manual: Yes
+      - Delivery receipts: Yes
+      - Reactions: Yes
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
@@ -2116,13 +3169,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
-        - Outgoing: Yes
+        - Outgoing: N/A
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: Yes
+      - Delivery receipts: N/A
+      - Reactions: Yes
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
@@ -2137,20 +3191,35 @@ e2e: &e2e
 
           XSalsa20-Poly1305(key=<deprecated-video.key>, nonce=00..02)
 
-      When receiving this message as a 1:1 conversation message:
+      This message is deprecated and may no longer be submitted.
 
-      1. Download thumbnail and video (if desired) data from the blob server and
-         request the blobs to be removed.
-      2. Add the message to the associated 1:1 conversation.
+      When reflected from another device as an incoming 1:1 message:
+
+      1. Run the _Common Deprecated Audio Receive Steps_.
+
+      When receiving this message as a 1:1 message:
+
+      1. Run the _Common Deprecated Audio Receive Steps_.
+
+      When reflected from another device as an incoming group message (wrapped
+      by [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the _Common Deprecated Audio Receive Steps_.
 
       When receiving this message as a group message (wrapped by
       [`group-member-container`](ref:e2e.group-member-container)):
 
       1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
-      2. Download thumbnail and video (if desired) data from the blob server. Do
-         not request the blobs to be removed.
-      3. Add the message to the associated group conversation.
+      2. Run the _Common Deprecated Audio Receive Steps_.
+
+      The following steps are defined as the _Common Deprecated Video Receive
+      Steps_:
+
+      1. Add the message to the associated conversation.
+      2. If this message is eligible for auto-download, schedule downloading the
+         video data from the blob server. Only request the blob to be removed if
+         the associated conversation is a 1:1 conversation.
     fields:
       - _doc: |-
           Video duration in seconds.
@@ -2190,13 +3259,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: Yes
-        - Manual: Yes
+      - Delivery receipts: Yes
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: Caption
       - Deletable by: User and sender
@@ -2210,13 +3280,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: Yes
+      - Delivery receipts: N/A
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: Caption
       - Deletable by: User and sender
@@ -2230,21 +3301,51 @@ e2e: &e2e
 
           XSalsa20-Poly1305(key=<file.key>, nonce=00..02)
 
-      When receiving this message as a 1:1 conversation message:
+      When the user submits this message in a 1:1, group or distribution list
+      conversation:
 
-      1. Download thumbnail and file (if desired) data from the blob server and
-         request the blobs to be removed.
-      2. Add the message to the associated 1:1 conversation.
+      1. Let `file` be all necessary properties to construct this message.
+      2. If the UTF-8 encoded bytes of `file.name` exceed 256 bytes, discard
+         `file`, log an error and abort these steps.¹
+      3. If the UTF-8 encoded bytes of `file.caption` exceed 6000 bytes, discard
+         `file`, log an error and abort these steps.¹
+      4. Run the _Messages Submit Steps_ with `messages` set from `file` (for a
+         group, wrapped by
+         [`group-member-container`](ref:e2e.group-member-container)).
+
+      ¹: The UI should prevent submission in these cases.
+
+      When reflected from another device as an incoming or outgoing 1:1
+      message:
+
+      1. Run the _Common File Receive Steps_.
+
+      When receiving this message as a 1:1 message:
+
+      1. Run the _Common File Receive Steps_.
+
+      When reflected from another device as an incoming or outgoing group
+      message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the _Common File Receive Steps_.
 
       When receiving this message as a group message (wrapped by
       [`group-member-container`](ref:e2e.group-member-container)):
 
       1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
-      2. Download thumbnail and file (if desired) data from the blob server. Do
-         not request the blobs to be removed.
-      3. Add the message to the associated group conversation.
+      2. Run the _Common File Receive Steps_.
 
+      The following steps are defined as the _Common File Receive Steps_:
+
+      1. Add the message to the associated conversation.
+      2. Schedule auto-downloading the thumbnail data from the blob server. Only
+         request the blob to be removed if the associated conversation is a 1:1
+         conversation.
+      3. If this message is eligible for auto-download, schedule downloading the
+         file data from the blob server. Only request the blob to be removed if
+         the associated conversation is a 1:1 conversation.
     fields:
       - _doc: |-
           UTF-8, JSON-encoded object with the following fields:
@@ -2322,13 +3423,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: Yes
-        - Manual: Yes
+      - Delivery receipts: Yes
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-383))
@@ -2342,19 +3444,47 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: Yes
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: Yes
+      - Delivery receipts: N/A
+      - Reactions: Yes
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-383))
       - Send to Threema Gateway ID group creator: If capture is enabled
 
-      When receiving this message as a 1:1 conversation message:
+      When the user submits this message in a 1:1 or group conversation:
+
+      1. Let `poll` be all necessary properties to construct this message.
+      2. If the UTF-8 encoded bytes of `poll.description` exceed 256 bytes,
+         discard `poll`, log an error and abort these steps.¹
+      3. If the UTF-8 encoded bytes of any of the `poll.choices` exceeds 256
+         bytes, discard `poll`, log an error and abort these steps.¹
+      4. JSON encode `poll` and let `encoded-poll` be the UTF-8 encoded result.
+      5. If `encoded-poll` exceeds 6000 bytes, discard `poll` (and
+         `encoded-poll`), log an error and abort these steps.¹
+      6. Run the _Messages Submit Steps_ with `messages` set from
+         `encoded-poll` (for a group, wrapped by
+         [`group-member-container`](ref:e2e.group-member-container)).
+
+      ¹: The UI should prevent submission in these cases.
+
+      When reflected from another device as an incoming or outgoing 1:1
+      message:
+
+      1. Run the _Common Poll Setup Receive Steps_.
+
+      When receiving this message as a 1:1 message:
+
+      1. Run the _Common Poll Setup Receive Steps_.
+
+      When reflected from another device as an incoming or outgoing group
+      message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
 
       1. Run the _Common Poll Setup Receive Steps_.
 
@@ -2457,13 +3587,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No¹
+      - Bump _last update_: No¹
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `poll-vote`)
       - Deletable by: User only (TODO(SE-383))
@@ -2476,19 +3607,48 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No¹
+      - Bump _last update_: No¹
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: No
+      - Delivery receipts: N/A
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `poll-vote`)
       - Deletable by: User only (TODO(SE-383))
       - Send to Threema Gateway ID group creator: If capture is enabled
 
-      When receiving this message as a 1:1 conversation message:
+      ¹: A [`poll-vote`](ref:e2e.poll-vote) updates the poll state initiated by
+      a corresponding [`poll-setup`](ref:e2e.poll-setup), meaning it does not
+      produce a new visible message.
+
+      When the user submits this message in a 1:1 or group conversation by
+      casting a vote:
+
+      1. Let `vote` be all necessary properties to construct this message.
+      2. JSON encode `vote` and let `encoded-vote` be the UTF-8 encoded result.
+      3. If `encoded-vote` exceeds 6000 bytes, discard `vote` (and
+         `encoded-vote`), log an error and abort these steps.¹
+      4. Run the _Messages Submit Steps_ with `messages` set from
+         `encoded-vote` (for a group, wrapped by
+         [`group-member-container`](ref:e2e.group-member-container)).
+
+      ¹: The UI should prevent submission in these cases.
+
+      When reflected from another device as an incoming or outgoing 1:1
+      message:
+
+      1. Run the _Common Poll Vote Receive Steps_.
+
+      When receiving this message as a 1:1 message:
+
+      1. Run the _Common Poll Vote Receive Steps_.
+
+      When reflected from another device as an incoming or outgoing group
+      message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
 
       1. Run the _Common Poll Vote Receive Steps_.
 
@@ -2543,20 +3703,20 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: Yes
+      - Bump _last update_: Yes
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: Abort call
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-384))
       - Send to Threema Gateway ID group creator: N/A
 
-      [//]: # "When sending: TODO(SE-102)"
-      [//]: # "When receiving: TODO(SE-102)"
+      [//]: # "When submit / receiving / reflected: TODO(SE-102)"
     fields:
       - _doc: |-
           UTF-8, JSON-encoded object with the following fields:
@@ -2585,24 +3745,28 @@ e2e: &e2e
       - Flags:
         - `0x01`: Send push notification.
         - `0x20`: Short-lived server queuing.
-      - User profile distribution: Only if accepting (`action`: `1`)
+      - User profile distribution: Only if accepted (`action`: `1`)
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No¹
+      - Bump _last update_: No¹
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: Abort call
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-384))
       - Send to Threema Gateway ID group creator: N/A
 
-      [//]: # "When sending: TODO(SE-102)"
-      [//]: # "When receiving: TODO(SE-102)"
+      ¹: A [`call-answer`](ref:e2e.call-answer) updates the call state initiated
+      by a corresponding [`call-offer`](ref:e2e.call-offer), meaning it does not
+      produce a new visible message.
+
+      [//]: # "When submit / receiving / reflected: TODO(SE-102)"
     fields:
       - _doc: |-
           UTF-8, JSON-encoded object with the following fields:
@@ -2647,13 +3811,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: No¹
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: No
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: N/A
@@ -2662,8 +3827,7 @@ e2e: &e2e
       ¹: This message does not trigger any kind of reaction and adding ICE
       candidates again has no ill-effect.
 
-      [//]: # "When sending: TODO(SE-102)"
-      [//]: # "When receiving: TODO(SE-102)"
+      [//]: # "When submit / receiving / reflected: TODO(SE-102)"
     fields:
       - _doc: |-
           UTF-8, JSON-encoded object with the following fields:
@@ -2700,20 +3864,28 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: If no corresponding `call-offer` can be found¹
+      - Bump _last update_: If no corresponding `call-offer` can be found¹
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-384))
       - Send to Threema Gateway ID group creator: N/A
 
-      [//]: # "When sending: TODO(SE-102)"
-      [//]: # "When receiving: TODO(SE-102)"
+      ¹: A [`call-hangup`](ref:e2e.call-hangup) usually updates the call state
+      initiated by a corresponding [`call-offer`](ref:e2e.call-offer), meaning
+      it does not produce a new visible message. However, the
+      [`call-offer`](ref:e2e.call-offer) uses the _Short-lived server queuing_
+      flag and therefore may be lost. In that case, the
+      [`call-hangup`](ref:e2e.call-hangup) does create a visible _call missed_
+      message.
+
+      [//]: # "When submit / receiving / reflected: TODO(SE-102)"
     fields:
       - _doc: |-
           UTF-8, JSON-encoded object. If this field contains zero bytes, assume
@@ -2739,20 +3911,24 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No¹
+      - Bump _last update_: No¹
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: Abort call
       - Edit applies to: N/A
       - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
-      [//]: # "When sending: TODO(SE-102)"
-      [//]: # "When receiving: TODO(SE-102)"
+      ¹: A [`call-ringing`](ref:e2e.call-ringing) updates the call state
+      initiated by a corresponding [`call-offer`](ref:e2e.call-offer), meaning
+      it does not produce a new visible message.
+
+      [//]: # "When submit / receiving / reflected: TODO(SE-102)"
     fields:
       - _doc: |-
           UTF-8, JSON-encoded object. If this field contains zero bytes, assume
@@ -2776,11 +3952,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Only for reactions¹
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes²
         - _Sent_ update: No
       - Delivery receipts: No, that would be silly!
+      - Reactions: No (also silly)
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `delivery-receipt`)
       - Deletable by: N/A
@@ -2789,7 +3968,7 @@ e2e: &e2e
       ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
 
       ²: When the message is being _read_ and _read_ receipts are disabled, an
-      `IncomingMessageUpdate` will be reflected instead.
+      `d2d.IncomingMessageUpdate` will be reflected instead.
 
       **Properties (Group)**:
       - Kind: Group
@@ -2798,13 +3977,16 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Only for reactions¹
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes. When the message is being _read_ and _read_ receipts
-          are disabled, reflect an `IncomingMessageUpdate` (since no
+          are disabled, reflect an `d2d.IncomingMessageUpdate` (since no
           `delivery-receipt` is sent in this case).
         - _Sent_ update: No
       - Delivery receipts: No, that would be silly!
+      - Reactions: No (also silly)
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `delivery-receipt`)
       - Deletable by: N/A
@@ -2812,42 +3994,120 @@ e2e: &e2e
 
       ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
 
-      When receiving this message as a 1:1 conversation status update message:
+      When the user opens a 1:1 conversation or marks it as _read_ by another
+      mechanism:
 
-      1. For each message id of `message-ids`, look up the associated message
-         in the conversation and let `messages` be the result. Ignore message
-         ids where an associated message could not be found.
-      2. For each `message` of `messages`, apply and replace the status or
-         reaction of the sender to `message` by following the replacement logic
-         outlied in the `status` field.
+      1. Let `message-ids` be all message IDs associated to messages of the
+         conversation that require _automatic_ delivery receipts and which are
+         not yet marked as _read_.
+      2. Split the provided `message-ids` into bundles of at most 875 message
+         IDs and let `message-ids-bundles` be the result.¹
+      3. Run the _Messages Submit Steps_ with `messages` set to create one or
+         more [`delivery-receipt`](ref:e2e.delivery-receipt)s from
+         `message-ids-bundles` with status `0x02`.
 
-      When receiving this message as a group status update message (wrapped by
-      [`group-member-container`](ref:e2e.group-member-container):
+      ¹: Each message ID has 8 bytes, divided by at most 7000 bytes.
 
-      1. If `status` is not `0x03` or `0x04`, discard the message and abort
-         these steps.
-      2. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+      When reflected from another device as an incoming 1:1 message:
+
+      1. Run the _Common Incoming Delivery Receipt Steps_.
+
+      When reflected from another device as an outgoing 1:1 message:
+
+      1. Run the _Common Outgoing Delivery Receipt Steps_.
+
+      When receiving this message as a 1:1 message:
+
+      1. Run the _Common Incoming Delivery Receipt Steps_.
+
+      When reflected from another device as an incoming group message (wrapped
+      by [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. If `status` is not `0x03` or `0x04` (i.e. not a reaction), log a
+         notice, discard the message and abort these steps.
+      2. Run the _Common Incoming Delivery Receipt Steps_.
+
+      When reflected from another device as an outgoing group message (wrapped
+      by [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. If `status` is not `0x03` or `0x04` (i.e. not a reaction), log a
+         notice, discard the message and abort these steps.
+      2. Run the _Common Outgoing Delivery Receipt Steps_.
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
-      3. For each message id of `message-ids`, look up the associated message
-         in the group conversation and let `messages` be the result. Ignore
-         message ids where an associated message could not be found.
-      4. For each `message` of `messages`, apply and replace the reaction of the
-         sender to `message`.
+      2. If `status` is not `0x03` or `0x04` (i.e. not a reaction), log a
+         notice, discard the message and abort these steps.
+      3. Run the _Common Incoming Delivery Receipt Steps_.
+
+      The following steps are defined as the _Common Incoming Delivery Receipt
+      Steps_:
+
+      1. For each `message-id` of `message-ids`:
+         1. Lookup the associated message for `message-id` in the associated
+            conversation and let `referred-message` be the result.
+         2. If `referred-message` is not defined, abort these sub-steps.
+         3. If the associated conversation is a 1:1 conversation and the
+            original sender of `referred-message` is not the user, abort these
+            sub-steps.
+         4. If `status` is `0x01` or `0x02` (i.e. a delivery receipt) and
+            `referred-message` allows for delivery receipts (see the associated
+            _Delivery receipts_ property), apply and replace the delivery
+            receipt of the sender to `referred-message` with the associated
+            timestamp set to the message's (the `delivery-receipt`'s)
+            `created-at`.
+         5. If `status` is `0x03` or `0x04` (i.e. a reaction) and
+            `referred-message` is reactable (see the associated _Reactions_
+            property), apply and replace any existing reaction of the sender to
+            `referred-message` with the reaction timestamp set to the message's
+            (the `delivery-receipt`'s) `created-at`.¹
+
+      The following steps are defined as the _Common Outgoing Delivery Receipt
+      Steps_:
+
+      1. For each `message-id` of `message-ids`:
+         1. Lookup the associated message for `message-id` in the associated
+            conversation and let `referred-message` be the result.
+         2. If `referred-message` is not defined, abort these sub-steps.
+         3. If the associated conversation is a 1:1 conversation and the
+            original sender of `referred-message` is the user, abort these
+            sub-steps.
+         4. If `status` is `0x01` or `0x02` (i.e. a delivery receipt) and
+            `referred-message` allows for delivery receipts (see the associated
+            _Delivery receipts_ property), apply and replace the delivery
+            receipt of the user to `referred-message` with the associated
+            timestamp set to the message's (the `delivery-receipt`'s)
+            `created-at`.
+         5. If `status` is `0x03` or `0x04` (i.e. a reaction) and
+            `referred-message` is reactable (see the associated _Reactions_
+            property), apply and replace any existing reaction of the user to
+            `referred-message` with the reaction timestamp set to the message's
+            (the `delivery-receipt`'s) `created-at`.¹
+
+      ¹: Note that the deprecated reactions transmitted by a `delivery-receipt`
+      always replace **all existing reactions** of the respective sender,
+      including new-style reactions transmitted by a `csp_e2e.Reaction` message.
     fields:
       - _doc: |-
           Message status:
 
           - `0x01`: Message was received.
           - `0x02`: Message was read.
-          - `0x03`: Message has been explicitly acknowledged.
-          - `0x04`: Message has been explicitly declined.
+          - `0x03`: **Deprecated** Maps to the 👍 emoji (`1F44D`).
+          - `0x04`: **Deprecated** Maps to the 👎 emoji (`1F44E`).
+
+          Note that only the `0x01` and `0x02` variants are considered true
+          _delivery receipts_ whereas the deprecated `0x03` and `0x04` variants
+          are considered _reactions_ (just like `csp_e2e.Reaction`).
 
           The following replacement logic is to be applied on a message's
           status when displayed:
 
-          1. `0x03` or `0x04` replace each other and groups listed below,
-          2. `0x02` replaces groups listed below,
-          3. `0x01` replaces the unlisted _created_ status.
+          1. `0x02` replaces groups listed below,
+          2. `0x01` replaces the unlisted _created_ status.
         name: status
         type: u8
       - _doc: |-
@@ -2869,13 +4129,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: No¹
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: No
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: N/A
@@ -2887,7 +4148,12 @@ e2e: &e2e
       When the user is currently _typing_ while composing a **new**¹ message in
       an associated conversation:
 
-      1. Send this message with `is-typing` set to `1`.
+      1. Schedule a volatile task to run the _Bundled Messages Send Steps_ with
+         the following properties:
+         - `id` set to a random message ID,
+         - `created-at` set to the current timestamp,
+         - `receivers` set to the targeted receiver,
+         - to construct this message with `is-typing` set to `1`.
       2. Start a _user is typing_ timer in the conversation to rerun these
          steps in 10s.
 
@@ -2897,9 +4163,23 @@ e2e: &e2e
       1. If no _user is typing_ timer is running for the conversation, abort
          these steps.
       2. Stop the _user is typing_ timer of the conversation.
-      3. Send this message with `is-typing` set to `0`.
+      3. Schedule a volatile task to run the _Bundled Messages Send Steps_ with
+         the following properties:
+         - `id` set to a random message ID,
+         - `created-at` set to the current timestamp,
+         - `receivers` set to the targeted receiver,
+         - to construct this message with `is-typing` set to `0`.
+
+      When reflected from another device as an incoming message:
+
+      1. Run the _Common Typing Indicator Receive Steps_.
 
       When receiving this message:
+
+      1. Run the _Common Typing Indicator Receive Steps_.
+
+      The following steps are defined as the _Common Typing Indicator Receive
+      Steps_:
 
       1. If `is-typing` is `1`, start a timer to display that the sender is
          typing in the associated conversation for the next 15s.
@@ -2926,13 +4206,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
-        - Incoming: Yes (unused)
+        - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `set-profile-picture`)
       - Deletable by: N/A (can just send a `delete-profile-picture`)
@@ -2945,13 +4226,14 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: No
+      - Delivery receipts: N/A
+      - Reactions: No
       - When rejected: N/A¹
       - Edit applies to: N/A (can just send another `set-profile-picture`)
       - Deletable by: N/A (can just send a `delete-profile-picture`)
@@ -2966,26 +4248,41 @@ e2e: &e2e
 
           XSalsa20-Poly1305(key=<set-profile-picture.key>, nonce=00..01)
 
-      When reflected from another device as an outgoing contact control message:
+      When reflected from another device as an outgoing 1:1 message:
 
-      1. Store the enclosed blob ID as the most recently used blob ID for that
-         contact.
+      1. Update the most recently distributed profile picture cache for the
+         contact to the enclosed blob ID.
 
-      When receiving this message as a contact control message:
+      When receiving this message as a 1:1 message:
 
       1. Download the picture from the blob server but do not request the blob
          to be removed. Store the profile picture.
       2. Store the picture as the _contact-defined_ profile picture and run the
          _Contact Profile Picture Selection Steps_.
 
-      When receiving this message as a group control message (wrapped by
+      When receiving this message as a group message (wrapped by
       [`group-creator-container`](ref:e2e.group-creator-container)):
 
       1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
       2. Download the picture from the blob server but do not request the blob
-         to be removed.
-      3. Store the profile picture and and apply it to the group.
+         to be removed. Let `profile-picture` be the result.
+      3. Let `group` be a snapshot of the current group state.
+      4. If `group.profile-picture` is defined and equals `profile-picture`
+         (i.e. no changes), discard the message and abort these steps.
+      5. (MD) Run the following sub-steps:
+         1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+            precondition:
+            1. If the group does not exist or the group is marked as _left_, log
+               a warning that a group sync race occurred, discard the message
+               and abort these steps.
+         2. (MD) Let `group` be a snapshot of the current group state.
+         3. (MD) If `group.profile-picture` is defined and equals
+            `profile-picture`, log a warning that a group sync race occurred.
+         4. (MD) Reflect a `GroupSync.Update` with `group` set to contain
+            `profile_picture` set to `profile-picture.
+         5. (MD) Commit the transaction and await acknowledgement.
+      6. Store the profile picture and and apply it to the group.
     fields:
       - _doc: |-
           Blob ID to obtain the image data.
@@ -3012,13 +4309,14 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
-        - Incoming: Yes (unused)
+        - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `delete-profile-picture`)
       - Deletable by: N/A
@@ -3031,13 +4329,14 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: No
+      - Delivery receipts: N/A
+      - Reactions: No
       - When rejected: N/A¹
       - Edit applies to: N/A (can just send another `delete-profile-picture`)
       - Deletable by: N/A
@@ -3047,17 +4346,42 @@ e2e: &e2e
       received, re-sending the group profile picture state, implicitly triggered
       by FS `Reject` receive steps.
 
-      When receiving this message as a contact control message:
+      When reflected from another device as an incoming 1:1 message:
 
       1. Remove the _contact-defined_ profile picture and run the _Contact
          Profile Picture Selection Steps_.
 
-      When receiving this message as a group control message (wrapped by
+      When reflected from another device as an outgoing 1:1 message:
+
+      1. Update the most recently distributed profile picture cache for the
+         contact to a _remove_ mark with the reflected timestamp.
+
+      When receiving this message as a 1:1 message:
+
+      1. Remove the _contact-defined_ profile picture and run the _Contact
+         Profile Picture Selection Steps_.
+
+      When receiving this message as a group message (wrapped by
       [`group-creator-container`](ref:e2e.group-creator-container)):
 
       1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
-      2. Remove the profile picture of the group.
+      2. Let `group` be a snapshot of the current group state.
+      3. If `group.profile-picture` is not defined (i.e. no change), discard the
+         message and abort these steps.
+      4. (MD) Run the following sub-steps:
+         1. Begin a transaction with scope `GROUP_SYNC` and the following
+            precondition:
+            1. If the group does not exist or the group is marked as _left_, log
+               a warning that a group sync race occurred, discard the message
+               and abort these steps.
+         2. Let `group` be a snapshot of the current group state.
+         3. If `group.profile-picture` is not defined, log a warning that a
+            group sync race occurred.
+         4. Reflect a `GroupSync.Update` with `group` set to contain
+            `profile_picture` set to be removed.
+         5. Commit the transaction and await acknowledgement.
+      5. Remove the profile picture of the group.
 
   contact-request-profile-picture:
     _group: Contact and Group Control
@@ -3076,25 +4400,32 @@ e2e: &e2e
       - Exempt from blocking: No
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: No
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: No
+      - Reactions: No
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
-      When receiving this message via CSP or reflection:
+      When reflected from another device as an incoming message:
 
-      1. Look up the sender contact. If the contact could not be found, abort
-         these steps.
-      2. If the sender is not eligible for reception of the profile picture,
-         abort these steps.
-      3. Clear the cached profile picture blob ID for the sender.
+      1. Run the _Common Request Profile Picture Receive Steps_.
+
+      When receiving this message:
+
+      1. Run the _Common Request Profile Picture Receive Steps_.
+
+      The following steps are defined as the _Common Request Profile Picture
+      Receive Steps_:
+
+      1. Purge the most recently distributed profile picture cache for the
+         sender.
 
   group-setup:
     _group: Contact and Group Control
@@ -3120,102 +4451,123 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
+      - Unarchive: No¹
+      - Bump _last update_: No²
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: No
-      - When rejected: N/A¹
+      - Delivery receipts: N/A
+      - Reactions: No
+      - When rejected: N/A³
       - Edit applies to: N/A (can just send another `group-setup`)
       - Deletable by: N/A (can just send another `group-setup`)
       - Send to Threema Gateway ID group creator: N/A
 
-      ¹: For the group creator it will be handled as if `group-sync-request` was
+      ¹: A newly created group's conversation visibility is implicitly _normal_
+      and therefore not _archived_. For the sake of simplicity and
+      sender/receiver symmetry, further updates to the group should not alter
+      the conversation visibility.
+
+      ²: A newly created group is implicitly created with _last update_ set to
+      the current timestamp. For the sake of simplicity and sender/receiver
+      symmetry, no further updates to the group should bump _last update_.
+
+      ³: For the group creator it will be handled as if `group-sync-request` was
       received, re-sending the group state, implicitly triggered by FS `Reject`
       receive steps.
 
-      When sending this message as a response to a single receiver, see the
-      handling logic that triggered this message for details. No further
-      steps are required.
-
-      When sending this message to all group members:
-
-      1.  If the user is not the creator of the group, abort these steps.
-      2.  Create a `group-setup` message with an empty members list and send it
-          to the group members that are to be removed from the group.
-      3.  Let `members` be the current member list of the group. Remove all
-          members from this list that are to be removed from the group. Add all
-          members to this list that are to be added to the group. (i.e. this
-          list represents the updated member set with all removed and added
-          members.)
-      4.  For each member of `members`, create a contact with acquaintance level
-          _group_ if not already present in the contact list.
-      5.  Create a `group-setup` message with the members present in
-          `members`. Send this message to all group members present in
-          `members`.
-      6.  For each newly added `member` in `members`,
-          additionally:
-          1. If the group has a profile picture, send a
-             [`set-profile-picture`](ref:e2e.set-profile-picture) group control
-             message to the newly added `member`.
-          2. If the group has no profile picture, send a
-             [`delete-profile-picture`](ref:e2e.delete-profile-picture) group
-             control message to the newly added `member`.
-          3. If a group call is currently considered running within this group,
-             run the _Group Call Refresh Steps_ and let `chosen-call` be the
-             result. If `chosen-call` is defined, repeat
-             `csp-e2e.GroupCallStart` that is associated to `chosen-call` with
-             the _created_ timestamp set to the `started_at` value associated to
-             `chosen-call`.
-      7.  If the action of the user triggering these steps was to disband or
-          delete the group (and consequently `members` is empty):
-          1. If the user is currently participating in a group call of this
-             group, trigger leaving the call.
-          2. Mark the group as _left_ and abort these steps. Persist this
-             mark even if the group and its history is being removed by the
-             user. When disbanding but not deleting, the client should persist
-             the previous member setup, ignoring the content of `member` to give
-             the user the possibility to view the message history and the member
-             setup prior to the user being removed. The user must not be able to
-             send any more messages to the group but may be allowed to _reopen_
-             the group with the previous member setup, when desired.
-      8.  Update the group with the given `members`.
-      9.  If the group was previously marked as _left_, remove the _left_ mark.
-      10. Run the _Rejected Messages Refresh Steps_ for the group.
-
-      When receiving this message as a group control message (wrapped by
+      When receiving this message as a group message (wrapped by
       [`group-creator-container`](ref:e2e.group-creator-container)):
 
       1. Let `members` be the given member list. Remove all duplicate entries
-         from `members`. Remove the sender from `members` if present.
+         from `members`. Remove the sender (creator) from `members` if present.
       2. Look up the group.
-      3. If the group could not be found:
-         1. If the user is not present in `members`, abort these steps.
-      4. If the group could be found and `members` is empty or does not include
-         the user:
-         1. If the user is currently participating in a group call of this
+      3. If the group could be found:
+         1. Let `group` be a snapshot of the current group state.
+         2. If the group is marked as _left_ and `members` is empty (i.e. no
+            change), discard the message and abort these steps.
+         3. If the group is not marked as _left_:
+            1. Let `current-members` be a copy of `group.members`.
+            2. Add the user to `current-members`.
+            3. If `current-members` equals `members` (i.e. no change), discard
+               the message and abort these steps.
+      4. If `members` does not include the user:
+         1. If the group could not be found, discard the message and abort these
+            steps.
+         2. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+            precondition:
+            1. If the group does not exist or the group is marked as _left_,
+               discard the message and abort these steps.
+         3. (MD) Reflect a `GroupSync.Update` with `group` set to contain the
+            `user_state` set to `KICKED`.
+         4. (MD) Commit the transaction and await acknowledgement.
+         5. If the user is currently participating in a group call of this
             group, trigger leaving the call.
-         2. Mark the group as _left_ and abort these steps.
-            Persist this mark even if the group and its history is being removed
-            by the user. The client should persist the previous member setup,
-            ignoring the content of `members` to give the user the possibility
-            to view the message history and the member setup prior to the user
-            being removed. The user must not be able to send any more messages
-            to the group but should be able to clone the group with the previous
-            member setup, when desired.
-      5. For each member of `members`, create a contact with acquaintance
-         level _group_ if not already present in the contact list. (Do not add
-         the user's own identity as a contact.)
-      6. Create or update the group with the given `members` plus the sender
-         (creator).
-      7. If the group was previously marked as _left_, remove the _left_ mark.
-      8. Run the _Rejected Messages Refresh Steps_ for the group.
-      9. If the user is currently participating in a group call of this group
-         and there are group call participants which are no longer members of
-         the group, remove these participants from the group call (handle them
-         as if they left the call).
+         6. Mark the group as _left_.
+         7. Persist the previous member setup so that the group can be cloned.
+         8. Run the _Rejected Messages Refresh Steps_ for the group.
+      5. If `members` includes the user.
+         1.  (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+             precondition:
+             1. If the sender (creator) contact does not exist, log an error,
+                discard the message and abort these steps.
+         2.  Run the _Valid Contacts Lookup Steps_ for `members` and
+             overwrite `members` with the result.
+         3.  For each `contact-or-init` of `members`:
+             1. If `contact-or-init` indicates that the _contact is the user_,
+                remove the entry from `members` and abort these sub-steps.
+             2. If `contact-or-init` indicates that the _contact is invalid_,
+                remove the entry from `members`, log a warning and abort these
+                sub-steps.
+         4.  (MD) Let `pending-reflect-acks` be an empty list.
+         5.  For each `contact-or-init` of `members`:
+             1. If `contact-or-init` is an existing contact, abort these
+                sub-steps.
+             2. (MD) Reflect a `ContactSync.Create` with `contact` set from
+                `contact-or-init` and the following additional properties:
+                - `created_at` set to now,
+                - `acquaintance_level` set to `GROUP`,
+                - all policies and categories set to their defaults.
+             3. (MD) Add the pending reflect acknowledgement to
+                `pending-reflect-acks`.
+         6.  (MD) Await all `pending-reflect-acks`.
+         7.  Let `added-members` be a copy of `members`.
+         8.  Let `group` be a snapshot of the current group state or undefined
+             if the group does not exist.
+         9.  If `group` is not defined:
+             1. Let `removed-members` be an empty list.
+             2. (MD) Reflect a `GroupSync.Create` with `group` set to contain:
+                - `group_identity`,
+                - `created_at`,
+                - `name` empty,
+                - `user_state` set to `MEMBER`,
+                - `profile_picture` empty,
+                - `member_identities` from `members`,
+                - all policies and categories set to their defaults.
+         10. If `group` is defined:
+             1. Remove all members from `added-members` that are in
+                `group.members`.
+             2. Let `removed-members` be a copy of `group.members`.
+             3. Remove all members from `removed-members` that are in `members`.
+             4. (MD) Reflect a `GroupSync.Update` with `member_state_changes`
+                constructed from `added-members` and `removed-members` and
+                `group` set to contain the following additional properties:
+                - `user_state` set to `MEMBER`,
+                - `member_identities` from `members`.
+         11. (MD) Commit the transaction and await acknowledgement.
+         12. If the user is currently participating in a group call of this
+             group, remove all `removed-members` participants from the group
+             call (handle them as if they left the call) and unblock all pending
+             group call flows for `added-members`.
+         13. Persist newly added contacts from `members`.
+         14. Persist the newly created group or the member changes to the group.
+             If the group was previously marked as _left_, remove the _left_
+             mark.
+         15. TODO(SE-510): Schedule fetching gateway-defined profile picture
+             here for each newly added contact from `members`, if necessary.
+         16. If `added-members` or `removed-members` is not empty, run the
+             _Rejected Messages Refresh Steps_ for the group.
     fields:
       - _doc: |-
           A set of Threema IDs defining group membership. The creator's
@@ -3238,13 +4590,14 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: No
+      - Delivery receipts: N/A
+      - Reactions: No
       - When rejected: N/A¹
       - Edit applies to: N/A (can just send another `group-name`)
       - Deletable by: N/A (can just send an empty name)
@@ -3254,12 +4607,27 @@ e2e: &e2e
       received, re-sending the group name, implicitly triggered by FS `Reject`
       receive steps.
 
-      When receiving this message as a group control message (wrapped by
+      When receiving this message as a group message (wrapped by
       [`group-creator-container`](ref:e2e.group-creator-container)):
 
       1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
          message has been discarded, abort these steps.
-      2. Update the group with the given name.
+      2. Let `group` be a snapshot of the current group state.
+      3. If `group.name` equals `name` (i.e. no change), discard the message and
+         abort these steps.
+      4. (MD) Run the following sub-steps:
+         1. Begin a transaction with scope `GROUP_SYNC` and the following
+            precondition:
+            1. If the group does not exist or the group is marked as _left_, log
+               a warning that a group sync race occurred, discard the message
+               and abort these steps.
+         2. Let `group` be a snapshot of the current group state.
+         3. If `group.name` equals `name`, log a warning that a group sync race
+            occurred.
+         4. Reflect a `GroupSync.Update` with `group` set to contain
+            `name` set to `name`.
+         5. Commit the transaction and await acknowledgement.
+      5. Update the group's name with `name`.
     fields:
       - _doc: |-
           UTF-8 encoded string containing the group's name.
@@ -3285,13 +4653,14 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: Yes
         - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: No
+      - Delivery receipts: N/A
+      - Reactions: No
       - When rejected: N/A¹
       - Edit applies to: N/A
       - Deletable by: N/A
@@ -3300,35 +4669,40 @@ e2e: &e2e
       ¹: Re-send of `group-leave` implicitly triggered by FS `Reject` receive
       steps due to _Common Group Receive Steps_ invocation.
 
-      When sending this message:
-
-      1. If the user is participating in a group call of this group, trigger
-         leaving the call.
-      2. Mark the group as _left_. Persist this mark
-         even if the group and its history is being removed by the user. The
-         client should persist the previous member setup of the group to give
-         the user the possibility to view the message history and the member
-         setup prior to the user leaving the group. The user must not be able to
-         send any more messages to the group but should be able to clone the
-         group with the previous member setup, when desired.
-      3. Run the _Rejected Messages Refresh Steps_ for the group.
-
-      When receiving this message as a group control message (wrapped by
+      When receiving this message as a group message (wrapped by
       [`group-member-container`](ref:e2e.group-member-container)):
 
-      1. If the sender is the creator of the group, discard the message and
-         abort these steps.
+      1. If the sender is the creator of the group, log a warning, discard the
+         message and abort these steps.
       2. Look up the group.
       3. If the group could not be found or is marked as _left_:
           1. If the user is the creator of the group (as alleged by the
              message), discard the message and abort these steps.
-          2. Send a [`group-sync-request`](ref:e2e.group-sync-request) to the
-             group creator, discard the message and abort these steps.
-      4. Remove the member from the local group.
-      5. Run the _Rejected Messages Refresh Steps_ for the group.
-      6. If the user and the sender are participating in a group call of this
-         group, remove the sender from the group call (handle it as if the
-         sender left the call).
+          2. Run the _Group Sync Request Steps_ for the group, discard the
+             message and abort these steps.
+      4. Let `group` be a snapshot of the current group state.
+      5. If `group.members` does not include the sender, discard the message and
+         abort these steps.
+      6. (MD) Run the following sub-steps:
+         1. Begin a transaction with scope `GROUP_SYNC` and the following
+            precondition:
+            1. If the group does not exist or the group is marked as _left_, log
+               a warning that a group sync race occurred, discard the message
+               and abort these steps.
+         2. Let `group` be a snapshot of the current group state.
+         3. If `group.members` does not include the sender, log a warning that a
+            group sync race occurred.
+         4. Let `updated-members` be a copy of `group.members`.
+         5. Remove the sender from `updated-members`.
+         6. Reflect a `GroupSync.Update` with `member_state_changes`
+            set to the single entry of the sender leaving and `group` set to
+            contain `member_identities` set from `updated-members`.
+         7. Commit the transaction and await acknowledgement.
+      7. If the user is currently participating in a group call of this group,
+         remove the sender from the group call (handle it as if the sender left
+         the call).
+      8. Remove the sender from the group.
+      9. Run the _Rejected Messages Refresh Steps_ for the group.
 
   group-sync-request:
     _group: Contact and Group Control
@@ -3343,13 +4717,14 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: No
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
-        - Incoming: Yes (unused)
-        - Outgoing: Yes (unused)
+        - Incoming: Yes
+        - Outgoing: Yes
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: N/A
-        - Manual: No
+      - Delivery receipts: N/A
+      - Reactions: No
       - When rejected: N/A¹
       - Edit applies to: N/A
       - Deletable by: N/A
@@ -3357,37 +4732,46 @@ e2e: &e2e
 
       ¹: Implicitly ignored by FS `Reject` receive steps.
 
-      When creating this message:
+      The following steps are defined as the _Group Sync Request Steps_:
 
-      1. If the last `group-sync-request` towards the receiver for this
-         particular group (uniquely identified by group id and creator) is less
-         than 1h ago, log a notice and abort these steps.¹
+      1. If the user is the creator of the group, log an error and abort these
+         steps.
+      2. If the group is marked as _recently resynced_ for the user, log a
+         notice and abort these steps.¹
+      3. Run the _Bundled Messages Send Steps_ with the following properties:
+         - `id` set to a random message ID,
+         - `created-at` set to the current timestamp,
+         - `receivers` set to the creator of the group,
+         - to construct this message (wrapped by
+           [`group-member-container`](ref:e2e.group-member-container))
+      4. Mark the group as _recently resynced_ for the user for 1h.
 
-      When receiving this message as a group control message (wrapped by
-      [`group-creator-container`](ref:e2e.group-creator-container)):
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
 
       1. Look up the group. If the group could not be found, discard the message
          and abort these steps.
-      2. If the last `group-sync-request` from the sender for this particular
-         group (uniquely identified by group id and creator) is less than 1h
-         ago, log a notice, discard the message and abort these steps.¹
-      3. If the group is marked as _left_ or the sender is not a member of the
-         group, send a [`group-setup`](ref:e2e.group-setup) with an empty
-         members list back to the sender and abort these steps.
-      4. Send a [`group-setup`](ref:e2e.group-setup) message with the current
-         group members, followed by a [`group-name`](ref:e2e.group-name)
-         message to the sender.
-      5. If the group has a profile picture, send a
-         [`set-profile-picture`](ref:e2e.set-profile-picture) group control
-         message to the sender.
-      6. If the group has no profile picture, send a
-         [`delete-profile-picture`](ref:e2e.delete-profile-picture) group
-         control message to the sender.
-      7. If a group call is currently considered running within this group,
-         run the _Group Call Refresh Steps_ and let `chosen-call` be the result.
-         If `chosen-call` is defined, repeat `csp-e2e.GroupCallStart` that is
-         associated to `chosen-call` with the _created_ timestamp set to the
-         `started_at` value associated to `chosen-call`.
+      2. If the user is not the creator of the group, discard the message and
+         abort these steps.
+      3. If the group is marked as _recently resynced_ for the sender, log a
+         notice, discard the message and abort these steps.¹
+      4. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+         precondition:
+         1. If the group does not exist, log a warning that a group sync race
+            occurred, discard the message and abort these steps.
+      5. If the group is marked as _left_ or the sender is not a member of the
+         group, run the _Bundled Messages Send Steps_ with the following
+         properties:
+         - `id` set to a random message ID,
+         - `created-at` set to the current timestamp,
+         - `receivers` set to the sender,
+         - to construct a [`group-setup`](ref:e2e.group-setup) (wrapped by
+           [`group-creator-container`](ref:e2e.group-creator-container)) with an
+           empty members set.
+      6. If the group is not marked as _left_ and the sender is a member of the
+         group, run the _Active Group State Resync Steps_ with four random message
+         IDs and `target-members` set to the sender.
+      7. (MD) Commit the transaction and await acknowledgement.
 
       ¹: This is a precaution since a `group-sync-request` is automatically
       triggered and creates an automatic response. This can easily lead to
@@ -3407,13 +4791,14 @@ e2e: &e2e
       - Exempt from blocking: Yes
       - Implicit _direct_ contact creation: N/A (blocking is circumvented)
       - Protect against replay: Yes
+      - Unarchive: No
+      - Bump _last update_: No
       - Reflect:
         - Incoming: No
         - Outgoing: No
         - _Sent_ update: No
-      - Delivery receipts:
-        - Automatic: No
-        - Manual: No
+      - Delivery receipts: N/A
+      - Reactions: N/A
       - When rejected: N/A (not sent by clients)
       - Edit applies to: N/A
       - Deletable by: N/A

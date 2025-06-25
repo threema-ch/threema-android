@@ -22,7 +22,6 @@
 package ch.threema.app.multidevice.wizard.steps
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,6 +31,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,12 +44,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -87,16 +85,7 @@ class LinkNewDeviceResultFragment : LinkNewDeviceFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ThreemaTheme {
-                    // We have to change the current color of the status bar once,
-                    // because the compose threema theme sets it too
-                    val context = LocalContext.current
-                    LaunchedEffect(Unit) {
-                        val window = (context as Activity).window
-                        window.statusBarColor = Color.Transparent.toArgb()
-                    }
-
                     val linkingResult by viewModel.linkingResult.collectAsStateWithLifecycle()
-
                     LinkNewDeviceResultContent(
                         modifier = Modifier.fillMaxSize(),
                         linkingResult = linkingResult ?: LinkingResult.Failure.Unexpected,
@@ -128,7 +117,7 @@ fun LinkNewDeviceResultContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = dimensionResource(R.dimen.spacing_four_grid_unit))
+                .padding(horizontal = dimensionResource(R.dimen.grid_unit_x4))
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -165,6 +154,7 @@ fun LinkNewDeviceResultContent(
             Spacer(Modifier.height(GridUnit.x6))
 
             ButtonPrimary(
+                modifier = Modifier.fillMaxWidth(),
                 onClick = onClickedPrimary,
                 text = stringResource(linkingResult.primaryButtonTextRes),
                 maxLines = 2,

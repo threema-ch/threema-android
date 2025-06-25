@@ -17,13 +17,35 @@
         -->
         <domain includeSubdomains="true">threema.ch</domain>
         <pin-set>
-            <pin digest="SHA-256">8kTK9HP1KHIP0sn6T2AFH3Bq+qq3wn2i/OJSMjewpFw=</pin>
-            <pin digest="SHA-256">KKBJHJn1PQSdNTmoAfhxqWTO61r8O8bPi/JeGtP/6gg=</pin>
-            <pin digest="SHA-256">h2gHawxPZyMCiZSkJN0dQ4RsDxowVuTmuiNQyjeU+Sk=</pin>
-            <pin digest="SHA-256">HXqz8rMr6nBDdUX3CdyIwln8ym3qFUBwv4QGyMN2uEg=</pin>
-            <pin digest="SHA-256">2Vpy8qUQCqc2+Lg6BgRO8G6e6vh7NmvVHTljfwP/Pfk=</pin>
             <pin digest="SHA-256">vGQZ8hm2h+km+q7rnJ7kF9S17BwSY0rbhwjz6nIupf0=</pin>
-            <pin digest="SHA-256">jsQHAHKQ2oOf3rvMn9GJVIKslkhLpODGOMPSxgLeIyo=</pin>
+            <pin digest="SHA-256">3L0bKTNfTwVUCjYqqhZXJIO03qC00bSnuxZFsb09OUo=</pin>
+            <pin digest="SHA-256">NN6Lb+2AE7CN3HWZKoWOe6mmHROOnywWoKZYWL1oHIU=</pin>
+            <pin digest="SHA-256">efJCZofFPR3oV/bBk0wmehqnhy3Vv+s9P+3sjhHem/E=</pin>
+            <pin digest="SHA-256">2Vpy8qUQCqc2+Lg6BgRO8G6e6vh7NmvVHTljfwP/Pfk=</pin>
+            <pin digest="SHA-256">KKBJHJn1PQSdNTmoAfhxqWTO61r8O8bPi/JeGtP/6gg=</pin>
+        </pin-set>
+        <!-- TrustKit Android API -->
+        <!-- Enforce pinning validation -->
+        <trustkit-config
+            enforcePinning="true"
+            disableDefaultReportUri="true">
+            <!-- Reporting URL for pin validation reports -->
+            <report-uri>https://3ma.ch/pinreport</report-uri>
+        </trustkit-config>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <!--
+            Note that these pins are not used for CSP. Pinning the public key is part of the
+            protocol.
+        -->
+        <domain includeSubdomains="true">threema.com</domain>
+        <pin-set>
+            <pin digest="SHA-256">saKwtUPx8bCj9CW+c55nU2jb4aOpr0vBD8XMJveXq34=</pin>
+            <pin digest="SHA-256">nZWRY8rNSEqxjQDQjaunWlUL+YBOTK1xN5Bb0wMq/K0=</pin>
+            <pin digest="SHA-256">5AfgU7xFqhx5AS69cQZlAGv6JpmLm0A+Z6yBrLPOCP8=</pin>
+            <pin digest="SHA-256">GGSYKwkV3h6SRIY16Ixsh8LEKuGuhx3B4CamRde4xgY=</pin>
+            <pin digest="SHA-256">oD0JGdy32wZtoUT4n9ac3HLOgEosnx2kq+qaJnmtsQk=</pin>
+            <pin digest="SHA-256">j4n4RTr0MLfQ3gBmONIFreXDq5/Kkb2oquVTmq0n5pI=</pin>
         </pin-set>
         <!-- TrustKit Android API -->
         <!-- Enforce pinning validation -->
@@ -54,9 +76,9 @@
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">test.threema.ch</domain>
         <pin-set>
+            <pin digest="SHA-256">Dvvb0s1E8Y2tG67GoyzIkmJNAebvOqQjz4TnPMq3yhI=</pin>
             <pin digest="SHA-256">/mH2CVdSxVBMuKiRHplBP2GTFWs/l+KXHriAxRFNsaw=</pin>
             <pin digest="SHA-256">bmsGGaIGEs1HWAUIE082NSPYTURvChScDmE7PjL+5RQ=</pin>
-            <pin digest="SHA-256">Dvvb0s1E8Y2tG67GoyzIkmJNAebvOqQjz4TnPMq3yhI=</pin>
         </pin-set>
         <!-- TrustKit Android API -->
         <!-- Enforce pinning validation -->

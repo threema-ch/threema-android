@@ -53,6 +53,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -78,11 +79,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
 import ch.threema.app.activities.ComposeMessageActivity;
-import ch.threema.app.activities.ContactDetailActivity;
+import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.adapters.ContactListAdapter;
 import ch.threema.app.asynctasks.AndroidContactLinkPolicy;
@@ -97,7 +99,6 @@ import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.TextWithCheckboxDialog;
 import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.emojis.EmojiTextView;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.ConversationListener;
@@ -110,14 +111,17 @@ import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LockingSwipeRefreshLayout;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
@@ -134,6 +138,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
@@ -277,13 +282,9 @@ public class ContactsSectionFragment
                 stopSwipeRefresh();
 
                 if (serviceManager != null) {
-                    try {
-                        AvatarCacheService avatarCacheService = serviceManager.getAvatarCacheService();
-                        //clear the cache
-                        avatarCacheService.clear();
-                    } catch (FileSystemNotPresentException e) {
-                        logger.error("Exception", e);
-                    }
+                    AvatarCacheService avatarCacheService = serviceManager.getAvatarCacheService();
+                    //clear the cache
+                    avatarCacheService.clear();
                 }
                 updateList();
             }
@@ -406,8 +407,7 @@ public class ContactsSectionFragment
         @Override
         public void onChanged(String key, Object value) {
             if (isAdded() && !isDetached()) {
-                // getString() will fail if the fragment is no longer attached to an activity
-                if (TestUtil.compare(key, getString(R.string.preferences__sync_contacts))) {
+                if (preferenceService != null && preferenceService.getContactSyncPolicySetting().preferenceKey.equals(key)) {
                     if (resumePauseHandler != null) {
                         resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_PULL_TO_REFRESH, runIfActiveUpdatePullToRefresh);
                     }
@@ -734,11 +734,16 @@ public class ContactsSectionFragment
 
     private void showWorkTabs() {
         if (workTabLayout != null && listView != null) {
+
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                (View) workTabLayout.getParent(),
+                InsetSides.horizontal()
+            );
+
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) listView.getLayoutParams();
             ((ViewGroup) workTabLayout.getParent()).setVisibility(View.VISIBLE);
             layoutParams.topMargin = getResources().getDimensionPixelSize(R.dimen.header_contact_section_work_height);
             listView.setLayoutParams(layoutParams);
-
             setStickyInitialLayoutTopMargin(layoutParams.topMargin);
         }
     }
@@ -792,8 +797,6 @@ public class ContactsSectionFragment
                 this.lockAppService = this.serviceManager.getLockAppService();
             } catch (MasterKeyLockedException e) {
                 logger.debug("Master Key locked!");
-            } catch (ThreemaException e) {
-                logger.error("Exception", e);
             }
         }
     }
@@ -818,6 +821,11 @@ public class ContactsSectionFragment
             }
 
             listView = fragmentView.findViewById(android.R.id.list);
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                listView,
+                InsetSides.horizontal(),
+                new SpacingValues(null, null, R.dimen.grid_unit_x10, null)
+            );
             listView.setOnItemClickListener(this);
             listView.setDividerHeight(0);
             listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -884,10 +892,22 @@ public class ContactsSectionFragment
                 listView.addHeaderView(headerView, null, false);
 
                 View footerView = View.inflate(getActivity(), R.layout.footer_contact_section, null);
+                ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                    footerView,
+                    InsetSides.horizontal(),
+                    new SpacingValues(R.dimen.grid_unit_x1, null, R.dimen.grid_unit_x1_5, null)
+                );
                 this.contactsCounterButton = footerView.findViewById(R.id.contact_counter_text);
                 listView.addFooterView(footerView, null, false);
 
-                headerView.findViewById(R.id.share_container).setOnClickListener(v -> shareInvite());
+                final RelativeLayout shareContainer = headerView.findViewById(R.id.share_container);
+                shareContainer.setOnClickListener(v -> shareInvite());
+
+                ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                    shareContainer,
+                    InsetSides.horizontal(),
+                    SpacingValues.symmetric(R.dimen.listitem_contacts_margin_top_bottom, R.dimen.listitem_contacts_margin_left_right)
+                );
             } else {
                 workTabLayout = fragmentView.findViewById(R.id.work_contacts_tab_layout);
                 workTabLayout.addOnTabSelectedListener(onTabSelectedListener);
@@ -902,6 +922,11 @@ public class ContactsSectionFragment
 
             this.floatingButtonView = fragmentView.findViewById(R.id.floating);
             this.floatingButtonView.setOnClickListener(this::onFABClicked);
+            ViewExtensionsKt.applyDeviceInsetsAsMargin(
+                this.floatingButtonView,
+                InsetSides.horizontal(),
+                SpacingValues.all(R.dimen.floating_button_margin)
+            );
         }
         return fragmentView;
     }
@@ -1090,15 +1115,15 @@ public class ContactsSectionFragment
         }
 
         Intent intent = new Intent(getActivity(), ComposeMessageActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
+        intent.putExtra(AppConstants.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
 
         getActivity().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
     }
 
     private void openContact(@Nullable View view, String identity) {
         Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
 
         getActivity().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL);
     }
@@ -1318,7 +1343,7 @@ public class ContactsSectionFragment
             serviceManager.getExcludedSyncIdentitiesService(),
             serviceManager.getDHSessionStore(),
             serviceManager.getNotificationService(),
-            serviceManager.getDatabaseServiceNew()
+            serviceManager.getDatabaseService()
         );
 
         return new DialogMarkContactAsDeletedBackgroundTask(
@@ -1480,8 +1505,10 @@ public class ContactsSectionFragment
 
                         final String spammerIdentity = contactModel.getIdentity();
                         if (checked) {
-                            ThreemaApplication.requireServiceManager().getBlockedIdentitiesService().blockIdentity(spammerIdentity, null);
-                            ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerIdentity);
+                            serviceManager.getBlockedIdentitiesService()
+                                .blockIdentity(spammerIdentity, null);
+                            serviceManager.getExcludedSyncIdentitiesService()
+                                .excludeFromSync(spammerIdentity, TriggerSource.LOCAL);
 
                             try {
                                 new EmptyOrDeleteConversationsAsyncTask(
@@ -1533,9 +1560,5 @@ public class ContactsSectionFragment
             default:
                 break;
         }
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
     }
 }

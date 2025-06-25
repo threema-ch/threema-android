@@ -32,7 +32,7 @@ class MessageReceiverExtensionsTest {
     @Test
     fun `direct chat with gateway contact is considered a gateway chat`() {
         val messageReceiverMock = mockk<ContactMessageReceiver>()
-        val contactModel = ContactModel("*TESTING", MOCK_PUBLIC_KEY)
+        val contactModel = ContactModel.create("*TESTING", MOCK_PUBLIC_KEY)
         every { messageReceiverMock.contact } returns contactModel
 
         assertTrue(messageReceiverMock.isGatewayChat())
@@ -41,7 +41,7 @@ class MessageReceiverExtensionsTest {
     @Test
     fun `direct chat with non-gateway contact is not considered a gateway chat`() {
         val messageReceiverMock = mockk<ContactMessageReceiver>()
-        val contactModel = ContactModel("TESTUSER", MOCK_PUBLIC_KEY)
+        val contactModel = ContactModel.create("TESTUSER", MOCK_PUBLIC_KEY)
         every { messageReceiverMock.contact } returns contactModel
 
         assertFalse(messageReceiverMock.isGatewayChat())
@@ -62,6 +62,6 @@ class MessageReceiverExtensionsTest {
     }
 
     companion object {
-        private val MOCK_PUBLIC_KEY = ByteArray(0)
+        private val MOCK_PUBLIC_KEY = ByteArray(32)
     }
 }

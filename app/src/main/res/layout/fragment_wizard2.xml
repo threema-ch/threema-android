@@ -6,22 +6,22 @@
     android:gravity="center_horizontal">
 
     <TextView
-        style="@style/WizardSubTitleText"
         android:id="@+id/scooter"
-        android:layout_alignParentTop="true"
+        style="@style/WizardSubTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/wizard_paragraph_height"
         android:gravity="center_horizontal"
-        android:text="@string/new_wizard_nickname_explain"
-        android:layout_marginTop="@dimen/wizard_paragraph_height" />
+        android:text="@string/new_wizard_nickname_explain" />
 
     <LinearLayout
         android:id="@+id/wizard_edit1_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/wizard_paragraph_height"
         android:layout_below="@id/scooter"
+        android:layout_marginTop="@dimen/wizard_paragraph_height"
         android:orientation="horizontal">
 
         <ImageView
@@ -31,8 +31,8 @@
             app:srcCompat="@drawable/ic_person_outline" />
 
         <ch.threema.app.emojis.EmojiEditText
-            style="@style/WizardEditText"
             android:id="@+id/wizard_edit1"
+            style="@style/WizardEditText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/wizard_default_view_height"
             android:hint="@string/new_wizard_hint_enter_nickname"
@@ -45,10 +45,10 @@
         android:id="@+id/disabled_by_policy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:layout_below="@+id/wizard_edit1_layout"
-        android:textSize="14sp"
+        android:layout_marginTop="4dp"
         android:text="@string/disabled_by_policy"
+        android:textSize="14sp"
         android:visibility="gone" />
 
 </RelativeLayout>

@@ -39,6 +39,7 @@ import java.util.Map;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.GlobalAppState;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
@@ -266,7 +267,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 
             if (!this.active) {
                 logger.info("cleanupConnection: Connection not active");
-            } else if (lingerUntil > curTime && !ThreemaApplication.isIsDeviceIdle()) {
+            } else if (lingerUntil > curTime && !GlobalAppState.isDeviceIdle()) {
                 logger.info("cleanupConnection: Connection must linger for another {} milliseconds", lingerUntil - curTime);
             } else if (downloadService != null && downloadService.isDownloading()) {
                 logger.info("cleanupConnection: Still downloading - linger on");

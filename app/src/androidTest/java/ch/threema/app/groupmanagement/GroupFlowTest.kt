@@ -24,6 +24,9 @@ package ch.threema.app.groupmanagement
 import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.GroupFlowDispatcher
+import ch.threema.domain.protocol.connection.ConnectionState
+import ch.threema.domain.protocol.connection.ConnectionStateListener
+import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 
 enum class SetupConfig {
@@ -72,6 +75,7 @@ abstract class GroupFlowTest {
     protected fun getGroupFlowDispatcher(
         setupConfig: SetupConfig,
         taskManager: TaskManager,
+        connection: ServerConnection = ConnectionLoggedIn,
     ) = GroupFlowDispatcher(
         serviceManager.modelRepositories.contacts,
         serviceManager.modelRepositories.groups,
@@ -92,7 +96,46 @@ abstract class GroupFlowTest {
         serviceManager.apiService,
         serviceManager.apiConnector,
         serviceManager.fileService,
-        serviceManager.databaseServiceNew,
+        serviceManager.databaseService,
         taskManager,
+        connection,
     )
+
+    data object ConnectionDisconnected : ServerConnection {
+
+        override val isRunning: Boolean = false
+
+        override val connectionState: ConnectionState = ConnectionState.DISCONNECTED
+
+        override val isNewConnectionSession: Boolean = false
+
+        override fun disableReconnect() {}
+
+        override fun start() {}
+
+        override fun stop() {}
+
+        override fun addConnectionStateListener(listener: ConnectionStateListener) {}
+
+        override fun removeConnectionStateListener(listener: ConnectionStateListener) {}
+    }
+
+    data object ConnectionLoggedIn : ServerConnection {
+
+        override val isRunning: Boolean = true
+
+        override val connectionState: ConnectionState = ConnectionState.LOGGEDIN
+
+        override val isNewConnectionSession: Boolean = true
+
+        override fun disableReconnect() {}
+
+        override fun start() {}
+
+        override fun stop() {}
+
+        override fun addConnectionStateListener(listener: ConnectionStateListener) {}
+
+        override fun removeConnectionStateListener(listener: ConnectionStateListener) {}
+    }
 }

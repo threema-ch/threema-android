@@ -21,10 +21,6 @@
 
 package ch.threema.app.services;
 
-import android.content.Context;
-
-import ch.threema.storage.models.ContactModel;
-
 public interface IdListService {
     void add(String id);
 

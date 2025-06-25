@@ -35,7 +35,7 @@ import java.util.List;
 import ch.threema.app.services.MessageService;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -44,12 +44,12 @@ import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class MessageModelFactory extends AbstractMessageModelFactory {
-    public MessageModelFactory(DatabaseServiceNew databaseService) {
+    public MessageModelFactory(DatabaseService databaseService) {
         super(databaseService, MessageModel.TABLE);
     }
 
     public List<MessageModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -112,7 +112,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 
         if (includeArchived) {
             if (text == null) {
-                return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                return convertAbstractList(getReadableDatabase().rawQuery(
                     "SELECT * FROM " + MessageModel.TABLE +
                         " WHERE isStatusMessage = 0" +
                         displayClause +
@@ -121,7 +121,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
                     new String[]{}));
             }
 
-            return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+            return convertAbstractList(getReadableDatabase().rawQuery(
                 "SELECT * FROM " + MessageModel.TABLE +
                     " WHERE ( ( body LIKE ? " +
                     " AND type IN (" +
@@ -142,7 +142,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
                 }));
         } else {
             if (text == null) {
-                return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                return convertAbstractList(getReadableDatabase().rawQuery(
                     "SELECT * FROM " + MessageModel.TABLE + " m" +
                         " INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
                         " WHERE c.isArchived = 0" +
@@ -152,7 +152,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
                         "LIMIT 200",
                     new String[]{}));
             }
-            return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+            return convertAbstractList(getReadableDatabase().rawQuery(
                 "SELECT * FROM " + MessageModel.TABLE + " m" +
                     " INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
                     " WHERE c.isArchived = 0" +
@@ -214,7 +214,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
             MessageModel c = new MessageModel();
 
             //convert default
-            super.convert(c, new CursorHelper(cursor, columnIndexCache));
+            super.convert(c, new CursorHelper(cursor, getColumnIndexCache()));
 
             return c;
         }
@@ -223,7 +223,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public long countMessages(String identity) {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + MessageModel.COLUMN_IDENTITY + "=?",
             new String[]{
@@ -233,7 +233,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public long countUnreadMessages(String identity) {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + MessageModel.COLUMN_IDENTITY + "=?"
                 + " AND " + MessageModel.COLUMN_OUTBOX + "=0"
@@ -248,7 +248,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 
 
     public List<MessageModel> getUnreadMessages(String identity) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             MessageModel.COLUMN_IDENTITY + "=?"
                 + " AND " + MessageModel.COLUMN_OUTBOX + "=0"
@@ -264,7 +264,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public MessageModel getLastMessage(String identity) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             MessageModel.COLUMN_IDENTITY + "=?",
@@ -290,7 +290,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
         for (int n = 0; n < messageTypes.length; n++) {
             args[n] = String.valueOf(messageTypes[n].ordinal());
         }
-        Cursor c = this.databaseService.getReadableDatabase().rawQuery(
+        Cursor c = getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + MessageModel.COLUMN_TYPE + " IN (" + DatabaseUtil.makePlaceholders(args.length) + ")",
             args
@@ -302,7 +302,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     public boolean createOrUpdate(@NonNull MessageModel messageModel) {
         boolean insert = true;
         if (messageModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 MessageModel.COLUMN_ID + "=?",
@@ -330,7 +330,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 
     public boolean create(MessageModel messageModel) {
         ContentValues contentValues = this.buildContentValues(messageModel);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             messageModel.setId((int) newId);
             return true;
@@ -340,7 +340,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 
     public boolean update(MessageModel messageModel) {
         ContentValues contentValues = this.buildContentValues(messageModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             MessageModel.COLUMN_ID + "=?",
             new String[]{
@@ -350,7 +350,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public int delete(MessageModel messageModel) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             MessageModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(messageModel.getId())
@@ -371,7 +371,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
         this.appendFilter(queryBuilder, filter, placeholders);
         queryBuilder.setTables(this.getTableName());
         List<MessageModel> messageModels = convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             placeholders.toArray(new String[0]),
@@ -403,7 +403,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 
         queryBuilder.setTables(this.getTableName());
 
-        Cursor cursor = queryBuilder.query(this.databaseService.getReadableDatabase(),
+        Cursor cursor = queryBuilder.query(getReadableDatabase(),
             null,
             null,
             new String[]{identity, String.valueOf(MessageType.VOIP_STATUS.ordinal())},
@@ -428,7 +428,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public List<MessageModel> getByIdentityUnsorted(String identity) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             MessageModel.COLUMN_IDENTITY + "=?",
             new String[]{
@@ -440,7 +440,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
     private MessageModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

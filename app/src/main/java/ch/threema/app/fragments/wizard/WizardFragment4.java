@@ -21,8 +21,8 @@
 
 package ch.threema.app.fragments.wizard;
 
-import static ch.threema.app.ThreemaApplication.EMAIL_LINKED_PLACEHOLDER;
-import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.AppConstants.EMAIL_LINKED_PLACEHOLDER;
+import static ch.threema.app.AppConstants.PHONE_LINKED_PLACEHOLDER;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.annotation.SuppressLint;

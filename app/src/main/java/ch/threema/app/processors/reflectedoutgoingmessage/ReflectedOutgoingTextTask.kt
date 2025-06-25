@@ -26,39 +26,41 @@ import androidx.core.util.component2
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.QuoteUtil
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 import ch.threema.storage.models.MessageModel
-import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.MessageContentsType
-import java.util.Date
+
+private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingTextTask")
 
 internal class ReflectedOutgoingTextTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(message, Common.CspE2eMessageType.TEXT, serviceManager) {
+) : ReflectedOutgoingContactMessageTask<TextMessage>(
+    outgoingMessage = outgoingMessage,
+    message = TextMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.TEXT,
+    serviceManager = serviceManager,
+) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val textMessage: TextMessage by lazy { TextMessage.fromByteArray(message.body.toByteArray()) }
-
-    override val storeNonces: Boolean
-        get() = textMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean = true
-
     override fun processOutgoingMessage() {
-        val messageModel: MessageModel = messageReceiver.createLocalModel(
+        messageService.getMessageModelByApiMessageIdAndReceiver(message.messageId.toString(), messageReceiver)?.run {
+            // It is possible that a message gets reflected twice when the reflecting task gets restarted.
+            logger.info("Skipping message {} as it already exists.", message.messageId)
+            return
+        }
+
+        val messageModel: MessageModel = createMessageModel(
             MessageType.TEXT,
             MessageContentsType.TEXT,
-            Date(message.createdAt),
         )
-        initializeMessageModelsCommonFields(messageModel)
-        val (body, messageId) = QuoteUtil.getBodyAndQuotedMessageId(textMessage.text)
+        val (body, messageId) = QuoteUtil.getBodyAndQuotedMessageId(message.text)
         messageModel.body = body
         messageModel.quotedMessageId = messageId
-        messageModel.state = MessageState.SENT
         messageService.save(messageModel)
         ListenerManager.messageListeners.handle { it.onNew(messageModel) }
     }

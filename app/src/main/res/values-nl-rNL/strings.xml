@@ -101,6 +101,7 @@
     <string name="next">Volgende</string>
     <string name="finish">Voltooien</string>
     <string name="please_wait">Even geduld…</string>
+    <string name="please_wait_timeout">Dit duurt langer dan verwacht</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Uw ${app_name_short} ID aanmaken…</string>
     <string name="wizard1_sync_contacts">Contactpersonen synchroniseren…</string>
@@ -164,6 +165,7 @@
     <string name="delete_id_message">Tenzij u een back-up voor dit ID heeft, kunt u nooit meer met dit ID berichten versturen/ontvangen.\n\nAls u dit ID niet meer wilt gebruiken, is het aanbevolen om een intrekkingswachtwoord in te stellen en het ID via myid.threema.ch in te trekken voordat u het verwijdert.</string>
     <string name="delete_id_message2">Laatste waarschuwing: wilt u uw ID echt verwijderen?</string>
     <string name="delete_id_sum">Uw ID en alle gegevens op dit apparaat permanent verwijderen</string>
+    <string name="delete_all_data_prompt">Alle gegevens van de app verwijderen?</string>
     <string name="backup_password_summary">Uw ID-exportbestand wordt versleuteld met een wachtwoord. Gebruik een combinatie van letters, cijfers en symbolen. Vergeet niet wat u hier invoert!</string>
     <string name="backup_password_again_summary">Wachtwoord opnieuw invoeren</string>
     <string name="password_hint">Wachtwoord</string>
@@ -171,7 +173,6 @@
     <string name="backup_id_title">Uw ID-exportbestand</string>
     <string name="backup_id_summary">De hierboven weergegeven tekststring of de QR-code kan samen met het wachtwoord dat u hebt gekozen, worden gebruikt om uw ID op een ander apparaat te herstellen. Uw kunt het naar een geschikte plaats kopiëren, het delen per e-mail op de QR-code met het andere apparaat scannen.</string>
     <string name="support">Hulp</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">De volgende back-upgegevens kunnen samen met het gekozen wachtwoord worden gebruikt om uw ${app_name_short} ID te herstellen.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -346,9 +347,12 @@
     <string name="title_tab_recent">Recent</string>
     <string name="no_recent_conversations">Geen gesprekken gevonden</string>
     <string name="save_changes">Opslaan</string>
-    <string name="group_created_confirm">Groep aangemaakt</string>
     <string name="creating_group">Groep aanmaken</string>
     <string name="updating_group">Groep bijwerken</string>
+    <string name="leaving_group">Groep wordt verlaten</string>
+    <string name="disbanding_group">Groep wordt opgeheven</string>
+    <string name="removing_group">Groep wordt verwijderd</string>
+    <string name="resyncing_group">Groep wordt opnieuw gesynchroniseerd</string>
     <string name="status_create_group">Groep aangemaakt</string>
     <string name="status_rename_group">Groep hernoemd tot «%1$s»</string>
     <string name="status_group_new_photo">Groepsfoto bijgewerkt.</string>
@@ -741,7 +745,20 @@ Voer een vraag in voor uw poll.</string>
     <string name="clone_group_message">Dit kloont deze groep met u als administrator. Doorgaan?</string>
     <string name="prefs_proximity_sensor">Nabijheidssensor gebruiken</string>
     <string name="prefs_proximity_sensor_explain">Oordopje gebruiken voor het beluisteren van gesproken berichten als de nabijheidssensor is afgedekt</string>
-    <string name="error_creating_group">Fout bij aanmaken van groep</string>
+    <string name="error_creating_group_network">De groep is niet aangemaakt. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <string name="error_creating_group_internal">De groep is niet aangemaakt wegens een interne fout. Probeer het later opnieuw.</string>
+    <string name="error_cloning_group_network">De groep is niet gekloond. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <string name="error_cloning_group_internal">De groep is niet gekloond wegens een interne fout. Probeer het later opnieuw.</string>
+    <string name="error_updating_group_network">De wijzigingen konden niet worden toegepast. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <string name="error_updating_group_internal">De wijzigingen konden niet worden toegepast wegens een interne fout. Probeer het later opnieuw.</string>
+    <string name="error_leaving_group_network">De groep is niet verlaten. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <string name="error_leaving_group_internal">De groep is niet verlaten wegens een interne fout. Probeer het later opnieuw.</string>
+    <string name="error_disbanding_group_network">De groep is niet opgeheven. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <string name="error_disbanding_group_internal">De groep is niet opgeheven wegens een interne fout. Probeer het later opnieuw.</string>
+    <string name="error_removing_group_network">De groep is niet verwijderd. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <string name="error_removing_group_internal">De groep is niet verwijderd wegens een interne fout. Probeer het later opnieuw.</string>
+    <string name="error_resyncing_group_network">De groep is niet opnieuw gesynchroniseerd. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <string name="error_resyncing_group_internal">De groep is niet opnieuw gesynchroniseerd wegens een interne fout. Probeer het later opnieuw.</string>
     <string name="no_media_found_generic">Geen media gevonden in deze chat die overeenkomt met de selectie.</string>
     <string name="max_images_reached">U kunt max. %d afbeeldingen tegelijkertijd bewerken</string>
     <string name="enter_description">Beschrijf het probleem/de bug hier.</string>
@@ -856,8 +873,6 @@ Voer een vraag in voor uw poll.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Grote mediabestanden opslaan als lokale zip-backup kan de capaciteit van de CPU en het geheugen van uw apparaat overschreiden en kan erg lang duren. ${app_name} kan geen berichten verzenden of ontvangen terwijl het de backup maakt. Doorgaan?</string>
     <string name="backup_data_cancelled">Backup geannuleerd</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Beschadigde database of onvolledige gegevens. Kan app niet opstarten.</string>
     <string name="message_sent">Bericht verzonden</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short}-Oproep</string>
@@ -1227,9 +1242,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="permission_camera_videocall_required">Geef toegang tot de camera om video-oproepen te kunnen doen</string>
     <string name="tooltip_voip_enable_speakerphone">Tik hier om de luidspreker in te schakelen</string>
     <string name="ballot_open">Open polls</string>
-    <string name="translators">Vertalers</string>
-    <string name="credits">Credits</string>
-    <string name="translators_thanks">We willen onze vrijwillige vertalers ontzettend bedanken: %s</string>
     <string name="ballot_window_hide">Open polls verbergen</string>
     <string name="ballot_window_show">Open polls weergeven</string>
     <string name="single_ballot_really_delete">Deze poll verwijderen</string>
@@ -1565,7 +1577,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="prefs_summary_hibernation_api">Zorg dat de systeeminstelling \'App-activiteit pauzeren indien ongebruikt\' uitgeschakeld is om te voorkomen dat ${app_name} na lange perioden van inactiviteit door het systeem gepauzeerd wordt.</string>
     <string name="unable_to_fetch_configuration">Niet mogelijk om gegevens op te halen uit de configuratieserver. Probeer het later opnieuw.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Er is een verbinding met een ander apparaat ontdekt dat dezelfde ${app_name_short}-ID heeft. Hebt u uw ${app_name_short}-ID onlangs op een ander apparaat gebruikt? &lt;br&gt;&lt;br&gt; Indien ja, kunt u dit bericht negeren. &lt;br&gt;&lt;br&gt; Indien nee, is uw privésleutel mogelijk gecompromitteerd. <a href="https://threema.ch/en/faq/another_connection">Volg onze suggesties</a> om uw apparaat en uw gegevens te beschermen voordat u een nieuwe ID aanmaakt.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Er is een verbinding met een ander apparaat ontdekt dat dezelfde ${app_name_short}-ID heeft. Hebt u uw ${app_name_short}-ID onlangs op een ander apparaat gebruikt? <br><br> Indien ja, kunt u dit bericht negeren. <br><br> Indien nee, is uw privésleutel mogelijk gecompromitteerd. <a href="https://threema.com/faq/another_connection">Volg onze suggesties</a> om uw apparaat en uw gegevens te beschermen voordat u een nieuwe ID aanmaakt.]]></string>
     <string name="fetch2_failure">Synchronisatie met de provisioningserver is mislukt.</string>
     <string name="no_members_support_group_calls">Er zijn geen andere leden in deze groep die groepsgesprekken kunnen beantwoorden</string>
     <string name="group_calls">Groepsgesprekken</string>
@@ -1704,10 +1716,10 @@ Voer een vraag in voor uw poll.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Batterijgebruik van de app is ingesteld op \'geoptimaliseerd\'</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">De app kan geen permanente verbinding met de servers onderhouden en dit is nodig om ${app_name_short} Push te laten werken. U wordt niet op de hoogte gebracht van nieuwe berichten wanneer de app op de achtergrond is. Tik op \'Batterijgebruik van de app\' en selecteer \'Onbeperkt\' om dit probleem op te lossen.</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">Deze Android-versie wordt binnenkort niet meer ondersteund</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">U gebruikt een Android-apparaat dat geen software-updates meer ontvangt. Om veiligheidsredenen wordt deze Android-versie binnenkort niet meer door Threema ondersteund.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">De app wordt niet meer bijgewerkt</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">U gebruikt een oudere versie van Android die om veiligheidsredenen niet langer door Threema wordt ondersteund. Dit betekent dat u geen updates voor de Threema-app meer zult ontvangen. Werk uw apparaat bij naar een nieuwere versie van het besturingssysteem om Threema met alle functies te kunnen blijven gebruiken.</string>
     <string name="problemsolver_to_settings">Naar de instellingen</string>
     <string name="prefs_advanced_options">Geavanceerde opties</string>
     <string name="push_service">Pushdienst</string>
@@ -1755,7 +1767,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="device_linking_cancel_dialog_continue">Doorgaan</string>
     <string name="md_drop_device_dialog_drop_button">Apparaat verwijderen</string>
     <string name="md_drop_device_dialog_close_button">Sluiten</string>
-    <string name="md_drop_device_failed_dialog_title">Verwijderen gekoppeld apparaat mislukt</string>
+    <string name="md_drop_device_failed_dialog_title">Het verwijderen van het gekoppelde apparaat is mogelijk mislukt</string>
     <string name="md_drop_device_failed_dialog_message">Controleer de internetverbinding en probeer het opnieuw.</string>
     <string name="md_drop_device_failed_dialog_button_close">Sluiten</string>
     <!-- accessibility -->
@@ -1817,12 +1829,20 @@ Voer een vraag in voor uw poll.</string>
     <string name="device_linking_error_emoji_mismatch_body">Het lijkt erop dat er problemen zijn met de verbinding met het apparaat. Start de app opnieuw op het nieuwe apparaat en probeer het opnieuw.</string>
     <string name="device_linking_error_unexpected_title">Onverwachte fout</string>
     <string name="device_linking_error_unexpected_body">Probeer het apparaat opnieuw te koppelen. Als dit probleem zich blijft voordoen, neem dan contact op met de ondersteuning (Hoofdmenu &gt; Help).</string>
+    <string name="device_linking_error_invalid_contact_title">Ongeldige contactpersoon</string>
+    <string name="device_linking_error_invalid_contact_body">De contactpersoon met identiteit %1$s is onjuist op dit apparaat opgeslagen en belemmert het koppelen met het nieuwe apparaat. Neem contact op met de ondersteuning (\"Hoofdmenu &gt; Help\").</string>
     <string name="device_linking_error_screen_close">Sluiten</string>
     <string name="work_directory_title">Bedrijfscontacten</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Zoek in de contacten</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Voer minstens 3 tekens van een naam in om te beginnen met zoeken naar gebruikers van ${app_name_short} in de bedrijfscontacten.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Dit bestand is ongeldig en kan niet worden gedeeld</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Beschikbaar</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Niet beschikbaar</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>

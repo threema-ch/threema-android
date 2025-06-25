@@ -14,6 +14,11 @@
         android:paddingRight="16dp"
         android:paddingLeft="16dp">
 
+        <ch.threema.app.contactdetails.ContactAvailabilityView
+            android:id="@+id/availability_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <ch.threema.app.ui.SectionHeaderView
             android:id="@+id/header_job_title"
             android:layout_width="match_parent"

@@ -21,18 +21,12 @@
 
 package ch.threema.app.groupflows
 
-import androidx.fragment.app.FragmentManager
-import ch.threema.app.R
-import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.tasks.OutgoingGroupDisbandTask
 import ch.threema.app.tasks.ReflectGroupSyncDeletePrecondition
 import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
 import ch.threema.app.tasks.ReflectLocalGroupLeaveOrDisband
-import ch.threema.app.tasks.ReflectionFailed
-import ch.threema.app.tasks.ReflectionPreconditionFailed
-import ch.threema.app.tasks.ReflectionSuccess
-import ch.threema.app.utils.DialogUtil
+import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.app.voip.groupcall.GroupCallManager
@@ -41,14 +35,14 @@ import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.api.APIConnector
+import ch.threema.domain.protocol.connection.ConnectionState
+import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.GroupModel.UserState
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("DisbandGroupFlow")
-
-private const val DIALOG_TAG_DISBAND_GROUP = "disbandGroup"
 
 /**
  * The intent of the group leave.
@@ -71,7 +65,6 @@ enum class GroupDisbandIntent {
  * that group flows are not executed concurrently.
  */
 class DisbandGroupFlow(
-    private val fragmentManager: FragmentManager?,
     private val intent: GroupDisbandIntent,
     private val groupModel: GroupModel,
     private val groupModelRepository: GroupModelRepository,
@@ -79,56 +72,59 @@ class DisbandGroupFlow(
     private val apiConnector: APIConnector,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
     private val taskManager: TaskManager,
-) : BackgroundTask<Boolean> {
+    private val connection: ServerConnection,
+) : BackgroundTask<GroupFlowResult> {
     private val myIdentity by lazy { outgoingCspMessageServices.identityStore.identity }
 
     private val groupService by lazy { outgoingCspMessageServices.groupService }
 
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
-    override fun runBefore() {
-        fragmentManager?.let {
-            GenericProgressDialog.newInstance(R.string.updating_group, R.string.please_wait)
-                .show(it, DIALOG_TAG_DISBAND_GROUP)
-        }
-    }
-
-    override fun runInBackground(): Boolean {
+    override fun runInBackground(): GroupFlowResult {
         logger.info("Running disband group flow with intent {}", intent)
 
         val groupModelData = groupModel.data.value
         if (groupModelData == null) {
             logger.warn("Cannot disband already deleted group")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
         if (groupModel.groupIdentity.creatorIdentity != myIdentity) {
             logger.error("Cannot disband group where user is not creator")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
         if (groupModel.data.value?.isMember != true) {
             logger.error("Cannot disband already disbanded group")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
         // First reflect the changes
         if (multiDeviceManager.isMultiDeviceActive) {
+            if (connection.connectionState != ConnectionState.LOGGEDIN) {
+                return GroupFlowResult.Failure.Network
+            }
             when (val reflectionResult = reflect()) {
-                is ReflectionFailed -> {
+                is ReflectionResult.Failed -> {
                     logger.error("Reflection failed", reflectionResult.exception)
-                    return false
+                    return GroupFlowResult.Failure.Other
                 }
 
-                is ReflectionPreconditionFailed -> {
+                is ReflectionResult.PreconditionFailed -> {
                     logger.warn(
                         "Reflection failed due to precondition",
                         reflectionResult.transactionException,
                     )
-                    return false
+                    return GroupFlowResult.Failure.Other
                 }
 
-                is ReflectionSuccess -> {
+                is ReflectionResult.MultiDeviceNotActive -> {
+                    // Note that this is a very rare edge case that should not be possible at all. If it happens, it is fine to continue here because
+                    // it is fine to just skip the reflection when multi device is not active anymore.
+                    logger.warn("Reflection failed because multi device is not active")
+                }
+
+                is ReflectionResult.Success -> {
                     logger.info("Reflected group disband of intent {}", intent)
                 }
             }
@@ -140,20 +136,10 @@ class DisbandGroupFlow(
         // Finally, send the csp messages to the group members
         sendCsp(groupModelData.otherMembers)
 
-        return true
+        return GroupFlowResult.Success(groupModel)
     }
 
-    override fun runAfter(result: Boolean) {
-        fragmentManager?.let {
-            DialogUtil.dismissDialog(
-                it,
-                DIALOG_TAG_DISBAND_GROUP,
-                true,
-            )
-        }
-    }
-
-    private fun reflect() = runBlocking {
+    private fun reflect(): ReflectionResult<Unit> = runBlocking {
         when (intent) {
             GroupDisbandIntent.DISBAND ->
                 taskManager.schedule(
@@ -198,7 +184,7 @@ class DisbandGroupFlow(
             OutgoingGroupDisbandTask(
                 groupModel.groupIdentity,
                 members,
-                MessageId(),
+                MessageId.random(),
                 groupModelRepository,
                 apiConnector,
                 outgoingCspMessageServices,

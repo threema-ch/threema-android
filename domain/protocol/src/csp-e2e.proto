@@ -321,9 +321,9 @@ message EditMessage {
 // The following steps are defined as the _Common Delete Message Receive Steps_:
 //
 // 1. Lookup the message with `message_id` originally sent by the sender within
-//    the associated conversation and let `message` be the result.
+//    the associated conversation and let `referred-message` be the result.
 // 2. If `referred-message` is not defined or the sender is not the original
-//    sender of `message`, discard the message and abort these steps.
+//    sender of `referred-message`, discard the message and abort these steps.
 // 3. If `referred-message` is not deletable (see the associated _Deletable by_
 //    property), discard the message and abort these steps.
 // 4. Replace `referred-message` with a message informing the user that the

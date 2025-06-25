@@ -36,6 +36,7 @@ import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.AppConstants;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.managers.ServiceManager;
@@ -72,7 +73,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.protobuf.csp.e2e.Reaction;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
@@ -94,7 +95,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     @Nullable
     private final ch.threema.data.models.GroupModel groupModel;
     private final GroupService groupService;
-    private final DatabaseServiceNew databaseServiceNew;
+    private final DatabaseService databaseService;
     @NonNull
     private final ContactService contactService;
     @NonNull
@@ -108,7 +109,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     public GroupMessageReceiver(
         GroupModel group,
         GroupService groupService,
-        DatabaseServiceNew databaseServiceNew,
+        DatabaseService databaseService,
         @NonNull ContactService contactService,
         @NonNull ContactModelRepository contactModelRepository,
         @NonNull GroupModelRepository groupModelRepository,
@@ -116,7 +117,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     ) {
         this.group = group;
         this.groupService = groupService;
-        this.databaseServiceNew = databaseServiceNew;
+        this.databaseService = databaseService;
         this.contactService = contactService;
         this.contactModelRepository = contactModelRepository;
         this.groupModelRepository = groupModelRepository;
@@ -161,7 +162,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
     @Override
     public void saveLocalModel(GroupMessageModel save) {
-        databaseServiceNew.getGroupMessageModelFactory().createOrUpdate(save);
+        databaseService.getGroupMessageModelFactory().createOrUpdate(save);
     }
 
     @Override
@@ -176,7 +177,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         }
 
         // Create and assign a new message id
-        messageModel.setApiMessageId(new MessageId().toString());
+        messageModel.setApiMessageId(MessageId.random().toString());
         saveLocalModel(messageModel);
 
         bumpLastUpdate();
@@ -211,7 +212,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         }
 
         // Create and assign a new message id
-        messageModel.setApiMessageId(new MessageId().toString());
+        messageModel.setApiMessageId(MessageId.random().toString());
         saveLocalModel(messageModel);
 
         bumpLastUpdate();
@@ -259,7 +260,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         messageModel.setFileData(modelFileData);
 
         // Create a new message id if the given message id is null
-        messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
+        messageModel.setApiMessageId(messageId != null ? messageId.toString() : MessageId.random().toString());
         saveLocalModel(messageModel);
 
         // Note that lastUpdate lastUpdate was bumped when the file message was created
@@ -286,7 +287,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
         // Create a new message id if the given message id is null
-        messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
+        messageModel.setApiMessageId(messageId != null ? messageId.toString() : MessageId.random().toString());
         saveLocalModel(messageModel);
 
         bumpLastUpdate();
@@ -311,7 +312,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         @NonNull TriggerSource triggerSource
     ) throws ThreemaException {
         // Create message id
-        MessageId messageId = new MessageId();
+        MessageId messageId = MessageId.random();
 
         final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
@@ -351,7 +352,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         taskManager.schedule(
             new OutgoingGroupEditMessageTask(
                 messageModelId,
-                new MessageId(),
+                MessageId.random(),
                 body,
                 editedAt,
                 GroupUtil.getRecipientIdentitiesByFeatureSupport(
@@ -366,7 +367,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         taskManager.schedule(
             new OutgoingGroupDeleteMessageTask(
                 messageModelId,
-                new MessageId(),
+                MessageId.random(),
                 deletedAt,
                 GroupUtil.getRecipientIdentitiesByFeatureSupport(
                     getFeatureSupport(ThreemaFeature.DELETE_MESSAGES)
@@ -397,7 +398,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         taskManager.schedule(
             new OutgoingGroupReactionMessageTask(
                 messageModel.getId(),
-                new MessageId(),
+                MessageId.random(),
                 actionCase,
                 emojiSequence,
                 reactedAt,
@@ -450,27 +451,27 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
     @Override
     public List<GroupMessageModel> loadMessages(MessageService.MessageFilter filter) {
-        return databaseServiceNew.getGroupMessageModelFactory().find(
+        return databaseService.getGroupMessageModelFactory().find(
             group.getId(),
             filter);
     }
 
     @Override
     public long getMessagesCount() {
-        return databaseServiceNew.getGroupMessageModelFactory().countMessages(
+        return databaseService.getGroupMessageModelFactory().countMessages(
             group.getId());
     }
 
     @Override
     public long getUnreadMessagesCount() {
-        return databaseServiceNew.getGroupMessageModelFactory().countUnreadMessages(
+        return databaseService.getGroupMessageModelFactory().countUnreadMessages(
             group.getId());
     }
 
     @NonNull
     @Override
     public List<GroupMessageModel> getUnreadMessages() {
-        return databaseServiceNew.getGroupMessageModelFactory().getUnreadMessages(
+        return databaseService.getGroupMessageModelFactory().getUnreadMessages(
             group.getId());
     }
 
@@ -513,7 +514,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
     @Override
     public void prepareIntent(Intent intent) {
-        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, group.getId());
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, group.getId());
     }
 
     @Override
@@ -532,6 +533,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         return GroupUtil.getUniqueId(group);
     }
 
+    @NonNull
     @Override
     public String getUniqueIdString() {
         return GroupUtil.getUniqueIdString(group);

@@ -57,6 +57,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -70,7 +71,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.base.ThreemaException;
@@ -116,7 +117,7 @@ public final class ShortcutUtil {
                     RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.add_shortcut_exists, Toast.LENGTH_LONG).show());
                     return;
                 } else {
-                    Intent pinnedShortcutCallbackIntent = new Intent(ThreemaApplication.INTENT_ACTION_SHORTCUT_ADDED);
+                    Intent pinnedShortcutCallbackIntent = new Intent(AppConstants.INTENT_ACTION_SHORTCUT_ADDED);
                     pinnedShortcutCallbackIntent.setPackage(getContext().getPackageName());
                     PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
                         pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
@@ -149,7 +150,7 @@ public final class ShortcutUtil {
                 }
             }
 
-            if (matchingShortcuts.size() > 0) {
+            if (!matchingShortcuts.isEmpty()) {
                 ShortcutManagerCompat.updateShortcuts(getContext(), matchingShortcuts);
             }
         }
@@ -176,7 +177,7 @@ public final class ShortcutUtil {
                 }
             }
 
-            if (matchingShortcuts.size() > 0) {
+            if (!matchingShortcuts.isEmpty()) {
                 ShortcutManagerCompat.updateShortcuts(getContext(), matchingShortcuts);
                 return true;
             }
@@ -189,7 +190,7 @@ public final class ShortcutUtil {
         if (!TestUtil.isEmptyOrNull(uniqueIdString)) {
             List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED);
 
-            if (shortcutInfos.size() > 0) {
+            if (!shortcutInfos.isEmpty()) {
                 for (ShortcutInfoCompat shortcutInfo : shortcutInfos) {
                     String shortcutId = shortcutInfo.getId();
                     if (!TestUtil.isEmptyOrNull(shortcutId)) {
@@ -211,7 +212,7 @@ public final class ShortcutUtil {
     public static void deleteAllPinnedShortcuts() {
         List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED);
 
-        if (shortcutInfos.size() > 0) {
+        if (!shortcutInfos.isEmpty()) {
             List<String> shortcutIds = new ArrayList<>();
 
             for (ShortcutInfoCompat shortcutInfoCompat : shortcutInfos) {
@@ -432,7 +433,7 @@ public final class ShortcutUtil {
         synchronized (dynamicShortcutLock) {
             List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(getContext());
 
-            if (shortcutInfos.size() > 0) {
+            if (!shortcutInfos.isEmpty()) {
                 List<String> shortcutIds = new ArrayList<>();
 
                 for (ShortcutInfoCompat shortcutInfoCompat : shortcutInfos) {
@@ -490,7 +491,7 @@ public final class ShortcutUtil {
         synchronized (dynamicShortcutLock) {
             List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(getContext());
 
-            if (shortcutInfos.size() > 0) {
+            if (!shortcutInfos.isEmpty()) {
                 for (ShortcutInfoCompat shortcutInfoCompat : shortcutInfos) {
                     if (shortcutId.equals(shortcutInfoCompat.getId())) {
                         return shortcutInfoCompat.getExtras();
@@ -504,7 +505,7 @@ public final class ShortcutUtil {
     @Nullable
     @WorkerThread
     private static ShortcutInfoCompat getShareTargetShortcutInfo(@NonNull ConversationModel conversationModel, int rank) {
-        MessageReceiver messageReceiver = conversationModel.getReceiver();
+        MessageReceiver messageReceiver = conversationModel.messageReceiver;
         if (messageReceiver == null) {
             return null;
         }
@@ -550,7 +551,7 @@ public final class ShortcutUtil {
                     shortcutInfoCompatBuilder.setPerson(person);
                 }
 
-                if (persons.size() > 0) {
+                if (!persons.isEmpty()) {
                     shortcutInfoCompatBuilder.setPersons(persons.toArray(new Person[0]));
                 }
 
@@ -568,13 +569,13 @@ public final class ShortcutUtil {
 
         switch (messageReceiver.getType()) {
             case MessageReceiver.Type_CONTACT:
-                persistableBundle.putString(ThreemaApplication.INTENT_DATA_CONTACT, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
+                persistableBundle.putString(AppConstants.INTENT_DATA_CONTACT, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
                 break;
             case MessageReceiver.Type_GROUP:
-                persistableBundle.putInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
+                persistableBundle.putInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
                 break;
             case MessageReceiver.Type_DISTRIBUTION_LIST:
-                persistableBundle.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
+                persistableBundle.putLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
                 break;
             default:
                 break;

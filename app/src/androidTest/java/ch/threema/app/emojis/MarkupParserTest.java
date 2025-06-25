@@ -217,10 +217,10 @@ public class MarkupParserTest {
 
     @Test
     public void atWordBoundaries6() {
-        final SpannableStringBuilder parsed = Utils.parse("_<a href=\"https://threema.ch\">Threema</a>_");
-        assertEquals("<a href=\"https://threema.ch\">Threema</a>", parsed.toString());
+        final SpannableStringBuilder parsed = Utils.parse("_<a href=\"https://threema.com\">Threema</a>_");
+        assertEquals("<a href=\"https://threema.com\">Threema</a>", parsed.toString());
         Utils.expectSpanCount(parsed, 1);
-        Utils.expectItalicAt(parsed, 0, 40);
+        Utils.expectItalicAt(parsed, 0, 41);
     }
 
     @Test
@@ -245,7 +245,7 @@ public class MarkupParserTest {
 
     @Test
     public void onlyWordBoundaries5() {
-        Utils.expectNoSpan("<a href=\"https://threema.ch\">_Threema_</a>");
+        Utils.expectNoSpan("<a href=\"https://threema.com\">_Threema_</a>");
     }
 
     @Test

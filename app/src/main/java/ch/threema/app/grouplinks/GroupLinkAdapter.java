@@ -40,7 +40,6 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.AbstractRecyclerAdapter;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.base.ThreemaException;
@@ -49,8 +48,6 @@ import ch.threema.storage.models.group.GroupInviteModel;
 
 public class GroupLinkAdapter extends AbstractRecyclerAdapter<GroupInviteModel, RecyclerView.ViewHolder> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkAdapter");
-
-    private final GroupService groupService;
 
     private final Context context;
     private final LayoutInflater inflater;
@@ -69,7 +66,6 @@ public class GroupLinkAdapter extends AbstractRecyclerAdapter<GroupInviteModel, 
         if (serviceManager == null) {
             throw new ThreemaException("Missing serviceManager");
         }
-        this.groupService = serviceManager.getGroupService();
         this.colorIdRed = ContextCompat.getColor(context, R.color.material_red);
         this.colorIdGreen = ContextCompat.getColor(context, R.color.material_green);
     }

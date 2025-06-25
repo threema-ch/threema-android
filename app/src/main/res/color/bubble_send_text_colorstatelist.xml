@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_activated="true" android:color="?attr/colorOnPrimary" />
-    <item android:color="?attr/colorOnSecondaryContainer" />
+    <item android:color="?attr/colorOnSecondaryContainer" android:state_pressed="true" />
+    <item android:color="?attr/colorOnSecondaryContainer" android:state_activated="true" />
+    <item android:color="?attr/colorOnTertiaryContainer" />
 </selector>

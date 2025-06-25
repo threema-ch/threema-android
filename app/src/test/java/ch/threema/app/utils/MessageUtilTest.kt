@@ -21,7 +21,7 @@
 
 package ch.threema.app.utils
 
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.AppConstants
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.ContactMessageReceiver
@@ -31,8 +31,8 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.DistributionListService
-import ch.threema.base.utils.minus
-import ch.threema.base.utils.now
+import ch.threema.common.minus
+import ch.threema.common.now
 import ch.threema.data.models.ContactModelData.Companion.javaCreate
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.storage.DatabaseBackend
@@ -113,7 +113,7 @@ class MessageUtilTest {
         mockkStatic(ConfigUtils::class)
         every { ConfigUtils.isEditMessagesEnabled() } returns true
 
-        val contactThreemaId = ThreemaApplication.ECHO_USER_IDENTITY
+        val contactThreemaId = AppConstants.ECHO_USER_IDENTITY
         val businessContactThreemaId = "*THREEMA"
 
         // mock object
@@ -864,7 +864,7 @@ class MessageUtilTest {
         identity: String = randomIdentity(),
         publicKey: ByteArray = nonSecureRandomArray(32),
     ): ContactMessageReceiver {
-        val contactModel = ContactModel(identity, publicKey)
+        val contactModel = ContactModel.create(identity, publicKey)
         every {
             contactModelRepositoryMock.getByIdentity(any())
         } returns ch.threema.data.models.ContactModel(
@@ -907,7 +907,7 @@ class MessageUtilTest {
             null,
             /* serviceManager = */
             serviceManagerMock,
-            /* databaseServiceNew = */
+            /* databaseService = */
             null,
             /* identityStore = */
             null,
@@ -922,7 +922,7 @@ class MessageUtilTest {
         identitiesWithPublicKey: List<Pair<String, ByteArray>>,
     ): MessageReceiver<*> {
         val distributionListServiceMock = mockk<DistributionListService>()
-        val contacts: List<ContactModel> = identitiesWithPublicKey.map { ContactModel(it.first, it.second) }
+        val contacts: List<ContactModel> = identitiesWithPublicKey.map { ContactModel.create(it.first, it.second) }
 
         every { distributionListServiceMock.getMembers(any()) } returns contacts
 
@@ -977,7 +977,7 @@ class MessageUtilTest {
                 null,
                 /* serviceManager = */
                 serviceManagerMock,
-                /* databaseServiceNew = */
+                /* databaseService = */
                 null,
                 /* identityStore = */
                 null,
@@ -989,7 +989,7 @@ class MessageUtilTest {
         }
 
         return DistributionListMessageReceiver(
-            /* databaseServiceNew = */
+            /* databaseService = */
             null,
             /* contactService = */
             contactServiceMock,

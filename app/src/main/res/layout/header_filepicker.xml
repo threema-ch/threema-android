@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:id="@+id/header_layout_container"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:gravity="center_vertical"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary"
     android:elevation="@dimen/appbar_elevation"
-    android:background="?attr/colorPrimary">
+    android:gravity="center_vertical"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/title_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:textSize="20sp"
+        android:layout_margin="@dimen/grid_unit_x2"
+        android:ellipsize="end"
+        android:maxLines="2"
         android:text="@string/open_from"
-        android:textColor="?attr/colorOnPrimary" />
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="20sp" />
 
 </LinearLayout>

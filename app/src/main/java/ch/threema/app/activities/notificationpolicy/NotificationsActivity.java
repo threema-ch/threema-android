@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.OutOfQuotaPolicy;
 import androidx.work.WorkManager;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -65,9 +66,11 @@ import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.ServicesConstants;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LogUtil;
@@ -145,12 +148,18 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
         super.onCreate(savedInstanceState);
 
-        chatName = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
+        chatName = getIntent().getStringExtra(AppConstants.INTENT_DATA_TEXT);
 
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_notifications);
 
         parentLayout = findViewById(R.id.parent_layout);
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            parentLayout,
+            InsetSides.all()
+        );
+
         loopViewGroup(parentLayout);
         ViewGroup topLayout = (ViewGroup) parentLayout.getParent();
         plusButton = findViewById(R.id.duration_plus);
@@ -179,7 +188,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
-            animCenterLocation = intent.getIntArrayExtra(ThreemaApplication.INTENT_DATA_ANIM_CENTER);
+            animCenterLocation = intent.getIntArrayExtra(AppConstants.INTENT_DATA_ANIM_CENTER);
 
             if (animCenterLocation != null) {
                 // see http://stackoverflow.com/questions/26819429/cannot-start-this-animator-on-a-detached-view-reveal-effect

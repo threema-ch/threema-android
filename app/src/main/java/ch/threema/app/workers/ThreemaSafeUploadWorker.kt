@@ -22,26 +22,27 @@
 package ch.threema.app.workers
 
 import android.content.Context
-import android.text.format.DateUtils
 import androidx.work.*
-import ch.threema.app.ThreemaApplication
-import ch.threema.app.listeners.ThreemaSafeListener
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ListenerManager
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.services.PreferenceService
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.threemasafe.ThreemaSafeService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.minus
+import ch.threema.common.now
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
-class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParameters) :
-    Worker(context, workerParameters) {
-    private val logger = LoggingUtil.getThreemaLogger("ThreemaSafeUploadWorker")
+private val logger = LoggingUtil.getThreemaLogger("ThreemaSafeUploadWorker")
 
-    private val serviceManager: ServiceManager? = ThreemaApplication.getServiceManager()
-    private val threemaSafeService: ThreemaSafeService? = serviceManager?.threemaSafeService
-    private val preferenceService: PreferenceService? = serviceManager?.preferenceService
+class ThreemaSafeUploadWorker(
+    context: Context,
+    workerParameters: WorkerParameters,
+) : CoroutineWorker(context, workerParameters) {
 
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
@@ -84,16 +85,17 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
         }
     }
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         val forceUpdate: Boolean = inputData.getBoolean(EXTRA_FORCE_UPDATE, false)
         var success = true
 
         logger.info("Threema Safe upload worker started, force = {}", forceUpdate)
 
-        if (serviceManager == null || threemaSafeService == null || preferenceService == null) {
-            logger.info("Services not available")
-            return Result.failure()
-        }
+        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+            ?: return Result.failure()
+
+        val threemaSafeService = serviceManager.threemaSafeService
+        val preferenceService = serviceManager.preferenceService
 
         if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
             // skip upload if license was revoked or is temporarily unavailable
@@ -109,12 +111,12 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
             if (preferenceService.threemaSafeErrorDate == null && e.isUploadNeeded) {
                 preferenceService.threemaSafeErrorDate = Date()
             }
-            showWarningNotification()
+            showWarningNotification(preferenceService, serviceManager.notificationService)
             logger.error("Threema Safe upload failed", e)
             success = false
         }
 
-        ListenerManager.threemaSafeListeners.handle { obj: ThreemaSafeListener -> obj.onBackupStatusChanged() }
+        ListenerManager.threemaSafeListeners.handle { listener -> listener.onBackupStatusChanged() }
 
         logger.info("Threema Safe upload worker finished. Success = {}", success)
 
@@ -125,14 +127,11 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
         }
     }
 
-    private fun showWarningNotification() {
-        val errorDate = preferenceService!!.threemaSafeErrorDate
-        val aWeekAgo = Date(System.currentTimeMillis() - DateUtils.WEEK_IN_MILLIS)
-        if (errorDate != null && errorDate.before(aWeekAgo)) {
+    private fun showWarningNotification(preferenceService: PreferenceService, notificationService: NotificationService) {
+        val errorDate = preferenceService.threemaSafeErrorDate ?: return
+        if (errorDate < now() - 7.days) {
             val lastBackupDate = preferenceService.threemaSafeBackupDate
-            val notificationService = serviceManager!!.notificationService
-            val fullDaysSinceLastBackup =
-                ((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt()
+            val fullDaysSinceLastBackup = (now() - lastBackupDate).inWholeDays.toInt()
             if (fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
                 notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
             } else {

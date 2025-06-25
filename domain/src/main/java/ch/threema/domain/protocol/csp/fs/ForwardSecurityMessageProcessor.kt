@@ -1074,7 +1074,7 @@ class ForwardSecurityMessageProcessor(
         if (message.protectAgainstReplay()) {
             nonceFactory.store(NonceScope.CSP, nonce)
         }
-        if (!message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK)) {
+        if (!message.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK)) {
             handle.awaitOutgoingMessageAck(message.messageId, message.toIdentity)
         }
     }

@@ -35,3 +35,5 @@ class DeviceLinkingCancelledException(cause: Throwable? = null) : DeviceLinkingE
 class DeviceLinkingInvalidQrCodeException(message: String, cause: Throwable? = null) : DeviceLinkingException(message, cause)
 
 class DeviceLinkingScannedWebQrCodeException(message: String, cause: Throwable? = null) : DeviceLinkingException(message, cause)
+
+class DeviceLinkingInvalidContact(val identity: String) : DeviceLinkingException("Invalid contact with identity $identity")

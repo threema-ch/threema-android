@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:orientation="vertical">
 
     <ScrollView
-        android:id="@+id/top_view"
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@android:color/transparent">
+        android:clipToPadding="false"
+        android:padding="@dimen/grid_unit_x2">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 style="@style/Threema.TextAppearance.Title"
@@ -24,24 +24,24 @@
                 android:text="@string/server_message_title" />
 
             <TextView
+                android:id="@+id/server_message_text"
                 style="@style/Threema.TextAppearance.BodyLarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="[server message]"
-                android:id="@+id/server_message_text" />
+                android:text="[server message]" />
 
         </LinearLayout>
 
     </ScrollView>
 
     <com.google.android.material.button.MaterialButton
-        style="@style/Threema.MaterialButton.Action"
         android:id="@+id/close_button"
-        android:layout_marginTop="16dp"
-        android:layout_height="wrap_content"
+        style="@style/Threema.MaterialButton.Action"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="right"
+        android:layout_margin="@dimen/grid_unit_x2"
         android:text="@string/close" />
 
 </LinearLayout>

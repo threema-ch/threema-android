@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- wizard -->
-    <color name="color_wizard_primary">#0096ff</color>
-    <color name="color_wizard_on_primary">#FFFFFF</color>
 
-    <!-- chat bubbles -->
-    <color name="bubble_receive">#F2F2F2</color>
+    <!-- BRAND -->
+    <color name="brand_50">#DCF5FF</color>
+    <color name="brand_100">#C0EDFF</color>
+    <color name="brand_200">#A4E6FF</color>
+    <color name="brand_300">#89DEFF</color>
+    <color name="brand_400">#6DD7FF</color>
+    <color name="brand_500">#51CFFF</color>
+    <color name="brand_600">#41AFE0</color>
+    <color name="brand_700">#318FC1</color>
+    <color name="brand_800">#002E63</color>
+    <color name="brand_900">#001C3B</color>
+
+    <!-- others -->
+    <color name="ic_launcher_background">#002E63</color>
 </resources>

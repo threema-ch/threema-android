@@ -70,7 +70,7 @@ public class EmojiDetailPopup extends PopupWindow implements View.OnClickListene
     }
 
     public void show(final View originView, final String originalEmoji) {
-        this.originalImage.setImageDrawable(emojiManager.getEmojiDrawable(originalEmoji));
+        this.originalImage.setImageDrawable(emojiManager.getEmojiDrawableAsync(originalEmoji));
         this.originalImage.setTag(originalEmoji);
         this.originalImage.setOnClickListener(this);
 

@@ -22,13 +22,13 @@
 package ch.threema.domain.onprem
 
 import ch.threema.base.utils.Base64
-import ch.threema.base.utils.plus
-import ch.threema.base.utils.withoutLastLine
+import ch.threema.common.plus
+import ch.threema.common.withoutLastLine
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
-import ch.threema.testutils.TestTimeProvider
+import ch.threema.testhelpers.TestTimeProvider
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

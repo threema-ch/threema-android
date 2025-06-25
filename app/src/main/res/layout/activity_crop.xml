@@ -14,9 +14,9 @@
             android:id="@+id/crop_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/crop_image_title"
             app:contentInsetEnd="0dp"
-            app:contentInsetStart="0dp" />
+            app:contentInsetStart="0dp"
+            app:title="@string/crop_image_title" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -44,9 +44,10 @@
             android:id="@+id/floating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/floating_button_margin"
+            android:layout_margin="@dimen/grid_unit_x2"
             android:clickable="true"
             android:contentDescription="@string/crop"
+            android:focusable="true"
             android:text="@string/crop"
             app:icon="@drawable/ic_crop_outline"
             app:layout_anchor="@id/crop_parent"

@@ -22,6 +22,7 @@
 package ch.threema.app.emojis;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -58,6 +59,7 @@ import ch.threema.data.models.EmojiReactionData;
 public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.EmojiSearchListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiPicker");
 
+    private Activity activity;
     private final ArrayList<EmojiPickerListener> emojiPickerListeners = new ArrayList<>();
     private EmojiService emojiService;
 
@@ -107,11 +109,12 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
         this.emojiKeyListener = listener;
     }
 
-    public void init(EmojiService emojiService, boolean isKeyboardAnimated) {
-        init(emojiService, isKeyboardAnimated, null);
+    public void init(Activity activity, EmojiService emojiService, boolean isKeyboardAnimated) {
+        init(activity, emojiService, isKeyboardAnimated, null);
     }
 
-    public void init(EmojiService emojiService, boolean isKeyboardAnimated, @Nullable List<EmojiReactionData> emojiReactions) {
+    public void init(Activity activity, EmojiService emojiService, boolean isKeyboardAnimated, @Nullable List<EmojiReactionData> emojiReactions) {
+        this.activity = activity;
         this.emojiService = emojiService;
         this.isKeyboardAnimated = isKeyboardAnimated;
         this.emojiReactions = Optional.ofNullable(emojiReactions)
@@ -238,8 +241,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
     private void showEmojiSearch() {
         setLayoutParams(searchLayoutParams);
-        emojiSearchWidget.setVisibility(VISIBLE);
-        emojiSearchWidget.searchInput.requestFocus();
+        emojiSearchWidget.show();
         EditTextUtil.showSoftKeyboard(emojiSearchWidget.searchInput);
         pickerHeader.setVisibility(GONE);
         viewPager.setVisibility(GONE);
@@ -268,7 +270,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
     private void initEmojiSearchWidget() {
         emojiSearchWidget = findViewById(R.id.emoji_search);
-        emojiSearchWidget.init(this, emojiService);
+        emojiSearchWidget.init(activity, this, emojiService);
     }
 
     private void initPagerAdapter() {
@@ -306,12 +308,13 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
         int currentItem = this.viewPager.getCurrentItem();
 
         EmojiPagerAdapter emojiPagerAdapter = new EmojiPagerAdapter(
-            getContext(),
+            activity,
             this,
             emojiService,
             keyClickListener,
             reactionsListener,
-            emojiReactions);
+            emojiReactions
+        );
 
         this.viewPager.setAdapter(emojiPagerAdapter);
         this.viewPager.setOffscreenPageLimit(1);
@@ -319,7 +322,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
         final TabLayout tabLayout = emojiPickerView.findViewById(R.id.sliding_tabs);
         tabLayout.removeAllTabs();
 
-        for (EmojiGroup emojiGroup : EmojiManager.getEmojiGroups()) {
+        for (EmojiGroup emojiGroup : EmojiManager.emojiGroups) {
             tabLayout.addTab(
                 tabLayout.newTab()
                     .setIcon(emojiGroup.getGroupIcon())
@@ -431,7 +434,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
     }
 
     public String getGroupTitle(int id) {
-        return getContext().getString(EmojiManager.getGroupName(id)).toUpperCase();
+        return getContext().getString(EmojiManager.getEmojiGroupName(id)).toUpperCase();
     }
 
     private void refreshRecentView() {
@@ -466,6 +469,6 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
         void onEmojiClick(String emojiCodeString);
 
-        void onShowPicker();
+        default void onShowPicker() {}
     }
 }

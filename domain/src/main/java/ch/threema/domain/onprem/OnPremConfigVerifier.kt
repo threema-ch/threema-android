@@ -23,8 +23,8 @@ package ch.threema.domain.onprem
 
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.Base64
-import ch.threema.base.utils.lastLine
-import ch.threema.base.utils.withoutLastLine
+import ch.threema.common.lastLine
+import ch.threema.common.withoutLastLine
 import java.io.IOException
 import java.security.InvalidAlgorithmParameterException
 import java.security.InvalidKeyException

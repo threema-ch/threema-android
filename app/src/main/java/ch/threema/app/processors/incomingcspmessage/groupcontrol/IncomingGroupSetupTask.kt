@@ -31,15 +31,13 @@ import ch.threema.app.protocol.SpecialContact
 import ch.threema.app.protocol.UserContact
 import ch.threema.app.protocol.runValidContactsLookupSteps
 import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
-import ch.threema.app.tasks.ReflectionFailed
-import ch.threema.app.tasks.ReflectionPreconditionFailed
-import ch.threema.app.tasks.ReflectionSuccess
+import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.tasks.toFullSyncContact
 import ch.threema.app.tasks.toGroupSync
 import ch.threema.app.voip.groupcall.localGroupId
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -48,6 +46,7 @@ import ch.threema.data.repositories.ContactCreateException
 import ch.threema.data.repositories.ContactReflectException
 import ch.threema.data.repositories.ContactStoreException
 import ch.threema.data.repositories.GroupCreateException
+import ch.threema.data.repositories.InvalidContactException
 import ch.threema.data.repositories.UnexpectedContactException
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
@@ -267,6 +266,8 @@ class IncomingGroupSetupTask(
                         it.identity,
                     )
                     // This should never happen
+                    is InvalidContactException -> throw e
+                    // This should never happen
                     is UnexpectedContactException -> throw e
                     // This should never happen
                     is ContactReflectException -> throw e
@@ -315,12 +316,12 @@ class IncomingGroupSetupTask(
                 multiDeviceManager,
             ).reflect(handle)
             when (reflectionResult) {
-                is ReflectionFailed -> {
+                is ReflectionResult.Failed -> {
                     logger.error("Reflection of group update failed", reflectionResult.exception)
                     return ReceiveStepsResult.DISCARD
                 }
 
-                is ReflectionPreconditionFailed -> {
+                is ReflectionResult.PreconditionFailed -> {
                     logger.error(
                         "Group sync race: Transaction precondition failed",
                         reflectionResult.transactionException,
@@ -328,7 +329,13 @@ class IncomingGroupSetupTask(
                     return ReceiveStepsResult.DISCARD
                 }
 
-                is ReflectionSuccess -> logger.info("Reflected user kicked update")
+                is ReflectionResult.MultiDeviceNotActive -> {
+                    // Note that this is an edge case that should never happen as deactivating md and processing incoming messages is both running in
+                    // tasks. However, if it happens nevertheless, we can simply log a warning and continue processing the message.
+                    logger.warn("Reflection failed because multi device is not active")
+                }
+
+                is ReflectionResult.Success -> logger.info("Reflected user kicked update")
             }
         }
 

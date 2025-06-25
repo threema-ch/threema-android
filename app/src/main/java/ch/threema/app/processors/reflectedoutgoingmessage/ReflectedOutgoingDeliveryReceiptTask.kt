@@ -35,36 +35,30 @@ import java.util.Date
 private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingDeliveryReceiptTask")
 
 internal class ReflectedOutgoingDeliveryReceiptTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.DELIVERY_RECEIPT,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<DeliveryReceiptMessage>(
+    outgoingMessage = outgoingMessage,
+    message = DeliveryReceiptMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.DELIVERY_RECEIPT,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
     private val notificationService by lazy { serviceManager.notificationService }
     private val myIdentity by lazy { serviceManager.identityStore.identity }
 
-    private val deliveryReceiptMessage by lazy { DeliveryReceiptMessage.fromReflected(message) }
-
-    override val shouldBumpLastUpdate: Boolean = false
-
-    override val storeNonces: Boolean
-        get() = deliveryReceiptMessage.protectAgainstReplay()
-
     override fun processOutgoingMessage() {
         logger.info("Processing reflected outgoing delivery receipt")
 
-        val deliveryReceiptMessage = DeliveryReceiptMessage.fromReflected(message)
+        val deliveryReceiptMessage = DeliveryReceiptMessage.fromReflected(outgoingMessage)
         val state = MessageUtil.receiptTypeToMessageState(deliveryReceiptMessage.receiptType)
 
         if (state == null) {
-            logger.warn("Message {} error: unknown delivery receipt type", message.messageId)
+            logger.warn("Message {} error: unknown delivery receipt type", outgoingMessage.messageId)
             return
         }
 
-        val identity = message.conversation.contact
+        val identity = outgoingMessage.conversation.contact
 
         for (messageId in deliveryReceiptMessage.receiptMessageIds) {
             val messageModel = messageService.getContactMessageModel(messageId, identity)
@@ -91,12 +85,12 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
                 state,
                 // the identity that reacted (this is us => reflected outgoing message)
                 myIdentity,
-                Date(message.createdAt),
+                Date(outgoingMessage.createdAt),
             )
         } else {
             when (state) {
                 MessageState.DELIVERED -> {
-                    val date = Date(message.createdAt)
+                    val date = Date(outgoingMessage.createdAt)
                     // The delivered at date is stored in created at for incoming messages
                     messageModel.createdAt = date
                     messageModel.modifiedAt = date
@@ -105,7 +99,7 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
                 }
 
                 MessageState.READ -> {
-                    val date = Date(message.createdAt)
+                    val date = Date(outgoingMessage.createdAt)
                     messageModel.readAt = date
                     messageModel.modifiedAt = date
                     messageModel.isRead = true

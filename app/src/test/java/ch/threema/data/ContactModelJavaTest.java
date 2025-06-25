@@ -143,7 +143,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -164,7 +164,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -185,7 +185,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -206,7 +206,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -227,7 +227,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -248,7 +248,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -269,7 +269,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -290,7 +290,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -311,7 +311,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -333,7 +333,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -354,7 +354,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -375,7 +375,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -396,7 +396,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -417,7 +417,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -438,7 +438,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -459,7 +459,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -480,7 +480,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -501,7 +501,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -522,7 +522,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -543,7 +543,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -564,7 +564,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -585,7 +585,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -605,7 +605,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -625,7 +625,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -645,7 +645,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );
@@ -665,7 +665,7 @@ public class ContactModelJavaTest {
         // arrange
         final String identity = "IDENTITY";
         final byte[] publicKey = new byte[32];
-        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+        final ch.threema.storage.models.ContactModel javaContactModel = ch.threema.storage.models.ContactModel.create(
             identity,
             publicKey
         );

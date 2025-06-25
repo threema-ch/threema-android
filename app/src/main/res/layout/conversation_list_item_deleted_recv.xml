@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
-    android:paddingLeft="@dimen/chat_bubble_container_padding_left_right">
+    android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
+    android:paddingBottom="@dimen/chat_bubble_container_padding_bottom">
 
     <include layout="@layout/conversation_bubble_start_recv" />
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/Threema.CardView.Bubble.Receive"
-        android:id="@+id/message_block">
+        android:id="@+id/message_block"
+        style="@style/Threema.CardView.Bubble.Receive">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
@@ -19,57 +19,60 @@
             android:orientation="vertical">
 
             <include
-                layout="@layout/conversation_bubble_header"
                 android:id="@+id/group_sender_view"
-                app:layout_constraintTop_toTopOf="parent"
+                layout="@layout/conversation_bubble_header"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ch.threema.app.emojis.EmojiConversationTextView
-                style="@style/Threema.Bubble.Text.Body.Deleted"
                 android:id="@+id/text_view"
+                style="@style/Threema.Bubble.Text.Body.Deleted"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/chat_bubble_margin_start"
                 android:layout_marginRight="@dimen/chat_bubble_margin_end"
-                android:layout_gravity="center"
+                android:alpha="0.6"
                 android:autoLink="none"
                 android:ellipsize="end"
                 android:gravity="center_horizontal"
                 android:text="@string/message_was_deleted"
+                android:textColor="@color/bubble_receive_text_colorstatelist"
+                app:layout_constraintBottom_toTopOf="@id/date_view"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/group_sender_view"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/date_view" />
+                app:layout_constraintTop_toBottomOf="@id/group_sender_view" />
 
             <TextView
-                style="@style/Threema.Bubble.Text.Footer.Deleted"
                 android:id="@+id/date_view"
+                style="@style/Threema.Bubble.Text.Footer"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom|left"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="1dp"
                 android:layout_marginLeft="@dimen/chat_bubble_margin_start"
+                android:layout_marginTop="2dp"
                 android:layout_marginRight="@dimen/chat_bubble_margin_end"
+                android:layout_marginBottom="1dp"
+                android:alpha="0.6"
                 android:ellipsize="none"
                 android:singleLine="true"
-                tools:text="17:20 PM"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                tools:text="17:20 PM" />
 
             <ImageView
                 android:id="@+id/star_icon"
-                app:srcCompat="@drawable/ic_star_golden_24dp"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:padding="3dp"
                 android:layout_gravity="center_vertical"
-                android:visibility="gone"
                 android:contentDescription="@string/starred_message"
-                tools:visibility="visible"
+                android:padding="3dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/date_view" />
+                app:layout_constraintLeft_toRightOf="@id/date_view"
+                app:srcCompat="@drawable/ic_star_golden_24dp"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp.messages
 
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import kotlin.test.Test
 import kotlin.test.assertIs
 

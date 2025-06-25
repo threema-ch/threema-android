@@ -22,18 +22,19 @@
 package ch.threema.app.services
 
 import android.content.Context
-import androidx.fragment.app.FragmentManager
 import ch.threema.app.groupflows.CreateGroupFlow
 import ch.threema.app.groupflows.DisbandGroupFlow
 import ch.threema.app.groupflows.GroupChanges
 import ch.threema.app.groupflows.GroupCreateProperties
 import ch.threema.app.groupflows.GroupDisbandIntent
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.groupflows.GroupLeaveIntent
 import ch.threema.app.groupflows.GroupResyncFlow
 import ch.threema.app.groupflows.LeaveGroupFlow
 import ch.threema.app.groupflows.RemoveGroupFlow
 import ch.threema.app.groupflows.UpdateGroupFlow
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.app.voip.groupcall.GroupCallManager
@@ -42,11 +43,13 @@ import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.protocol.api.APIConnector
+import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
+import kotlinx.coroutines.Deferred
 
 /**
  * The group flow dispatcher acts as dispatcher and executor of different group flows. Group flows
@@ -72,8 +75,9 @@ class GroupFlowDispatcher(
     private val apiService: ApiService,
     private val apiConnector: APIConnector,
     private val fileService: FileService,
-    private val databaseService: DatabaseServiceNew,
+    private val databaseService: DatabaseService,
     private val taskManager: TaskManager,
+    private val connection: ServerConnection,
 ) {
     private val outgoingCspMessageServices by lazy {
         OutgoingCspMessageServices(
@@ -97,16 +101,13 @@ class GroupFlowDispatcher(
     private val backgroundExecutor by lazy { BackgroundExecutor() }
 
     /**
-     * Create a new group from local. Providing a [fragmentManager] allows showing a progress
-     * dialog.
+     * Create a new group from local.
      */
     fun runCreateGroupFlow(
-        fragmentManager: FragmentManager?,
         context: Context,
         groupCreateProperties: GroupCreateProperties,
-    ) = backgroundExecutor.executeDeferred(
+    ): Deferred<GroupFlowResult> = backgroundExecutor.executeDeferred(
         CreateGroupFlow(
-            fragmentManager,
             context,
             groupCreateProperties,
             groupModelRepository,
@@ -115,22 +116,18 @@ class GroupFlowDispatcher(
             apiService,
             fileService,
             taskManager,
+            connection,
         ),
     )
 
     /**
-     * Update an existing group from local. Providing a [fragmentManager] allows showing a progress
-     * dialog.
-     *
-     * @return true if the group has been updated, false if an error occurred
+     * Update an existing group from local.
      */
     fun runUpdateGroupFlow(
-        fragmentManager: FragmentManager?,
         groupChanges: GroupChanges,
         groupModel: GroupModel,
     ) = backgroundExecutor.executeDeferred(
         UpdateGroupFlow(
-            fragmentManager,
             groupChanges,
             groupModel,
             groupModelRepository,
@@ -139,22 +136,18 @@ class GroupFlowDispatcher(
             apiService,
             fileService,
             taskManager,
+            connection,
         ),
     )
 
     /**
-     * Leave an existing group from local. Providing a [fragmentManager] allows showing a progress
-     * dialog.
-     *
-     * @return true if the group has been left, false if an error occurred
+     * Leave an existing group from local.
      */
     fun runLeaveGroupFlow(
-        fragmentManager: FragmentManager?,
         intent: GroupLeaveIntent,
         groupModel: GroupModel,
     ) = backgroundExecutor.executeDeferred(
         LeaveGroupFlow(
-            fragmentManager,
             intent,
             groupModel,
             groupModelRepository,
@@ -162,22 +155,18 @@ class GroupFlowDispatcher(
             apiConnector,
             outgoingCspMessageServices,
             taskManager,
+            connection,
         ),
     )
 
     /**
-     * Disband an existing group from local. Providing a [fragmentManager] allows showing a progress
-     * dialog.
-     *
-     * @return true if the group has been disbanded, false if an error occurred
+     * Disband an existing group from local.
      */
     fun runDisbandGroupFlow(
-        fragmentManager: FragmentManager?,
         intent: GroupDisbandIntent,
         groupModel: GroupModel,
     ) = backgroundExecutor.executeDeferred(
         DisbandGroupFlow(
-            fragmentManager,
             intent,
             groupModel,
             groupModelRepository,
@@ -185,35 +174,30 @@ class GroupFlowDispatcher(
             apiConnector,
             outgoingCspMessageServices,
             taskManager,
+            connection,
         ),
     )
 
     /**
-     * Remove an existing group from local. Providing a [fragmentManager] allows showing a progress
-     * dialog. Note that this flow must only be used if the group is already left or disbanded.
-     *
-     * @return true if the group has been removed, false if an error occurred
+     * Remove an existing group from local.
      */
     fun runRemoveGroupFlow(
-        fragmentManager: FragmentManager?,
         groupModel: GroupModel,
     ) = backgroundExecutor.executeDeferred(
         RemoveGroupFlow(
-            fragmentManager,
             groupModel,
             groupService,
             groupModelRepository,
             multiDeviceManager,
             nonceFactory,
             taskManager,
+            connection,
         ),
     )
 
     /**
      * Resync the given group. Note that this flow must only be used if the user is the creator of
      * the group and the group is not disbanded.
-     *
-     * @return true if the group has been resynced, false if an error occurred
      */
     fun runGroupResyncFlow(
         groupModel: GroupModel,

@@ -29,9 +29,8 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import org.apache.commons.io.EndianUtils
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("VideoMessage")
+private val logger = LoggingUtil.getThreemaLogger("VideoMessage")
 
 /**
  * A message that has a video including thumbnail (stored on the blob server) as its content.

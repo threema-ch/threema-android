@@ -1,37 +1,38 @@
+//! Bindings for the _Connection Rendezvous Protocol_.
 use js_sys::Error;
 use serde::Serialize;
-use tsify::Tsify;
+use serde_bytes::ByteBuf;
+use tsify_next::Tsify;
 use wasm_bindgen::prelude::*;
 
 use crate::d2d_rendezvous::{self, AuthenticationKey};
 
 /// Binding-friendly version of [`d2d_rendezvous::PathStateUpdate`].
-#[allow(variant_size_differences)]
 #[derive(Tsify, Serialize)]
 #[serde(tag = "state", rename_all = "kebab-case")]
 #[tsify(into_wasm_abi)]
 pub enum PathStateUpdate {
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     #[serde(rename_all = "camelCase")]
     AwaitingNominate { measured_rtt_ms: u32 },
 
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     #[serde(rename_all = "camelCase")]
-    Nominated { rph: [u8; 32] },
+    Nominated { rph: ByteBuf },
 }
 
 impl From<d2d_rendezvous::PathStateUpdate> for PathStateUpdate {
     fn from(update: d2d_rendezvous::PathStateUpdate) -> Self {
         match update {
-            d2d_rendezvous::PathStateUpdate::AwaitingNominate { measured_rtt } => {
-                Self::AwaitingNominate {
-                    measured_rtt_ms: measured_rtt
-                        .as_millis()
-                        .try_into()
-                        .expect("measured_rtt should not exceed a u32"),
-                }
+            d2d_rendezvous::PathStateUpdate::AwaitingNominate { measured_rtt } => Self::AwaitingNominate {
+                measured_rtt_ms: measured_rtt
+                    .as_millis()
+                    .try_into()
+                    .expect("measured_rtt should not exceed a u32"),
             },
-            d2d_rendezvous::PathStateUpdate::Nominated { rph } => Self::Nominated { rph: rph.0 },
+            d2d_rendezvous::PathStateUpdate::Nominated { rph } => Self::Nominated {
+                rph: ByteBuf::from(rph.0.to_vec()),
+            },
         }
     }
 }
@@ -41,16 +42,14 @@ impl From<d2d_rendezvous::PathStateUpdate> for PathStateUpdate {
 #[serde(rename_all = "camelCase")]
 #[tsify(into_wasm_abi)]
 pub struct PathProcessResult {
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     pub state_update: Option<PathStateUpdate>,
 
-    #[allow(missing_docs)]
-    #[serde(with = "serde_bytes")]
-    pub outgoing_frame: Option<Box<[u8]>>,
+    #[expect(missing_docs, reason = "Binding-friendly version")]
+    pub outgoing_frame: Option<ByteBuf>,
 
-    #[allow(missing_docs)]
-    #[serde(with = "serde_bytes")]
-    pub incoming_ulp_data: Option<Box<[u8]>>,
+    #[expect(missing_docs, reason = "Binding-friendly version")]
+    pub incoming_ulp_data: Option<ByteBuf>,
 }
 
 impl From<d2d_rendezvous::PathProcessResult> for PathProcessResult {
@@ -85,8 +84,7 @@ pub struct OutgoingFrame {
     pub pid: u32,
 
     /// The outgoing frame.
-    #[serde(with = "serde_bytes")]
-    pub frame: Box<[u8]>,
+    pub frame: ByteBuf,
 }
 
 impl From<(u32, d2d_rendezvous::OutgoingFrame)> for OutgoingFrame {
@@ -113,20 +111,10 @@ impl RendezvousProtocol {
     ///
     /// Throws if `ak` is not exactly 32 bytes.
     #[wasm_bindgen(js_name = newAsRid)]
-    pub fn new_as_rid(
-        is_nominator: bool,
-        ak: &[u8],
-        pids: &[u32],
-    ) -> Result<RendezvousProtocol, Error> {
-        let ak: [u8; 32] = ak
-            .try_into()
-            .map_err(|_| Error::new("AK must be 32 bytes"))?;
+    pub fn new_as_rid(is_nominator: bool, ak: &[u8], pids: &[u32]) -> Result<RendezvousProtocol, Error> {
+        let ak: [u8; 32] = ak.try_into().map_err(|_| Error::new("AK must be 32 bytes"))?;
         Ok(Self {
-            inner: d2d_rendezvous::RendezvousProtocol::new_as_rid(
-                is_nominator,
-                AuthenticationKey(ak),
-                pids,
-            ),
+            inner: d2d_rendezvous::RendezvousProtocol::new_as_rid(is_nominator, AuthenticationKey(ak), pids),
             initial_outgoing_frames: None,
         })
     }
@@ -143,19 +131,10 @@ impl RendezvousProtocol {
     ///
     /// Throws if `ak` is not exactly 32 bytes.
     #[wasm_bindgen(js_name = newAsRrd)]
-    pub fn new_as_rrd(
-        is_nominator: bool,
-        ak: &[u8],
-        pids: &[u32],
-    ) -> Result<RendezvousProtocol, Error> {
-        let ak: [u8; 32] = ak
-            .try_into()
-            .map_err(|_| Error::new("AK must be 32 bytes"))?;
-        let (inner, initial_outgoing_frames) = d2d_rendezvous::RendezvousProtocol::new_as_rrd(
-            is_nominator,
-            AuthenticationKey(ak),
-            pids,
-        );
+    pub fn new_as_rrd(is_nominator: bool, ak: &[u8], pids: &[u32]) -> Result<RendezvousProtocol, Error> {
+        let ak: [u8; 32] = ak.try_into().map_err(|_| Error::new("AK must be 32 bytes"))?;
+        let (inner, initial_outgoing_frames) =
+            d2d_rendezvous::RendezvousProtocol::new_as_rrd(is_nominator, AuthenticationKey(ak), pids);
         Ok(Self {
             inner,
             initial_outgoing_frames: Some(OutgoingFrames::from(initial_outgoing_frames)),
@@ -185,7 +164,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::add_chunks`].
-    #[allow(clippy::missing_errors_doc)]
+    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
     #[wasm_bindgen(js_name = addChunk)]
     pub fn add_chunk(&mut self, pid: u32, chunk: &[u8]) -> Result<(), Error> {
         self.inner
@@ -194,7 +173,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::process_frame`].
-    #[allow(clippy::missing_errors_doc)]
+    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
     #[wasm_bindgen(js_name = processFrame)]
     pub fn process_frame(&mut self, pid: u32) -> Result<Option<PathProcessResult>, Error> {
         self.inner
@@ -204,7 +183,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::nominate_path`].
-    #[allow(clippy::missing_errors_doc)]
+    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
     #[wasm_bindgen(js_name = nominatePath)]
     pub fn nominate_path(&mut self, pid: u32) -> Result<PathProcessResult, Error> {
         self.inner
@@ -214,7 +193,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::create_ulp_frame`].
-    #[allow(clippy::missing_errors_doc)]
+    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
     #[wasm_bindgen(js_name = createUlpFrame)]
     pub fn create_ulp_frame(&mut self, outgoing_data: Vec<u8>) -> Result<PathProcessResult, Error> {
         self.inner

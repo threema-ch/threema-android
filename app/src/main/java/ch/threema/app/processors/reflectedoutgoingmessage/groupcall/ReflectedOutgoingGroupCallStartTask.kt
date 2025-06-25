@@ -28,27 +28,20 @@ import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D
 
 internal class ReflectedOutgoingGroupCallStartTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_CALL_START,
-    serviceManager,
+) : ReflectedOutgoingGroupMessageTask<GroupCallStartMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupCallStartMessage.fromReflected(
+        message = outgoingMessage,
+        ownIdentity = serviceManager.identityStore.identity,
+    ),
+    type = Common.CspE2eMessageType.GROUP_CALL_START,
+    serviceManager = serviceManager,
 ) {
     private val groupCallManager = serviceManager.groupCallManager
 
-    private val identityStore = serviceManager.identityStore
-
-    private val groupCallStartMessage = GroupCallStartMessage.fromReflected(
-        message = message,
-        ownIdentity = identityStore.identity,
-    )
-
-    override val storeNonces: Boolean = groupCallStartMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean = groupCallStartMessage.bumpLastUpdate()
-
     override fun processOutgoingMessage() {
-        groupCallManager.handleControlMessage(groupCallStartMessage)
+        groupCallManager.handleControlMessage(message)
     }
 }

@@ -27,9 +27,8 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("VoipCallRingingMessage")
+private val logger = LoggingUtil.getThreemaLogger("VoipCallRingingMessage")
 
 /**
  * This packet is sent by the receiver of a call.

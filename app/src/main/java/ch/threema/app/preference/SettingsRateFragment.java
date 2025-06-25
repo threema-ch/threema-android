@@ -35,7 +35,7 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.dialogs.RateDialog;
+import ch.threema.app.rating.RateDialog;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 

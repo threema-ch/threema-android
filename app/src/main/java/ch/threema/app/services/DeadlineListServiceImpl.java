@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 
 import java.util.HashMap;
 
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.base.utils.LoggingUtil;
 
 public class DeadlineListServiceImpl implements DeadlineListService {

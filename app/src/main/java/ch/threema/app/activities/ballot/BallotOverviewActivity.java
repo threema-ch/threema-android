@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
@@ -58,7 +59,9 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SelectorDialogItem;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -125,23 +128,23 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     private final BallotListener ballotListener = new BallotListener() {
         @Override
         public void onClosed(BallotModel ballotModel) {
-            RuntimeUtil.runOnUiThread(() -> updateList());
+            RuntimeUtil.runOnUiThread(updateList);
         }
 
         @Override
         public void onModified(BallotModel ballotModel) {
-            RuntimeUtil.runOnUiThread(() -> updateList());
+            RuntimeUtil.runOnUiThread(updateList);
         }
 
         @Override
         public void onCreated(BallotModel ballotModel) {
-            RuntimeUtil.runOnUiThread(() -> updateList());
+            RuntimeUtil.runOnUiThread(updateList);
 
         }
 
         @Override
         public void onRemoved(BallotModel ballotModel) {
-            RuntimeUtil.runOnUiThread(() -> updateList());
+            RuntimeUtil.runOnUiThread(updateList);
 
         }
 
@@ -158,6 +161,15 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
             return false;
         }
     };
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(android.R.id.list),
+            InsetSides.lbr()
+        );
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,10 +231,10 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
+        super.onPause();
         ListenerManager.ballotListeners.remove(this.ballotListener);
         ListenerManager.ballotVoteListeners.remove(this.ballotVoteListener);
-        super.onDestroy();
     }
 
     private void setupList() {
@@ -449,21 +461,15 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
         }
 
         this.updateList();
-
     }
 
     @Override
     public void onYes(String tag, Object data) {
         if (tag.equals(DIALOG_TAG_BALLOT_DELETE)) {
             removeSelectedBallotsDo((SparseBooleanArray) data);
-        } else if (tag.equals(ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT)) {
-            BallotUtil.closeBallot(this, (BallotModel) data, ballotService, new MessageId(), TriggerSource.LOCAL);
+        } else if (tag.equals(AppConstants.CONFIRM_TAG_CLOSE_BALLOT)) {
+            BallotUtil.closeBallot(this, (BallotModel) data, ballotService, MessageId.random(), TriggerSource.LOCAL);
         }
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
-
     }
 
     @Override
@@ -481,16 +487,6 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                 BallotUtil.requestCloseBallot(ballotModel, myIdentity, null, this);
                 break;
         }
-    }
-
-    @Override
-    public void onCancel(String tag) {
-
-    }
-
-    @Override
-    public void onNo(String tag) {
-
     }
 
     public class MessageSectionAction implements ActionMode.Callback {

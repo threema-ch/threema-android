@@ -31,7 +31,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.lang.reflect.Method;
 
@@ -70,22 +69,6 @@ public class ViewUtil {
         return true;
     }
 
-    /**
-     * show the first view and hide the second, return true if the views exist
-     *
-     * @param viewToHide
-     * @param viewToShow
-     * @return
-     */
-    public static boolean showAndHide(View viewToShow, View viewToHide) {
-        if (viewToShow == null || viewToHide == null) {
-            return false;
-        }
-
-        return show(viewToShow, true)
-            && show(viewToHide, false);
-    }
-
     public static boolean showAndSet(ImageView view, int imageResourceId) {
         if (!show(view)) {
             return false;
@@ -93,7 +76,6 @@ public class ViewUtil {
         view.setImageResource(imageResourceId);
         return true;
     }
-
 
     /**
      * show a text view and set the text, return true if the view exist

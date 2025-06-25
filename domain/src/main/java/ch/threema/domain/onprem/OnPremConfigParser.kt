@@ -23,14 +23,14 @@ package ch.threema.domain.onprem
 
 import ch.threema.base.utils.Base64
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.TimeProvider
-import ch.threema.base.utils.plus
+import ch.threema.common.TimeProvider
+import ch.threema.common.plus
+import ch.threema.common.toIntArray
+import ch.threema.common.toJSONObjectList
 import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
-import ch.threema.domain.utils.toIntArray
-import ch.threema.domain.utils.toJSONObjectList
 import java.io.IOException
 import java.text.ParseException
 import java.time.Instant
@@ -41,9 +41,8 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import org.json.JSONException
 import org.json.JSONObject
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("OnPremConfigParser")
+private val logger = LoggingUtil.getThreemaLogger("OnPremConfigParser")
 
 class OnPremConfigParser(
     private val timeProvider: TimeProvider = TimeProvider.default,

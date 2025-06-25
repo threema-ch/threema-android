@@ -57,9 +57,11 @@ class ReflectUserProfileIdentityLinksTask(
     override val type: String = "ReflectUserProfileIdentityLinksTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        check(multiDeviceManager.isMultiDeviceActive) {
-            "Multi device is not active and a user profile identity link change must not be reflected"
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            logger.warn("Cannot reflect identity links because multi device is not active")
+            return
         }
+
         handle.createTransaction(
             keys = mdProperties.keys,
             scope = TransactionScope.Scope.USER_PROFILE_SYNC,

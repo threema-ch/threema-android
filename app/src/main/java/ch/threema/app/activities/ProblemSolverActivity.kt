@@ -34,15 +34,18 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.SpacingValues
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.PowermanagerUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
-import java.time.Instant
 
 private val logger = LoggingUtil.getThreemaLogger("ProblemSolverActivity")
 
@@ -54,10 +57,6 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
     private val settingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { _: ActivityResult? -> recreate() }
-
-    private val notificationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-    ) { _: Boolean -> recreate() }
 
     private class Problem(
         // title text used in problem solver box
@@ -104,11 +103,11 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
                 !PowermanagerUtil.isIgnoringBatteryOptimizations(ThreemaApplication.getAppContext()),
         ),
         Problem(
-            title = R.string.problemsolver_title_android_version_deprecated,
-            explanation = R.string.problemsolver_explain_android_version_deprecated,
+            title = R.string.problemsolver_title_android_version_retired,
+            explanation = R.string.problemsolver_explain_android_version_retired,
             intentAction = null,
             check = Build.VERSION.SDK_INT < Build.VERSION_CODES.N &&
-                ThreemaApplication.getServiceManager()?.preferenceService?.lastDeprecatedAndroidVersionWarningDismissed == null,
+                ThreemaApplication.getServiceManager()?.preferenceService?.shouldShowUnsupportedAndroidVersionWarning() == true,
         ),
     )
 
@@ -128,6 +127,15 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
         showProblems()
 
         return success
+    }
+
+    override fun handleDeviceInsets() {
+        super.handleDeviceInsets()
+
+        findViewById<NestedScrollView>(R.id.scroll_container).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.lbr(),
+            ownPadding = SpacingValues.all(R.dimen.grid_unit_x2),
+        )
     }
 
     private fun showProblems() {
@@ -155,7 +163,7 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
             problemsParentLayout.addView(itemLayout)
         }
 
-        if (problems.singleOrNull()?.title == R.string.problemsolver_title_android_version_deprecated) {
+        if (problems.singleOrNull()?.title == R.string.problemsolver_title_android_version_retired) {
             findViewById<View>(R.id.intro_text).isVisible = false
             findViewById<View>(R.id.info_icon).isVisible = false
             findViewById<View>(R.id.info_text).isVisible = false
@@ -167,8 +175,8 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
     }
 
     private fun onProblemClick(problem: Problem) {
-        if (problem.title == R.string.problemsolver_title_android_version_deprecated) {
-            ThreemaApplication.requireServiceManager().preferenceService.setLastDeprecatedAndroidVersionWarningDismissed(Instant.now())
+        if (problem.title == R.string.problemsolver_title_android_version_retired) {
+            ThreemaApplication.requireServiceManager().preferenceService.setUnsupportedAndroidVersionDismissedNow()
             recreate()
             return
         }

@@ -21,8 +21,8 @@
 
 package ch.threema.app.ui;
 
-import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
-import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
+import static ch.threema.app.preference.service.PreferenceService.ImageScale_DEFAULT;
+import static ch.threema.app.preference.service.PreferenceService.VideoSize_DEFAULT;
 import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
@@ -45,7 +45,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;

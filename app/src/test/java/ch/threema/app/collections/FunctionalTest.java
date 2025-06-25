@@ -22,83 +22,15 @@
 package ch.threema.app.collections;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import static junit.framework.Assert.assertEquals;
 
 public class FunctionalTest {
-
-    @Test
-    public void mapCollection() {
-        final List<String> names = new ArrayList<>();
-        names.add("MC Hammer");
-        names.add("Knöppel");
-        names.add(null);
-        names.add("Nella Martinetti");
-
-        final Collection<Integer> lengthsCollection = Functional.map(names, new IMap<String, Integer>() {
-            @Override
-            public Integer apply(String value) {
-                if (value == null) {
-                    return null;
-                }
-                return value.length();
-            }
-        });
-
-        Assert.assertArrayEquals(
-            new Integer[]{9, 7, null, 16},
-            lengthsCollection.toArray(new Integer[lengthsCollection.size()])
-        );
-    }
-
-    @Test
-    public void mapList() {
-        final List<String> names = new ArrayList<>();
-        names.add("MC Hammer");
-        names.add("Knöppel");
-
-        final List<String> lengthsCollection = Functional.map(names, new IMap<String, String>() {
-            @Override
-            public String apply(String value) {
-                return value.toUpperCase();
-            }
-        });
-
-        Assert.assertArrayEquals(
-            new String[]{"MC HAMMER", "KNÖPPEL"},
-            lengthsCollection.toArray(new String[lengthsCollection.size()])
-        );
-    }
-
-    @Test
-    public void filterNullable() {
-        final List<String> names = new ArrayList<>();
-        names.add("MC Hammer");
-        names.add("Knöppel");
-        names.add(null);
-        names.add("Nella Martinetti");
-
-        final List<String> nonNull = Functional.filter(names, new IPredicate<String>() {
-            @Override
-            public boolean apply(@Nullable String value) {
-                return value != null;
-            }
-        });
-
-        assertEquals(3, nonNull.size());
-        assertEquals("MC Hammer", nonNull.get(0));
-        assertEquals("Knöppel", nonNull.get(1));
-        assertEquals("Nella Martinetti", nonNull.get(2));
-    }
 
     @Test
     public void filterNonNull() {

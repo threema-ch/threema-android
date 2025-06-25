@@ -26,12 +26,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ballot.IdentityBallotModel;
 
 public class IdentityBallotModelFactory extends ModelFactory {
 
-    public IdentityBallotModelFactory(DatabaseServiceNew databaseService) {
+    public IdentityBallotModelFactory(DatabaseService databaseService) {
         super(databaseService, IdentityBallotModel.TABLE);
     }
 
@@ -58,7 +58,7 @@ public class IdentityBallotModelFactory extends ModelFactory {
             final IdentityBallotModel c = new IdentityBallotModel();
 
             //convert default
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
                 public boolean next(CursorHelper cursorHelper) {
                     c
@@ -85,7 +85,7 @@ public class IdentityBallotModelFactory extends ModelFactory {
 
     public boolean create(IdentityBallotModel identityBallotModel) {
         ContentValues contentValues = buildContentValues(identityBallotModel);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             identityBallotModel.setId((int) newId);
             return true;
@@ -94,7 +94,7 @@ public class IdentityBallotModelFactory extends ModelFactory {
     }
 
     public int deleteByBallotId(int ballotId) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             IdentityBallotModel.COLUMN_BALLOT_ID + "=?",
             new String[]{
                 String.valueOf(ballotId)
@@ -102,7 +102,7 @@ public class IdentityBallotModelFactory extends ModelFactory {
     }
 
     private IdentityBallotModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

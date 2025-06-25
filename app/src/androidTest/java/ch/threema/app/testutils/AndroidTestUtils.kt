@@ -28,11 +28,11 @@ import ch.threema.data.models.GroupIdentity
 fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
     // First get all available contacts and groups
     val contactIdentities =
-        serviceManager.databaseServiceNew.contactModelFactory.all.map { contact ->
+        serviceManager.databaseService.contactModelFactory.all.map { contact ->
             contact.identity
         }
     val groupModelRepository = serviceManager.modelRepositories.groups
-    val groups = serviceManager.databaseServiceNew.groupModelFactory.all
+    val groups = serviceManager.databaseService.groupModelFactory.all
         .map { group ->
             GroupIdentity(group.creatorIdentity, group.apiGroupId.toLong())
         }.onEach {
@@ -42,14 +42,14 @@ fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
         }
 
     // Clear entire database
-    serviceManager.databaseServiceNew.writableDatabase.apply {
+    serviceManager.databaseService.writableDatabase.apply {
         rawExecSQL("PRAGMA writable_schema = 1;")
         rawExecSQL("DELETE FROM sqlite_master where type in ('table', 'index', 'trigger');")
         rawExecSQL("PRAGMA writable_schema = 0;")
         rawExecSQL("VACUUM;")
         rawExecSQL("PRAGMA integrity_check;")
         // Recreate the database
-        serviceManager.databaseServiceNew.onCreate(this)
+        serviceManager.databaseService.onCreate(this)
     }
 
     // Clear caches in services and trigger listeners to refresh the new models from database

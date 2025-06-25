@@ -32,11 +32,14 @@ import android.widget.TextView;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -69,15 +72,21 @@ public class SessionsIntroActivity extends ThreemaToolbarActivity {
             linkText.setVisibility(View.GONE);
         }
 
-        launchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setEnabled(false);
-                sharedPreferences.edit().putBoolean(getString(R.string.preferences__web_client_welcome_shown), true).apply();
-                setResult(RESULT_OK);
-                finish();
-            }
+        launchButton.setOnClickListener(v -> {
+            v.setEnabled(false);
+            sharedPreferences.edit().putBoolean(getString(R.string.preferences__web_client_welcome_shown), true).apply();
+            setResult(RESULT_OK);
+            finish();
         });
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.scroll_container),
+            InsetSides.lbr()
+        );
     }
 
     @Override
@@ -86,13 +95,10 @@ public class SessionsIntroActivity extends ThreemaToolbarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

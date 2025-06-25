@@ -4,7 +4,7 @@
     <solid android:color="#44000000" />
     <stroke
         android:width="3dp"
-        android:color="@color/md_theme_dark_primary" />
+        android:color="?attr/colorPrimary" />
     <corners android:radius="@dimen/media_attach_button_radius" />
 </shape>
 

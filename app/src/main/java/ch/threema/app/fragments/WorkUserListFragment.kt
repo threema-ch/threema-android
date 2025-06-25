@@ -44,9 +44,8 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.IdentityState
 import ch.threema.storage.models.ContactModel
 import com.bumptech.glide.Glide
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("WorkUserListFragment")
+private val logger = LoggingUtil.getThreemaLogger("WorkUserListFragment")
 
 class WorkUserListFragment : RecipientListFragment() {
     init {

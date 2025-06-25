@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="pref_key_about"
     android:persistent="true"
     android:title="@string/menu_about">
@@ -27,13 +28,23 @@
         android:key="pref_key_about_header"
         android:title="@string/threema_version">
 
-        <Preference android:key="@string/preferences__about" />
+        <Preference android:key="@string/preferences__version" />
+        <Preference android:key="@string/preferences__version_code" />
         <Preference android:key="@string/preferences__device_info" />
 
         <Preference
             android:key="@string/preferences__check_updates"
             android:title="@string/check_updates" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/preferences__hidden_info_section"
+        android:title="Info"
+        app:isPreferenceVisible="false">
+        <Preference
+            android:key="@string/preferences__installer_package"
+            android:title="Installer Package" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -47,16 +58,6 @@
         <Preference
             android:key="@string/preferences__onprem_server"
             android:title="@string/server_hint" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="pref_key_feedback_credits"
-        android:title="@string/credits">
-
-        <Preference
-            android:key="@string/preferences__translators"
-            android:title="@string/translators" />
 
     </PreferenceCategory>
 

@@ -32,9 +32,6 @@ import java.util.Map;
 
 import androidx.collection.SparseArrayCompat;
 
-/**
- * Functional functionality (map / filter / select etc)
- */
 public class Functional {
 
     /**
@@ -53,29 +50,9 @@ public class Functional {
 
     /**
      * Filter a collection using the predicate.
-     */
-    public static <T> Collection<T> filter(Collection<T> target, IPredicate<T> predicate) {
-        Collection<T> result = new ArrayList<>();
-        for (T element : target) {
-            if (predicate.apply(element)) {
-                result.add(element);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Filter a collection using the predicate.
      * Null values are always retained and not passed to the predicate.
      */
     public static <T> List<T> filter(List<T> target, IPredicateNonNull<T> predicate) {
-        return (List<T>) Functional.filter((Collection<T>) target, predicate);
-    }
-
-    /**
-     * Filter a collection using the predicate.
-     */
-    public static <T> List<T> filter(List<T> target, IPredicate<T> predicate) {
         return (List<T>) Functional.filter((Collection<T>) target, predicate);
     }
 
@@ -119,47 +96,5 @@ public class Functional {
             }
         }
         return null;
-    }
-
-    public static <T> T select(Collection<T> target, IPredicateNonNull<T> predicate, T defaultValue) {
-        T result = defaultValue;
-        for (T element : target) {
-            if (element == null || !predicate.apply(element))
-                continue;
-            result = element;
-            break;
-        }
-        return result;
-    }
-
-    public static <T> T select(T[] target, IPredicateNonNull<T> predicate, T defaultValue) {
-        T result = defaultValue;
-        for (T element : target) {
-            if (element == null || !predicate.apply(element))
-                continue;
-            result = element;
-            break;
-        }
-        return result;
-    }
-
-    /**
-     * Apply a mapping function to all elements of a collection.
-     * Return a new collection with those elements.
-     */
-    public static <T, U> Collection<U> map(Collection<T> target, IMap<T, U> mapping) {
-        Collection<U> result = new ArrayList<>();
-        for (T element : target) {
-            result.add(mapping.apply(element));
-        }
-        return result;
-    }
-
-    /**
-     * Apply a mapping function to all elements of a list.
-     * Return a new list with those elements.
-     */
-    public static <T, U> List<U> map(List<T> target, IMap<T, U> mapping) {
-        return (List<U>) Functional.map((Collection<T>) target, mapping);
     }
 }

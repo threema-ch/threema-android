@@ -14,14 +14,14 @@
         android:key="pref_key_voip"
         android:title="@string/prefs_title_voip">
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:defaultValue="true"
             android:key="@string/preferences__voip_enable"
             android:icon="@drawable/ic_phone_locked_outline"
             android:widgetLayout="@layout/preference_switch_layout"
             android:title="@string/prefs_title_voip_enable" />
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:defaultValue="true"
             android:key="@string/preferences__voip_video_enable"
             android:icon="@drawable/ic_camera_locked"
@@ -29,7 +29,7 @@
             android:dependency="@string/preferences__voip_enable"
             android:widgetLayout="@layout/preference_switch_layout" />
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:widgetLayout="@layout/preference_switch_layout"
             android:defaultValue="false"
             android:key="@string/preferences__voip_force_turn"
@@ -68,7 +68,7 @@
         android:key="pref_key_group_calls_settings"
         android:title="@string/group_calls">
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:defaultValue="true"
             android:key="@string/preferences__group_calls_enable"
             android:icon="@drawable/ic_phone_locked_outline"

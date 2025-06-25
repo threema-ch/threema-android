@@ -7,7 +7,6 @@
     </style>
 
     <style name="Threema.ActionMode.TitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
-        <item name="fontFamily">@font/lab_grotesque</item>
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
@@ -23,7 +22,12 @@
         <item name="android:id">@id/action_overflow_button</item>
     </style>
 
+    <style name="Overlay.Threema.PopupMenuStyle.Overflow" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
+        <item name="colorSurfaceContainer">?attr/colorSurfaceContainerLowest</item>
+    </style>
+
     <style name="Threema.PopupMenuStyle.Overflow" parent="@style/Widget.Material3.PopupMenu.Overflow">
+        <item name="materialThemeOverlay">@style/Overlay.Threema.PopupMenuStyle.Overflow</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="tint">?attr/colorOnSurface</item>
     </style>
@@ -60,9 +64,7 @@
         <item name="android:background">?android:attr/colorBackground</item>
     </style>
 
-    <style name="Threema.TextAppearance.Headline" parent="@style/TextAppearance.Material3.HeadlineSmall">
-        <item name="fontFamily">@font/lab_grotesque</item>
-    </style>
+    <style name="Threema.TextAppearance.Headline" parent="@style/TextAppearance.Material3.HeadlineSmall" />
 
     <style name="Threema.TextAppearance.MediaViewer.Title" parent="@style/Threema.TextAppearance.Toolbar.Title">
         <item name="android:textColor">@color/md_theme_dark_onSurface</item>
@@ -77,18 +79,15 @@
         <item name="android:letterSpacing">0</item>
         <item name="lineHeight">23sp</item>
         <item name="android:lineHeight">23sp</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
     </style>
 
     <style name="Threema.TextAppearance.Toolbar.SubTitle" parent="@style/TextAppearance.Material3.ActionBar.Subtitle">
         <item name="android:letterSpacing">0</item>
         <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
     </style>
 
     <style name="Threema.Text.Overline" parent="@style/TextAppearance.Material3.TitleMedium">
         <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -190,6 +189,8 @@
 
     <style name="Threema.AlertDialogStyle" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorControlActivated">?attr/colorPrimary</item>
+        <item name="backgroundTint">?attr/colorSurfaceContainerLow</item>
+        <item name="android:background">?attr/colorSurfaceContainerLow</item>
     </style>
 
     <style name="Threema.FingerprintAlertDialogStyle" parent="@style/Threema.AlertDialogStyle">
@@ -233,6 +234,11 @@
     <style name="Threema.ShapeAppearance.DeleteMediaItem" parent="@style/ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Threema.AppBarLayoutStyle" parent="@style/Widget.Material3.AppBarLayout">
+        <item name="android:background">?attr/colorSurfaceContainerLow</item>
+        <item name="liftOnScrollColor">?attr/colorSurfaceContainerHigh</item>
     </style>
 
     <style name="Threema.ToolbarStyle" parent="@style/Widget.Material3.Toolbar">
@@ -293,19 +299,13 @@
         <item name="android:letterSpacing">0.012</item>
     </style>
 
-    <style name="Threema.Bubble.Text.Footer.Deleted" parent="Threema.Bubble.Text.Footer">
-        <item name="android:textColor">@color/bubble_text_deleted_colorstatelist</item>
-    </style>
-
     <style name="Threema.Bubble.Text.Body.Deleted" parent="@style/Threema.Bubble.Text.Body">
-        <item name="android:textColor">@color/bubble_text_deleted_colorstatelist</item>
         <item name="android:textStyle">italic</item>
     </style>
 
     <style name="Threema.Bubble.Text.Body.HistoryNoCaption" parent="@style/Threema.Bubble.Text.Body.Deleted" />
 
     <style name="Threema.Bubble.Text.Body.Status" parent="">
-        <item name="fontFamily">@font/lab_grotesque</item>
         <item name="android:textColor">@color/bubble_text_status_colorstatelist</item>
         <item name="android:textSize">?attr/font_status</item>
         <item name="android:letterSpacing">0.012</item>
@@ -334,7 +334,6 @@
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textSize">28sp</item>
         <item name="lineHeight">32sp</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
     </style>
 
     <style name="Threema.TextAppearance.Subtitle" parent="@style/TextAppearance.Material3.TitleMedium">
@@ -345,14 +344,13 @@
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textSize">18sp</item>
         <item name="lineHeight">24sp</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
     </style>
 
     <style name="Threema.TextAppearance.List.FirstLine.Bold" parent="Threema.TextAppearance.List.FirstLine">
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Threema.TextAppearance.List.SecondLine" parent="@style/Threema.TextAppearance.BodyMedium"></style>
+    <style name="Threema.TextAppearance.List.SecondLine" parent="@style/Threema.TextAppearance.BodyMedium" />
 
     <style name="Threema.TextAppearance.List.SecondLine.Bold" parent="@style/Threema.TextAppearance.List.SecondLine">
         <item name="android:textStyle">bold</item>
@@ -383,7 +381,6 @@
     </style>
 
     <style name="Threema.TextAppearance.Emptyview" parent="@style/Threema.TextAppearance.Subtitle">
-        <item name="fontFamily">@font/lab_grotesque</item>
         <item name="android:textSize">18sp</item>
     </style>
 
@@ -427,13 +424,15 @@
 
     <style name="Threema.Dialog.Wizard" parent="@style/Theme.Material3.Dark.Dialog.Alert">
         <item name="colorSurface">@color/md_theme_dark_surface</item>
-        <item name="colorAccent">@color/color_wizard_primary</item>
-        <item name="colorPrimary">@color/color_wizard_primary</item>
-        <item name="colorOnPrimary">@color/color_wizard_on_primary</item>
+        <item name="colorAccent">@color/md_theme_dark_primary</item>
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
         <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
         <item name="colorOutline">@color/md_theme_dark_outline</item>
         <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
         <item name="elevationOverlayColor">@color/md_theme_dark_outline</item>
+        <item name="android:backgroundTint">@color/md_theme_dark_surfaceContainer</item>
+        <item name="android:backgroundDimAmount">0.8</item>
     </style>
 
     <!-- Conversation bubble font sizes -->
@@ -471,14 +470,13 @@
     <!-- wizard -->
     <style name="WizardTitleText">
         <item name="android:textAlignment">center</item>
-        <item name="android:fontFamily">@font/lab_grotesque</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/wizard_title_text_size</item>
         <item name="android:layout_marginTop">@dimen/wizard_title_text_margin_top</item>
-        <item name="android:textColor">@color/color_wizard_on_primary</item>
+        <item name="android:textColor">@color/md_theme_dark_onSurface</item>
         <item name="android:textColorHint">?android:attr/textColorHint</item>
         <item name="android:textColorHighlight">?android:attr/textColorHighlight</item>
-        <item name="android:textColorLink">@color/color_wizard_primary</item>
+        <item name="android:textColorLink">@color/md_theme_dark_primary</item>
     </style>
 
     <style name="WizardSubTitleText" parent="@style/WizardTitleText">
@@ -593,11 +591,9 @@
     </style>
 
     <style name="DateSeparatorText" parent="@style/TextAppearance.Material3.BodyMedium">
-        <item name="android:fontFamily">@font/lab_grotesque</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/date_separator_text_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">?attr/font_medium</item>
-        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="Threema.BadgeStyle" parent="@style/Widget.Material3.Badge">
@@ -694,7 +690,7 @@
     </style>
 
     <style name="Threema.MaterialButton.Wizard" parent="@style/Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/color_wizard_primary</item>
+        <item name="android:textColor">@color/md_theme_dark_primary</item>
     </style>
 
     <style name="Threema.MaterialButton.Fatal" parent="@style/Widget.Material3.Button">
@@ -734,8 +730,8 @@
     <!-- square button with icon only -->
     <style name="Threema.MaterialButton.Icon" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-        <item name="backgroundColor">?attr/colorPrimaryContainer</item>
-        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="backgroundColor">?attr/colorSecondaryContainer</item>
+        <item name="iconTint">?attr/colorOnSecondaryContainer</item>
     </style>
 
     <!-- outline text button with icon -->
@@ -793,19 +789,26 @@
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginStart">0dp</item>
         <item name="ensureMinTouchTargetSize">false</item>
-        <item name="android:textColor">@color/color_wizard_primary</item>
-        <item name="iconTint">@color/color_wizard_primary</item>
+        <item name="android:textColor">@color/md_theme_dark_primary</item>
+        <item name="iconTint">@color/md_theme_dark_primary</item>
     </style>
 
     <style name="Threema.TextAppearance.DetailTitle" parent="@style/TextAppearance.Material3.DisplaySmall">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
     </style>
 
     <style name="Threema.RadioButton" parent="@style/Widget.Material3.CompoundButton.RadioButton">
         <!-- we deliberately override minTouchTargetSize as this results in an ugly sprawled out appearance of RadioGroups -->
         <item name="android:minHeight">18dp</item>
+    </style>
+
+    <style name="Threema.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Threema.Switch</item>
+    </style>
+
+    <style name="ThemeOverlay.Threema.Switch" parent="">
+        <item name="colorSurfaceContainerHighest">?attr/colorSurfaceContainerLowest</item>
     </style>
 
     <style name="Threema.SpinnerStyle" parent="@style/Widget.AppCompat.Spinner">
@@ -814,7 +817,7 @@
         <item name="android:elevation">8dp</item>
     </style>
 
-    <style name="Threema.ChipStyle" parent="@style/Widget.Material3.Chip.Assist"></style>
+    <style name="Threema.ChipStyle" parent="@style/Widget.Material3.Chip.Assist" />
 
     <style name="Threema.Chip.Outline.Action.WithIcon" parent="@style/Widget.Material3.Chip.Assist">
         <item name="android:textColor">?attr/colorPrimary</item>
@@ -828,8 +831,8 @@
     <style name="Threema.Chip.VideoTranscoder" parent="@style/Widget.Material3.Chip.Assist">
         <item name="android:textAppearance">@style/Threema.TextAppearance.Chip.VideoTranscoder
         </item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
-        <item name="chipBackgroundColor">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="chipBackgroundColor">?attr/colorSurfaceContainerLow</item>
         <item name="chipCornerRadius">14dp</item>
         <item name="chipMinTouchTargetSize">36dp</item>
         <item name="chipMinHeight">28dp</item>
@@ -838,6 +841,9 @@
 
     <style name="Threema.Chip.Choice" parent="@style/Widget.Material3.Chip.Filter">
         <item name="chipBackgroundColor">@color/chip_colorstatelist</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="chipIconTint">?attr/colorOnPrimary</item>
+        <item name="checkedIconTint">?attr/colorOnPrimary</item>
     </style>
 
     <style name="Threema.Chip.Suggestion" parent="@style/Widget.Material3.Chip.Suggestion" />
@@ -851,6 +857,7 @@
         <item name="tabIndicatorFullWidth">true</item>
         <item name="tabGravity">fill</item>
         <item name="tabMode">fixed</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceContainerLow</item>
     </style>
 
     <style name="Threema.PopupMenuStyle.SendMedia" parent="@style/Widget.Material3.PopupMenu">
@@ -926,7 +933,6 @@
 
     <style name="Threema.CardView.MentionSelector" parent="@style/Widget.Material3.CardView.Filled">
         <item name="cardBackgroundColor">?attr/colorSurface</item>
-        <item name="cardElevation">@dimen/compose_edittext_elevation</item>
         <item name="shapeAppearanceOverlay">
             @style/Threema.ShapeAppearance.CardView.TopRounded.Small
         </item>
@@ -942,6 +948,7 @@
         <item name="strokeWidth">0dp</item>
         <item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.Status
         </item>
+        <item name="cardBackgroundColor">@color/bubble_status_colorstatelist</item>
         <item name="contentPaddingBottom">@dimen/message_status_padding_bottom</item>
         <item name="contentPaddingLeft">12dp</item>
         <item name="contentPaddingRight">12dp</item>
@@ -990,7 +997,7 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:outlineProvider">none</item>
         <item name="strokeWidth">0dp</item>
-        <item name="cardBackgroundColor">?attr/colorTertiaryContainer</item>
+        <item name="cardBackgroundColor">?attr/colorSecondaryContainer</item>
         <item name="cardPreventCornerOverlap">false</item>
         <item name="shapeAppearanceOverlay">
             @style/Threema.ShapeAppearance.CardView.Bubble.FirstUnread
@@ -1064,7 +1071,6 @@
         <item name="android:textColor">@color/preferences_text</item>
         <item name="lineHeight">24sp</item>
         <item name="android:lineHeight">24sp</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
     </style>
 
     <style name="Threema.MaterialPreference.Summary">
@@ -1089,7 +1095,6 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">36sp</item>
         <item name="android:hyphenationFrequency">normal</item>
-        <item name="fontFamily">@font/lab_grotesque</item>
     </style>
 
     <style name="Threema.MaterialPreferenceCategory" parent="@style/Preference.Category.Material">
@@ -1109,7 +1114,7 @@
         <item name="boxCornerRadiusBottomEnd">@dimen/compose_textinputlayout_radius</item>
         <item name="boxCornerRadiusTopStart">@dimen/compose_textinputlayout_radius</item>
         <item name="boxCornerRadiusTopEnd">@dimen/compose_textinputlayout_radius</item>
-        <item name="boxBackgroundColor">?attr/colorOnSurfaceInverse</item>
+        <item name="boxBackgroundColor">?attr/colorSurfaceContainerLow</item>
     </style>
 
     <style name="Threema.EditText.Compose" parent="@style/Widget.Material3.TextInputEditText.FilledBox">

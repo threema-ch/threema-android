@@ -45,9 +45,9 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationGroups
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.stores.IdentityStore
 import ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
 import ch.threema.app.utils.RuntimeUtil
@@ -65,6 +65,7 @@ import ch.threema.app.voip.services.VoipStateService
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.takeUnlessEmpty
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.storage.models.GroupModel
@@ -318,9 +319,9 @@ class GroupCallService : Service() {
         )
     }
 
-    private fun getNotificationTitle(groupModel: GroupModel?): String {
-        return groupModel?.name ?: getString(R.string.group_call)
-    }
+    private fun getNotificationTitle(groupModel: GroupModel?): String =
+        groupModel?.name?.takeUnlessEmpty()
+            ?: groupService.getMembersString(groupModel)
 
     private fun getAvatar(groupModel: GroupModel?): Bitmap? {
         return groupModel?.let { groupService.getAvatar(it, false, true) }

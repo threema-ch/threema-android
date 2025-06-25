@@ -21,45 +21,47 @@
 
 package ch.threema.domain.protocol.csp.messages.group;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import static ch.threema.domain.testhelpers.TestHelpers.*;
+import static ch.threema.domain.testhelpers.TestHelpers.boxMessage;
+import static ch.threema.domain.testhelpers.TestHelpers.decodeMessageFromBox;
+import static ch.threema.domain.testhelpers.TestHelpers.setMessageDefaultSenderAndReceiver;
 
 public class GroupJoinResponseMessageTest {
 
-    static GroupJoinResponseData getDataTestInstance() throws BadMessageException {
+    static GroupJoinResponseData getDataTestInstance() {
         return new GroupJoinResponseData(
             GroupJoinResponseDataTest.TEST_TOKEN_VALID,
             GroupJoinResponseDataTest.TEST_RESPONSE
         );
     }
 
-    static GroupJoinResponseMessage getMessageTestInstance() throws BadMessageException {
+    static GroupJoinResponseMessage getMessageTestInstance() {
         final GroupJoinResponseMessage msg = new GroupJoinResponseMessage(getDataTestInstance());
         setMessageDefaultSenderAndReceiver(msg);
         return msg;
     }
 
     @Test
-    public void makeBoxTest() throws ThreemaException, BadMessageException {
+    void makeBoxTest() throws ThreemaException {
         final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
-        Assert.assertNotNull(boxedMessage);
+        Assertions.assertNotNull(boxedMessage);
     }
 
     @Test
-    public void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
+    void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
         final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
 
         final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
-        Assert.assertTrue(decodedMessage instanceof GroupJoinResponseMessage);
+        Assertions.assertInstanceOf(GroupJoinResponseMessage.class, decodedMessage);
         final GroupJoinResponseMessage msg = (GroupJoinResponseMessage) decodedMessage;
-        Assert.assertEquals(msg.getData(), getDataTestInstance());
+        Assertions.assertEquals(msg.getData(), getDataTestInstance());
     }
 }

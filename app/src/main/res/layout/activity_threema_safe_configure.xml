@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/top_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,20 +10,21 @@
     <include layout="@layout/toolbar_view" />
 
     <RelativeLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_above="@+id/button_bar"
+            android:layout_alignParentTop="true"
             android:background="@android:color/transparent">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:padding="@dimen/grid_unit_x2">
 
                 <TextView
                     android:id="@+id/safe_enable_explain"
@@ -36,7 +38,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/safe_enable_explain"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="@dimen/grid_unit_x2"
                     android:hint="@string/password_hint"
                     app:counterEnabled="true"
                     app:errorEnabled="true"
@@ -77,10 +79,10 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionDone"
                         android:inputType="text|textNoSuggestions|textPassword"
+                        android:nextFocusRight="@id/next"
                         android:nextFocusForward="@+id/safe_password1"
                         android:singleLine="true"
-                        android:textIsSelectable="false"
-                        android:nextFocusRight="@id/next"></ch.threema.app.ui.ThreemaTextInputEditText>
+                        android:textIsSelectable="false" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,14 +95,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="8dp"
+            android:padding="@dimen/grid_unit_x2"
             android:weightSum="13">
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Threema.MaterialButton.Action.Outline"
                 android:id="@+id/advanced_options"
+                style="@style/Threema.MaterialButton.Action.Outline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
@@ -110,13 +110,13 @@
                 android:text="@string/safe_advanced_options" />
 
             <android.widget.Space
-                android:layout_width="8dp"
+                android:layout_width="@dimen/grid_unit_x1"
                 android:layout_height="0dp"
-                android:layout_weight="1"></android.widget.Space>
+                android:layout_weight="1" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Threema.MaterialButton.Action"
                 android:id="@+id/next"
+                style="@style/Threema.MaterialButton.Action"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
@@ -124,7 +124,8 @@
                 android:ellipsize="none"
                 android:singleLine="true"
                 android:text="@string/next"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
         </LinearLayout>
 

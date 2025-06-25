@@ -30,9 +30,8 @@ import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("GroupFileMessage")
+private val logger = LoggingUtil.getThreemaLogger("GroupFileMessage")
 
 class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
     override var fileData: FileData? = null
@@ -87,6 +86,23 @@ class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
          */
         @JvmStatic
         fun fromReflected(message: MdD2D.IncomingMessage): GroupFileMessage {
+            val groupFileMessage = fromByteArray(message.body.toByteArray())
+            groupFileMessage.initializeCommonProperties(message)
+            return groupFileMessage
+        }
+
+        /**
+         *  When the message bytes come from sync (reflected), they do not contain the one extra byte at the beginning.
+         *  So we set the offset in [fromByteArray] to zero.
+         *
+         *  In addition the common message model properties ([messageId] and [date]) get set.
+         *
+         *  @param message the MdD2D message representing the group-file message
+         *  @return Instance of [GroupFileMessage]
+         *  @see fromByteArray
+         */
+        @JvmStatic
+        fun fromReflected(message: MdD2D.OutgoingMessage): GroupFileMessage {
             val groupFileMessage = fromByteArray(message.body.toByteArray())
             groupFileMessage.initializeCommonProperties(message)
             return groupFileMessage

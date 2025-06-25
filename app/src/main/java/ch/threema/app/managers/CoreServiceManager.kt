@@ -29,7 +29,7 @@ import ch.threema.domain.models.AppVersion
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 
 /**
  * The core service manager contains some core services that are used before the other services are
@@ -45,7 +45,7 @@ interface CoreServiceManager {
     /**
      * The database service.
      */
-    val databaseService: DatabaseServiceNew
+    val databaseService: DatabaseService
 
     /**
      * The preference store

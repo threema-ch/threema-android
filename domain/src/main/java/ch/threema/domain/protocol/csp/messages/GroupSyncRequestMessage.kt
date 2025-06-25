@@ -29,9 +29,8 @@ import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.conversationOrNull
 import ch.threema.protobuf.d2d.groupOrNull
 import java.io.ByteArrayOutputStream
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("GroupSyncRequestMessage")
+private val logger = LoggingUtil.getThreemaLogger("GroupSyncRequestMessage")
 
 /**
  * Request current group information to be sent back.

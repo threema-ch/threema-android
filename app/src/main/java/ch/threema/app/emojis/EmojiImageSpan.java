@@ -23,7 +23,6 @@ package ch.threema.app.emojis;
 
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetricsInt;
-import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
@@ -34,7 +33,7 @@ public class EmojiImageSpan extends ImageSpan {
     private final int size, scale;
     private final FontMetricsInt fm;
 
-    public EmojiImageSpan(@NonNull Drawable drawable, @NonNull TextView tv, int scale) {
+    public EmojiImageSpan(@NonNull EmojiDrawable drawable, @NonNull TextView tv, int scale) {
         super(drawable);
         drawable.setCallback(tv);
         this.scale = scale;
@@ -45,8 +44,7 @@ public class EmojiImageSpan extends ImageSpan {
     }
 
     @Override
-    public int getSize(Paint paint, CharSequence text, int start, int end,
-                       FontMetricsInt fm) {
+    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, FontMetricsInt fm) {
         if (fm != null && this.fm != null) {
             fm.ascent = this.fm.ascent * scale;
             fm.descent = this.fm.descent * scale;

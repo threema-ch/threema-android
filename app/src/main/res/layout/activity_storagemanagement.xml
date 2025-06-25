@@ -6,23 +6,23 @@
     android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="fill_vertical"
-        android:layout_marginBottom="?attr/actionBarSize"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-            android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+            android:layout_marginLeft="@dimen/tablet_additional_padding_horizontal"
+            android:layout_marginRight="@dimen/tablet_additional_padding_horizontal"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_margin="@dimen/grid_unit_x2"
                 android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
@@ -217,8 +217,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@id/legend_num_msgs"
                         android:layout_toLeftOf="@+id/num_messages_view"
+                        android:layout_toRightOf="@id/legend_num_msgs"
                         android:ellipsize="end"
                         android:text="@string/num_messages"
                         android:textAppearance="?android:textAppearanceMedium" />
@@ -273,9 +273,9 @@
                         android:id="@+id/keep_messages_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/textview_colorstatelist"
                         android:focusable="false"
-                        android:inputType="none" />
+                        android:inputType="none"
+                        android:textColor="@color/textview_colorstatelist" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

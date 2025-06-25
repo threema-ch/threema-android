@@ -64,6 +64,8 @@ import androidx.preference.Preference.SummaryProvider;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
+import ch.threema.app.AppConstants;
+import ch.threema.app.AppLogging;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -80,6 +82,7 @@ import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
@@ -88,7 +91,6 @@ import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.ThreemaPushService;
 import ch.threema.app.services.UserService;
@@ -115,6 +117,7 @@ import ch.threema.logging.backend.DebugLogFileBackend;
 import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_AUTOSTART;
 import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_POWERMANAGER;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static ch.threema.app.utils.ToasterKt.showToast;
 
 public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment implements GenericAlertDialog.DialogClickListener, SharedPreferences.OnSharedPreferenceChangeListener, TextEntryDialog.TextEntryDialogClickListener, CancelableHorizontalProgressDialog.ProgressDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsAdvancedOptionsFragment");
@@ -260,7 +263,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 
             DebugLogFileBackend.setEnabled(newCheckedValue);
             if (newCheckedValue) {
-                ThreemaApplication.logVersion();
+                AppLogging.logAppVersionInfo(requireContext());
             }
 
             return true;
@@ -276,7 +279,10 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 
             // Show share options
             exportLogPreference.setOnPreferenceClickListener(preference -> {
-                ShareUtil.shareLogfile(requireContext(), fileService);
+                var success = ShareUtil.shareLogfile(requireContext());
+                if (!success) {
+                    showToast(requireContext(), R.string.try_again);
+                }
                 return true;
             });
         } else {
@@ -683,7 +689,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         LocalBroadcastManager.getInstance(requireActivity()).registerReceiver(pushTokenResetBroadcastReceiver,
-            new IntentFilter(ThreemaApplication.INTENT_PUSH_REGISTRATION_COMPLETE));
+            new IntentFilter(AppConstants.INTENT_PUSH_REGISTRATION_COMPLETE));
     }
 
     @Override
@@ -762,7 +768,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
             @NonNull
             @Override
             public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
-                File zipFile = DebugLogFileBackend.getZipFile(fileService);
+                File zipFile = DebugLogFileBackend.getZipFile(fileService.getExtTmpPath());
 
                 try {
                     ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
@@ -894,19 +900,11 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     }
 
     @Override
-    public void onNo(String tag) {
-    }
-
-    @Override
     public void onNo(String tag, Object data) {
         if (DIALOG_TAG_IPV6_APP_RESTART.equals(tag)) {
             boolean oldValue = (boolean) data;
             ipv6Preferences.setChecked(oldValue);
         }
-    }
-
-    @Override
-    public void onCancel(String tag, Object object) {
     }
 
     @Override

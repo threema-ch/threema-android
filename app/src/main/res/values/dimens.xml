@@ -1,5 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+
+    <!-- general dimensions for uniform margins and paddings -->
+    <dimen name="grid_unit_x0_5">4dp</dimen>
+    <dimen name="grid_unit_x1">8dp</dimen>
+    <dimen name="grid_unit_x1_5">12dp</dimen>
+    <dimen name="grid_unit_x2">16dp</dimen>
+    <dimen name="grid_unit_x3">24dp</dimen>
+    <dimen name="grid_unit_x4">32dp</dimen>
+    <dimen name="grid_unit_x5">40dp</dimen>
+    <dimen name="grid_unit_x6">48dp</dimen>
+    <dimen name="grid_unit_x7">56dp</dimen>
+    <dimen name="grid_unit_x8">64dp</dimen>
+    <dimen name="grid_unit_x10">80dp</dimen>
+    <dimen name="grid_unit_x15">120dp</dimen>
+
     <!-- message/contacts listviews -->
     <dimen name="avatar_size_small">40dp</dimen>
     <dimen name="avatar_size_mini">32dp</dimen>
@@ -74,15 +89,9 @@
     <dimen name="listitem_message_margin_left_right">16dp</dimen>
     <dimen name="listitem_contacts_margin_top_bottom">10dp</dimen>
     <dimen name="listitem_contacts_margin_left_right">16dp</dimen>
-    <dimen name="spacing_half_grid_unit">4dp</dimen>
-    <dimen name="spacing_one_grid_unit">8dp</dimen>
-    <dimen name="spacing_one_and_a_half_grid_unit">12dp</dimen>
-    <dimen name="spacing_two_grid_unit">16dp</dimen>
-    <dimen name="spacing_three_grid_unit">24dp</dimen>
-    <dimen name="spacing_four_grid_unit">32dp</dimen>
     <dimen name="listitem_contact_height">64dp</dimen>
     <dimen name="listitem_globalsearch_height">80dp</dimen>
-    <dimen name="tablet_additional_padding_left_right">0dp</dimen>
+    <dimen name="tablet_additional_padding_horizontal">0dp</dimen>
 
     <!-- new ballot wizard -->
     <dimen name="wizard_footer_height">48dp</dimen>
@@ -152,7 +161,7 @@
     <!-- wizard -->
     <dimen name="wizard_contents_padding">16dp</dimen>
     <dimen name="wizard_title_text_margin_top">8dp</dimen>
-    <item type="dimen" name="wizard_title_width_percent">.75</item>
+    <item name="wizard_title_width_percent" type="dimen">.75</item>
     <dimen name="wizard_button_height">32dp</dimen>
     <dimen name="wizard_default_view_height">32dp</dimen>
     <dimen name="wizard_edittext_text_size">14sp</dimen>
@@ -269,10 +278,6 @@
     <!-- cardview settings -->
     <dimen name="cardview_border_radius">15dp</dimen>
 
-    <!-- MapActivity compass location -->
-    <dimen name="map_compass_margin_top">16dp</dimen>
-    <dimen name="map_compass_margin_right">16dp</dimen>
-
     <!-- Video timeline -->
     <dimen name="video_timeline_item_size">40dp</dimen>
     <dimen name="video_timeline_marginTop">8dp</dimen>
@@ -295,7 +300,6 @@
     <dimen name="call_status_text_size">24sp</dimen>
 
     <!-- Group calls -->
-    <dimen name="group_caller_container_margin_top">12dp</dimen>
     <dimen name="group_call_participants_item_gutter">4dp</dimen>
     <dimen name="group_call_participant_mute_icon_size">20dp</dimen>
     <dimen name="group_call_participant_margin">10dp</dimen>
@@ -345,7 +349,6 @@
     <dimen name="notice_views_elevation">3dp</dimen>
     <dimen name="notice_views_vertical_margin">2dp</dimen>
     <dimen name="media_gallery_container_radius">3dp</dimen>
-    <dimen name="compose_edittext_elevation">3dp</dimen>
 
     <!-- offset of badge on overflow toolbar item -->
     <dimen name="overflow_badge_offset">18dp</dimen>
@@ -371,9 +374,6 @@
     <dimen name="md_drop_device_dialog_platform_icon_size">54dp</dimen>
 
     <!-- Device Linking Wizard -->
-    <dimen name="sheet_peek_position_extra_spacing">16dp</dimen>
     <dimen name="verification_emoji_size">56dp</dimen>
-
-    <dimen name="scroll_spacing_extra_floating_action_button">100dp</dimen>
 
 </resources>

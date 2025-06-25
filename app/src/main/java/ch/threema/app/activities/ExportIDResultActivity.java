@@ -51,12 +51,15 @@ import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.services.QRCodeServiceImpl;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.ui.TooltipPopup;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -71,7 +74,6 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 
     private Bitmap qrcodeBitmap;
     private WebView printWebView;
-    private MaterialToolbar toolbar;
     private TooltipPopup tooltipPopup;
 
     private String identity, backupData;
@@ -80,8 +82,8 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        this.toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(this.toolbar);
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar == null) {
@@ -93,8 +95,8 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         actionBar.setTitle("");
         actionBar.setHomeAsUpIndicator(R.drawable.ic_check);
 
-        this.backupData = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP);
-        this.identity = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+        this.backupData = this.getIntent().getStringExtra(AppConstants.INTENT_DATA_ID_BACKUP);
+        this.identity = this.getIntent().getStringExtra(AppConstants.INTENT_DATA_CONTACT);
 
         if (TestUtil.isEmptyOrNull(this.backupData)) {
             finish();
@@ -106,6 +108,15 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         if (savedInstanceState == null) {
             showTooltip();
         }
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.qr_container_backup),
+            InsetSides.lbr()
+        );
     }
 
     private void displayIDBackup() {
@@ -271,10 +282,5 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         NavUtils.navigateUpTo(ExportIDResultActivity.this, upIntent);
 
         finish();
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
-
     }
 }

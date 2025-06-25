@@ -9,7 +9,7 @@
         android:key="pref_key_conatcts"
         android:title="@string/prefs_header_contacts">
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:defaultValue="false"
             android:key="@string/preferences__sync_contacts"
             android:summaryOff="@string/prefs_sum_sync_contacts_off"
@@ -18,7 +18,7 @@
             android:icon="@drawable/ic_sync_outline"
             android:widgetLayout="@layout/preference_switch_layout" />
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:widgetLayout="@layout/preference_switch_layout"
             android:defaultValue="false"
             android:key="@string/preferences__block_unknown"
@@ -33,13 +33,13 @@
         android:key="pref_key_chat"
         android:title="@string/prefs_header_receipts">
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:widgetLayout="@layout/preference_switch_layout"
             android:defaultValue="true"
             android:key="@string/preferences__read_receipts"
             android:title="@string/prefs_title_read_receipts" />
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:widgetLayout="@layout/preference_switch_layout"
             android:defaultValue="true"
             android:key="@string/preferences__typing_indicator"
@@ -75,7 +75,7 @@
         android:key="pref_key_other"
         android:title="@string/prefs_header_other">
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:widgetLayout="@layout/preference_switch_layout"
             android:defaultValue="false"
             android:key="@string/preferences__hide_screenshots"
@@ -88,7 +88,7 @@
             android:summary="@string/prefs_summary_hide_screenshots_notice"
             android:icon="@drawable/ic_info_outline" />
 
-        <CheckBoxPreference
+        <ch.threema.app.preference.SynchronizedCheckBoxPreference
             android:widgetLayout="@layout/preference_switch_layout"
             android:defaultValue="false"
             android:key="@string/preferences__incognito_keyboard"

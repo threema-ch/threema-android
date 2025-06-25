@@ -21,13 +21,15 @@
 
 package ch.threema.app.emojireactions
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -38,8 +40,11 @@ import ch.threema.app.emojis.EmojiPicker
 import ch.threema.app.emojis.EmojiService
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.ui.RootViewDeferringInsetsCallback
 import ch.threema.app.ui.SingleToast
+import ch.threema.app.ui.TranslateDeferringInsetsAnimationCallback
 import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.getCurrentInsets
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.EmojiReactionData
@@ -65,11 +70,8 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
     private lateinit var parentLayout: LinearLayout
     private var emojiPicker: EmojiPicker? = null
 
-    override fun getLayoutResource(): Int {
-        return R.layout.activity_emojireactions_picker
-    }
+    override fun getLayoutResource(): Int = R.layout.activity_emojireactions_picker
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
@@ -91,10 +93,38 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
             finish()
         }
 
-        window.statusBarColor = ContextCompat.getColor(this, R.color.attach_status_bar_color_collapsed)
-
         emojiPicker = (findViewById<View>(R.id.emoji_stub) as ViewStub).inflate() as EmojiPicker
-        emojiPicker?.setEmojiKeyListener(this)
+        emojiPicker!!.setEmojiKeyListener(this)
+
+        try {
+            val tag = "emoji-picker-activity"
+
+            val deferringInsetsListener = RootViewDeferringInsetsCallback(
+                tag = tag,
+                emojiPicker = emojiPicker,
+                threemaToolbarActivity = this,
+                persistentInsetTypes = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+            )
+
+            ViewCompat.setWindowInsetsAnimationCallback(parentLayout, deferringInsetsListener)
+            ViewCompat.setOnApplyWindowInsetsListener(parentLayout, deferringInsetsListener)
+
+            emojiPicker?.let { emojiPicker ->
+                ViewCompat.setWindowInsetsAnimationCallback(
+                    emojiPicker,
+                    TranslateDeferringInsetsAnimationCallback(
+                        tag,
+                        emojiPicker,
+                        emojiPicker,
+                        WindowInsetsCompat.Type.systemBars(),
+                        WindowInsetsCompat.Type.ime(),
+                        WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE,
+                    ),
+                )
+            }
+        } catch (e: NullPointerException) {
+            logger.error("Exception", e)
+        }
 
         lifecycleScope.launch {
             val emojiReactionsRepository: EmojiReactionsRepository =
@@ -109,8 +139,9 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
                             emojiPicker?.let { picker ->
                                 // inflate emoji picker
                                 withContext(Dispatchers.Main) {
-                                    picker.init(emojiService, false, emojiReactions)
-                                    showEmojiPicker()
+                                    picker.init(this@EmojiReactionsPickerActivity, emojiService, false, emojiReactions)
+                                    emojiPicker?.show(loadStoredSoftKeyboardHeight())
+                                    removeVerticalInsetsFromInsetPaddingContainer()
                                 }
                             }
                         }
@@ -120,8 +151,17 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
         return true
     }
 
-    private fun showEmojiPicker() {
-        emojiPicker?.show(loadStoredSoftKeyboardHeight())
+    /**
+     * If the emoji picker is shown, we have to make sure that no vertical padding insets are applied.
+     * The emoji picker has to handle the vertical insets internally.
+     *
+     * This will remove any vertical padding of [parentLayout] while still respecting the horizontal insets.
+     */
+    private fun removeVerticalInsetsFromInsetPaddingContainer() {
+        val insets: Insets = this.getCurrentInsets(
+            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+        )
+        parentLayout.setPadding(insets.left, 0, insets.right, 0)
     }
 
     override fun finish() {
@@ -171,9 +211,5 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
         }
 
         this.finish()
-    }
-
-    override fun onShowPicker() {
-        // not used
     }
 }

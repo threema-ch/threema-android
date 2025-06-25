@@ -31,18 +31,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public class BallotVoteModelFactory extends ModelFactory {
-    public BallotVoteModelFactory(DatabaseServiceNew databaseService) {
+    public BallotVoteModelFactory(DatabaseService databaseService) {
         super(databaseService, BallotVoteModel.TABLE);
     }
 
     public List<BallotVoteModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -52,7 +52,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     public List<BallotVoteModel> getByBallotId(int ballotId) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             BallotVoteModel.COLUMN_BALLOT_ID + "=?",
             new String[]{
@@ -64,7 +64,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     public List<BallotVoteModel> getByBallotIdAndVotingIdentity(Integer ballotId, String fromIdentity) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             BallotVoteModel.COLUMN_BALLOT_ID + "=? "
                 + " AND " + BallotVoteModel.COLUMN_VOTING_IDENTITY + "=?",
@@ -78,7 +78,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     public long countByBallotIdAndVotingIdentity(Integer ballotId, String fromIdentity) {
-        return DatabaseUtils.longForQuery(this.databaseService.getReadableDatabase(),
+        return DatabaseUtils.longForQuery(getReadableDatabase(),
             "SELECT COUNT(*) FROM " + this.getTableName() + " "
                 + "WHERE " + BallotVoteModel.COLUMN_BALLOT_ID + "=?"
                 + " AND " + BallotVoteModel.COLUMN_VOTING_IDENTITY + "=?",
@@ -89,7 +89,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     public List<BallotVoteModel> getByBallotChoiceId(int ballotChoiceId) {
-        return convertList(this.databaseService.getReadableDatabase().query(
+        return convertList(getReadableDatabase().query(
             this.getTableName(),
             null,
             BallotVoteModel.COLUMN_BALLOT_CHOICE_ID + "=?",
@@ -113,7 +113,7 @@ public class BallotVoteModelFactory extends ModelFactory {
                                          String orderBy) {
         queryBuilder.setTables(this.getTableName());
         return convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             args,
@@ -142,7 +142,7 @@ public class BallotVoteModelFactory extends ModelFactory {
             final BallotVoteModel c = new BallotVoteModel();
 
             //convert default
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
 
                 public boolean next(CursorHelper cursorHelper) {
@@ -168,7 +168,7 @@ public class BallotVoteModelFactory extends ModelFactory {
 
         boolean insert = true;
         if (ballotVoteModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 BallotVoteModel.COLUMN_ID + "=?",
@@ -212,7 +212,7 @@ public class BallotVoteModelFactory extends ModelFactory {
 
     public boolean create(BallotVoteModel ballotVoteModel) {
         ContentValues contentValues = buildContentValues(ballotVoteModel);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             ballotVoteModel.setId((int) newId);
             return true;
@@ -222,7 +222,7 @@ public class BallotVoteModelFactory extends ModelFactory {
 
     private boolean update(BallotVoteModel ballotVoteModel) {
         ContentValues contentValues = buildContentValues(ballotVoteModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             BallotVoteModel.COLUMN_ID + "=?",
             new String[]{
@@ -232,7 +232,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     public int delete(BallotVoteModel ballotVoteModel) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             BallotVoteModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(ballotVoteModel.getId())
@@ -244,13 +244,13 @@ public class BallotVoteModelFactory extends ModelFactory {
         for (int n = 0; n < ids.length; n++) {
             params[n] = String.valueOf(ids[n]);
         }
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             BallotVoteModel.COLUMN_ID + " IN(" + DatabaseUtil.makePlaceholders(params.length) + ")",
             params);
     }
 
     public int deleteByBallotId(int ballotId) {
-        return this.databaseService.getWritableDatabase().delete(
+        return getWritableDatabase().delete(
             this.getTableName(),
             BallotVoteModel.COLUMN_BALLOT_ID + "=?",
             new String[]{
@@ -260,7 +260,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     public int deleteByBallotIdAndVotingIdentity(int ballotId, String identity) {
-        return this.databaseService.getWritableDatabase().delete(
+        return getWritableDatabase().delete(
             this.getTableName(),
             BallotVoteModel.COLUMN_BALLOT_ID + "=? "
                 + "AND " + BallotVoteModel.COLUMN_VOTING_IDENTITY + "=?",
@@ -272,7 +272,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     private BallotVoteModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -296,7 +296,7 @@ public class BallotVoteModelFactory extends ModelFactory {
     }
 
     public long countByBallotChoiceIdAndChoice(int ballotChoiceId, int choice) {
-        return DatabaseUtils.longForQuery(this.databaseService.getReadableDatabase(),
+        return DatabaseUtils.longForQuery(getReadableDatabase(),
             "SELECT COUNT(*) FROM " + this.getTableName() + " "
                 + "WHERE " + BallotVoteModel.COLUMN_BALLOT_CHOICE_ID + "=? "
                 + "AND " + BallotVoteModel.COLUMN_CHOICE + "=?",

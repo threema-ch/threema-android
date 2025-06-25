@@ -21,7 +21,6 @@
 
 package ch.threema.localcrypto;
 
-import org.bouncycastle.crypto.generators.SCrypt;
 import org.slf4j.Logger;
 
 import java.io.DataInputStream;
@@ -38,6 +37,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -50,7 +50,11 @@ import javax.crypto.spec.SecretKeySpec;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.AtomicFile;
+import ch.threema.domain.libthreema.LibthreemaJavaBridge;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.libthreema.CryptoException;
+
+import static ch.threema.libthreema.LibthreemaKt.scrypt;
 
 /**
  * This class wraps the master key used to encrypt locally stored application data.
@@ -85,19 +89,6 @@ public class MasterKey {
     private static final int IV_LENGTH = 16;
 
     private static final int PBKDF2_ITERATION_COUNT = 10000;
-
-    // Scrypt parameters as recommended by OWASP:
-    // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt
-    //
-    // These values correspond to a minimum memory requirement
-    // of 64 MiB (128 * 65536 * 8 * 1 bytes).
-    //
-    // Note: Values must be chosen so that the scrypt operation can still be
-    // calculated on an old phone (with little RAM) within a few seconds.
-    // For example, a Nexus S (512 MiB RAM) takes around 4 seconds.
-    private static final int SCRYPT_N = 65536;
-    private static final int SCRYPT_R = 8;
-    private static final int SCRYPT_P = 1;
 
     // Static key used for obfuscating the stored master key.
     //
@@ -184,9 +175,7 @@ public class MasterKey {
 
             /* zeroize master key */
             if (masterKey != null) {
-                for (int i = 0; i < masterKey.length; i++) {
-                    masterKey[i] = 0;
-                }
+                Arrays.fill(masterKey, (byte) 0);
                 masterKey = null;
             }
 
@@ -199,7 +188,7 @@ public class MasterKey {
      * Unlock the master key with the supplied passphrase.
      *
      * @param passphrase passphrase for unlocking
-     * @return true on success, false if the passphrase is wrong or an error occured
+     * @return true on success, false if the passphrase is wrong or an error occurred
      */
     public boolean unlock(char[] passphrase) {
         if (!locked) {
@@ -515,7 +504,11 @@ public class MasterKey {
         newKeyNotWrittenYet = false;
     }
 
-    private static byte[] derivePassphraseKey(char[] passphrase, byte[] salt, ProtectionType protectionType) {
+    private static byte[] derivePassphraseKey(
+        @NonNull char[] passphrase,
+        @NonNull byte[] salt,
+        @NonNull ProtectionType protectionType
+    ) {
         try {
             switch (protectionType) {
                 case PBKDF2:
@@ -523,11 +516,17 @@ public class MasterKey {
                     SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
                     return factory.generateSecret(keySpec).getEncoded();
                 case SCRYPT:
-                    return SCrypt.generate(new String(passphrase).getBytes(StandardCharsets.UTF_8), salt, SCRYPT_N, SCRYPT_R, SCRYPT_P, KEY_LENGTH);
+                    return scrypt(
+                        new String(passphrase).getBytes(StandardCharsets.UTF_8),
+                        salt,
+                        LibthreemaJavaBridge.createScryptParameters(
+                            (byte) KEY_LENGTH
+                        )
+                    );
                 default:
                     throw new RuntimeException("Unsupported protection type " + protectionType);
             }
-        } catch (GeneralSecurityException | IllegalArgumentException e) {
+        } catch (GeneralSecurityException | IllegalArgumentException | CryptoException e) {
             throw new RuntimeException(e);
         }
     }

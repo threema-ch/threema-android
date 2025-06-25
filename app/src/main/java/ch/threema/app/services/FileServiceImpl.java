@@ -88,6 +88,7 @@ import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -103,7 +104,6 @@ import ch.threema.app.utils.RingtoneChecker;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
-import ch.threema.app.utils.StreamUtilKt;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
@@ -118,6 +118,7 @@ import ch.threema.storage.models.MessageType;
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 import static ch.threema.app.utils.StreamUtilKt.orEmpty;
+import static ch.threema.common.TimeExtensionsKt.now;
 
 public class FileServiceImpl implements FileService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("FileServiceImpl");
@@ -131,6 +132,8 @@ public class FileServiceImpl implements FileService {
     private static final String DIALOG_TAG_SAVING_MEDIA = "savingToGallery";
 
     private final Context context;
+    @NonNull
+    private final AppDirectoryProvider appDirectoryProvider;
     private final MasterKey masterKey;
     @NonNull
     private final PreferenceService preferenceService;
@@ -138,7 +141,6 @@ public class FileServiceImpl implements FileService {
     private final File videoPath;
     private final File audioPath;
     private final File downloadsPath;
-    private final File appDataPath;
     private final File backupPath;
 
     @NonNull
@@ -146,21 +148,19 @@ public class FileServiceImpl implements FileService {
 
     public FileServiceImpl(
         @NonNull Context c,
+        @NonNull AppDirectoryProvider appDirectoryProvider,
         @NonNull MasterKey masterKey,
         @NonNull PreferenceService preferenceService,
         @NonNull NotificationPreferenceService notificationPreferenceService,
         @NonNull AvatarCacheService avatarCacheService
     ) {
         this.context = c;
+        this.appDirectoryProvider = appDirectoryProvider;
         this.preferenceService = preferenceService;
         this.masterKey = masterKey;
         this.avatarCacheService = avatarCacheService;
 
         String mediaPathPrefix = Environment.getExternalStorageDirectory() + "/" + BuildConfig.MEDIA_PATH + "/";
-
-        // secondary storage directory for files that do not need any security enforced such as encrypted media
-        this.appDataPath = new File(context.getExternalFilesDir(null), "data");
-        getAppDataPath();
 
         // temporary file path used for sharing media from / with external applications (i.e. system camera) on older Android versions
         createNomediaFile(getExtTmpPath());
@@ -250,11 +250,9 @@ public class FileServiceImpl implements FileService {
      * @return path
      */
     @Override
+    @NonNull
     public File getAppDataPath() {
-        if (!this.appDataPath.exists()) {
-            this.appDataPath.mkdirs();
-        }
-        return this.appDataPath;
+        return appDirectoryProvider.getAppDataDirectory();
     }
 
     private String getAppDataPathAbsolute() {
@@ -350,22 +348,13 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public File getIntTmpPath() {
-        File intTmpPath = new File(context.getFilesDir(), "tmp");
-
-        if (!intTmpPath.exists()) {
-            intTmpPath.mkdirs();
-        }
-        return intTmpPath;
+        return appDirectoryProvider.getInternalTempDirectory();
     }
 
     @Override
+    @NonNull
     public File getExtTmpPath() {
-        File extTmpPath = new File(context.getExternalFilesDir(null), "tmp");
-
-        if (!extTmpPath.exists()) {
-            extTmpPath.mkdirs();
-        }
-        return extTmpPath;
+        return appDirectoryProvider.getExternalTempDirectory();
     }
 
     private void createNomediaFile(File directory) {
@@ -392,7 +381,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @WorkerThread
-    private void cleanDirectory(File path, final Runnable runAfter) {
+    private void cleanDirectory(@NonNull File path, @NonNull Date thresholdDate) {
         if (!path.isDirectory()) {
             if (path.delete()) {
                 path.mkdirs();
@@ -400,31 +389,20 @@ public class FileServiceImpl implements FileService {
             return;
         }
 
-        Date thresholdDate = new Date(System.currentTimeMillis() - (2 * DateUtils.HOUR_IN_MILLIS));
-
         // this will crash if path is not a directory
         try {
-            final Iterator<File> filesToDelete =
-                FileUtils.iterateFiles(path, new AgeFileFilter(thresholdDate), TrueFileFilter.INSTANCE);
+            final Iterator<File> filesToDelete = FileUtils.iterateFiles(path, new AgeFileFilter(thresholdDate), TrueFileFilter.INSTANCE);
 
             if (filesToDelete != null && filesToDelete.hasNext()) {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        while (filesToDelete.hasNext()) {
-                            File file = filesToDelete.next();
-                            try {
-                                SecureDeleteUtil.secureDelete(file);
-                            } catch (IOException e) {
-                                logger.error("Exception", e);
-                                FileUtils.deleteQuietly(file);
-                            }
-                        }
-                        if (runAfter != null) {
-                            runAfter.run();
-                        }
+                while (filesToDelete.hasNext()) {
+                    File file = filesToDelete.next();
+                    try {
+                        SecureDeleteUtil.secureDelete(file);
+                    } catch (IOException e) {
+                        logger.error("Failed to delete file", e);
+                        FileUtils.deleteQuietly(file);
                     }
-                }.start();
+                }
             }
         } catch (IllegalArgumentException e) {
             logger.error("Exception", e);
@@ -432,17 +410,15 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void cleanTempDirs() {
+    @WorkerThread
+    public void cleanTempDirs(long ageThresholdMillis) {
         logger.debug("Cleaning temp files");
 
-        cleanDirectory(getTempPath(), null);
-        cleanDirectory(getIntTmpPath(), null);
-        cleanDirectory(getExtTmpPath(), new Runnable() {
-            @Override
-            public void run() {
-                createNomediaFile(getExtTmpPath());
-            }
-        });
+        var thresholdDate = new Date(System.currentTimeMillis() - ageThresholdMillis);
+        cleanDirectory(getTempPath(), thresholdDate);
+        cleanDirectory(getIntTmpPath(), thresholdDate);
+        cleanDirectory(getExtTmpPath(), thresholdDate);
+        createNomediaFile(getExtTmpPath());
     }
 
     @Override
@@ -1468,8 +1444,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public Uri getShareFileUri(@Nullable File destFile, @Nullable String filename) {
         if (destFile != null) {
-            // see https://code.google.com/p/android/issues/detail?id=76683
-            return NamedFileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile, filename);
+            return NamedFileProvider.getShareFileUri(context, destFile, filename);
         }
         return null;
     }
@@ -1671,11 +1646,11 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void saveAppLogo(File logo, @ConfigUtils.AppThemeSetting String theme) {
+    public void saveAppLogo(@Nullable File logo, @ConfigUtils.AppThemeSetting String theme) {
         File existingLogo = this.getAppLogo(theme);
         if (logo == null || !logo.exists()) {
             //remove existing icon
-            if (existingLogo != null && existingLogo.exists()) {
+            if (existingLogo.exists()) {
                 FileUtil.deleteFileOrWarn(existingLogo, "saveAppLogo", logger);
             }
         } else {
@@ -1687,13 +1662,14 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @NonNull
     public File getAppLogo(@ConfigUtils.AppThemeSetting String theme) {
         String key = "light";
 
         if (ConfigUtils.THEME_DARK.equals(theme)) {
             key = "dark";
         }
-        return new File(getAppDataPathAbsolute(), "appicon_" + key + ".png");
+        return new File(getAppDataPath(), "appicon_" + key + ".png");
     }
 
     @Override

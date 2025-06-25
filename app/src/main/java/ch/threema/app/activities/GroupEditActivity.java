@@ -55,6 +55,11 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
     private boolean isAvatarRemoved = false;
 
     @Override
+    protected void handleDeviceInsets() {
+        // Prevent super method behaviour
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -67,7 +72,6 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
             this.conversationCategoryService = this.serviceManager.getConversationCategoryService();
         } catch (Exception e) {
             LogUtil.exception(e, this);
-            return;
         }
     }
 

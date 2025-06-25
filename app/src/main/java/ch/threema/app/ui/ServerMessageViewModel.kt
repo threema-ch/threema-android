@@ -25,7 +25,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ch.threema.app.ThreemaApplication
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.factories.ServerMessageModelFactory
 
 class ServerMessageViewModel : ViewModel() {
@@ -36,7 +36,7 @@ class ServerMessageViewModel : ViewModel() {
 
     init {
         val serviceManager = ThreemaApplication.getServiceManager()
-        val databaseService: DatabaseServiceNew? = serviceManager?.databaseServiceNew
+        val databaseService: DatabaseService? = serviceManager?.databaseService
         serverMessageModelFactory = databaseService?.serverMessageModelFactory
 
         serverMessage.postValue(serverMessageModelFactory?.popServerMessageModel()?.message)

@@ -21,7 +21,8 @@
 
 package ch.threema.app.activities;
 
-import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
+import static ch.threema.app.preference.service.PreferenceService.LockingMech_NONE;
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -63,6 +65,9 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         isUnlocked = false;
         safeConfig = ThreemaSafeMDMConfig.getInstance();
@@ -132,23 +137,19 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
-                if (resultCode == RESULT_OK) {
-                    isUnlocked = true;
-                } else {
-                    finish();
-                }
-                break;
+        if (requestCode == ThreemaActivity.ACTIVITY_ID_CHECK_LOCK) {
+            if (resultCode == RESULT_OK) {
+                isUnlocked = true;
+            } else {
+                finish();
+            }
         }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
         }
         return true;
     }
@@ -170,7 +171,7 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putBoolean(BUNDLE_IS_UNLOCKED, isUnlocked);
 
         super.onSaveInstanceState(outState);
@@ -198,6 +199,7 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
         }
 
         @Override
+        @NonNull
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:

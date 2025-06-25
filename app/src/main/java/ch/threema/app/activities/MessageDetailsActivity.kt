@@ -30,9 +30,14 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -41,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.compose.common.HintText
@@ -50,6 +56,7 @@ import ch.threema.app.compose.message.CompleteMessageBubble
 import ch.threema.app.compose.message.MessageDetailsListBox
 import ch.threema.app.compose.message.MessageTimestampsListBox
 import ch.threema.app.compose.theme.ThreemaTheme
+import ch.threema.app.compose.theme.dimens.GridUnit
 import ch.threema.app.dialogs.GenericAlertDialog.DialogClickListener
 import ch.threema.app.listeners.EditMessageListener
 import ch.threema.app.listeners.MessageDeletedForAllListener
@@ -63,7 +70,8 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
 import com.google.android.material.appbar.MaterialToolbar
-import org.slf4j.Logger
+
+private val logger = LoggingUtil.getThreemaLogger("MessageDetailsActivity")
 
 class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
     init {
@@ -71,7 +79,6 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
     }
 
     private companion object {
-        val logger: Logger = LoggingUtil.getThreemaLogger("MessageDetailsActivity")
 
         const val CONTEXT_MENU_FORWARD = 600
         const val CONTEXT_MENU_GROUP = 22200
@@ -132,6 +139,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                         logger.info("Forward message clicked")
                         forwardText()
                     }
+
                     else -> return false
                 }
                 return true
@@ -157,7 +165,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                     intent.setType("text/plain")
                     intent.setAction(Intent.ACTION_SEND)
                     intent.putExtra(Intent.EXTRA_TEXT, body)
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_IS_FORWARD, true)
+                    intent.putExtra(AppConstants.INTENT_DATA_IS_FORWARD, true)
                     startActivity(intent)
                 }
             }
@@ -197,60 +205,68 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                 )
                 val editHistoryUiState by editHistoryViewModel.editHistoryUiState.collectAsStateWithLifecycle()
 
-                EditHistoryList(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    editHistoryUiState = editHistoryUiState,
-                    isOutbox = messageModel.isOutbox,
-                    shouldMarkupText = uiState.shouldMarkupText,
-                    headerContent = {
-                        when (messageModel.type) {
-                            MessageType.TEXT,
-                            MessageType.FILE,
-                            MessageType.LOCATION,
-                            MessageType.IMAGE,
-                            MessageType.VIDEO,
-                            MessageType.VOICEMESSAGE,
-                            -> Column {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                CompleteMessageBubble(
-                                    message = messageModel,
-                                    shouldMarkupText = uiState.shouldMarkupText,
-                                    isTextSelectable = true,
-                                    textSelectionCallback = textSelectionCallback,
-                                )
-                                if (uiState.hasReactions) {
-                                    Spacer(modifier = Modifier.height(2.dp))
-                                    HintText(
-                                        text = stringResource(R.string.emoji_reactions_message_details_hint),
+                Scaffold(
+                    contentWindowInsets = WindowInsets.safeDrawing.only(
+                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+                    ),
+                ) { insetsPadding ->
+
+                    EditHistoryList(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = GridUnit.x2),
+                        contentPadding = insetsPadding,
+                        editHistoryUiState = editHistoryUiState,
+                        isOutbox = messageModel.isOutbox,
+                        shouldMarkupText = uiState.shouldMarkupText,
+                        headerContent = {
+                            when (messageModel.type) {
+                                MessageType.TEXT,
+                                MessageType.FILE,
+                                MessageType.LOCATION,
+                                MessageType.IMAGE,
+                                MessageType.VIDEO,
+                                MessageType.VOICEMESSAGE,
+                                -> Column {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    CompleteMessageBubble(
+                                        message = messageModel,
+                                        shouldMarkupText = uiState.shouldMarkupText,
+                                        isTextSelectable = true,
+                                        textSelectionCallback = textSelectionCallback,
+                                    )
+                                    if (uiState.hasReactions) {
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        HintText(
+                                            text = stringResource(R.string.emoji_reactions_message_details_hint),
+                                        )
+                                    }
+                                }
+
+                                else -> Unit
+                            }
+                        },
+                        footerContent = {
+                            Column {
+                                if (messageModel.messageTimestampsUiModel.hasProperties()) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    MessageTimestampsListBox(
+                                        messageTimestampsUiModel = messageModel.messageTimestampsUiModel,
+                                        isOutbox = messageModel.isOutbox,
                                     )
                                 }
+                                if (messageModel.messageDetailsUiModel.hasProperties()) {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    MessageDetailsListBox(
+                                        messageDetailsUiModel = messageModel.messageDetailsUiModel,
+                                        isOutbox = messageModel.isOutbox,
+                                    )
+                                    Spacer(modifier = Modifier.height(24.dp))
+                                }
                             }
-
-                            else -> Unit
-                        }
-                    },
-                    footerContent = {
-                        Column {
-                            if (messageModel.messageTimestampsUiModel.hasProperties()) {
-                                Spacer(modifier = Modifier.height(8.dp))
-                                MessageTimestampsListBox(
-                                    messageTimestampsUiModel = messageModel.messageTimestampsUiModel,
-                                    isOutbox = messageModel.isOutbox,
-                                )
-                            }
-                            if (messageModel.messageDetailsUiModel.hasProperties()) {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                MessageDetailsListBox(
-                                    messageDetailsUiModel = messageModel.messageDetailsUiModel,
-                                    isOutbox = messageModel.isOutbox,
-                                )
-                                Spacer(modifier = Modifier.height(24.dp))
-                            }
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
         }
     }
@@ -286,9 +302,5 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
             logger.info("Opening of link confirmed")
             LinkifyUtil.getInstance().openLink(data as Uri, null, this)
         }
-    }
-
-    override fun onNo(tag: String, data: Any) {
-        //
     }
 }

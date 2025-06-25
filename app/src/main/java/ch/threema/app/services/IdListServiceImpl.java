@@ -24,6 +24,8 @@ package ch.threema.app.services;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.threema.app.preference.service.PreferenceService;
+
 public class IdListServiceImpl implements IdListService {
     private final Object lock = new Object();
     private String[] ids;

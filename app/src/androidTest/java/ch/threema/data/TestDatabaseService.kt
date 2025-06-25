@@ -22,15 +22,13 @@
 package ch.threema.data
 
 import androidx.test.core.app.ApplicationProvider
-import ch.threema.app.services.UpdateSystemServiceImpl
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 
 /**
  * An in-memory database used in android tests.
  */
-class TestDatabaseService : DatabaseServiceNew(
-    ApplicationProvider.getApplicationContext(),
-    null,
-    "test-database-key",
-    UpdateSystemServiceImpl(),
+class TestDatabaseService : DatabaseService(
+    context = ApplicationProvider.getApplicationContext(),
+    databaseName = null,
+    databaseKey = "test-database-key",
 )

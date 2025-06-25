@@ -36,11 +36,14 @@ import org.slf4j.Logger;
 
 import java.security.MessageDigest;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.NavigationUtil;
@@ -76,10 +79,13 @@ public class PinLockActivity extends ThreemaActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
-        ConfigUtils.configureSystemBars(this);
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.topFrame),
+            InsetSides.all()
+        );
 
-        isCheckOnly = getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, false);
-        pinPreset = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_PIN);
+        isCheckOnly = getIntent().getBooleanExtra(AppConstants.INTENT_DATA_CHECK_ONLY, false);
+        pinPreset = getIntent().getStringExtra(AppConstants.INTENT_DATA_PIN);
 
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager == null) {
@@ -110,7 +116,7 @@ public class PinLockActivity extends ThreemaActivity {
             }
             return false;
         });
-        passwordEntry.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ThreemaApplication.MAX_PIN_LENGTH)});
+        passwordEntry.setFilters(new InputFilter[]{new InputFilter.LengthFilter(AppConstants.MAX_PIN_LENGTH)});
 
         TextView headerTextView = findViewById(R.id.headerText);
         TextView detailsTextView = findViewById(R.id.detailsText);

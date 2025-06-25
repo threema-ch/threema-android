@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
@@ -63,7 +64,7 @@ public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver 
 
             final PendingResult pendingResult = goAsync();
 
-            String identity = intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+            String identity = intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT);
             if (identity == null) {
                 logger.error("Identity is null");
                 return;

@@ -30,14 +30,14 @@ import java.util.List;
 import java.util.Map;
 
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
 
 public class GroupMemberModelFactory extends ModelFactory {
 
-    public GroupMemberModelFactory(DatabaseServiceNew databaseService) {
+    public GroupMemberModelFactory(DatabaseService databaseService) {
         super(databaseService, GroupMemberModel.TABLE);
     }
 
@@ -52,7 +52,7 @@ public class GroupMemberModelFactory extends ModelFactory {
     }
 
     public List<GroupMemberModel> getByGroupId(int groupId) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             GroupMemberModel.COLUMN_GROUP_ID + "=?",
             new String[]{
@@ -68,7 +68,7 @@ public class GroupMemberModelFactory extends ModelFactory {
      * members is the value returned by this method + 1.
      */
     public long countMembersWithoutUser(int groupId) {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + GroupMemberModel.COLUMN_GROUP_ID + "=?",
             new String[]{
@@ -80,7 +80,7 @@ public class GroupMemberModelFactory extends ModelFactory {
     private GroupMemberModel convert(Cursor cursor) {
         if (cursor != null && cursor.getPosition() >= 0) {
             final GroupMemberModel groupMemberModel = new GroupMemberModel();
-            new CursorHelper(cursor, columnIndexCache).current(
+            new CursorHelper(cursor, getColumnIndexCache()).current(
                 (CursorHelper.Callback) cursorHelper -> {
                     groupMemberModel
                         .setId(cursorHelper.getInt(GroupMemberModel.COLUMN_ID))
@@ -109,7 +109,7 @@ public class GroupMemberModelFactory extends ModelFactory {
     public boolean createOrUpdate(GroupMemberModel groupMemberModel) {
         boolean insert = true;
         if (groupMemberModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 GroupMemberModel.COLUMN_ID + "=?",
@@ -146,7 +146,7 @@ public class GroupMemberModelFactory extends ModelFactory {
 
     public boolean create(GroupMemberModel groupMemberModel) {
         ContentValues contentValues = buildContentValues(groupMemberModel);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             groupMemberModel.setId((int) newId);
             return true;
@@ -156,7 +156,7 @@ public class GroupMemberModelFactory extends ModelFactory {
 
     public boolean update(GroupMemberModel groupMemberModel) {
         ContentValues contentValues = buildContentValues(groupMemberModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             GroupMemberModel.COLUMN_ID + "=?",
             new String[]{
@@ -166,7 +166,7 @@ public class GroupMemberModelFactory extends ModelFactory {
     }
 
     private GroupMemberModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -190,7 +190,7 @@ public class GroupMemberModelFactory extends ModelFactory {
     }
 
     public Map<String, Integer> getIDColorIndices(long groupId) {
-        Cursor c = this.databaseService.getReadableDatabase().rawQuery("SELECT c." + ContactModel.COLUMN_IDENTITY + ", c." + ContactModel.COLUMN_ID_COLOR_INDEX +
+        Cursor c = getReadableDatabase().rawQuery("SELECT c." + ContactModel.COLUMN_IDENTITY + ", c." + ContactModel.COLUMN_ID_COLOR_INDEX +
             " FROM " + GroupMemberModel.TABLE + " gm " +
             "INNER JOIN " + ContactModel.TABLE + " c " +
             "	ON c." + ContactModel.COLUMN_IDENTITY + " = gm." + GroupMemberModel.COLUMN_IDENTITY + " " +
@@ -212,7 +212,7 @@ public class GroupMemberModelFactory extends ModelFactory {
     }
 
     public List<Integer> getGroupIdsByIdentity(String identity) {
-        Cursor c = this.databaseService.getReadableDatabase().query(
+        Cursor c = getReadableDatabase().query(
             this.getTableName(),
             new String[]{
                 GroupMemberModel.COLUMN_GROUP_ID
@@ -237,7 +237,7 @@ public class GroupMemberModelFactory extends ModelFactory {
     }
 
     public int deleteByGroupId(long groupId) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             GroupMemberModel.COLUMN_GROUP_ID + "=?",
             new String[]{
                 String.valueOf(groupId)
@@ -249,13 +249,13 @@ public class GroupMemberModelFactory extends ModelFactory {
         for (int n = 0; n < modelsToRemove.size(); n++) {
             args[n] = String.valueOf(modelsToRemove.get(n).getId());
         }
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             GroupMemberModel.COLUMN_ID + " IN (" + DatabaseUtil.makePlaceholders(args.length) + ")",
             args);
     }
 
     public int deleteByGroupIdAndIdentity(int groupId, String identity) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             GroupMemberModel.COLUMN_GROUP_ID + "=?"
                 + " AND " + GroupMemberModel.COLUMN_IDENTITY + "=?",
             new String[]{

@@ -21,72 +21,69 @@
 
 package ch.threema.app.groupflows
 
-import androidx.fragment.app.FragmentManager
-import ch.threema.app.R
-import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.GroupService
 import ch.threema.app.tasks.ReflectGroupSyncDeletePrecondition
 import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
-import ch.threema.app.tasks.ReflectionFailed
-import ch.threema.app.tasks.ReflectionPreconditionFailed
-import ch.threema.app.tasks.ReflectionSuccess
-import ch.threema.app.utils.DialogUtil
+import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
+import ch.threema.domain.protocol.connection.ConnectionState
+import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TriggerSource
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("RemoveGroupFlow")
 
-private const val DIALOG_TAG_LEAVE_GROUP = "groupLeave"
-
 class RemoveGroupFlow(
-    private val fragmentManager: FragmentManager?,
     private val groupModel: GroupModel,
     private val groupService: GroupService,
     private val groupModelRepository: GroupModelRepository,
     private val multiDeviceManager: MultiDeviceManager,
     private val nonceFactory: NonceFactory,
     private val taskManager: TaskManager,
-) : BackgroundTask<Boolean> {
-    override fun runBefore() {
-        fragmentManager?.let {
-            GenericProgressDialog.newInstance(R.string.updating_group, R.string.please_wait)
-                .show(it, DIALOG_TAG_LEAVE_GROUP)
-        }
-    }
+    private val connection: ServerConnection,
+) : BackgroundTask<GroupFlowResult> {
 
-    override fun runInBackground(): Boolean {
+    override fun runInBackground(): GroupFlowResult {
         logger.info("Running remove group flow")
 
         if (groupModel.data.value?.isMember == true) {
             logger.error("Cannot remove group where the user is still a member")
-            return false
+            return GroupFlowResult.Failure.Other
         }
 
         // First, reflect the deletion (if md is active)
         if (multiDeviceManager.isMultiDeviceActive) {
+            if (connection.connectionState != ConnectionState.LOGGEDIN) {
+                return GroupFlowResult.Failure.Network
+            }
             when (val reflectionResult = reflect()) {
-                is ReflectionSuccess -> {
+                is ReflectionResult.Success -> {
                     logger.info("Reflected group delete successfully")
                 }
 
-                is ReflectionFailed -> {
+                is ReflectionResult.Failed -> {
                     logger.error("Reflection failed", reflectionResult.exception)
-                    return false
+                    return GroupFlowResult.Failure.Other
                 }
 
-                is ReflectionPreconditionFailed -> {
+                is ReflectionResult.MultiDeviceNotActive -> {
+                    // Note that this is a very rare edge case that should not be possible at all. If it happens, it is fine to continue here because
+                    // it is fine to just skip the reflection when multi device is not active anymore.
+                    logger.warn("Reflection failed because multi device is not active")
+                }
+
+                is ReflectionResult.PreconditionFailed -> {
                     logger.error(
                         "Reflection failed due to precondition",
                         reflectionResult.transactionException,
                     )
-                    return false
+                    return GroupFlowResult.Failure.Other
                 }
             }
         }
@@ -97,20 +94,10 @@ class RemoveGroupFlow(
         // As the group has already been left or disbanded, there is no need to send any csp
         // messages
 
-        return true
+        return GroupFlowResult.Success(groupModel)
     }
 
-    override fun runAfter(result: Boolean) {
-        fragmentManager?.let {
-            DialogUtil.dismissDialog(
-                it,
-                DIALOG_TAG_LEAVE_GROUP,
-                true,
-            )
-        }
-    }
-
-    private fun reflect() = runBlocking {
+    private fun reflect(): ReflectionResult<Unit> = runBlocking {
         taskManager.schedule(
             ReflectGroupSyncDeleteTask(
                 groupModel,

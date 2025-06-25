@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 
 import java.util.Date;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
@@ -60,7 +61,10 @@ import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
@@ -142,17 +146,28 @@ public class BackupDataFragment extends Fragment implements
             });
             fab.show();
 
+            ViewExtensionsKt.applyDeviceInsetsAsMargin(
+                fab,
+                InsetSides.lbr(),
+                SpacingValues.all(R.dimen.grid_unit_x2)
+            );
+
             scrollView = fragmentView.findViewById(R.id.scroll_parent);
-            scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    if (v.getTop() == scrollY) {
+            scrollView.setOnScrollChangeListener(
+                (NestedScrollView.OnScrollChangeListener) (nestedScrollView, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                    if (nestedScrollView.getTop() == scrollY) {
                         fab.extend();
                     } else {
                         fab.shrink();
                     }
                 }
-            });
+            );
+
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                scrollView,
+                InsetSides.lbr(),
+                SpacingValues.bottom(R.dimen.grid_unit_x10)
+            );
 
             fragmentView.findViewById(R.id.info).setOnClickListener(v -> onInfoButtonClicked(v));
             fragmentView.findViewById(R.id.restore).setOnClickListener(v -> onRestoreButtonClicked(v));
@@ -290,8 +305,8 @@ public class BackupDataFragment extends Fragment implements
             R.string.password_hint,
             R.string.ok,
             R.string.cancel,
-            ThreemaApplication.MIN_PW_LENGTH_BACKUP,
-            ThreemaApplication.MAX_PW_LENGTH_BACKUP,
+            AppConstants.MIN_PW_LENGTH_BACKUP,
+            AppConstants.MAX_PW_LENGTH_BACKUP,
             R.string.backup_password_again_summary,
             0,
             R.string.backup_data_media,
@@ -307,10 +322,6 @@ public class BackupDataFragment extends Fragment implements
                 launchDataBackup(text, isChecked);
                 break;
         }
-    }
-
-    @Override
-    public void onNo(String tag) {
     }
 
     @Override

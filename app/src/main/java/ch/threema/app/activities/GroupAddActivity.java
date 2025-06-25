@@ -34,10 +34,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.services.GroupService;
@@ -102,7 +102,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
+    protected void initData(@Nullable Bundle savedInstanceState) {
         this.appendMembers = false;
         this.excludedIdentities = new ArrayList<>();
         try {
@@ -120,24 +120,20 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
             return;
         }
 
-        if (appendMembers) {
-            updateToolbarSubtitle(R.string.title_select_contacts);
-        } else {
-            updateToolbarSubtitle(R.string.title_select_contacts);
-        }
+        updateToolbarSubtitle(R.string.title_select_contacts);
 
         initList();
 
-        if (!appendMembers) {
+        if (!appendMembers && savedInstanceState == null) {
             ShowOnceDialog.newInstance(R.string.title_addgroup, R.string.note_group_howto, 0).show(getSupportFragmentManager(), DIALOG_TAG_NOTE_GROUP_HOWTO);
         }
     }
 
     @Override
-    protected void menuNext(final List<ContactModel> selectedContacts) {
+    protected void menuNext(@NonNull final List<ContactModel> selectedContacts) {
         final int previousContacts = this.appendMembers ? excludedIdentities.size() : 1; // user counts as one contact
 
-        if (selectedContacts.size() >= ThreemaApplication.MIN_GROUP_MEMBERS_COUNT) {
+        if (!selectedContacts.isEmpty()) {
             if ((previousContacts + selectedContacts.size()) > BuildConfig.MAX_GROUP_SIZE) {
                 Toast.makeText(this, String.format(getString(R.string.group_select_max), BuildConfig.MAX_GROUP_SIZE - previousContacts), Toast.LENGTH_LONG).show();
             } else {
@@ -187,9 +183,5 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     @Override
     public void onYes(String tag, Object data) {
         createOrUpdateGroup(new ArrayList<>());
-    }
-
-    @Override
-    public void onNo(String tag, Object data) {
     }
 }

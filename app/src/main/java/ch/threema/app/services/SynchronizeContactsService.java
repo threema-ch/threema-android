@@ -40,7 +40,7 @@ public interface SynchronizeContactsService {
 
     boolean isFullSyncInProgress();
 
-    boolean enableSync();
+    boolean enableSyncFromLocal();
 
-    boolean disableSync(Runnable runAfterRemovedAccount);
+    boolean disableSyncFromLocal(Runnable runAfterRemovedAccount);
 }

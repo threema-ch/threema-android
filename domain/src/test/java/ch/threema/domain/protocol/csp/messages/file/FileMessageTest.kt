@@ -22,7 +22,7 @@
 package ch.threema.domain.protocol.csp.messages.file
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

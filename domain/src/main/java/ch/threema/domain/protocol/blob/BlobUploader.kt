@@ -48,9 +48,8 @@ import okhttp3.internal.closeQuietly
 import okio.BufferedSink
 import okio.source
 import org.apache.commons.io.IOUtils
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("BlobUploader")
+private val logger = LoggingUtil.getThreemaLogger("BlobUploader")
 
 private const val PROGRESS_UPDATE_STEP_SIZE = 10
 

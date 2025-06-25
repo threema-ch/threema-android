@@ -22,6 +22,7 @@
 package ch.threema.app.groupmanagement
 
 import ch.threema.app.DangerousTest
+import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.tasks.ActiveGroupStateResyncTask
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.clearDatabaseAndCaches
@@ -42,14 +43,12 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
-import kotlin.test.assertFalse
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Test
 
 @DangerousTest
 class GroupResyncFlowTest : GroupFlowTest() {
@@ -100,7 +99,7 @@ class GroupResyncFlowTest : GroupFlowTest() {
         name = "ExistingGroup",
     )
 
-    @Before
+    @BeforeTest
     fun setup() {
         clearDatabaseAndCaches(serviceManager)
 
@@ -150,21 +149,24 @@ class GroupResyncFlowTest : GroupFlowTest() {
         groupModel: GroupModel,
         setupConfig: SetupConfig,
     ) {
-        assertTrue {
-            runGroupResync(groupModel, setupConfig)
-        }
+        assertIs<GroupFlowResult.Success>(
+            runGroupResync(groupModel, setupConfig),
+        )
     }
 
     private suspend fun assertUnsuccessfulGroupResync(
         groupModel: GroupModel,
         setupConfig: SetupConfig,
     ) {
-        assertFalse {
-            runGroupResync(groupModel, setupConfig)
-        }
+        assertIs<GroupFlowResult.Failure>(
+            runGroupResync(groupModel, setupConfig),
+        )
     }
 
-    private suspend fun runGroupResync(groupModel: GroupModel, setupConfig: SetupConfig): Boolean {
+    private suspend fun runGroupResync(
+        groupModel: GroupModel,
+        setupConfig: SetupConfig,
+    ): GroupFlowResult {
         val groupModelData = groupModel.data.value
 
         // Prepare task manager and group flow dispatcher
@@ -177,7 +179,7 @@ class GroupResyncFlowTest : GroupFlowTest() {
         )
 
         // Run group resync flow
-        val result = groupFlowDispatcher.runGroupResyncFlow(groupModel).await()
+        val groupFowResult = groupFlowDispatcher.runGroupResyncFlow(groupModel).await()
 
         taskManager.pendingTaskAssertions.size.let { size ->
             if (size > 0) {
@@ -185,7 +187,7 @@ class GroupResyncFlowTest : GroupFlowTest() {
             }
         }
 
-        return result
+        return groupFowResult
     }
 
     private fun getExpectedTaskAssertions(groupModelData: GroupModelData?): MutableList<(Task<*, TaskCodec>) -> Unit> {

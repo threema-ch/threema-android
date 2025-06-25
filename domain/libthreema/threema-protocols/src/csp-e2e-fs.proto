@@ -770,25 +770,29 @@ message Terminate {
 // The following steps are defined as the _FS Encapsulation Steps_:
 //
 // 1. Let `inner-type` be any message type except `0xa0` and `inner-message` be
-//    the associated data of the message. Let `receiver` be the receiver of the
-//    message (which is assumed to support FS).
-// 2. Let `outer-messages` be an empty list.
-// 3. Lookup a session with `receiver` and let `session` be the result.
-// 4. If `session` is undefined, initiate a new `L20` session and set `session`
+//    the message data and its nonce. Let `receiver` be the receiver of the
+//    message.
+// 2. If either sender or receiver do not support FS, return `inner-message` and
+//    a stub `fs-commit-fn` function.
+// 3. Let `outer-messages` be an empty list.
+// 4. Lookup a session with `receiver` and let `session` be the result.
+// 5. If `session` is undefined, initiate a new `L20` session and set `session`
 //    to the newly created session. Append the `Init` message for `session` to
-//    `outer-messages` with type `0xa0`.
-// 5. If `inner-type` is not eligible to be encapsulated by `session`:
+//    `outer-messages` with type `0xa0` and a random nonce.
+// 6. If `inner-type` is not eligible to be encapsulated by `session`:
 //    1. If `session` is not a newly created session and the `session`'s
 //       _updated_ mark is older than 24h ago, create an `Encapsulated` message
 //       using `session` from inner type `0xfc` (_empty_) and append the
-//       encrypted and encoded result to `outer-messages` with type `0xa0`.
+//       encrypted and encoded result to `outer-messages` with type `0xa0` and a
+//       random nonce.
 //    2. Append `inner-message` as a non-encapsulated message to
-//       `outer-messages` with type `inner-type`.
-// 6. If `inner-type` is eligible to be encapsulated by `session`, create an
+//       `outer-messages` with type `inner-type` and the nonce of
+//       `inner-message`.
+// 7. If `inner-type` is eligible to be encapsulated by `session`, create an
 //    `Encapsulated` message using `session` from `inner-type` and
 //    `inner-message` and append the encrypted and encoded result to
-//    `outer-messages` with type `0xa0`.
-// 7. Return `outer-messages` and an `fs-commit-fn` function that sets the
+//    `outer-messages` with type `0xa0` and the nonce of `inner-message`.
+// 8. Return `outer-messages` and an `fs-commit-fn` function that sets the
 //    `session`'s _updated_ mark to the current timestamp and commits the
 //    `session` changes to storage when called.
 //

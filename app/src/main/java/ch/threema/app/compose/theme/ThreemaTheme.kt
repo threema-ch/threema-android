@@ -30,11 +30,8 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -42,10 +39,6 @@ import androidx.preference.PreferenceManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.compose.theme.color.ColorsDark
 import ch.threema.app.compose.theme.color.ColorsLight
-import ch.threema.app.compose.theme.color.CustomColor
-import ch.threema.app.compose.theme.color.CustomColorDark
-import ch.threema.app.compose.theme.color.CustomColorLight
-import ch.threema.app.compose.theme.color.LocalCustomColor
 
 val AppTypography = Typography() // system default
 
@@ -87,29 +80,17 @@ private fun ThreemaThemeBase(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = materialColorScheme.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
                 !isDarkTheme
         }
     }
 
-    val customColorScheme = if (isDarkTheme) CustomColorDark else CustomColorLight
-    CompositionLocalProvider(
-        LocalCustomColor provides customColorScheme,
-    ) {
-        MaterialTheme(
-            colorScheme = materialColorScheme,
-            typography = AppTypography,
-            content = content,
-        )
-    }
+    MaterialTheme(
+        colorScheme = materialColorScheme,
+        typography = AppTypography,
+        content = content,
+    )
 }
-
-@Suppress("UnusedReceiverParameter")
-val MaterialTheme.customColorScheme: CustomColor
-    @Composable
-    @ReadOnlyComposable
-    get() = LocalCustomColor.current
 
 /**
  * This is just for use in `@Preview`s.

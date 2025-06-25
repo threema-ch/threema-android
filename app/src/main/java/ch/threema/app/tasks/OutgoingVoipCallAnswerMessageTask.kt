@@ -22,11 +22,11 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.common.now
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import java.util.Date
 
 class OutgoingVoipCallAnswerMessageTask(
     private val voipCallAnswerData: VoipCallAnswerData,
@@ -43,7 +43,14 @@ class OutgoingVoipCallAnswerMessageTask(
 
         voipStateService.addRequiredMessageId(voipCallAnswerData.callId ?: 0, message.messageId)
 
-        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
+        sendContactMessage(
+            message = message,
+            messageModel = null,
+            toIdentity = toIdentity,
+            messageId = MessageId.random(),
+            createdAt = now(),
+            handle = handle,
+        )
     }
 
     // We do not need to persist this message

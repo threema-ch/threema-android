@@ -25,13 +25,13 @@ import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
-import ch.threema.app.activities.HomeActivity
 import ch.threema.app.asynctasks.AndroidContactLinkPolicy
 import ch.threema.app.asynctasks.ContactSyncPolicy
 import ch.threema.app.asynctasks.DeleteContactServices
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask
 import ch.threema.app.asynctasks.MarkContactAsDeletedBackgroundTask
 import ch.threema.app.groupflows.GroupLeaveIntent
+import ch.threema.app.home.HomeActivity
 import ch.threema.app.processors.MessageProcessorProvider
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
@@ -50,18 +50,18 @@ import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.factories.GroupMessageModelFactory
 import ch.threema.storage.factories.MessageModelFactory
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import java.util.Date
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -71,7 +71,7 @@ class EditHistoryTest : MessageProcessorProvider() {
     private val messageService: MessageService by lazy { serviceManager.messageService }
     private val contactService: ContactService by lazy { serviceManager.contactService }
     private val groupService: GroupService by lazy { serviceManager.groupService }
-    private val databaseService: DatabaseServiceNew by lazy { serviceManager.databaseServiceNew }
+    private val databaseService: DatabaseService by lazy { serviceManager.databaseService }
     private val messageModelFactory: MessageModelFactory by lazy { databaseService.messageModelFactory }
     private val groupMessageModelFactory: GroupMessageModelFactory by lazy { databaseService.groupMessageModelFactory }
     private val editHistoryDao: EditHistoryDao by lazy { EditHistoryDaoImpl(databaseService) }
@@ -308,7 +308,6 @@ class EditHistoryTest : MessageProcessorProvider() {
         )
         assertNotNull(groupModel)
         serviceManager.groupFlowDispatcher.runLeaveGroupFlow(
-            fragmentManager = null,
             intent = GroupLeaveIntent.LEAVE_AND_REMOVE,
             groupModel = groupModel,
         ).await()
@@ -339,7 +338,7 @@ class EditHistoryTest : MessageProcessorProvider() {
             text = "Original Text"
             fromIdentity = contactA.identity
             toIdentity = myContact.identity
-            messageId = MessageId()
+            messageId = MessageId.random()
         }
 
         processMessage(message, contactA.identityStore)
@@ -380,7 +379,7 @@ class EditHistoryTest : MessageProcessorProvider() {
             groupCreator = groupA.groupCreator.identity
             fromIdentity = contactA.identity
             toIdentity = myContact.identity
-            messageId = MessageId()
+            messageId = MessageId.random()
         }
 
         processMessage(message, contactA.identityStore)

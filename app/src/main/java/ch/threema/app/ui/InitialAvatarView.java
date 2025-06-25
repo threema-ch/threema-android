@@ -62,10 +62,10 @@ public class InitialAvatarView extends FrameLayout {
 
     public void setInitials(String firstName, String lastName) {
         StringBuilder initialsBuilder = new StringBuilder();
-        if (firstName != null && firstName.length() > 0) {
+        if (firstName != null && !firstName.isEmpty()) {
             initialsBuilder.append(firstName.substring(0, 1));
         }
-        if (lastName != null && lastName.length() > 0) {
+        if (lastName != null && !lastName.isEmpty()) {
             initialsBuilder.append(lastName.substring(0, 1));
         }
 

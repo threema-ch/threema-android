@@ -45,7 +45,7 @@ public class EmojiTextView extends AppCompatTextView {
 
     @Override
     public void setText(@Nullable CharSequence text, BufferType type) {
-        super.setText(EmojiMarkupUtil.getInstance().addTextSpans(getContext(), text, this, true, true, false, true), type);
+        super.setText(EmojiMarkupUtil.getInstance().addTextSpans(getContext(), text, this, true, true, false, false), type);
     }
 
     /**

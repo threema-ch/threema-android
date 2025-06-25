@@ -30,15 +30,15 @@ import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import java.util.Date
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import org.junit.Before
 
 class BundledMessagesSendStepsTest : MessageProcessorProvider() {
     private lateinit var outgoingCspMessageServices: OutgoingCspMessageServices
 
-    @Before
+    @BeforeTest
     fun initialize() {
         outgoingCspMessageServices = OutgoingCspMessageServices(
             serviceManager.forwardSecurityMessageProcessor,
@@ -58,7 +58,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
     @Test
     fun testContactMessage() {
         runInsideOfATask { handle ->
-            val messageId = MessageId()
+            val messageId = MessageId.random()
             val createdAt = Date()
             var hasBeenMarkedAsSent = false
             var forwardSecurityModes: Map<String, ForwardSecurityMode>? = null
@@ -95,7 +95,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
     @Test
     fun testGroupMessage() {
         runInsideOfATask { handle ->
-            val messageId = MessageId()
+            val messageId = MessageId.random()
             val createdAt = Date()
             val group = groupAB
             var hasBeenMarkedAsSent = false
@@ -138,7 +138,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             OutgoingCspMessageHandle(
                 contactA.toBasicContact(),
                 OutgoingCspContactMessageCreator(
-                    MessageId(),
+                    MessageId.random(),
                     Date(),
                     contactA.identity,
                 ) {
@@ -149,7 +149,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             OutgoingCspMessageHandle(
                 contactB.toBasicContact(),
                 OutgoingCspContactMessageCreator(
-                    MessageId(),
+                    MessageId.random(),
                     Date(),
                     contactA.identity,
                 ) {
@@ -160,7 +160,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             OutgoingCspMessageHandle(
                 groupAB.members.map { it.toBasicContact() }.toSet(),
                 OutgoingCspGroupMessageCreator(
-                    MessageId(),
+                    MessageId.random(),
                     Date(),
                     groupAB.groupModel,
                 ) {

@@ -23,13 +23,13 @@ package ch.threema.app.webclient.services
 
 import ch.threema.app.webclient.services.WebSessionQRCodeParser.InvalidQrCodeException
 import ch.threema.base.utils.Base64
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import org.junit.Test
 
 class WebSessionQRCodeParserImplTest {
 

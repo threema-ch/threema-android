@@ -22,8 +22,6 @@
 package ch.threema.app.activities.ballot;
 
 import ch.threema.app.activities.ThreemaToolbarActivity;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.storage.models.ballot.BallotModel;
 
@@ -55,12 +53,9 @@ abstract class BallotDetailActivity extends ThreemaToolbarActivity {
 
     private void updateViewState() {
         if (this.ballotModel != null) {
-            this.callService(new ServiceCall() {
-                @Override
-                public boolean call(BallotService service) {
-                    service.viewingBallot(ballotModel, true);
-                    return true;
-                }
+            this.callService(service -> {
+                service.viewingBallot(ballotModel, true);
+                return true;
             });
         }
     }
@@ -69,12 +64,9 @@ abstract class BallotDetailActivity extends ThreemaToolbarActivity {
     public void onResume() {
         super.onResume();
         if (this.ballotModel != null) {
-            this.callService(new ServiceCall() {
-                @Override
-                public boolean call(BallotService service) {
-                    service.viewingBallot(ballotModel, true);
-                    return true;
-                }
+            this.callService(service -> {
+                service.viewingBallot(ballotModel, true);
+                return true;
             });
         }
     }
@@ -82,12 +74,9 @@ abstract class BallotDetailActivity extends ThreemaToolbarActivity {
     @Override
     public void onPause() {
         if (this.ballotModel != null) {
-            this.callService(new ServiceCall() {
-                @Override
-                public boolean call(BallotService service) {
-                    service.viewingBallot(ballotModel, false);
-                    return true;
-                }
+            this.callService(service -> {
+                service.viewingBallot(ballotModel, false);
+                return true;
             });
         }
         super.onPause();
@@ -105,11 +94,4 @@ abstract class BallotDetailActivity extends ThreemaToolbarActivity {
     }
 
     abstract BallotService getBallotService();
-
-    abstract ContactService getContactService();
-
-    abstract GroupService getGroupService();
-
-    abstract String getIdentity();
-
 }

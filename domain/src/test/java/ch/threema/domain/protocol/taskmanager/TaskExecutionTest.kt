@@ -24,6 +24,7 @@ package ch.threema.domain.protocol.taskmanager
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.taskmanager.TaskExecutionTest.UnexpectedExceptionTask.UnexpectedException
 import ch.threema.domain.taskmanager.ConnectionStoppedException
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
@@ -316,7 +317,7 @@ class TaskExecutionTest {
             Thread.sleep(delay)
             // Launch new coroutine to restart the task manager
             CoroutineScope(Dispatchers.Default).launch {
-                taskManager.pauseRunningTasks()
+                taskManager.pauseRunningTasks(ServerSocketCloseReason("Test"))
                 taskManager.startRunningTasks(
                     layer5Codec,
                     mockk<IncomingMessageProcessor>(),
@@ -327,6 +328,6 @@ class TaskExecutionTest {
     }
 
     private suspend fun stopConnection() {
-        taskManager.pauseRunningTasks()
+        taskManager.pauseRunningTasks(ServerSocketCloseReason("Test"))
     }
 }

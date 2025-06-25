@@ -1,14 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <!-- chat bubbles -->
-    <color name="bubble_receive">#F2F4F1</color>
-    <color name="bubble_pressed">@color/material_grey_300</color>
+
+    <!-- BRAND -->
+    <!-- Changes here must also be made to every BrandColor.kt file for Compose -->
+    <color name="brand_50">#ECFDF4</color>
+    <color name="brand_100">#D9FAE9</color>
+    <color name="brand_200">#9CF2C6</color>
+    <color name="brand_300">#7DEEB5</color>
+    <color name="brand_400">#5FEAA3</color>
+    <color name="brand_500">#40E692</color>
+    <color name="brand_600">#36D588</color>
+    <color name="brand_700">#2CC47E</color>
+    <color name="brand_800">#0E9061</color>
+    <color name="brand_900">#0B734E</color>
+
+    <!-- Changes here must also be made to BrandGreyColors.kt for Compose -->
+    <color name="brand_grey_50">#F4F4F3</color>
+    <color name="brand_grey_100">#E8E8E7</color>
+    <color name="brand_grey_200">#D0D0D0</color>
+    <color name="brand_grey_300">#B9B9B8</color>
+    <color name="brand_grey_400">#8A8A89</color>
+    <color name="brand_grey_500">#737371</color>
+    <color name="brand_grey_600">#5B5B5A</color>
+    <color name="brand_grey_700">#444442</color>
+    <color name="brand_grey_800">#2C2C2B</color>
+    <color name="brand_grey_900">#151513</color>
+
     <color name="bubble_thumbnail_placeholder_tint">#eeeeee</color>
     <color name="bubble_thumbnail_placeholder_background">#fcfcfc</color>
-
-    <!-- status messages -->
-    <color name="date_separator_bg_color">#ffbababa</color>
-    <color name="date_separator_text_color">#FFFFFFFF</color>
 
     <color name="file_picker_divider_color">#1f000000</color>
 
@@ -18,8 +37,6 @@
     <color name="ballot_detail_highlight_bg_color">#ffcccccc</color>
 
     <color name="text_color_openNotice">@color/text_color_open_ballots</color>
-    <color name="attach_status_bar_color_collapsed">@color/attach_status_bar_collapsed</color>
-    <color name="attach_status_bar_color_expanded">@color/attach_status_bar_expanded</color>
 
     <!-- work accent color for reference -->
     <color name="accent_work">#0096ff</color>
@@ -49,8 +66,6 @@
     <color name="transparent_activity_overlay">#4C000000</color>
     <color name="transparent_activity_overlay_darker">#80000000</color>
     <color name="mime_type_marker_background">#55000000</color>
-    <color name="attach_status_bar_expanded">@android:color/white</color>
-    <color name="attach_status_bar_collapsed">#FFB3B3B3</color>
     <color name="attach_button_background">#FFF1F1F1</color>
     <color name="preview_navigation_area_bg">#44000000</color>
     <color name="settings_multipane_selection_bg">#1a000000</color>
@@ -61,6 +76,10 @@
     <color name="mention_text_color">@color/md_theme_light_onBackground</color>
     <color name="mention_text_color_inverted">@color/md_theme_light_background</color>
 
+    <!-- contact availability status -->
+    <color name="availability_status_available">@color/material_green</color>
+    <color name="availability_status_unavailable">@color/material_red</color>
+
     <!-- others -->
     <color name="text_color_open_ballots">#656565</color>
     <color name="markup_marker_color">#FFD3D3D3</color>
@@ -69,17 +88,15 @@
     <color name="qrscanner_masking_color">#50000000</color>
     <color name="mediaviewer_caption_background_color">#77000000</color>
     <color name="media_attach_button_background_default">#FFEEEEEE</color>
-    <color name="text_color_deleted">#656565</color>
+    <color name="ic_launcher_background">#000000</color>
 
     <!--**********************************************************************************************************-->
     <!-- theme-agnostic colors -->
 
     <!-- wizard -->
     <color name="wizard_alpha_background">#33ffffff</color>
-    <color name="color_wizard_primary">@color/md_theme_dark_primary</color>
-    <color name="color_wizard_on_primary">#FFFFFF</color>
     <!-- primary color of consumer build to use in work build -->
-    <color name="color_wizard_primary_fixed_consumer">#05A63F</color>
+    <color name="color_wizard_primary_fixed_consumer">#2CC47E</color>
     <color name="color_wizard_on_primary_fixed_consumer">#FFFFFF</color>
 
     <!-- wizard step pager display -->

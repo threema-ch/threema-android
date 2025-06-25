@@ -32,6 +32,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -59,7 +60,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
@@ -80,7 +80,6 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.elevation.ElevationOverlayProvider;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -110,6 +109,7 @@ import java.util.stream.Collectors;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,9 +122,10 @@ import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.compose.ui.platform.ComposeView;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -138,16 +139,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+import ch.threema.app.AppConstants;
+import ch.threema.app.ExecutorServices;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.SendAction;
 import ch.threema.app.actions.TextMessageSendAction;
 import ch.threema.app.activities.ComposeMessageActivity;
-import ch.threema.app.activities.ContactDetailActivity;
+import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.activities.notificationpolicy.ContactNotificationsActivity;
 import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.activities.notificationpolicy.GroupNotificationsActivity;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.ImagePaintActivity;
 import ch.threema.app.activities.MediaGalleryActivity;
 import ch.threema.app.activities.MessageDetailsActivity;
@@ -155,14 +158,18 @@ import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
-import ch.threema.app.activities.WorkExplainActivity;
 import ch.threema.app.activities.ballot.BallotOverviewActivity;
 import ch.threema.app.adapters.ComposeMessageAdapter;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.compose.common.interop.ComposeJavaBridge;
+import ch.threema.app.drafts.DraftManager;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ConversationCategoryService;
+import ch.threema.app.ui.SimpleTextWatcher;
+import ch.threema.app.utils.ActivityExtensionsKt;
+import ch.threema.app.webviews.WorkExplainActivity;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -211,7 +218,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.UserService;
@@ -226,7 +233,6 @@ import ch.threema.app.ui.ContentCommitComposeEditText;
 import ch.threema.app.ui.ConversationListView;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.ListViewTouchSwipeListener;
-import ch.threema.app.ui.LockableScrollView;
 import ch.threema.app.ui.LongToast;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.OngoingCallNoticeMode;
@@ -296,7 +302,7 @@ import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -315,9 +321,8 @@ import ch.threema.storage.models.data.MessageContentsType;
 import kotlin.Unit;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
-import static androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP;
 import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.activities.HomeActivity.THREEMA_CHANNEL_IDENTITY;
+import static ch.threema.app.home.HomeActivity.THREEMA_CHANNEL_IDENTITY;
 import static ch.threema.app.adapters.ComposeMessageAdapter.MIN_CONSTRAINT_LENGTH;
 import static ch.threema.app.messagereceiver.MessageReceiverExtensionsKt.isGatewayChat;
 import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
@@ -408,6 +413,7 @@ public class ComposeMessageFragment extends Fragment implements
     private MenuItem showEmptyChatMenuItem;
     private TextView dateTextView;
     private TextInputLayout textInputLayout;
+    private ConstraintLayout conversationParent;
 
     private ActionMode actionMode = null;
     private ActionMode searchActionMode = null;
@@ -424,7 +430,8 @@ public class ComposeMessageFragment extends Fragment implements
     private TypingIndicatorTextWatcher typingIndicatorTextWatcher;
     private Map<String, Integer> identityColors;
     private MediaFilterQuery lastMediaFilter;
-    private RootViewDeferringInsetsCallback deferringInsetsListener = null;
+    private RootViewDeferringInsetsCallback rootInsetsDeferringCallback = null;
+    private TranslateDeferringInsetsAnimationCallback keyboardAnimationInsetsCallback = null;
 
     private PreferenceService preferenceService;
     private ContactService contactService;
@@ -445,6 +452,8 @@ public class ComposeMessageFragment extends Fragment implements
 
     private ActivityResultLauncher<Intent> wallpaperLauncher;
     private final ActivityResultLauncher<Intent> emojiReactionsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        rootInsetsDeferringCallback.setEnabled(true);
+        keyboardAnimationInsetsCallback.setEnabled(true);
         if (actionMode != null) {
             actionMode.finish();
         }
@@ -503,9 +512,9 @@ public class ComposeMessageFragment extends Fragment implements
     private ReportSpamView reportSpamView;
     private ComposeMessageActivity activity;
     private View fragmentView;
-    private CoordinatorLayout coordinatorLayout;
+    private FrameLayout coordinatorLayout;
     private BallotService ballotService;
-    private DatabaseServiceNew databaseServiceNew;
+    private DatabaseService databaseService;
     private LayoutInflater layoutInflater;
     private ListViewTouchSwipeListener listViewTouchSwipeListener;
 
@@ -1097,9 +1106,9 @@ public class ComposeMessageFragment extends Fragment implements
     private final QRCodeScanListener qrCodeScanListener = new QRCodeScanListener() {
         @Override
         public void onScanCompleted(final String scanResult) {
-            if (scanResult != null && scanResult.length() > 0) {
+            if (scanResult != null && !scanResult.isEmpty()) {
                 if (messageReceiver != null) {
-                    ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), scanResult, null);
+                    DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(), scanResult, null);
                 }
             }
         }
@@ -1231,7 +1240,7 @@ public class ComposeMessageFragment extends Fragment implements
         }
 
         if (this.emojiPicker != null) {
-            this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService(), true);
+            this.emojiPicker.init(activity, ThreemaApplication.requireServiceManager().getEmojiService(), true);
         }
 
         // resolution and layout may have changed after being attached to a new activity
@@ -1275,12 +1284,6 @@ public class ComposeMessageFragment extends Fragment implements
             activity.getTheme().applyStyle(preferenceService.getFontStyle(), true);
             this.fragmentView = inflater.inflate(R.layout.fragment_compose_message, container, false);
 
-            LockableScrollView sv = fragmentView.findViewById(R.id.wallpaper_scroll);
-            sv.setEnabled(false);
-            sv.setScrollingEnabled(false);
-            sv.setOnTouchListener(null);
-            sv.setOnClickListener(null);
-
             this.coordinatorLayout = fragmentView.findViewById(R.id.compose_root);
 
             this.convListView = fragmentView.findViewById(R.id.history);
@@ -1300,7 +1303,12 @@ public class ComposeMessageFragment extends Fragment implements
             this.listViewTop = this.convListView.getPaddingTop();
             this.swipeRefreshLayout = fragmentView.findViewById(R.id.ptr_layout);
             this.swipeRefreshLayout.setOnRefreshListener(this);
-            this.swipeRefreshLayout.setColorSchemeResources(R.color.md_theme_light_primary);
+            this.swipeRefreshLayout.setProgressBackgroundColorSchemeColor(
+                ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorSurfaceContainer)
+            );
+            this.swipeRefreshLayout.setColorSchemeColors(
+                ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary)
+            );
             this.swipeRefreshLayout.setSize(SwipeRefreshLayout.LARGE);
             this.messageText = fragmentView.findViewById(R.id.embedded_text_editor);
 
@@ -1383,12 +1391,8 @@ public class ComposeMessageFragment extends Fragment implements
                 scrollList(0);
             });
 
-            // tint the edittext manually as TextInputLayout does not currently support elevation
-            ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(activity);
             textInputLayout = fragmentView.findViewById(R.id.textinputlayout_compose);
-            textInputLayout.setBoxBackgroundColor(elevationOverlayProvider.compositeOverlayIfNeeded(
-                ConfigUtils.getColorFromAttribute(activity, R.attr.colorSurface),
-                getResources().getDimension(R.dimen.compose_edittext_elevation)));
+            conversationParent = fragmentView.findViewById(R.id.conversation_parent);
 
             this.getValuesFromBundle(savedInstanceState);
             this.handleIntent(activity.getIntent());
@@ -1417,8 +1421,8 @@ public class ComposeMessageFragment extends Fragment implements
                         showEmojiPicker();
                     }
                 };
-                this.emojiPicker = (EmojiPicker) ((ViewStub) this.activity.findViewById(R.id.emoji_stub)).inflate();
-                this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService(), true);
+                this.emojiPicker = (EmojiPicker) fragmentView.findViewById(R.id.emoji_picker);
+                this.emojiPicker.init(activity, ThreemaApplication.requireServiceManager().getEmojiService(), true);
                 this.emojiButton.attach(this.emojiPicker);
                 this.emojiPicker.setEmojiKeyListener(emojiKeyListener);
                 this.emojiPicker.addEmojiPickerListener(this);
@@ -1530,6 +1534,7 @@ public class ComposeMessageFragment extends Fragment implements
     private void hideEmojiPickerIfShown() {
         if (isEmojiPickerShown()) {
             emojiPicker.hide();
+            addAllInsetsToInsetPaddingContainer();
         }
     }
 
@@ -1544,14 +1549,16 @@ public class ComposeMessageFragment extends Fragment implements
         logger.debug("Emoji button clicked");
 
         if (activity.isSoftKeyboardOpen() && !isEmojiPickerShown()) {
-            if (deferringInsetsListener != null) {
-                deferringInsetsListener.setDisableAnimation(true);
+            if (rootInsetsDeferringCallback != null && keyboardAnimationInsetsCallback != null) {
+                rootInsetsDeferringCallback.openingEmojiPicker = true;
+                keyboardAnimationInsetsCallback.skipNextAnimation = true;
             }
 
             logger.debug("Show emoji picker after keyboard close");
             activity.runOnSoftKeyboardClose(() -> {
                 if (emojiPicker != null) {
                     emojiPicker.show(activity.loadStoredSoftKeyboardHeight());
+                    removeVerticalInsetsFromInsetPaddingContainer();
                 }
             });
 
@@ -1560,21 +1567,51 @@ public class ComposeMessageFragment extends Fragment implements
             if (emojiPicker != null) {
                 if (emojiPicker.isShown()) {
                     logger.debug("Emoji picker currently shown. Closing.");
-                    if (ConfigUtils.isLandscape(activity) &&
-                        !ConfigUtils.isTabletLayout()) {
+                    if (ConfigUtils.isLandscape(activity) && !ConfigUtils.isTabletLayout()) {
                         emojiPicker.hide();
+                        addAllInsetsToInsetPaddingContainer();
                     } else {
-                        if (deferringInsetsListener != null) {
-                            deferringInsetsListener.setDisableAnimation(true);
+                        if (rootInsetsDeferringCallback != null && keyboardAnimationInsetsCallback != null) {
+                            rootInsetsDeferringCallback.openingEmojiPicker = true;
+                            keyboardAnimationInsetsCallback.skipNextAnimation = true;
                         }
-                        activity.openSoftKeyboard(emojiPicker, messageText);
+                        activity.openSoftKeyboard(messageText);
                     }
                 } else {
                     logger.debug("Show emoji picker immediately");
                     emojiPicker.show(activity.loadStoredSoftKeyboardHeight());
+                    removeVerticalInsetsFromInsetPaddingContainer();
                 }
             }
         }
+    }
+
+    /**
+     * If the emoji picker is shown, we have to make sure that no vertical padding insets are applied.
+     * The emoji picker has to handle the vertical insets internally.
+     * <p>
+     * This will remove any vertical padding of {@code inset_padding_container} while still respecting the horizontal insets.
+     */
+    private void removeVerticalInsetsFromInsetPaddingContainer() {
+        final Insets insets = ActivityExtensionsKt.getCurrentInsets(
+            activity,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        final FrameLayout insetPaddingContainer = getView().findViewById(R.id.inset_padding_container);
+        insetPaddingContainer.setPadding(insets.left, 0, insets.right, 0);
+    }
+
+    private void addAllInsetsToInsetPaddingContainer() {
+        final @Nullable View fragmentView = getView();
+        if (fragmentView == null) {
+            return;
+        }
+        final Insets insets = ActivityExtensionsKt.getCurrentInsets(
+            activity,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        final @NonNull FrameLayout insetPaddingContainer = fragmentView.findViewById(R.id.inset_padding_container);
+        insetPaddingContainer.setPadding(insets.left, 0, insets.right, insets.bottom);
     }
 
     @Override
@@ -1583,67 +1620,37 @@ public class ComposeMessageFragment extends Fragment implements
 
         super.onActivityCreated(savedInstanceState);
         /*
-         * This callback tells the fragment when it is fully associated with the new activity instance. This is called after onCreateView(LayoutInflater, ViewGroup, Bundle) and before onViewStateRestored(Bundle).
+         * This callback tells the fragment when it is fully associated with the new activity instance.
+         * This is called after onCreateView(LayoutInflater, ViewGroup, Bundle) and before onViewStateRestored(Bundle).
          */
         if (preferenceService == null) {
             return;
         }
 
-        try {
-            View rootView = activity.getWindow().getDecorView().getRootView();
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                try {
-                    ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-                    if (decorView.getChildCount() == 1) {
-                        rootView = decorView.getChildAt(0);
-                    }
-                } catch (Exception e) {
-                    logger.error("Exception", e);
-                }
-            }
+        final String tag = "compose-message-fragment";
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                rootView.setBackgroundColor(ConfigUtils.getColorFromAttribute(requireContext(), android.R.attr.colorBackground));
-            }
+        // Set inset listener that will effectively apply the final view paddings
+        rootInsetsDeferringCallback = new RootViewDeferringInsetsCallback(
+            tag,
+            emojiPicker,
+            activity,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        final FrameLayout insetPaddingContainer = getView().findViewById(R.id.inset_padding_container);
+        ViewCompat.setWindowInsetsAnimationCallback(insetPaddingContainer, rootInsetsDeferringCallback);
+        ViewCompat.setOnApplyWindowInsetsListener(insetPaddingContainer, rootInsetsDeferringCallback);
 
-            deferringInsetsListener = new RootViewDeferringInsetsCallback(emojiPicker, activity);
+        // Set inset listener to temporarily push up/down the chat views while an IME animation takes place
+        keyboardAnimationInsetsCallback = new TranslateDeferringInsetsAnimationCallback(
+            tag,
+            conversationParent,
+            emojiPicker,
+            WindowInsetsCompat.Type.systemBars(),
+            WindowInsetsCompat.Type.ime(),
+            WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+        );
+        ViewCompat.setWindowInsetsAnimationCallback(conversationParent, keyboardAnimationInsetsCallback);
 
-            ViewCompat.setWindowInsetsAnimationCallback(rootView, deferringInsetsListener);
-
-            ViewCompat.setOnApplyWindowInsetsListener(rootView, deferringInsetsListener);
-
-            ViewCompat.setWindowInsetsAnimationCallback(
-                bottomPanel,
-                new TranslateDeferringInsetsAnimationCallback(
-                    bottomPanel,
-                    WindowInsetsCompat.Type.systemBars(),
-                    WindowInsetsCompat.Type.ime(),
-                    WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
-                )
-            );
-            ViewCompat.setWindowInsetsAnimationCallback(
-                convListView,
-                new TranslateDeferringInsetsAnimationCallback(
-                    convListView,
-                    WindowInsetsCompat.Type.systemBars(),
-                    WindowInsetsCompat.Type.ime(),
-                    DISPATCH_MODE_STOP
-                )
-            );
-            if (emojiPicker != null) {
-                ViewCompat.setWindowInsetsAnimationCallback(
-                    emojiPicker,
-                    new TranslateDeferringInsetsAnimationCallback(
-                        emojiPicker,
-                        WindowInsetsCompat.Type.systemBars(),
-                        WindowInsetsCompat.Type.ime(),
-                        DISPATCH_MODE_STOP
-                    )
-                );
-            }
-        } catch (NullPointerException e) {
-            logger.error("Exception", e);
-        }
         activity.addOnSoftKeyboardChangedListener(this);
     }
 
@@ -1660,7 +1667,7 @@ public class ComposeMessageFragment extends Fragment implements
         isPaused = false;
 
         // mark all unread messages as read
-         if (!unreadMessages.isEmpty()) {
+        if (!unreadMessages.isEmpty()) {
             logger.debug("markAllRead");
             new MarkAsReadRoutine(conversationService, messageService, notificationService)
                 .runAsync(
@@ -2108,14 +2115,10 @@ public class ComposeMessageFragment extends Fragment implements
 
         setupMessageTextClickListener();
 
-        this.messageText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+        this.messageText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ThreemaApplication.activityUserInteract(activity);
+                ActivityService.activityUserInteract(activity);
                 updateSendButton(s);
             }
 
@@ -2154,13 +2157,15 @@ public class ComposeMessageFragment extends Fragment implements
                     if (ConfigUtils.isLandscape(activity) &&
                         !ConfigUtils.isTabletLayout()) {
                         emojiPicker.hide();
+                        addAllInsetsToInsetPaddingContainer();
                     } else {
-                        if (deferringInsetsListener != null) {
-                            deferringInsetsListener.setDisableAnimation(true);
+                        if (rootInsetsDeferringCallback != null && keyboardAnimationInsetsCallback != null) {
+                            rootInsetsDeferringCallback.openingEmojiPicker = true;
+                            keyboardAnimationInsetsCallback.skipNextAnimation = true;
                         }
                     }
                 }
-                activity.openSoftKeyboard(emojiPicker, messageText);
+                activity.openSoftKeyboard(messageText);
             });
         } else {
             this.messageText.setOnClickListener(null);
@@ -2314,10 +2319,10 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void getValuesFromBundle(Bundle bundle) {
         if (bundle != null) {
-            this.groupDbId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
-            this.distributionListId = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
-            this.identity = bundle.getString(ThreemaApplication.INTENT_DATA_CONTACT);
-            this.intentTimestamp = bundle.getLong(ThreemaApplication.INTENT_DATA_TIMESTAMP, 0L);
+            this.groupDbId = bundle.getInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
+            this.distributionListId = bundle.getLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
+            this.identity = bundle.getString(AppConstants.INTENT_DATA_CONTACT);
+            this.intentTimestamp = bundle.getLong(AppConstants.INTENT_DATA_TIMESTAMP, 0L);
             this.cameraUri = bundle.getParcelable(CAMERA_URI);
             this.listInstancePosition = bundle.getInt(BUNDLE_LIST_POSITION);
             this.listInstanceReceiverId = bundle.getString(BUNDLE_LIST_RECEIVER_ID);
@@ -2383,7 +2388,7 @@ public class ComposeMessageFragment extends Fragment implements
                 } else {
                     logger.info("Clicked title of contact chat");
                     intent = new Intent(activity, ContactDetailActivity.class);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT_READONLY, true);
+                    intent.putExtra(AppConstants.INTENT_DATA_CONTACT_READONLY, true);
                 }
                 if (messageReceiver != null) {
                     addExtrasToIntent(intent, messageReceiver);
@@ -2507,14 +2512,14 @@ public class ComposeMessageFragment extends Fragment implements
             }
         }
 
-        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID) || this.groupDbId != 0) {
+        if (intent.hasExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID) || this.groupDbId != 0) {
             this.isGroupChat = true;
             // TODO(ANDR-3786) - Only read the value as type long
             if (this.groupDbId == 0) {
-                this.groupDbId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
+                this.groupDbId = intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
             }
             if (this.groupDbId == 0) {
-                this.groupDbId = (int) intent.getLongExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0L);
+                this.groupDbId = (int) intent.getLongExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
             }
             this.groupModel = groupModelRepository.getByLocalGroupDbId(this.groupDbId);
 
@@ -2523,7 +2528,7 @@ public class ComposeMessageFragment extends Fragment implements
                 return;
             }
 
-            intent.removeExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID);
+            intent.removeExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID);
             this.messageReceiver = this.groupService.createReceiver(this.groupModel);
             this.conversationUid = ConversationUtil.getGroupConversationUid(this.groupDbId);
             if (ConfigUtils.supportsGroupLinks() && groupModel.isCreator()) {
@@ -2540,12 +2545,12 @@ public class ComposeMessageFragment extends Fragment implements
                 groupModel,
                 textInputLayout
             );
-        } else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID) || this.distributionListId != 0) {
+        } else if (intent.hasExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID) || this.distributionListId != 0) {
             this.isDistributionListChat = true;
 
             try {
                 if (this.distributionListId == 0) {
-                    this.distributionListId = intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
+                    this.distributionListId = intent.getLongExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, 0);
                 }
                 this.distributionListModel = distributionListService.getById(this.distributionListId);
 
@@ -2554,7 +2559,7 @@ public class ComposeMessageFragment extends Fragment implements
                     return;
                 }
 
-                intent.removeExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID);
+                intent.removeExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID);
                 this.messageReceiver = distributionListService.createReceiver(this.distributionListModel);
             } catch (Exception e) {
                 logger.error("Exception", e);
@@ -2563,7 +2568,7 @@ public class ComposeMessageFragment extends Fragment implements
             this.conversationUid = ConversationUtil.getDistributionListConversationUid(this.distributionListId);
         } else {
             if (TestUtil.isEmptyOrNull(this.identity)) {
-                this.identity = intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+                this.identity = intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT);
             }
 
             if (this.identity == null) {
@@ -2576,8 +2581,8 @@ public class ComposeMessageFragment extends Fragment implements
                 }
             }
 
-            intent.removeExtra(ThreemaApplication.INTENT_DATA_CONTACT);
-            if (this.identity == null || this.identity.length() == 0 || this.identity.equals(this.userService.getIdentity())) {
+            intent.removeExtra(AppConstants.INTENT_DATA_CONTACT);
+            if (this.identity == null || this.identity.isEmpty() || this.identity.equals(this.userService.getIdentity())) {
                 logger.error("no identity found");
                 finishActivity();
                 return;
@@ -2674,7 +2679,7 @@ public class ComposeMessageFragment extends Fragment implements
         // any previously handled intent
         long newTimestamp = 0L;
         try {
-            newTimestamp = intent.getLongExtra(ThreemaApplication.INTENT_DATA_TIMESTAMP, 0L);
+            newTimestamp = intent.getLongExtra(AppConstants.INTENT_DATA_TIMESTAMP, 0L);
             if (newTimestamp != 0L && newTimestamp <= this.intentTimestamp) {
                 return;
             }
@@ -2694,7 +2699,7 @@ public class ComposeMessageFragment extends Fragment implements
         // restore draft before setting predefined text
         restoreMessageDraft(false);
 
-        String defaultText = intent.getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
+        String defaultText = intent.getStringExtra(AppConstants.INTENT_DATA_TEXT);
         if (!TestUtil.isEmptyOrNull(defaultText)) {
             this.messageText.setText(null);
             this.messageText.append(defaultText);
@@ -2703,7 +2708,7 @@ public class ComposeMessageFragment extends Fragment implements
         updateSendButton(this.messageText.getText());
         updateCameraButton();
 
-        boolean editFocus = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, false);
+        boolean editFocus = intent.getBooleanExtra(AppConstants.INTENT_DATA_EDITFOCUS, false);
         if (editFocus || this.unreadCount <= 0) {
             messageText.setSelected(true);
             messageText.requestFocus();
@@ -3122,7 +3127,7 @@ public class ComposeMessageFragment extends Fragment implements
                 this.messageValues.clear();
             } else {
                 // prevent duplicate date separators when adding messages to an existing chat (e.g. after pull-to-refresh)
-                if (this.messageValues.size() > 0) {
+                if (!this.messageValues.isEmpty()) {
                     if (this.messageValues.get(0) instanceof DateSeparatorMessageModel) {
                         this.messageValues.remove(0);
                     }
@@ -3182,7 +3187,7 @@ public class ComposeMessageFragment extends Fragment implements
     }
 
     private void valuesLoaded(List<AbstractMessageModel> values) {
-        if (values != null && values.size() > 0) {
+        if (values != null && !values.isEmpty()) {
             AbstractMessageModel topMessageModel = values.get(values.size() - 1);
             // the topmost message may be a unread messages indicator. as it does not have an id, skip it.
             if (topMessageModel instanceof FirstUnreadMessageModel && values.size() > 1) {
@@ -3327,9 +3332,9 @@ public class ComposeMessageFragment extends Fragment implements
                     if (actionMode == null && messageModel.isOutbox() && (messageModel.getState() == MessageState.SENDFAILED || messageModel.getState() == MessageState.FS_KEY_MISMATCH) && messageReceiver.isMessageBelongsToMe(messageModel)) {
                         final Set<String> finalRecipientIdentities = new HashSet<>();
 
-                        Runnable resendMessage = () -> ThreemaApplication.sendMessageExecutorService.execute(() -> {
+                        Runnable resendMessage = () -> ExecutorServices.getSendMessageExecutorService().execute(() -> {
                             try {
-                                messageService.resendMessage(messageModel, messageReceiver, null, finalRecipientIdentities, new MessageId(), TriggerSource.LOCAL);
+                                messageService.resendMessage(messageModel, messageReceiver, null, finalRecipientIdentities, MessageId.random(), TriggerSource.LOCAL);
                             } catch (Exception e) {
                                 RuntimeUtil.runOnUiThread(() -> {
                                     if (isAdded()) {
@@ -3360,7 +3365,7 @@ public class ComposeMessageFragment extends Fragment implements
                                 return;
                             }
 
-                            RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseServiceNew.getRejectedGroupMessageFactory();
+                            RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseService.getRejectedGroupMessageFactory();
                             finalRecipientIdentities.addAll(rejectedGroupMessageFactory.getMessageRejects(messageId, groupModel));
 
                             if (finalRecipientIdentities.isEmpty()) {
@@ -3423,7 +3428,7 @@ public class ComposeMessageFragment extends Fragment implements
                             } else {
                                 logger.info("Message avatar clicked in contact chat, opening contact details");
                                 intent = new Intent(getActivity(), ContactDetailActivity.class);
-                                intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT_READONLY, true);
+                                intent.putExtra(AppConstants.INTENT_DATA_CONTACT_READONLY, true);
                                 IntentDataUtil.append(contactModel, intent);
                             }
                             getActivity().startActivity(intent);
@@ -3645,6 +3650,8 @@ public class ComposeMessageFragment extends Fragment implements
             intent.putExtra(EmojiReactionsOverviewActivity.EXTRA_INITIAL_EMOJI, emojiSequence);
         }
         emojiReactionsLauncher.launch(intent);
+        rootInsetsDeferringCallback.setEnabled(false);
+        keyboardAnimationInsetsCallback.setEnabled(false);
     }
 
     /**
@@ -3979,6 +3986,8 @@ public class ComposeMessageFragment extends Fragment implements
             Intent intent = new Intent(activity, EmojiReactionsPickerActivity.class);
             IntentDataUtil.append(messageModel, intent);
             emojiReactionsLauncher.launch(intent);
+            rootInsetsDeferringCallback.setEnabled(false);
+            keyboardAnimationInsetsCallback.setEnabled(false);
         } else {
             logger.debug("MessageModel or Receiver is null");
         }
@@ -4157,7 +4166,7 @@ public class ComposeMessageFragment extends Fragment implements
                     RuntimeUtil.runOnUiThread(() -> {
                         if (ConfigUtils.isTabletLayout()) {
                             // remove draft right now to make sure conversations pane is updated
-                            ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+                            DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
                         }
                     });
                 }
@@ -4465,7 +4474,7 @@ public class ComposeMessageFragment extends Fragment implements
     }
 
     private void startForwardMessage() {
-        if (selectedMessages.size() > 0) {
+        if (!selectedMessages.isEmpty()) {
             if (selectedMessages.size() == 1) {
                 final AbstractMessageModel messageModel = selectedMessages.get(0);
 
@@ -4476,7 +4485,7 @@ public class ComposeMessageFragment extends Fragment implements
                     intent.setType("text/plain");
                     intent.setAction(Intent.ACTION_SEND);
                     intent.putExtra(Intent.EXTRA_TEXT, body);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_IS_FORWARD, true);
+                    intent.putExtra(AppConstants.INTENT_DATA_IS_FORWARD, true);
                     activity.startActivity(intent);
                     return;
                 }
@@ -4719,7 +4728,7 @@ public class ComposeMessageFragment extends Fragment implements
         }.execute();
 
         // show/hide open group request chips if there are any
-        if (ConfigUtils.supportsGroupLinks() && groupModel != null && !databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
+        if (ConfigUtils.supportsGroupLinks() && groupModel != null && !databaseService.getIncomingGroupJoinRequestModelFactory()
             .getSingleMostRecentOpenRequestsPerUserForGroup(new GroupId(groupModel.getGroupIdentity().getGroupId())).isEmpty()) {
             showOpenGroupRequestsMenuItem.setVisible(true);
             showAllGroupRequestsMenuItem.setVisible(true);
@@ -4737,7 +4746,7 @@ public class ComposeMessageFragment extends Fragment implements
         // link to incoming group requests overview if there are any (includes already answered ones)
         showAllGroupRequestsMenuItem.setVisible(ConfigUtils.supportsGroupLinks() &&
             groupModel != null &&
-            !databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
+            !databaseService.getIncomingGroupJoinRequestModelFactory()
                 .getAllRequestsForGroup(new GroupId(groupModel.getGroupIdentity().getGroupId())).isEmpty()
         );
 
@@ -4836,14 +4845,14 @@ public class ComposeMessageFragment extends Fragment implements
     private Intent addExtrasToIntent(Intent intent, @NonNull MessageReceiver receiver) {
         switch (receiver.getType()) {
             case MessageReceiver.Type_GROUP:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupDbId);
+                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupDbId);
                 break;
             case MessageReceiver.Type_DISTRIBUTION_LIST:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, distributionListModel.getId());
+                intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, distributionListModel.getId());
                 break;
             case MessageReceiver.Type_CONTACT:
             default:
-                intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+                intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
         }
         return intent;
     }
@@ -4851,9 +4860,9 @@ public class ComposeMessageFragment extends Fragment implements
     private void attachCamera() {
         Intent previewIntent = IntentDataUtil.addMessageReceiversToIntent(new Intent(activity, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
         if (this.actionBarTitleTextView != null && this.actionBarTitleTextView.getText() != null) {
-            previewIntent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, this.actionBarTitleTextView.getText().toString());
+            previewIntent.putExtra(AppConstants.INTENT_DATA_TEXT, this.actionBarTitleTextView.getText().toString());
         }
-        previewIntent.putExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, true);
+        previewIntent.putExtra(AppConstants.INTENT_DATA_PICK_FROM_CAMERA, true);
         activity.startActivityForResult(previewIntent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
     }
 
@@ -4895,16 +4904,16 @@ public class ComposeMessageFragment extends Fragment implements
 
                 if (isGroupChat) {
                     intent = new Intent(activity, GroupNotificationsActivity.class);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, this.groupDbId);
+                    intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, this.groupDbId);
                 } else {
                     intent = new Intent(activity, ContactNotificationsActivity.class);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, this.identity);
+                    intent.putExtra(AppConstants.INTENT_DATA_CONTACT, this.identity);
                 }
                 if (messageReceiver != null) {
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, this.messageReceiver.getDisplayName());
+                    intent.putExtra(AppConstants.INTENT_DATA_TEXT, this.messageReceiver.getDisplayName());
                 }
                 if (ToolbarUtil.getMenuItemCenterPosition(activity.getToolbar(), R.id.menu_muted, location)) {
-                    intent.putExtra((ThreemaApplication.INTENT_DATA_ANIM_CENTER), location);
+                    intent.putExtra((AppConstants.INTENT_DATA_ANIM_CENTER), location);
                 }
                 activity.startActivity(intent);
             }
@@ -4948,7 +4957,7 @@ public class ComposeMessageFragment extends Fragment implements
             logger.info("Show all group requests button clicked");
             Intent groupRequestsOverviewIntent = new Intent(getContext(), IncomingGroupRequestActivity.class);
             groupRequestsOverviewIntent.putExtra(
-                ThreemaApplication.INTENT_DATA_GROUP_API,
+                AppConstants.INTENT_DATA_GROUP_API,
                 new GroupId(groupModel.getGroupIdentity().getGroupId())
             );
             startActivity(groupRequestsOverviewIntent);
@@ -5012,7 +5021,7 @@ public class ComposeMessageFragment extends Fragment implements
                     }
 
                     // empty draft
-                    ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+                    DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
                     messageText.setText(null);
 
                     setCurrentPageReferenceId(null);
@@ -5176,11 +5185,6 @@ public class ComposeMessageFragment extends Fragment implements
         private boolean canShowAsQRCode(@NonNull AbstractMessageModel message) {
             return message.getType() == MessageType.TEXT    // if the message is a text message
                 && !message.isStatusMessage();              // and it is not a status message
-        }
-
-        private boolean canShowAsText(@NonNull AbstractMessageModel message) {
-            return (message.getType() == MessageType.TEXT || message.getType() == MessageType.FILE) // if the message is a text or file  message
-                && !message.isStatusMessage();                                                       // and it is not a status message
         }
 
         private boolean isForwardable(@NonNull AbstractMessageModel message) {
@@ -5385,9 +5389,12 @@ public class ComposeMessageFragment extends Fragment implements
     }
 
     private void setMessageTextMaxLength(int max) {
-        for (int i = 0; i < messageText.getFilters().length; i++) {
-            if (messageText.getFilters()[i] instanceof InputFilter.LengthFilter) {
-                messageText.getFilters()[i] = new InputFilter.LengthFilter(max);
+        var filters = messageText.getFilters();
+        for (int i = 0; i < filters.length; i++) {
+            if (filters[i] instanceof InputFilter.LengthFilter) {
+                filters[i] = new InputFilter.LengthFilter(max);
+                // We need to re-apply the filters after modifying the array, otherwise the EditText won't pick up the new filter
+                messageText.setFilters(filters);
                 break;
             }
         }
@@ -5398,20 +5405,10 @@ public class ComposeMessageFragment extends Fragment implements
         private final AbstractMessageModel messageModel;
         private boolean shouldRestoreQuotePanel;
 
-        private final TextWatcher onEditMessageTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        private final TextWatcher onEditMessageTextChangedListener = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 updateSendEditMessageButton(getEditableText(messageModel), charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
             }
         };
 
@@ -5510,7 +5507,7 @@ public class ComposeMessageFragment extends Fragment implements
         public void onDestroyActionMode(ActionMode mode) {
             // restore message draft
             if (messageReceiver != null) {
-                String messageDraft = ThreemaApplication.getMessageDraft(messageReceiver.getUniqueIdString());
+                String messageDraft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
                 messageText.setText(messageDraft);
                 messageText.setSelection(String.valueOf(messageText.getText()).length());
             }
@@ -5653,6 +5650,7 @@ public class ComposeMessageFragment extends Fragment implements
         if (isEmojiPickerShown()) {
             // dismiss emoji keyboard if it's showing instead of leaving activity
             emojiPicker.hide();
+            addAllInsetsToInsetPaddingContainer();
             return true;
         } else {
             if (messageText != null && messageText.isMentionPopupShowing()) {
@@ -5704,9 +5702,9 @@ public class ComposeMessageFragment extends Fragment implements
 
         // some phones destroy the retained fragment upon going in background so we have to persist some data
         outState.putParcelable(CAMERA_URI, cameraUri);
-        outState.putInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, this.groupDbId);
-        outState.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, this.distributionListId);
-        outState.putString(ThreemaApplication.INTENT_DATA_CONTACT, this.identity);
+        outState.putInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, this.groupDbId);
+        outState.putLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, this.distributionListId);
+        outState.putString(AppConstants.INTENT_DATA_CONTACT, this.identity);
         outState.putInt(BUNDLE_LIST_POSITION, this.listInstancePosition);
         outState.putString(BUNDLE_LIST_RECEIVER_ID, this.listInstanceReceiverId);
         outState.putInt(BUNDLE_LIST_TOP, this.listInstanceTop);
@@ -5920,7 +5918,7 @@ public class ComposeMessageFragment extends Fragment implements
                 this.messagePlayerService = serviceManager.getMessagePlayerService();
                 this.blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
                 this.ballotService = serviceManager.getBallotService();
-                this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
+                this.databaseService = serviceManager.getDatabaseService();
                 this.conversationService = serviceManager.getConversationService();
                 this.deviceService = serviceManager.getDeviceService();
                 this.wallpaperService = serviceManager.getWallpaperService();
@@ -5951,9 +5949,9 @@ public class ComposeMessageFragment extends Fragment implements
                     }).start();
                 }
                 break;
-            case ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT:
+            case AppConstants.CONFIRM_TAG_CLOSE_BALLOT:
                 logger.info("Closing ballot confirmed");
-                BallotUtil.closeBallot((AppCompatActivity) requireActivity(), (BallotModel) data, ballotService, new MessageId(), TriggerSource.LOCAL);
+                BallotUtil.closeBallot((AppCompatActivity) requireActivity(), (BallotModel) data, ballotService, MessageId.random(), TriggerSource.LOCAL);
                 break;
             case DIALOG_TAG_CONFIRM_CALL:
                 VoipUtil.initiateCall((AppCompatActivity) requireActivity(), contactModel, false, null);
@@ -6084,12 +6082,12 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void restoreMessageDraft(boolean force) {
         if (this.messageReceiver != null && this.messageText != null && (force || TestUtil.isBlankOrNull(this.messageText.getText()))) {
-            String messageDraft = ThreemaApplication.getMessageDraft(this.messageReceiver.getUniqueIdString());
+            String messageDraft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
 
             if (!TextUtils.isEmpty(messageDraft)) {
                 this.messageText.setText("");
                 this.messageText.append(messageDraft);
-                String apiMessageId = ThreemaApplication.getQuoteDraft(this.messageReceiver.getUniqueIdString());
+                String apiMessageId = DraftManager.getQuoteDraft(messageReceiver.getUniqueIdString());
                 if (apiMessageId != null) {
                     AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, messageReceiver);
                     if (quotedMessageModel != null && QuoteUtil.isQuoteable(quotedMessageModel)) {
@@ -6108,9 +6106,9 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void saveMessageDraft() {
         if (this.messageReceiver != null) {
-            String draft = ThreemaApplication.getMessageDraft(this.messageReceiver.getUniqueIdString());
+            String draft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
             if (this.messageText.getText() != null) {
-                ThreemaApplication.putMessageDraft(this.messageReceiver.getUniqueIdString(),
+                DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(),
                     this.messageText.getText().toString(),
                     isQuotePopupShown() ? quotePopup.getQuoteInfo().getMessageModel() : null);
             }
@@ -6166,7 +6164,9 @@ public class ComposeMessageFragment extends Fragment implements
                 final String spammerIdentity = spammerContactModel.getIdentity();
                 if (block) {
                     blockedIdentitiesService.blockIdentity(spammerIdentity, null);
-                    ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerIdentity);
+                    ThreemaApplication.requireServiceManager()
+                        .getExcludedSyncIdentitiesService()
+                        .excludeFromSync(spammerIdentity, TriggerSource.LOCAL);
 
                     if (messageReceiver != null) {
                         new EmptyOrDeleteConversationsAsyncTask(

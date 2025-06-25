@@ -51,7 +51,7 @@ public class LocaleServiceImpl implements LocaleService {
                 //is TELEPHONY_SERVICE disabled?
             }
 
-            if (this.countryIsoCode == null || this.countryIsoCode.length() == 0) {
+            if (this.countryIsoCode == null || this.countryIsoCode.isEmpty()) {
                 this.countryIsoCode = Locale.getDefault().getCountry();
             }
         }

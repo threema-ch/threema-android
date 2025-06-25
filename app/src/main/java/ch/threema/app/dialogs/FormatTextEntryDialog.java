@@ -25,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 
@@ -39,8 +38,9 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.app.services.ActivityService;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -113,7 +113,7 @@ public class FormatTextEntryDialog extends ThreemaDialogFragment {
 
         editText.setText(text);
 
-        if (text != null && text.length() > 0) {
+        if (text != null && !text.isEmpty()) {
             editText.setSelection(text.length());
         }
 
@@ -122,18 +122,10 @@ public class FormatTextEntryDialog extends ThreemaDialogFragment {
             editText.setMaxLines(maxLines);
         }
 
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+        editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ThreemaApplication.activityUserInteract(requireActivity());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+                ActivityService.activityUserInteract(requireActivity());
             }
         });
 

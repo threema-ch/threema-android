@@ -145,7 +145,7 @@ public class QRCodeServiceImpl implements QRCodeService {
         if (this.userService.hasIdentity()) {
             BitMatrix matrix;
 
-            if (raw != null && raw.length() > 0) {
+            if (raw != null && !raw.isEmpty()) {
                 matrix = this.renderQR(raw, unicode, true);
             } else {
                 matrix = this.renderQR(getUserQRCodeString(), unicode, true);

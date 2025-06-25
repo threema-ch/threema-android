@@ -25,6 +25,7 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.taskmanager.TriggerSource
 
 private val logger = LoggingUtil.getThreemaLogger("ExcludedSyncIdentitiesActivity")
 
@@ -34,20 +35,20 @@ class ExcludedSyncIdentitiesActivity : IdentityListActivity() {
     }
 
     private val identityList: IdentityList? by lazy {
-        val listService = ThreemaApplication.getServiceManager()?.excludedSyncIdentitiesService
+        val excludedSyncIdentitiesService = ThreemaApplication.getServiceManager()?.excludedSyncIdentitiesService
             ?: return@lazy null
 
         object : IdentityList {
             override fun getAll(): Set<String> {
-                return listService.all?.toSet() ?: emptySet()
+                return excludedSyncIdentitiesService.getExcludedIdentities()
             }
 
             override fun addIdentity(identity: String) {
-                listService.add(identity)
+                excludedSyncIdentitiesService.excludeFromSync(identity, TriggerSource.LOCAL)
             }
 
             override fun removeIdentity(identity: String) {
-                listService.remove(identity)
+                excludedSyncIdentitiesService.removeExcludedIdentity(identity, TriggerSource.LOCAL)
             }
         }
     }

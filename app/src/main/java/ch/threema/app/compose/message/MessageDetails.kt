@@ -41,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
 import ch.threema.app.activities.MessageDetailsUiModel
-import ch.threema.app.compose.theme.customColorScheme
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 
 @Composable
@@ -51,9 +50,9 @@ fun MessageDetailsListBox(
     isOutbox: Boolean,
 ) {
     val borderColor = if (isOutbox) {
-        MaterialTheme.colorScheme.secondaryContainer
+        MaterialTheme.colorScheme.tertiaryContainer
     } else {
-        MaterialTheme.customColorScheme.messageBubbleContainerReceive
+        MaterialTheme.colorScheme.surfaceContainer
     }
     MessageDetailsList(
         modifier = modifier

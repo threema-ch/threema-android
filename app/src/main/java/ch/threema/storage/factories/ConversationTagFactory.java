@@ -35,7 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.sqlite.db.SupportSQLiteQueryBuilder;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.ConversationTagModel;
@@ -43,12 +43,12 @@ import ch.threema.storage.models.ConversationTagModel;
 public class ConversationTagFactory extends ModelFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationTagFactory");
 
-    public ConversationTagFactory(DatabaseServiceNew databaseService) {
+    public ConversationTagFactory(DatabaseService databaseService) {
         super(databaseService, ConversationTagModel.TABLE);
     }
 
     public List<ConversationTagModel> getAll() {
-        try (Cursor cursor = this.databaseService.getReadableDatabase().query(this.getTableName(),
+        try (Cursor cursor = getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -71,7 +71,7 @@ public class ConversationTagFactory extends ModelFactory {
     }
 
     public long countByTag(@NonNull ConversationTag tag) {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + ConversationTagModel.COLUMN_TAG + "=?",
             new String[]{
@@ -82,7 +82,7 @@ public class ConversationTagFactory extends ModelFactory {
 
     @NonNull
     public List<String> getAllConversationUidsByTag(@NonNull ConversationTag tag) {
-        try (Cursor cursor = databaseService.getReadableDatabase().query(
+        try (Cursor cursor = getReadableDatabase().query(
             SupportSQLiteQueryBuilder.builder(getTableName())
                 .columns(new String[]{ConversationTagModel.COLUMN_CONVERSATION_UID})
                 .selection(ConversationTagModel.COLUMN_TAG + " = ?", new String[]{tag.value})
@@ -116,7 +116,7 @@ public class ConversationTagFactory extends ModelFactory {
             final ConversationTagModel c = new ConversationTagModel();
 
             //convert default
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
                 public boolean next(CursorHelper cursorHelper) {
                     c
@@ -145,7 +145,7 @@ public class ConversationTagFactory extends ModelFactory {
     public void create(ConversationTagModel model) {
         logger.debug("create conversation tag " + model.getConversationUid() + " " + model.getTag());
         ContentValues contentValues = buildContentValues(model);
-        this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
     }
 
     public void deleteByConversationUidAndTag(@NonNull String conversationUid, @NonNull ConversationTag tag) {
@@ -153,7 +153,7 @@ public class ConversationTagFactory extends ModelFactory {
     }
 
     public void deleteByConversationUidAndTag(@NonNull String conversationUid, @NonNull String tag) {
-        this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        getWritableDatabase().delete(this.getTableName(),
             ConversationTagModel.COLUMN_CONVERSATION_UID + "=? AND "
                 + ConversationTagModel.COLUMN_TAG + "=? ",
             new String[]{
@@ -163,7 +163,7 @@ public class ConversationTagFactory extends ModelFactory {
     }
 
     public void deleteByConversationUid(String conversationUid) {
-        this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        getWritableDatabase().delete(this.getTableName(),
             ConversationTagModel.COLUMN_CONVERSATION_UID + "=?",
             new String[]{
                 conversationUid
@@ -171,7 +171,7 @@ public class ConversationTagFactory extends ModelFactory {
     }
 
     private ConversationTagModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

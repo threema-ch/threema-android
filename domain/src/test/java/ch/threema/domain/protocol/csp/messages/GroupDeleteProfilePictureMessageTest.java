@@ -21,7 +21,8 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.models.GroupId;
 
@@ -34,10 +35,7 @@ public class GroupDeleteProfilePictureMessageTest {
         GroupId groupId = new GroupId();
         msg.setApiGroupId(groupId);
 
-        org.junit.Assert.assertArrayEquals(
-            groupId.getGroupId(),
-            msg.getBody()
-        );
+        Assertions.assertArrayEquals(groupId.getGroupId(), msg.getBody());
     }
 
 }

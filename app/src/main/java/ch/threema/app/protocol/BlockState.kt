@@ -21,9 +21,9 @@
 
 package ch.threema.app.protocol
 
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.PreferenceService
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.stores.ContactStore
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel

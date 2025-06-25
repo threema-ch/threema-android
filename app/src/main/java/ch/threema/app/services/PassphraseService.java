@@ -39,9 +39,10 @@ import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.StopPassphraseServiceActivity;
 import ch.threema.app.notifications.NotificationChannels;
+import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
@@ -133,7 +134,7 @@ public class PassphraseService extends Service {
 
         ServiceCompat.startForeground(
             this,
-            ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID,
+            NotificationIDs.PASSPHRASE_SERVICE_NOTIFICATION_ID,
             builder.build(),
             FG_SERVICE_TYPE);
     }
@@ -143,7 +144,7 @@ public class PassphraseService extends Service {
 
         // ServiceManager may not yet be available at this point!
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.cancel(ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID);
+        notificationManagerCompat.cancel(NotificationIDs.PASSPHRASE_SERVICE_NOTIFICATION_ID);
 
         if (ThreemaApplication.getServiceManager() != null) {
             NotificationService notificationService = ThreemaApplication.getServiceManager().getNotificationService();

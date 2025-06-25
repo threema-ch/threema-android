@@ -28,13 +28,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,7 +49,6 @@ import android.widget.TextView;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.shape.MaterialShapeDrawable;
 
 import org.slf4j.Logger;
 
@@ -63,7 +60,6 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -85,11 +81,13 @@ import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.UnlockMasterKeyActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.CheckableView;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaGridItemDecoration;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -100,7 +98,7 @@ import ch.threema.localcrypto.MasterKey;
 import me.zhanghai.android.fastscroll.FastScroller;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
@@ -154,7 +152,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
     protected boolean isEditingContact = false;
 
     protected int peekHeightNumRows = 1;
-    private @ColorInt int savedStatusBarColor = 0, expandedStatusBarColor;
 
     private boolean isDragging = false;
     private boolean bottomSheetScroll = false;
@@ -173,7 +170,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ConfigUtils.configureSystemBars(this);
         checkMasterKey();
         initServices();
         // set font size according to user preferences
@@ -236,12 +232,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
             }
             return false;
         });
-        this.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                collapseBottomSheet();
-            }
-        });
+        this.toolbar.setNavigationOnClickListener(v -> collapseBottomSheet());
     }
 
     protected void initServices() {
@@ -319,43 +310,13 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
             }
         });
 
-        @SuppressLint("RestrictedApi") FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
+        @SuppressLint("RestrictedApi")
+        FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
         contentFrameLayout.setOnClickListener(v -> finish());
 
-        // set status bar color
-        expandedStatusBarColor = getResources().getColor(R.color.attach_status_bar_color_expanded);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
-
-        this.bottomSheetLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                Drawable background = bottomSheetLayout.getBackground();
-                if (background instanceof MaterialShapeDrawable) {
-                    expandedStatusBarColor = ((MaterialShapeDrawable) background).getResolvedTintColor();
-                }
-            }
-        });
-
-        // horizontal layout fill screen 2/3 with media selection layout
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && !isInSplitScreenMode()) {
-            CoordinatorLayout bottomSheetContainer = findViewById(R.id.bottom_sheet_container);
-            CoordinatorLayout.LayoutParams bottomSheetContainerParams = (CoordinatorLayout.LayoutParams) bottomSheetContainer.getLayoutParams();
-            FrameLayout.LayoutParams attacherLayoutParams = (FrameLayout.LayoutParams) rootView.getLayoutParams();
-
-            attacherLayoutParams.width = displayMetrics.widthPixels * 2 / 3;
-            attacherLayoutParams.gravity = Gravity.CENTER;
-            bottomSheetContainerParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            bottomSheetContainerParams.gravity = Gravity.CENTER;
-            bottomSheetContainerParams.insetEdge = Gravity.CENTER;
-
-            bottomSheetContainer.setLayoutParams(bottomSheetContainerParams);
-            rootView.setLayoutParams(attacherLayoutParams);
-
-            contentFrameLayout.setOnClickListener(v -> finish());
-
             this.gridLayoutManager = new GridLayoutManager(this, 4);
             this.mediaAttachRecyclerView.setLayoutManager(gridLayoutManager);
-
             this.peekHeightNumRows = 1;
         } else {
             this.gridLayoutManager = new GridLayoutManager(this, 3);
@@ -383,13 +344,29 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
                 // adjust height of bottom sheet container to snap smack below toolbar
                 CoordinatorLayout bottomSheetContainer = findViewById(R.id.bottom_sheet_container);
-                int topMargin = toolbar.getHeight() - getResources().getDimensionPixelSize(R.dimen.drag_handle_height);
+                int topMargin = appBarLayout.getHeight()
+                    - getResources().getDimensionPixelSize(R.dimen.drag_handle_height);
 
                 CoordinatorLayout.LayoutParams bottomSheetContainerLayoutParams = (CoordinatorLayout.LayoutParams) bottomSheetContainer.getLayoutParams();
                 bottomSheetContainerLayoutParams.setMargins(0, topMargin, 0, 0);
                 bottomSheetContainer.setLayoutParams(bottomSheetContainerLayoutParams);
             }
         });
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.toolbar_wrapper),
+            InsetSides.top()
+        );
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.preview_toolbar_wrapper),
+            InsetSides.top()
+        );
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            previewBottomSheetLayout,
+            InsetSides.bottom()
+        );
     }
 
     /**
@@ -673,17 +650,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
                     previewPager.setAdapter(null);
                     mediaAttachAdapter.notifyDataSetChanged();
                     onItemChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().size());
-
-                    getWindow().setStatusBarColor(savedStatusBarColor);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        getWindow().setNavigationBarColor(expandedStatusBarColor);
-                    }
+                    isPreviewMode = false;
                     if (!ConfigUtils.isTheDarkSide(this)) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                         }
                     }
-                    isPreviewMode = false;
                 }
             } else {
                 finish();
@@ -698,15 +670,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
                 pagerContainer.setVisibility(View.VISIBLE);
                 previewPager.setAdapter(imagePreviewPagerAdapter);
                 gridContainer.setVisibility(View.GONE);
-
-                logger.debug("*** setStatusBarColor");
-
                 toolbar.postDelayed(() -> {
-                    savedStatusBarColor = getWindow().getStatusBarColor();
-                    getWindow().setStatusBarColor(getResources().getColor(R.color.gallery_background));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        getWindow().setNavigationBarColor(getResources().getColor(R.color.gallery_background));
-                    }
                     if (!ConfigUtils.isTheDarkSide(this)) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
@@ -817,10 +781,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
                             appBarLayout.setVisibility(View.VISIBLE);
                         }
                     });
-                appBarLayout.postDelayed(
-                    () -> getWindow().setStatusBarColor(expandedStatusBarColor),
-                    50
-                );
                 // show/hide control panel in attach mode depending on whether we have selected items
                 if (MediaSelectionBaseActivity.this instanceof MediaAttachActivity) {
                     if (mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty()) {
@@ -853,9 +813,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
                                 appBarLayout.setVisibility(View.GONE);
                             }
                         });
-                    appBarLayout.postDelayed(() -> {
-                        getWindow().setStatusBarColor(Color.TRANSPARENT);
-                    }, 50);
                 }
                 break;
             case STATE_COLLAPSED:
@@ -989,7 +946,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
     public void checkMasterKey() {
         MasterKey masterKey = ThreemaApplication.getMasterKey();
-        if (masterKey != null && masterKey.isLocked()) {
+        if (masterKey.isLocked()) {
             startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
         } else {
             if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
@@ -1033,10 +990,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
         dragHandle.setVisibility(View.VISIBLE);
         appBarLayout.setVisibility(View.GONE);
-        appBarLayout.post(() -> {
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        });
-
         updateUI(STATE_COLLAPSED);
     }
 }

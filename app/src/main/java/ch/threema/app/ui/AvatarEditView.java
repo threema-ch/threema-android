@@ -93,7 +93,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -216,12 +216,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
     private final ProfileListener profileListener = new ProfileListener() {
         @Override
-        public void onAvatarChanged() {
-            reloadProfilePicture();
-        }
-
-        @Override
-        public void onAvatarRemoved() {
+        public void onAvatarChanged(@NonNull TriggerSource triggerSource) {
             reloadProfilePicture();
         }
 
@@ -453,7 +448,6 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
             : RemoveProfilePicture.INSTANCE;
 
         groupFlowDispatcher.runUpdateGroupFlow(
-            null,
             new GroupChanges(
                 null,
                 profilePictureChange,

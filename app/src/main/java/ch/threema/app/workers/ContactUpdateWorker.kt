@@ -24,21 +24,19 @@ package ch.threema.app.workers
 import android.content.Context
 import androidx.annotation.WorkerThread
 import androidx.work.Constraints
+import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.Operation
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
-import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.WORKER_CONTACT_UPDATE_PERIODIC_NAME
-import ch.threema.app.ThreemaApplication.WORKER_IDENTITY_STATES_PERIODIC_NAME
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.PollingHelper
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.WorkManagerUtil
@@ -50,6 +48,7 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.protocol.api.APIConnector
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 private val logger = LoggingUtil.getThreemaLogger("ContactUpdateWorker")
 
@@ -60,16 +59,17 @@ private val logger = LoggingUtil.getThreemaLogger("ContactUpdateWorker")
 class ContactUpdateWorker(
     private val context: Context,
     workerParameters: WorkerParameters,
-) : Worker(context, workerParameters) {
-    override fun doWork(): Result {
-        val serviceManager = ThreemaApplication.getServiceManager()
+) : CoroutineWorker(context, workerParameters) {
+    override suspend fun doWork(): Result {
+        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+            ?: return Result.failure()
 
         val success = sendFeatureMaskAndUpdateContacts(
-            serviceManager?.modelRepositories?.contacts,
-            serviceManager?.contactService,
-            serviceManager?.apiConnector,
-            serviceManager?.userService,
-            serviceManager?.preferenceService,
+            serviceManager.modelRepositories.contacts,
+            serviceManager.contactService,
+            serviceManager.apiConnector,
+            serviceManager.userService,
+            serviceManager.preferenceService,
             PollingHelper(context, "contactUpdateWorker"),
         )
 
@@ -97,15 +97,11 @@ class ContactUpdateWorker(
 
                 if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
                         workManager,
-                        WORKER_CONTACT_UPDATE_PERIODIC_NAME,
+                        WorkerNames.WORKER_CONTACT_UPDATE_PERIODIC_NAME,
                         schedulePeriodMs,
                     )
                 ) {
                     logger.debug("Scheduling new job")
-
-                    // Cancel the work with the old name as the IdentityStatesWorker class does not
-                    // exist anymore.
-                    workManager.cancelUniqueWork(WORKER_IDENTITY_STATES_PERIODIC_NAME)
 
                     // Schedule the start of the service according to schedule period
                     val constraints = Constraints.Builder()
@@ -123,7 +119,7 @@ class ContactUpdateWorker(
                         .build()
 
                     workManager.enqueueUniquePeriodicWork(
-                        WORKER_CONTACT_UPDATE_PERIODIC_NAME,
+                        WorkerNames.WORKER_CONTACT_UPDATE_PERIODIC_NAME,
                         ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                         workRequest,
                     )
@@ -141,7 +137,7 @@ class ContactUpdateWorker(
         }
 
         fun cancelPeriodicSync(context: Context): Operation {
-            return WorkManagerUtil.cancelUniqueWork(context, WORKER_CONTACT_UPDATE_PERIODIC_NAME)
+            return WorkManagerUtil.cancelUniqueWork(context, WorkerNames.WORKER_CONTACT_UPDATE_PERIODIC_NAME)
         }
 
         @WorkerThread
@@ -152,26 +148,19 @@ class ContactUpdateWorker(
                 serviceManager.apiConnector,
                 serviceManager.userService,
                 serviceManager.preferenceService,
-                null,
+                pollingHelper = null,
             )
 
         @WorkerThread
         private fun sendFeatureMaskAndUpdateContacts(
-            contactModelRepository: ContactModelRepository?,
-            contactService: ContactService?,
-            apiConnector: APIConnector?,
-            userService: UserService?,
-            preferenceService: PreferenceService?,
+            contactModelRepository: ContactModelRepository,
+            contactService: ContactService,
+            apiConnector: APIConnector,
+            userService: UserService,
+            preferenceService: PreferenceService,
             pollingHelper: PollingHelper?,
         ): Boolean {
             logger.info("Starting contact update")
-
-            if (contactService == null || apiConnector == null || userService == null || preferenceService == null ||
-                contactModelRepository == null
-            ) {
-                logger.warn("Services not available while updating contact states")
-                return false
-            }
 
             if (!userService.hasIdentity()) {
                 logger.warn("No identity found. Contact update not needed.")

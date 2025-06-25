@@ -38,7 +38,7 @@ import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LocaleService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;

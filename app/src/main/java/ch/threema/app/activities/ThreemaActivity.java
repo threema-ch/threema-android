@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -76,14 +77,14 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (isPinLockable() && isResumed) {
-            ThreemaApplication.activityPaused(this);
+            ActivityService.activityPaused(this);
             isResumed = false;
         }
     }
 
     @Override
     protected void onResume() {
-        if (isPinLockable() && ThreemaApplication.activityResumed(this)) {
+        if (isPinLockable() && ActivityService.activityResumed(this)) {
             isResumed = true;   /* activityResumed can return false, in which case we should make sure not to call activityPaused the next time to maintain acquire/release balance */
         }
 
@@ -102,7 +103,7 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
         // This might occur, for example, if you detect an error during onCreate() and call finish() as a result.
         // In such a case, though, any cleanup you expected to be done in onPause() and onStop() will not be executed.
         if (isPinLockable() && isResumed) {
-            ThreemaApplication.activityDestroyed(this);
+            ActivityService.activityDestroyed(this);
         }
 
         super.onDestroy();
@@ -111,22 +112,13 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
     @Override
     public void onUserInteraction() {
         if (isPinLockable()) {
-            ThreemaApplication.activityUserInteract(this);
+            ActivityService.activityUserInteract(this);
         }
         super.onUserInteraction();
     }
 
     protected boolean isPinLockable() {
         return true;
-    }
-
-    /**
-     * Return true if master key is unlocked or not protected
-     *
-     * @return
-     */
-    public boolean isAllowed() {
-        return !ThreemaApplication.getMasterKey().isLocked() || !ThreemaApplication.getMasterKey().isProtected();
     }
 
     final protected boolean requiredInstances() {
@@ -150,8 +142,8 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 
     protected String getMyIdentity() {
         if (this.myIdentity == null) {
-            UserService userService = ThreemaApplication.getServiceManager().getUserService();
-            if (userService != null && !TestUtil.isEmptyOrNull(userService.getIdentity())) {
+            UserService userService = ThreemaApplication.requireServiceManager().getUserService();
+            if (!TestUtil.isEmptyOrNull(userService.getIdentity())) {
                 this.myIdentity = userService.getIdentity();
             }
         }

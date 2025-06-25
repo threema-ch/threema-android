@@ -101,6 +101,7 @@
     <string name="next">Sonraki</string>
     <string name="finish">Tamam</string>
     <string name="please_wait">Lütfen bekleyin…</string>
+    <string name="please_wait_timeout">Bu beklenenden daha uzun sürüyor</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">${app_name_short} kimliğiniz oluşturuluyor…</string>
     <string name="wizard1_sync_contacts">Kişiler Eşitleniyor…</string>
@@ -165,6 +166,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="delete_id_message">Bir yedek oluşturmadığınız veya bu kimliğin bir kopyasını dışa aktarıp kayıt edilmediği sürece, tekrar bu kimliğe sahip mesajlar asla gönderemez veya alamazsınız.\n\nBu kimliği artık kullanmak istemiyorsanız, silmeden önce bir iptal parolası ayarlamanız ve myid.threema.ch/revoke adresinden iptal etmeniz önerilir.</string>
     <string name="delete_id_message2">Son uyarı: Bu cihazdaki kimliğinizi gerçekten silmek istiyor musunuz?</string>
     <string name="delete_id_sum">${app_name_short} kimliğini ve bu cihazdaki tüm verileri kalıcı olarak sil</string>
+    <string name="delete_all_data_prompt">Tüm uygulama verileri silinsin mi?</string>
     <string name="backup_password_summary">Kimlik dışa aktarma işleminiz bir parola ile şifrelenir. Harfler, sayılar ve simgelerden oluşan bir kombinasyon kullanın. Buraya ne girdiğinizi unutmayın!</string>
     <string name="backup_password_again_summary">Şifreyi tekrar girin</string>
     <string name="password_hint">Şifre</string>
@@ -172,7 +174,6 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="backup_id_title">Dışa aktarılan kimliğiniz</string>
     <string name="backup_id_summary">Yukarıda görüntülenen metin dizesi veya kare kodu, seçtiğiniz şifre ile birlikte kimliğinizi başka bir cihaza geri yüklemek için kullanılabilir. Uygun bir yere kopyalamanız, elektronik posta ile paylaşmanız veya başka bir cihaz kullanarak kare kodunu taramanız gerekir.</string>
     <string name="support">Yardım</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Aşağıdaki metin dizisi, ${app_name_short} kimliğinizi geri yüklemek için seçilen parola ile birlikte kullanılabilir.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -346,9 +347,12 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="title_tab_recent">Son Kullanılanlar</string>
     <string name="no_recent_conversations">Sohbet bulunamadı</string>
     <string name="save_changes">Kaydet</string>
-    <string name="group_created_confirm">Grup başarıyla oluşturuldu</string>
     <string name="creating_group">Grup oluşturuluyor</string>
     <string name="updating_group">Grup güncelleniyor</string>
+    <string name="leaving_group">Gruptan ayrılıyor</string>
+    <string name="disbanding_group">Çözünen grup</string>
+    <string name="removing_group">Grup siliniyor</string>
+    <string name="resyncing_group">Grup yeniden senkronize ediliyor</string>
     <string name="status_create_group">Grup oluşturuldu.</string>
     <string name="status_rename_group">Grubun adı “%1$s\" olarak değiştirildi</string>
     <string name="status_group_new_photo">Grup resmi güncellendi.</string>
@@ -738,7 +742,20 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="clone_group_message">Bu, yönetici olarak sizinle birlikte bu grubun bir kopyasını oluşturacaktır. Devam edilsin mi?</string>
     <string name="prefs_proximity_sensor">Yakınlık sensörünü kullan</string>
     <string name="prefs_proximity_sensor_explain">Yakınlık sensörü kapalıysa sesli mesaj oynatmak için kulaklığı kullan</string>
-    <string name="error_creating_group">Grup oluşturulurken / güncellenirken hata</string>
+    <string name="error_creating_group_network">Grup oluşturulamadı. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="error_creating_group_internal">Dahili bir hata nedeniyle grup oluşturulamadı. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_cloning_group_network">Grup klonlanmadı. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="error_cloning_group_internal">Dahili bir hata nedeniyle grup klonlanamadı. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_updating_group_network">Değişiklikler uygulanamadı. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="error_updating_group_internal">Dahili bir hata nedeniyle değişiklikler uygulanamadı. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_leaving_group_network">Gruptan ayrılmadık. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="error_leaving_group_internal">Dahili bir hata nedeniyle gruptan çıkılamadı. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_disbanding_group_network">Grup dağılmadı. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="error_disbanding_group_internal">Dahili bir hata nedeniyle grup dağılmadı. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_removing_group_network">Grup silinmedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="error_removing_group_internal">Dahili bir hata nedeniyle grup silinemedi. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_resyncing_group_network">Grup yeniden senkronize edilmedi. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="error_resyncing_group_internal">Dahili bir hata nedeniyle grup yeniden senkronize edilemedi. Lütfen daha sonra tekrar deneyin.</string>
     <string name="no_media_found_generic">Bu sohbette seçimle eşleşen medya bulunamadı.</string>
     <string name="max_images_reached">Maksimum %d öğe aynı anda düzenlenebilir</string>
     <string name="enter_description">Lütfen hatayı / sorunu burada açıklayın.</string>
@@ -853,8 +870,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Büyük medya dosyalarını yerel bir ZIP yedeklemesine kaydetmek, cihazınızın işlemci ve bellek kapasitesini aşabilir ve çok uzun sürebilir.  ${app_name}, yedekleme çalışırken mesaj göndermeyecek veya almayacak. Devam edilsin mi?</string>
     <string name="backup_data_cancelled">Yedekleme iptal edildi</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">${app_name} başlatılamıyor. Lütfen cihazınızı kapatıp tekrar açın.</string>
     <string name="message_sent">Mesaj gönderildi</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short} araması</string>
@@ -1223,9 +1238,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="permission_camera_videocall_required">Görüntülü arama için, lütfen kameraya erişim izni verin.</string>
     <string name="tooltip_voip_enable_speakerphone">Hoparlörü açmak için buraya dokunun</string>
     <string name="ballot_open">Anketleri aç</string>
-    <string name="translators">Çevirmenler</string>
-    <string name="credits">Katkıda bulunanlar</string>
-    <string name="translators_thanks">Gönüllü çevirmenlerimize çok teşekkürler:\n%s</string>
     <string name="ballot_window_hide">Açık anketleri gizle</string>
     <string name="ballot_window_show">Açık anketleri göster</string>
     <string name="single_ballot_really_delete">Bu anketi kaldır</string>
@@ -1561,7 +1573,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_summary_hibernation_api">${app_name}\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"Kullanılmıyorsa uygulama etkinliğini duraklat\" sistem ayarını devre dışı bırakın.</string>
     <string name="unable_to_fetch_configuration">Yapılandırma sunucusundan veri alınamıyor. Daha sonra tekrar deneyin</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Aynı ${app_name_short} kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda ${app_name_short} kimliğinizi başka bir cihazda kullandınız mı? &lt;br&gt;&lt;br&gt; Evet ise, bu mesajı yok sayabilirsiniz. &lt;br&gt;&lt;br&gt; Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.ch/en/faq/another_connection">önerilerimizi uygulayın</a>.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Aynı ${app_name_short} kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda ${app_name_short} kimliğinizi başka bir cihazda kullandınız mı?<br><br>Evet ise, bu mesajı yok sayabilirsiniz.<br><br>Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.com/faq/another_connection">önerilerimizi uygulayın</a>.]]></string>
     <string name="fetch2_failure">Konfigurasyon sunucusuyla eşitleme başarısız oldu.</string>
     <string name="no_members_support_group_calls">Bu grupta grup aramalarına cevap verebilecek başka üye yok</string>
     <string name="group_calls">Grup aramaları</string>
@@ -1700,10 +1712,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="problemsolver_title_app_battery_usgae_optimized">Uygulama pil kullanımı \"optimize\" olarak ayarlandı</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Uygulamanın, ${app_name_short} Push\'un çalışması için gerekli olan sunucularla kalıcı bir bağlantı kurmasına izin verilmez. Uygulama arka plandayken yeni mesajlardan haberdar olmazsınız. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">Bu Android sürümü yakında artık desteklenmeyecek</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">Artık yazılım güncellemeleri almayan bir Android cihaz kullanıyorsunuz. Güvenlik nedenleriyle, bu Android sürümü yakında Threema tarafından desteklenmeyecektir.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">Bu uygulama artık güncellenmiyor</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">Güvenlik nedeniyle artık Threema tarafından desteklenmeyen eski bir Android sürümü kullanıyorsunuz. Bu, artık Threema uygulaması için güncelleme almayacağınız anlamına gelir. Threema\'yı tüm özellikleriyle kullanmaya devam etmek için lütfen güncel bir işletim sistemi sürümüne yükseltin.</string>
     <string name="problemsolver_to_settings">Ayarlara</string>
     <string name="prefs_advanced_options">Gelişmiş seçenekler</string>
     <string name="push_service">Push hizmeti</string>
@@ -1751,7 +1763,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="device_linking_cancel_dialog_continue">Devam etmek</string>
     <string name="md_drop_device_dialog_drop_button">Cihazı kaldır</string>
     <string name="md_drop_device_dialog_close_button">Kapalı</string>
-    <string name="md_drop_device_failed_dialog_title">Bağlı Cihazın Kaldırılması Başarısız Oldu</string>
+    <string name="md_drop_device_failed_dialog_title">Bağlantılı cihazın kaldırılması başarısız olmuş olabilir</string>
     <string name="md_drop_device_failed_dialog_message">Lütfen İnternet bağlantısını kontrol edin ve tekrar deneyin.</string>
     <string name="md_drop_device_failed_dialog_button_close">Kapat</string>
     <!-- accessibility -->
@@ -1813,12 +1825,20 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="device_linking_error_emoji_mismatch_body">Görünüşe göre cihaza bağlanmayla ilgili sorunlar var. Lütfen uygulamayı yeni cihazda yeniden başlatın ve tekrar deneyin.</string>
     <string name="device_linking_error_unexpected_title">Beklenmedik Hata</string>
     <string name="device_linking_error_unexpected_body">Lütfen cihazı bağlamayı yeniden deneyin. Bu sorun devam ederse lütfen destekle iletişime geçin (“Ayarlar &gt; Destek”).</string>
+    <string name="device_linking_error_invalid_contact_title">Geçersiz irtibat</string>
+    <string name="device_linking_error_invalid_contact_body">%1$s kimliğine sahip temas bu cihazda yanlış bir şekilde saklanıyor ve yeni cihazın bağlanmasını engelliyor. Lütfen destek ile iletişime geçin (“Ana menü &gt; Yardım”).</string>
     <string name="device_linking_error_screen_close">Kapat</string>
     <string name="work_directory_title">Şirket rehberi</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Dizinde ara</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Şirketinizin ${app_name_short} kullanıcıları dizininde arama yapmaya başlamak için lütfen en az 3 karakterlik bir ad girin.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Bu dosya geçersiz ve paylaşılamaz</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Mevcut</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Kullanılamıyor</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

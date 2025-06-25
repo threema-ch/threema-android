@@ -22,10 +22,10 @@
 package ch.threema.app.voip.services
 
 import android.content.Context
+import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker
-import androidx.work.Worker
 import androidx.work.WorkerParameters
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.voip.activities.CallActivity
 import ch.threema.app.voip.util.VoipUtil
@@ -33,6 +33,7 @@ import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData
 import ch.threema.storage.models.ContactModel
+import kotlin.time.Duration.Companion.seconds
 
 const val KEY_CALL_ID = "call_id"
 const val KEY_CONTACT_IDENTITY = "contact_identity"
@@ -43,17 +44,17 @@ private val logger = LoggingUtil.getThreemaLogger("CallRejectWorker")
 /**
  * Takes a call id, identity and reject reason as arguments and rejects the incoming call.
  */
-class RejectIntentServiceWorker(appContext: Context, workerParams: WorkerParameters) :
-    Worker(appContext, workerParams) {
+class RejectIntentServiceWorker(
+    appContext: Context,
+    workerParams: WorkerParameters,
+) :
+    CoroutineWorker(appContext, workerParams) {
     /**
      * Performs the call reject.
      */
-    override fun doWork(): Result {
-        // Initialize service manager
-        val serviceManager = ThreemaApplication.getServiceManager() ?: run {
-            logger.info("ServiceManager is null")
-            return Result.failure()
-        }
+    override suspend fun doWork(): Result {
+        val serviceManager = awaitServiceManagerWithTimeout(20.seconds)
+            ?: return Result.failure()
 
         // Check call id
         val callId = inputData.keyValueMap[KEY_CALL_ID]

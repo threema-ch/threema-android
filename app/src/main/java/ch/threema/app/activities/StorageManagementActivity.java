@@ -62,8 +62,10 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LongToast;
 import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AutoDeleteUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
@@ -73,11 +75,13 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.MessageType;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class StorageManagementActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, CancelableHorizontalProgressDialog.ProgressDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("StorageManagementActivity");
 
+    private final static String DELETE_ALL_APP_DATA_TAG = "delallappdata";
     private final static String DELETE_CONFIRM_TAG = "delconf";
     private final static String DELETE_PROGRESS_TAG = "delprog";
     private static final String DELETE_MESSAGES_CONFIRM_TAG = "delmsgsconf";
@@ -102,7 +106,14 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (serviceManager == null) {
+            finish();
+            return;
+        }
         logScreenVisibility(this, logger);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -123,8 +134,12 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
         }
 
         if (!userService.hasIdentity()) {
-            Toast.makeText(this, "Nothing to delete!", Toast.LENGTH_SHORT).show();
-            finish();
+            GenericAlertDialog.newInstance(
+                R.string.delete_data,
+                R.string.delete_all_data_prompt,
+                R.string.delete_data,
+                R.string.cancel
+            ).show(getSupportFragmentManager(), DELETE_ALL_APP_DATA_TAG);
             return;
         }
 
@@ -248,6 +263,15 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
         storageFull.post(this::updateStorageDisplay);
     }
 
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.scroll_container),
+            InsetSides.lbr()
+        );
+    }
+
     @SuppressLint("StaticFieldLeak")
     private void updateStorageDisplay() {
         new AsyncTask<Void, Void, Void>() {
@@ -298,6 +322,10 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
     @Override
     public int getLayoutResource() {
+        var serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null || !serviceManager.getUserService().hasIdentity()) {
+            return R.layout.activity_storagemanagement_empty;
+        }
         return R.layout.activity_storagemanagement;
     }
 
@@ -343,7 +371,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                     }
                     publishProgress(i++ * 100 / numConversations);
 
-                    final List<AbstractMessageModel> messageModels = messageService.getMessagesForReceiver(conversationModel.getReceiver(), null);
+                    final List<AbstractMessageModel> messageModels = messageService.getMessagesForReceiver(conversationModel.messageReceiver, null);
 
                     for (AbstractMessageModel messageModel : messageModels) {
                         if (isMessageDeleteCancelled) {
@@ -463,7 +491,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                     }
                     publishProgress(i++ * 100 / numConversations);
 
-                    final List<AbstractMessageModel> messageModels = messageService.getMessagesForReceiver(conversationModel.getReceiver(), messageFilter);
+                    final List<AbstractMessageModel> messageModels = messageService.getMessagesForReceiver(conversationModel.messageReceiver, messageFilter);
 
                     for (AbstractMessageModel messageModel : messageModels) {
                         if (isCancelled) {
@@ -504,7 +532,6 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                 });
             }
         }.execute();
-
     }
 
     @Override
@@ -537,14 +564,17 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                 preferenceService.setAutoDeleteDays(selectedDays);
                 AutoDeleteWorker.Companion.scheduleAutoDelete(ThreemaApplication.getAppContext());
             }
+        } else if (DELETE_ALL_APP_DATA_TAG.equals(tag)) {
+            ConfigUtils.clearAppData(this);
         }
     }
-
 
     @Override
     public void onNo(String tag, Object data) {
         if (DIALOG_TAG_SET_AUTO_DELETE.equals(tag)) {
             keepMessagesSpinner.setText(((ArrayAdapter<CharSequence>) keepMessagesSpinner.getAdapter()).getItem(selectedKeepMessageSpinnerItem), false);
+        } else if (DELETE_ALL_APP_DATA_TAG.equals(tag)) {
+            finish();
         }
     }
 

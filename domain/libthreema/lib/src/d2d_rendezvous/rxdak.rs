@@ -1,8 +1,9 @@
-use super::{rxdxk, AuthenticationKey};
-use crate::crypto::{blake2b::Blake2bMac256, digest::FixedOutput as _};
+//! Rendezvous Initiator/Responder Device Authentication Key (RIDAK/RRDAK) utilities.
+use super::{AuthenticationKey, rxdxk};
+use crate::crypto::{blake2b::Blake2bMac256, chacha20, digest::FixedOutput as _};
 
 #[inline]
-fn derive_keys(ak: &AuthenticationKey) -> (chacha20poly1305::Key, chacha20poly1305::Key) {
+fn derive_keys(ak: &AuthenticationKey) -> (chacha20::Key, chacha20::Key) {
     let ridak = Blake2bMac256::new_with_salt_and_personal(Some(&ak.0), b"rida", b"3ma-rendezvous")
         .expect("Blake2bMac256 failed")
         .finalize_fixed();

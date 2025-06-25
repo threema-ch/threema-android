@@ -23,12 +23,12 @@ package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService
+import ch.threema.common.now
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import java.util.Date
 
 /**
  * This class provides methods to send the csp messages set-profile-picture,
@@ -47,7 +47,14 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
         val message = ContactRequestProfilePictureMessage()
 
         // Encapsulate and send the message
-        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
+        sendContactMessage(
+            message = message,
+            messageModel = null,
+            toIdentity = toIdentity,
+            messageId = MessageId.random(),
+            createdAt = now(),
+            handle = handle,
+        )
     }
 
     /**
@@ -67,7 +74,14 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
             encryptionKey = data.encryptionKey,
         )
 
-        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
+        sendContactMessage(
+            message = message,
+            messageModel = null,
+            toIdentity = toIdentity,
+            messageId = MessageId.random(),
+            createdAt = now(),
+            handle = handle,
+        )
     }
 
     /**
@@ -80,6 +94,13 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
         // Create the message
         val message = DeleteProfilePictureMessage()
 
-        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
+        sendContactMessage(
+            message = message,
+            messageModel = null,
+            toIdentity = toIdentity,
+            messageId = MessageId.random(),
+            createdAt = now(),
+            handle = handle,
+        )
     }
 }

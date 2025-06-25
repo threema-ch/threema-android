@@ -35,55 +35,45 @@ import java.util.Date
 private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupDeliveryReceiptTask")
 
 internal class ReflectedOutgoingGroupDeliveryReceiptTask(
-    message: MdD2D.OutgoingMessage,
+    outgoingMessage: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.GROUP_DELIVERY_RECEIPT,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<GroupDeliveryReceiptMessage>(
+    outgoingMessage = outgoingMessage,
+    message = GroupDeliveryReceiptMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.GROUP_DELIVERY_RECEIPT,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
     private val myIdentity by lazy { serviceManager.identityStore.identity }
 
-    private val groupDeliveryReceiptMessage by lazy {
-        GroupDeliveryReceiptMessage.fromReflected(
-            message,
-        )
-    }
-
-    override val shouldBumpLastUpdate: Boolean = false
-
-    override val storeNonces: Boolean
-        get() = groupDeliveryReceiptMessage.protectAgainstReplay()
-
     override fun processOutgoingMessage() {
         logger.info(
             "Processing message {}: reflected outgoing group delivery receipt",
-            message.messageId,
+            outgoingMessage.messageId,
         )
 
         val messageState: MessageState? =
-            MessageUtil.receiptTypeToMessageState(groupDeliveryReceiptMessage.receiptType)
+            MessageUtil.receiptTypeToMessageState(message.receiptType)
         if (messageState == null || !MessageUtil.isReaction(messageState)) {
             logger.warn(
                 "Message {} error: unknown or unsupported delivery receipt type: {}",
-                groupDeliveryReceiptMessage.messageId,
-                groupDeliveryReceiptMessage.receiptType,
+                message.messageId,
+                message.receiptType,
             )
             return
         }
 
-        for (receiptMessageId: MessageId in groupDeliveryReceiptMessage.receiptMessageIds) {
+        for (receiptMessageId: MessageId in message.receiptMessageIds) {
             logger.info(
                 "Processing message {}: group delivery receipt for {} (state = {})",
-                message.messageId,
+                outgoingMessage.messageId,
                 receiptMessageId,
                 messageState,
             )
             val groupMessageModel: GroupMessageModel? = messageService.getGroupMessageModel(
                 receiptMessageId,
-                groupDeliveryReceiptMessage.groupCreator,
-                groupDeliveryReceiptMessage.apiGroupId,
+                message.groupCreator,
+                message.apiGroupId,
             )
             if (groupMessageModel == null) {
                 logger.warn(
@@ -97,7 +87,7 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
                 messageState,
                 // the identity that reacted (this is us => reflected outgoing message)
                 myIdentity,
-                Date(message.createdAt),
+                Date(outgoingMessage.createdAt),
             )
         }
     }

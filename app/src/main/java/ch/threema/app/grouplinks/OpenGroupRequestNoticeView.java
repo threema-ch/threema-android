@@ -67,12 +67,11 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
-public class OpenGroupRequestNoticeView extends ConstraintLayout implements DefaultLifecycleObserver,
-    OnClickListener {
+public class OpenGroupRequestNoticeView extends ConstraintLayout implements DefaultLifecycleObserver, OnClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("OpenGroupRequestNoticeView");
 
     private static final int MAX_REQUESTS_SHOWN = 20;
@@ -83,7 +82,7 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 
     private ChipGroup chipGroup;
     private ContactService contactService;
-    private DatabaseServiceNew databaseService;
+    private DatabaseService databaseService;
 
     GroupId groupId;
 
@@ -136,7 +135,7 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
         if (serviceManager == null) {
             throw new ThreemaException("Missing serviceManager");
         }
-        this.databaseService = serviceManager.getDatabaseServiceNew();
+        this.databaseService = serviceManager.getDatabaseService();
         this.contactService = serviceManager.getContactService();
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -230,7 +229,7 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
         ColorStateList foregroundColor;
         ColorStateList backgroundColor;
         if (ConfigUtils.isTheDarkSide(getContext())) {
-            foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnBackground));
+            foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface));
             backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
         } else {
             foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));

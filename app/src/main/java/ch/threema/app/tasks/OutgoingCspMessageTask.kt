@@ -66,12 +66,8 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
     protected val nonceFactory by lazy { serviceManager.nonceFactory }
     protected val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
     protected val messageService by lazy { serviceManager.messageService }
-    private val databaseService by lazy { serviceManager.databaseServiceNew }
+    private val databaseService by lazy { serviceManager.databaseService }
     private val rejectedGroupMessageFactory by lazy { databaseService.rejectedGroupMessageFactory }
-
-    // It is important that the task creator is loaded lazily, as the task archiver may instantiate
-    // this class before the connection is initialized (which is used for the task creator).
-    private val taskCreator by lazy { serviceManager.taskCreator }
     protected val preferenceService by lazy { serviceManager.preferenceService }
 
     final override suspend fun invoke(handle: ActiveTaskCodec) {

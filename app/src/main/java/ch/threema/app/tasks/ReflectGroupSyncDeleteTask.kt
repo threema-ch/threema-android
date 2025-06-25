@@ -71,6 +71,10 @@ class ReflectGroupSyncDeleteTask(
     override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> Unit = { }
 
     override suspend fun invoke(handle: ActiveTaskCodec): ReflectionResult<Unit> {
+        if (!multiDeviceManager.isMultiDeviceActive) {
+            return ReflectionResult.MultiDeviceNotActive()
+        }
+
         return runTransaction(handle)
     }
 }

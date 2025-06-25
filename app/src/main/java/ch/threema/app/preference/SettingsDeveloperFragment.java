@@ -53,9 +53,9 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.preference.developer.ContentCreator;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -65,7 +65,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.TextMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
@@ -81,7 +81,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
     private static final String TEST_IDENTITY_2 = "H6AXSHKC";
 
     private PreferenceService preferenceService;
-    private DatabaseServiceNew databaseService;
+    private DatabaseService databaseService;
     private ContactService contactService;
     private MessageService messageService;
     private UserService userService;
@@ -296,7 +296,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
                     messageService.createStatusMessage("Creating test quotes...", receiver1);
 
                     // Create recursive quote
-                    final MessageId messageIdRecursive = new MessageId();
+                    final MessageId messageIdRecursive = MessageId.random();
                     TextMessage messageRecursive = new TextMessage();
                     messageRecursive.setFromIdentity(contact1.getIdentity());
                     messageRecursive.setToIdentity(userService.getIdentity());
@@ -306,8 +306,8 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
                     messageService.processIncomingContactMessage(messageRecursive, TriggerSource.LOCAL);
 
                     // Create cross-chat quote
-                    final MessageId messageIdCrossChat1 = new MessageId();
-                    final MessageId messageIdCrossChat2 = new MessageId();
+                    final MessageId messageIdCrossChat1 = MessageId.random();
+                    final MessageId messageIdCrossChat2 = MessageId.random();
                     TextMessage messageChat2 = new TextMessage();
                     messageChat2.setFromIdentity(contact2.getIdentity());
                     messageChat2.setToIdentity(userService.getIdentity());
@@ -382,7 +382,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
         if (serviceManager != null) {
             try {
                 this.preferenceService = serviceManager.getPreferenceService();
-                this.databaseService = serviceManager.getDatabaseServiceNew();
+                this.databaseService = serviceManager.getDatabaseService();
                 this.contactService = serviceManager.getContactService();
                 this.messageService = serviceManager.getMessageService();
                 this.userService = serviceManager.getUserService();

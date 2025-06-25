@@ -28,9 +28,6 @@ import android.util.Log;
 
 import com.neilalexander.jnacl.NaCl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -97,7 +94,7 @@ public class TestHelpers {
 
         @NonNull
         public ContactModel getContactModel() {
-            return new ContactModel(this.identity, this.publicKey);
+            return ContactModel.create(this.identity, this.publicKey);
         }
 
         @NonNull
@@ -284,64 +281,5 @@ public class TestHelpers {
         );
         Log.i(TAG, "Test identity restored: " + TEST_CONTACT.identity);
         return TEST_CONTACT.identity;
-    }
-
-    public static void clearLogcat() {
-        try {
-            Runtime.getRuntime().exec(new String[]{"logcat", "-c"});
-        } catch (IOException e) {
-            Log.e(TAG, "Could not clear logcat", e);
-        }
-    }
-
-    /**
-     * Return adb logs since the start of the specified test.
-     * <p>
-     * Based on https://www.braze.com/resources/articles/logcat-junit-android-tests
-     */
-    public static String getTestLogs(@NonNull String testName) {
-        final StringBuilder logLines = new StringBuilder();
-
-        // Process id is used to filter messages
-        final String currentProcessId = Integer.toString(android.os.Process.myPid());
-
-        // A snippet of text that uniquely determines where the relevant logs start in the logcat
-        final String testStartMessage = "TestRunner: started: " + testName;
-
-        // When true, write every line from the logcat buffer to the string builder
-        boolean recording = false;
-
-        // Logcat command:
-        //   -d asks the command to completely dump to our buffer, then return
-        //   -v threadtime sets the output log format
-        final String[] command = new String[]{"logcat", "-d", "-v", "threadtime"};
-
-        BufferedReader bufferedReader = null;
-        try {
-            final Process process = Runtime.getRuntime().exec(command);
-            bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.contains(testStartMessage)) {
-                    recording = true;
-                }
-                if (recording) {
-                    logLines.append(line);
-                    logLines.append('\n');
-                }
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to run logcat command", e);
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to close buffered reader", e);
-                }
-            }
-        }
-
-        return logLines.toString();
     }
 }

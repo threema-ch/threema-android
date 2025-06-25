@@ -41,15 +41,8 @@ import ch.threema.app.adapters.GroupDetailAdapter;
 import ch.threema.app.services.ContactService;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
-
-/**
- * The ViewModel's role is to provide data to the UI and survive configuration changes.
- * A ViewModel acts as a communication center between the Repository and the UI.
- * <p>
- * Never pass context into ViewModel instances. Do not store Activity, Fragment, or View instances or
- * their Context in the ViewModel.
- */
 
 public class GroupDetailViewModel extends ViewModel {
     private static final String KEY_AVATAR_FILE = "avatar";
@@ -60,21 +53,18 @@ public class GroupDetailViewModel extends ViewModel {
     private static final String KEY_GROUP_DESC_TIMESTAMP = "descTimestamp";
     private static final String KEY_GROUP_DESC_STATE = "descState";
 
+    private final SavedStateHandle savedState;
+    @NonNull
+    private final ContactService contactService;
+    private final MutableLiveData<List<ContactModel>> groupMembers;
 
-    private SavedStateHandle savedState;
-    private ContactService contactService;
-    private MutableLiveData<List<ContactModel>> groupMembers;
+    private boolean hasMemberChanges = false;
+    private boolean hasAvatarChanges = false;
 
-    public GroupDetailViewModel(SavedStateHandle savedStateHandle) {
+    public GroupDetailViewModel(SavedStateHandle savedStateHandle) throws MasterKeyLockedException {
         savedState = savedStateHandle;
-
-        try {
-            this.contactService = ThreemaApplication.getServiceManager().getContactService();
-        } catch (Exception e) {
-            //
-        }
-
-        this.groupMembers = new MutableLiveData<List<ContactModel>>() {
+        this.contactService = ThreemaApplication.requireServiceManager().getContactService();
+        this.groupMembers = new MutableLiveData<>() {
             @Nullable
             @Override
             public List<ContactModel> getValue() {
@@ -108,6 +98,7 @@ public class GroupDetailViewModel extends ViewModel {
 
     public void setIsAvatarRemoved(boolean isRemoved) {
         this.savedState.set(KEY_AVATAR_REMOVED, isRemoved);
+        hasAvatarChanges = true;
     }
 
     /**
@@ -144,11 +135,13 @@ public class GroupDetailViewModel extends ViewModel {
         List<ContactModel> contactModels = getGroupContacts();
         contactModels.remove(contactModel);
         setGroupContacts(contactModels);
+        hasMemberChanges = true;
     }
 
     public void addGroupContacts(@Nullable String[] contactIdentities) {
         if (contactIdentities != null && contactIdentities.length > 0) {
             setGroupContacts(addGroupMembersToList(getGroupContacts(), contactIdentities));
+            hasMemberChanges = true;
         }
     }
 
@@ -179,7 +172,7 @@ public class GroupDetailViewModel extends ViewModel {
 
     public boolean containsModel(List<ContactModel> contacts, String contactId) {
         // prevent duplicates - we can't compare models
-        if (contacts != null && contacts.size() > 0) {
+        if (contacts != null && !contacts.isEmpty()) {
             for (ContactModel contact : contacts) {
                 if (contact.getIdentity().equals(contactId)) {
                     return true;
@@ -193,7 +186,7 @@ public class GroupDetailViewModel extends ViewModel {
         String[] identities = getGroupIdentities();
 
         if (identities != null) {
-            return Arrays.asList(getGroupIdentities()).contains(contactId);
+            return Arrays.asList(identities).contains(contactId);
         }
         return false;
     }
@@ -213,36 +206,35 @@ public class GroupDetailViewModel extends ViewModel {
         }.execute();
     }
 
-
-    public GroupDetailViewModel setGroupDesc(String groupDesc) {
+    public void setGroupDesc(String groupDesc) {
         this.savedState.set(KEY_GROUP_DESC, groupDesc);
-        return this;
     }
 
-
-    public GroupDetailViewModel setGroupDescTimestamp(Date groupDescDate) {
+    public void setGroupDescTimestamp(Date groupDescDate) {
         this.savedState.set(KEY_GROUP_DESC_TIMESTAMP, groupDescDate);
-        return this;
     }
-
 
     public String getGroupDesc() {
         return this.savedState.get(KEY_GROUP_DESC);
     }
 
-
     public Date getGroupDescTimestamp() {
         return this.savedState.get(KEY_GROUP_DESC_TIMESTAMP);
     }
 
-
-    public GroupDetailViewModel setGroupDescState(GroupDetailAdapter.GroupDescState groupDescState) {
+    public void setGroupDescState(GroupDetailAdapter.GroupDescState groupDescState) {
         this.savedState.set(KEY_GROUP_DESC_STATE, groupDescState);
-        return this;
     }
-
 
     public GroupDetailAdapter.GroupDescState getGroupDescState() {
         return savedState.get(KEY_GROUP_DESC_STATE);
+    }
+
+    public boolean hasAvatarChanges() {
+        return hasAvatarChanges;
+    }
+
+    public boolean hasMemberChanges() {
+        return hasMemberChanges;
     }
 }

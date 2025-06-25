@@ -27,6 +27,7 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.*
 import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.tasks.OutgoingGroupCallStartTask
@@ -47,7 +48,7 @@ import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData.Companion.GCK_LENGTH
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel
@@ -67,7 +68,7 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallManagerImpl")
 class GroupCallManagerImpl(
     private val context: Context,
     private val serviceManager: ServiceManager,
-    private val databaseService: DatabaseServiceNew,
+    private val databaseService: DatabaseService,
     private val groupService: GroupService,
     private val contactService: ContactService,
     private val preferenceService: PreferenceService,
@@ -114,6 +115,7 @@ class GroupCallManagerImpl(
     app start.
      */
     init {
+        // TODO(ANDR-3878): This should not make synchronous DB calls in the constructor
         runningCalls = loadPersistedRunningCalls()
         runningCalls.values
             .map { it.groupId }

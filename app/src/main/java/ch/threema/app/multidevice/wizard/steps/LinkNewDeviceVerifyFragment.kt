@@ -27,13 +27,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.view.updatePadding
-import androidx.core.widget.NestedScrollView
 import ch.threema.app.R
 import ch.threema.app.multidevice.wizard.LinkingResult
-import ch.threema.app.utils.getStatusBarHeightPxCompat
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.withCurrentWindowInsets
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.button.MaterialButton
 
@@ -79,13 +77,9 @@ class LinkNewDeviceVerifyFragment : LinkNewDeviceFragment() {
         emojiSelectionViews[1]?.layoutTransition?.enableTransitionType(LayoutTransition.CHANGING)
         emojiSelectionViews[2]?.layoutTransition?.enableTransitionType(LayoutTransition.CHANGING)
 
-        // Add extra vertical top padding to prevent ui elements being overlapped
-        // by the system status bar when the bottom-sheet is fully expanded
-        withCurrentWindowInsets { _, insets ->
-            view.findViewById<NestedScrollView>(R.id.parent_layout).updatePadding(
-                top = insets.getStatusBarHeightPxCompat(),
-            )
-        }
+        view.findViewById<View>(R.id.parent_layout).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.vertical(),
+        )
 
         view.findViewById<MaterialButton>(R.id.no_match_button).setOnClickListener(onNoMatchListener)
 

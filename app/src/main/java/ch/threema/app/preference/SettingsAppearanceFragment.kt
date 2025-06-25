@@ -31,8 +31,8 @@ import androidx.preference.PreferenceCategory
 import ch.threema.app.R
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.WallpaperService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil.mapLocaleToPredefinedLocales

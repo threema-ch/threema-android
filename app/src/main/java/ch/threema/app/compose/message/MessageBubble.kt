@@ -53,10 +53,9 @@ import ch.threema.app.activities.MessageUiModel
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.interop.InteropEmojiConversationTextView
 import ch.threema.app.compose.theme.AppTypography
-import ch.threema.app.compose.theme.customColorScheme
 import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.LocaleUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import java.util.Date
 
 @Composable
@@ -73,12 +72,12 @@ fun MessageBubble(
     footerContent: @Composable ((contentColor: Color) -> Unit)? = null,
 ) {
     val bubbleColor: Color = if (isOutbox) {
-        MaterialTheme.colorScheme.secondaryContainer
+        MaterialTheme.colorScheme.tertiaryContainer
     } else {
-        MaterialTheme.customColorScheme.messageBubbleContainerReceive
+        MaterialTheme.colorScheme.surfaceContainer
     }
     val contentColor = if (isOutbox) {
-        MaterialTheme.colorScheme.onSecondaryContainer
+        MaterialTheme.colorScheme.onTertiaryContainer
     } else {
         MaterialTheme.colorScheme.onBackground
     }
@@ -178,6 +177,8 @@ fun DeletedMessageBubble(
     )
 }
 
+const val CONTENT_ALPHA_BOTTOM_ROW = 0.6f
+
 @Composable
 fun MessageBubbleFooter(
     shouldShowEditedLabel: Boolean,
@@ -202,14 +203,15 @@ fun MessageBubbleFooter(
                 },
                 text = stringResource(R.string.edited),
                 style = AppTypography.bodySmall,
-                color = contentColor,
+                color = contentColor.copy(
+                    alpha = CONTENT_ALPHA_BOTTOM_ROW,
+                ),
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         date?.let {
             Spacer(modifier = Modifier.size(4.dp))
-            val formattedDate =
-                LocaleUtil.formatTimeStampString(LocalContext.current, it.time, true)
+            val formattedDate = LocaleUtil.formatTimeStampString(LocalContext.current, it.time, true)
             ThemedText(
                 modifier = stringResource(R.string.cd_created_at).let {
                     Modifier.semantics {
@@ -218,7 +220,9 @@ fun MessageBubbleFooter(
                 },
                 text = formattedDate,
                 style = AppTypography.bodySmall,
-                color = contentColor,
+                color = contentColor.copy(
+                    alpha = CONTENT_ALPHA_BOTTOM_ROW,
+                ),
             )
         }
         if (deliveryIconRes != null && isOutbox) {
@@ -226,7 +230,9 @@ fun MessageBubbleFooter(
             MessageStateIndicator(
                 deliveryIconRes = deliveryIconRes,
                 deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
-                deliveryIndicatorTintColor = contentColor,
+                deliveryIndicatorTintColor = contentColor.copy(
+                    alpha = CONTENT_ALPHA_BOTTOM_ROW,
+                ),
             )
         }
     }

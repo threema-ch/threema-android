@@ -25,12 +25,12 @@ import ch.threema.data.storage.DbEmojiReaction.Companion.COLUMN_EMOJI_SEQUENCE
 import ch.threema.data.storage.DbEmojiReaction.Companion.COLUMN_MESSAGE_ID
 import ch.threema.data.storage.DbEmojiReaction.Companion.COLUMN_REACTED_AT
 import ch.threema.data.storage.DbEmojiReaction.Companion.COLUMN_SENDER_IDENTITY
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 
-abstract class EmojiReactionModelFactory(dbService: DatabaseServiceNew, tableName: String) :
+abstract class EmojiReactionModelFactory(dbService: DatabaseService, tableName: String) :
     ModelFactory(dbService, tableName) {
     override fun getStatements(): Array<String> = arrayOf(
         "CREATE TABLE IF NOT EXISTS `$tableName` (" +
@@ -47,7 +47,7 @@ abstract class EmojiReactionModelFactory(dbService: DatabaseServiceNew, tableNam
     protected abstract fun getConstraints(): String
 }
 
-class ContactEmojiReactionModelFactory(dbService: DatabaseServiceNew) :
+class ContactEmojiReactionModelFactory(dbService: DatabaseService) :
     EmojiReactionModelFactory(dbService, TABLE) {
     companion object {
         const val TABLE = "contact_reactions"
@@ -64,7 +64,7 @@ class ContactEmojiReactionModelFactory(dbService: DatabaseServiceNew) :
     }
 }
 
-class GroupEmojiReactionModelFactory(dbService: DatabaseServiceNew) :
+class GroupEmojiReactionModelFactory(dbService: DatabaseService) :
     EmojiReactionModelFactory(dbService, TABLE) {
     companion object {
         const val TABLE = "group_reactions"

@@ -46,6 +46,8 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.common.TimeExtensionsKt.now;
+
 public class PushService extends FirebaseMessagingService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
 
@@ -63,6 +65,7 @@ public class PushService extends FirebaseMessagingService {
         }
     }
 
+    @SuppressWarnings("unused")
     public static String deleteToken(Context context) {
         try {
             FirebaseMessaging.getInstance().deleteToken();
@@ -81,16 +84,6 @@ public class PushService extends FirebaseMessagingService {
     }
 
     @Override
-    public void onMessageSent(@NonNull String msgId) {
-        logger.info("onMessageSent called for message id: {}", msgId);
-    }
-
-    @Override
-    public void onSendError(@NonNull String msgId, @NonNull Exception exception) {
-        logger.info("onSendError called for message id: {} exception: {}", msgId, exception);
-    }
-
-    @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         logger.info("Handling incoming FCM intent.");
 
@@ -103,11 +96,12 @@ public class PushService extends FirebaseMessagingService {
         // Log message sent time
         try {
             Date sentDate = new Date(remoteMessage.getSentTime());
+            Date receivedDate = now();
 
-            logger.info("*** Message sent     : " + sentDate.toString(), true);
-            logger.info("*** Message received : " + new Date().toString(), true);
-            logger.info("*** Original priority: " + remoteMessage.getOriginalPriority());
-            logger.info("*** Current priority: " + remoteMessage.getPriority());
+            logger.info("*** Message sent     : {}", sentDate);
+            logger.info("*** Message received : {}", receivedDate);
+            logger.info("*** Original priority: {}", remoteMessage.getOriginalPriority());
+            logger.info("*** Current priority : {}", remoteMessage.getPriority());
         } catch (Exception ignore) {
         }
 
@@ -120,6 +114,7 @@ public class PushService extends FirebaseMessagingService {
     /**
      * check for specific huawei services
      */
+    @SuppressWarnings("unused")
     public static boolean hmsServicesInstalled(Context context) {
         return false;
     }

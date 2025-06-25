@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/spacing_two_grid_unit"
-    android:layout_marginVertical="@dimen/spacing_half_grid_unit"
+    android:layout_marginHorizontal="@dimen/grid_unit_x2"
+    android:layout_marginVertical="@dimen/grid_unit_x0_5"
     android:clickable="true"
     android:focusable="true"
     app:cardBackgroundColor="?attr/colorSurface">
@@ -19,7 +19,7 @@
             android:id="@+id/platformIconIv"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="@dimen/spacing_two_grid_unit"
+            android:layout_marginStart="@dimen/grid_unit_x2"
             android:importantForAccessibility="no"
             app:tint="?attr/colorOnSurface"
             tools:src="@drawable/ic_platform_desktop" />
@@ -27,9 +27,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/spacing_two_grid_unit"
+            android:layout_marginHorizontal="@dimen/grid_unit_x2"
             android:orientation="vertical"
-            android:paddingVertical="@dimen/spacing_one_and_a_half_grid_unit">
+            android:paddingVertical="@dimen/grid_unit_x1_5">
 
             <TextView
                 android:id="@+id/firstLineTv"
@@ -44,7 +44,7 @@
                 style="@style/Threema.TextAppearance.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_half_grid_unit"
+                android:layout_marginTop="@dimen/grid_unit_x0_5"
                 android:ellipsize="end"
                 tools:text="2.0-beta44 - Electron 30 on macOS" />
 
@@ -53,7 +53,7 @@
                 style="@style/Threema.TextAppearance.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_half_grid_unit"
+                android:layout_marginTop="@dimen/grid_unit_x0_5"
                 android:ellipsize="end"
                 tools:text="Connected since christmas" />
 

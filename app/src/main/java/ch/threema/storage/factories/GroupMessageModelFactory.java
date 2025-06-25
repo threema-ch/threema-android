@@ -38,7 +38,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.JsonUtil;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -50,12 +50,12 @@ import ch.threema.storage.models.MessageType;
 import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
 public class GroupMessageModelFactory extends AbstractMessageModelFactory {
-    public GroupMessageModelFactory(DatabaseServiceNew databaseService) {
+    public GroupMessageModelFactory(DatabaseService databaseService) {
         super(databaseService, GroupMessageModel.TABLE);
     }
 
     public List<GroupMessageModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -102,7 +102,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 
     public List<GroupMessageModel> getAllRejectedMessagesInGroup(@NonNull GroupModel group) {
         return convertList(
-            this.databaseService.getReadableDatabase().query(
+            getReadableDatabase().query(
                 getTableName(),
                 null,
                 GroupMessageModel.COLUMN_GROUP_ID + "=? AND " + AbstractMessageModel.COLUMN_STATE + "=?",
@@ -130,7 +130,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 
         if (includeArchived) {
             if (text == null) {
-                return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                return convertAbstractList(getReadableDatabase().rawQuery(
                     "SELECT * FROM " + GroupMessageModel.TABLE +
                         " WHERE isStatusMessage = 0" +
                         displayClause +
@@ -139,7 +139,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
                     new String[]{}));
             }
 
-            return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+            return convertAbstractList(getReadableDatabase().rawQuery(
                 "SELECT * FROM " + GroupMessageModel.TABLE +
                     " WHERE ( ( body LIKE ? " +
                     " AND type IN (" +
@@ -160,7 +160,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
                 }));
         } else {
             if (text == null) {
-                return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                return convertAbstractList(getReadableDatabase().rawQuery(
                     "SELECT * FROM " + GroupMessageModel.TABLE + " m" +
                         " INNER JOIN " + ch.threema.storage.models.GroupModel.TABLE + " g ON g.id = m.groupId" +
                         " WHERE g.isArchived = 0" +
@@ -171,7 +171,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
                     new String[]{}));
             }
 
-            return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+            return convertAbstractList(getReadableDatabase().rawQuery(
                 "SELECT * FROM " + GroupMessageModel.TABLE + " m" +
                     " INNER JOIN " + ch.threema.storage.models.GroupModel.TABLE + " g ON g.id = m.groupId" +
                     " WHERE g.isArchived = 0" +
@@ -232,7 +232,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
             final GroupMessageModel groupMessageModel = new GroupMessageModel();
 
             //convert default
-            super.convert(groupMessageModel, new CursorHelper(cursor, columnIndexCache).current((CursorHelper.Callback) cursorHelper -> {
+            super.convert(groupMessageModel, new CursorHelper(cursor, getColumnIndexCache()).current((CursorHelper.Callback) cursorHelper -> {
                 int groupId = Objects.requireNonNull(cursorHelper.getInt(GroupMessageModel.COLUMN_GROUP_ID));
                 groupMessageModel.setGroupId(groupId);
                 String messageStates = cursorHelper.getString(GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES);
@@ -255,7 +255,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public long countMessages(int groupId) {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + GroupMessageModel.COLUMN_GROUP_ID + "=?",
             new String[]{
@@ -265,7 +265,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public long countUnreadMessages(int groupId) {
-        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+        return DatabaseUtil.count(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + GroupMessageModel.COLUMN_GROUP_ID + "=?"
                 + " AND " + GroupMessageModel.COLUMN_OUTBOX + "=0"
@@ -279,7 +279,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public List<GroupMessageModel> getUnreadMessages(int groupId) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             GroupMessageModel.COLUMN_GROUP_ID + "=?"
                 + " AND " + GroupMessageModel.COLUMN_OUTBOX + "=0"
@@ -300,7 +300,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
             args[n] = String.valueOf(messageTypes[n].ordinal());
         }
 
-        Cursor c = this.databaseService.getReadableDatabase().rawQuery(
+        Cursor c = getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
                 + " WHERE " + GroupMessageModel.COLUMN_TYPE + " IN (" + DatabaseUtil.makePlaceholders(args.length) + ")",
             args
@@ -311,7 +311,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     public boolean createOrUpdate(GroupMessageModel groupMessageModel) {
         boolean insert = true;
         if (groupMessageModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 GroupMessageModel.COLUMN_ID + "=?",
@@ -341,7 +341,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
         ContentValues contentValues = this.buildContentValues(groupMessageModel);
         contentValues.put(GroupMessageModel.COLUMN_GROUP_ID, groupMessageModel.getGroupId());
         addGroupMessageStates(contentValues, groupMessageModel);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             groupMessageModel.setId((int) newId);
             return true;
@@ -352,7 +352,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     public boolean update(GroupMessageModel groupMessageModel) {
         ContentValues contentValues = this.buildContentValues(groupMessageModel);
         addGroupMessageStates(contentValues, groupMessageModel);
-        this.databaseService.getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(this.getTableName(),
             contentValues,
             GroupMessageModel.COLUMN_ID + "=?",
             new String[]{
@@ -376,7 +376,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 
         queryBuilder.setTables(this.getTableName());
         List<GroupMessageModel> messageModels = convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             placeholders.toArray(new String[0]),
@@ -391,7 +391,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public List<GroupMessageModel> getByGroupIdUnsorted(long groupId) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             GroupMessageModel.COLUMN_GROUP_ID + "=?",
             new String[]{
@@ -403,7 +403,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public int delete(GroupMessageModel groupMessageModel) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             GroupMessageModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(groupMessageModel.getId())
@@ -411,7 +411,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     }
 
     public int deleteByGroupId(long groupId) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             GroupMessageModel.COLUMN_GROUP_ID + "=?",
             new String[]{
                 String.valueOf(groupId)
@@ -419,7 +419,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
     }
 
     private GroupMessageModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

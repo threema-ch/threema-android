@@ -12,7 +12,7 @@
         android:id="@+id/explain_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/spacing_four_grid_unit"
+        android:layout_marginHorizontal="@dimen/grid_unit_x4"
         android:animateLayoutChanges="true"
         android:gravity="center_horizontal"
         android:orientation="vertical"

@@ -27,6 +27,8 @@ import androidx.work.*
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.TimeUnit
 
+private val logger = LoggingUtil.getThreemaLogger("RestartWorker")
+
 class RestartWorker(val appContext: Context, workerParameters: WorkerParameters) :
     Worker(appContext, workerParameters) {
     override fun doWork(): Result {
@@ -52,7 +54,5 @@ class RestartWorker(val appContext: Context, workerParameters: WorkerParameters)
                 }
                 .build()
         }
-
-        private val logger = LoggingUtil.getThreemaLogger("RestartWorker")
     }
 }

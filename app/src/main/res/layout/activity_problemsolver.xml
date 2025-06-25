@@ -20,8 +20,8 @@
                 style="@style/Threema.ToolbarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="@string/problemsolver_title"
-                app:navigationIcon="?attr/homeAsUpIndicator" />
+                app:navigationIcon="?attr/homeAsUpIndicator"
+                app:title="@string/problemsolver_title" />
 
             <include layout="@layout/connection_indicator" />
 
@@ -30,9 +30,11 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
+        android:clipToPadding="false"
+        android:padding="@dimen/grid_unit_x2"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,40 +47,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/problemsolver_intro"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/problems_parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/intro_text"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/intro_text" />
 
             <ImageView
                 android:id="@+id/info_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?attr/colorOnBackground"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/problems_parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?attr/colorOnBackground" />
 
             <TextView
-                style="@style/Threema.TextAppearance.BodyMedium"
                 android:id="@+id/info_text"
+                style="@style/Threema.TextAppearance.BodyMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/problemsolver_info_text"
-                app:layout_constraintTop_toBottomOf="@+id/info_icon"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/info_icon" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

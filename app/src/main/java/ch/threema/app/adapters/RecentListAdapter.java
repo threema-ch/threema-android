@@ -79,7 +79,7 @@ public class RecentListAdapter extends FilterableListAdapter {
         this.distributionListService = distributionListService;
         this.filterResultsListener = filterResultsListener;
 
-        if (checkedItems != null && checkedItems.size() > 0) {
+        if (checkedItems != null && !checkedItems.isEmpty()) {
             // restore checked items
             this.checkedItems.addAll(checkedItems);
         }

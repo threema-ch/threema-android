@@ -22,7 +22,8 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.multidevice.LinkedDevice
+import ch.threema.app.multidevice.unlinking.DropDevicesIntent
+import ch.threema.app.multidevice.unlinking.runDropDevicesSteps
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -37,20 +38,17 @@ private val logger = LoggingUtil.getThreemaLogger("DeactivateMultiDeviceIfAloneT
 class DeactivateMultiDeviceIfAloneTask(private val serviceManager: ServiceManager) : ActiveTask<Unit>, PersistableTask {
     override val type = "DeactivateMultiDeviceIfAloneTask"
 
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        if (!multiDeviceManager.isMultiDeviceActive) {
+        if (!serviceManager.multiDeviceManager.isMultiDeviceActive) {
             logger.error("Multi device is already deactivated")
             return
         }
 
-        logger.info("Checking multi device group size to determine if multi-device must be active anymore")
-        val linkedDevices: List<LinkedDevice> = GetLinkedDevicesTask(serviceManager).invoke(handle).getOrThrow()
-        if (linkedDevices.isEmpty()) {
-            logger.info("Deactivate MD because we are the only device left in the device group")
-            multiDeviceManager.deactivate(serviceManager, handle)
-        }
+        runDropDevicesSteps(
+            intent = DropDevicesIntent.DeactivateIfAlone,
+            serviceManager = serviceManager,
+            handle = handle,
+        )
     }
 
     @Serializable

@@ -169,7 +169,6 @@
     <string name="backup_id_title">Ваш экспарт ID</string>
     <string name="backup_id_summary">Тэкставы радок, паказаны вышэй, або QR-код, а таксама пароль, які вы выбралі, можна выкарыстоўваць для аднаўлення вашага ідэнтыфікатара на іншай прыладзе.  Вы павінны скапіяваць яго ў падыходнае месца, падзяліцца ім па электроннай пошце або адсканіруйце QR-код з дапамогай іншай прылады.</string>
     <string name="support">Падтрымка</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Наступныя рэзервовыя копіі могуць быць выкарыстаны разам з абраным паролем для аднаўлення вашага ${app_name_short} ID.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -336,7 +335,6 @@
     <string name="state_dialog_status">Статус</string>
     <string name="no_recent_conversations">Размовы не знойдзены</string>
     <string name="save_changes">Захаваць</string>
-    <string name="group_created_confirm">Суполка паспяхова створана</string>
     <string name="creating_group">Стварэнне суполкі</string>
     <string name="updating_group">Абнаўленне суполкі</string>
     <string name="status_create_group">Суполка створана.</string>
@@ -725,7 +723,6 @@
     <string name="clone_group_message">Будзе створаны клон суполкі з вамі, у якасці адміністратара.  Працягнуць?</string>
     <string name="prefs_proximity_sensor">Ужываць датчык набліжэння</string>
     <string name="prefs_proximity_sensor_explain">Ужываць гутарковы дынамік для прайгравання галасавых паведамленняў, калі датчык набліжэння зачынены</string>
-    <string name="error_creating_group">Памылка стварэння суполкі</string>
     <string name="no_media_found_generic">У гэтым чаце не знойдзена мультымедыя, якое адпавядае выбару.</string>
     <string name="max_images_reached">Макс.  %d элементаў можна рэдагаваць адначасова</string>
     <string name="enter_description">Калі ласка, апішыце памылку/праблему тут.</string>
@@ -839,8 +836,6 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Пры захаванні вялікіх мультымедыйных файлаў з лакальнай рэзервовай копіі можа быць перавышана ёмістасць сховішча прылады, захаванне таксама можа заняць шмат часу.  ${app_name} не будзе адпраўляць і атрымліваць паведамленні падчас рэзервовага капіявання. Працягнуць?</string>
     <string name="backup_data_cancelled">Рэз. капіяв. адменена</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">База даных пашкоджана або няпоўная. Запуск немагчымы.</string>
     <string name="message_sent">Павед. адпраўлена</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">Званок ${app_name_short}</string>
@@ -1205,9 +1200,6 @@
     <string name="permission_camera_videocall_required">Для відэасувязі дайце доступ да камеры</string>
     <string name="tooltip_voip_enable_speakerphone">Націсніце тут, каб уключыць гучную сувязь</string>
     <string name="ballot_open">Адкр-я апытанні</string>
-    <string name="translators">Перакладчыкі</string>
-    <string name="credits">Тытры</string>
-    <string name="translators_thanks">Вялікі дзякуй нашым перакладчыкам-валанцёрам:\n %s</string>
     <string name="ballot_window_hide">Схаваць адкр-я апытанні</string>
     <string name="ballot_window_show">Паказаць адк-я апытанні</string>
     <string name="single_ballot_really_delete">Выдаліць гэтае апытанне</string>
@@ -1547,7 +1539,7 @@
     <string name="prefs_summary_hibernation_api">Каб прадухіліць прыпыненне ${app_name} сістэмай пасля працяглай бяздзейнасці, адключыце сістэмны параметр «Прыпыніць дзейнасць праграмы, калі яна не выкарыстоўваецца».</string>
     <string name="unable_to_fetch_configuration">Немагчыма атрымаць дадзеныя з сервера.  Паўтарыце спробу пазней.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Было выяўлена злучэнне з іншай прылады з такім жа ID ${app_name_short}. Ці выкарыстоўвалі вы нядаўна свой ідэнтыфікатар ${app_name_short} на іншай прыладзе? <br><br> Калі ёсць, то можаце праігнараваць гэтае паведамленне. <br><br> Калі вы гэтага не зрабілі, ваш асабісты ключ можа быць узламаны. Калі ласка, <a href="https://threema.ch/en/faq/another_connection">прытрымлівайцеся нашых рэкамендацый</a>, каб абараніць вашу прыладу і даныя перад стварэннем новага ідэнтыфікатара.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Было выяўлена злучэнне з іншай прылады з такім жа ID ${app_name_short}. Ці выкарыстоўвалі вы нядаўна свой ідэнтыфікатар ${app_name_short} на іншай прыладзе? <br><br> Калі ёсць, то можаце праігнараваць гэтае паведамленне. <br><br> Калі вы гэтага не зрабілі, ваш асабісты ключ можа быць узламаны. Калі ласка, <a href="https://threema.com/faq/another_connection">прытрымлівайцеся нашых рэкамендацый</a>, каб абараніць вашу прыладу і даныя перад стварэннем новага ідэнтыфікатара.]]></string>
     <string name="fetch2_failure">Збой сінхранізацыі з серверам забеспячэння.</string>
     <string name="no_members_support_group_calls">У гэтай суполцы няма іншых удзельнікаў, якія могуць адказваць на супольныя выклікі</string>
     <string name="group_calls">Супольныя званкі</string>
@@ -1674,8 +1666,8 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Выкарыстанне акумулятара усталявана як «аптымізаванае»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Праграме не дазваляецца падтрымліваць пастаяннае злучэнне з серверамі, якое патрабуецца для працы ${app_name_short} Push.  Вы не будзеце атрымліваць інфармацыю аб новых паведамленнях, калі праграма працуе ў фонавым рэжыме.  Каб выправіць гэта, націсніце «Выкарыстанне батарэі праграмы» і выберыце «Без абмежаванняў».</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
     <string name="problemsolver_to_settings">Да налад</string>
     <string name="prefs_advanced_options">Дадатковыя параметры</string>
     <string name="push_service">Паслуга Push</string>
@@ -1735,6 +1727,9 @@
     <string name="device_linking_error_screen_close">Закрыць</string>
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d кантакт</item>
         <item quantity="few">%d кантакты</item>

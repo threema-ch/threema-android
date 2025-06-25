@@ -24,13 +24,13 @@ package ch.threema.storage.factories
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.SQLException
-import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
+import ch.threema.storage.runQuery
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
-class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNew) :
+class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, IncomingGroupSyncRequestLogModel.TABLE) {
     /**
      * Insert the provided model into the database.
@@ -56,22 +56,18 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
         localDbGroupId: Long,
         senderIdentity: String,
     ): IncomingGroupSyncRequestLogModel {
-        val groupIdSelection = "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ?"
-        val senderIdentitySelection =
-            "${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY} = ?"
-        val selection = "$groupIdSelection AND $senderIdentitySelection"
-        val selectionArgs = arrayOf(localDbGroupId.toString(), senderIdentity)
-        readableDatabase.query(
-            SupportSQLiteQueryBuilder.builder(tableName)
-                .selection(selection, selectionArgs)
-                .create(),
-        ).use {
-            return if (it.moveToFirst()) {
-                it.toGroupSyncRequestLogModel()
-            } else {
-                IncomingGroupSyncRequestLogModel(localDbGroupId, senderIdentity, 0)
+        readableDatabase.runQuery(
+            table = tableName,
+            selection = "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ? AND ${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY} = ?",
+            selectionArgs = arrayOf(localDbGroupId.toString(), senderIdentity),
+        )
+            .use {
+                return if (it.moveToFirst()) {
+                    it.toGroupSyncRequestLogModel()
+                } else {
+                    IncomingGroupSyncRequestLogModel(localDbGroupId, senderIdentity, 0)
+                }
             }
-        }
     }
 
     override fun getStatements(): Array<String> {

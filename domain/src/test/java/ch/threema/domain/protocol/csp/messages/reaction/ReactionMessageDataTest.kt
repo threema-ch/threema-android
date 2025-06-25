@@ -27,7 +27,7 @@ import ch.threema.domain.protocol.csp.messages.ReactionMessageData
 import ch.threema.protobuf.csp.e2e.Reaction
 import ch.threema.protobuf.csp.e2e.Reaction.ActionCase
 import ch.threema.protobuf.csp.e2e.reaction
-import ch.threema.testutils.willThrow
+import ch.threema.testhelpers.willThrow
 import com.google.protobuf.ByteString
 import com.google.protobuf.kotlin.toByteStringUtf8
 import kotlin.test.Test
@@ -35,7 +35,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 class ReactionMessageDataTest {
-    private val testMessageId = MessageId()
+    private val testMessageId = MessageId.random()
     private val dragonEmoji: String = Character.toString(128_009) // 🐉
 
     @Test

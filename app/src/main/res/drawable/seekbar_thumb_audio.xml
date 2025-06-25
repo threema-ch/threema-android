@@ -16,13 +16,13 @@
 <animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_enabled="false">
         <shape
-            android:shape="ring"
             android:innerRadius="2dp"
-            android:thickness="2dp"
-            android:useLevel="false"
-            android:tint="?attr/colorControlNormal"
             android:opticalInsetLeft="3dp"
-            android:opticalInsetRight="3dp">
+            android:opticalInsetRight="3dp"
+            android:shape="ring"
+            android:thickness="2dp"
+            android:tint="?attr/colorControlNormal"
+            android:useLevel="false">
             <solid android:color="@android:color/transparent" />
             <size
                 android:width="18dp"
@@ -31,17 +31,17 @@
     </item>
     <item
         android:id="@+id/pressed"
-        android:state_pressed="true"
-        android:drawable="@drawable/seekbar_thumb_pressed_to_unpressed" />
+        android:drawable="@drawable/seekbar_thumb_pressed_to_unpressed"
+        android:state_pressed="true" />
     <item
         android:id="@+id/unpressed"
         android:drawable="@drawable/seekbar_thumb_unpressed_to_pressed" />
     <transition
+        android:drawable="@drawable/seekbar_thumb_unpressed_to_pressed_animation"
         android:fromId="@+id/unpressed"
-        android:toId="@+id/pressed"
-        android:drawable="@drawable/seekbar_thumb_unpressed_to_pressed_animation" />
+        android:toId="@+id/pressed" />
     <transition
+        android:drawable="@drawable/seekbar_thumb_pressed_to_unpressed_animation"
         android:fromId="@+id/pressed"
-        android:toId="@+id/unpressed"
-        android:drawable="@drawable/seekbar_thumb_pressed_to_unpressed_animation" />
+        android:toId="@+id/unpressed" />
 </animated-selector>

@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Erstellt am: %1$s (%2$s)</string>
     <string name="webclient_active_since">Aktiv sit: %s</string>
     <string name="webclient_enable">Desktop-App/Web-Client aktiviere</string>
-    <string name="webclient_no_sessions_found">Ladet Sie am Kompi d’Desktop-App abe (https://threema.ch/download), oder mached Sie de Web-Client (%s) uf. Tipped Sie nachher ufde folgend Button, zum de aazeigt QR-Code z’scanne.</string>
+    <string name="webclient_no_sessions_found">Ladet Sie am Kompi d’Desktop-App abe (<b>https://threema.com/download</b>), oder mached Sie de Web-Client (<b>%s</b>) uf. Tipped Sie nachher ufde folgend Button, zum de aazeigt QR-Code z’scanne.</string>
     <string name="webclient_session_rename">Sitzig umbenänne</string>
     <string name="webclient_session_label">Neue Name</string>
     <string name="webclient_session_start">Sitzig starte</string>

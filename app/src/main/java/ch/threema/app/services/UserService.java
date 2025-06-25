@@ -25,6 +25,7 @@ import android.accounts.Account;
 import android.accounts.AccountManagerCallback;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
@@ -32,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -105,6 +107,34 @@ public interface UserService {
 
     long getMobileLinkingTime();
 
+    /**
+     * Persist the provided phone number as identity link from sync. The change is not reflected.
+     *
+     * @param phoneNumber the normalized phone number that has been linked on another device. If
+     *                    null, the currently linked phone number will be removed.
+     * @param triggerSource the trigger source. Note that only from sync is allowed.
+     *
+     * @throws IllegalArgumentException if the trigger source is not from sync
+     */
+    void persistPhoneIdentityLinkFromSync(
+        @Nullable String phoneNumber,
+        @NonNull TriggerSource triggerSource
+    );
+
+    /**
+     * Persist the provided email address as identity link from sync. The change is not reflected.
+     *
+     * @param email the email address that has been linked on another device. If null, the currently
+     *              linked email address will be removed
+     * @param triggerSource the trigger source. Note that only from sync is allowed.
+     *
+     * @throws IllegalArgumentException if the trigger source is not from sync
+     */
+    void persistEmailIdentityLinkFromSync(
+        @Nullable String email,
+        @NonNull TriggerSource triggerSource
+    );
+
     String getPublicNickname();
 
     /**
@@ -113,7 +143,7 @@ public interface UserService {
      * @return converted and truncated string or null if an error happens.
      */
     @Nullable
-    String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource);
+    String setPublicNickname(@Nullable String publicNickname, @NonNull TriggerSource triggerSource);
 
     /**
      * Get the user profile picture. If no profile picture is set, then null is returned.
@@ -132,6 +162,17 @@ public interface UserService {
      * is active.
      */
     boolean setUserProfilePicture(@NonNull byte[] userProfilePicture, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Set the user profile picture from a given blob.
+     * This method should only be called from sync.
+     *
+     * @throws IllegalArgumentException if the trigger source is not sync
+     */
+    void setUserProfilePictureFromSync(
+        @NonNull ContactService.ProfilePictureUploadData uploadData,
+        @NonNull TriggerSource triggerSource
+    ) throws MasterKeyLockedException, IOException;
 
     /**
      * Remove the user profile picture. Note that this will trigger a user profile sync if multi

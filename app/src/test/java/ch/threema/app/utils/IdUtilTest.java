@@ -32,9 +32,9 @@ public class IdUtilTest {
 
     @Test
     public void getTempUniqueId() {
-        final ContactModel contact1 = new ContactModel("AAAAAAAA", new byte[]{0});
-        final ContactModel contact2 = new ContactModel("BBBBBBBB", new byte[]{1});
-        final ContactModel contact3 = new ContactModel("CCCCCCCC", new byte[]{2});
+        final ContactModel contact1 = ContactModel.create("AAAAAAAA", new byte[32]);
+        final ContactModel contact2 = ContactModel.create("BBBBBBBB", new byte[32]);
+        final ContactModel contact3 = ContactModel.create("CCCCCCCC", new byte[32]);
         final GroupModel group1 = new GroupModel();
         group1.setId(1);
         assertEquals(1, IdUtil.getTempId(contact1));

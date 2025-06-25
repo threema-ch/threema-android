@@ -21,10 +21,10 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import ch.threema.base.BuilderException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import ch.threema.base.BuilderException;
 
 public class BallotDataChoiceBuilderTest {
     @Test
@@ -34,10 +34,10 @@ public class BallotDataChoiceBuilderTest {
             .setDescription("This is a choice")
             .setSortKey(1)
             .build();
-        Assert.assertEquals(123, choice.getId());
-        Assert.assertEquals("This is a choice", choice.getName());
-        Assert.assertEquals(1, choice.getOrder());
-        Assert.assertNull(choice.getResult(0));
+        Assertions.assertEquals(123, choice.getId());
+        Assertions.assertEquals("This is a choice", choice.getName());
+        Assertions.assertEquals(1, choice.getOrder());
+        Assertions.assertNull(choice.getResult(0));
     }
 
     @Test
@@ -50,9 +50,9 @@ public class BallotDataChoiceBuilderTest {
             .addVote(1)
             .addVote(2)
             .build();
-        Assert.assertEquals(Integer.valueOf(3), choice.getResult(0));
-        Assert.assertEquals(Integer.valueOf(1), choice.getResult(1));
-        Assert.assertEquals(Integer.valueOf(2), choice.getResult(2));
+        Assertions.assertEquals(Integer.valueOf(3), choice.getResult(0));
+        Assertions.assertEquals(Integer.valueOf(1), choice.getResult(1));
+        Assertions.assertEquals(Integer.valueOf(2), choice.getResult(2));
     }
 
     @Test
@@ -62,9 +62,9 @@ public class BallotDataChoiceBuilderTest {
             .setSortKey(1);
         try {
             builder.build();
-            Assert.fail("BuilderException not thrown");
+            Assertions.fail("BuilderException not thrown");
         } catch (BuilderException e) {
-            Assert.assertEquals("Cannot build BallotDataChoice: id is null", e.getMessage());
+            Assertions.assertEquals("Cannot build BallotDataChoice: id is null", e.getMessage());
         }
     }
 
@@ -75,9 +75,9 @@ public class BallotDataChoiceBuilderTest {
             .setSortKey(1);
         try {
             builder.build();
-            Assert.fail("BuilderException not thrown");
+            Assertions.fail("BuilderException not thrown");
         } catch (BuilderException e) {
-            Assert.assertEquals("Cannot build BallotDataChoice: description is null", e.getMessage());
+            Assertions.assertEquals("Cannot build BallotDataChoice: description is null", e.getMessage());
         }
     }
 
@@ -88,9 +88,9 @@ public class BallotDataChoiceBuilderTest {
             .setDescription("This is a choice");
         try {
             builder.build();
-            Assert.fail("BuilderException not thrown");
+            Assertions.fail("BuilderException not thrown");
         } catch (BuilderException e) {
-            Assert.assertEquals("Cannot build BallotDataChoice: sortKey is null", e.getMessage());
+            Assertions.assertEquals("Cannot build BallotDataChoice: sortKey is null", e.getMessage());
         }
     }
 }

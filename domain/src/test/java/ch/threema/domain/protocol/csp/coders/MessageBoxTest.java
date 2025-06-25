@@ -26,11 +26,13 @@ import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 
 import org.apache.commons.io.output.NullOutputStream;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class MessageBoxTest {
 
@@ -53,35 +55,37 @@ public class MessageBoxTest {
     );
 
     @Test
-    public void testSerializeDeserialize() throws Exception {
+    void testSerializeDeserialize() throws Exception {
         // Encode message and check expected binary output
         MessageBox testMessage = getTestMessage();
 
         byte[] binary = testMessage.makeBinary();
-        Assert.assertArrayEquals(EXPECTED_BINARY, binary);
+        Assertions.assertArrayEquals(EXPECTED_BINARY, binary);
 
         // Decode message again
         MessageBox decodedMessage = MessageBox.parseBinary(binary);
 
         // Check decoded fields
-        Assert.assertEquals(TEST_FROM_IDENTITY, decodedMessage.getFromIdentity());
-        Assert.assertEquals(TEST_TO_IDENTITY, decodedMessage.getToIdentity());
-        Assert.assertArrayEquals(TEST_MESSAGE_ID, decodedMessage.getMessageId().getMessageId());
-        Assert.assertEquals(TEST_DATE, decodedMessage.getDate());
-        Assert.assertEquals(0, decodedMessage.getFlags());
-        Assert.assertEquals(TEST_NICKNAME, decodedMessage.getPushFromName());
-        Assert.assertArrayEquals(TEST_METADATA_BOX, decodedMessage.getMetadataBox().getBox());
-        Assert.assertArrayEquals(TEST_NONCE, decodedMessage.getNonce());
-        Assert.assertArrayEquals(TEST_BOX, decodedMessage.getBox());
+        Assertions.assertEquals(TEST_FROM_IDENTITY, decodedMessage.getFromIdentity());
+        Assertions.assertEquals(TEST_TO_IDENTITY, decodedMessage.getToIdentity());
+        Assertions.assertArrayEquals(TEST_MESSAGE_ID, decodedMessage.getMessageId().getMessageId());
+        Assertions.assertEquals(TEST_DATE, decodedMessage.getDate());
+        Assertions.assertEquals(0, decodedMessage.getFlags());
+        Assertions.assertEquals(TEST_NICKNAME, decodedMessage.getPushFromName());
+        Assertions.assertArrayEquals(TEST_METADATA_BOX, decodedMessage.getMetadataBox().getBox());
+        Assertions.assertArrayEquals(TEST_NONCE, decodedMessage.getNonce());
+        Assertions.assertArrayEquals(TEST_BOX, decodedMessage.getBox());
     }
 
-    @Test(expected = Test.None.class)
-    public void testJavaSerializable() throws ThreemaException, IOException {
+    @Test
+    void testJavaSerializable() {
         // Ensure BoxedMessage objects are Serializable
-        MessageBox testMessage = getTestMessage();
-        ObjectOutputStream oos = new ObjectOutputStream(new NullOutputStream());
-        oos.writeObject(testMessage);
-        oos.close();
+        assertDoesNotThrow(() -> {
+            MessageBox testMessage = getTestMessage();
+            ObjectOutputStream oos = new ObjectOutputStream(new NullOutputStream());
+            oos.writeObject(testMessage);
+            oos.close();
+        });
     }
 
     private MessageBox getTestMessage() throws ThreemaException {

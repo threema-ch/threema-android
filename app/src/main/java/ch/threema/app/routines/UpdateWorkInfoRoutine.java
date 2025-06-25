@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.restrictions.AppRestrictionService;
 import ch.threema.app.services.DeviceService;
@@ -157,17 +156,12 @@ public class UpdateWorkInfoRoutine implements Runnable {
         if (serviceManager == null) {
             return null;
         }
-        try {
-            return new UpdateWorkInfoRoutine(
-                serviceManager.getContext(),
-                serviceManager.getAPIConnector(),
-                serviceManager.getIdentityStore(),
-                serviceManager.getDeviceService(),
-                serviceManager.getLicenseService()
-            );
-        } catch (FileSystemNotPresentException e) {
-            logger.error("File system not present", e);
-            return null;
-        }
+        return new UpdateWorkInfoRoutine(
+            serviceManager.getContext(),
+            serviceManager.getAPIConnector(),
+            serviceManager.getIdentityStore(),
+            serviceManager.getDeviceService(),
+            serviceManager.getLicenseService()
+        );
     }
 }

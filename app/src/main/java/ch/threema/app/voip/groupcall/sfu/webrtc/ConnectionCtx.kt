@@ -24,7 +24,7 @@ package ch.threema.app.voip.groupcall.sfu.webrtc
 import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
-import ch.threema.app.services.PreferenceService
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.app.voip.groupcall.sfu.messages.P2SMessage

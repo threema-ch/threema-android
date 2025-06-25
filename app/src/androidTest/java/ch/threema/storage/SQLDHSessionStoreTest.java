@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.test.core.app.ApplicationProvider;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.helpers.DummyUsers;
@@ -59,8 +58,7 @@ public class SQLDHSessionStoreTest {
         store = new SQLDHSessionStore(
             ApplicationProvider.getApplicationContext(),
             DATABASE_KEY,
-            tempDbFileName,
-            ThreemaApplication.requireServiceManager().getUpdateSystemService()
+            tempDbFileName
         );
     }
 

@@ -43,11 +43,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -62,7 +62,6 @@ import org.maplibre.android.location.modes.CameraMode;
 import org.maplibre.android.location.modes.RenderMode;
 import org.maplibre.android.maps.MapView;
 import org.maplibre.android.maps.MapLibreMap;
-import org.maplibre.android.maps.OnMapReadyCallback;
 import org.maplibre.android.maps.Style;
 
 import org.slf4j.Logger;
@@ -71,14 +70,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.core.view.WindowInsetsCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.locationpicker.NearbyPoiUtil;
 import ch.threema.app.locationpicker.Poi;
 import ch.threema.app.ui.SingleToast;
+import ch.threema.app.ui.VerticalTextView;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.Destroyer;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -87,6 +90,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.storage.models.data.LocationDataModel;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
@@ -103,6 +107,8 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
     private static final int MAX_POI_COUNT = 50;
 
+    private Destroyer destroyer = Destroyer.createDestroyer(this);
+
     private ServerAddressProvider serverAddressProvider;
 
     private MapView mapView;
@@ -116,27 +122,23 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
     private LatLng markerPosition;
     private String markerName, markerProvider;
 
-    private int insetTop = 0;
-
     private boolean isShowingExternalLocation = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-
-        ConfigUtils.configureSystemBars(this);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         ConfigUtils.getMapLibreInstance();
 
         setContentView(R.layout.activity_map);
 
-        ConfigUtils.configureTransparentStatusBar(this);
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // we want dark icons, i.e. a light status bar
             getWindow().getDecorView().setSystemUiVisibility(
@@ -144,29 +146,20 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
         }
 
         parentView = findViewById(R.id.coordinator);
-        mapView = findViewById(R.id.map);
+        mapView = destroyer.register(
+            () -> findViewById(R.id.map),
+            () -> mapView.onDestroy()
+        );
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (locationManager == null) {
             finish();
             return;
         }
-        var serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null) {
-            finish();
-            return;
-        }
+        var serviceManager = ThreemaApplication.requireServiceManager();
         serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
 
         mapView.onCreate(savedInstanceState);
-
-        ViewCompat.setOnApplyWindowInsetsListener(parentView, new OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-                insetTop = insets.getSystemWindowInsetTop();
-                return insets;
-            }
-        });
 
         Intent intent = getIntent();
 
@@ -201,6 +194,62 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
             logger.error("Failed to get map style url", e);
             finish();
         }
+
+        handleDeviceInsets();
+    }
+
+    private void handleDeviceInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(parentView, (view, windowInsets) -> {
+            final @NonNull Insets insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+            );
+            mapView.getMapAsync(
+                (MapLibreMap libreMap) -> {
+                    final int compassOwnMargin = getResources().getDimensionPixelSize(R.dimen.grid_unit_x2);
+                    libreMap.getUiSettings().setCompassMargins(
+                        compassOwnMargin,
+                        insets.top + compassOwnMargin,
+                        insets.right + compassOwnMargin,
+                        compassOwnMargin
+                    );
+                }
+            );
+
+            final @Px int spacingOneGridUnit = getResources().getDimensionPixelSize(R.dimen.grid_unit_x1);
+            ViewExtensionsKt.setMargin(
+                findViewById(R.id.cardview),
+                insets.left + spacingOneGridUnit,
+                0,
+                insets.right + spacingOneGridUnit,
+                insets.bottom + spacingOneGridUnit
+            );
+
+            ViewExtensionsKt.setMargin(
+                findViewById(R.id.center_map),
+                0,
+                0,
+                insets.right + spacingOneGridUnit,
+                spacingOneGridUnit
+            );
+
+            final TextView copyrightLabel = findViewById(R.id.copyright_label);
+            final @Px int copyrightMarginTop;
+            // In the portrait layout file we use VerticalTextView, in the landscape file just a normal TextView
+            if (copyrightLabel instanceof VerticalTextView) {
+                copyrightMarginTop = 0;
+            } else {
+                copyrightMarginTop = insets.top;
+            }
+            ViewExtensionsKt.setMargin(
+                copyrightLabel,
+                insets.left,
+                copyrightMarginTop,
+                0,
+                spacingOneGridUnit
+            );
+
+            return windowInsets;
+        });
     }
 
     private void initUi() {
@@ -253,38 +302,22 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
     }
 
     private void initMap(@NonNull String mapStyleUrl) {
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull MapLibreMap mapLibreMap1) {
-                maplibreMap = mapLibreMap1;
-                maplibreMap.setStyle(new Style.Builder().fromUri(mapStyleUrl), new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        // Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
-                        mapStyle = style;
+        mapView.getMapAsync(libreMap -> {
+            maplibreMap = libreMap;
+            maplibreMap.setStyle(new Style.Builder().fromUri(mapStyleUrl), style -> {
+                // Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
+                mapStyle = style;
 
-                        if (checkLocationEnabled(locationManager)) {
-                            setupLocationComponent(style);
-                        }
-                        maplibreMap.addMarker(getMarker(markerPosition, markerName, markerProvider));
+                if (checkLocationEnabled(locationManager)) {
+                    setupLocationComponent(style);
+                }
+                maplibreMap.addMarker(getMarker(markerPosition, markerName, markerProvider));
 
-                        int marginTop = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_top) + insetTop;
-                        int marginRight = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_right);
+                moveCamera(markerPosition, false, -1);
+                mapView.postDelayed(() -> moveCamera(markerPosition, true, 15), 1200);
 
-                        maplibreMap.getUiSettings().setCompassMargins(0, marginTop, marginRight, 0);
-
-                        moveCamera(markerPosition, false, -1);
-                        mapView.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                moveCamera(markerPosition, true, 15);
-                            }
-                        }, 1200);
-
-                        showNearbyPOIs(markerPosition);
-                    }
-                });
-            }
+                showNearbyPOIs(markerPosition);
+            });
         });
     }
 
@@ -311,7 +344,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
             @Override
             protected void onPostExecute(List<MarkerOptions> markerOptions) {
-                if (markerOptions.size() > 0) {
+                if (!markerOptions.isEmpty()) {
                     maplibreMap.addMarkers(markerOptions);
                 }
             }
@@ -367,12 +400,6 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
     }
 
     private boolean checkLocationEnabled(LocationManager locationManager) {
@@ -453,11 +480,6 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
     }
 
     @Override
-    public void onNo(String tag, Object data) {
-        // do nothing
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_LOCATION_SETTINGS) {
             zoomToCenter();
@@ -467,8 +489,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             if (requestCode == PERMISSION_REQUEST_LOCATION) {

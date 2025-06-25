@@ -28,8 +28,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -80,9 +78,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
 import ch.threema.app.actions.SendAction;
 import ch.threema.app.actions.TextMessageSendAction;
@@ -101,6 +99,7 @@ import ch.threema.app.fragments.RecentListFragment;
 import ch.threema.app.fragments.RecipientListFragment;
 import ch.threema.app.fragments.UserListFragment;
 import ch.threema.app.fragments.WorkUserListFragment;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 import ch.threema.app.services.ContactService;
@@ -109,7 +108,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.LongToast;
 import ch.threema.app.ui.MediaItem;
@@ -146,6 +145,7 @@ import java8.util.concurrent.CompletableFuture;
 
 import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_FILES;
 import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
@@ -448,12 +448,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 actionBar.setDisplayHomeAsUpEnabled(false);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    ColorDrawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
                     actionBar.setTitle(null);
-                    actionBar.setBackgroundDrawable(transparentDrawable);
                     getToolbar().setVisibility(View.GONE);
-                    getWindow().setBackgroundDrawable(transparentDrawable);
-                    getWindow().setStatusBarColor(Color.TRANSPARENT);
                     setTranslucent(true);
                 } else {
                     actionBar.setTitle(R.string.app_name);
@@ -485,7 +481,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             setIntent(intent);
 
             try {
-                this.hideRecents = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, false);
+                this.hideRecents = intent.getBooleanExtra(AppConstants.INTENT_DATA_HIDE_RECENTS, false);
                 this.multiSelect = intent.getBooleanExtra(INTENT_DATA_MULTISELECT, true);
                 this.multiSelectIdentities = intent.getBooleanExtra(INTENT_DATA_MULTISELECT_FOR_COMPOSE, false);
             } catch (BadParcelableException e) {
@@ -502,12 +498,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 if (!TestUtil.isEmptyOrNull(id)) {
                     BaseBundle bundle = ShortcutUtil.getShareTargetExtrasFromShortcutId(id);
                     if (bundle != null) {
-                        if (bundle.containsKey(ThreemaApplication.INTENT_DATA_CONTACT)) {
-                            identity = bundle.getString(ThreemaApplication.INTENT_DATA_CONTACT);
-                        } else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID)) {
-                            groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID);
-                        } else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
-                            distributionListID = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID);
+                        if (bundle.containsKey(AppConstants.INTENT_DATA_CONTACT)) {
+                            identity = bundle.getString(AppConstants.INTENT_DATA_CONTACT);
+                        } else if (bundle.containsKey(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
+                            groupId = bundle.getInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID);
+                        } else if (bundle.containsKey(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
+                            distributionListID = bundle.getLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID);
                         }
                     }
                 }
@@ -608,7 +604,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                             }
                         }
 
-                        if (mediaItems.size() == 0) {
+                        if (mediaItems.isEmpty()) {
                             Toast.makeText(this, getString(R.string.invalid_data), Toast.LENGTH_LONG).show();
                             finish();
                         }
@@ -725,12 +721,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                         finish();
                         return;
                     }
-                } else if (action.equals(ThreemaApplication.INTENT_ACTION_FORWARD)) {
+                } else if (action.equals(AppConstants.INTENT_ACTION_FORWARD)) {
                     // internal forward using message id instead of media URI
                     ArrayList<Integer> messageIds = IntentDataUtil.getAbstractMessageIds(intent);
                     String originalMessageType = IntentDataUtil.getAbstractMessageType(intent);
 
-                    if (messageIds != null && messageIds.size() > 0) {
+                    if (messageIds != null && !messageIds.isEmpty()) {
                         for (int messageId : messageIds) {
                             AbstractMessageModel model = messageService.getMessageModelFromId(messageId, originalMessageType);
                             if (model != null && model.getType() != MessageType.BALLOT) {
@@ -945,9 +941,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
     private void sendSharedMedia(final MessageReceiver[] messageReceivers, final Intent intent) {
         if (messageReceivers.length == 1 && mediaItems.size() == 1 && TYPE_TEXT == mediaItems.get(0).getType()) {
-            intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getTrimmedCaption());
+            intent.putExtra(AppConstants.INTENT_DATA_TEXT, mediaItems.get(0).getTrimmedCaption());
             startComposeActivity(intent);
-        } else if (messageReceivers.length > 1 || mediaItems.size() > 0) {
+        } else if (messageReceivers.length > 1 || !mediaItems.isEmpty()) {
             messageService.sendMediaSingleThread(mediaItems, Arrays.asList(messageReceivers));
             startComposeActivity(intent);
         } else {
@@ -1176,7 +1172,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                                 recipientMessageReceivers.toArray(new MessageReceiver[0])
                             );
                             intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mappedMediaItems);
-                            intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, combinedRecipientName);
+                            intent.putExtra(AppConstants.INTENT_DATA_TEXT, combinedRecipientName);
                             startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
                         }
 
@@ -1335,7 +1331,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
                                     Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(RecipientListBaseActivity.this, SendMediaActivity.class), recipientMessageReceivers.toArray(new MessageReceiver[0]));
                                     intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, (ArrayList<MediaItem>) mediaItems);
-                                    intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, combinedRecipientName);
+                                    intent.putExtra(AppConstants.INTENT_DATA_TEXT, combinedRecipientName);
                                     startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 
                                 } else {
@@ -1415,6 +1411,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         if (savedInstanceState != null) {
             queryText = savedInstanceState.getString(BUNDLE_QUERY_TEXT, null);

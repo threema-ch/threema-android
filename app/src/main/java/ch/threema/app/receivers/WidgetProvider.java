@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.ComposeMessageActivity;
-import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.services.WidgetService;
 import ch.threema.base.utils.LoggingUtil;

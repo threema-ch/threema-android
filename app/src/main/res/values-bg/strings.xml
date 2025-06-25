@@ -171,7 +171,6 @@
     <string name="backup_id_title">Вашият експортиран идентификатор</string>
     <string name="backup_id_summary">Текстовата секвенция, която се изписва отгоре, или QR кодът, който заедно с паролата         сте избрали, могат да се използват, за да възстановите Вашия идентификатор на друго устройство. Трябва да го копирате на подходящо място, да го споделите чрез         имейл или да сканирате QR кода, използвайки друго устройство.</string>
     <string name="support">Помощ</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Тази текстова секвенция може да бъде използвана заедно с паролата, за да възстановите Вашия ${app_name_short} идентификатор.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -345,7 +344,6 @@
     <string name="title_tab_recent">Скорошни</string>
     <string name="no_recent_conversations">Не са намерени чатове</string>
     <string name="save_changes">Запазете</string>
-    <string name="group_created_confirm">Групата е създадена успешно</string>
     <string name="creating_group">Създаване на групата</string>
     <string name="updating_group">Обновяване на групата</string>
     <string name="status_create_group">Групата е създадена.</string>
@@ -747,7 +745,6 @@
     <string name="clone_group_message">Това действие ще създаде копие на групата с Вас като администратор. Ще продължите ли?</string>
     <string name="prefs_proximity_sensor">Използване на сензора за близост</string>
     <string name="prefs_proximity_sensor_explain">Използване на слушалка за възпроизвеждане на гласови съобщения, ако сензорът за близост е закрит</string>
-    <string name="error_creating_group">Грешка при създаването/актуализирането на групата</string>
     <string name="no_media_found_generic">Няма мултимедийни елементи в този чат, които да съвпадат с избора Ви.</string>
     <string name="max_images_reached">Максимум %d елемента могат да се редактират едновременно</string>
     <string name="enter_description">Моля, опишете грешката/проблема тук.</string>
@@ -862,8 +859,6 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Запазването на големи мултимедийни файлове като локално ZIP резервно копие може да претовари процесора или паметта на Вашето устройство и може да отнеме много време. ${app_name} няма да получава/изпраща съобщения докато резервното копие се създава. Ще продължите ли?</string>
     <string name="backup_data_cancelled">Резервното копие е отказано</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">${app_name} не може да стартира. Моля, изключете устройството и после го включете отново.</string>
     <string name="message_sent">Съобщението е изпратено</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">Обаждане с ${app_name_short}</string>
@@ -1233,9 +1228,6 @@
     <string name="permission_camera_videocall_required">За да стартирате видео обаждане, трябва да разрешите достъпа до камерата</string>
     <string name="tooltip_voip_enable_speakerphone">Натиснете тук, за да включите високоговорителя</string>
     <string name="ballot_open">Отворени анкети</string>
-    <string name="translators">Преводачи</string>
-    <string name="credits">Благодарности</string>
-    <string name="translators_thanks">Благодарности на нашите преводачи доброволци:\n%s</string>
     <string name="ballot_window_hide">Скрийте отворените анкети</string>
     <string name="ballot_window_show">Покажете отворените анкети</string>
     <string name="single_ballot_really_delete">Премахнете тази анкета</string>
@@ -1571,7 +1563,7 @@
     <string name="prefs_summary_hibernation_api">За да предотвратите приложението ${app_name} да бъде поставено на пауза от системата след дълга неактивност, деактивирайте системната настройка „Поставете на пауза приложението, ако не се използва“.</string>
     <string name="unable_to_fetch_configuration">Няма достъп до данните от сървъра за настройки. Опитайте отново по-късно.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Засечена е връзка от друго устройство със същия ${app_name_short} идентификатор. Наскоро да сте използвали Вашия ${app_name_short} идентификатор от друго устройство? <br><br> Ако сте го направил\а, може да игнорирате това съобщение. <br><br> Ако не сте, поверителният Ви ключ може да е компрометиран. Моля, <a href="https://threema.ch/en/faq/another_connection"> последвайте нашите предложения,</a> за да защитите Вашето устройство и Вашите данни преди да създадете нов идентификатор.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Засечена е връзка от друго устройство със същия ${app_name_short} идентификатор. Наскоро да сте използвали Вашия ${app_name_short} идентификатор от друго устройство? <br><br> Ако сте го направил\а, може да игнорирате това съобщение. <br><br> Ако не сте, поверителният Ви ключ може да е компрометиран. Моля, <a href=https://threema.com/faq/another_connection"> последвайте нашите предложения,</a> за да защитите Вашето устройство и Вашите данни преди да създадете нов идентификатор.]]></string>
     <string name="fetch2_failure">Синхронизацията със сървъра за предоставяне на услуги е неуспешна.</string>
     <string name="no_members_support_group_calls">Няма повече членове в тази група, които да могат да отговорят на групови обаждания</string>
     <string name="group_calls">Групови обаждания</string>
@@ -1604,7 +1596,7 @@
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) защитава записаната комуникация от ретроактивното декриптиране дори ако криптирането в дългосрочен план е нарушено.\n\nОпцията може да бъде активирана, ако приложението и на двете страни поддържа PFS.</string>
     <string name="group_call_inactivity_left">Напускане на груповото обаждане поради неактивност</string>
     <string name="missing_permission_external_storage">Не може да се копира файлът. Опитайте следните стъпки:\n1. Отворете „Настройки“.\nОтидете в „Приложения“ и изберете „Специален достъп на приложението“.\n3. Натиснете на „Достъп до всички файлове“.\n4. Натиснете на трите точки в горния десен ъгъл и изберете „Покажете системните настройки“.\n5. Натиснете на „Външно хранилище“ и се подсигурете, че сте дали „позволение за достъп до управлението на всички файлове“.\n6. Опитайте отново да възстановите резервното копие.</string>
-    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy е деактивирано за този разговор, защото Вашият събеседник използва несъвместима версия на приложението.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy е деактивирано за този разговор, защото Вашият събеседник използва несъвместима версия на приложението или е използвано приложението ${app_name_desktop} 2,0 за настолен компютър (бета).</string>
     <string name="forward_security_illegal_session_status_message">Perfect Forward Secrecy сесията беше рестартирана поради невалидност.</string>
     <string name="crop_image_title">Изрежете изображението</string>
     <string name="scroll_to_bottom">Плъзнете до долу</string>
@@ -1710,8 +1702,8 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Използването на батерията е настроено на “оптимизирано“</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">На приложението не му е разрешено да поддържа постоянна връзка със сървърите, а това е необходимо на ${app_name_short} Push, за да работи. Вие няма да бъдете информирани за нови съобщения, когато приложението е във фонов режим. За да го поправите, натиснете на „Използване на батерията“ и изберете „Неограничено“.</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
     <string name="problemsolver_to_settings">Към настройките</string>
     <string name="prefs_advanced_options">Разширени опции</string>
     <string name="push_service">Push услуга</string>
@@ -1759,7 +1751,6 @@
     <string name="device_linking_cancel_dialog_continue">Продължете</string>
     <string name="md_drop_device_dialog_drop_button">Премахнете устройство</string>
     <string name="md_drop_device_dialog_close_button">Затворете</string>
-    <string name="md_drop_device_failed_dialog_title">Премахването на свързаното устройство е неуспешно</string>
     <string name="md_drop_device_failed_dialog_message">Моля, проверете интернет връзката Ви и опитайте отново.</string>
     <string name="md_drop_device_failed_dialog_button_close">Затворете</string>
     <!-- accessibility -->
@@ -1809,8 +1800,11 @@
     <string name="device_linking_error_unknown_qr_code_title">QR кодът не е разпознат</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_unknown_qr_code_body">Това не е QR код от ${app_name_desktop} 2,0 за настолен компютър (бета). Моля, изтеглете последната бета версия за настолен компютър от [нашия уебсайт] и сканирайте QR кода, който се показва при отваряне на приложението.</string>
+    <string name="device_linking_error_web_qr_code_title">QR кодът е неправилен</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="device_linking_error_web_qr_code_body">QR кодът е за ${app_name_short} уеб клиента.\nМоля, изтеглете последната версия на ${app_name_desktop} 2,0 за настолен компютър (бета) от [нашия уебсайт] и сканирайте QR кода, който се показва при отваряне на приложението.</string>
     <string name="device_linking_error_old_rendezvous_version_title">Несъвместима версия</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="device_linking_error_old_rendezvous_version_body">Моля, инсталирайте най-новата версия на ${app_name} и на двете устройства.</string>
@@ -1824,6 +1818,9 @@
     <string name="work_directory_search">Потърсете във фирмената директория</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Моля, въведете поне 3 букви от името, за да започне търсенето във фирмената директория с ${app_name_short} потребители.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="other">%d контакти</item>

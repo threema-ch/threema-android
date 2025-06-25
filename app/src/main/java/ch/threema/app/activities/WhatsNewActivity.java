@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
@@ -45,12 +47,15 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ConfigUtils.configureSystemBars(this);
-
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
         setContentView(R.layout.activity_whatsnew);
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content_container),
+            InsetSides.all()
+        );
 
         String title = getString(R.string.whatsnew_title, BuildConfig.VERSION_NAME);
         CharSequence body = Html.fromHtml(getString(R.string.whatsnew_headline));

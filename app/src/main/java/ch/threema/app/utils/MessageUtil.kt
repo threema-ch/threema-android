@@ -25,8 +25,8 @@ import android.content.Context
 import android.content.res.ColorStateList
 import androidx.appcompat.content.res.AppCompatResources
 import ch.threema.app.R
-import ch.threema.base.utils.minus
-import ch.threema.base.utils.now
+import ch.threema.common.minus
+import ch.threema.common.now
 import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.FirstUnreadMessageModel
@@ -62,13 +62,12 @@ fun AbstractMessageModel.canBeEdited(
  * @return The correct color-state-list to use when rendering contents of this message model.
  */
 fun AbstractMessageModel.getUiContentColor(context: Context): ColorStateList =
-    if (isStatusMessage || this is FirstUnreadMessageModel) {
+    if (this is FirstUnreadMessageModel) {
         ColorStateList.valueOf(
-            ConfigUtils.getColorFromAttribute(
-                context,
-                R.attr.colorOnTertiaryContainer,
-            ),
+            ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSecondaryContainer),
         )
+    } else if (isStatusMessage) {
+        AppCompatResources.getColorStateList(context, R.color.bubble_text_status_colorstatelist)
     } else {
         AppCompatResources.getColorStateList(
             context,

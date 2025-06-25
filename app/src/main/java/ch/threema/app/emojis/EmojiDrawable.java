@@ -34,14 +34,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class EmojiDrawable extends Drawable {
-    private final SpriteCoordinates coords;
+    private final SpriteCoordinates coordinates;
     private final int spritemapInSampleSize;
     private Bitmap bitmap;
 
     private static final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
 
-    EmojiDrawable(SpriteCoordinates coords, int spritemapInSampleSize) {
-        this.coords = coords;
+    EmojiDrawable(SpriteCoordinates coordinates, int spritemapInSampleSize) {
+        this.coordinates = coordinates;
         this.spritemapInSampleSize = spritemapInSampleSize;
     }
 
@@ -59,16 +59,16 @@ public class EmojiDrawable extends Drawable {
     public void draw(@NonNull Canvas canvas) {
         if (bitmap != null) {
             canvas.drawBitmap(bitmap,
-                new Rect((int) ((float) (coords.x) / spritemapInSampleSize),
-                    (int) ((float) coords.y / spritemapInSampleSize),
-                    (int) ((float) (coords.x + EmojiManager.EMOJI_WIDTH) / spritemapInSampleSize),
-                    (int) ((float) (coords.y + EmojiManager.EMOJI_HEIGHT) / spritemapInSampleSize)),
+                new Rect((int) ((float) (coordinates.x) / spritemapInSampleSize),
+                    (int) ((float) coordinates.y / spritemapInSampleSize),
+                    (int) ((float) (coordinates.x + EmojiManager.EMOJI_WIDTH) / spritemapInSampleSize),
+                    (int) ((float) (coordinates.y + EmojiManager.EMOJI_HEIGHT) / spritemapInSampleSize)),
                 getBounds(),
                 paint);
         }
     }
 
-    public void setBitmap(Bitmap bitmap) {
+    public void setBitmap(@Nullable Bitmap bitmap) {
         if (this.bitmap == null || !this.bitmap.sameAs(bitmap)) {
             this.bitmap = bitmap;
             invalidateSelf();

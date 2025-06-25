@@ -34,6 +34,8 @@ import kotlinx.coroutines.CompletableDeferred
 import org.webrtc.*
 import org.webrtc.CameraVideoCapturer
 
+private val logger = LoggingUtil.getThreemaLogger("GroupCall.PeerConnectionObserver")
+
 /**
  * Implements the interface but ignores all observed events unless overridden.
  */
@@ -251,7 +253,6 @@ internal class PeerConnectionObserver(
     private val addTransceiver: ((transceiver: RtpTransceiver) -> Unit),
     private val failedSignal: CompletableDeferred<*>,
 ) : SanePeerConnectionObserver {
-    private val logger = LoggingUtil.getThreemaLogger("GroupCall.PeerConnectionObserver")
     private val lock = ReentrantLock()
     private var iceFailedSignal: CompletableFuture<Unit>? = null
 

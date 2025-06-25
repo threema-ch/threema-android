@@ -4,18 +4,18 @@
         <clip>
             <shape>
                 <corners android:radius="2dip" />
-                <solid android:color="@color/color_wizard_primary" />
+                <solid android:color="@color/md_theme_dark_primary" />
             </shape>
         </clip>
-        <color android:color="@color/color_wizard_primary" />
+        <color android:color="@color/md_theme_dark_primary" />
     </item>
     <item android:id="@android:id/progress">
         <clip>
             <shape>
                 <corners android:radius="2dip" />
-                <solid android:color="@color/color_wizard_primary" />
+                <solid android:color="@color/md_theme_dark_primary" />
             </shape>
         </clip>
-        <color android:color="@color/color_wizard_primary" />
+        <color android:color="@color/md_theme_dark_primary" />
     </item>
 </layer-list>

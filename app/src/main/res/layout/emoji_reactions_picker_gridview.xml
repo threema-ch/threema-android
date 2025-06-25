@@ -2,9 +2,10 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
+    android:clipToPadding="false"
     android:fadeScrollbars="true"
-    android:scrollbarAlwaysDrawVerticalTrack="true">
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:scrollbars="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,9 +30,9 @@
             android:columnWidth="@dimen/emoji_picker_item_size"
             android:gravity="center"
             android:horizontalSpacing="0dp"
-            android:verticalSpacing="2dp"
             android:numColumns="auto_fit"
-            android:stretchMode="columnWidth" />
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="2dp" />
 
         <TextView
             android:id="@+id/recents_title"
@@ -51,9 +52,9 @@
             android:columnWidth="@dimen/emoji_picker_item_size"
             android:gravity="center"
             android:horizontalSpacing="0dp"
-            android:verticalSpacing="2dp"
             android:numColumns="auto_fit"
-            android:stretchMode="columnWidth" />
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="2dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

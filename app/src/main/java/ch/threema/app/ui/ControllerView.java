@@ -43,7 +43,6 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import ch.threema.app.R;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -260,29 +259,14 @@ public class ControllerView extends MaterialCardView {
     }
 
     private @ColorInt int getBackgroundDefaultColor() {
-        return ConfigUtils.getColorFromAttribute(
-            getContext(),
-            ColorUtil.areDynamicColorsCurrentlyApplied(getContext())
-                ? R.attr.colorPrimary
-                : R.attr.colorTertiaryContainer
-        );
+        return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorSecondary);
     }
 
     private @ColorInt int getProgressTrackIndicatorColor() {
-        return ConfigUtils.getColorFromAttribute(
-            getContext(),
-            ColorUtil.areDynamicColorsCurrentlyApplied(getContext())
-                ? R.attr.colorOnPrimary
-                : R.attr.colorPrimary
-        );
+        return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary);
     }
 
     private @ColorInt int getIconTintColor() {
-        return ConfigUtils.getColorFromAttribute(
-            getContext(),
-            ColorUtil.areDynamicColorsCurrentlyApplied(getContext())
-                ? R.attr.colorOnPrimary
-                : R.attr.colorOnBackground
-        );
+        return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary);
     }
 }

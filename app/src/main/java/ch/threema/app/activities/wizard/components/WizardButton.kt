@@ -51,7 +51,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -84,8 +83,8 @@ fun WizardButton(
     modifier: Modifier = Modifier,
     text: String,
     @DrawableRes trailingIconRes: Int? = null,
-    @ColorRes primaryColorRes: Int = R.color.color_wizard_primary,
-    @ColorRes onPrimaryColorRes: Int = R.color.color_wizard_on_primary,
+    @ColorRes primaryColorRes: Int = R.color.md_theme_dark_primary,
+    @ColorRes onPrimaryColorRes: Int = R.color.md_theme_dark_onPrimary,
     style: WizardButtonStyle = WizardButtonStyle.DEFAULT,
     isEnabled: Boolean = true,
     onClick: () -> Unit,
@@ -154,7 +153,6 @@ fun WizardButton(
             ),
             text = text,
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Light,
                 fontSize = 16.sp,
             ),
             color = colorResource(contentColorRes).copy(

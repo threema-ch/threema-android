@@ -1,13 +1,13 @@
 <div align="center">
   <!-- Centered README header hack -->
-  <img width="400" src="logo.svg">
+  <img width="500" src="logo.svg">
   <br><br>
 </div>
 
 # Threema for Android
 
 This repository contains the complete source code of
-[Threema](https://threema.ch/) for Android.
+[Threema](https://threema.com/) for Android.
 
 
 ## Table of Contents
@@ -28,14 +28,14 @@ This repository contains the complete source code of
 ## <a name="issues"></a>Bug Reports / Feature Requests / Security Issues
 
 To report bugs and request new features, please contact the Threema support
-team through [threema.ch/support](https://threema.ch/support).
+team through [threema.com/support](https://threema.com/support).
 
 If you discover a security issue in Threema, please adhere to the coordinated
 vulnerability disclosure model. To be eligible for a bug bounty, please [file a
 report on GObugfree](https://app.gobugfree.com/programs/threema) (where all the
 details, including the bounty levels, are listed). If you’re not interested in
 the bug bounty program, you can contact us via Threema or by email; for contact
-details, see [threema.ch/contact](https://threema.ch/en/contact) (section
+details, see [threema.com/contact](https://threema.com/en/contact) (section
 “Security”).
 
 
@@ -106,9 +106,9 @@ Threema employee.
 
 ## <a name="build-variants"></a>Build Variants
 
-**Consumer**
+**Private**
 
-There are currently the following product flavors relevant for the consumer
+There are currently the following product flavors relevant for the private
 version of Threema:
 
 | Flavor                 | Description                                    | License Checks |
@@ -225,13 +225,13 @@ You can also run tests through Android Studio.
 
 Instructions on how to reproduce the build process used to publish the official
 Threema app can be found at
-[threema.ch/open-source/reproducible-builds/](https://threema.ch/open-source/reproducible-builds/).
+[threema.com/open-source/reproducible-builds/](https://threema.com/open-source/reproducible-builds/).
 
 
 ## <a name="architecture"></a>Code Organization / Architecture
 
 Before digging into the codebase, you should read the [Cryptography
-Whitepaper](https://threema.ch/press-files/2_documentation/cryptography_whitepaper.pdf)
+Whitepaper](https://threema.com/press-files/2_documentation/cryptography_whitepaper.pdf)
 to understand the design concepts.
 
 Code related to the core functionality (e.g., connecting to the chat server,
@@ -241,11 +241,14 @@ encrypting messages, etc.) can be found in the
 The code of the actual Android app is located in the
 `app/src/main/java/ch/threema/` directory.
 
+Common code not specific to Threema is located in the
+`common/src/main/java/ch/threema/` directory.
+
 
 ## <a name="contributions"></a>Contributions
 
 We accept GitHub pull requests. Please refer to
-<https://threema.ch/open-source/contributions>
+<https://threema.com/open-source/contributions>
 for more information on how to contribute.
 
 Note that translation fixes should not be contributed through GitHub but

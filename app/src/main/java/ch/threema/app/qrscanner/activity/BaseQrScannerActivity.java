@@ -46,6 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -103,8 +104,8 @@ public class BaseQrScannerActivity extends AppCompatActivity implements
 
     public void handleActivityResult(Intent intent) {
 
-        if (intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_QRCODE_TYPE_OK, false)) {
-            final String resultRaw = intent.getStringExtra(ThreemaApplication.INTENT_DATA_QRCODE);
+        if (intent.getBooleanExtra(AppConstants.INTENT_DATA_QRCODE_TYPE_OK, false)) {
+            final String resultRaw = intent.getStringExtra(AppConstants.INTENT_DATA_QRCODE);
             final Uri uri = Uri.parse(resultRaw);
             final String scheme = uri.getScheme();
             final String authority = uri.getAuthority();

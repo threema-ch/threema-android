@@ -23,26 +23,26 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.work.BackoffPolicy
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.services.ConversationService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
-import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.ballot.BallotService
 import ch.threema.app.utils.AutoDeleteUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.WorkManagerUtil
-import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.storage.models.ConversationModel
@@ -53,13 +53,18 @@ import ch.threema.storage.models.data.media.BallotDataModel
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
-    Worker(context, workerParameters) {
+private val logger = LoggingUtil.getThreemaLogger("AutoDeleteWorker")
+
+class AutoDeleteWorker(
+    context: Context,
+    workerParameters: WorkerParameters,
+) : CoroutineWorker(context, workerParameters) {
     private lateinit var preferenceService: PreferenceService
     private lateinit var conversationService: ConversationService
     private lateinit var groupService: GroupService
@@ -68,8 +73,6 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
     private lateinit var ballotService: BallotService
 
     companion object {
-        private val logger = LoggingUtil.getThreemaLogger("AutoDeleteWorker")
-
         const val EXTRA_GRACE_DAYS = "grace_days"
         private val schedulePeriod = 0.5.days
 
@@ -84,7 +87,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val operation = WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                            ThreemaApplication.WORKER_AUTO_DELETE,
+                            WorkerNames.WORKER_AUTO_DELETE,
                             ExistingPeriodicWorkPolicy.UPDATE,
                             buildPeriodicWorkRequest(graceDays),
                         )
@@ -117,7 +120,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
             )
                 .setInitialDelay(5, TimeUnit.MINUTES)
                 .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.HOURS)
-                .apply { setInputData(data) }
+                .setInputData(data)
                 .build()
         }
 
@@ -141,31 +144,21 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
         }
 
         suspend fun cancelAutoDeleteAwait(context: Context) {
-            WorkManagerUtil.cancelUniqueWorkAwait(context, ThreemaApplication.WORKER_AUTO_DELETE)
+            WorkManagerUtil.cancelUniqueWorkAwait(context, WorkerNames.WORKER_AUTO_DELETE)
         }
     }
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         logger.info("Start auto delete work")
-        val serviceManager = ThreemaApplication.getServiceManager()
+        val serviceManager = awaitServiceManagerWithTimeout(20.seconds)
+            ?: return Result.retry()
 
-        try {
-            if (serviceManager != null) {
-                this.preferenceService = serviceManager.preferenceService
-                this.conversationService = serviceManager.conversationService
-                this.groupService = serviceManager.groupService
-                this.messageService = serviceManager.messageService
-                this.fileService = serviceManager.fileService
-                this.ballotService = serviceManager.ballotService
-            } else {
-                // auto cleanup cannot be performed if the service manager is not available - try again later
-                return Result.retry()
-            }
-        } catch (e: ThreemaException) {
-            // we cannot perform our work if master key is locked - try again later
-            logger.error("Auto cleanup failed. Master Key is locked.", e)
-            return Result.retry()
-        }
+        this.preferenceService = serviceManager.preferenceService
+        this.conversationService = serviceManager.conversationService
+        this.groupService = serviceManager.groupService
+        this.messageService = serviceManager.messageService
+        this.fileService = serviceManager.fileService
+        this.ballotService = serviceManager.ballotService
 
         val graceDays: Int = inputData.getInt(
             EXTRA_GRACE_DAYS,
@@ -207,7 +200,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
             }
         }
 
-        val messageModels = messageService.getMessagesForReceiver(conversationModel.receiver, null)
+        val messageModels = messageService.getMessagesForReceiver(conversationModel.messageReceiver, null)
 
         for (messageModel in messageModels) {
             if (messageModel.isOutbox) {

@@ -52,6 +52,7 @@ import javax.crypto.SecretKey;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.base.utils.LoggingUtil;
 
 public class SystemScreenLockServiceImpl implements SystemScreenLockService {

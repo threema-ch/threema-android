@@ -4,12 +4,52 @@ use convert_case::{Case, Casing as _};
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{
-    self,
+    self, Data, DeriveInput, Expr, Fields, Ident, Variant,
     parse::{Parse, ParseStream},
     parse_macro_input,
     punctuated::Punctuated,
-    Data, DeriveInput, Expr, Fields, Ident, Variant,
 };
+
+/// Provides the name of a `struct`, `enum` or `union`.
+///
+/// # Examples
+///
+/// Given the following:
+///
+/// ```
+/// use libthreema_macros::Name;
+///
+/// #[derive(Name)]
+/// struct Something;
+/// ```
+///
+/// the derive macro expands it to:
+///
+/// ```
+/// struct Something;
+/// impl Something {
+///     pub const NAME: &'static str = "Something";
+/// }
+/// ```
+#[proc_macro_derive(Name)]
+pub fn derive_name(input: TokenStream) -> TokenStream {
+    // Parse the input tokens into a syntax tree.
+    let input = parse_macro_input!(input as DeriveInput);
+
+    // Implement `NAME`
+    let name = input.ident;
+    let literal_name = name.to_string();
+    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
+    let expanded = quote! {
+        impl #impl_generics #name #type_generics #where_clause {
+            /// The name for debugging purposes
+            pub const NAME: &'static str = #literal_name;
+        }
+    };
+
+    // Generate code
+    TokenStream::from(expanded)
+}
 
 /// Provides variant names for an `enum`.
 ///
@@ -75,7 +115,7 @@ pub fn derive_variant_names(input: TokenStream) -> TokenStream {
                 pub const #const_name: &'static str = #literal_name;
             }
         }),
-        #[allow(clippy::unimplemented)]
+        #[expect(clippy::unimplemented, reason = "Only applicable to enums")]
         _ => unimplemented!(),
     };
     let mapped_variants = match &input.data {
@@ -91,7 +131,7 @@ pub fn derive_variant_names(input: TokenStream) -> TokenStream {
                 Self::#variant_name #parameters => Self::#const_name
             }
         }),
-        #[allow(clippy::unimplemented)]
+        #[expect(clippy::unimplemented, reason = "Only applicable to enums")]
         _ => unimplemented!(),
     };
 
@@ -143,8 +183,8 @@ pub fn derive_variant_names(input: TokenStream) -> TokenStream {
 /// // Omitting expansion of `VariantNames` here.
 ///
 /// impl std::fmt::Debug for Something {
-///     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-///         f.write_fmt(format_args!("{}::{}", "Something", self.variant_name()))
+///     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+///         write!(formatter, "{}::{}", "Something", self.variant_name())
 ///     }
 /// }
 /// ```
@@ -154,7 +194,7 @@ pub fn derive_debug_variant_names(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
     // Ensure its an enum
-    #[allow(clippy::unimplemented)]
+    #[expect(clippy::unimplemented, reason = "Only applicable to enums")]
     if !matches!(input.data, Data::Enum(..)) {
         unimplemented!()
     }
@@ -164,8 +204,8 @@ pub fn derive_debug_variant_names(input: TokenStream) -> TokenStream {
     let literal_name = name.to_string();
     let expanded = quote! {
         impl std::fmt::Debug for #name {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                f.write_fmt(format_args!("{}::{}", #literal_name, self.variant_name()))
+            fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(formatter, "{}::{}", #literal_name, self.variant_name())
             }
         }
     };
@@ -206,9 +246,7 @@ pub fn concat_fixed_bytes(tokens: TokenStream) -> TokenStream {
         .clone()
         .map(|(index, _)| format_ident!("T{index}"))
         .collect();
-    let field_names: Vec<Ident> = indices
-        .map(|(index, _)| format_ident!("t{index}"))
-        .collect();
+    let field_names: Vec<Ident> = indices.map(|(index, _)| format_ident!("t{index}")).collect();
 
     let expanded = quote! {{
         #[repr(C)]

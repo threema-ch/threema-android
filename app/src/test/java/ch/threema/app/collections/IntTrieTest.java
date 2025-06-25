@@ -23,9 +23,6 @@ package ch.threema.app.collections;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -99,20 +96,6 @@ public class IntTrieTest {
 
         trie.insert(new int[]{1, 2, 3, 4, 5}, "C");
         assertFalse(trie.get(new int[]{1, 2, 3}).isLeaf());
-    }
-
-    @Test
-    public void containsListPath() throws Exception {
-        final IntTrie<String> trie = new IntTrie<>();
-        trie.insert(new int[]{1, 2, 3}, "Hello");
-
-        // Contains the inserted value
-        final List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        assertTrue(trie.contains(list));
-        assertEquals("Hello", trie.get(list).getValue());
     }
 
     @Test

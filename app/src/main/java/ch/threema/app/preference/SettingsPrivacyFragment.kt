@@ -34,22 +34,20 @@ import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.TwoStatePreference
-import androidx.work.WorkManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.BlockedIdentitiesActivity
 import ch.threema.app.activities.ExcludedSyncIdentitiesActivity
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericProgressDialog
-import ch.threema.app.exceptions.FileSystemNotPresentException
 import ch.threema.app.listeners.SynchronizeContactsListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.routines.SynchronizeContactsRoutine
 import ch.threema.app.services.SynchronizeContactsService
 import ch.threema.app.utils.*
+import ch.threema.app.workers.ShareTargetUpdateWorker
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.localcrypto.MasterKeyLockedException
 import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
@@ -65,7 +63,6 @@ class SettingsPrivacyFragment :
 
     private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
     private val preferenceService by lazy { serviceManager.preferenceService }
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
 
     private lateinit var disableScreenshot: CheckBoxPreference
     private var disableScreenshotChecked = false
@@ -74,8 +71,7 @@ class SettingsPrivacyFragment :
 
     private lateinit var contactSyncPreference: TwoStatePreference
 
-    private val synchronizeContactsService: SynchronizeContactsService? =
-        getOrNull { requireSynchronizeContactsService() }
+    private val synchronizeContactsService: SynchronizeContactsService by lazy { serviceManager.synchronizeContactsService }
 
     private val synchronizeContactsListener: SynchronizeContactsListener =
         object : SynchronizeContactsListener {
@@ -119,7 +115,7 @@ class SettingsPrivacyFragment :
     override fun initializePreferences() {
         super.initializePreferences()
 
-        disableScreenshot = getPref(R.string.preferences__hide_screenshots)
+        disableScreenshot = getPref(preferenceService.screenshotPolicySetting.preferenceKey)
         disableScreenshotChecked = this.disableScreenshot.isChecked
 
         if (ConfigUtils.getScreenshotsDisabled(preferenceService, serviceManager.lockAppService)) {
@@ -140,10 +136,6 @@ class SettingsPrivacyFragment :
         initDirectSharePref()
 
         updateView()
-
-        if (multiDeviceManager.isMultiDeviceActive) {
-            subscribeToMdRelevantSettings()
-        }
     }
 
     override fun getPreferenceTitleResource(): Int = R.string.prefs_privacy
@@ -187,13 +179,13 @@ class SettingsPrivacyFragment :
             )
         ) {
             contactSyncPreference.apply {
-                isEnabled = synchronizeContactsService?.isSynchronizationInProgress != true
+                isEnabled = !synchronizeContactsService.isSynchronizationInProgress
             }
         }
     }
 
     private fun initContactSyncPref() {
-        contactSyncPreference = getPref(resources.getString(R.string.preferences__sync_contacts))
+        contactSyncPreference = getPref(preferenceService.contactSyncPolicySetting.preferenceKey)
         contactSyncPreference.summaryOn =
             getString(R.string.prefs_sum_sync_contacts_on, getString(R.string.app_name))
         contactSyncPreference.summaryOff =
@@ -210,10 +202,12 @@ class SettingsPrivacyFragment :
                 preferenceService.phoneNumberSyncHashCode = 0
                 preferenceService.timeOfLastContactSync = 0L
 
+                // Note that the change here can be triggered from sync. However, as this only happens while the preferences are shown, this is
+                // considered acceptable.
                 if (enabled) {
-                    enableSync()
+                    enableSyncFromLocal()
                 } else {
-                    disableSync()
+                    disableSyncFromLocal()
                 }
             }
         }
@@ -224,7 +218,7 @@ class SettingsPrivacyFragment :
             var value =
                 AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__block_unknown))
             if (value != null) {
-                val blockUnknown: CheckBoxPreference = getPref(R.string.preferences__block_unknown)
+                val blockUnknown: CheckBoxPreference = getPref(preferenceService.unknownContactPolicySetting.preferenceKey)
                 blockUnknown.isEnabled = false
                 blockUnknown.isSelectable = false
             }
@@ -273,10 +267,9 @@ class SettingsPrivacyFragment :
     private fun initDirectSharePref() {
         getPrefOrNull<TwoStatePreference>(R.string.preferences__direct_share)?.onChange<Boolean> { enabled ->
             if (enabled) {
-                ThreemaApplication.scheduleShareTargetShortcutUpdate()
+                ShareTargetUpdateWorker.scheduleShareTargetShortcutUpdate(requireContext())
             } else {
-                WorkManager.getInstance(requireContext())
-                    .cancelUniqueWork(ThreemaApplication.WORKER_SHARE_TARGET_UPDATE)
+                ShareTargetUpdateWorker.cancelScheduledShareTargetShortcutUpdate(requireContext())
                 ShortcutUtil.deleteAllShareTargetShortcuts()
             }
         }
@@ -300,7 +293,7 @@ class SettingsPrivacyFragment :
             PERMISSION_REQUEST_CONTACTS -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 launchContactsSync()
             } else if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                disableSync()
+                disableSyncFromLocal()
                 ConfigUtils.showPermissionRationale(
                     context,
                     fragmentView,
@@ -308,41 +301,36 @@ class SettingsPrivacyFragment :
                     object : BaseCallback<Snackbar?>() {},
                 )
             } else {
-                disableSync()
+                disableSyncFromLocal()
             }
         }
     }
 
     private fun launchContactsSync() {
         // start a Sync
-        synchronizeContactsService?.instantiateSynchronizationAndRun()
+        synchronizeContactsService.instantiateSynchronizationAndRun()
     }
 
-    private fun enableSync() {
-        getOrNull { requireSynchronizeContactsService() }?.apply {
-            try {
-                if (enableSync() && ConfigUtils.requestContactPermissions(
-                        requireActivity(),
-                        this@SettingsPrivacyFragment,
-                        PERMISSION_REQUEST_CONTACTS,
-                    )
-                ) {
-                    launchContactsSync()
-                }
-            } catch (e: MasterKeyLockedException) {
-                logger.error("Exception", e)
-            } catch (e: FileSystemNotPresentException) {
-                logger.error("Exception", e)
+    private fun enableSyncFromLocal() {
+        try {
+            if (synchronizeContactsService.enableSyncFromLocal() && ConfigUtils.requestContactPermissions(
+                    requireActivity(),
+                    this@SettingsPrivacyFragment,
+                    PERMISSION_REQUEST_CONTACTS,
+                )
+            ) {
+                launchContactsSync()
             }
+        } catch (e: MasterKeyLockedException) {
+            logger.error("Exception", e)
         }
     }
 
-    private fun disableSync() {
-        getOrNull { requireSynchronizeContactsService() }?.apply {
-            GenericProgressDialog.newInstance(R.string.app_name, R.string.please_wait)
-                .show(parentFragmentManager, DIALOG_TAG_DISABLE_SYNC)
-            Thread({
-                disableSync {
+    private fun disableSyncFromLocal() {
+        GenericProgressDialog.newInstance(R.string.app_name, R.string.please_wait).show(parentFragmentManager, DIALOG_TAG_DISABLE_SYNC)
+        Thread(
+            {
+                synchronizeContactsService.disableSyncFromLocal {
                     RuntimeUtil.runOnUiThread {
                         DialogUtil.dismissDialog(
                             parentFragmentManager,
@@ -352,14 +340,15 @@ class SettingsPrivacyFragment :
                         contactSyncPreference.isChecked = false
                     }
                 }
-            }, "DisableSync").start()
-        }
+            },
+            "DisableSync",
+        ).start()
     }
 
     private fun resetReceipts() {
-        getOrNull { requireContactService() }?.apply {
-            Thread({
-                resetReceiptsSettings()
+        Thread(
+            {
+                serviceManager.contactService.resetReceiptsSettings()
                 RuntimeUtil.runOnUiThread {
                     Toast.makeText(
                         context,
@@ -367,25 +356,13 @@ class SettingsPrivacyFragment :
                         Toast.LENGTH_SHORT,
                     ).show()
                 }
-            }, "ResetReceiptSettings").start()
-        }
+            },
+            "ResetReceiptSettings",
+        ).start()
     }
 
-    private fun subscribeToMdRelevantSettings() {
-        getPref<CheckBoxPreference>(R.string.preferences__block_unknown).onChange<Boolean> { enabled ->
-            // Note that it is necessary that the preference is already persisted before it is reflected.
-            preferenceService.setBlockUnknown(enabled, TriggerSource.LOCAL)
-        }
-
-        getPref<CheckBoxPreference>(R.string.preferences__read_receipts).onChange<Boolean> { enabled ->
-            // Note that it is necessary that the preference is already persisted before it is reflected.
-            preferenceService.setReadReceipts(enabled, TriggerSource.LOCAL)
-        }
-
-        getPref<CheckBoxPreference>(R.string.preferences__typing_indicator).onChange<Boolean> { enabled ->
-            // Note that it is necessary that the preference is already persisted before it is reflected.
-            preferenceService.setTypingIndicator(enabled, TriggerSource.LOCAL)
-        }
+    override fun onYes(tag: String?, data: Any?) {
+        resetReceipts()
     }
 
     companion object {
@@ -396,10 +373,4 @@ class SettingsPrivacyFragment :
 
         private const val PERMISSION_REQUEST_CONTACTS = 1
     }
-
-    override fun onYes(tag: String?, data: Any?) {
-        resetReceipts()
-    }
-
-    override fun onNo(tag: String?, data: Any?) {}
 }

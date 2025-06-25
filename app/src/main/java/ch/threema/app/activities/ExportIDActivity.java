@@ -30,12 +30,13 @@ import org.slf4j.Logger;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -74,8 +75,8 @@ public class ExportIDActivity extends AppCompatActivity implements PasswordEntry
             R.string.password_hint,
             R.string.ok,
             R.string.cancel,
-            ThreemaApplication.MIN_PW_LENGTH_BACKUP,
-            ThreemaApplication.MAX_PW_LENGTH_BACKUP,
+            AppConstants.MIN_PW_LENGTH_BACKUP,
+            AppConstants.MAX_PW_LENGTH_BACKUP,
             R.string.backup_password_again_summary,
             0, 0, PasswordEntryDialog.ForgotHintType.NONE);
         dialogFragment.show(getSupportFragmentManager(), DIALOG_TAG_SET_ID_BACKUP_PW);
@@ -83,8 +84,8 @@ public class ExportIDActivity extends AppCompatActivity implements PasswordEntry
 
     private void displayIDBackup(String result) {
         Intent intent = new Intent(this, ExportIDResultActivity.class);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, result);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+        intent.putExtra(AppConstants.INTENT_DATA_ID_BACKUP, result);
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
 
         startActivity(intent);
         finish();

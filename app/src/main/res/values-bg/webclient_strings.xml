@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Създадено: %1$s (%2$s)</string>
     <string name="webclient_active_since">Активен от: %s</string>
     <string name="webclient_enable">Активирайте десктоп приложението/уеб клиента</string>
-    <string name="webclient_no_sessions_found">За да се свържете, изтеглете настолното приложение от: (<b>https://threema.ch/download</b>) или отворете уеб клиента (<b>%s</b>) на компютъра Ви и натиснете бутона отдолу, за да сканирате QR кода, който се появява на екрана на компютъра Ви.</string>
+    <string name="webclient_no_sessions_found">За да се свържете, изтеглете настолното приложение от: (<b>https://threema.com/download</b>) или отворете уеб клиента (<b>%s</b>) на компютъра Ви и натиснете бутона отдолу, за да сканирате QR кода, който се появява на екрана на компютъра Ви.</string>
     <string name="webclient_session_rename">Преименувайте сесията</string>
     <string name="webclient_session_label">Ново име</string>
     <string name="webclient_session_start">Започнете сесия</string>

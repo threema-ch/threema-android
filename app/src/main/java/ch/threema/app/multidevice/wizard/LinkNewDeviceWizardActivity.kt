@@ -25,19 +25,18 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsets
-import android.view.WindowMetrics
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.Type.displayCutout
+import androidx.core.view.WindowInsetsCompat.Type.systemBars
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -50,12 +49,11 @@ import ch.threema.app.multidevice.wizard.steps.LinkNewDevicePFSInfoFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceResultFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceScanQrFragment
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.getStatusBarHeightPxCompat
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.withCurrentWindowInsets
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.android.material.bottomsheet.BottomSheetDragHandleView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.lang.ref.WeakReference
 import kotlinx.coroutines.launch
@@ -74,10 +72,7 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        enableEdgeToEdge()
         setContentView(R.layout.activity_link_new_device_bottom_sheet)
-        window.statusBarColor = Color.TRANSPARENT
 
         onBackPressedDispatcher.addCallback(
             object : OnBackPressedCallback(enabled = true) {
@@ -141,6 +136,7 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
                     }
             }
 
+            val dragHandle = findViewById<BottomSheetDragHandleView>(R.id.drag_handle)
             bottomSheetBehavior.addBottomSheetCallback(
                 object : BottomSheetCallback() {
                     override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -148,18 +144,14 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
                             BottomSheetBehavior.STATE_HIDDEN -> onUserRequestedCancel()
 
                             BottomSheetBehavior.STATE_EXPANDED -> {
-                                findViewById<View>(R.id.drag_handle).visibility = View.INVISIBLE
-                                window.statusBarColor = ConfigUtils.getColorFromAttribute(
-                                    this@LinkNewDeviceWizardActivity,
-                                    R.attr.colorSurfaceContainerLow,
-                                )
+                                dragHandle.visibility = View.INVISIBLE
                             }
 
                             BottomSheetBehavior.STATE_SETTLING -> {
-                                findViewById<View>(R.id.drag_handle).visibility = View.VISIBLE
+                                dragHandle.visibility = View.VISIBLE
                             }
 
-                            else -> window.statusBarColor = Color.TRANSPARENT
+                            else -> {}
                         }
                     }
 
@@ -286,34 +278,23 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
     }
 
     private fun determinePeekHeight(onAvailable: (Int) -> Unit) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-            onAvailable(determinePeekHeightFromApi30Impl())
-        } else {
-            withCurrentWindowInsets(R.id.parent_layout) { _, insets ->
-                val statusBarHeightPx: Int = insets.getStatusBarHeightPxCompat()
-                val toolbarHeightPx: Int = ConfigUtils.getActionBarSize(this)
-                val extraSpacingPx: Int = resources.getDimensionPixelSize(R.dimen.sheet_peek_position_extra_spacing)
-                onAvailable(
-                    (resources.displayMetrics.heightPixels - statusBarHeightPx - toolbarHeightPx - extraSpacingPx).coerceAtLeast(0),
-                )
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.parent_layout)) { view: View, windowInsets: WindowInsetsCompat ->
+            val insets = windowInsets.getInsets(systemBars() or displayCutout())
+            val toolbarHeightPx: Int = ConfigUtils.getActionBarSize(this)
+            val extraSpacingPx: Int = resources.getDimensionPixelSize(R.dimen.grid_unit_x2)
+            val windowHeight: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                windowManager.currentWindowMetrics.bounds.height()
+            } else {
+                // It seems that this height value already excludes the vertical device insets
+                resources.displayMetrics.heightPixels
             }
+            var peekHeight = windowHeight - toolbarHeightPx - extraSpacingPx
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                peekHeight -= insets.top + insets.bottom
+            }
+            view.setOnApplyWindowInsetsListener(null)
+            onAvailable(peekHeight.coerceAtLeast(0))
+            windowInsets
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun determinePeekHeightFromApi30Impl(): Int {
-        val metrics: WindowMetrics = windowManager.currentWindowMetrics
-        val windowInsets: WindowInsets = metrics.getWindowInsets()
-        val insetsTop = windowInsets.getInsets(
-            WindowInsets.Type.statusBars() or WindowInsets.Type.displayCutout() or WindowInsets.Type.captionBar(),
-        )
-        val insetsHeightTop = insetsTop.top + insetsTop.bottom
-
-        val insetsBottom = windowInsets.getInsets(WindowInsets.Type.navigationBars())
-        val insetsHeightBottom = insetsBottom.top + insetsBottom.bottom
-
-        val toolbarHeightPx: Int = ConfigUtils.getActionBarSize(this)
-        val extraSpacingPx: Int = resources.getDimensionPixelSize(R.dimen.sheet_peek_position_extra_spacing)
-        return ((metrics.bounds.height() - insetsHeightTop - insetsHeightBottom) - toolbarHeightPx - extraSpacingPx).coerceAtLeast(0)
     }
 }

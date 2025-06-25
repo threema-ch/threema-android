@@ -57,6 +57,9 @@ import java.util.List;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.StorageUtil;
 import ch.threema.app.utils.TestUtil;
@@ -91,6 +94,20 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+    }
+
+    @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(android.R.id.list),
+            InsetSides.lbr(),
+            SpacingValues.bottom(R.dimen.grid_unit_x2)
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.nav_view),
+            new InsetSides(true, false, true, true)
+        );
     }
 
     @Override
@@ -137,7 +154,6 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
             finish();
             return false;
         }
-        ;
 
         drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
@@ -159,14 +175,9 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
             }
 
             // sort by date (most recent first)
-            comparator = new Comparator<FileInfo>() {
-                @Override
-                public int compare(FileInfo f1, FileInfo f2) {
-                    return f1.getLastModified() == f2.getLastModified() ? 0 :
-                        f1.getLastModified() < f2.getLastModified() ? 1 :
-                            -1;
-                }
-            };
+            comparator = (f1, f2) -> f1.getLastModified() == f2.getLastModified()
+                ? 0
+                : f1.getLastModified() < f2.getLastModified() ? 1 : -1;
         } else {
             currentFolder = rootPaths.get(0);
             currentRoot = 0;
@@ -297,18 +308,17 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (drawerLayout != null) {
-                    drawerLayout.openDrawer(GravityCompat.START);
-                }
-                return true;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            if (drawerLayout != null) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupDrawerContent(final NavigationView navigationView) {
+    private void setupDrawerContent(@NonNull final NavigationView navigationView) {
         Menu menu = navigationView.getMenu();
         if (rootPaths.size() > 1) {
             for (int i = 1; i < rootPaths.size(); i++) {
@@ -338,16 +348,14 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case PERMISSION_STORAGE:
-                if (grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    scanFiles(currentFolder);
-                } else {
-                    finish();
-                }
+        if (requestCode == PERMISSION_STORAGE) {
+            if (grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                scanFiles(currentFolder);
+            } else {
+                finish();
+            }
         }
     }
 }

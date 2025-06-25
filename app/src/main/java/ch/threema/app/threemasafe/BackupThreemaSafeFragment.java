@@ -30,8 +30,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,8 +52,11 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.listeners.ThreemaSafeListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SilentSwitchCompat;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -77,7 +80,7 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
     private ExtendedFloatingActionButton floatingActionButton;
     private Button changePasswordButton;
     private SilentSwitchCompat enableSwitch;
-    private View configLayout, explainLayout;
+    private ScrollView configLayout, explainLayout;
 
     private final ThreemaSafeListener threemaSafeListener = new ThreemaSafeListener() {
         @Override
@@ -134,7 +137,18 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
             this.fragmentView = inflater.inflate(R.layout.fragment_backup_threema_safe, container, false);
 
             configLayout = fragmentView.findViewById(R.id.config_layout);
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                configLayout,
+                InsetSides.lbr(),
+                SpacingValues.bottom(R.dimen.grid_unit_x10)
+            );
+
             explainLayout = fragmentView.findViewById(R.id.explain_layout);
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(
+                explainLayout,
+                InsetSides.lbr(),
+                SpacingValues.bottom(R.dimen.grid_unit_x10)
+            );
 
             floatingActionButton = fragmentView.findViewById(R.id.floating);
             floatingActionButton.setOnClickListener(v -> {
@@ -144,23 +158,25 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
                 }
             });
 
+            ViewExtensionsKt.applyDeviceInsetsAsMargin(
+                floatingActionButton,
+                InsetSides.all(),
+                SpacingValues.all(R.dimen.grid_unit_x2)
+            );
+
             changePasswordButton = fragmentView.findViewById(R.id.threema_safe_change_password);
-            changePasswordButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (preferenceService.getThreemaSafeEnabled()) {
-                        threemaSafeService.unschedulePeriodicUpload();
-                        Intent intent = new Intent(getActivity(), ThreemaSafeConfigureActivity.class);
-                        intent.putExtra(EXTRA_CHANGE_PASSWORD, true);
-                        startActivityForResult(intent, REQUEST_CODE_SAFE_CHANGE_PASSWORD);
-                    }
+            changePasswordButton.setOnClickListener(v -> {
+                if (preferenceService.getThreemaSafeEnabled()) {
+                    threemaSafeService.unschedulePeriodicUpload();
+                    Intent intent = new Intent(getActivity(), ThreemaSafeConfigureActivity.class);
+                    intent.putExtra(EXTRA_CHANGE_PASSWORD, true);
+                    startActivityForResult(intent, REQUEST_CODE_SAFE_CHANGE_PASSWORD);
                 }
             });
 
             enableSwitch = fragmentView.findViewById(R.id.switch_button);
-            enableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            enableSwitch.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
                     if (buttonView.isShown()) {
                         logger.debug("*** onCheckedChanged buttonView {} isChecked {}", buttonView.isChecked(), isChecked);
                         if (isChecked) {
@@ -172,9 +188,9 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
                         }
                     }
                 }
-            });
+            );
 
-            fragmentView.findViewById(R.id.info).setOnClickListener(v -> onInfoButtonClicked(v));
+            fragmentView.findViewById(R.id.info).setOnClickListener(this::onInfoButtonClicked);
             updateUI();
         }
 
@@ -186,6 +202,11 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
                 lp.height = getResources().getDimensionPixelSize(R.dimen.web_sessions_switch_frame_height);
                 switchLayout.setLayoutParams(lp);
                 ((TextView) switchLayout.findViewById(R.id.switch_text)).setHeight(lp.height);
+
+                ViewExtensionsKt.applyDeviceInsetsAsMargin(
+                    switchLayout,
+                    InsetSides.horizontal()
+                );
             }
         }
 

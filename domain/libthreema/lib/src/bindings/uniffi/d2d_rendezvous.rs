@@ -1,34 +1,31 @@
+//! Bindings for the _Connection Rendezvous Protocol_.
 use std::sync::{Arc, Mutex};
 
 use crate::{
     d2d_rendezvous::{self, RendezvousProtocolError},
-    sync::MutexIgnorePoison as _,
+    utils::sync::MutexIgnorePoison as _,
 };
 
 /// Binding-friendly version of [`d2d_rendezvous::PathStateUpdate`].
 #[derive(uniffi::Enum)]
 pub enum PathStateUpdate {
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     AwaitingNominate { measured_rtt_ms: u32 },
 
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     Nominated { rph: Vec<u8> },
 }
 
 impl From<d2d_rendezvous::PathStateUpdate> for PathStateUpdate {
     fn from(update: d2d_rendezvous::PathStateUpdate) -> Self {
         match update {
-            d2d_rendezvous::PathStateUpdate::AwaitingNominate { measured_rtt } => {
-                Self::AwaitingNominate {
-                    measured_rtt_ms: measured_rtt
-                        .as_millis()
-                        .try_into()
-                        .expect("measured_rtt should not exceed a u32"),
-                }
+            d2d_rendezvous::PathStateUpdate::AwaitingNominate { measured_rtt } => Self::AwaitingNominate {
+                measured_rtt_ms: measured_rtt
+                    .as_millis()
+                    .try_into()
+                    .expect("measured_rtt should not exceed a u32"),
             },
-            d2d_rendezvous::PathStateUpdate::Nominated { rph } => Self::Nominated {
-                rph: rph.0.to_vec(),
-            },
+            d2d_rendezvous::PathStateUpdate::Nominated { rph } => Self::Nominated { rph: rph.0.to_vec() },
         }
     }
 }
@@ -36,13 +33,13 @@ impl From<d2d_rendezvous::PathStateUpdate> for PathStateUpdate {
 /// Binding-friendly version of [`d2d_rendezvous::PathProcessResult`].
 #[derive(uniffi::Record)]
 pub struct PathProcessResult {
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     pub state_update: Option<PathStateUpdate>,
 
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     pub outgoing_frame: Option<Vec<u8>>,
 
-    #[allow(missing_docs)]
+    #[expect(missing_docs, reason = "Binding-friendly version")]
     pub incoming_ulp_data: Option<Vec<u8>>,
 }
 
@@ -51,7 +48,7 @@ impl From<d2d_rendezvous::PathProcessResult> for PathProcessResult {
         Self {
             state_update: result.state_update.map(PathStateUpdate::from),
             outgoing_frame: result.outgoing_frame.map(Into::into),
-            incoming_ulp_data: result.incoming_ulp_data.map(Into::into),
+            incoming_ulp_data: result.incoming_ulp_data,
         }
     }
 }
@@ -164,17 +161,19 @@ impl RendezvousProtocol {
     }
 
     /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::add_chunks`].
-    #[allow(clippy::missing_errors_doc)]
-    pub fn add_chunks(&self, pid: u32, chunks: &[Vec<u8>]) -> Result<(), RendezvousProtocolError> {
-        self.inner.lock_ignore_poison().add_chunks(pid, chunks)
+    #[expect(
+        clippy::missing_errors_doc,
+        clippy::needless_pass_by_value,
+        reason = "Binding-friendly version"
+    )]
+    pub fn add_chunks(&self, pid: u32, chunks: Vec<Vec<u8>>) -> Result<(), RendezvousProtocolError> {
+        let chunks: Vec<&[u8]> = chunks.iter().map(Vec::as_slice).collect();
+        self.inner.lock_ignore_poison().add_chunks(pid, &chunks)
     }
 
     /// Binding-friendly version of [`RendezvousProtocol::process_frame`].
-    #[allow(clippy::missing_errors_doc)]
-    pub fn process_frame(
-        &self,
-        pid: u32,
-    ) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
+    #[expect(clippy::missing_errors_doc, reason = "Binding-friendly version")]
+    pub fn process_frame(&self, pid: u32) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
         self.inner
             .lock_ignore_poison()
             .process_frame(pid)
@@ -182,7 +181,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding-friendly version of [`RendezvousProtocol::nominate_path`].
-    #[allow(clippy::missing_errors_doc)]
+    #[expect(clippy::missing_errors_doc, reason = "Binding-friendly version")]
     pub fn nominate_path(&self, pid: u32) -> Result<PathProcessResult, RendezvousProtocolError> {
         self.inner
             .lock_ignore_poison()
@@ -191,7 +190,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding-friendly version of [`RendezvousProtocol::create_ulp_frame`].
-    #[allow(clippy::missing_errors_doc)]
+    #[expect(clippy::missing_errors_doc, reason = "Binding-friendly version")]
     pub fn create_ulp_frame(
         &self,
         outgoing_data: Vec<u8>,

@@ -21,8 +21,8 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
@@ -59,28 +59,20 @@ public class BallotDataTest {
         try {
             result = BallotData.parse(testBallot);
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
 
-        Assert.assertEquals
-            (
-                "Ballotelli",
-                result.getDescription()
-            );
+        Assertions.assertEquals("Ballotelli", result.getDescription());
 
-        Assert.assertEquals
-            (
-                2,
-                result.getChoiceList().size()
-            );
+        Assertions.assertEquals(2, result.getChoiceList().size());
 
-        Assert.assertEquals(BallotData.State.OPEN, result.getState());
-        Assert.assertEquals(BallotData.AssessmentType.SINGLE, result.getAssessmentType());
-        Assert.assertEquals(BallotData.Type.INTERMEDIATE, result.getType());
-        Assert.assertEquals(BallotData.ChoiceType.TEXT, result.getChoiceType());
-        Assert.assertEquals(2, result.getParticipants().size());
-        Assert.assertEquals("ECHOECH2", result.getParticipants().get(1));
+        Assertions.assertEquals(BallotData.State.OPEN, result.getState());
+        Assertions.assertEquals(BallotData.AssessmentType.SINGLE, result.getAssessmentType());
+        Assertions.assertEquals(BallotData.Type.INTERMEDIATE, result.getType());
+        Assertions.assertEquals(BallotData.ChoiceType.TEXT, result.getChoiceType());
+        Assertions.assertEquals(2, result.getParticipants().size());
+        Assertions.assertEquals("ECHOECH2", result.getParticipants().get(1));
     }
 
 
@@ -88,7 +80,7 @@ public class BallotDataTest {
     public void parseInvalidString() {
         try {
             BallotData.parse("i want to be a hippie");
-            Assert.fail("invalid string parsed");
+            Assertions.fail("invalid string parsed");
         } catch (BadMessageException e) {
             //ok! exception received
         }
@@ -103,9 +95,9 @@ public class BallotDataTest {
         d.setType(BallotData.Type.INTERMEDIATE);
         d.setChoiceType(BallotData.ChoiceType.TEXT);
         int posEcho1 = d.addParticipant("ECHOECH1");
-        Assert.assertEquals(posEcho1, 0);
+        Assertions.assertEquals(0, posEcho1);
         int posEcho2 = d.addParticipant("ECHOECH2");
-        Assert.assertEquals(posEcho2, 1);
+        Assertions.assertEquals(1, posEcho2);
 
 
         BallotDataChoice c1 = new BallotDataChoice(2);
@@ -127,9 +119,9 @@ public class BallotDataTest {
 
         try {
             BallotData b = BallotData.parse(testBallot);
-            Assert.assertEquals(b.generateString(), d.generateString());
+            Assertions.assertEquals(b.generateString(), d.generateString());
         } catch (BadMessageException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 }

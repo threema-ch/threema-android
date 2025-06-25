@@ -167,7 +167,6 @@
 		helyreállítására egy másik eszközön. Másolja &amp; és illessze be az adatokat egy megfelelő helyre, nyomtassa
 		ki, küldje el magának e-mailben a Megosztás funkció segítségével, vagy olvassa be a QR-kódot egy másik eszközzel.</string>
     <string name="support">Súgó</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">A következő karakterláncot a kiválasztott jelszóval együtt használja a
 		${app_name_short} azonosító visszaszerzéséhez.</string>
@@ -337,7 +336,6 @@
     <string name="state_dialog_status">Állapot</string>
     <string name="no_recent_conversations">Nem találtunk csevegést</string>
     <string name="save_changes">Mentés</string>
-    <string name="group_created_confirm">Csoport sikeresen létrehozva</string>
     <string name="creating_group">Csoport létrehozása folyamatban</string>
     <string name="updating_group">Csoport frissítése</string>
     <string name="status_create_group">Csoport létrehozva.</string>
@@ -722,7 +720,6 @@
     <string name="clone_group_message">Az aktuális csoport másolata jön létre Önnel mint rendszergazdával. Folytatja?</string>
     <string name="prefs_proximity_sensor">Közelségérzékelő használata</string>
     <string name="prefs_proximity_sensor_explain">Hangüzeneteket a fülhallgatón keresztül visszajátszani, ha a közelségérzékelő le van fedve</string>
-    <string name="error_creating_group">Hiba a csoport létrehozásában/frissítésében</string>
     <string name="no_media_found_generic">Nem találtunk médiát</string>
     <string name="max_images_reached">Egyszerre nem lehet több mint %d képet szerkeszteni</string>
     <string name="enter_description">Kérjük, írja le a problémát vagy hibát.</string>
@@ -831,8 +828,6 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">A nagyméretű médiafájlok ZIP biztonsági mentése hosszú időt vehet igénybe, és meghaladhatja a készülék processzor- és memóriakapacitását. A biztonsági mentés során nem fogadhatók ${app_name} üzenetek. Biztos, hogy folytatni akarod?</string>
     <string name="backup_data_cancelled">A biztonsági mentés leállítása</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Az alkalmazás nem indítható. Kérjük, kapcsolja ki teljesen a készüléket, majd kapcsolja be újra.</string>
     <string name="message_sent">Üzenetet elküldve</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short} hívás</string>
@@ -1187,9 +1182,6 @@
     <string name="permission_camera_videocall_required">Aktiválja a kamera engedélyt a videóhívásokhoz</string>
     <string name="tooltip_voip_enable_speakerphone">Kattintson ide a beszélgetés kihangosításához</string>
     <string name="ballot_open">Nyílt szavazások</string>
-    <string name="translators">Fordítók</string>
-    <string name="credits">Köszönetnyilvánítás</string>
-    <string name="translators_thanks">Köszönet önkéntes fordítóinknak:\n%s</string>
     <string name="ballot_window_hide">Nyílt szavazások elrejtése</string>
     <string name="ballot_window_show">Nyílt szavazások megjelenítése</string>
     <string name="tooltip_voip_other_party_video_on">Beszélgetőpartnere videóhívást indított. Kattintson ide a kamera bekapcsolásához is.</string>
@@ -1460,8 +1452,8 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
@@ -1479,6 +1471,9 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d névjegyek</item>
         <item quantity="other">%d névjegyek</item>

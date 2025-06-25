@@ -27,10 +27,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication.requireServiceManager
+import ch.threema.app.ThreemaApplication.Companion.requireServiceManager
 import ch.threema.app.activities.StateFlowViewModel
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.multidevice.linking.DeviceLinkingInvalidContact
 import ch.threema.app.multidevice.linking.DeviceLinkingInvalidQrCodeException
 import ch.threema.app.multidevice.linking.DeviceLinkingScannedWebQrCodeException
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
@@ -135,6 +136,7 @@ class LinkNewDeviceWizardViewModel : StateFlowViewModel() {
                             is DeviceLinkingScannedWebQrCodeException -> LinkingResult.Failure.ThreemaWebQrCode
                             is DeviceLinkingUnsupportedProtocolException -> LinkingResult.Failure.OldRendezvousProtocolVersion
                             is UnknownHostException -> LinkingResult.Failure.GenericNetwork
+                            is DeviceLinkingInvalidContact -> LinkingResult.Failure.InvalidContact(deviceLinkingStatus.throwable.identity)
                             else -> LinkingResult.Failure.Generic
                         }
                         showResultFailure(linkingResult)

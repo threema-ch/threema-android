@@ -31,9 +31,12 @@ import static com.google.common.base.Predicates.not;
 
 public class ArchitectureTestUtils {
 
+    private static final Pattern javaUnitTestPattern = Pattern.compile(".*/build/intermediates/[^/]*/[^/]*UnitTest/.*");
+    private static final Pattern kotlinUnitTestPattern = Pattern.compile(".*/build/tmp/kotlin-classes/[^/]*UnitTest/.*");
+
     static final Predicate<String> UNIT_TEST_PATTERN = input -> {
         if (input == null) return false;
-        return Pattern.compile(".*/build/intermediates/[^/]*/[^/]*UnitTest/.*").matcher(input).matches();
+        return javaUnitTestPattern.matcher(input).matches() || kotlinUnitTestPattern.matcher(input).matches();
     };
     static final Predicate<String> NOT_UNIT_TEST_PATTERN = not(UNIT_TEST_PATTERN);
 

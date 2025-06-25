@@ -2,12 +2,11 @@
   ~ Copyright (c) 2018-2025 Threema GmbH
   ~ All rights reserved.
   -->
-
-<vector android:height="24dp"
-    android:viewportHeight="252"
-    android:viewportWidth="252"
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:height="24dp"
+    android:viewportWidth="252"
+    android:viewportHeight="252">
     <path
         android:fillColor="#ffffc107"
         android:fillType="nonZero"

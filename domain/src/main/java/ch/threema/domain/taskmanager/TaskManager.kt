@@ -29,6 +29,7 @@ import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import ch.threema.domain.protocol.connection.data.toHex
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -89,7 +90,7 @@ internal interface InternalTaskManager {
     /**
      * Pause running tasks as there is no network connection.
      */
-    suspend fun pauseRunningTasks()
+    suspend fun pauseRunningTasks(closeReason: ServerSocketCloseReason)
 }
 
 /**
@@ -129,9 +130,9 @@ internal class TaskManagerImpl(
         taskRunner.value.startTaskRunner(layer5Codec, incomingMessageProcessor)
     }
 
-    override suspend fun pauseRunningTasks() {
+    override suspend fun pauseRunningTasks(closeReason: ServerSocketCloseReason) {
         if (taskRunner.isInitialized()) {
-            taskRunner.value.stopTaskRunner()
+            taskRunner.value.stopTaskRunner(closeReason)
         }
     }
 
@@ -140,6 +141,12 @@ internal class TaskManagerImpl(
 
         val done = CompletableDeferred<R>()
         CoroutineScope(dispatchers.scheduleDispatcher.coroutineContext).launch {
+            if (task is DropOnDisconnectTask && taskRunner.value.state != TaskRunner.State.RUNNING) {
+                logger.info("DropOnDisconnectTask {} won't be scheduled because there is currently no connection", task)
+                done.completeExceptionally(ConnectionUnavailableException())
+                return@launch
+            }
+
             // Enqueue the task
             taskQueue.enqueueTask(task, done)
 

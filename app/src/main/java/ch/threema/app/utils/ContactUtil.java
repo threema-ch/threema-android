@@ -46,12 +46,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Pair;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
@@ -140,7 +141,7 @@ public class ContactUtil {
     public static boolean isEchoEchoOrGatewayContact(ContactModel contactModel) {
         return contactModel != null
             && (isGatewayContact(contactModel.getIdentity())
-            || ThreemaApplication.ECHO_USER_IDENTITY.equals(contactModel.getIdentity())
+            || AppConstants.ECHO_USER_IDENTITY.equals(contactModel.getIdentity())
         );
     }
 
@@ -150,7 +151,7 @@ public class ContactUtil {
      */
     public static boolean isEchoEchoOrGatewayContact(@NonNull String identity) {
         return isGatewayContact(identity)
-            || ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
+            || AppConstants.ECHO_USER_IDENTITY.equals(identity);
     }
 
     public static boolean canReceiveVoipMessages(

@@ -25,19 +25,16 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
-import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
-import ch.threema.app.tasks.DeactivateMultiDeviceTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.protocol.connection.data.DeviceId
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.d2d.MdD2D
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 
 interface MultiDeviceManager {
@@ -51,16 +48,11 @@ interface MultiDeviceManager {
     val socketCloseListener: D2mSocketCloseListener
 
     /**
-     * Deactivate multi device:
-     * - drop all (including own) devices from device group
-     * - delete dgk
-     * - reconnect to chat server
-     * - reactivate fs TODO(ANDR-2519): Remove fs part
-     *
-     * NOTE: This method must be run from within a task, e.g. [DeactivateMultiDeviceTask].
+     * Disable multi device locally. This requires that all devices of this device group including this device have been dropped. FS must be enabled
+     * afterwards. Note that most likely callers of this method also want to restart the connection afterwards.
      */
     @WorkerThread
-    suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec)
+    fun removeMultiDeviceLocally(serviceManager: ServiceManager)
 
     @WorkerThread
     suspend fun setDeviceLabel(deviceLabel: String)
@@ -81,30 +73,10 @@ interface MultiDeviceManager {
     ): Flow<DeviceLinkingStatus>
 
     /**
-     * Drop a single device by their [deviceId] from the current device group.
-     *
-     * @param deviceId It is save to call this with a [DeviceId] that might not actually
-     * be part of the current device group anymore.
-     *
-     * @param timeout Determines how long the task for dropping the devices can
-     * take before it is cancelled. The follow up task of re-loading the remaining
-     * devices can run indefinitely. Use [Duration.INFINITE] to disable any timeout.
-     *
-     * @return [DropDeviceResult.Success] containing all remaining  linked devices
-     * **excluding** our device, [DropDeviceResult.Failure] otherwise.
-     */
-    @WorkerThread
-    suspend fun dropDevice(
-        deviceId: DeviceId,
-        taskCreator: TaskCreator,
-        timeout: Duration = 10.seconds,
-    ): DropDeviceResult
-
-    /**
      *  @return A list of all **other** devices in the current device group.
      */
     @AnyThread
-    suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>>
+    suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<Map<DeviceId, DevicesInfo.AugmentedDeviceInfo>>
 
     @AnyThread
     suspend fun setProperties(persistedProperties: PersistedMultiDeviceProperties?)
@@ -120,6 +92,10 @@ interface MultiDeviceManager {
         fsMessageProcessor: ForwardSecurityMessageProcessor,
         taskCreator: TaskCreator,
     )
+
+    // TODO(ANDR-2519): Remove when md allows fs
+    @WorkerThread
+    fun enableForwardSecurity(serviceManager: ServiceManager)
 
     companion object {
         /**

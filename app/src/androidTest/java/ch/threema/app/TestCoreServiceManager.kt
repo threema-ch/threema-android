@@ -21,14 +21,12 @@
 
 package ch.threema.app
 
-import androidx.annotation.AnyThread
+import androidx.annotation.WorkerThread
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.multidevice.LinkedDevice
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.multidevice.PersistedMultiDeviceProperties
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
-import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.stores.IdentityStore
@@ -48,6 +46,7 @@ import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.D2mProtocolVersion
 import ch.threema.domain.protocol.connection.data.DeviceId
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.protocol.multidevice.MultiDeviceProperties
@@ -57,9 +56,8 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
-import kotlin.time.Duration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -71,7 +69,7 @@ import kotlinx.coroutines.runBlocking
 
 class TestCoreServiceManager(
     override val version: AppVersion,
-    override val databaseService: DatabaseServiceNew,
+    override val databaseService: DatabaseService,
     override val preferenceStore: PreferenceStoreInterface,
     override val taskArchiver: TaskArchiver = TestTaskArchiver(),
     override val deviceCookieManager: DeviceCookieManager = TestDeviceCookieManager(),
@@ -166,8 +164,8 @@ class TestMultiDeviceManager(
     override val propertiesProvider: MultiDevicePropertyProvider = TestMultiDevicePropertyProvider,
     override val socketCloseListener: D2mSocketCloseListener = D2mSocketCloseListener { },
 ) : MultiDeviceManager {
-    @AnyThread
-    override suspend fun deactivate(serviceManager: ServiceManager, handle: ActiveTaskCodec) {
+    @WorkerThread
+    override fun removeMultiDeviceLocally(serviceManager: ServiceManager) {
         MUST_NOT_BE_CALLED()
     }
 
@@ -183,15 +181,7 @@ class TestMultiDeviceManager(
         MUST_NOT_BE_CALLED()
     }
 
-    override suspend fun dropDevice(
-        deviceId: DeviceId,
-        taskCreator: TaskCreator,
-        timeout: Duration,
-    ): DropDeviceResult {
-        MUST_NOT_BE_CALLED()
-    }
-
-    override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<List<LinkedDevice>> {
+    override suspend fun loadLinkedDevices(taskCreator: TaskCreator): Result<Map<DeviceId, DevicesInfo.AugmentedDeviceInfo>> {
         MUST_NOT_BE_CALLED()
     }
 
@@ -210,6 +200,10 @@ class TestMultiDeviceManager(
         fsMessageProcessor: ForwardSecurityMessageProcessor,
         taskCreator: TaskCreator,
     ) {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun enableForwardSecurity(serviceManager: ServiceManager) {
         MUST_NOT_BE_CALLED()
     }
 }

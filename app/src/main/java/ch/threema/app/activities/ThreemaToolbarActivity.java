@@ -26,7 +26,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -51,7 +50,9 @@ import ch.threema.app.emojis.EmojiPicker;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.EditTextUtil;
@@ -62,12 +63,15 @@ import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
 import ch.threema.localcrypto.MasterKey;
 
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
+
 /**
  * Helper class for activities that use the new toolbar
  */
 public abstract class ThreemaToolbarActivity extends ThreemaActivity implements ConnectionStateListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaToolbarActivity");
 
+    private AppBarLayout appBarLayout;
     private Toolbar toolbar;
     private View connectionIndicator;
     protected ServiceManager serviceManager;
@@ -97,8 +101,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         logger.debug("onCreate");
-
-        ConfigUtils.configureSystemBars(this);
         resetKeyboard();
 
         super.onCreate(savedInstanceState);
@@ -106,7 +108,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
         //check master key
         MasterKey masterKey = ThreemaApplication.getMasterKey();
 
-        if (masterKey != null && masterKey.isLocked()) {
+        if (masterKey.isLocked()) {
             startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
             return;
         } else {
@@ -124,14 +126,25 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
                 finish();
             }
         }
+
+        handleDeviceInsets();
+    }
+
+    /**
+     * Applies left, top and right device insets padding to the AppBarLayout {@code R.id.appbar} if present.
+     */
+    protected void handleDeviceInsets() {
+        final @Nullable AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        if (appBarLayout != null) {
+            ViewExtensionsKt.applyDeviceInsetsAsPadding(appBarLayout, InsetSides.ltr());
+        }
     }
 
     protected void initServices() {
         if (serviceManager == null) {
             serviceManager = ThreemaApplication.getServiceManager();
             if (serviceManager == null) {
-                // app is probably locked
-                Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
+                // app is probably locked. This might not be possible to ever happen
                 finish();
                 return;
             }
@@ -176,14 +189,13 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
             setContentView(layoutResource);
 
+            this.appBarLayout = findViewById(R.id.appbar);
+
             this.toolbar = findViewById(R.id.toolbar);
             if (toolbar != null) {
                 setSupportActionBar(toolbar);
             }
-            AppBarLayout appBarLayout = findViewById(R.id.appbar);
             if (appBarLayout != null) {
-                appBarLayout.addLiftOnScrollListener((elevation, backgroundColor) -> getWindow().setStatusBarColor(backgroundColor));
-
                 MaterialToolbar materialToolbar = appBarLayout.findViewById(R.id.material_toolbar);
                 if (materialToolbar != null) {
                     materialToolbar.setNavigationContentDescription(R.string.abc_action_bar_up_description);
@@ -200,6 +212,11 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
     public void setToolbar(Toolbar toolbar) {
         this.toolbar = toolbar;
+    }
+
+    @Nullable
+    public AppBarLayout getAppBarLayout() {
+        return this.appBarLayout;
     }
 
     public Toolbar getToolbar() {
@@ -220,7 +237,9 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
                     .setPositiveButton(R.string.try_again, (dialog, whichButton) -> startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY))
                     .setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
             } else {
-                this.initActivity(null);
+                if (!finishAndRestartLaterIfNotReady(this)) {
+                    this.initActivity(null);
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -328,7 +347,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     }
 
     @UiThread
-    public void openSoftKeyboard(@NonNull final EmojiPicker emojiPicker, @NonNull final EditText messageText) {
+    public void openSoftKeyboard(@NonNull final EditText messageText) {
         EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
     }
 

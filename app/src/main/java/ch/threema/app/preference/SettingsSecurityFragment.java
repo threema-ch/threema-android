@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -56,16 +57,16 @@ import ch.threema.app.activities.UnlockMasterKeyActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.PassphraseService;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
+import static ch.threema.app.preference.service.PreferenceService.LockingMech_NONE;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SettingsSecurityFragment extends ThreemaPreferenceFragment implements PasswordEntryDialog.PasswordEntryDialogClickListener, GenericAlertDialog.DialogClickListener {
@@ -240,7 +241,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
             public boolean onPreferenceClick(@NonNull Preference preference) {
                 if (MessageDigest.isEqual(preference.getKey().getBytes(), getResources().getString(R.string.preferences__masterkey_passphrase).getBytes())) {
                     Intent intent = new Intent(getActivity(), UnlockMasterKeyActivity.class);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_PASSPHRASE_CHECK, true);
+                    intent.putExtra(AppConstants.INTENT_DATA_PASSPHRASE_CHECK, true);
                     startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK);
 
                 }
@@ -263,7 +264,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                 if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
                     if (!newCheckedValue) {
                         Intent intent = new Intent(getActivity(), UnlockMasterKeyActivity.class);
-                        intent.putExtra(ThreemaApplication.INTENT_DATA_PASSPHRASE_CHECK, true);
+                        intent.putExtra(AppConstants.INTENT_DATA_PASSPHRASE_CHECK, true);
                         startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_RESET_PASSPHRASE);
 
                         setMasterKeyPreferenceText();
@@ -412,8 +413,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
             R.string.set_pin_hint,
             R.string.ok,
             R.string.cancel,
-            ThreemaApplication.MIN_PIN_LENGTH,
-            ThreemaApplication.MAX_PIN_LENGTH,
+            AppConstants.MIN_PIN_LENGTH,
+            AppConstants.MAX_PIN_LENGTH,
             R.string.set_pin_again_summary,
             InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD,
             0, PasswordEntryDialog.ForgotHintType.NONE);
@@ -471,12 +472,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                         preferenceService.setLockMechanism(PreferenceService.LockingMech_BIOMETRIC);
                     }
                     updateLockPreferences();
-                }
-
-                @Override
-                public void onAuthenticationFailed() {
-                    super.onAuthenticationFailed();
-//					Snackbar.make(fragmentView, R.string.biometric_authnetication_failed, Snackbar.LENGTH_LONG).show();
                 }
             });
             biometricPrompt.authenticate(promptInfo);

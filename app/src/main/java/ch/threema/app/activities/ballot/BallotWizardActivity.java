@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
@@ -38,10 +40,14 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import ch.threema.app.ExecutorServices;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -52,9 +58,12 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.ballot.BallotService;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.RootViewDeferringInsetsCallback;
 import ch.threema.app.ui.StepPagerStrip;
+import ch.threema.app.ui.TranslateDeferringInsetsAnimationCallback;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BallotUtil;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
@@ -95,6 +104,13 @@ public class BallotWizardActivity extends ThreemaActivity {
     private final Runnable createBallotRunnable = new Runnable() {
         @Override
         public void run() {
+            // Initialize the ballot choice api id and the order
+            for (int i = 0; i < ballotChoiceModelList.size(); i++) {
+                BallotChoiceModel ballotChoiceModel = ballotChoiceModelList.get(i);
+                ballotChoiceModel.setApiBallotChoiceId(i);
+                ballotChoiceModel.setOrder(i);
+            }
+
             BallotUtil.createBallot(
                 receiver,
                 ballotDescription,
@@ -102,7 +118,7 @@ public class BallotWizardActivity extends ThreemaActivity {
                 ballotAssessment,
                 ballotChoiceModelList,
                 new BallotId(),
-                new MessageId(),
+                MessageId.random(),
                 TriggerSource.LOCAL
             );
         }
@@ -110,8 +126,6 @@ public class BallotWizardActivity extends ThreemaActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ConfigUtils.configureSystemBars(this);
-
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
@@ -172,6 +186,39 @@ public class BallotWizardActivity extends ThreemaActivity {
 
         setDefaults();
         handleIntent();
+
+        handleDeviceInsetsAndImeAnimation();
+    }
+
+    private void handleDeviceInsetsAndImeAnimation() {
+
+        final @NonNull ViewPager viewPager = findViewById(R.id.pager);
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(viewPager, InsetSides.all());
+
+        final String tag = "ballot_wizard";
+
+        // Set inset listener that will effectively apply the final view paddings for the views affected by the keyboard
+        final @NonNull RootViewDeferringInsetsCallback rootInsetsDeferringCallback = new RootViewDeferringInsetsCallback(
+            tag,
+            null,
+            null,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+        );
+        final FrameLayout bottomContainerAnimationParent = findViewById(R.id.bottom_container_animation_parent);
+        ViewCompat.setWindowInsetsAnimationCallback(bottomContainerAnimationParent, rootInsetsDeferringCallback);
+        ViewCompat.setOnApplyWindowInsetsListener(bottomContainerAnimationParent, rootInsetsDeferringCallback);
+
+        // Set inset animation listener to temporarily push up/down the foreground control views while an IME animation is ongoing
+        final RelativeLayout bottomControlsContainer = findViewById(R.id.bottom_container);
+        final TranslateDeferringInsetsAnimationCallback keyboardAnimationInsetsCallback = new TranslateDeferringInsetsAnimationCallback(
+            tag,
+            bottomControlsContainer,
+            null,
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout(),
+            WindowInsetsCompat.Type.ime(),
+            WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+        );
+        ViewCompat.setWindowInsetsAnimationCallback(bottomControlsContainer, keyboardAnimationInsetsCallback);
     }
 
     @Override
@@ -249,7 +296,7 @@ public class BallotWizardActivity extends ThreemaActivity {
                 BallotWizardFragment1 fragment = (BallotWizardFragment1) pagerAdapter.instantiateItem(pager, pager.getCurrentItem());
                 fragment.saveUnsavedData();
                 if (this.ballotChoiceModelList.size() > 1) {
-                    ThreemaApplication.sendMessageExecutorService.execute(createBallotRunnable);
+                    ExecutorServices.getSendMessageExecutorService().execute(createBallotRunnable);
                     setResult(RESULT_OK);
                     finish();
                 } else {
@@ -381,6 +428,7 @@ public class BallotWizardActivity extends ThreemaActivity {
                     BallotChoiceModel choiceModel = new BallotChoiceModel();
                     choiceModel.setName(ballotChoiceModel.getName());
                     choiceModel.setType(ballotChoiceModel.getType());
+                    choiceModel.setApiBallotChoiceId(ballotChoiceModel.getApiBallotChoiceId());
                     this.ballotChoiceModelList.add(choiceModel);
                 }
             } catch (NotAllowedException e) {

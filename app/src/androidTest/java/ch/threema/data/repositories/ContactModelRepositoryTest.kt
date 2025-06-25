@@ -26,6 +26,7 @@ import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.testutils.TestHelpers
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
@@ -45,6 +46,7 @@ import ch.threema.testhelpers.randomIdentity
 import com.neilalexander.jnacl.NaCl
 import java.util.Date
 import junit.framework.TestCase.assertNotNull
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -53,7 +55,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
@@ -138,7 +139,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         )
     }
 
-    @Before
+    @BeforeTest
     fun before() {
         TestHelpers.setIdentity(
             ThreemaApplication.requireServiceManager(),
@@ -148,7 +149,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         // Instantiate services where MD is disabled
         this.databaseService = TestDatabaseService()
         this.coreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
@@ -159,7 +160,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         this.databaseServiceMd = TestDatabaseService()
         this.taskCodecMd = TransactionAckTaskCodec()
         this.coreServiceManagerMd = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseServiceMd,
             preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
             multiDeviceManager = TestMultiDeviceManager(
@@ -236,8 +237,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         val publicKey = nonSecureRandomArray(32)
 
         // Create contact using "old model"
-        databaseService.contactModelFactory.createOrUpdate(ContactModel(identity, publicKey))
-        databaseServiceMd.contactModelFactory.createOrUpdate(ContactModel(identity, publicKey))
+        databaseService.contactModelFactory.createOrUpdate(ContactModel.create(identity, publicKey))
+        databaseServiceMd.contactModelFactory.createOrUpdate(ContactModel.create(identity, publicKey))
 
         // Fetch contact using "new model"
         val model = contactModelRepository.getByIdentity(identity)!!
@@ -420,7 +421,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         // Create contact using "old model"
         val identity = randomIdentity()
         databaseService.contactModelFactory.createOrUpdate(
-            ContactModel(
+            ContactModel.create(
                 identity,
                 nonSecureRandomArray(32),
             ),

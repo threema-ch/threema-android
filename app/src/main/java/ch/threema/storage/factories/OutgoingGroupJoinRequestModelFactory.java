@@ -37,14 +37,14 @@ import java.util.Objects;
 import ch.threema.base.Result;
 import ch.threema.domain.models.GroupId;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 import java8.util.Optional;
 
 public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
 
-    public OutgoingGroupJoinRequestModelFactory(DatabaseServiceNew databaseServiceNew) {
-        super(databaseServiceNew, OutgoingGroupJoinRequestModel.TABLE);
+    public OutgoingGroupJoinRequestModelFactory(DatabaseService databaseService) {
+        super(databaseService, OutgoingGroupJoinRequestModel.TABLE);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
         final ContentValues contentValues = groupJoinRequestModelToContentValues(model);
         final long newId;
         try {
-            newId = this.databaseService.getWritableDatabase().insertOrThrow(
+            newId = getWritableDatabase().insertOrThrow(
                 this.getTableName(),
                 null,
                 contentValues
@@ -94,7 +94,7 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
 
     public boolean update(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel) throws SQLException {
         ContentValues contentValues = buildContentValues(outgoingGroupJoinRequestModel);
-        int rowsAffected = this.databaseService.getWritableDatabase().update(this.getTableName(),
+        int rowsAffected = getWritableDatabase().update(this.getTableName(),
             contentValues,
             OutgoingGroupJoinRequestModel.COLUMN_ID + "=?",
             new String[]{
@@ -102,7 +102,7 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
             });
 
         if (rowsAffected != 1) {
-            throw new SQLException(NO_RECORD_MSG + outgoingGroupJoinRequestModel.getId());
+            throw new SQLException(ModelFactory.noRecordsMessage(outgoingGroupJoinRequestModel.getId()));
         }
         return true;
     }
@@ -114,7 +114,7 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
      * @param values that should be changed
      */
     private void update(int id, final @NonNull ContentValues values) {
-        int rowsAffected = this.databaseService.getWritableDatabase().update(
+        int rowsAffected = getWritableDatabase().update(
             this.getTableName(),
             values,
             OutgoingGroupJoinRequestModel.COLUMN_ID + "=?",
@@ -124,19 +124,19 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
         );
 
         if (rowsAffected != 1) {
-            throw new SQLException(NO_RECORD_MSG + id);
+            throw new SQLException(ModelFactory.noRecordsMessage(id));
         }
     }
 
     public void delete(OutgoingGroupJoinRequestModel model) throws SQLException {
-        int rowsAffected = this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        int rowsAffected = getWritableDatabase().delete(this.getTableName(),
             OutgoingGroupJoinRequestModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(model.getId())
             });
 
         if (rowsAffected != 1) {
-            throw new SQLException(NO_RECORD_MSG + model.getId());
+            throw new SQLException(ModelFactory.noRecordsMessage(model.getId()));
         }
     }
 
@@ -157,7 +157,7 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
         @NonNull String selection,
         @NonNull String[] selectionArgs
     ) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().query(
+        final Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -183,7 +183,7 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
         @Nullable String selection,
         @Nullable String[] selectionArgs
     ) {
-        final Cursor cursor = this.databaseService.getReadableDatabase().query(this.getTableName(),
+        final Cursor cursor = getReadableDatabase().query(this.getTableName(),
             null,
             selection,
             selectionArgs,

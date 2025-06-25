@@ -352,4 +352,16 @@ public class NamedFileProvider extends FileProvider {
         System.arraycopy(original, 0, result, 0, newLength);
         return result;
     }
+
+    /**
+     * Get an Uri for the destination file that can be shared to other apps.
+     *
+     * @param file File to get an Uri for
+     * @param filename Desired filename for this file. Can be different from the filename of destFile
+     * @return The shareable Uri, using the 'content' scheme
+     */
+    @NonNull
+    public static Uri getShareFileUri(@NonNull Context context, @NonNull File file, @Nullable String filename) {
+        return getUriForFile(context, context.getPackageName() + ".fileprovider", file, filename);
+    }
 }

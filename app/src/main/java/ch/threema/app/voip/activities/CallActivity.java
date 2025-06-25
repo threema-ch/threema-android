@@ -22,6 +22,7 @@
 package ch.threema.app.voip.activities;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.app.utils.ShortcutUtil.EXTRA_CALLED_FROM_SHORTCUT;
 import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
@@ -86,7 +87,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.transition.ChangeBounds;
@@ -119,10 +122,11 @@ import ch.threema.app.listeners.SensorListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.SensorService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.AnimatedEllipsisTextView;
@@ -157,7 +161,6 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
-import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
@@ -318,7 +321,7 @@ public class CallActivity extends ThreemaActivity implements
     private final Runnable keepAliveTask = new Runnable() {
         @Override
         public void run() {
-            ThreemaApplication.activityUserInteract(CallActivity.this);
+            ActivityService.activityUserInteract(CallActivity.this);
             keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
         }
     };
@@ -727,15 +730,13 @@ public class CallActivity extends ThreemaActivity implements
         logScreenVisibility(this, logger);
 
         super.onCreate(savedInstanceState);
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
         // Threema services
         try {
-            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-            if (serviceManager == null) {
-                logger.error("Service manager is null");
-                finish();
-                return;
-            }
+            ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
             this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
             this.contactService = serviceManager.getContactService();
             this.userService = serviceManager.getUserService();
@@ -764,7 +765,7 @@ public class CallActivity extends ThreemaActivity implements
 
         // Set window styles for fullscreen-window size. Needs to be done before
         // adding content.
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN
             | LayoutParams.FLAG_KEEP_SCREEN_ON
             | LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -781,7 +782,7 @@ public class CallActivity extends ThreemaActivity implements
         setContentView(R.layout.activity_call);
 
         // Support notch
-        adjustWindowOffsets();
+        handleDeviceInsets();
 
         this.layoutMargin = getApplicationContext().getResources().getDimensionPixelSize(R.dimen.call_activity_margin);
 
@@ -790,15 +791,6 @@ public class CallActivity extends ThreemaActivity implements
         AccessibilityManager accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         if (accessibilityManager != null && accessibilityManager.isTouchExplorationEnabled()) {
             accessibilityEnabled = true;
-        }
-
-        // Check master key
-        final MasterKey masterKey = ThreemaApplication.getMasterKey();
-        if (masterKey != null && masterKey.isLocked()) {
-            logger.warn("Cannot start call, master key is locked");
-            LongToast.makeText(this, R.string.master_key_locked, Toast.LENGTH_LONG).show();
-            finish();
-            return;
         }
 
         // Acquire a Threema server connection
@@ -1840,38 +1832,28 @@ public class CallActivity extends ThreemaActivity implements
         this.abortWithError(VoipCallAnswerData.RejectReason.UNKNOWN);
     }
 
-    private void adjustWindowOffsets() {
-        // Support notch
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content_layout), (v, insets) -> {
-                if (!isInPictureInPictureMode) {
-                    if (insets.getDisplayCutout() != null) {
-                        logger.debug("apply cutout:"
-                            + " left = " + insets.getDisplayCutout().getSafeInsetLeft()
-                            + " top = " + insets.getDisplayCutout().getSafeInsetTop()
-                            + " right = " + insets.getDisplayCutout().getSafeInsetRight()
-                            + " bottom = " + insets.getDisplayCutout().getSafeInsetBottom()
-                        );
+    private void handleDeviceInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content_layout), (view, windowInsets) -> {
 
-                        v.setPadding(
-                            insets.getDisplayCutout().getSafeInsetLeft(),
-                            insets.getDisplayCutout().getSafeInsetTop(),
-                            insets.getDisplayCutout().getSafeInsetRight(),
-                            insets.getDisplayCutout().getSafeInsetBottom()
-                        );
-                    }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isInPictureInPictureMode) {
+                // reset notch margins for PIP
+                view.setPadding(0, 0, 0, 0);
+                return windowInsets;
+            }
 
-                    // Uncomment the following line for running screenshot tests. The notch of the
-                    // device frame is 97 pixels high and therefore we need to add this padding to
-                    // the top.
-                    // v.setPadding(0, 97, 0, 0);
-                } else {
-                    // reset notch margins for PIP
-                    v.setPadding(0, 0, 0, 0);
-                }
-                return insets;
-            });
-        }
+            final Insets insets = windowInsets.getInsetsIgnoringVisibility(
+                WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(insets.left, insets.top, insets.right, 0);
+
+            // Uncomment the following line for running screenshot tests. The notch of the
+            // device frame is 97 pixels high and therefore we need to add this padding to
+            // the top.
+            // view.setPadding(0, 97, 0, 0);
+
+            return windowInsets;
+        });
     }
 
     @Override
@@ -1880,7 +1862,7 @@ public class CallActivity extends ThreemaActivity implements
 
         super.onWindowFocusChanged(hasFocus);
 
-        adjustWindowOffsets();
+        handleDeviceInsets();
 
         getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility(getWindow()));
 
@@ -2124,7 +2106,7 @@ public class CallActivity extends ThreemaActivity implements
     }
 
     private void enterPictureInPictureMode(boolean launchedByUser) {
-        if (voipStateService.getVideoRenderMode() == VIDEO_RENDER_FLAG_NONE || this.videoViews == null) {
+        if (voipStateService == null || voipStateService.getVideoRenderMode() == VIDEO_RENDER_FLAG_NONE || this.videoViews == null) {
             return;
         }
 
@@ -2353,7 +2335,7 @@ public class CallActivity extends ThreemaActivity implements
         callerContainerSet.applyTo(callerContainer);
         constraintSet.applyTo(container);
 
-        adjustWindowOffsets();
+        handleDeviceInsets();
         adjustPipLayout();
     }
 

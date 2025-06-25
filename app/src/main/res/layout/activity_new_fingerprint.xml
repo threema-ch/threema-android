@@ -9,6 +9,7 @@
     <include layout="@layout/background_new_wizard" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/new_fingerprint_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
@@ -20,20 +21,12 @@
             android:id="@+id/wizard_icon_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:importantForAccessibility="no"
-            app:layout_constraintBottom_toBottomOf="@id/dummy_title_align_view"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/dummy_title_align_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_info_outline"
-            app:tint="@color/color_wizard_primary" />
-
-        <TextView
-            android:id="@+id/dummy_title_align_view"
-            style="@style/WizardTitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@id/wizard_welcome"
-            app:layout_constraintRight_toLeftOf="@id/wizard_welcome" />
+            app:tint="@color/md_theme_dark_primary" />
 
         <TextView
             android:id="@+id/wizard_welcome"

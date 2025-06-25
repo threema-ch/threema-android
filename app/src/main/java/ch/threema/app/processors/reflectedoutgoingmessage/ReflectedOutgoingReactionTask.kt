@@ -30,32 +30,25 @@ import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
 
 internal class ReflectedOutgoingReactionTask(
-    message: OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingContactMessageTask(
-    message,
-    Common.CspE2eMessageType.REACTION,
-    serviceManager,
+) : ReflectedOutgoingContactMessageTask<ReactionMessage>(
+    outgoingMessage = outgoingMessage,
+    message = ReactionMessage.fromReflected(outgoingMessage),
+    type = Common.CspE2eMessageType.REACTION,
+    serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
 
-    private val reactionMessage: ReactionMessage by lazy { ReactionMessage.fromReflected(message) }
-
-    override val storeNonces: Boolean
-        get() = reactionMessage.protectAgainstReplay()
-
-    override val shouldBumpLastUpdate: Boolean
-        get() = reactionMessage.bumpLastUpdate()
-
     override fun processOutgoingMessage() {
         val targetMessage: AbstractMessageModel = runCommonReactionMessageReceiveSteps(
-            reactionMessage = reactionMessage,
+            reactionMessage = message,
             receiver = messageReceiver,
             messageService = messageService,
         ) ?: return
 
         val emojiSequence: String = runCommonReactionMessageReceiveEmojiSequenceConversion(
-            emojiSequenceBytes = reactionMessage.data.emojiSequenceBytes,
+            emojiSequenceBytes = message.data.emojiSequenceBytes,
         ) ?: return
 
         messageService.saveEmojiReactionMessage(
@@ -64,7 +57,7 @@ internal class ReflectedOutgoingReactionTask(
             /* senderIdentity = */
             contactService.me.identity,
             /* actionCase = */
-            reactionMessage.data.actionCase,
+            message.data.actionCase,
             /* emojiSequence = */
             emojiSequence,
         )

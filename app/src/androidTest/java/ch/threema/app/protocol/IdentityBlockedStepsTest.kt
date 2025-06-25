@@ -25,13 +25,14 @@ import ch.threema.app.DangerousTest
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.PreferenceServiceImpl
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.PreferenceService
-import ch.threema.app.services.PreferenceServiceImpl
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.clearDatabaseAndCaches
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -46,15 +47,15 @@ import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.stores.ContactStore
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupMemberModel
 import ch.threema.storage.models.GroupModel
 import java.util.Date
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
-import org.junit.Test
 
 @DangerousTest
 class IdentityBlockedStepsTest {
@@ -74,7 +75,7 @@ class IdentityBlockedStepsTest {
     private val inNoGroup = TestContact("********")
     private val inLeftGroup = TestContact("--------")
 
-    @Before
+    @BeforeTest
     fun setup() {
         val serviceManager = ThreemaApplication.requireServiceManager()
 
@@ -84,7 +85,7 @@ class IdentityBlockedStepsTest {
 
         val databaseService = TestDatabaseService()
         val coreServiceManager = TestCoreServiceManager(
-            version = ThreemaApplication.getAppVersion(),
+            version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = serviceManager.preferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
@@ -120,7 +121,7 @@ class IdentityBlockedStepsTest {
         }
 
         addKnownContacts()
-        addGroups(serviceManager.databaseServiceNew)
+        addGroups(serviceManager.databaseService)
     }
 
     @Test
@@ -341,7 +342,7 @@ class IdentityBlockedStepsTest {
         )
     }
 
-    private fun addGroups(databaseService: DatabaseServiceNew) = runBlocking {
+    private fun addGroups(databaseService: DatabaseService) = runBlocking {
         databaseService.groupModelFactory.apply {
             create(
                 GroupModel()

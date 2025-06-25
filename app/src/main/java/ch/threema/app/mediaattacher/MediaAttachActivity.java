@@ -60,6 +60,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
@@ -71,6 +72,7 @@ import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ballot.BallotWizardActivity;
 import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.dialogs.GenericAlertDialog;
+import ch.threema.app.drafts.DraftManager;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.locationpicker.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
@@ -80,8 +82,10 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.QRCodeServiceImpl;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
@@ -93,8 +97,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.ThreemaApplication.getMessageDraft;
+import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
@@ -234,6 +237,11 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         stub.setLayoutResource(R.layout.media_attach_control_panel);
         stub.inflate();
 
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            this.findViewById(R.id.actions_container),
+            InsetSides.lbr()
+        );
+
         this.controlPanel = findViewById(R.id.control_panel);
         this.sendPanel = findViewById(R.id.send_panel);
         this.attachPanel = findViewById(R.id.attach_options_container);
@@ -261,12 +269,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
         // additional decoration
         this.moreArrowView = findViewById(R.id.more_arrow);
-        this.moreArrowView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (scrollView != null) {
-                    scrollView.smoothScrollTo(65535, 0);
-                }
+        this.moreArrowView.setOnClickListener(v -> {
+            if (scrollView != null) {
+                scrollView.smoothScrollTo(65535, 0);
             }
         });
 
@@ -573,10 +578,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         }
     }
 
-    @Override
-    public void onNo(String tag, Object data) {
-    }
-
     /* end section callback methods */
 
     /* start section attachment/sending methods */
@@ -590,13 +591,14 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     public void onEdit(final List<Uri> uriList, boolean asFiles) {
         ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uriList, this, asFiles);
         if (!mediaItems.isEmpty()) {
-            if (getMessageDraft(messageReceiver.getUniqueIdString()) != null) {
-                mediaItems.get(0).setCaption(getMessageDraft(messageReceiver.getUniqueIdString()));
+            var draft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
+            if (draft != null) {
+                mediaItems.get(0).setCaption(draft);
             }
 
             Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
             intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+            intent.putExtra(AppConstants.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
             // pass on last filter to potentially re-use it when adding more media items
             if (mediaAttachViewModel.getLastQuery() != null) {
                 IntentDataUtil.addLastMediaFilterToIntent(intent,
@@ -641,8 +643,8 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
     private void attachFromExternalCamera() {
         Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
-        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
-        intent.putExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, true);
+        intent.putExtra(AppConstants.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+        intent.putExtra(AppConstants.INTENT_DATA_PICK_FROM_CAMERA, true);
         intent.putExtra(SendMediaActivity.EXTRA_USE_EXTERNAL_CAMERA, true);
         startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
     }
@@ -690,7 +692,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     private void prepareSendFileMessage(final ArrayList<Uri> uriList) {
         Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
         intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, MediaItem.getFromUris(uriList, this, true));
-        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+        intent.putExtra(AppConstants.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
         startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
     }
 

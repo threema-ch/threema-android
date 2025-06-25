@@ -172,7 +172,6 @@
 môže byť použitý k obnoveniu vášho ID na inom zariadení. Mali by ste ho skopírovať na vhodné miesto, zdieľať ho emailom,
 alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="support">Nápoveda</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Nasledujúci textový reťazec je možné použiť spolu so zvoleným heslom na obnovenie vašeho ${app_name_short} ID.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -339,7 +338,6 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="state_dialog_status">Stav</string>
     <string name="no_recent_conversations">Žiadne konverzácie</string>
     <string name="save_changes">Uložiť</string>
-    <string name="group_created_confirm">Skupina úspešne vytvorená</string>
     <string name="creating_group">Vytváranie skupiny</string>
     <string name="updating_group">Skupina sa aktualizuje</string>
     <string name="status_create_group">Skupina vytvorená.</string>
@@ -730,7 +728,6 @@ Už ich nebude možné obnoviť.</string>
     <string name="clone_group_message">Týmto vytvoríte kópiu tejto skupiny s vami ako administrátorom. Pokračovať?</string>
     <string name="prefs_proximity_sensor">Použiť senzor priblíženia</string>
     <string name="prefs_proximity_sensor_explain">Použiť slúchadlo na prehrávanie hlasových správ, ak je snímač priblíženia zakrytý</string>
-    <string name="error_creating_group">Chyba výtvárania/aktualizácie skupiny</string>
     <string name="no_media_found_generic">V tejto konverzácii sa nenašli žiadne médiá zodpovedajúce výberu.</string>
     <string name="max_images_reached">Súčasne môže byť upravených max. %d položiek</string>
     <string name="enter_description">Prosím popíšte tu chybu/problém</string>
@@ -845,8 +842,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Uloženie veľkých mediálnych súborov do lokálnej zálohy ZIP môže zaťažiť CPU a prekročiť kapacitu úložiska vašeho zariadenia. Proces môže trvať veľmi dlho. ${app_name} nebude počas zálohovania odosielať ani prijímať žiadne správy. Chcete pokračovať?</string>
     <string name="backup_data_cancelled">Záloha prerušená</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Nepodarilo sa spustiť ${app_name}. Vypnite prosím zariadenie a znovu ho zapnite.</string>
     <string name="message_sent">Správa odoslaná</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">${app_name_short} hovor</string>
@@ -1211,9 +1206,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="permission_camera_videocall_required">Pre video hovory prosím povoľte prístup k fotoaparátu</string>
     <string name="tooltip_voip_enable_speakerphone">Kliknutím sem zapnete reproduktor</string>
     <string name="ballot_open">Otvorené ankety</string>
-    <string name="translators">Prekladatelia</string>
-    <string name="credits">Kredity</string>
-    <string name="translators_thanks">Veľké poďakovanie našim dobrovoľným prekladateľom:\n%s</string>
     <string name="ballot_window_hide">Skryť otvorené ankety</string>
     <string name="ballot_window_show">Zobraziť otvorené ankety</string>
     <string name="single_ballot_really_delete">Odstrániť túto anketu</string>
@@ -1549,7 +1541,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="prefs_summary_hibernation_api">Ak chcete zabrániť tomu, aby systém po dlhšej nečinnosti pozastavil aplikáciu ${app_name}, vypnite systémové nastavenie „Odstrániť povolenia, ak sa nepoužíva“.</string>
     <string name="unable_to_fetch_configuration">Nie je možné načítať údaje z konfiguračného servera. Skúste to znova neskôr.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Bolo zistené pripojenie z iného zariadenia s rovnakým ${app_name_short} ID. Použili ste nedávno svoje ${app_name_short} ID na inom zariadení? <br><br> Ak áno, môžete túto správu ignorovať. <br><br> Ak ste tak neurobili, váš súkromný kľúč môže byť ohrozený. Pred vytvorením nového identifikátora <a href="https://threema.ch/en/faq/another_connection">postupujte podľa našich návrhov</a> na ochranu svojho zariadenia a údajov.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Bolo zistené pripojenie z iného zariadenia s rovnakým ${app_name_short} ID. Použili ste nedávno svoje ${app_name_short} ID na inom zariadení? <br><br> Ak áno, môžete túto správu ignorovať. <br><br> Ak ste tak neurobili, váš súkromný kľúč môže byť ohrozený. Pred vytvorením nového identifikátora <a href="https://threema.com/faq/another_connection">postupujte podľa našich návrhov</a> na ochranu svojho zariadenia a údajov.]]></string>
     <string name="fetch2_failure">Synchronizácia so serverom poskytovania zlyhala.</string>
     <string name="no_members_support_group_calls">V tejto skupine nie sú žiadni ďalší členovia, ktorí by mohli prijímať skupinové hovory</string>
     <string name="group_calls">Skupinové hovory</string>
@@ -1687,8 +1679,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Používanie batérie aplikácie nastavené na \"optimalizované\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikácia nemá povolené udržiavať trvalé pripojenie k serverom, ktoré je potrebné na fungovanie služby ${app_name_short} Push. Keď je aplikácia na pozadí, nebudete informovaní o nových správach. Ak to chcete napraviť, klepnite v informáciach o aplikácii na položku \"Batéria\" a vyberte možnosť \"Neobmedzené\".</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
     <string name="problemsolver_to_settings">K nastaveniam</string>
     <string name="prefs_advanced_options">Rozšírené možnosti</string>
     <string name="push_service">Služba Push</string>
@@ -1749,6 +1741,9 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

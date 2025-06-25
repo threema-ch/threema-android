@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="1dp"
-    android:fitsSystemWindows="true">
+    android:elevation="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/permission_container"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/media_grid_recycler"
         app:layout_constraintLeft_toLeftOf="@id/media_grid_recycler"
         app:layout_constraintRight_toRightOf="@id/media_grid_recycler"
@@ -26,14 +25,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:gravity="center_horizontal"
-            android:textAlignment="center"
-            android:textAppearance="@style/Threema.TextAppearance.Emptyview"
-            android:textColor="@android:color/white"
-            android:text="@string/enable_storage_access_for_media"
             android:shadowColor="@android:color/black"
             android:shadowDx="2"
             android:shadowDy="2"
             android:shadowRadius="3"
+            android:text="@string/enable_storage_access_for_media"
+            android:textAlignment="center"
+            android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+            android:textColor="@android:color/white"
             app:layout_constraintBottom_toTopOf="@+id/permission_button"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -67,48 +66,48 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@id/bottom_sheet"
+                style="?attr/bottomSheetStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                style="?attr/bottomSheetStyle"
+                android:layout_gravity="center"
+                android:clipToPadding="false"
                 android:elevation="1dp"
                 app:behavior_hideable="true"
                 app:behavior_saveFlags="all"
-                android:clipToPadding="false"
-                android:layout_gravity="center"
                 app:layout_behavior="@string/bottom_sheet_behavior">
 
                 <ImageView
-                    style="@style/Threema.BottomSheet.DragHandle"
                     android:id="@+id/drag_handle"
-                    android:layout_height="wrap_content"
+                    style="@style/Threema.BottomSheet.DragHandle"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:importantForAccessibility="no"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <include
-                    layout="@layout/notice_select_media_permission"
                     android:id="@+id/select_media_permission_notice_container"
+                    layout="@layout/notice_select_media_permission"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginTop="@dimen/notice_views_vertical_margin"
+                    android:layout_marginRight="8dp"
                     android:layout_marginBottom="@dimen/notice_views_vertical_margin"
                     android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@id/media_grid_recycler"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/drag_handle"
-                    app:layout_constraintBottom_toTopOf="@id/media_grid_recycler" />
+                    app:layout_constraintTop_toBottomOf="@id/drag_handle" />
 
                 <ch.threema.app.ui.EmptyRecyclerView
                     android:id="@+id/media_grid_recycler"
-                    android:layout_height="0dp"
                     android:layout_width="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_height="0dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="@dimen/grid_unit_x1"
+                    android:paddingTop="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -124,56 +123,66 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorSurface"
             android:visibility="invisible"
-            app:elevation="0dp">
+            app:elevation="0dp"
+            tools:visibility="visible">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                style="@style/Threema.ToolbarStyle"
+            <FrameLayout
+                android:id="@+id/toolbar_wrapper"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:menu="@menu/activity_media_attach"
-                app:navigationIcon="@drawable/ic_chevron_down_slightly_bigger"
-                app:navigationIconTint="?attr/colorOnSurface">
+                android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:id="@+id/toolbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:clickable="false"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless">
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/toolbar"
+                    style="@style/Threema.ToolbarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:menu="@menu/activity_media_attach"
+                    app:navigationIcon="@drawable/ic_chevron_down_slightly_bigger"
+                    app:navigationIconTint="?attr/colorOnSurface">
 
-                    <TextView
-                        style="@style/Threema.TextAppearance.Toolbar.Title"
-                        android:id="@+id/toolbar_title_textview"
+                    <LinearLayout
+                        android:id="@+id/toolbar_title"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="?attr/colorOnBackground"
-                        android:textSize="20sp"
-                        android:ellipsize="middle" />
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="false"
+                        android:focusable="true"
+                        android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/dropdown_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        app:srcCompat="@drawable/ic_arrow_down_filled"
-                        app:tint="?attr/colorOnBackground"
-                        android:visibility="invisible"
-                        android:contentDescription="@string/filter_by_album" />
+                        <TextView
+                            android:id="@+id/toolbar_title_textview"
+                            style="@style/Threema.TextAppearance.Toolbar.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:ellipsize="middle"
+                            android:textColor="?attr/colorOnBackground"
+                            android:textSize="20sp"
+                            tools:text="Gallery" />
 
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/dropdown_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/filter_by_album"
+                            android:visibility="invisible"
+                            app:srcCompat="@drawable/ic_arrow_down_filled"
+                            app:tint="?attr/colorOnBackground"
+                            tools:visibility="visible" />
 
-            </com.google.android.material.appbar.MaterialToolbar>
+                    </LinearLayout>
+
+                </com.google.android.material.appbar.MaterialToolbar>
+
+            </FrameLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 
         <ViewStub
             android:id="@+id/stub"
-            android:inflatedId="@+id/control_panel"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/control_panel_height"
-            android:layout_gravity="bottom" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:inflatedId="@+id/control_panel" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -196,25 +205,32 @@
             android:background="@color/preview_navigation_area_bg"
             app:elevation="0dp">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/preview_toolbar"
-                style="@style/Threema.ToolbarStyle"
+            <FrameLayout
+                android:id="@+id/preview_toolbar_wrapper"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
-                app:navigationIcon="@drawable/ic_arrow_left"
-                app:navigationIconTint="@android:color/white">
+                android:layout_height="wrap_content">
 
-                <ch.threema.app.ui.CheckableView
-                    android:id="@+id/check_box"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="top|right"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginRight="16dp"
-                    android:background="@drawable/selector_grid_checkbox" />
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/preview_toolbar"
+                    style="@style/Threema.ToolbarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@android:color/transparent"
+                    app:navigationIcon="@drawable/ic_arrow_left"
+                    app:navigationIconTint="@android:color/white">
 
-            </com.google.android.material.appbar.MaterialToolbar>
+                    <ch.threema.app.ui.CheckableView
+                        android:id="@+id/check_box"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="top|right"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginRight="16dp"
+                        android:background="@drawable/selector_grid_checkbox" />
+
+                </com.google.android.material.appbar.MaterialToolbar>
+
+            </FrameLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 

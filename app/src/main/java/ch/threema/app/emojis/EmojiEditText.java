@@ -30,6 +30,7 @@ import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.ThreemaEditText;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
@@ -102,7 +103,12 @@ public class EmojiEditText extends ThreemaEditText {
 
         // fix reverse selections
         getText().replace(Math.min(start, end), Math.max(start, end), emojiCodeString);
-        setSelection(start + emojiCodeString.length());
+
+        final int newEnd = start + emojiCodeString.length();
+        if (newEnd <= length()) {
+            // move cursor after newly inserted emoji. it may be that nothing was inserted because of filters
+            setSelection(newEnd);
+        }
     }
 
     /**
@@ -134,15 +140,7 @@ public class EmojiEditText extends ThreemaEditText {
     }
 
 
-    private final TextWatcher textLengthWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
+    private final TextWatcher textLengthWatcher = new SimpleTextWatcher() {
         @Override
         public void afterTextChanged(Editable s) {
             if (s != null) {

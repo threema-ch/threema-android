@@ -7,9 +7,6 @@
     <string name="webclient_created_at">作成: %1$s (%2$s)</string>
     <string name="webclient_active_since">%sから有効</string>
     <string name="webclient_enable">Threema Webを有効化</string>
-    <string name="webclient_no_sessions_found">接続するために
-<b>%s</b>
-をあなたのパソコンのブラウザで開き、下のボタンをタップして、コードをスキャンしてください。</string>
     <string name="webclient_session_rename">セッション名を編集</string>
     <string name="webclient_session_label">新しい名前</string>
     <string name="webclient_session_start">セッション開始</string>
@@ -41,5 +38,6 @@
     <string name="webclient_diagnostics_start">開始</string>
     <string name="webclient_diagnostics_intro">テストを開始するために«開始»をタップしてください</string>
     <string name="webclient_diagnostics_done">完了しました。Threema Webの接続構築に問題が発生した場合は、このログをThreemaサポートに送ってください。</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">誤ったQRコード</string>
     <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
 </resources>

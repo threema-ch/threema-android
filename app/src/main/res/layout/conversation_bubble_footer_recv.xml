@@ -11,8 +11,7 @@
     android:minHeight="16sp"
     android:orientation="horizontal"
     android:paddingLeft="@dimen/chat_bubble_margin_start"
-    android:paddingRight="@dimen/chat_bubble_margin_end"
-    tools:background="@color/bubble_receive">
+    android:paddingRight="@dimen/chat_bubble_margin_end">
 
     <TextView
         android:id="@+id/edited_text"
@@ -22,6 +21,7 @@
         android:layout_gravity="bottom"
         android:layout_marginRight="4dp"
         android:layout_weight="1.0"
+        android:alpha="0.6"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="@string/edited"
@@ -33,6 +33,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:layout_gravity="center_vertical"
+        android:alpha="0.6"
         android:paddingRight="3dp"
         android:visibility="gone"
         app:tint="@color/bubble_receive_text_colorstatelist"
@@ -45,6 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
+        android:alpha="0.6"
         android:ellipsize="none"
         android:singleLine="true"
         tools:text="11.11.2024" />
@@ -54,6 +56,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:layout_gravity="center_vertical"
+        android:alpha="0.6"
         android:importantForAccessibility="no"
         android:padding="3dp"
         android:visibility="gone"

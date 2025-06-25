@@ -39,7 +39,7 @@ class OutgoingGroupSetupTask(
 ) : OutgoingCspGroupControlMessageTask(serviceManager) {
     override val type: String = "OutgoingGroupSetupTask"
 
-    override val messageId = messageId ?: MessageId()
+    override val messageId = messageId ?: MessageId.random()
 
     override fun createGroupMessage() = GroupSetupMessage().also {
         it.members = memberIdentities.toTypedArray()

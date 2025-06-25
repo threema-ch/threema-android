@@ -64,6 +64,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.camera.CameraActivity;
@@ -74,7 +75,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_DEFAULT_PATH;
 import static ch.threema.app.utils.StreamUtilKt.getFromUri;
 
@@ -246,8 +247,8 @@ public class FileUtil {
     public static void forwardMessages(Context context, Class<?> targetActivity, List<AbstractMessageModel> messageModels) {
         Intent intent = new Intent(context, targetActivity);
 
-        intent.setAction(ThreemaApplication.INTENT_ACTION_FORWARD);
-        intent.putExtra(ThreemaApplication.INTENT_DATA_IS_FORWARD, true);
+        intent.setAction(AppConstants.INTENT_ACTION_FORWARD);
+        intent.putExtra(AppConstants.INTENT_DATA_IS_FORWARD, true);
         IntentDataUtil.appendMultiple(messageModels, intent);
 
         context.startActivity(intent);
@@ -302,7 +303,7 @@ public class FileUtil {
         String dataDir = Environment.getDataDirectory().toString();
         ArrayList<Uri> validatedUris = new ArrayList<>();
 
-        if (uris != null && uris.size() > 0) {
+        if (uris != null && !uris.isEmpty()) {
             for (Uri uri : uris) {
                 try {
                     if (uri != null) {
@@ -875,7 +876,7 @@ public class FileUtil {
      * path traversals.
      *
      * @param context the context
-     * @param path the path that will be checked
+     * @param path    the path that will be checked
      * @return {@code false} if the provided path is null, contains unresolvable path traversals, or
      * resides inside the internal data directory
      */

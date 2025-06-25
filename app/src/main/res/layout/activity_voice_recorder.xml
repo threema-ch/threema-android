@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parent_layout"
@@ -13,12 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/colorBackground"
-        android:orientation="vertical"
         android:clipToPadding="false"
+        android:elevation="2dp"
+        android:orientation="vertical"
         android:outlineProvider="bounds"
         app:behavior_hideable="false"
         app:behavior_saveFlags="all"
-        android:elevation="2dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <SeekBar
@@ -42,19 +41,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
+                android:animateLayoutChanges="true"
                 android:divider="?android:attr/dividerVertical"
                 android:dividerPadding="12dp"
                 android:orientation="horizontal"
-                android:showDividers="middle"
-                android:animateLayoutChanges="true">
+                android:showDividers="middle">
 
                 <ImageView
-                    style="?android:attr/borderlessButtonStyle"
                     android:id="@+id/discard_button"
+                    style="?android:attr/borderlessButtonStyle"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="8dp"
                     android:background="@drawable/selector_compose_button"
                     android:clickable="true"
                     android:contentDescription="@string/discard"
@@ -65,8 +64,8 @@
                     app:tint="?attr/colorOnSurface" />
 
                 <ImageView
-                    style="?android:attr/borderlessButtonStyle"
                     android:id="@+id/play_button"
+                    style="?android:attr/borderlessButtonStyle"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
@@ -80,8 +79,8 @@
                     app:tint="?attr/colorOnSurface" />
 
                 <ImageView
-                    style="?android:attr/borderlessButtonStyle"
                     android:id="@+id/pause_button"
+                    style="?android:attr/borderlessButtonStyle"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
@@ -153,8 +152,8 @@
             </FrameLayout>
 
             <ImageView
-                style="?android:attr/borderlessButtonStyle"
                 android:id="@+id/bluetooth_toggle"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerVertical="true"
@@ -169,13 +168,13 @@
                 app:tint="?attr/colorOnSurface" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Threema.MaterialButton.Icon.Circle.Filled.Small"
                 android:id="@+id/send_button"
+                style="@style/Threema.MaterialButton.Icon.Circle.Filled.Small"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginRight="8dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
                 android:clickable="true"
                 android:contentDescription="@string/send"
                 android:focusable="true"

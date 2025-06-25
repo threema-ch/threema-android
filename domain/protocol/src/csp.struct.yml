@@ -737,18 +737,22 @@ payload: &payload
       17. If `inner-type` is `0xa0` (i.e. FS encapsulation within FS
           encapsulation), log a warning, _Acknowledge_ and discard the message
           and abort these steps.
-      18. If `inner-type` is not exempted from blocking, run the _Identity
-          Blocked Steps_ for `sender-identity`. If the result indicates that
-          `sender-identity` is blocked, _Acknowledge_ and discard the message
-          and abort these steps.
-      19. If `sender-identity` equals `*3MAPUSH`:
+      18. If `inner-type` has dedicated blocking exemption steps, run these with
+          `sender-identity` and `inner-message`. If the result indicates that
+          the message should be discarded, _Acknowledge_ the message and abort
+          these steps.
+      19. If `inner-type` does not have dedicated blocking exemption steps and
+          is not exempted from blocking, run the _Identity Blocked Steps_ for
+          `sender-identity`. If the result indicates that `sender-identity` is
+          blocked, _Acknowledge_ and discard the message and abort these steps.
+      20. If `sender-identity` equals `*3MAPUSH`:
           1. If `inner-type` is not `0xfe`, log a warning,
              _Acknowledge_ and discard the message and abort these steps.
           2. Run the receive steps associated to `inner-type` with
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      20. If `sender-identity` is not a _Special Contact_:
+      21. If `sender-identity` is not a _Special Contact_:
           1. If `inner-metadata.nickname` is defined, let `nickname` be the
              value of `inner-metadata.nickname`.¹
           2. If `inner-metadata` is not defined and _User Profile Distribution_
@@ -779,29 +783,29 @@ payload: &payload
           5. Lookup the contact associated to `sender-identity` and let
              `contact` be the result (at this point, `contact` must exist).
           6. (MD) If the contact's nickname is different to `nickname`:
-            1. Begin a transaction with scope `CONTACT_SYNC` and the
-                following precondition:
-                1. If the contact no longer exists, log an error and
-                  exceptionally abort these steps and the connection.
-            2. Reflect a `ContactSync.Update` with `contact` including the
-               new `nickname`.
-            3. Commit the transaction and await acknowledgement.
+              1. Begin a transaction with scope `CONTACT_SYNC` and the
+                 following precondition:
+                 1. If the contact no longer exists, log an error and
+                    exceptionally abort these steps and the connection.
+              2. Reflect a `ContactSync.Update` with `contact` including the
+                 new `nickname`.
+              3. Commit the transaction and await acknowledgement.
           7. Update the contact's nickname with `nickname`. Remove the
              contact's nickname if `nickname` is empty.
           8. Run the receive steps associated to `inner-type` with
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      21. (MD) If the properties associated to `inner-type` require
+      22. (MD) If the properties associated to `inner-type` require
           reflecting incoming messages, reflect a `d2d.IncomingMessage` from
           `outer-type` and `outer-message` and the associated conversation to
           other devices and wait for reflection acknowledgement.² If this fails,
           exceptionally abort these steps and the connection.³
-      22. _Acknowledge_ the message.⁴
-      23. If the properties associated to `type` do not require sending
+      23. _Acknowledge_ the message.⁴
+      24. If the properties associated to `type` do not require sending
           automatic delivery receipts or `flags` contains the _no
           automatic delivery receipts_ (`0x80`) flag, abort these steps.
-      24. Run the _Bundled Messages Send Steps_ with the following properties:
+      25. Run the _Bundled Messages Send Steps_ with the following properties:
           - `id` being a random message ID,
           - `created-at` set to the current timestamp,
           - `receivers` set to `contact`,
@@ -1787,6 +1791,82 @@ e2e: &e2e
        3. Commit the transaction and await acknowledgement.
        4. Persist the `change` to the group (again).
 
+    ### Device Flows
+
+    #### Deactivate Multi-Device Flow
+
+    The following steps must be invoked when the user wants to deactivate
+    multi-device and continue using the current device.
+
+    1. Run the _Drop Devices Steps_ with the intent to _deactivate_
+       multi-device and keep the user informed regarding the process status and
+       any encountered issues.
+
+    #### Drop Own Device Flow
+
+    The following steps must be invoked when the user wants to stop using the
+    current device.
+
+    1. If the device does not have multi-device enabled, log an error and
+       abort these steps.
+    2. Begin a transaction (scope: `DROP_DEVICE`, precondition: none).
+    3. Send a `DropDevice` with this device's Device ID.
+    4. Await the corresponding `DropDeviceAck` or the connection closing with
+       close code `4113`.
+    5. TODO(SE-494): Enter read-only mode persistently.
+
+    #### Drop Other Devices Flow
+
+    The following steps must be invoked when the user wants to drop one or more
+    other devices from the device group.
+
+    1. Let `device-ids-to-drop` be a set of Device IDs that should be
+       dropped from the device group.
+    2. If this device's Device ID is contained in `device-ids-to-drop`,
+       log an error and abort these steps.
+    3. Run the _Drop Devices Steps_ with the intent to _drop specific_
+       `device-ids-to-drop` and keep the user informed regarding the process
+       status and any encountered issues.
+
+    #### Drop Devices Steps
+
+    The following steps are defined as the _Drop Devices Steps_:
+
+    1.  If the device does not have multi-device enabled¹, run the
+        _Application Setup Steps_ step 2.2. through 2.6. and abort these steps.
+        TODO(SE-199): This shall be removed once multi-device supports FS.
+    2.  Let `intent` be the intent which can be either to _deactivate_
+        multi-device or _drop specific_ devices, letting `device-ids-to-drop` be
+        that set of specific Device IDs.
+    3.  If `device-ids-to-drop` is defined:
+        1. If `device-ids-to-drop` is empty, log an error and abort these steps.
+        2. If `device-ids-to-drop` contains this device's Device ID, log
+           an error and abort these steps.
+    4.  Begin a transaction  (scope: `DROP_DEVICE`, precondition: none).
+    5.  Send a `GetDevicesInfo` message.
+    6.  Await the `DevicesInfo` message and let `other-device-ids` be a set of
+        the contained Device IDs excluding this device's Device ID.
+    7.  If `device-ids-to-drop` is defined, remove each Device ID from
+        `device-ids-to-drop` that is not present in `other-device-ids`.
+    8.  If `device-ids-to-drop` is not defined, define it to be a copy of
+        `other-device-ids`.
+    9.  Send a `DropDevice` message for each Device ID of `device-ids-to-drop`.
+    10. Await all corresponding `DropDeviceAck`s of each Device ID in
+        `device-ids-to-drop`.
+    11. If `device-ids-to-drop` contains the same Device IDs as
+        `other-device-ids` (i.e. all other devices but this device have been
+        dropped):
+        1. Send a `DropDevice` with this device's Device ID.
+        2. Await the corresponding `DropDeviceAck` or the connection closing
+           with close code `4113`.
+        3. Disable multi-device and purge any existing device group data.
+        4. Run the _Application Setup Steps_ step 2.2. through 2.6.
+           TODO(SE-199): This shall be removed once multi-device supports FS.
+
+    ¹: This can happen if the steps are run within a persistent task that is
+    aborted before reactivating FS successfully. TODO(SE-199): This shall be
+    removed once multi-device supports FS.
+
     ### Sending
 
     The following steps are defined as the _Bundled Messages Send Steps_ and
@@ -2131,7 +2211,7 @@ e2e: &e2e
     ¹: There should be no receivers in a distribution list that have
     acquaintance level _deleted_, so the filtering is only done for safety.
 
-    2: This is intentionally done only for MD since the user may e.g.
+    ²: This is intentionally done only for MD since the user may e.g.
     immediately archive a conversation after submitting a message. This results
     in both the message and the distribution list sync being queued as tasks
     whereas in the non-MD case only the message task would be queued. In the MD
@@ -2148,9 +2228,13 @@ e2e: &e2e
 
     1. Look up the group.
     2. If the group could not be found:
-       1. If the user is not the creator of the group, run the _Group Sync
-          Request Steps_.
-       2. Discard the message and abort these steps.
+       1. If the user is the creator of the group, discard the message and abort
+          these steps.
+       2. Run the _Identity Blocked Steps_ for the creator of the group. If
+          the result indicates that the creator is blocked, discard the message
+          and abort these steps.
+       3. Run the _Group Sync Request Steps_ for the group, discard the
+          message and abort these steps.
     3. If the group is marked as _left_:
        1. If the user is the creator of the group, run the _Bundled Messages
           Send Steps_ with the following properties:
@@ -2224,6 +2308,16 @@ e2e: &e2e
     When Multi-Device is activated, all Blobs must be downloaded via the
     respective Blob Mirror unless explicitly stated otherwise.
 
+    The following steps are defined as the _Blob Credentials Refresh Steps_:
+
+    1. Let `credentials` be the most recently used cached blob credentials.
+    2. If `credentials` is defined and is not yet expired, return `credentials`.
+    3. Request Blob Server Credentials via the Directory Server API and set
+      `credentials` to the result. If no credentials could be obtained within 10s
+      or the request was unsuccessful, exceptionally abort these steps.
+    4. Cache `credentials` with the provided expiration date.
+    5. Return `credentials`.
+
     #### Upload
 
     The following steps are defined as the _Blob Upload Steps_:
@@ -2233,12 +2327,14 @@ e2e: &e2e
        - `scope` being either _public_ (for public facing blobs) or _local_ (for
            device group facing blobs).
        - `persist` being a mark (primarily for usage within groups).
-    2. (non-MD) Upload to the blob server from `blob`.
-    3. (MD) Upload to the blob mirror server from `blob` and the device group
-       information.
-    4. If the upload stream stalls for more than 10s, exceptionally abort these
+    2. Run the _Blob Credentials Refresh Steps_ and let `credentials` be the
+       result.
+    3. (non-MD) Upload to the blob server from `blob` and `credentials`.
+    4. (MD) Upload to the blob mirror server from `blob`, `credentials` and the
+       device group information.
+    5. If the upload stream stalls for more than 10s, exceptionally abort these
        steps.
-    5. Return the resulting blob ID.
+    6. Return the resulting blob ID.
 
     #### Download
 
@@ -2248,19 +2344,25 @@ e2e: &e2e
        - `id` being the blob ID,
        - `scope` being either _public_ (for public facing blobs) or _local_ (for
            device group facing blobs).
-    2. (non-MD) Download the blob data from the blob server using `blob`.
-    3. (MD) Download the blob data from the blob mirror server using `blob` and
-       the device group information.
-    4. If the download stream stalls for more than 10s, exceptionally abort
+    2. Run the _Blob Credentials Refresh Steps_ and let `credentials` be the
+       result.
+    3. (non-MD) Download the blob data from the blob server using `blob` and
+       `credentials`.
+    4. (MD) Download the blob data from the blob mirror server using `blob`,
+       `credentials` and the device group information.
+    5. If the download stream stalls for more than 10s, exceptionally abort
        these steps.
-    5. Schedule a volatile background task to run the following steps:
-       1. (non-MD) Request to mark the blob download from the blob server of
-          `blob.id` as _done_.
-       2. (MD) Request to mark the blob download from the blob mirror server of
-          `blob.id` as _done_ with the device group information.
-       3. If no response could be obtained within 10s or the request was
+    6. Schedule a volatile background task to run the following steps:
+       1. Run the _Blob Credentials Refresh Steps_ and let `credentials` be the
+          result.
+       2. (non-MD) Request to mark the blob download from the blob server of
+          `blob.id` as _done_ with `credentials`.
+       3. (MD) Request to mark the blob download from the blob mirror server of
+          `blob.id` as _done_ with `credentials` and the device group
+          information.
+       4. If no response could be obtained within 10s or the request was
           unsuccessful, log a warning.
-    6. Return the resulting blob data.
+    7. Return the resulting blob data.
 
     ### Image, Audio, Video vs. File
 
@@ -3667,13 +3769,13 @@ e2e: &e2e
       3. Update the poll with the provided choices of the sender.
     fields:
       - _doc: |-
-          ID of the associated poll.
-        name: poll-id
-        type: *poll-id
-      - _doc: |-
           The Threema ID of the creator of the poll.
         name: creator-identity
         type: *identity
+      - _doc: |-
+          ID of the associated poll.
+        name: poll-id
+        type: *poll-id
       - _doc: |-
           UTF-8, JSON-encoded list containing one or more choice tuples. Each
           choice tuple contains the following two integer values:
@@ -4448,7 +4550,7 @@ e2e: &e2e
       - Kind: Group
       - Flags: None
       - User profile distribution: Yes
-      - Exempt from blocking: Yes
+      - Exempt from blocking: See dedicated steps
       - Implicit _direct_ contact creation: Yes
       - Protect against replay: Yes
       - Unarchive: No¹
@@ -4477,8 +4579,20 @@ e2e: &e2e
       received, re-sending the group state, implicitly triggered by FS `Reject`
       receive steps.
 
-      When receiving this message as a group message (wrapped by
+      The following steps are the dedicated blocking exemption steps for this
+      message as a group message (wrapped by
       [`group-creator-container`](ref:e2e.group-creator-container)):
+
+      1. Look up the group.
+      2. If the group could be found, return that the message passed the
+         blocking check.
+      3. Run the _Identity Blocked Steps_ for the creator. If the result
+         indicates that the creator is not blocked, return that the message
+         passed the blocking check. Otherwise return that the message needs to
+         be discarded.
+
+        When receiving this message as a group message (wrapped by
+        [`group-creator-container`](ref:e2e.group-creator-container)):
 
       1. Let `members` be the given member list. Remove all duplicate entries
          from `members`. Remove the sender (creator) from `members` if present.
@@ -4678,7 +4792,10 @@ e2e: &e2e
       3. If the group could not be found or is marked as _left_:
           1. If the user is the creator of the group (as alleged by the
              message), discard the message and abort these steps.
-          2. Run the _Group Sync Request Steps_ for the group, discard the
+          2. Run the _Identity Blocked Steps_ for the creator of the group. If
+             the result indicates that the creator is blocked, discard the
+             message and abort these steps.
+          3. Run the _Group Sync Request Steps_ for the group, discard the
              message and abort these steps.
       4. Let `group` be a snapshot of the current group state.
       5. If `group.members` does not include the sender, discard the message and

@@ -57,7 +57,7 @@ public class ReConnectJobService extends JobService {
                 }
 
                 if (!isStopped) {
-                    boolean success = pollingHelper.poll(true) || (ThreemaApplication.getMasterKey() != null && ThreemaApplication.getMasterKey().isLocked());
+                    boolean success = pollingHelper.poll(true) || ThreemaApplication.getMasterKey().isLocked();
 
                     if (!isStopped) {
                         try {

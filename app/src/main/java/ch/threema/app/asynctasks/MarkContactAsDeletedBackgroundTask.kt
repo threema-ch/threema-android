@@ -25,6 +25,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.annotation.CallSuper
 import androidx.fragment.app.FragmentManager
+import ch.threema.app.GlobalListeners
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.asynctasks.AndroidContactLinkPolicy.KEEP
@@ -35,6 +36,7 @@ import ch.threema.app.dialogs.CancelableHorizontalProgressDialog
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
+import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.IdListService
 import ch.threema.app.services.RingtoneService
@@ -52,7 +54,8 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel
 import java.lang.ref.WeakReference
 
@@ -72,10 +75,10 @@ data class DeleteContactServices(
     val profilePicRecipientsService: IdListService,
     val wallpaperService: WallpaperService,
     val fileService: FileService,
-    val excludeService: IdListService,
+    val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService,
     val dhSessionStore: DHSessionStoreInterface,
     val notificationService: NotificationService,
-    val databaseService: DatabaseServiceNew,
+    val databaseService: DatabaseService,
 )
 
 /**
@@ -133,7 +136,7 @@ open class MarkContactAsDeletedBackgroundTask(
         // TODO(ANDR-2327): This is a hack that may be removed when we have implemented contact
         //  import.
         RuntimeUtil.runOnUiThread {
-            ThreemaApplication.onAndroidContactChangeLock.lock()
+            GlobalListeners.onAndroidContactChangeLock.lock()
         }
     }
 
@@ -172,12 +175,12 @@ open class MarkContactAsDeletedBackgroundTask(
 
     @CallSuper
     override fun runAfter(result: Set<String>) {
-        ThreemaApplication.onAndroidContactChangeLock.unlock()
+        GlobalListeners.onAndroidContactChangeLock.unlock()
 
         when (syncPolicy) {
             EXCLUDE -> {
                 for (deletedIdentity in result) {
-                    deleteContactServices.excludeService.add(deletedIdentity)
+                    deleteContactServices.excludedSyncIdentitiesService.excludeFromSync(deletedIdentity, TriggerSource.LOCAL)
                 }
             }
 

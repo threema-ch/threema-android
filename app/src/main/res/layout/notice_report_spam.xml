@@ -10,22 +10,22 @@
         android:id="@+id/notice_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/notice_views_vertical_margin"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginTop="@dimen/notice_views_vertical_margin"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="@dimen/notice_views_vertical_margin"
         android:clickable="false"
         android:orientation="vertical"
         android:outlineProvider="none"
         android:visibility="visible"
-        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerHighest"
         app:cardCornerRadius="@dimen/cardview_border_radius"
         app:cardElevation="@dimen/notice_views_elevation"
-        app:strokeWidth="0dp"
+        app:contentPaddingBottom="12dp"
         app:contentPaddingLeft="16dp"
         app:contentPaddingRight="8dp"
         app:contentPaddingTop="12dp"
-        app:contentPaddingBottom="12dp">
+        app:strokeWidth="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -38,11 +38,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
                 android:text="@string/spam_first_contact"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/button_report_spam"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textColor="?attr/colorOnBackground" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_report_spam"

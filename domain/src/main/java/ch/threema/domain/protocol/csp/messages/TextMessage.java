@@ -123,6 +123,14 @@ public class TextMessage extends AbstractMessage {
     }
 
     @NonNull
+    public static TextMessage fromReflected(MdD2D.OutgoingMessage message) throws BadMessageException {
+        TextMessage textMessage = fromByteArray(message.getBody().toByteArray());
+        textMessage.initializeCommonProperties(message);
+        return textMessage;
+    }
+
+
+    @NonNull
     public static TextMessage fromByteArray(@NonNull byte[] data) throws BadMessageException {
         return fromByteArray(data, 0, data.length);
     }

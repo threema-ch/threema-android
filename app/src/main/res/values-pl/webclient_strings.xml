@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Utworzono: %1$s (%2$s)</string>
     <string name="webclient_active_since">Aktywny od: %s</string>
     <string name="webclient_enable">Włącz aplikację komputerową/ klienta sieciowego</string>
-    <string name="webclient_no_sessions_found">Aby się połączyć, pobierz aplikację komputerową (<b>https://threema.ch/download</b>) lub otwórz klienta sieciowego(<b>%s</b>) w swoim komputerze i naciśnij poniższy przycisk, aby zeskanować kod QR wyświetlony na ekranie Twojego komputera.</string>
+    <string name="webclient_no_sessions_found">Aby się połączyć, pobierz aplikację komputerową (<b>https://threema.com/download</b>) lub otwórz klienta sieciowego (<b>%s</b>) w swoim komputerze i naciśnij poniższy przycisk, aby zeskanować kod QR wyświetlony na ekranie Twojego komputera.</string>
     <string name="webclient_session_rename">Zmień nazwę sesji</string>
     <string name="webclient_session_label">Nowa nazwa</string>
     <string name="webclient_session_start">Rozpocznij sesję</string>

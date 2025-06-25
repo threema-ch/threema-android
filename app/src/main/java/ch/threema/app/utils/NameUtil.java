@@ -33,7 +33,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupModelData;
@@ -194,6 +194,7 @@ public class NameUtil {
         return null;
     }
 
+    @Nullable
     public static String getShortName(Context context, AbstractMessageModel messageModel, ContactService contactService) {
         if (TestUtil.required(context, messageModel)) {
             if (messageModel.isOutbox()) {

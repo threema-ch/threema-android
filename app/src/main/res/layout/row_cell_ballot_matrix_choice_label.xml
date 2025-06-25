@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/ballot_matrix_cell_height">
 
@@ -15,13 +16,15 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:gravity="right"
-            android:maxLines="2"
-            android:maxWidth="@dimen/ballot_matrix_label_maxwidth"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:ellipsize="end" />
+            android:ellipsize="end"
+            android:gravity="right"
+            android:maxWidth="@dimen/ballot_matrix_label_maxwidth"
+            android:maxLines="2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorOnSurface"
+            tools:text="Option" />
 
     </RelativeLayout>
 </LinearLayout>

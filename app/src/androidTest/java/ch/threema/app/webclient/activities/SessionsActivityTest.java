@@ -47,7 +47,7 @@ import ch.threema.app.DangerousTest;
 import ch.threema.app.R;
 import ch.threema.app.ScreenshotTakingRule;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.WebClientSessionModel;
 
 import static androidx.test.InstrumentationRegistry.getInstrumentation;
@@ -102,9 +102,9 @@ public class SessionsActivityTest {
      * Clear all sessions.
      */
     private static void clearSessions() {
-        final DatabaseServiceNew databaseService = ThreemaApplication
+        final DatabaseService databaseService = ThreemaApplication
             .getServiceManager()
-            .getDatabaseServiceNew();
+            .getDatabaseService();
         databaseService.getWebClientSessionModelFactory().deleteAll();
     }
 
@@ -119,7 +119,7 @@ public class SessionsActivityTest {
         @NonNull Date lastConnection,
         @NonNull Browser browser
     ) {
-        final DatabaseServiceNew databaseService = Objects.requireNonNull(ThreemaApplication.getServiceManager()).getDatabaseServiceNew();
+        final DatabaseService databaseService = Objects.requireNonNull(ThreemaApplication.getServiceManager()).getDatabaseService();
         final WebClientSessionModel model = new WebClientSessionModel();
 
         model.setLabel(label);

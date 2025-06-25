@@ -22,7 +22,7 @@
 package ch.threema.base.crypto;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.Utils;

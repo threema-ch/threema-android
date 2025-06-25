@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
@@ -7,90 +9,93 @@
 
     <include layout="@layout/toolbar_view" />
 
-    <TextView
-        style="@style/Threema.TextAppearance.BodyLarge"
-        android:id="@+id/webrtc_debug_intro"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:text="@string/voip_webrtc_debug_intro" />
-
-    <com.google.android.material.button.MaterialButton
-        style="@style/Threema.MaterialButton.Action"
-        android:id="@+id/webrtc_debug_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/voip_webrtc_debug_start" />
-
-    <ListView
-        android:id="@+id/webrtc_debug_candidates"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/webrtc_debug_loading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:visibility="gone" />
-
-    <TextView
-        style="@style/Threema.TextAppearance.BodyLarge"
-        android:id="@+id/webrtc_debug_done"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/voip_webrtc_debug_done"
-        android:visibility="gone" />
-
     <LinearLayout
-        android:id="@+id/webrtc_debug_footer_buttons"
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        android:visibility="gone"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/webrtc_debug_intro"
+            style="@style/Threema.TextAppearance.BodyLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/grid_unit_x3"
+            android:layout_marginVertical="@dimen/grid_unit_x1"
+            android:text="@string/voip_webrtc_debug_intro" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/webrtc_debug_start"
             style="@style/Threema.MaterialButton.Action"
-            android:id="@+id/webrtc_debug_copy_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/voip_webrtc_debug_copy_clipboard"
-            android:maxLines="3"
-            android:singleLine="false"
-            android:layout_gravity="left"
-            android:layout_weight="1" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/grid_unit_x2"
+            android:text="@string/voip_webrtc_debug_start" />
 
-        <com.google.android.material.button.MaterialButton
-            style="@style/Threema.MaterialButton.Action"
-            android:id="@+id/webrtc_debug_send_button"
-            android:layout_width="wrap_content"
+        <ListView
+            android:id="@+id/webrtc_debug_candidates"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/grid_unit_x1" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/webrtc_debug_loading"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:text="@string/send_to_support"
-            android:maxLines="3"
-            android:singleLine="false"
-            android:layout_gravity="right"
-            android:layout_weight="1" />
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/webrtc_debug_done"
+            style="@style/Threema.TextAppearance.BodyLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/grid_unit_x3"
+            android:layout_marginVertical="@dimen/grid_unit_x1"
+            android:text="@string/voip_webrtc_debug_done"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/webrtc_debug_footer_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/grid_unit_x2"
+            android:layout_marginBottom="@dimen/grid_unit_x1"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/webrtc_debug_copy_button"
+                style="@style/Threema.MaterialButton.Action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginRight="@dimen/grid_unit_x1"
+                android:layout_weight="1"
+                android:maxLines="3"
+                android:singleLine="false"
+                android:text="@string/voip_webrtc_debug_copy_clipboard" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/webrtc_debug_send_button"
+                style="@style/Threema.MaterialButton.Action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="@dimen/grid_unit_x2"
+                android:layout_weight="1"
+                android:maxLines="3"
+                android:singleLine="false"
+                android:text="@string/send_to_support" />
+
+        </LinearLayout>
 
     </LinearLayout>
+
 </LinearLayout>

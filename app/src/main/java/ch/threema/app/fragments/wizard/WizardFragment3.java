@@ -29,7 +29,6 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -61,6 +60,7 @@ import java.util.Set;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
+import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -120,15 +120,7 @@ public class WizardFragment3 extends WizardFragment {
             countrySpinner.setEnabled(false);
             rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
         } else {
-            emailEditText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
+            emailEditText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     if (getActivity() != null) {
@@ -137,15 +129,7 @@ public class WizardFragment3 extends WizardFragment {
                 }
             });
 
-            prefixText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
+            prefixText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     String prefixString = s.toString();
@@ -170,15 +154,7 @@ public class WizardFragment3 extends WizardFragment {
                 }
             });
 
-            phoneText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
+            phoneText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     if (!TextUtils.isEmpty(s) && phoneNumberFormatter != null) {

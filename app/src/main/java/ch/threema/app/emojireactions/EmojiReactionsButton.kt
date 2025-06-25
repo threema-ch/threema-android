@@ -35,6 +35,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import ch.threema.app.R
 import ch.threema.app.emojis.EmojiTextView
+import ch.threema.common.consume
 import com.google.android.material.card.MaterialCardView
 
 class EmojiReactionsButton : MaterialCardView {
@@ -47,45 +48,26 @@ class EmojiReactionsButton : MaterialCardView {
         GestureDetector(
             context,
             object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapUp(e: MotionEvent): Boolean {
-                    onEmojiReactionButtonClickListener?.onClick(emojiSequence)
+                override fun onSingleTapUp(e: MotionEvent) = consume {
                     performClick()
-                    return true
                 }
 
                 override fun onLongPress(e: MotionEvent) {
-                    onEmojiReactionButtonClickListener?.onLongClick(emojiSequence)
                     performLongClick()
                 }
             },
         )
 
-    private lateinit var labelView: TextView
-    private lateinit var emojiView: EmojiTextView
-    private lateinit var spacerView: Space
+    private val labelView: TextView
+    private val emojiView: EmojiTextView
+    private val spacerView: Space
 
-    constructor(context: Context) : super(
-        context,
-    ) {
-        init()
-    }
+    @JvmOverloads
+    constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(
-        context,
-        attrs,
-    ) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr,
-    ) {
-        init()
-    }
-
-    private fun init() {
+    init {
         layoutParams = LayoutParams(WRAP_CONTENT, MATCH_PARENT)
         isClickable = true
         isFocusable = true
@@ -100,7 +82,7 @@ class EmojiReactionsButton : MaterialCardView {
     }
 
     private fun renderContents() {
-        emojiView.isVisible = emojiSequence?.isNotEmpty() == true
+        emojiView.isVisible = !emojiSequence.isNullOrEmpty()
         if (emojiView.isVisible) {
             emojiSequence = emojiView.setSingleEmojiSequence(emojiSequence).toString()
         }
@@ -114,7 +96,7 @@ class EmojiReactionsButton : MaterialCardView {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(event: MotionEvent) = consume {
         gestureDetector.onTouchEvent(event)
 
         if (event.action == MotionEvent.ACTION_UP) {
@@ -122,8 +104,16 @@ class EmojiReactionsButton : MaterialCardView {
         } else if (event.action == MotionEvent.ACTION_DOWN) {
             isPressed = true
         }
+    }
 
-        return true
+    override fun performClick(): Boolean {
+        onEmojiReactionButtonClickListener?.onClick(emojiSequence)
+        return super.performClick()
+    }
+
+    override fun performLongClick(): Boolean {
+        onEmojiReactionButtonClickListener?.onLongClick(emojiSequence)
+        return super.performLongClick()
     }
 
     fun setButtonData(emojiSequence: String, count: Int) {

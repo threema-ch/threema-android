@@ -28,12 +28,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.updatePadding
 import ch.threema.app.R
-import ch.threema.app.utils.getStatusBarHeightPxCompat
+import ch.threema.app.ui.InsetSides
+import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.withCurrentWindowInsets
 import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceLinkingProgressFragment")
@@ -61,13 +59,9 @@ class LinkNewDeviceLinkingProgressFragment : LinkNewDeviceFragment() {
             LayoutTransition.CHANGING,
         )
 
-        // Add extra vertical top padding to prevent ui elements being overlapped
-        // by the system status bar when the bottom-sheet is fully expanded
-        withCurrentWindowInsets { _, insets ->
-            view.findViewById<ConstraintLayout>(R.id.parent_layout).updatePadding(
-                top = insets.getStatusBarHeightPxCompat(),
-            )
-        }
+        view.findViewById<View>(R.id.parent_layout).applyDeviceInsetsAsPadding(
+            insetSides = InsetSides.vertical(),
+        )
 
         viewModel.linkingProgressStringRes.observe(viewLifecycleOwner) { stringRes ->
             bodyTextView.text = getString(stringRes)

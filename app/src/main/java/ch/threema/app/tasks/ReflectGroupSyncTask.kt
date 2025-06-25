@@ -66,38 +66,43 @@ abstract class ReflectGroupSyncTask<TransactionResult, TaskResult>(
             when (e) {
                 is TransactionException -> {
                     logger.error("Precondition failed for group sync task", e)
-                    return ReflectionPreconditionFailed(e)
+                    return ReflectionResult.PreconditionFailed(e)
                 }
 
                 is NetworkException -> throw e
-                else -> return ReflectionFailed(e)
+                else -> return ReflectionResult.Failed(e)
             }
         }
-        return ReflectionSuccess(result)
+        return ReflectionResult.Success(result)
     }
 }
 
 /**
- * The result of executing a [ReflectGroupSyncTask]. It may either be a [ReflectionSuccess],
- * [ReflectionPreconditionFailed] or [ReflectionFailed].
+ * The result of executing a [ReflectGroupSyncTask]. It may either be a [Success],
+ * [PreconditionFailed], [Failed], or [MultiDeviceNotActive].
  */
-sealed interface ReflectionResult<T>
+sealed interface ReflectionResult<T> {
+    /**
+     * This result indicates that the reflection task has completed successfully.
+     */
+    data class Success<T>(val result: T) : ReflectionResult<T>
 
-/**
- * This result indicates that the reflection task has completed successfully.
- */
-data class ReflectionSuccess<T>(val result: T) : ReflectionResult<T>
+    /**
+     * This result indicates that the reflection task has failed due to a failed precondition.
+     */
+    data class PreconditionFailed<T>(val transactionException: TransactionException) :
+        ReflectionResult<T>
 
-/**
- * This result indicates that the reflection task has failed due to a failed precondition.
- */
-data class ReflectionPreconditionFailed<T>(val transactionException: TransactionException) :
-    ReflectionResult<T>
+    /**
+     * This result indicates that there was an undefined error while reflecting.
+     */
+    data class Failed<T>(val exception: Exception) : ReflectionResult<T>
 
-/**
- * This result indicates that there was an undefined error while reflecting.
- */
-data class ReflectionFailed<T>(val exception: Exception) : ReflectionResult<T>
+    /**
+     * This result indicates that multi device is not active and the reflection therefore could not be done.
+     */
+    class MultiDeviceNotActive<T> : ReflectionResult<T>
+}
 
 /**
  * Get a group sync from the given group model data.

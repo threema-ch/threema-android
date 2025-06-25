@@ -26,12 +26,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ballot.GroupBallotModel;
 
 public class GroupBallotModelFactory extends ModelFactory {
 
-    public GroupBallotModelFactory(DatabaseServiceNew databaseService) {
+    public GroupBallotModelFactory(DatabaseService databaseService) {
         super(databaseService, GroupBallotModel.TABLE);
     }
 
@@ -59,7 +59,7 @@ public class GroupBallotModelFactory extends ModelFactory {
             final GroupBallotModel c = new GroupBallotModel();
 
             //convert default
-            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
                 @Override
                 public boolean next(CursorHelper cursorHelper) {
                     c
@@ -86,7 +86,7 @@ public class GroupBallotModelFactory extends ModelFactory {
 
     public boolean create(GroupBallotModel groupBallotModel) {
         ContentValues contentValues = buildContentValues(groupBallotModel);
-        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
         if (newId > 0) {
             groupBallotModel.setId((int) newId);
             return true;
@@ -95,7 +95,7 @@ public class GroupBallotModelFactory extends ModelFactory {
     }
 
     public int deleteByBallotId(int ballotId) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             GroupBallotModel.COLUMN_BALLOT_ID + "=?",
             new String[]{
                 String.valueOf(ballotId)
@@ -103,7 +103,7 @@ public class GroupBallotModelFactory extends ModelFactory {
     }
 
     private GroupBallotModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,

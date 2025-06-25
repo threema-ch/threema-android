@@ -27,10 +27,3 @@ fun <T : Comparable<T>> Array<out T>.equalsIgnoreOrder(other: Array<out T>): Boo
     }
     return this.sortedArray().contentEquals(other.sortedArray())
 }
-
-fun <T : Comparable<T>> Array<out T>.deepEqualsIgnoreOrder(other: Array<out T>): Boolean {
-    if (this.size != other.size) {
-        return false
-    }
-    return this.sortedArray().contentDeepEquals(other.sortedArray())
-}

@@ -32,9 +32,10 @@ import java.io.File;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import ch.threema.app.BuildConfig;
+import ch.threema.app.NamedFileProvider;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.FileService;
+import ch.threema.app.services.AppDirectoryProvider;
 import ch.threema.app.services.UserService;
 import ch.threema.logging.backend.DebugLogFileBackend;
 import ch.threema.storage.models.ContactModel;
@@ -73,25 +74,25 @@ public class ShareUtil {
     }
 
     /**
-     * Share the logfile with another application.
-     *
-     * @param context     the context
-     * @param fileService the file service
+     * Share the logfile with another application
+     * @return True on success, false if the debug log file could not be created
      */
-    public static void shareLogfile(@NonNull Context context, @NonNull FileService fileService) {
-        File zipFile = DebugLogFileBackend.getZipFile(fileService);
+    public static boolean shareLogfile(@NonNull Context context) {
+        var tempDirectory = new AppDirectoryProvider(context).getExternalTempDirectory();
+
+        File zipFile = DebugLogFileBackend.getZipFile(tempDirectory);
         if (zipFile == null) {
-            Toast.makeText(context, context.getResources().getString(R.string.try_again), Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
 
-        Uri uriToLogfile = fileService.getShareFileUri(zipFile, "debug_log.zip");
+        Uri uriToLogfile = NamedFileProvider.getShareFileUri(context, zipFile, "debug_log.zip");
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("application/zip");
         shareIntent.putExtra(Intent.EXTRA_STREAM, uriToLogfile);
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        startActivity(context, Intent.createChooser(shareIntent, context.getResources().getString(R.string.share_via)), null);
+        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_via)), null);
+        return true;
     }
 }

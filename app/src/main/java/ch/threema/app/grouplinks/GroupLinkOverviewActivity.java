@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
@@ -58,7 +59,10 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SelectorDialogItem;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.ui.ViewModelFactory;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -106,13 +110,28 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
+    protected void handleDeviceInsets() {
+        super.handleDeviceInsets();
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.recycler),
+            InsetSides.lbr(),
+            SpacingValues.bottom(R.dimen.grid_unit_x10)
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            findViewById(R.id.floating),
+            InsetSides.all(),
+            SpacingValues.all(R.dimen.grid_unit_x2)
+        );
+    }
+
+    @Override
     protected boolean initActivity(Bundle savedInstanceState) {
         if (!super.initActivity(savedInstanceState)) {
             return false;
         }
 
         Intent intent = getIntent();
-        int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, 0);
+        int groupId = intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
         if (groupId == 0) {
             logger.error("No group id received to display group links for");
             finish();
@@ -130,7 +149,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
         try {
             this.groupInviteService = serviceManager.getGroupInviteService();
             this.groupService = serviceManager.getGroupService();
-            this.groupInviteRepository = serviceManager.getDatabaseServiceNew().getGroupInviteModelFactory();
+            this.groupInviteRepository = serviceManager.getDatabaseService().getGroupInviteModelFactory();
         } catch (Exception e) {
             logger.error("Exception, required services not available... finishing", e);
             finish();
@@ -169,6 +188,15 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
         EmptyView emptyView = new EmptyView(this, ConfigUtils.getActionBarSize(this));
         emptyView.setup(R.string.no_group_links);
 
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            emptyView,
+            InsetSides.lbr(),
+            SpacingValues.symmetric(
+                R.dimen.grid_unit_x1,
+                R.dimen.grid_unit_x3
+            )
+        );
+
         EmptyRecyclerView recyclerView = this.findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -181,7 +209,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
     private void initListeners(int groupId) {
         this.floatingButtonView.setOnClickListener(v -> {
             Intent intent = new Intent(GroupLinkOverviewActivity.this, AddGroupLinkBottomSheet.class);
-            intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_DATABASE_ID, groupId);
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupId);
             startActivityForResult(intent, 2);
         });
 
@@ -253,11 +281,6 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
             reallyDelete((List<GroupInviteModel>) data);
         }
     }
-
-    @Override
-    public void onNo(String tag, Object data) {
-        // fall through, delete process aborted
-    }
     // end GenericAlertDialog callbacks
 
     // start SelectorDialog callbacks
@@ -325,12 +348,6 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
     @Override
     public void onNo(String tag) {
         // fall through, don't update link name
-    }
-
-    @Override
-    public void onNeutral(String tag) {
-        // not used in this case
-
     }
     // end TextEntryDialog callbacks
 

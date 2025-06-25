@@ -51,9 +51,8 @@ import javax.crypto.CipherInputStream
 import org.apache.commons.io.IOUtils
 import org.json.JSONArray
 import org.json.JSONObject
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("PreferenceStore")
+private val logger = LoggingUtil.getThreemaLogger("PreferenceStore")
 
 class PreferenceStore(
     private val context: Context,

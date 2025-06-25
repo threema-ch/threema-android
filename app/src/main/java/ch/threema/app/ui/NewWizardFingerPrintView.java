@@ -90,7 +90,7 @@ public class NewWizardFingerPrintView extends SquareImageView implements View.On
         this.backgroundCharPaint.setTextAlign(Paint.Align.CENTER);
         this.backgroundCharPaint.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
 
-        this.backgroundCharPaintFixed.setColor(ContextCompat.getColor(getContext(), R.color.color_wizard_primary));
+        this.backgroundCharPaintFixed.setColor(ContextCompat.getColor(getContext(), R.color.md_theme_dark_primary));
         this.backgroundCharPaintFixed.setAntiAlias(true);
         this.backgroundCharPaintFixed.setTextAlign(Paint.Align.CENTER);
         this.backgroundCharPaintFixed.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));

@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="0dp"
-        app:liftOnScroll="false"
-        android:outlineProvider="none">
+        android:outlineProvider="none"
+        app:liftOnScroll="false">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -22,7 +22,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?android:attr/colorBackground"
                 app:contentInsetStartWithNavigation="0dp" />
 
             <include layout="@layout/connection_indicator" />
@@ -33,15 +32,8 @@
 
     <FrameLayout
         android:id="@+id/compose"
-        android:layout_weight="1"
-        android:layout_height="0dp"
-        android:layout_width="match_parent" />
-
-    <ViewStub
-        android:id="@+id/emoji_stub"
-        android:inflatedId="@+id/emoji_picker"
-        android:layout="@layout/emoji_picker_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>

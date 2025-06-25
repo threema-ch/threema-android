@@ -31,7 +31,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.storage.DbEmojiReaction
 import ch.threema.domain.models.MessageId
 import ch.threema.storage.models.AbstractMessageModel
@@ -121,7 +121,7 @@ object ContentCreator {
         serviceManager: ServiceManager,
     ): List<DbEmojiReaction> {
         val userIdentity = serviceManager.userService.identity
-        val groupMessageModelFactory = serviceManager.databaseServiceNew.groupMessageModelFactory
+        val groupMessageModelFactory = serviceManager.databaseService.groupMessageModelFactory
 
         val reactionIdentities = mutableListOf<String>()
         val groupMessageStates = mutableMapOf<String, Any>()
@@ -189,7 +189,7 @@ object ContentCreator {
         serviceManager: ServiceManager,
     ): List<DbEmojiReaction> {
         val userIdentity = serviceManager.userService.identity
-        val messageModelFactory = serviceManager.databaseServiceNew.messageModelFactory
+        val messageModelFactory = serviceManager.databaseService.messageModelFactory
 
         val hasUserReactions = Random.nextBoolean()
         val hasContactReactions = Random.nextBoolean()
@@ -291,7 +291,7 @@ object ContentCreator {
     ) {
         val now = now()
         uid = UUID.randomUUID().toString()
-        apiMessageId = MessageId().toString()
+        apiMessageId = MessageId.random().toString()
         this.isOutbox = isOutbox
         this.type = MessageType.TEXT
         bodyAndQuotedMessageId = text

@@ -30,9 +30,8 @@ import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("GroupLocationMessage")
+private val logger = LoggingUtil.getThreemaLogger("GroupLocationMessage")
 
 /**
  * A group message that has a GPS location with accuracy as its contents.

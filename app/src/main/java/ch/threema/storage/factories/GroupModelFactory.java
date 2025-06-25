@@ -38,7 +38,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.GroupId;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.GroupModel;
@@ -46,12 +46,12 @@ import ch.threema.storage.models.GroupModel;
 public class GroupModelFactory extends ModelFactory {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GroupModelFactory");
 
-    public GroupModelFactory(DatabaseServiceNew databaseService) {
+    public GroupModelFactory(DatabaseService databaseService) {
         super(databaseService, GroupModel.TABLE);
     }
 
     public List<GroupModel> getAll() {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             null,
             null,
@@ -74,7 +74,7 @@ public class GroupModelFactory extends ModelFactory {
         String orderBy) {
         queryBuilder.setTables(this.getTableName());
         return convertList(queryBuilder.query(
-            this.databaseService.getReadableDatabase(),
+            getReadableDatabase(),
             null,
             null,
             args,
@@ -103,7 +103,7 @@ public class GroupModelFactory extends ModelFactory {
             final GroupModel groupModel = new GroupModel();
 
             //convert default
-            new CursorHelper(cursor, columnIndexCache).current(
+            new CursorHelper(cursor, getColumnIndexCache()).current(
                 (CursorHelper.Callback) cursorHelper -> {
                     groupModel
                         .setId(cursorHelper.getInt(GroupModel.COLUMN_ID))
@@ -133,7 +133,7 @@ public class GroupModelFactory extends ModelFactory {
     public boolean createOrUpdate(GroupModel groupModel) {
         boolean insert = true;
         if (groupModel.getId() > 0) {
-            Cursor cursor = this.databaseService.getReadableDatabase().query(
+            Cursor cursor = getReadableDatabase().query(
                 this.getTableName(),
                 null,
                 GroupModel.COLUMN_ID + "=?",
@@ -184,7 +184,7 @@ public class GroupModelFactory extends ModelFactory {
         logger.debug("create group {}", groupModel.getApiGroupId());
         ContentValues contentValues = buildContentValues(groupModel);
         try {
-            long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+            long newId = getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
             if (newId > 0) {
                 logger.debug("create group success with id {}", newId);
                 groupModel.setId((int) newId);
@@ -198,7 +198,7 @@ public class GroupModelFactory extends ModelFactory {
 
     public boolean update(GroupModel groupModel) {
         ContentValues contentValues = buildContentValues(groupModel);
-        int rowAffected = this.databaseService.getWritableDatabase().update(this.getTableName(),
+        int rowAffected = getWritableDatabase().update(this.getTableName(),
             contentValues,
             GroupModel.COLUMN_ID + "=?",
             new String[]{
@@ -225,7 +225,7 @@ public class GroupModelFactory extends ModelFactory {
     }
 
     public int delete(GroupModel groupModel) {
-        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+        return getWritableDatabase().delete(this.getTableName(),
             GroupModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(groupModel.getId())
@@ -233,7 +233,7 @@ public class GroupModelFactory extends ModelFactory {
     }
 
     private GroupModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = this.databaseService.getReadableDatabase().query(
+        Cursor cursor = getReadableDatabase().query(
             this.getTableName(),
             null,
             selection,
@@ -292,7 +292,7 @@ public class GroupModelFactory extends ModelFactory {
     }
 
     public List<GroupModel> getInId(List<Integer> groupIds) {
-        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+        return convertList(getReadableDatabase().query(this.getTableName(),
             null,
             GroupModel.COLUMN_ID + " IN (" + DatabaseUtil.makePlaceholders(groupIds.size()) + ")",
             DatabaseUtil.convertArguments(groupIds),

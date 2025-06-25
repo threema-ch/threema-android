@@ -989,7 +989,7 @@ public class VoipStats {
 
             // Add codecs
             builder.append("cs=");
-            if (parameters.codecs.size() > 0) {
+            if (!parameters.codecs.isEmpty()) {
                 for (final RtpParameters.Codec codec : parameters.codecs) {
                     // Add codec
                     builder
@@ -1056,7 +1056,7 @@ public class VoipStats {
                 .append("\n    Codecs (")
                 .append(parameters.codecs.size())
                 .append(")");
-            if (parameters.codecs.size() > 0) {
+            if (!parameters.codecs.isEmpty()) {
                 for (final RtpParameters.Codec codec : parameters.codecs) {
                     // Add codec
                     builder

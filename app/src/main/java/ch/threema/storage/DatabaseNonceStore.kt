@@ -100,7 +100,7 @@ class DatabaseNonceStore(
         }
     }
 
-    fun executeNull() {
+    fun migrateIfNeeded() {
         try {
             readableDatabase.rawQuery("SELECT NULL").close()
         } catch (e: SQLException) {

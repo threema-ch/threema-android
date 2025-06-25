@@ -45,12 +45,16 @@ import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.dialogs.WizardSafeSearchPhoneDialog;
+import ch.threema.app.services.ActivityService;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
+import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LongToast;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -95,6 +99,12 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
         logScreenVisibility(this, logger);
 
         setContentView(R.layout.activity_wizard_restore_safe);
+
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            findViewById(R.id.content),
+            InsetSides.all(),
+            SpacingValues.symmetric(R.dimen.wizard_contents_padding, R.dimen.wizard_contents_padding_horizontal)
+        );
 
         try {
             threemaSafeService = ThreemaApplication.requireServiceManager().getThreemaSafeService();
@@ -155,19 +165,19 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 
     @Override
     protected void onPause() {
-        ThreemaApplication.activityPaused(this);
+        ActivityService.activityPaused(this);
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        ThreemaApplication.activityResumed(this);
+        ActivityService.activityResumed(this);
         super.onResume();
     }
 
     @Override
     public void onUserInteraction() {
-        ThreemaApplication.activityUserInteract(this);
+        ActivityService.activityUserInteract(this);
         super.onUserInteraction();
     }
 

@@ -37,6 +37,7 @@ import ch.threema.domain.protocol.connection.layer.Layer5Codec
 import ch.threema.domain.protocol.connection.layer.MonitoringLayer
 import ch.threema.domain.protocol.connection.layer.MultiplexLayer
 import ch.threema.domain.protocol.connection.layer.ServerConnectionLayers
+import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
@@ -79,7 +80,7 @@ internal class CspConnectionTest : ServerConnectionTest() {
                 // Nothing to do
             }
 
-            override suspend fun pauseRunningTasks() {
+            override suspend fun pauseRunningTasks(closeReason: ServerSocketCloseReason) {
                 // Nothing to do
             }
 

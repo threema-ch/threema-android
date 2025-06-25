@@ -25,9 +25,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
-import ch.threema.app.tasks.ReflectionFailed
-import ch.threema.app.tasks.ReflectionPreconditionFailed
-import ch.threema.app.tasks.ReflectionSuccess
+import ch.threema.app.tasks.ReflectionResult
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.BasicContact
@@ -100,7 +98,7 @@ class IncomingGroupLeaveTask(
                 multiDeviceManager,
             ).reflect(handle)
             when (reflectionResult) {
-                is ReflectionPreconditionFailed -> {
+                is ReflectionResult.PreconditionFailed -> {
                     logger.warn(
                         "Group sync race: Could not reflect contact leave",
                         reflectionResult.transactionException,
@@ -108,12 +106,18 @@ class IncomingGroupLeaveTask(
                     return ReceiveStepsResult.DISCARD
                 }
 
-                is ReflectionFailed -> {
+                is ReflectionResult.Failed -> {
                     logger.error("Could not reflect contact leave", reflectionResult.exception)
                     return ReceiveStepsResult.DISCARD
                 }
 
-                is ReflectionSuccess -> Unit
+                is ReflectionResult.MultiDeviceNotActive -> {
+                    // Note that this is an edge case that should never happen as deactivating md and processing incoming messages is both running in
+                    // tasks. However, if it happens nevertheless, we can simply log a warning and continue processing the message.
+                    logger.warn("Reflection failed because multi device is not active")
+                }
+
+                is ReflectionResult.Success -> Unit
             }
         }
 

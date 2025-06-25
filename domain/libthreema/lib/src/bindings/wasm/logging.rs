@@ -1,6 +1,7 @@
+//! Logging utility to forward logging.
 use std::{io, panic};
 
-use tracing::{debug, metadata::LevelFilter, Level};
+use tracing::{Level, debug, metadata::LevelFilter};
 use tracing_subscriber::fmt::MakeWriter;
 use wasm_bindgen::prelude::*;
 
@@ -19,6 +20,7 @@ interface PanicDispatcher {
 
 #[wasm_bindgen]
 extern "C" {
+    /// Dispatches panics raised in libthreema.
     #[wasm_bindgen(
         extends = ::js_sys::Object,
         js_name = PanicDispatcher,
@@ -27,6 +29,7 @@ extern "C" {
     #[derive(Debug, Clone)]
     pub type PanicDispatcher;
 
+    /// Pass the panic info to the panic dispatcher
     #[wasm_bindgen(method, js_class = "handle", js_name = handle)]
     pub fn handle(this: &PanicDispatcher, panic_info: &str);
 }
@@ -70,6 +73,7 @@ type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error';
 
 #[wasm_bindgen]
 extern "C" {
+    /// Handle a log record
     #[wasm_bindgen(
         extends = ::js_sys::Object,
         js_name = LogDispatcher,
@@ -78,18 +82,23 @@ extern "C" {
     #[derive(Debug, Clone)]
     pub type LogDispatcher;
 
+    /// Log a record at the debug level
     #[wasm_bindgen(method, js_class = "LogDispatcher", js_name = debug)]
     pub fn debug(this: &LogDispatcher, record: &str);
 
+    /// Log a record at the info level
     #[wasm_bindgen(method, js_class = "LogDispatcher", js_name = info)]
     pub fn info(this: &LogDispatcher, record: &str);
 
+    /// Log a record at the warn level
     #[wasm_bindgen(method, js_class = "LogDispatcher", js_name = warn)]
     pub fn warn(this: &LogDispatcher, record: &str);
 
+    /// Log a record at the error level
     #[wasm_bindgen(method, js_class = "LogDispatcher", js_name = error)]
     pub fn error(this: &LogDispatcher, record: &str);
 
+    /// Describes the level of verbosity of the logging
     #[wasm_bindgen(extends = ::js_sys::Object, js_name = LogLevel, typescript_type = "LogLevel")]
     pub type LogLevel;
 }
@@ -215,6 +224,6 @@ pub(super) fn init_logging(log_dispatcher: &LogDispatcher, min_log_level: LogLev
         .with_writer(MakeDispatchWriter::new(log_dispatcher.clone()))
         .finish();
     tracing::subscriber::set_global_default(subscriber)
-        .expect("Cannot initialize logging multiple times. Did you call init() more than once?");
-    debug! {"Configured log level filter: {}", level_filter }
+        .expect("Cannot initialize logging multiple times. Did you call this more than once?");
+    debug!(?level_filter, "Configured log level filter");
 }

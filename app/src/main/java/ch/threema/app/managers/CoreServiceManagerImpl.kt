@@ -35,7 +35,7 @@ import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TaskManagerConfiguration
 import ch.threema.domain.taskmanager.TaskManagerProvider
 import ch.threema.storage.DatabaseNonceStore
-import ch.threema.storage.DatabaseServiceNew
+import ch.threema.storage.DatabaseService
 
 /**
  * The core service manager contains some core services that are used before the other services are
@@ -44,7 +44,7 @@ import ch.threema.storage.DatabaseServiceNew
  */
 class CoreServiceManagerImpl(
     override val version: AppVersion,
-    override val databaseService: DatabaseServiceNew,
+    override val databaseService: DatabaseService,
     override val preferenceStore: PreferenceStoreInterface,
     override val identityStore: IdentityStore,
     private val nonceDatabaseStoreProvider: () -> DatabaseNonceStore,

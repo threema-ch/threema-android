@@ -101,6 +101,7 @@
     <string name="next">Další</string>
     <string name="finish">Dokončit</string>
     <string name="please_wait">Čekejte prosím…</string>
+    <string name="please_wait_timeout">Trvá to déle, než se očekávalo</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Vytváří se vaše ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">Synchronizují se kontakty…</string>
@@ -164,6 +165,7 @@
     <string name="delete_id_message">Pokud jste nevytvořili zálohu tohoto ID, nebo jste ho neexportovali a neuložili, nebudete moci již nikdy v budoucnu odesílat ani přijímat zprávy s touto identitou.\n\nJestliže nechcete toto ID nadále používat, doporučujeme nastavit heslo pro jeho zrušení a zrušit ID na myid.threema.ch/revoke dříve, než ho odstraníte.</string>
     <string name="delete_id_message2">Poslední varování: Skutečně si z tohoto zařízení přejete odstranit vaše ID?</string>
     <string name="delete_id_sum">Trvale z tohoto zařízení odstraní vaše ID a všechna data aplikace ${app_name_short}</string>
+    <string name="delete_all_data_prompt">Odstranit všechna data aplikace?</string>
     <string name="backup_password_summary">Záloha vašeho ID bude zašifrována a chráněna heslem. Použijte kombinaci písmen, čísel a symbolů. Toto heslo nesmíte zapomenout!</string>
     <string name="backup_password_again_summary">Zadejte heslo znovu</string>
     <string name="password_hint">Heslo</string>
@@ -171,7 +173,6 @@
     <string name="backup_id_title">Záloha vašeho ID</string>
     <string name="backup_id_summary">Textový řetězec zobrazený výše nebo QR kód společně s heslem, které jste si zvolili, lze použít k obnovení vašeho ID na jiném zařízení. Můžete jej zkopírovat na vhodné místo, sdílet jej e‑mailem nebo naskenovat QR kód pomocí jiného zařízení.</string>
     <string name="support">Nápověda</string>
-    <string name="support_url">https://threema.ch/android/support/</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_content">Následující textový řetězec lze použít společně se zvoleným heslem k obnově vašeho ${app_name_short} ID.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -345,9 +346,12 @@
     <string name="title_tab_recent">Nedávné</string>
     <string name="no_recent_conversations">Konverzace nenalezeny</string>
     <string name="save_changes">Uložit</string>
-    <string name="group_created_confirm">Skupina byla úspěšně vytvořena</string>
     <string name="creating_group">Probíhá vytváření skupiny</string>
     <string name="updating_group">Probíhá úprava skupiny</string>
+    <string name="leaving_group">Opouští se skupina</string>
+    <string name="disbanding_group">Rozpouští se skupina</string>
+    <string name="removing_group">Odstraňuje se skupina</string>
+    <string name="resyncing_group">Znovu se synchronizuje skupina</string>
     <string name="status_create_group">Skupina byla vytvořena.</string>
     <string name="status_rename_group">Skupina byla přejmenována na: „%1$s“</string>
     <string name="status_group_new_photo">Obrázek skupiny byl upraven.</string>
@@ -741,7 +745,20 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="clone_group_message">Tímto vytvoříte kopii této skupiny, ve které budete správcem. Přejete si pokračovat?</string>
     <string name="prefs_proximity_sensor">Zohlednit senzor přiblížení</string>
     <string name="prefs_proximity_sensor_explain">Pokud je snímač přiblížení zakryt, použije se pro přehrávání hlasových zpráv sluchátko</string>
-    <string name="error_creating_group">Chyba během vytváření/úpravy skupiny</string>
+    <string name="error_creating_group_network">Skupina nebyla vytvořena. Zkontrolujte prosím vaše připojení k internetu a zkuste to znovu.</string>
+    <string name="error_creating_group_internal">Skupina nebyla vytvořena kvůli interní chybě. Zkuste to prosím znovu později.</string>
+    <string name="error_cloning_group_network">Skupina nebyla klonována. Zkontrolujte prosím vaše připojení k internetu a zkuste to znovu.</string>
+    <string name="error_cloning_group_internal">Skupina nebyla klonována kvůli interní chybě. Zkuste to prosím znovu později.</string>
+    <string name="error_updating_group_network">Nebylo možné aplikovat změny. Zkontrolujte prosím vaše připojení k internetu a zkuste to znovu.</string>
+    <string name="error_updating_group_internal">Změny nebylo možné aplikovat kvůli interní chybě. Zkuste to prosím znovu později.</string>
+    <string name="error_leaving_group_network">Skupina nebyla opuštěna. Zkontrolujte prosím vaše připojení k internetu a zkuste to znovu.</string>
+    <string name="error_leaving_group_internal">Skupina nebyla opuštěna kvůli interní chybě. Zkuste to prosím znovu později.</string>
+    <string name="error_disbanding_group_network">Skupina nebyla rozpuštěna. Zkontrolujte prosím vaše připojení k internetu a zkuste to znovu.</string>
+    <string name="error_disbanding_group_internal">Skupina nebyla rozpuštěna kvůli interní chybě. Zkuste to prosím znovu později.</string>
+    <string name="error_removing_group_network">Skupina nebyla odstraněna. Zkontrolujte prosím vaše připojení k internetu a zkuste to znovu.</string>
+    <string name="error_removing_group_internal">Skupina nebyla odstraněna kvůli interní chybě. Zkuste to prosím znovu později.</string>
+    <string name="error_resyncing_group_network">Skupina nebyla znovu synchronizována. Zkontrolujte prosím vaše připojení k internetu a zkuste to znovu.</string>
+    <string name="error_resyncing_group_internal">Skupina nebyla znovu synchronizována kvůli interní chybě. Zkuste to prosím znovu později.</string>
     <string name="no_media_found_generic">V této konverzaci nebyly nalezeny žádné mediální soubory odpovídající výběru.</string>
     <string name="max_images_reached">Najednou může být upraveno maximálně %d položek</string>
     <string name="enter_description">Zde prosím popište problém/chybu.</string>
@@ -856,8 +873,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Uložení velkých mediálních souborů do lokální zálohy souboru ZIP může překročit kapacitu úložiště vašeho zařízení a může trvat velmi dlouho. Aplikace ${app_name} během zálohování nebude odesílat ani přijímat zprávy. Přesto si přejete pokračovat?</string>
     <string name="backup_data_cancelled">Zálohování bylo přerušeno</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="service_manager_not_available">Aplikaci ${app_name} nelze spustit. Vypněte a zapněte prosím vaše zařízení.</string>
     <string name="message_sent">Zpráva odeslána</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_call">Hovor ${app_name_short}</string>
@@ -1227,9 +1242,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="permission_camera_videocall_required">Chcete‑li spustit video hovor, povolte prosím přístup k fotoaparátu</string>
     <string name="tooltip_voip_enable_speakerphone">Klepnutím sem zapnete hlasitý odposlech</string>
     <string name="ballot_open">Probíhající ankety</string>
-    <string name="translators">Překladatelé</string>
-    <string name="credits">Uznání</string>
-    <string name="translators_thanks">Mnohokrát děkujeme našim dobrovolným překladatelům:\n%s</string>
     <string name="ballot_window_hide">Skrýt probíhající ankety</string>
     <string name="ballot_window_show">Zobr. probíhající ankety</string>
     <string name="single_ballot_really_delete">Odstranit tuto anketu</string>
@@ -1565,7 +1577,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="prefs_summary_hibernation_api">Aby se zabránilo tomu, že je aplikace ${app_name} pozastavena systémem po delší neaktivitě, zakažte prosím systémové nastavení „Pozastavit aktivitu při nepoužívání“.</string>
     <string name="unable_to_fetch_configuration">Nelze načíst data z konfiguračního serveru. Zkuste to prosím znovu později.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Bylo zjištěno připojení z jiného zařízení s totožným ${app_name_short} ID. Použili jste v nedávné době své ${app_name_short} ID na jiném zařízení? <br><br> Pokud ano, tuto zprávu můžete ignorovat. <br><br> V opačném případě mohlo dojít k narušení bezpečnosti vašeho soukromého klíče. Zachovejte se dle <a href="https://threema.ch/en/faq/another_connection">našich pokynů</a>, abyste ochránili své zařízení a data, a následně si vytvořte nové ID.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Bylo zjištěno připojení z jiného zařízení s totožným ${app_name_short} ID. Použili jste v nedávné době své ${app_name_short} ID na jiném zařízení? <br><br> Pokud ano, tuto zprávu můžete ignorovat. <br><br> V opačném případě mohlo dojít k narušení bezpečnosti vašeho soukromého klíče. Zachovejte se dle <a href="https://threema.com/faq/another_connection">našich pokynů</a>, abyste ochránili své zařízení a data, a následně si vytvořte nové ID.]]></string>
     <string name="fetch2_failure">Synchronizace se zajišťovacím serverem selhala.</string>
     <string name="no_members_support_group_calls">V této skupině nejsou žádní další členové, kteří by mohli přijímat skupinové hovory.</string>
     <string name="group_calls">Skupinové hovory</string>
@@ -1704,10 +1716,10 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="problemsolver_title_app_battery_usgae_optimized">Využití baterie aplikace nastaveno na „optimalizované“</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikaci není dovoleno udržovat trvalé připojení k serverům, které je nutné pro fungování ${app_name_short} Push. Když bude aplikace na pozadí, nebudete informováni o nových zprávách. Chcete‑li tento problém opravit, klepněte na „Využití baterie“ a vyberte „Neomezeno“.</string>
-    <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_title_android_version_deprecated">Tato verze Androidu brzy přijde o podporu</string>
-    <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
-    <string name="problemsolver_explain_android_version_deprecated">Používáte zařízení s Androidem, které již nedostává aktualizace softwaru. Z bezpečnostních důvodů tato verze Androidu brzy přestane být aplikací Threema podporována.</string>
+    <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">Tato aplikace již není aktualizována</string>
+    <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">Používáte zastaralou verzi Androidu, která z bezpečnostních důvodů již není společností Threema podporována. To znamená, že nebudete dostávat aktualizace aplikace Threema. Chcete-li nadále používat aplikaci Threema se všemi jejími funkcemi, aktualizujte prosím operační systém.</string>
     <string name="problemsolver_to_settings">Do nastavení</string>
     <string name="prefs_advanced_options">Pokročilé možnosti</string>
     <string name="push_service">Služba push</string>
@@ -1757,7 +1769,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="device_linking_cancel_dialog_continue">Pokračovat</string>
     <string name="md_drop_device_dialog_drop_button">Odstranit zařízení</string>
     <string name="md_drop_device_dialog_close_button">Zavřít</string>
-    <string name="md_drop_device_failed_dialog_title">Odebrání propojeného zařízení selhalo</string>
+    <string name="md_drop_device_failed_dialog_title">Odstraňování propojeného zařízení mohlo selhat</string>
     <string name="md_drop_device_failed_dialog_message">Zkontrolujte prosím připojení k internetu a zkuste to znovu.</string>
     <string name="md_drop_device_failed_dialog_button_close">Zavřít</string>
     <!-- accessibility -->
@@ -1819,12 +1831,20 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="device_linking_error_emoji_mismatch_body">Zdá se, že se vyskytly potíže během připojování k zařízení. Restartujte prosím aplikaci na novém zařízení a zkuste to znovu.</string>
     <string name="device_linking_error_unexpected_title">Neočekávaná chyba</string>
     <string name="device_linking_error_unexpected_body">Opakujte prosím propojování zařízení. Jestliže bude problém přetrvávat, kontaktujte prosím podporu („Hlavní menu &gt; Nápověda“).</string>
+    <string name="device_linking_error_invalid_contact_title">Neplatný kontakt</string>
+    <string name="device_linking_error_invalid_contact_body">Kontakt s identitou %1$s je na tomto zařízení uložen nesprávně a znemožňuje propojení nového zařízení. Kontaktujte prosím podporu („Hlavní menu &gt; Nápověda“).</string>
     <string name="device_linking_error_screen_close">Zavřít</string>
     <string name="work_directory_title">Adresář společnosti</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Vyhledat v adresáři</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Zadejte prosím alespoň 3 znaky jména pro zahájení vyhledávání uživatelů aplikace ${app_name_short} v adresáři vaší společnosti.</string>
+    <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Tento soubor je neplatný a nelze jej sdílet</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Dostupný</string>
+    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Nedostupný</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

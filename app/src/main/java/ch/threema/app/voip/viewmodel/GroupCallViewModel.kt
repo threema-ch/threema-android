@@ -29,7 +29,7 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.*
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.requireServiceManager
+import ch.threema.app.ThreemaApplication.Companion.requireServiceManager
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.utils.AudioDevice

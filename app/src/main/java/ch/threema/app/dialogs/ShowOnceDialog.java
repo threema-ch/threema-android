@@ -154,8 +154,6 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 
         default void onCancel(String tag) {
         }
-
-        ;
     }
 
     @NonNull

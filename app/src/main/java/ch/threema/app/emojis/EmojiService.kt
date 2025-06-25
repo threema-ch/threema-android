@@ -24,7 +24,7 @@ package ch.threema.app.emojis
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.emojis.search.EmojiSearchIndex
-import ch.threema.app.services.PreferenceService
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.base.utils.LoggingUtil
 import java.lang.Exception
 import java.util.Locale

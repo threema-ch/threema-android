@@ -29,7 +29,7 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
-import ch.threema.base.utils.now
+import ch.threema.common.now
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository

@@ -61,8 +61,6 @@ public class MultiChoiceSelectorDialog extends ThreemaDialogFragment {
         default void onCancel(String tag) {
             // optional interface
         }
-
-        ;
     }
 
     @Override

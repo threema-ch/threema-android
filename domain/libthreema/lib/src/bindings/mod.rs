@@ -1,7 +1,5 @@
-/// UniFFI bindings.
+//! FFI bindings of this library.
 #[cfg(feature = "uniffi")]
 pub mod uniffi;
-
-/// WASM (FFI) bindings.
 #[cfg(feature = "wasm")]
 pub mod wasm;

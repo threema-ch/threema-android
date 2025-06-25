@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:minHeight="@dimen/web_sessions_switch_frame_height"
             android:outlineProvider="none"
-            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardBackgroundColor="?attr/colorTertiaryContainer"
             app:cardCornerRadius="0dp"
             app:cardElevation="4dp"
             app:contentPaddingBottom="8dp"
@@ -31,28 +31,41 @@
             app:contentPaddingTop="8dp"
             app:strokeWidth="0dp">
 
-            <TextView
-                android:id="@+id/switch_text"
-                style="@style/Threema.TextAppearance.SwitchHeader"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/switch_frame_inner"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|start"
                 android:gravity="center_vertical"
-                tools:text="An" />
+                android:orientation="horizontal">
 
-            <ch.threema.app.ui.SilentSwitchCompat
-                android:id="@+id/switch_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|end"
-                android:contentDescription="@string/webclient_enable"
-                tools:checked="true" />
+                <TextView
+                    android:id="@+id/switch_text"
+                    style="@style/Threema.TextAppearance.SwitchHeader"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/grid_unit_x2"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorOnTertiaryContainer"
+                    tools:text="An" />
+
+                <ch.threema.app.ui.SilentSwitchCompat
+                    android:id="@+id/switch_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/webclient_enable"
+                    tools:checked="true" />
+
+            </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,12 +86,12 @@
                         android:id="@+id/sessions_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-                        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+                        android:layout_marginLeft="@dimen/tablet_additional_padding_horizontal"
+                        android:layout_marginRight="@dimen/tablet_additional_padding_horizontal"
                         android:clipToPadding="false"
                         android:nestedScrollingEnabled="false"
-                        android:paddingTop="@dimen/spacing_two_grid_unit"
-                        android:paddingBottom="@dimen/scroll_spacing_extra_floating_action_button"
+                        android:paddingTop="@dimen/grid_unit_x2"
+                        android:paddingBottom="@dimen/grid_unit_x2"
                         tools:itemCount="2"
                         tools:listitem="@layout/item_webclient_session_list" />
 
@@ -88,19 +101,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="@dimen/spacing_four_grid_unit"
-                        android:layout_marginBottom="@dimen/scroll_spacing_extra_floating_action_button"
                         android:alpha="0.75"
-                        android:drawablePadding="@dimen/spacing_three_grid_unit"
+                        android:drawablePadding="@dimen/grid_unit_x3"
                         android:fontFamily="sans-serif-light"
                         android:gravity="center_horizontal"
-                        android:paddingHorizontal="@dimen/spacing_three_grid_unit"
-                        android:paddingVertical="@dimen/spacing_three_grid_unit"
+                        android:paddingHorizontal="@dimen/grid_unit_x3"
+                        android:paddingVertical="@dimen/grid_unit_x6"
                         android:text="@string/webclient_no_sessions_found"
                         android:textColor="?attr/colorOnBackground"
                         android:textSize="14sp"
                         app:drawableTint="?attr/colorOnBackground"
-                        app:drawableTopCompat="@drawable/ic_phonelink_white_128dp" />
+                        app:drawableTopCompat="@drawable/ic_phonelink_white_128dp"
+                        tools:visibility="invisible" />
 
                 </FrameLayout>
 
@@ -115,7 +127,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_margin="@dimen/floating_button_margin"
+        android:layout_margin="@dimen/grid_unit_x2"
         android:contentDescription="@string/webclient_init_session"
         android:text="@string/webclient_init_session"
         android:tint="@android:color/white"

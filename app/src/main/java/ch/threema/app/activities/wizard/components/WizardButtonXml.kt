@@ -41,8 +41,8 @@ class WizardButtonXml @JvmOverloads constructor(
     var style: WizardButtonStyle by mutableStateOf(defaultButtonStyle)
     var isButtonEnabled: Boolean by mutableStateOf(true)
     var trailingIconRes: Int? by mutableStateOf(null)
-    var primaryColorRes: Int by mutableIntStateOf(R.color.color_wizard_primary)
-    var onPrimaryColorRes: Int by mutableIntStateOf(R.color.color_wizard_on_primary)
+    var primaryColorRes: Int by mutableIntStateOf(R.color.md_theme_dark_primary)
+    var onPrimaryColorRes: Int by mutableIntStateOf(R.color.md_theme_dark_onPrimary)
 
     init {
         val typedArray = context.theme.obtainStyledAttributes(

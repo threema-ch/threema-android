@@ -25,8 +25,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
+import ch.threema.app.AppConstants
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.dialogs.TextEntryDialog
 import ch.threema.app.dialogs.TextEntryDialog.TextEntryDialogClickListener
 import ch.threema.app.services.DistributionListService
@@ -70,9 +70,9 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
 
     @MainThread
     override fun initData(savedInstanceState: Bundle?) {
-        if (this.intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
+        if (this.intent.hasExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
             this.distributionListModel = distributionListService.getById(
-                this.intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST_ID, 0),
+                this.intent.getLongExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, 0),
             )
             this.isEdit = this.distributionListModel != null
         }
@@ -159,14 +159,6 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
         } catch (e: Exception) {
             LogUtil.exception(e, this@DistributionListAddActivity)
         }
-    }
-
-    // Callback from dialog "Edit distribution list - Choose a name for this list"
-    override fun onNo(tag: String) {
-    }
-
-    // Callback from dialog "Edit distribution list - Choose a name for this list"
-    override fun onNeutral(tag: String) {
     }
 
     companion object {

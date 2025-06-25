@@ -114,9 +114,9 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
     @Override
     public void unregisterSensors(String tag) {
         synchronized (instanceMap) {
-            if (instanceMap.size() > 0) {
+            if (!instanceMap.isEmpty()) {
                 instanceMap.remove(tag);
-                if (instanceMap.size() < 1) {
+                if (instanceMap.isEmpty()) {
                     releaseWakelock();
                     if (hasSensors()) {
                         sensorManager.unregisterListener(this);
@@ -139,7 +139,7 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
 
     @Override
     public boolean isSensorRegistered(String tag) {
-        return instanceMap.size() > 0 && instanceMap.containsKey(tag);
+        return !instanceMap.isEmpty() && instanceMap.containsKey(tag);
     }
 
     private boolean isNear(float value) {

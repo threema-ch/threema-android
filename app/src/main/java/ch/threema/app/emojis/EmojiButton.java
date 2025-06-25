@@ -24,10 +24,11 @@ package ch.threema.app.emojis;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import androidx.appcompat.widget.AppCompatImageButton;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
-public class EmojiButton extends androidx.appcompat.widget.AppCompatImageButton implements EmojiPicker.EmojiPickerListener {
+public class EmojiButton extends AppCompatImageButton implements EmojiPicker.EmojiPickerListener {
     private Context context;
 
     public EmojiButton(Context context) {
@@ -50,8 +51,7 @@ public class EmojiButton extends androidx.appcompat.widget.AppCompatImageButton 
     }
 
     public void showKeyboardIcon() {
-        if (ConfigUtils.isLandscape(context) &&
-            !ConfigUtils.isTabletLayout()) {
+        if (ConfigUtils.isLandscape(context) && !ConfigUtils.isTabletLayout()) {
             setImageResource(R.drawable.ic_keyboard_arrow_down_outline);
         } else {
             setImageResource(R.drawable.ic_keyboard_outline);
