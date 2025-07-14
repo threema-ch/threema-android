@@ -366,6 +366,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
      */
     public class ContactAvatarConfig extends AvatarConfig<ContactModel> {
 
+        // TODO(ANDR-4021): This class needs a way to represent the user itself, or there needs to be another AvatarConfig that does that
         private ContactAvatarConfig(@Nullable ContactModel model, @NonNull AvatarOptions options) {
             super(model, options);
         }

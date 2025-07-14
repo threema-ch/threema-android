@@ -22,7 +22,7 @@
 package ch.threema.app.compose.conversation
 
 import android.content.Context
-import androidx.annotation.ColorRes
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -48,12 +48,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -245,6 +247,7 @@ private fun getLatestMessageStateIcon(
 
         val stateIconContentDescriptionRes: Int? = stateBitmapUtil.getStateDescription(messageState)
 
+        @ColorInt
         val tintOverride: Int? = when (messageState) {
             MessageState.SENDFAILED, MessageState.FS_KEY_MISMATCH -> stateBitmapUtil.warningColor
             else -> null
@@ -258,10 +261,11 @@ private fun getLatestMessageStateIcon(
     }
 }
 
+@Stable
 data class IconInfo(
     @DrawableRes val icon: Int,
     @StringRes val contentDescription: Int?,
-    @ColorRes val tintOverride: Int? = null,
+    @ColorInt val tintOverride: Int? = null,
 )
 
 private fun getAvatarContentDescription(
@@ -755,9 +759,9 @@ private fun SecondLineDefault(
             SpacerHorizontal(GridUnit.x0_5)
             Icon(
                 modifier = Modifier.size(GridUnit.x2_5),
-                tint = deliveryIcon.tintOverride?.let { tintOverrideRes ->
-                    colorResource(tintOverrideRes)
-                } ?: LocalContentColor.current,
+                tint = deliveryIcon.tintOverride
+                    ?.let(::Color)
+                    ?: LocalContentColor.current,
                 painter = painterResource(deliveryIcon.icon),
                 contentDescription = deliveryIcon.contentDescription?.let { contentDescriptionRes ->
                     stringResource(contentDescriptionRes)
@@ -1503,7 +1507,7 @@ private fun Preview_SendFailed() {
                 deliveryIcon = IconInfo(
                     icon = R.drawable.ic_baseline_key_off_24,
                     contentDescription = null,
-                    tintOverride = R.color.material_red,
+                    tintOverride = colorResource(R.color.material_red).toArgb(),
                 ),
                 unreadState = null,
                 isPinned = false,

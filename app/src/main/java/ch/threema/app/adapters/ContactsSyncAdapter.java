@@ -30,6 +30,8 @@ import android.os.Bundle;
 
 import org.slf4j.Logger;
 
+import java.util.Set;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
@@ -87,7 +89,7 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
                     return;
                 }
 
-                SynchronizeContactsRoutine routine = synchronizeContactsService.instantiateSynchronization(account);
+                SynchronizeContactsRoutine routine = synchronizeContactsService.instantiateSynchronization();
                 //update stats on finished to resolve the "every minute sync" bug
 
                 routine.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) -> {

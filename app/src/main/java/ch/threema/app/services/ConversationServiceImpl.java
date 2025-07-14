@@ -425,9 +425,12 @@ public class ConversationServiceImpl implements ConversationService {
                 ((DistributionListMessageReceiver) messageReceiver).getDistributionList()
             );
         } else if (messageReceiver instanceof ContactMessageReceiver) {
-            new ContactConversationModelParser().markConversationAsRead(
-                ((ContactMessageReceiver) messageReceiver).getContact()
-            );
+            ch.threema.data.models.ContactModel contactModel = ((ContactMessageReceiver) messageReceiver).getContactModel();
+            if (contactModel != null) {
+                new ContactConversationModelParser().markConversationAsRead(contactModel);
+            } else {
+                logger.error("Could not mark conversation as read because the contact model is null");
+            }
         }
     }
 
@@ -458,7 +461,10 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
-    public synchronized ConversationModel refresh(ContactModel contactModel) {
+    public synchronized ConversationModel refresh(@Nullable ch.threema.data.models.ContactModel contactModel) {
+        if (contactModel == null) {
+            return null;
+        }
         return new ContactConversationModelParser()
             .refresh(contactModel);
     }
@@ -479,18 +485,7 @@ public class ConversationServiceImpl implements ConversationService {
     public synchronized ConversationModel refresh(@NonNull MessageReceiver receiver) {
         switch (receiver.getType()) {
             case MessageReceiver.Type_CONTACT:
-                // TODO(ANDR-3139): This comparison should be removed once we use the new contact
-                //  model in the webclient. This will allow us to use the new model in the message
-                //  receiver as well.
-                ContactModel providedModel = ((ContactMessageReceiver) receiver).getContact();
-                String identity = providedModel.getIdentity();
-                ContactModel cachedModel = contactService.getByIdentity(identity);
-                if (providedModel != cachedModel) {
-                    logger.warn("Several contact model instances are in use. Resetting cache.");
-                    contactService.invalidateCache(identity);
-                    cachedModel = contactService.getByIdentity(identity);
-                }
-                return this.refresh(cachedModel);
+                return this.refresh(((ContactMessageReceiver) receiver).getContactModel());
             case MessageReceiver.Type_GROUP:
                 return this.refresh(((GroupMessageReceiver) receiver).getGroup());
             case MessageReceiver.Type_DISTRIBUTION_LIST:
@@ -503,7 +498,7 @@ public class ConversationServiceImpl implements ConversationService {
     @Override
     public synchronized ConversationModel setIsTyping(ContactModel contact, boolean isTyping) {
         ContactConversationModelParser p = new ContactConversationModelParser();
-        ConversationModel conversationModel = p.getCached(contact);
+        ConversationModel conversationModel = p.getCached(contact.getIdentity());
         if (conversationModel != null) {
             conversationModel.isTyping = isTyping;
             this.fireOnModifiedConversation(conversationModel);
@@ -631,7 +626,7 @@ public class ConversationServiceImpl implements ConversationService {
 
     @Override
     public synchronized int empty(@NonNull GroupModel groupModel) {
-        final ConversationModel conversationModel = new GroupConversationModelParser().getCached(groupModel);
+        final ConversationModel conversationModel = new GroupConversationModelParser().getCached(groupModel.getId());
         if (conversationModel != null) {
             return this.empty(conversationModel, true);
         }
@@ -641,17 +636,12 @@ public class ConversationServiceImpl implements ConversationService {
 
     @Override
     public synchronized int empty(@NonNull DistributionListModel distributionListModel) {
-        final ConversationModel conversationModel = new DistributionListConversationModelParser().getCached(distributionListModel);
+        final ConversationModel conversationModel = new DistributionListConversationModelParser().getCached(distributionListModel.getId());
         if (conversationModel != null) {
             return this.empty(conversationModel, true);
         }
         logger.warn("DistributionList conversation model is null, cannot empty");
         return 0;
-    }
-
-    @Override
-    public synchronized int delete(@NonNull ContactModel contactModel) {
-        return delete(contactModel.getIdentity());
     }
 
     @Override
@@ -676,7 +666,7 @@ public class ConversationServiceImpl implements ConversationService {
     @Override
     public synchronized void removeFromCache(@NonNull GroupModel groupModel) {
         // Remove from cache and notify listeners
-        final ConversationModel conversationModel = new GroupConversationModelParser().getCached(groupModel);
+        final ConversationModel conversationModel = new GroupConversationModelParser().getCached(groupModel.getId());
         if (conversationModel != null) {
             this.removeFromCache(conversationModel);
         }
@@ -685,7 +675,7 @@ public class ConversationServiceImpl implements ConversationService {
     @Override
     public synchronized void removeFromCache(@NonNull DistributionListModel distributionListModel) {
         // Remove from cache and notify listeners
-        final ConversationModel conversationModel = new DistributionListConversationModelParser().getCached(distributionListModel);
+        final ConversationModel conversationModel = new DistributionListConversationModelParser().getCached(distributionListModel.getId());
         if (conversationModel != null) {
             this.removeFromCache(conversationModel);
         }
@@ -738,7 +728,7 @@ public class ConversationServiceImpl implements ConversationService {
         return null;
     }
 
-    private abstract class ConversationModelParser<I, M extends AbstractMessageModel, R extends ReceiverModel> {
+    private abstract class ConversationModelParser<I, M extends AbstractMessageModel, R> {
         /**
          * Return whether the specified identifier belongs to the specified conversation.
          */
@@ -780,11 +770,10 @@ public class ConversationServiceImpl implements ConversationService {
         protected abstract I getIdentifier(R receiverModel);
 
         /**
-         * Return the cached conversation for the specified {@param receiverModel}.
+         * Get the last update flag from the receiver model
          */
-        public final @Nullable ConversationModel getCached(final @NonNull R receiverModel) {
-            return this.getCached(this.getIdentifier(receiverModel));
-        }
+        @Nullable
+        protected abstract Date getLastUpdate(@Nullable R receiverModel);
 
         /**
          * Return the cached conversation for the specified {@param messageModel}.
@@ -875,7 +864,7 @@ public class ConversationServiceImpl implements ConversationService {
                 }
 
                 // Refresh lastUpdate
-                model.lastUpdate = receiverModel.getLastUpdate();
+                model.lastUpdate = getLastUpdate(receiverModel);
 
                 // Refresh notificationTriggerPolicyOverride
                 if (model.isGroupConversation() && receiverModel instanceof GroupModel && model.getGroup() != null) {
@@ -1137,7 +1126,7 @@ public class ConversationServiceImpl implements ConversationService {
         }
     }
 
-    private class ContactConversationModelParser extends ConversationModelParser<String, MessageModel, ContactModel> {
+    private class ContactConversationModelParser extends ConversationModelParser<String, MessageModel, ch.threema.data.models.ContactModel> {
         @Override
         public boolean belongsTo(ConversationModel conversationModel, String identity) {
             return conversationModel.getContact() != null &&
@@ -1223,8 +1212,17 @@ public class ConversationServiceImpl implements ConversationService {
         }
 
         @Override
-        protected String getIdentifier(ContactModel contactModel) {
+        protected String getIdentifier(ch.threema.data.models.ContactModel contactModel) {
             return contactModel != null ? contactModel.getIdentity() : null;
+        }
+
+        @Nullable
+        @Override
+        protected Date getLastUpdate(@Nullable ch.threema.data.models.ContactModel receiverModel) {
+            if (receiverModel == null) {
+                return null;
+            }
+            return contactService.getLastUpdate(receiverModel.getIdentity());
         }
     }
 
@@ -1320,6 +1318,15 @@ public class ConversationServiceImpl implements ConversationService {
         protected Integer getIdentifier(GroupModel groupModel) {
             return groupModel != null ? groupModel.getId() : null;
         }
+
+        @Nullable
+        @Override
+        protected Date getLastUpdate(@Nullable GroupModel receiverModel) {
+            if (receiverModel == null) {
+                return null;
+            }
+            return receiverModel.getLastUpdate();
+        }
     }
 
 
@@ -1411,6 +1418,15 @@ public class ConversationServiceImpl implements ConversationService {
         @Override
         protected Long getIdentifier(DistributionListModel distributionListModel) {
             return distributionListModel != null ? distributionListModel.getId() : null;
+        }
+
+        @Nullable
+        @Override
+        protected Date getLastUpdate(@Nullable DistributionListModel receiverModel) {
+            if (receiverModel == null) {
+                return null;
+            }
+            return receiverModel.getLastUpdate();
         }
     }
 

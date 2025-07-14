@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -377,6 +378,13 @@ public interface ContactService extends AvatarService<ContactModel> {
 
     AccessModel getAccess(@Nullable String identity);
 
+    /**
+     * Get the color for the contact's default avatar. This not only depends on the contact itself
+     * but also on the preferences.
+     * @return the color that should be used for the default avatar of the contact
+     */
+    @ColorInt int getAvatarColor(@Nullable ch.threema.data.models.ContactModel contactModel);
+
     void setIsTyping(String identity, boolean isTyping);
 
     boolean isTyping(String identity);
@@ -409,6 +417,13 @@ public interface ContactService extends AvatarService<ContactModel> {
     @Nullable
     ContactMessageReceiver createReceiver(@NonNull String identity);
 
+    /**
+     * Update all contact names from android contacts. This changes the existing contact models if
+     * the contact has a new name in the android address book.
+     *
+     * @return true if the contacts have been tried to update, false if there was an issue with the
+     * permission
+     */
     boolean updateAllContactNamesFromAndroidContacts();
 
     void removeAllSystemContactLinks();
@@ -446,7 +461,7 @@ public interface ContactService extends AvatarService<ContactModel> {
      * @throws MasterKeyLockedException when the master key is locked
      */
     boolean setUserDefinedProfilePicture(
-        @Nullable ContactModel contactModel,
+        @NonNull String identity,
         @Nullable byte[] avatar,
         @NonNull TriggerSource triggerSource
     ) throws IOException, MasterKeyLockedException;
@@ -458,7 +473,7 @@ public interface ContactService extends AvatarService<ContactModel> {
      * @return true if the removal succeeded
      */
     boolean removeUserDefinedProfilePicture(
-        @Nullable ContactModel contactModel,
+        @NonNull String identity,
         @NonNull TriggerSource triggerSource
     );
 

@@ -47,7 +47,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.1.0"
+val appVersion = "6.1.1"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -56,7 +56,7 @@ val appVersion = "6.1.0"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1082
+val defaultVersionCode = 1084
 
 /**
  * Map with keystore paths (if found).

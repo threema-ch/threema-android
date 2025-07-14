@@ -23,18 +23,20 @@ package ch.threema.app.services;
 
 import android.accounts.Account;
 
+import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 
 public interface SynchronizeContactsService {
+    @Nullable
     SynchronizeContactsRoutine instantiateSynchronization();
 
     boolean instantiateSynchronizationAndRun();
 
-    /**
-     * @param account
-     * @return new instance of a routine
-     */
-    SynchronizeContactsRoutine instantiateSynchronization(Account account);
+    @Nullable
+    SynchronizeContactsRoutine instantiateSynchronization(@NonNull Set<String> processingIdentities);
 
     boolean isSynchronizationInProgress();
 

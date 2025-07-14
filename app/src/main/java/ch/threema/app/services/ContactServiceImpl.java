@@ -65,6 +65,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddOrUpdateWorkIdentityBackgroundTask;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.debug.AndroidContactSyncLogger;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
@@ -110,6 +111,7 @@ import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.GroupMemberModel;
+import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
@@ -127,6 +129,7 @@ public class ContactServiceImpl implements ContactService {
     private final DatabaseService databaseService;
     private final UserService userService;
     private final IdentityStore identityStore;
+    @NonNull
     private final PreferenceService preferenceService;
     // NOTE: The contact model cache will become unnecessary once everything uses the new data
     // layer, since that data layer has caching built-in.
@@ -181,7 +184,7 @@ public class ContactServiceImpl implements ContactService {
         DatabaseService databaseService,
         UserService userService,
         IdentityStore identityStore,
-        PreferenceService preferenceService,
+        @NonNull PreferenceService preferenceService,
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
         IdListService profilePicRecipientsService,
         FileService fileService,
@@ -860,8 +863,17 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public @ColorInt int getAvatarColor(@Nullable ContactModel contact) {
-        if ((this.preferenceService == null || this.preferenceService.isDefaultContactPictureColored()) && contact != null) {
+        if (this.preferenceService.isDefaultContactPictureColored() && contact != null) {
             return contact.getThemedColor(context);
+        }
+        return ColorUtil.getInstance().getCurrentThemeGray(this.context);
+    }
+
+    @Override
+    public @ColorInt int getAvatarColor(@Nullable ch.threema.data.models.ContactModel contactModel) {
+        ContactModelData contactModelData = contactModel != null ? contactModel.getData().getValue() : null;
+        if (this.preferenceService.isDefaultContactPictureColored() && contactModelData != null) {
+            return contactModelData.getThemedColor(context);
         }
         return ColorUtil.getInstance().getCurrentThemeGray(this.context);
     }
@@ -920,39 +932,36 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        // TODO(ANDR-3172): Get all contacts via contact model repository
-        this.getAll().stream()
-            .map(m -> contactModelRepository.getByIdentity(m.getIdentity()))
-            .filter(Objects::nonNull)
+        AndroidContactSyncLogger androidContactSyncLogger = new AndroidContactSyncLogger();
+
+        this.contactModelRepository.getAll()
+            .stream()
             .filter(contactModel -> {
-                ContactModelData data = contactModel.getData().getValue();
-                return data != null && data.isLinkedToAndroidContact();
+                ContactModelData contactModelData = contactModel.getData().getValue();
+                return contactModelData != null && contactModelData.isLinkedToAndroidContact();
             })
             .forEach(contactModel -> {
                 try {
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel);
+                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel, androidContactSyncLogger);
                 } catch (ThreemaException e) {
                     logger.error("Unable to update contact name", e);
                 }
             });
+
+        androidContactSyncLogger.logDuplicates();
+
         return true;
     }
 
     @Override
     public void removeAllSystemContactLinks() {
-        // TODO(ANDR-3172): Get all contacts via contact model repository
-        this.getAll()
+        this.contactModelRepository.getAll()
             .stream()
-            .filter(ContactModel::isLinkedToAndroidContact)
-            .map(m -> contactModelRepository.getByIdentity(m.getIdentity()))
-            .filter(Objects::nonNull)
-            .forEach(contactModel -> {
-                try {
-                    contactModel.removeAndroidContactLink();
-                } catch (ModelDeletedException e) {
-                    logger.info("Could not set android lookup key as model has been deleted");
-                }
-            });
+            .filter(contactModel -> {
+                ContactModelData contactModelData = contactModel.getData().getValue();
+                return contactModelData != null && contactModelData.isLinkedToAndroidContact();
+            })
+            .forEach(ch.threema.data.models.ContactModel::removeAndroidContactLink);
     }
 
     @Override
@@ -984,17 +993,26 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public boolean setUserDefinedProfilePicture(
-        @Nullable final ContactModel contactModel,
+        @NonNull final String identity,
         @Nullable byte[] avatar,
         @NonNull TriggerSource triggerSource
     ) throws IOException, MasterKeyLockedException {
-        if (contactModel != null && avatar != null) {
-            if (this.fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), avatar)) {
-                if (triggerSource != TriggerSource.SYNC && multiDeviceManager.isMultiDeviceActive()) {
-                    taskCreator.scheduleUserDefinedProfilePictureUpdate(contactModel.getIdentity());
-                }
-                return this.onUserDefinedProfilePictureSet(contactModel);
+        ContactModel contactModel = getByIdentity(identity);
+        if (contactModel == null) {
+            logger.error("Cannot set user defined profile for unknown identity {}", identity);
+            return false;
+        }
+
+        if (avatar == null) {
+            logger.error("Cannot set avatar that is null for identity {}", identity);
+            return false;
+        }
+
+        if (this.fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), avatar)) {
+            if (triggerSource != TriggerSource.SYNC && multiDeviceManager.isMultiDeviceActive()) {
+                taskCreator.scheduleUserDefinedProfilePictureUpdate(contactModel.getIdentity());
             }
+            return this.onUserDefinedProfilePictureSet(contactModel);
         }
         return false;
     }
@@ -1012,23 +1030,19 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public boolean removeUserDefinedProfilePicture(
-        @Nullable final ContactModel contactModel,
+        @NonNull final String identity,
         @NonNull TriggerSource triggerSource
     ) {
-        if (contactModel == null) {
-            logger.warn("Could not remove user defined profile picture as contact model is null");
-            return false;
-        }
-        if (userService.isMe(contactModel.getIdentity())) {
+        if (userService.isMe(identity)) {
             logger.error("The user's profile picture cannot be removed using the contact service");
             return false;
         }
 
-        if (this.fileService.removeUserDefinedProfilePicture(contactModel.getIdentity())) {
+        if (this.fileService.removeUserDefinedProfilePicture(identity)) {
             if (triggerSource != TriggerSource.SYNC && multiDeviceManager.isMultiDeviceActive()) {
-                taskCreator.scheduleUserDefinedProfilePictureUpdate(contactModel.getIdentity());
+                taskCreator.scheduleUserDefinedProfilePictureUpdate(identity);
             }
-            ListenerManager.contactListeners.handle(listener -> listener.onAvatarChanged(contactModel.getIdentity()));
+            ListenerManager.contactListeners.handle(listener -> listener.onAvatarChanged(identity));
             return true;
         }
 
@@ -1145,7 +1159,13 @@ public class ContactServiceImpl implements ContactService {
         // Check if contact is known after contact synchronization (if enabled)
         if (preferenceService.isSyncContacts()) {
             // Synchronize contact
-            SynchronizeContactsUtil.startDirectly(identity);
+            try {
+                SynchronizeContactsUtil.startDirectly(identity);
+            } catch (SecurityException exception) {
+                logger.error("Could not check whether the identity is a known android contact");
+                // We still continue because a missing contacts permission should not prevent
+                // fetching and caching a new contact.
+            }
 
             // Check again locally
             if (contactStore.getContactForIdentity(identity) != null) {
@@ -1366,13 +1386,24 @@ public class ContactServiceImpl implements ContactService {
     @NonNull
     public Set<String> getRemovedContacts() {
         /*
-            SELECT identity FROM contacts AS co WHERE acquaintanceLevel = 1 AND NOT EXISTS (
-                SELECT 1 FROM group_member AS gm WHERE gm.identity = co.identity
+            SELECT identity FROM contacts AS co WHERE acquaintanceLevel = 1 AND (
+                NOT EXISTS (
+                    SELECT 1 FROM group_member AS gm WHERE gm.identity = co.identity
+                ) AND NOT EXISTS (
+                    SELECT 1 FROM m_group AS g WHERE g.creatorIdentity = co.identity
+                )
             );
          */
         final @NonNull String query = "SELECT " + ContactModel.COLUMN_IDENTITY + " FROM " + ContactModel.TABLE + " AS co WHERE "
-            + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + " = " + AcquaintanceLevel.GROUP.ordinal() + " AND NOT EXISTS ("
-            + "SELECT 1 FROM " + GroupMemberModel.TABLE + " AS gm WHERE gm." + GroupMemberModel.COLUMN_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY + ");";
+            + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + " = " + AcquaintanceLevel.GROUP.ordinal() + " AND ( "
+            + "NOT EXISTS ("
+            + " SELECT 1 FROM " + GroupMemberModel.TABLE + " AS gm WHERE"
+            + " gm." + GroupMemberModel.COLUMN_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY
+            + " ) AND NOT EXISTS ("
+            + " SELECT 1 FROM " + GroupModel.TABLE + " AS g WHERE"
+            + " g." + GroupModel.COLUMN_CREATOR_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY
+            + " )"
+            + ");";
         final @Nullable Cursor cursor = this.databaseService
             .getReadableDatabase()
             .rawQuery(query);

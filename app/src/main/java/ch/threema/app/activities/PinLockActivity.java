@@ -103,7 +103,6 @@ public class PinLockActivity extends ThreemaActivity {
         numWrongConfirmAttempts = preferenceService.getLockoutAttempts();
 
         setContentView(R.layout.activity_pin_lock);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         passwordEntry = findViewById(R.id.password_entry);
         passwordEntry.setOnEditorActionListener((v, actionId, event) -> {

@@ -42,8 +42,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ch.threema.app.asynctasks.AddContactBackgroundTask;
+import ch.threema.app.debug.AndroidContactSyncLogger;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeviceService;
@@ -93,7 +95,8 @@ public class SynchronizeContactsRoutine implements Runnable {
     private final List<OnFinished> onFinished = new ArrayList<>();
     private final List<OnStarted> onStarted = new ArrayList<>();
 
-    private final List<String> processingIdentities = new ArrayList<>();
+    @NonNull
+    private final Set<String> processingIdentities;
     private boolean abort = false;
     private boolean running = false;
 
@@ -123,7 +126,8 @@ public class SynchronizeContactsRoutine implements Runnable {
         DeviceService deviceService,
         PreferenceService preferenceService,
         IdentityStoreInterface identityStore,
-        BlockedIdentitiesService blockedIdentitiesService
+        BlockedIdentitiesService blockedIdentitiesService,
+        @NonNull Set<String> processingIdentities
     ) {
         this.context = context;
         this.apiConnector = apiConnector;
@@ -137,13 +141,7 @@ public class SynchronizeContactsRoutine implements Runnable {
         this.preferenceService = preferenceService;
         this.identityStore = identityStore;
         this.blockedIdentitiesService = blockedIdentitiesService;
-    }
-
-    public SynchronizeContactsRoutine addProcessIdentity(String identity) {
-        if (!TestUtil.isEmptyOrNull(identity) && !this.processingIdentities.contains(identity)) {
-            this.processingIdentities.add(identity);
-        }
-        return this;
+        this.processingIdentities = processingIdentities;
     }
 
     public void abort() {
@@ -154,7 +152,11 @@ public class SynchronizeContactsRoutine implements Runnable {
         return this.running;
     }
 
-    public boolean fullSync() {
+    /**
+     * Check whether all contacts are being synchronized. If it is not a full sync, then only some
+     * specific identities are updated.
+     */
+    public boolean isFullSync() {
         return this.processingIdentities.isEmpty();
     }
 
@@ -171,7 +173,7 @@ public class SynchronizeContactsRoutine implements Runnable {
         this.running = true;
 
         for (OnStarted s : this.onStarted) {
-            s.started(this.fullSync());
+            s.started(this.isFullSync());
         }
 
         boolean success = false;
@@ -179,6 +181,7 @@ public class SynchronizeContactsRoutine implements Runnable {
         long deletedCount = 0;
         long modifiedRawContactCount = 0;
         long newRawContactCount = 0;
+        // The list of contacts that have been added in this run because they are found by phone or email.
         List<ContactModel> insertedContacts = new ArrayList<>();
 
         try {
@@ -210,20 +213,20 @@ public class SynchronizeContactsRoutine implements Runnable {
             preferenceService.setPhoneNumberSyncHashCode(phoneNumbersHash);
             preferenceService.setTimeOfLastContactSync(System.currentTimeMillis());
 
-            logger.info("Attempting to sync contacts {} - {}", emails.size(), phoneNumbers.size());
+            logger.info("Attempting to sync contacts: {} emails, {} phone numbers", emails.size(), phoneNumbers.size());
 
             //send hashes to server and get result
             MatchTokenStore matchTokenStore = new MatchTokenStore(this.preferenceService);
-            Map<String, APIConnector.MatchIdentityResult> foundIds = this.apiConnector.matchIdentities(
+            Map<String, APIConnector.MatchIdentityResult> matchIdentityResults = this.apiConnector.matchIdentities(
                 emails, phoneNumbers, this.localeService.getCountryIsoCode(), false, identityStore, matchTokenStore);
 
             // remove own ID
             if (userService != null) {
-                foundIds.remove(userService.getIdentity());
+                matchIdentityResults.remove(userService.getIdentity());
             }
 
             final List<String> preSynchronizedIdentities = new ArrayList<>();
-            if (this.fullSync()) {
+            if (this.isFullSync()) {
                 List<String> synchronizedIdentities = this.contactService.getSynchronizedIdentities();
                 if (synchronizedIdentities != null) {
                     preSynchronizedIdentities.addAll(synchronizedIdentities);
@@ -234,14 +237,17 @@ public class SynchronizeContactsRoutine implements Runnable {
             if (existingRawContacts == null) {
                 throw new ThreemaException("No permission or no account");
             }
-            logger.info("Number of existing raw contacts {}", existingRawContacts.size());
+            logger.info("Number of existing raw contacts: {}", existingRawContacts.size());
 
-            //looping result and create/update contacts
-            logger.info("Number of IDs matching phone or email {}", foundIds.size());
+            logger.info("Number of IDs matching phone or email: {}", matchIdentityResults.size());
+
+            AndroidContactSyncLogger androidContactSyncLogger = new AndroidContactSyncLogger();
 
             ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
-            for (Map.Entry<String, APIConnector.MatchIdentityResult> id : foundIds.entrySet()) {
+            for (Map.Entry<String, APIConnector.MatchIdentityResult> matchIdentityResultEntry : matchIdentityResults.entrySet()) {
                 boolean isNewContact = false;
+                String identity = matchIdentityResultEntry.getKey();
+                APIConnector.MatchIdentityResult result = matchIdentityResultEntry.getValue();
 
                 if (this.abort) {
                     //abort!
@@ -252,22 +258,24 @@ public class SynchronizeContactsRoutine implements Runnable {
                 }
 
                 // Do not sync contacts on exclude list
-                if (this.excludedSyncIdentitiesService.isExcluded(id.getKey())) {
-                    logger.info("Identity {} is on exclude list", id.getKey());
+                if (this.excludedSyncIdentitiesService.isExcluded(identity)) {
+                    logger.info("Identity {} is on exclude list", identity);
                     continue;
                 }
 
-                if (!this.processingIdentities.isEmpty() && !this.processingIdentities.contains(id.getKey())) {
+                // If it is not a full sync and the current identity is not one of the identities to
+                // be updated in this run, we skip processing this identity.
+                if (!isFullSync() && !this.processingIdentities.contains(identity)) {
                     continue;
                 }
 
-                if (this.fullSync()) {
+                if (this.isFullSync()) {
                     // remove if list contains this key
-                    preSynchronizedIdentities.remove(id.getKey());
+                    preSynchronizedIdentities.remove(identity);
                 }
 
-                final ContactMatchKeyEmail matchKeyEmail = (ContactMatchKeyEmail) id.getValue().refObjectEmail;
-                final ContactMatchKeyPhone matchKeyPhone = (ContactMatchKeyPhone) id.getValue().refObjectMobileNo;
+                final ContactMatchKeyEmail matchKeyEmail = (ContactMatchKeyEmail) result.refObjectEmail;
+                final ContactMatchKeyPhone matchKeyPhone = (ContactMatchKeyPhone) result.refObjectMobileNo;
 
                 long contactId;
                 String lookupKey;
@@ -280,21 +288,18 @@ public class SynchronizeContactsRoutine implements Runnable {
                 }
 
                 //try to get the contact
-                ContactModel contact = contactModelRepository.getByIdentity(
-                    id.getKey()
-                );
+                ContactModel contact = contactModelRepository.getByIdentity(identity);
                 ContactModelData data = contact != null ? contact.getData().getValue() : null;
                 //contact does not exist, create a new one
                 if (contact == null || data == null) {
-                    APIConnector.MatchIdentityResult result = id.getValue();
                     ContactModelData contactModelData = ContactModelData.javaCreate(
-                        id.getKey(),
+                        identity,
                         result.publicKey,
                         new Date(),
                         "",
                         "",
                         null,
-                        ContactModelData.getIdColorIndexInt(id.getKey()),
+                        ContactModelData.getIdColorIndexInt(identity),
                         VerificationLevel.SERVER_VERIFIED,
                         WorkVerificationLevel.NONE,
                         IdentityType.NORMAL,   // TODO(ANDR-3044): Fetch identity type
@@ -317,7 +322,7 @@ public class SynchronizeContactsRoutine implements Runnable {
                         .runSynchronously();
 
                     if (contact == null) {
-                        logger.error("Could not create contact with identity {}", id.getKey());
+                        logger.error("Could not create contact with identity {}", identity);
                         continue;
                     }
 
@@ -330,14 +335,14 @@ public class SynchronizeContactsRoutine implements Runnable {
                     insertedContacts.add(contact);
 
                     isNewContact = true;
-                    logger.info("Inserting new Threema contact {}", id.getKey());
+                    logger.info("Inserting new Threema contact {}", identity);
                 }
                 contact.setAndroidLookupKey(lookupKey + "/" + contactId);
 
                 try {
                     boolean createNewRawContact;
 
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contact); // throws an exception if no name can be determined
+                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contact, androidContactSyncLogger); // throws an exception if no name can be determined
                     AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
 
                     contact.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT);
@@ -384,11 +389,13 @@ public class SynchronizeContactsRoutine implements Runnable {
                     if (isNewContact) {
                         // probably not a valid contact
                         insertedContacts.remove(contact);
-                        logger.info("Ignore Threema contact {} due to missing name", id.getKey());
+                        logger.info("Ignore Threema contact {} due to missing name", identity);
                     }
                     logger.error("Contact lookup Exception", e);
                 }
             }
+
+            androidContactSyncLogger.logDuplicates();
 
             if (!contentProviderOperations.isEmpty()) {
                 try {
@@ -401,7 +408,7 @@ public class SynchronizeContactsRoutine implements Runnable {
                 contentProviderOperations.clear();
             }
 
-            if (this.fullSync()) {
+            if (this.isFullSync()) {
                 // delete remaining / stray raw contacts
                 if (!existingRawContacts.isEmpty()) {
                     AndroidContactUtil.getInstance().deleteThreemaRawContacts(existingRawContacts);
@@ -426,7 +433,7 @@ public class SynchronizeContactsRoutine implements Runnable {
                 this.onStatusUpdate.error(x);
             }
         } finally {
-            logger.info("Finished [success = {}, inserted = {}, deleted = {}, modifiedRawContacts = {}, newRawContacts = {}] fullSync = {}", success, insertedContacts.size(), deletedCount, modifiedRawContactCount, newRawContactCount, this.fullSync());
+            logger.info("Finished [success = {}, inserted = {}, deleted = {}, modifiedRawContacts = {}, newRawContacts = {}] fullSync = {}", success, insertedContacts.size(), deletedCount, modifiedRawContactCount, newRawContactCount, this.isFullSync());
             for (OnFinished f : this.onFinished) {
                 f.finished(success, modifiedRawContactCount, insertedContacts, deletedCount);
             }

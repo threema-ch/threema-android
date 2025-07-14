@@ -29,7 +29,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -85,7 +84,7 @@ public class StateBitmapUtil {
         this.warningColor = context.getResources().getColor(R.color.material_red);
     }
 
-    @ColorRes
+    @ColorInt
     public int getWarningColor() {
         return warningColor;
     }

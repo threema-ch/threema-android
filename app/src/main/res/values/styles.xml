@@ -189,8 +189,7 @@
 
     <style name="Threema.AlertDialogStyle" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorControlActivated">?attr/colorPrimary</item>
-        <item name="backgroundTint">?attr/colorSurfaceContainerLow</item>
-        <item name="android:background">?attr/colorSurfaceContainerLow</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceContainerLow</item>
     </style>
 
     <style name="Threema.FingerprintAlertDialogStyle" parent="@style/Threema.AlertDialogStyle">

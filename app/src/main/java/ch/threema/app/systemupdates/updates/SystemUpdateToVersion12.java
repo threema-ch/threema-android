@@ -38,21 +38,16 @@ public class SystemUpdateToVersion12 implements SystemUpdate {
 
     @Override
     public void run() {
-        SynchronizeContactsUtil.startDirectly();
-
-        ContactService contactService;
         try {
-            contactService = serviceManager.getContactService();
-        } catch (MasterKeyLockedException e) {
-            throw new RuntimeException("Failed to get contact service", e);
+            SynchronizeContactsUtil.startDirectly();
+        } catch (SecurityException exception) {
+            // Nothing to do
         }
 
         PreferenceService preferenceService = serviceManager.getPreferenceService();
         if (preferenceService.isSyncContacts()) {
             UserService userService = serviceManager.getUserService();
-            if (userService != null) {
-                userService.enableAccountAutoSync(true);
-            }
+            userService.enableAccountAutoSync(true);
         }
     }
 

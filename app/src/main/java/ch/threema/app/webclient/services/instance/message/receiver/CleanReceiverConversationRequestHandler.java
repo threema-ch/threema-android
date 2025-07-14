@@ -99,7 +99,7 @@ public class CleanReceiverConversationRequestHandler extends MessageReceiver {
             ConversationModel conversationModel = null;
             switch (receiver.getType()) {
                 case ContactMessageReceiver.Type_CONTACT:
-                    conversationModel = this.conversationService.refresh(((ContactMessageReceiver) receiver).getContact());
+                    conversationModel = this.conversationService.refresh(((ContactMessageReceiver) receiver).getContactModel());
                     this.conversationService.empty(conversationModel, true);
                     break;
                 case ContactMessageReceiver.Type_GROUP:

@@ -678,8 +678,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     private void openContactEditor() {
-        if (contact != null) {
-            if (!AndroidContactUtil.getInstance().openContactEditor(this, contact, REQUEST_CODE_CONTACT_EDITOR)) {
+        if (contactModel != null) {
+            if (!AndroidContactUtil.getInstance().openContactEditor(this, contactModel, REQUEST_CODE_CONTACT_EDITOR)) {
                 editName();
             }
         }
@@ -959,7 +959,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 break;
             case REQUEST_CODE_CONTACT_EDITOR:
                 try {
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel);
+                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel, null);
                     AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel);
                     this.avatarEditView.setContactModel(contact);
                 } catch (ThreemaException | SecurityException e) {

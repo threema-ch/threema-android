@@ -261,14 +261,14 @@ public class MessageSectionFragment extends MainFragment
     private final SynchronizeContactsListener synchronizeContactsListener = new SynchronizeContactsListener() {
         @Override
         public void onStarted(SynchronizeContactsRoutine startedRoutine) {
-            if (startedRoutine.fullSync()) {
+            if (startedRoutine.isFullSync()) {
                 currentFullSyncs++;
             }
         }
 
         @Override
         public void onFinished(SynchronizeContactsRoutine finishedRoutine) {
-            if (finishedRoutine.fullSync()) {
+            if (finishedRoutine.isFullSync()) {
                 currentFullSyncs--;
 
                 logger.debug("synchronizeContactsListener.onFinished");
@@ -278,7 +278,7 @@ public class MessageSectionFragment extends MainFragment
 
         @Override
         public void onError(SynchronizeContactsRoutine finishedRoutine) {
-            if (finishedRoutine.fullSync()) {
+            if (finishedRoutine.isFullSync()) {
                 currentFullSyncs--;
                 logger.debug("synchronizeContactsListener.onError");
                 refreshListEvent();

@@ -315,7 +315,7 @@ public class ContactsSectionFragment
         @Override
         public void onStarted(SynchronizeContactsRoutine startedRoutine) {
             //only show loading on "full sync"
-            if (resumePauseHandler != null && swipeRefreshLayout != null && startedRoutine.fullSync()) {
+            if (resumePauseHandler != null && swipeRefreshLayout != null && startedRoutine.isFullSync()) {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_SHOW_LOADING, runIfActiveShowLoading);
             }
         }

@@ -192,7 +192,7 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
     }
 
     private void deleteContactConversation(@NonNull ContactModel contactModel) {
-        this.conversationService.delete(contactModel);
+        this.conversationService.delete(contactModel.getIdentity());
     }
 
     @WorkerThread

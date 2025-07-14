@@ -118,7 +118,7 @@ public interface ConversationService {
     /**
      * refresh conversation
      */
-    ConversationModel refresh(ContactModel contactModel);
+    ConversationModel refresh(ch.threema.data.models.ContactModel contactModel);
 
     /**
      * refresh conversation
@@ -210,14 +210,6 @@ public interface ConversationService {
      * @return the number of removed messages.
      */
     int empty(@NonNull DistributionListModel distributionListModel);
-
-    /**
-     * Delete the contact conversation by removing all messages, setting `lastUpdate` to null
-     * and removing it from the cache.
-     *
-     * @return the number of removed messages.
-     */
-    int delete(@NonNull ContactModel contactModel);
 
     /**
      * Delete the contact conversation by removing all messages, setting `lastUpdate` to null and

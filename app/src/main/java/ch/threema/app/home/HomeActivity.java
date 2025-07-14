@@ -1378,6 +1378,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                         return null;
                     }
 
+                    // TODO(ANDR-4021): don't create a fake contact model here
                     Bitmap bitmap = contactService.getAvatar(
                         // Create "fake" contact model for own user
                         ContactModel.create(userService.getIdentity(), userService.getPublicKey()),

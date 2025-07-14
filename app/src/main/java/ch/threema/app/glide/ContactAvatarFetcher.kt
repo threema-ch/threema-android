@@ -28,20 +28,27 @@ import ch.threema.app.R
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.UserService
 import ch.threema.app.utils.AndroidContactUtil
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.ColorUtil
 import ch.threema.app.utils.ContactUtil
-import ch.threema.storage.models.ContactModel
+import ch.threema.data.models.ContactModel
+import ch.threema.data.repositories.ContactModelRepository
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 
 /**
  * This class is used to get the avatars from the database or create the default avatars. The results of the loaded bitmaps will be cached by glide (if possible).
+ * While the name suggests that it can only deal with contacts, it can actually also deal with the user's own profile picture.
+ * TODO(ANDR-4021): Consider properly generalizing or splitting this class, such that it does no need to
+ * rely on "fake" contact models for the user itself
  */
 class ContactAvatarFetcher(
     context: Context,
+    private val userService: UserService?,
     private val contactService: ContactService?,
+    private val contactModelRepository: ContactModelRepository?,
     private val contactAvatarConfig: AvatarCacheServiceImpl.ContactAvatarConfig,
     private val preferenceService: PreferenceService?,
 ) : AvatarFetcher(context) {
@@ -61,7 +68,6 @@ class ContactAvatarFetcher(
     }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val contactModel = contactAvatarConfig.model
         val highRes = contactAvatarConfig.options.highRes
         // Show profile picture from contact (if set)
         val profilePicReceive: Boolean
@@ -90,16 +96,28 @@ class ContactAvatarFetcher(
         }
         val backgroundColor = getBackgroundColor(contactAvatarConfig.options)
 
-        val avatar = if (defaultAvatar) {
-            buildDefaultAvatar(contactModel, highRes, backgroundColor)
+        // TODO(ANDR-4021): It should be possible to load the user's own profile picture without having to extract the identity from a "fake" contact
+        val identity = contactAvatarConfig.model?.identity
+        val avatar = if (identity != null && userService?.isMe(identity) == true) {
+            getUserDefinedProfilePicture(identity, highRes)
+                ?: if (returnDefaultIfNone) {
+                    buildDefaultAvatar(contactModel = null, highRes, backgroundColor)
+                } else {
+                    null
+                }
         } else {
-            loadContactAvatar(
-                contactModel,
-                highRes,
-                profilePicReceive,
-                returnDefaultIfNone,
-                backgroundColor,
-            )
+            val contactModel = identity?.let { contactModelRepository?.getByIdentity(identity) }
+            if (defaultAvatar) {
+                buildDefaultAvatar(contactModel, highRes, backgroundColor)
+            } else {
+                loadContactAvatar(
+                    contactModel,
+                    highRes,
+                    profilePicReceive,
+                    returnDefaultIfNone,
+                    backgroundColor,
+                )
+            }
         }
 
         callback.onDataReady(avatar)
@@ -124,7 +142,7 @@ class ContactAvatarFetcher(
         }
 
         // Try the user defined profile picture
-        getUserDefinedProfilePicture(contactModel, highRes)?.let {
+        getUserDefinedProfilePicture(contactModel.identity, highRes)?.let {
             return it
         }
 
@@ -156,11 +174,11 @@ class ContactAvatarFetcher(
     }
 
     private fun getUserDefinedProfilePicture(
-        contactModel: ContactModel,
+        identity: String,
         highRes: Boolean,
     ): Bitmap? {
         return try {
-            var result = fileService?.getUserDefinedProfilePicture(contactModel.identity)
+            var result = fileService?.getUserDefinedProfilePicture(identity)
             if (result != null && !highRes) {
                 result = AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -174,7 +192,7 @@ class ContactAvatarFetcher(
         contactModel: ContactModel,
         highRes: Boolean,
     ): Bitmap? {
-        if (ContactUtil.isGatewayContact(contactModel) || AndroidContactUtil.getInstance()
+        if (ContactUtil.isGatewayContact(contactModel.identity) || AndroidContactUtil.getInstance()
                 .getAndroidContactUri(contactModel) == null
         ) {
             return null
@@ -196,10 +214,13 @@ class ContactAvatarFetcher(
         highRes: Boolean,
         backgroundColor: Int,
     ): Bitmap {
-        val color = contactService?.getAvatarColor(contactModel)
-            ?: ColorUtil.getInstance().getCurrentThemeGray(context)
+        val color = contactService?.getAvatarColor(contactModel) ?: ColorUtil.getInstance().getCurrentThemeGray(context)
         val drawable =
-            if (ContactUtil.isGatewayContact(contactModel)) contactBusinessAvatar else contactDefaultAvatar
+            if (contactModel != null && ContactUtil.isGatewayContact(contactModel.identity)) {
+                contactBusinessAvatar
+            } else {
+                contactDefaultAvatar
+            }
         return if (highRes) {
             buildDefaultAvatarHighRes(drawable, color, backgroundColor)
         } else {

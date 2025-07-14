@@ -33,6 +33,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.dialogs.ContactEditDialog;
@@ -46,8 +48,10 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -73,15 +77,23 @@ public class ModifyContactHandler extends MessageReceiver {
     private @interface ErrorCode {
     }
 
+    @NonNull
     private final MessageDispatcher dispatcher;
+    @NonNull
     private final ContactService contactService;
+    @NonNull
+    private final ContactModelRepository contactModelRepository;
 
     @AnyThread
-    public ModifyContactHandler(MessageDispatcher dispatcher,
-                                ContactService contactService) {
+    public ModifyContactHandler(
+        @NonNull MessageDispatcher dispatcher,
+        @NonNull ContactService contactService,
+        @NonNull ContactModelRepository contactModelRepository
+    ) {
         super(Protocol.SUB_TYPE_CONTACT);
         this.dispatcher = dispatcher;
         this.contactService = contactService;
+        this.contactModelRepository = contactModelRepository;
     }
 
     @Override
@@ -98,88 +110,142 @@ public class ModifyContactHandler extends MessageReceiver {
         final String identity = args.get(Protocol.ARGUMENT_IDENTITY).asStringValue().toString();
         final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-        // TODO(ANDR-3139): Use new contact model
         // Validate identity
-        final ContactModel contactModel = this.contactService.getByIdentity(identity);
-        if (contactModel == null) {
+        final ContactModel contactModel = contactModelRepository.getByIdentity(identity);
+        final ContactModelData contactModelData = contactModel != null ? contactModel.getData().getValue() : null;
+        if (contactModelData == null) {
             this.failed(identity, temporaryId, Protocol.ERROR_INVALID_CONTACT);
             return;
         }
-        if (contactModel.isLinkedToAndroidContact()) {
+        if (contactModelData.isLinkedToAndroidContact()) {
             this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_LINKED);
             return;
         }
 
-        contactModel.setAcquaintanceLevel(AcquaintanceLevel.DIRECT);
+        contactModel.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT);
 
         // Process data
         final Map<String, Value> data = this.getData(message, false);
 
-        if (data.containsKey(FIELD_FIRST_NAME)) {
-            final String firstName = this.getValueString(data.get(FIELD_FIRST_NAME));
-            if (firstName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_FIRST_NAME) {
-                this.failed(identity, temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
-                return;
-            }
-            contactModel.setFirstName(firstName);
-        }
-        if (data.containsKey(FIELD_LAST_NAME)) {
-            final String lastName = this.getValueString(data.get(FIELD_LAST_NAME));
-            if (lastName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_LAST_NAME) {
-                this.failed(identity, temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
-                return;
-            }
-            contactModel.setLastName(lastName);
+        String nameErrorCode = updateNameFromData(contactModel, data);
+        if (nameErrorCode != null) {
+            failed(identity, temporaryId, nameErrorCode);
+            return;
         }
 
-        // Update avatar
-        if (data.containsKey(Protocol.ARGUMENT_AVATAR)) {
-            if (ContactUtil.isGatewayContact(contactModel)) {
-                this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_BUSINESS);
-                return;
-            } else {
-                try {
-                    final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
-                    if (avatarValue == null || avatarValue.isNilValue()) {
-                        // Clear avatar
-                        this.contactService.removeUserDefinedProfilePicture(contactModel, TriggerSource.LOCAL);
-                    } else {
-                        // Set avatar
-                        final byte[] bmp = avatarValue.asBinaryValue().asByteArray();
-                        if (bmp.length > 0) {
-                            Bitmap avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
-                            // Resize to max allowed size
-                            avatar = BitmapUtil.resizeBitmap(avatar,
-                                ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-                                ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
-                            this.contactService.setUserDefinedProfilePicture(
-                                contactModel,
-                                // Without quality loss
-                                BitmapUtil.bitmapToByteArray(avatar, Bitmap.CompressFormat.PNG,
-                                    100),
-                                TriggerSource.LOCAL
-                            );
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Failed to save avatar", e);
-                    this.failed(identity, temporaryId, Protocol.ERROR_INTERNAL);
-                    return;
-                }
-            }
+        String profilePictureErrorCode = updateProfilePictureFromData(contactModel, data);
+        if (profilePictureErrorCode != null) {
+            failed(identity, temporaryId, profilePictureErrorCode);
+            return;
         }
 
-        // Save the contact model
-        this.contactService.save(contactModel);
+        contactService.invalidateCache(identity);
 
         // Return updated contact
-        this.success(identity, temporaryId, contactModel);
+        this.success(identity, temporaryId, contactService.getByIdentity(identity));
+    }
+
+    /**
+     * Update the contact's name from the given data. If an error occurs, the error message is
+     * returned. If null is returned, the name has been successfully updated or no update was
+     * needed.
+     */
+    @Nullable
+    private String updateNameFromData(@NonNull ContactModel contactModel, @NonNull Map<String, Value> data) {
+        boolean firstNameChanged = data.containsKey(FIELD_FIRST_NAME);
+        boolean lastNameChanged = data.containsKey(FIELD_LAST_NAME);
+
+        String firstName;
+        String lastName;
+
+        if (firstNameChanged) {
+            logger.info("First name is set");
+            firstName = this.getValueString(data.get(FIELD_FIRST_NAME));
+            if (firstName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_FIRST_NAME) {
+                return Protocol.ERROR_VALUE_TOO_LONG;
+            }
+        } else {
+            ContactModelData contactModelData = contactModel.getData().getValue();
+            if (contactModelData == null) {
+                logger.error("Cannot get existing first name as the contact model data is null");
+                return Protocol.ERROR_INTERNAL;
+            }
+            firstName = contactModelData.firstName;
+        }
+        if (lastNameChanged) {
+            logger.info("Last name is set");
+            lastName = this.getValueString(data.get(FIELD_LAST_NAME));
+            if (lastName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_LAST_NAME) {
+                return Protocol.ERROR_VALUE_TOO_LONG;
+            }
+        } else {
+            ContactModelData contactModelData = contactModel.getData().getValue();
+            if (contactModelData == null) {
+                logger.error("Cannot get existing last name as the contact model data is null");
+                return Protocol.ERROR_INTERNAL;
+            }
+            lastName = contactModelData.lastName;
+        }
+
+        contactModel.setNameFromLocal(firstName, lastName);
+
+        return null;
+    }
+
+    /**
+     * Update the contact's profile picture from the given data. If an error occurs, the error
+     * message is returned. If null is returned, the profile picture has been successfully updated
+     * or no update was needed.
+     */
+    private String updateProfilePictureFromData(@NonNull ContactModel contactModel, @NonNull Map<String, Value> data) {
+        if (!data.containsKey(Protocol.ARGUMENT_AVATAR)) {
+            logger.info("Profile picture hasn't been changed");
+            return null;
+        }
+
+        if (ContactUtil.isGatewayContact(contactModel.getIdentity())) {
+            return Protocol.ERROR_NOT_ALLOWED_BUSINESS;
+        }
+
+        try {
+            final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
+            if (avatarValue == null || avatarValue.isNilValue()) {
+                // Clear avatar
+                this.contactService.removeUserDefinedProfilePicture(contactModel.getIdentity(), TriggerSource.LOCAL);
+            } else {
+                // Set avatar
+                final byte[] bmp = avatarValue.asBinaryValue().asByteArray();
+                if (bmp.length > 0) {
+                    Bitmap avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
+                    // Resize to max allowed size
+                    avatar = BitmapUtil.resizeBitmap(avatar,
+                        ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
+                        ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
+                    boolean success = this.contactService.setUserDefinedProfilePicture(
+                        contactModel.getIdentity(),
+                        // Without quality loss
+                        BitmapUtil.bitmapToByteArray(avatar, Bitmap.CompressFormat.PNG,
+                            100),
+                        TriggerSource.LOCAL
+                    );
+                    if (!success) {
+                        logger.error("Failed to set profile picture");
+                        return Protocol.ERROR_INTERNAL;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while setting profile picture", e);
+            return Protocol.ERROR_INTERNAL;
+        }
+
+        return null;
     }
 
     /**
      * Respond with the modified contact model.
      */
-    private void success(String threemaId, String temporaryId, ContactModel contact) {
+    private void success(String threemaId, String temporaryId, ch.threema.storage.models.ContactModel contact) {
         logger.debug("Respond modify contact success");
         try {
             this.send(this.dispatcher,

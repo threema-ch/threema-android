@@ -858,7 +858,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             String profilePic = user.optString(TAG_SAFE_USER_PROFILE_PIC, null);
             if (profilePic != null) {
                 try {
-                    contactService.setUserDefinedProfilePicture(contactModel, Base64.decode(profilePic), TriggerSource.LOCAL);
+                    contactService.setUserDefinedProfilePicture(identity, Base64.decode(profilePic), TriggerSource.LOCAL);
                 } catch (Exception e) {
                     // base 64 decoding or avatar setting failed - forget about the pic
                 }

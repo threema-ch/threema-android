@@ -3706,15 +3706,6 @@ public class ComposeMessageFragment extends Fragment implements
             for (Map.Entry<String, Integer> entry : colorIndices.entrySet()) {
                 String memberIdentity = entry.getKey();
                 int memberColorIndex = entry.getValue();
-                // If the ID color index is -1, the correct index is calculated and stored into the database
-                if (memberColorIndex < 0) {
-                    ContactModel member = contactService.getByIdentity(memberIdentity);
-                    if (member != null) {
-                        member.initializeIdColor();
-                        memberColorIndex = member.getIdColorIndex();
-                        contactService.save(member);
-                    }
-                }
                 colors.put(memberIdentity,
                     darkTheme ?
                         ColorUtil.getInstance().getIDColorDark(memberColorIndex) :

@@ -214,7 +214,7 @@
     <string name="enter_code_sum">Введите код, который был указан в SMS или продиктован в телефонном звонке.</string>
     <string name="no_matching_contacts">Контакты не найдены.</string>
     <string name="code_invalid">Введён неправильный код.</string>
-    <string name="try_again">Попробуйте ещё раз</string>
+    <string name="try_again">Попробовать ещё раз</string>
     <string name="decoding_message">Расшифровка сообщения</string>
     <string name="invalid_barcode">Неправильный тип штрих-кода</string>
     <string name="expired_barcode">Срок действия кода истёк. Отсканируйте его ещё раз непосредственно из приложения другого пользователя.</string>

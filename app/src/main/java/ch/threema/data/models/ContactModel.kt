@@ -21,6 +21,7 @@
 
 package ch.threema.data.models
 
+import android.content.Context
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
@@ -30,6 +31,7 @@ import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_ME
 import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.utils.ColorUtil
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.utils.LoggingUtil
@@ -219,6 +221,16 @@ data class ContactModelData(
      * Return the [colorIndex] as [Int].
      */
     fun colorIndexInt(): Int = colorIndex.toInt()
+
+    fun getThemedColor(context: Context): Int = if (ConfigUtils.isTheDarkSide(context)) {
+        getColorDark()
+    } else {
+        getColorLight()
+    }
+
+    private fun getColorDark(): Int = ColorUtil.getInstance().getIDColorDark(colorIndex.toInt())
+
+    private fun getColorLight(): Int = ColorUtil.getInstance().getIDColorLight(colorIndex.toInt())
 
     /**
      * Return the [featureMask] as [BigInteger].

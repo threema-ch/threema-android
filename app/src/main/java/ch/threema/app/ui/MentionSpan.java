@@ -91,7 +91,7 @@ public class MentionSpan extends ReplacementSpan {
 
     @NonNull
     private String getMentionLabelText(CharSequence text, int start, int end) {
-        final String identity = text.subSequence(start + 2, end - 1).toString();
+        final String identity = text.toString().substring(start + 2, end - 1);
 
         String label = NameUtil.getQuoteName(identity, this.contactService, this.userService);
         if (label.length() > LABEL_MAX_LENGTH) {

@@ -247,7 +247,8 @@ if [ $export_image -eq 1 ]; then
     log_major "Exporting docker image"
     docker image save -o "$targetdir/docker-image.tar" "$DOCKERIMAGE:$APP_VERSION_CODE"
     log_minor "Compressing docker image"
-    gzip "$targetdir/docker-image.tar"
+    gzip "${targetdir}/docker-image.tar"
+    chmod 644 "${targetdir}/docker-image.tar.gz"
 fi
 
 log_major "Done! You can find the resulting files in the '$releasedir' directory."

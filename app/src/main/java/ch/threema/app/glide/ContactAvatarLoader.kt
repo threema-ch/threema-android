@@ -31,7 +31,9 @@ import com.bumptech.glide.signature.ObjectKey
 
 class ContactAvatarLoader(val context: Context) :
     ModelLoader<AvatarCacheServiceImpl.ContactAvatarConfig, Bitmap> {
+    private val userService = ThreemaApplication.getServiceManager()?.userService
     private val contactService = ThreemaApplication.getServiceManager()?.contactService
+    private val contactModelRepository = ThreemaApplication.getServiceManager()?.modelRepositories?.contacts
     private val preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
 
     override fun buildLoadData(
@@ -42,7 +44,7 @@ class ContactAvatarLoader(val context: Context) :
     ): ModelLoader.LoadData<Bitmap> {
         return ModelLoader.LoadData(
             ObjectKey(config),
-            ContactAvatarFetcher(context, contactService, config, preferenceService),
+            ContactAvatarFetcher(context, userService, contactService, contactModelRepository, config, preferenceService),
         )
     }
 

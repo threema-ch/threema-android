@@ -42,6 +42,8 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import org.slf4j.Logger;
 
+import java.util.Set;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
@@ -978,12 +980,17 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                 @Override
                 protected Void doInBackground(Void... params) {
                     try {
-                        final Account account = userService.getAccount(true);
+                        // We need to create an account if there is no account yet. Therefore we need this call because of its side effect.
+                        userService.getAccount(true);
                         //disable
                         userService.enableAccountAutoSync(false);
 
-                        SynchronizeContactsService synchronizeContactsService = serviceManager.getSynchronizeContactsService();
-                        SynchronizeContactsRoutine routine = synchronizeContactsService.instantiateSynchronization(account);
+                        SynchronizeContactsRoutine routine = serviceManager.getSynchronizeContactsService().instantiateSynchronization();
+                        if (routine == null) {
+                            logger.error("Cannot synchronize contacts as the routine is null");
+                            cancel(true);
+                            return null;
+                        }
 
                         routine.setOnStatusUpdate(new SynchronizeContactsRoutine.OnStatusUpdate() {
                             @Override

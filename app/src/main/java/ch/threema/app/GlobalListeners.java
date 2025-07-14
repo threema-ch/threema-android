@@ -61,8 +61,6 @@ import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.notification.NotificationService;
@@ -121,9 +119,9 @@ public class GlobalListeners {
     }
 
     @NonNull
-    private Context appContext;
+    private final Context appContext;
     @NonNull
-    private ServiceManager serviceManager;
+    private final ServiceManager serviceManager;
 
     public void setUp() {
         ListenerManager.groupListeners.add(new GroupListener() {
@@ -486,20 +484,28 @@ public class GlobalListeners {
         ListenerManager.contactListeners.add(new ContactListener() {
             @Override
             public void onModified(final @NonNull String identity) {
-                final ContactModel modifiedContactModel = serviceManager.getDatabaseService().getContactModelFactory().getByIdentity(identity);
+                final ContactModel modifiedContact = serviceManager.getDatabaseService().getContactModelFactory().getByIdentity(identity);
+                if (modifiedContact == null) {
+                    return;
+                }
+                final ch.threema.data.models.ContactModel modifiedContactModel = serviceManager.getModelRepositories().getContacts().getByIdentity(identity);
                 if (modifiedContactModel == null) {
                     return;
                 }
+
                 RuntimeUtil.runOnWorkerThread(() -> {
                     try {
                         final ConversationService conversationService = serviceManager.getConversationService();
                         final ContactService contactService = serviceManager.getContactService();
 
                         // Refresh conversation cache
-                        conversationService.updateContactConversation(modifiedContactModel);
+                        conversationService.updateContactConversation(modifiedContact);
                         conversationService.refresh(modifiedContactModel);
 
-                        ShortcutUtil.updatePinnedShortcut(contactService.createReceiver(modifiedContactModel));
+                        ContactMessageReceiver messageReceiver = contactService.createReceiver(modifiedContactModel);
+                        if (messageReceiver != null) {
+                            ShortcutUtil.updatePinnedShortcut(messageReceiver);
+                        }
                     } catch (ThreemaException e) {
                         logger.error("Exception", e);
                     }
@@ -510,10 +516,9 @@ public class GlobalListeners {
             public void onAvatarChanged(final @NonNull String identity) {
                 RuntimeUtil.runOnWorkerThread(() -> {
                     try {
-                        ContactService contactService = serviceManager.getContactService();
-                        ContactModel contactModel = contactService.getByIdentity(identity);
-                        if (contactModel != null) {
-                            ShortcutUtil.updatePinnedShortcut(contactService.createReceiver(contactModel));
+                        ContactMessageReceiver messageReceiver = serviceManager.getContactService().createReceiver(identity);
+                        if (messageReceiver != null) {
+                            ShortcutUtil.updatePinnedShortcut(messageReceiver);
                         }
                     } catch (ThreemaException e) {
                         logger.error("Exception", e);
@@ -536,10 +541,8 @@ public class GlobalListeners {
             @Override
             public void onAvatarSettingChanged() {
                 //reset the avatar cache!
-                if (serviceManager != null) {
-                    AvatarCacheService s = serviceManager.getAvatarCacheService();
-                    s.clear();
-                }
+                AvatarCacheService s = serviceManager.getAvatarCacheService();
+                s.clear();
             }
 
             @Override
@@ -699,33 +702,33 @@ public class GlobalListeners {
             public void onChange(boolean selfChange) {
                 super.onChange(selfChange);
 
-                if (!selfChange && serviceManager != null && !isRunning) {
+                logger.info("Contact name change observed");
+
+                if (selfChange || isRunning) {
+                    logger.info("Contact name change observer already running");
+                    return;
+                }
+
+                try {
                     this.isRunning = true;
                     onAndroidContactChangeLock.lock();
+                    logger.info("Starting to update all contact names from android contacts");
 
-                    boolean cont;
-                    //check if a sync is in progress.. wait!
-                    try {
-                        SynchronizeContactsService synchronizeContactService = serviceManager.getSynchronizeContactsService();
-                        cont = !synchronizeContactService.isSynchronizationInProgress();
-                    } catch (MasterKeyLockedException e) {
-                        logger.error("Exception", e);
-                        //do nothing
-                        cont = false;
+                    if (serviceManager.getSynchronizeContactsService().isSynchronizationInProgress()) {
+                        logger.warn("Aborting contact name change observer as a contact synchronization is currently in progress");
+                        return;
                     }
 
-                    if (cont) {
-                        PreferenceService preferencesService = serviceManager.getPreferenceService();
-                        if (preferencesService.isSyncContacts()) {
-                            try {
-                                ContactService c = serviceManager.getContactService();
-                                //update contact names if changed!
-                                c.updateAllContactNamesFromAndroidContacts();
-                            } catch (MasterKeyLockedException e) {
-                                logger.error("Exception", e);
-                            }
-                        }
+                    if (!serviceManager.getPreferenceService().isSyncContacts()) {
+                        logger.warn("Contact synchronization is not enabled. Aborting.");
+                        return;
                     }
+
+                    boolean success = serviceManager.getContactService().updateAllContactNamesFromAndroidContacts();
+                    logger.info("Finished updating contact names from android contacts (success={})", success);
+                } catch (MasterKeyLockedException masterKeyLockedException) {
+                    logger.error("Cantact name change observer could not be run successfully", masterKeyLockedException);
+                } finally {
                     this.isRunning = false;
                     onAndroidContactChangeLock.unlock();
                 }
@@ -786,7 +789,7 @@ public class GlobalListeners {
                 @NonNull final byte[] permanentKey,
                 @NonNull final String browser
             ) {
-                logger.info("WebClientListenerManager: onStarted", true);
+                logger.info("WebClientListenerManager: onStarted");
 
                 RuntimeUtil.runOnUiThread(() -> {
                     String toastText = appContext.getString(R.string.webclient_new_connection_toast);
@@ -925,10 +928,6 @@ public class GlobalListeners {
             ) {
                 try {
                     // Services
-                    if (serviceManager == null) {
-                        this.logger.error("Could not save voip status, servicemanager is null");
-                        return;
-                    }
                     final IdentityStore identityStore = serviceManager.getIdentityStore();
                     final ContactService contactService = serviceManager.getContactService();
                     final MessageService messageService = serviceManager.getMessageService();

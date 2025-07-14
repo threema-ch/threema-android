@@ -473,7 +473,8 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 
         updateDispatcher.addReceiver(new ModifyContactHandler(
             updateDispatcher,
-            services.contact
+            services.contact,
+            services.contactModelRepository
         ));
         updateDispatcher.addReceiver(new ModifyGroupHandler(
             updateDispatcher,

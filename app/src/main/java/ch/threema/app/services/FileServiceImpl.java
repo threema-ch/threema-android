@@ -36,7 +36,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -108,17 +107,17 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupModel;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageType;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 import static ch.threema.app.utils.StreamUtilKt.orEmpty;
-import static ch.threema.common.TimeExtensionsKt.now;
 
 public class FileServiceImpl implements FileService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("FileServiceImpl");
@@ -455,16 +454,22 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean hasUserDefinedProfilePicture(@NonNull String identity) {
-        File avatar = getContactAvatarFile(identity);
+        File profilePictureFile = getContactAvatarFile(identity);
 
-        return avatar != null && avatar.exists();
+        return profilePictureFile != null && profilePictureFile.exists();
     }
 
     @Override
     public boolean hasContactDefinedProfilePicture(@NonNull String identity) {
-        File avatar = getContactPhotoFile(identity);
+        File profilePictureFile = getContactPhotoFile(identity);
 
-        return avatar != null && avatar.exists();
+        return profilePictureFile != null && profilePictureFile.exists();
+    }
+
+    @Override
+    public boolean hasAndroidDefinedProfilePicture(@NonNull String identity) {
+        File profilePictureFile = getAndroidContactAvatarFile(identity);
+        return profilePictureFile != null && profilePictureFile.exists();
     }
 
     private File getPictureFile(File path, String prefix, String identity) {
@@ -1092,16 +1097,19 @@ public class FileServiceImpl implements FileService {
             throw new MasterKeyLockedException("no masterkey or locked");
         }
 
+        ContactModelData contactModelData = contactModel.getData().getValue();
+        if (contactModelData == null) {
+            logger.error("Contact model data is null");
+            return null;
+        }
+
         long now = System.currentTimeMillis();
-        long expiration = contactModel.getLocalAvatarExpires() != null ? contactModel.getLocalAvatarExpires().getTime() : 0;
+        long expiration = contactModelData.localAvatarExpires != null ? contactModelData.localAvatarExpires.getTime() : 0;
         if (expiration < now) {
             ServiceManager serviceManager = ThreemaApplication.getServiceManager();
             if (serviceManager != null) {
                 try {
-                    if (AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel)) {
-                        ContactService contactService = serviceManager.getContactService();
-                        contactService.save(contactModel);
-                    }
+                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel);
                 } catch (SecurityException e) {
                     logger.error("Could not update avatar by android contact", e);
                 }

@@ -456,7 +456,7 @@
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:noHistory="true"
             android:theme="@style/Theme.Threema.WithToolbar.NoAnim"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan" />
         <activity
             android:name=".activities.GroupAddActivity"
             android:configChanges="uiMode"

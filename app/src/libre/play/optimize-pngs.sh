@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-find listings/ -name "*.png" -exec optipng -o6 {} \;
+find listings/ -name "*.png" -exec pngquant --speed 1 --strip --force --ext .png {} \;

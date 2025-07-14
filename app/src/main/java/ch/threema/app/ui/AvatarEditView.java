@@ -400,7 +400,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                             userService.removeUserProfilePicture(TriggerSource.LOCAL);
                         } else {
                             contactService.removeUserDefinedProfilePicture(
-                                avatarData.getContactModel(), TriggerSource.LOCAL
+                                contactModel.getIdentity(), TriggerSource.LOCAL
                             );
                         }
                     } else if (avatarData.getGroupModel() != null) {

@@ -46,9 +46,9 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ResettableInputStream;
 import ch.threema.base.ThreemaException;
+import ch.threema.data.models.ContactModel;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.data.models.GroupModel;
 
 public interface FileService {
@@ -136,6 +136,8 @@ public interface FileService {
     boolean hasUserDefinedProfilePicture(@NonNull String identity);
 
     boolean hasContactDefinedProfilePicture(@NonNull String identity);
+
+    boolean hasAndroidDefinedProfilePicture(@NonNull String identity);
 
     /**
      * decrypt a file and save into a new one
