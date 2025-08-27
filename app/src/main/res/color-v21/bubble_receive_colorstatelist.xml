@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TODO(ANDR-3888) Delete -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/brand_300" android:state_pressed="true" />
-    <item android:color="@color/brand_700" android:state_activated="true" />
+    <item android:color="@color/brand_800" android:state_pressed="true" />
+    <item android:color="@color/brand_800" android:state_activated="true" />
     <item android:color="@color/brand_grey_100" />
 </selector>

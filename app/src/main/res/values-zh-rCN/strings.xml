@@ -1761,7 +1761,8 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="new_group_messages">新的群组消息</string>
     <string name="individual_notification_settings">单独通知设置</string>
     <string name="delete_message_not_supported_for_all_group_members">此消息不会为以下群组成员删除：%1$s</string>
-    <string name="work_intro_more_link_text">进一步了解 Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">了解更多有关 ${app_name} 的信息</string>
     <string name="work_intro_subtitle">为公司而设的安全商业版通讯工具。</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">登录 ${app_name}</string>
@@ -1866,6 +1867,10 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="contact_availability_status_available">在线</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">离线</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">您所提供的服务器网址为无效，请联系您的管理员以获取帮助。</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">激活链接为无效，请联系您的管理员以获取帮助。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

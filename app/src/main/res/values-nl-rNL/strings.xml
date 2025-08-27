@@ -1737,7 +1737,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="new_group_messages">Nieuwe groepsberichten</string>
     <string name="individual_notification_settings">Individuele meldingsinstellingen</string>
     <string name="delete_message_not_supported_for_all_group_members">Het bericht wordt niet verwijderd voor de volgende groepsleden: %1$s</string>
-    <string name="work_intro_more_link_text">Kom meer te weten over Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Meer informatie over ${app_name}</string>
     <string name="work_intro_subtitle">De veilige zakelijke messenger \nvoor bedrijven.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Inloggen bij ${app_name}</string>
@@ -1843,6 +1844,10 @@ Voer een vraag in voor uw poll.</string>
     <string name="contact_availability_status_available">Beschikbaar</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Niet beschikbaar</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">De opgegeven server-URL is ongeldig. Neem contact op met uw beheerder.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">De activatielink is ongeldig. Neem contact op met uw beheerder.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>

@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:padding="16dp"
-        tools:background="?attr/colorPrimaryContainer"
+        android:background="?attr/colorSurfaceContainer"
+        tools:background="?attr/colorSurfaceContainer"
         tools:layout_gravity="center">
 
         <androidx.appcompat.widget.AppCompatImageView

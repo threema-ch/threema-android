@@ -1737,7 +1737,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="new_group_messages">Nové skupinové zprávy</string>
     <string name="individual_notification_settings">Individuální nastavení oznámení</string>
     <string name="delete_message_not_supported_for_all_group_members">Zpráva nebude odstraněna pro následující členy skupiny: %1$s</string>
-    <string name="work_intro_more_link_text">Zjistěte více o Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Zjistěte více o aplikaci ${app_name}</string>
     <string name="work_intro_subtitle">Bezpečný messenger pro firmy.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Přihlášení ${app_name}</string>
@@ -1845,6 +1846,10 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="contact_availability_status_available">Dostupný</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Nedostupný</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">Poskytnutá URL serveru je neplatná. Kontaktujte prosím svého administrátora.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">Aktivační odkaz je neplatný. Kontaktujte prosím svého administrátora.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

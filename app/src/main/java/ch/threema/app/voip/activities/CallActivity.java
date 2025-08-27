@@ -170,13 +170,14 @@ import java8.util.concurrent.CompletableFuture;
  */
 public class CallActivity extends ThreemaActivity implements
     BottomSheetAbstractDialog.BottomSheetDialogCallback,
+    GenericAlertDialog.DialogClickListener,
     SensorListener,
     LifecycleOwner {
     private static final Logger logger = LoggingUtil.getThreemaLogger("CallActivity");
     private static final String LIFETIME_SERVICE_TAG = "CallActivity";
     private static final String SENSOR_TAG_CALL = "voipcall";
     public static final String EXTRA_ACCEPT_INCOMING_CALL = "ACCEPT_INCOMING_CALL";
-    private static final String DIALOG_TAG_OK = "ok";
+    private static final String DIALOG_TAG_CONNECTION_FAILED = "connection_failed";
 
     // saved activity states
     private static final String BUNDLE_ACTIVITY_MODE = "activityMode";
@@ -465,7 +466,7 @@ public class CallActivity extends ThreemaActivity implements
                     case ACTION_CONNECTING_FAILED:
                         if (!isDestroyed()) {
                             GenericAlertDialog.newInstance(R.string.error, R.string.voip_connection_failed, R.string.ok, 0)
-                                .show(getSupportFragmentManager(), DIALOG_TAG_OK);
+                                .show(getSupportFragmentManager(), DIALOG_TAG_CONNECTION_FAILED);
                         }
                         break;
                     case ACTION_RECONNECTING:
@@ -2341,6 +2342,13 @@ public class CallActivity extends ThreemaActivity implements
 
     //endregion
 
+
+    @Override
+    public void onYes(String tag, Object data) {
+        if (tag.equals(DIALOG_TAG_CONNECTION_FAILED)) {
+            abortWithError();
+        }
+    }
 
     @Override
     public void finish() {

@@ -1699,7 +1699,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="individual_notification_settings">Individuálne nastavenia oznámení</string>
     <string name="delete_message_not_supported_for_all_group_members">Správa nebude odstránená pre nasledujúcich členov skupiny:
 %1$s</string>
-    <string name="work_intro_more_link_text">Zistiť viac o Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_subtitle">Bezpečný messenger\npre firmy.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Prihlásenie ${app_name}</string>
@@ -1744,6 +1744,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

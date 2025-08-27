@@ -101,6 +101,7 @@
     <string name="next">Следващо</string>
     <string name="finish">Край</string>
     <string name="please_wait">Моля, изчакайте…</string>
+    <string name="please_wait_timeout">Това отнема повече време от очакваното</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Създайте своя ${app_name_short} идентификатор…</string>
     <string name="wizard1_sync_contacts">Синхронизирайте контактите…</string>
@@ -164,6 +165,7 @@
     <string name="delete_id_message">Освен ако не сте създали резервно копие или експортирали/копирали този идентификатор, Вие никога няма да можете да изпращате или получавате         съобщения с този идентификатор отново.\n\nАко не искате да използвате този идентификатор повече, се препоръчва да създадете парола за анулиране и да анулирате идентификатора на myid.threema.ch/revoke преди да го изтриете.</string>
     <string name="delete_id_message2">Последно предупреждение: наистина ли искате да изтриете идентификатора на това устройство?</string>
     <string name="delete_id_sum">Окончателно изтриване на ${app_name_short} идентификатора и всички чатове на това устройство</string>
+    <string name="delete_all_data_prompt">Искате ли да изтриете всички данни на приложението?</string>
     <string name="backup_password_summary">Вашият експортиран идентификатор ще бъде криптиран с парола. Използвайте комбинация от букви, цифри и символи. Не забравяйте какво е въведено тук!</string>
     <string name="backup_password_again_summary">Въведете паролата отново</string>
     <string name="password_hint">Парола</string>
@@ -346,6 +348,10 @@
     <string name="save_changes">Запазете</string>
     <string name="creating_group">Създаване на групата</string>
     <string name="updating_group">Обновяване на групата</string>
+    <string name="leaving_group">Напускане на групата</string>
+    <string name="disbanding_group">Разпускане на групата</string>
+    <string name="removing_group">Изтриване на групата</string>
+    <string name="resyncing_group">Повторна синхронизация на групата</string>
     <string name="status_create_group">Групата е създадена.</string>
     <string name="status_rename_group">Групата е преименувана на „%1$s“</string>
     <string name="status_group_new_photo">Снимката на групата е обновена.</string>
@@ -700,7 +706,7 @@
     <string name="new_wizard_info_link">Предоставяйки ни Вашия телефонен номер и имейл, ${app_name_short} може да помогне на приятелите да Ви намират автоматично, ако Ви имат като контакт в техните списъци с контакти. Данните Ви ще бъдат запазени в едностранно криптирана (хеш) форма на нашите сървъри. Може просто да прескочите тази стъпка, ако искате да ползвате ${app_name} напълно анонимно.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_link_phone_only">Предоставяйки ни Вашия телефонен номер, ${app_name_short} може да помогне на приятелите да
-         Ви намират автоматично, ако Ви имат като контакт в техните списъци с контакти. Номерът Ви ще бъде запазен в 
+         Ви намират автоматично, ако Ви имат като контакт в техните списъци с контакти. Номерът Ви ще бъде запазен в
         едностранно криптирана (хеш) форма на нашите сървъри. Може просто да прескочите тази стъпка, ако искате да ползвате ${app_name_short}
       напълно анонимно.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -745,6 +751,20 @@
     <string name="clone_group_message">Това действие ще създаде копие на групата с Вас като администратор. Ще продължите ли?</string>
     <string name="prefs_proximity_sensor">Използване на сензора за близост</string>
     <string name="prefs_proximity_sensor_explain">Използване на слушалка за възпроизвеждане на гласови съобщения, ако сензорът за близост е закрит</string>
+    <string name="error_creating_group_network">Групата не бе създадена. Моля, проверете Вашата интернет връзка и опитайте отново.</string>
+    <string name="error_creating_group_internal">Поради вътрешна грешка групата не бе създадена. Моля, опитайте отново по-късно.</string>
+    <string name="error_cloning_group_network">Групата не бе клонирана. Моля, проверете Вашата интернет връзка и опитайте отново.</string>
+    <string name="error_cloning_group_internal">Поради вътрешна грешка, групата не бе клонирана. Моля, опитайте отново по-късно.</string>
+    <string name="error_updating_group_network">Промените не могат да бъдат приложени. Моля, проверете Вашата интернет връзка и опитайте отново.</string>
+    <string name="error_updating_group_internal">Поради вътрешна грешка промените не са приложени. Моля, опитайте отново по-късно.</string>
+    <string name="error_leaving_group_network">Групата не е напусната. Моля, проверете Вашата интернет връзка и опитайте отново.</string>
+    <string name="error_leaving_group_internal">Поради вътрешна грешка групата не е напусната. Моля, опитайте отново по-късно.</string>
+    <string name="error_disbanding_group_network">Групата не е разпусната. Моля, проверете Вашата интернет връзка и опитайте отново.</string>
+    <string name="error_disbanding_group_internal">Поради вътрешна грешка групата не е разпусната. Моля, опитайте отново по-късно.</string>
+    <string name="error_removing_group_network">Групата не е изтрита. Моля, проверете Вашата интернет връзка и опитайте отново.</string>
+    <string name="error_removing_group_internal">Поради вътрешна грешка групата не е изтрита. Моля, опитайте отново по-късно.</string>
+    <string name="error_resyncing_group_network">Групата не е повторно синхронизирана. Моля, проверете Вашата интернет връзка и опитайте отново.</string>
+    <string name="error_resyncing_group_internal">Поради вътрешна грешка групата не е повторно синхронизирана. Моля, опитайте отново по-късно.</string>
     <string name="no_media_found_generic">Няма мултимедийни елементи в този чат, които да съвпадат с избора Ви.</string>
     <string name="max_images_reached">Максимум %d елемента могат да се редактират едновременно</string>
     <string name="enter_description">Моля, опишете грешката/проблема тук.</string>
@@ -1563,7 +1583,7 @@
     <string name="prefs_summary_hibernation_api">За да предотвратите приложението ${app_name} да бъде поставено на пауза от системата след дълга неактивност, деактивирайте системната настройка „Поставете на пауза приложението, ако не се използва“.</string>
     <string name="unable_to_fetch_configuration">Няма достъп до данните от сървъра за настройки. Опитайте отново по-късно.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Засечена е връзка от друго устройство със същия ${app_name_short} идентификатор. Наскоро да сте използвали Вашия ${app_name_short} идентификатор от друго устройство? <br><br> Ако сте го направил\а, може да игнорирате това съобщение. <br><br> Ако не сте, поверителният Ви ключ може да е компрометиран. Моля, <a href=https://threema.com/faq/another_connection"> последвайте нашите предложения,</a> за да защитите Вашето устройство и Вашите данни преди да създадете нов идентификатор.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Засечена е връзка от друго устройство със същия ${app_name_short} идентификатор. Наскоро да сте използвали Вашия ${app_name_short} идентификатор от друго устройство? <br><br> Ако сте го направил\а, може да игнорирате това съобщение. <br><br> Ако не сте, поверителният Ви ключ може да е компрометиран. Моля, <a href="https://threema.com/faq/another_connection"> последвайте нашите предложения,</a> за да защитите Вашето устройство и Вашите данни преди да създадете нов идентификатор.]]></string>
     <string name="fetch2_failure">Синхронизацията със сървъра за предоставяне на услуги е неуспешна.</string>
     <string name="no_members_support_group_calls">Няма повече членове в тази група, които да могат да отговорят на групови обаждания</string>
     <string name="group_calls">Групови обаждания</string>
@@ -1703,7 +1723,9 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">На приложението не му е разрешено да поддържа постоянна връзка със сървърите, а това е необходимо на ${app_name_short} Push, за да работи. Вие няма да бъдете информирани за нови съобщения, когато приложението е във фонов режим. За да го поправите, натиснете на „Използване на батерията“ и изберете „Неограничено“.</string>
     <!-- Title of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_title_android_version_retired">Това приложение вече не е актуално</string>
     <!-- Details of warning message that informs the user that their app is no longer supported. -->
+    <string name="problemsolver_explain_android_version_retired">Използвате остаряла версия на Андроид, която вече не се поддържа от Threema поради причини свързани със сигурността. Това означава, че няма да получавате актуализации на Threema. За да продължите да използвате Threema и всички негови функции, трябва да надградите/ъпгрейднете операционната система.</string>
     <string name="problemsolver_to_settings">Към настройките</string>
     <string name="prefs_advanced_options">Разширени опции</string>
     <string name="push_service">Push услуга</string>
@@ -1721,7 +1743,8 @@
     <string name="new_group_messages">Нови групови съобщения</string>
     <string name="individual_notification_settings">Индивидуални настройки на известията</string>
     <string name="delete_message_not_supported_for_all_group_members">Съобщението няма да бъде изтрито за следните членове на групата: %1$s</string>
-    <string name="work_intro_more_link_text">Научете повече за Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Научете повече ${app_name}</string>
     <string name="work_intro_subtitle">Сигурният бизнес месинджър\nза фирми.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Вписване в ${app_name}</string>
@@ -1751,6 +1774,7 @@
     <string name="device_linking_cancel_dialog_continue">Продължете</string>
     <string name="md_drop_device_dialog_drop_button">Премахнете устройство</string>
     <string name="md_drop_device_dialog_close_button">Затворете</string>
+    <string name="md_drop_device_failed_dialog_title">Премахването на свързаните устройства може да е неуспешно</string>
     <string name="md_drop_device_failed_dialog_message">Моля, проверете интернет връзката Ви и опитайте отново.</string>
     <string name="md_drop_device_failed_dialog_button_close">Затворете</string>
     <!-- accessibility -->
@@ -1812,6 +1836,8 @@
     <string name="device_linking_error_emoji_mismatch_body">Изглежда, че има проблем с връзката към новото устройство. Моля, рестартирайте приложението на новото устройство и опитайте отново.</string>
     <string name="device_linking_error_unexpected_title">Неочаквана грешка</string>
     <string name="device_linking_error_unexpected_body">Моля, опитайте се да свържете устройството отново. Ако проблемът продължава, свържете се с екипа по поддръжка (Основно меню &gt; Помощ).</string>
+    <string name="device_linking_error_invalid_contact_title">Невалиден контакт</string>
+    <string name="device_linking_error_invalid_contact_body">Контактът %1$s е запазен неправилно на това устройство и пречи на свързването с новото устройство. Моля, свържете се с поддръжката (\"Основно меню &gt; Помощ\").</string>
     <string name="device_linking_error_screen_close">Затворете</string>
     <string name="work_directory_title">Директория на фирмата</string>
     <!-- Instruction text for the user directory search -->
@@ -1819,8 +1845,15 @@
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_directory_empty_view_text">Моля, въведете поне 3 букви от името, за да започне търсенето във фирмената директория с ${app_name_short} потребители.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
+    <string name="invalid_file_cannot_be_shared">Този файл е невалиден и не може да бъде споделен</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
+    <string name="contact_availability_status_available">Достъпен</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <string name="contact_availability_status_unavailable">Недостъпен</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">Предоставеният адрес на сървъра е невалиден. Моля, свържете се с Вашия администратор.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">Предоставеният линк за активация е невалиден. Моля, свържете се с Вашия администратор.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="other">%d контакти</item>

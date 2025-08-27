@@ -1738,7 +1738,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="new_group_messages">Novas mensagens de grupo</string>
     <string name="individual_notification_settings">Configurações de notificação individual</string>
     <string name="delete_message_not_supported_for_all_group_members">A mensagem não será excluída para os seguintes membros do grupo: %1$s</string>
-    <string name="work_intro_more_link_text">Saiba mais sobre o Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Saiba mais sobre ${app_name}</string>
     <string name="work_intro_subtitle">O messenger comercial seguro \npara empresas.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Fazer login ${app_name}</string>
@@ -1844,6 +1845,10 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="contact_availability_status_available">Disponível</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Indisponível</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">O URL do servidor fornecido é inválido. Entre em contato com o seu administrador.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">O link de ativação é inválido. Entre em contato com o seu administrador.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>

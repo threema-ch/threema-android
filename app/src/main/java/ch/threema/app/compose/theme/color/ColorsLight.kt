@@ -26,16 +26,16 @@ import androidx.compose.ui.graphics.Color
 object ColorsLight : ComposeColorPaletteLight() {
 
     // Primary
-    override val primary = Color(BrandColor.SHADE_700)
+    override val primary = Color(BrandColor.SHADE_800)
     override val onPrimary = Color(0xFFFFFFFF)
-    override val primaryContainer = Color(BrandColor.SHADE_700)
+    override val primaryContainer = Color(BrandColor.SHADE_800)
     override val onPrimaryContainer = Color(0xFFFFFFFF)
-    override val inversePrimary = Color(BrandColor.SHADE_500)
+    override val inversePrimary = Color(BrandColor.SHADE_600)
 
     // Secondary
-    override val secondary = Color(BrandColor.SHADE_300)
+    override val secondary = Color(BrandColor.SHADE_400)
     override val onSecondary = Color(BrandColor.SHADE_900)
-    override val secondaryContainer = Color(BrandColor.SHADE_300)
+    override val secondaryContainer = Color(BrandColor.SHADE_400)
     override val onSecondaryContainer = Color(BrandColor.SHADE_900)
 
     // Secondary

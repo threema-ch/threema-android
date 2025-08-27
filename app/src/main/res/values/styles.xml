@@ -729,8 +729,12 @@
     <!-- square button with icon only -->
     <style name="Threema.MaterialButton.Icon" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-        <item name="backgroundColor">?attr/colorSecondaryContainer</item>
-        <item name="iconTint">?attr/colorOnSecondaryContainer</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Threema.MaterialButton.Icon</item>
+    </style>
+    <style name="ThemeOverlay.Threema.MaterialButton.Icon" parent="ThemeOverlay.Material3.Button.IconButton.Filled.Tonal">
+        <item name="colorContainer">?attr/colorSurfaceContainer</item>
+        <item name="colorOnContainer">?attr/colorPrimary</item>
+        <item name="colorOnContainerUnchecked">?attr/colorPrimary</item>
     </style>
 
     <!-- outline text button with icon -->
@@ -830,8 +834,8 @@
     <style name="Threema.Chip.VideoTranscoder" parent="@style/Widget.Material3.Chip.Assist">
         <item name="android:textAppearance">@style/Threema.TextAppearance.Chip.VideoTranscoder
         </item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="chipBackgroundColor">?attr/colorSurfaceContainerLow</item>
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+        <item name="chipBackgroundColor">?attr/colorPrimaryContainer</item>
         <item name="chipCornerRadius">14dp</item>
         <item name="chipMinTouchTargetSize">36dp</item>
         <item name="chipMinHeight">28dp</item>

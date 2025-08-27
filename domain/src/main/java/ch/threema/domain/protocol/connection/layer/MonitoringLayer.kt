@@ -134,6 +134,7 @@ internal class MonitoringLayer(
     }
 
     private fun handlePromotedToLeader() {
+        logger.info("Handle RolePromotedToLeader")
         if (!mdController.reflectionQueueDry.isCompleted || mdController.reflectionQueueDry.isCancelled) {
             throw D2mProtocolException("RolePromotedToLeader was received before ReflectionQueueDry")
         }

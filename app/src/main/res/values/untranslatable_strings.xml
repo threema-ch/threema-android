@@ -23,7 +23,8 @@
     <string name="threema_safe_password_faq" translatable="false">https://threema.com/%s/faq/safepw</string>
     <string name="threema_passwords_faq" translatable="false">https://threema.com/%s/faq/lost_pass</string>
     <string name="backup_faq_url" translatable="false">https://threema.com/%s/faq/data_backup</string>
-    <string name="threema_work_url" translatable="false">https://threema.com/work?li=in-app-work</string>
+    <string name="threema_work_url" translatable="false">https://threema.com/products/work?mtm_campaign=introduction-work-promo&amp;mtm_kwd=android</string>
+    <string name="threema_onprem_url" translatable="false">https://threema.com/products/onprem?mtm_campaign=introduction-onprem-promo&amp;mtm_kwd=android</string>
     <string name="private_download_url" translatable="false">https://play.google.com/store/apps/details?id=ch.threema.app</string>
     <string name="private_download_url_hms" translatable="false">https://appgallery.huawei.com/#/app/C103713829</string>
     <!-- should not be translated because manifest does not allow varying resources-->

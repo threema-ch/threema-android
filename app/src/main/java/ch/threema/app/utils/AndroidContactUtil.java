@@ -141,8 +141,8 @@ public class AndroidContactUtil {
         final String lastName;
 
         public ContactName(@Nullable String firstName, @Nullable String lastName) {
-            this.firstName = firstName != null ? firstName.trim() : firstName;
-            this.lastName = lastName != null ? lastName.trim() : lastName;
+            this.firstName = firstName != null ? firstName.trim() : null;
+            this.lastName = lastName != null ? lastName.trim() : null;
         }
     }
 
@@ -234,6 +234,7 @@ public class AndroidContactUtil {
             }
         }
 
+        // Note that directly logging the lookup key and the contact uri is ok for debug level.
         logger.debug("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), androidContactLookupKey, contactUri);
     }
 
@@ -255,14 +256,14 @@ public class AndroidContactUtil {
         }
         Uri namedContactUri = getAndroidContactUri(contactModel);
         if (namedContactUri == null) {
-            logger.info("Unable to get android contact uri for {} lookupKey = {}", contactModel.getIdentity(), data.androidContactLookupKey);
+            logger.info("Unable to get android contact uri for {} obfuscatedLookupKey = {}", contactModel.getIdentity(), getObfuscatedAndroidContactLookupKey(data));
             return;
         }
 
         ContactName contactName = getContactName(namedContactUri);
 
         if (contactName == null) {
-            logger.info("Unable to get contact name for {} lookupKey = {} namedUri = {}", contactModel.getIdentity(), data.androidContactLookupKey, namedContactUri);
+            logger.info("Unable to get contact name for {} obfuscatedLookupKey = {}", contactModel.getIdentity(), getObfuscatedAndroidContactLookupKey(data));
             // remove contact link to unresolvable contact
             contactModel.removeAndroidContactLink();
             throw new ThreemaException("Unable to get contact name");
@@ -273,8 +274,8 @@ public class AndroidContactUtil {
         }
 
         if (!data.firstName.equals(contactName.firstName) || !data.lastName.equals(contactName.lastName)) {
-            logger.info("Updating name of contact. identity={}, lookupKey={}, namedUri={}",
-                contactModel.getIdentity(), data.androidContactLookupKey, namedContactUri);
+            logger.info("Updating name of contact. identity={}, obfuscatedLookupKey={}",
+                contactModel.getIdentity(), getObfuscatedAndroidContactLookupKey(data));
             contactModel.setNameFromLocal(contactName.firstName, contactName.lastName);
         }
     }
@@ -291,19 +292,18 @@ public class AndroidContactUtil {
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @Nullable
     private ContactName getContactName(Uri contactUri) {
-        if (!TestUtil.required(this.contentResolver)) {
+        if (this.contentResolver == null) {
+            logger.error("Cannot get contact name as content resolver is null");
             return null;
         }
 
         ContactName contactName = null;
-        Cursor nameCursor = null;
-        try {
-            nameCursor = this.contentResolver.query(
-                contactUri,
-                NAME_PROJECTION,
-                null,
-                null,
-                null);
+        try (Cursor nameCursor = this.contentResolver.query(
+            contactUri,
+            NAME_PROJECTION,
+            null,
+            null,
+            null)) {
 
             if (nameCursor != null && nameCursor.moveToFirst()) {
                 long contactId = nameCursor.getLong(nameCursor.getColumnIndex(ContactsContract.Contacts._ID));
@@ -311,6 +311,7 @@ public class AndroidContactUtil {
 
                 // fallback
                 if (contactName.firstName == null && contactName.lastName == null) {
+                    logger.info("Falling back to alternative sort key.");
                     //lastname, firstname
                     String alternativeSortKey = nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.Contacts.SORT_KEY_ALTERNATIVE));
 
@@ -326,19 +327,17 @@ public class AndroidContactUtil {
                         }
                     } else {
                         // no contact name found
-                        logger.info("No contact name found for contact ID {} uri = {}", contactId, contactUri.toString());
+                        logger.info("No contact name found for contact ID {}", contactId);
                         return null;
                     }
+                } else {
+                    logger.info("Getting structured name for contact was successful");
                 }
             } else {
-                logger.info("Contact not found: {}", contactUri.toString());
+                logger.info("Contact not found");
             }
         } catch (PatternSyntaxException e) {
             logger.error("Exception", e);
-        } finally {
-            if (nameCursor != null) {
-                nameCursor.close();
-            }
         }
         return contactName;
     }
@@ -403,7 +402,7 @@ public class AndroidContactUtil {
 
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     private @NonNull Map<String, String> getStructuredNameByContactId(long id) {
-        Map<String, String> structuredName = new TreeMap<String, String>();
+        Map<String, String> structuredName = new TreeMap<>();
 
         Cursor cursor = this.contentResolver.query(
             ContactsContract.Data.CONTENT_URI,
@@ -777,5 +776,31 @@ public class AndroidContactUtil {
             return true;
         }
         return false;
+    }
+
+    @Nullable
+    private static String getObfuscatedAndroidContactLookupKey(@Nullable ContactModelData contactModelData) {
+        if (contactModelData == null) {
+            return null;
+        }
+        return getObfuscatedAndroidContactLookupKey(contactModelData.androidContactLookupKey);
+    }
+
+    @Nullable
+    private static String getObfuscatedAndroidContactLookupKey(@Nullable String androidContactLookupKey) {
+        if (androidContactLookupKey == null) {
+            return null;
+        }
+        // The lookup key and contact id are separated by a slash
+        int splitIndex = androidContactLookupKey.lastIndexOf('/');
+        if (splitIndex == -1) {
+            logger.warn("Unexpected lookup key format as it does not contain '/'");
+            return "unexpected-" + androidContactLookupKey.hashCode();
+        }
+        // Obfuscate the lookup key as it may contain sensitive data
+        int obfuscatedLookupKey = androidContactLookupKey.substring(0, splitIndex).hashCode();
+        String contactId = androidContactLookupKey.substring(splitIndex);
+        // Concatenate the obfuscated lookup key with the raw contact id
+        return obfuscatedLookupKey + contactId;
     }
 }

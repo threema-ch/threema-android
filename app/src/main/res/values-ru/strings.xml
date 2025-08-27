@@ -165,7 +165,7 @@
     <string name="delete_id_message">Если у вас нет созданной или экспортированной резервной копии этого ID, вы больше никогда не сможете отправлять или получать сообщения, используя этот ID.\n\nЕсли вы больше не хотите использовать этот ID, рекомендуется задать пароль аннулирования и отозвать ID на сайте myid.threema.ch/revoke перед его удалением.</string>
     <string name="delete_id_message2">Последнее предупреждение: вы действительно хотите удалить свой ID?</string>
     <string name="delete_id_sum">Навсегда удалить свой ID и все данные на этом устройстве</string>
-    <string name="delete_all_data_prompt">Удалить все данные?</string>
+    <string name="delete_all_data_prompt">Удалить все данные приложения?</string>
     <string name="backup_password_summary">Ваш экспорт ID будет зашифрован паролем. Используйте сочетание латинских букв, цифр и специальных символов. Не забудьте записать или запомнить свой новый пароль!</string>
     <string name="backup_password_again_summary">Введите пароль ещё раз</string>
     <string name="password_hint">Пароль</string>
@@ -975,7 +975,7 @@
     <string name="disable_powermanager_title">Ограничения по питанию</string>
     <string name="disable_autostart_title">Автозапуск</string>
     <string name="unchanged">без изменений</string>
-    <string name="safe_learn_more_button">Узнайте больше</string>
+    <string name="safe_learn_more_button">Узнать больше</string>
     <string name="safe_enable_explain">Всё, что вам нужно для общения, хранится на вашем устройстве. У нас нет вашей учётной записи и мы не сможем помочь вам, если вы потеряете телефон или случайно удалите данные.\n\n${app_name_short} Safe создаёт автоматические резервные копии всех важных данных, в том числе ваших ключей, вашего списка контактов и групп (но не содержимого сообщений). Данные в анонимном виде хранятся на выбранном вами защищённом сервере.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_disable_confirm">Продолжить без включения ${app_name_short} Safe? При использовании ${app_name_short} Safe вы сможете восстановить ${app_name_short} ID, контакты и группы в случае потери доступа к устройству.</string>
@@ -1735,7 +1735,8 @@
     <string name="new_group_messages">Новые групповые сообщения</string>
     <string name="individual_notification_settings">Индивидуальные настройки уведомлений</string>
     <string name="delete_message_not_supported_for_all_group_members">Сообщение не будет удалено для следующих участников группы:%1$s</string>
-    <string name="work_intro_more_link_text">Подробнее о Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Подробнее о ${app_name}</string>
     <string name="work_intro_subtitle">Безопасный бизнес-мессенджер\nдля компаний.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Войти ${app_name}</string>
@@ -1843,6 +1844,10 @@
     <string name="contact_availability_status_available">Доступен</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Недоступен</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">Указанный URL сервера неправильный. Обратитесь к администратору.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">Ссылка активации неправильная. Обратитесь к администратору.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакта</item>

@@ -721,6 +721,10 @@ public class ConfigUtils {
         return BuildFlavor.getCurrent().getLicenseType().equals(BuildFlavor.LicenseType.ONPREM);
     }
 
+    public static boolean isWhitelabelOnPremBuild(@NonNull Context context) {
+        return isOnPremBuild() && !context.getPackageName().equals("ch.threema.app.onprem");
+    }
+
     public static boolean isDemoOPServer(@NonNull PreferenceService preferenceService) {
         return preferenceService.getOnPremServer() != null && preferenceService.getOnPremServer().toLowerCase().contains(".3ma.ch/");
     }

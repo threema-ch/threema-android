@@ -276,22 +276,20 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
         // Do not show send log preference on on prem builds
         if (ConfigUtils.isOnPremBuild()) {
             loggingCategory.removePreference(sendLogPreference);
-
-            // Show share options
-            exportLogPreference.setOnPreferenceClickListener(preference -> {
-                var success = ShareUtil.shareLogfile(requireContext());
-                if (!success) {
-                    showToast(requireContext(), R.string.try_again);
-                }
-                return true;
-            });
         } else {
-            loggingCategory.removePreference(exportLogPreference);
             sendLogPreference.setOnPreferenceClickListener(preference -> {
                 prepareSendLogfile();
                 return true;
             });
         }
+
+        exportLogPreference.setOnPreferenceClickListener(preference -> {
+            var success = ShareUtil.shareLogfile(requireContext());
+            if (!success) {
+                showToast(requireContext(), R.string.try_again);
+            }
+            return true;
+        });
 
         Preference resetPushPreference = getPref(getResources().getString(R.string.preferences__reset_push));
         resetPushPreference.setOnPreferenceClickListener(preference -> {

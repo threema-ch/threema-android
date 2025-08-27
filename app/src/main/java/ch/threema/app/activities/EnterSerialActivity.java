@@ -196,6 +196,12 @@ public class EnterSerialActivity extends ThreemaActivity {
 
         // Always enable for work build
         setLoginButtonEnabled(true);
+
+        String presetServerUrl = getPresetOnPremServerUrlIfWhiteLabeled();
+        if (presetServerUrl != null) {
+            serverText.setText(presetServerUrl);
+            serverText.setEnabled(false);
+        }
     }
 
     private void handleUrlIntent(@Nullable Intent intent) {
@@ -228,6 +234,12 @@ public class EnterSerialActivity extends ThreemaActivity {
                 String username = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_username));
                 String password = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
                 String server = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
+
+                String presetServerUrl = getPresetOnPremServerUrlIfWhiteLabeled();
+                if (isServerUrlMismatch(presetServerUrl, server)) {
+                    onMDMServerUrlPresetMismatch();
+                    return;
+                }
 
                 if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
                     check(new UserCredentials(username, password), server);
@@ -277,12 +289,18 @@ public class EnterSerialActivity extends ThreemaActivity {
         final String server = data.getQueryParameter("server");
 
         if (ConfigUtils.isOnPremBuild()) {
+            final String presetServerUrl = getPresetOnPremServerUrlIfWhiteLabeled();
+            if (isServerUrlMismatch(presetServerUrl, server)) {
+                onIntentServerUrlPresetMismatch();
+                return;
+            }
+
             if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password) && !TestUtil.isEmptyOrNull(server)) {
                 check(new UserCredentials(username, password), server);
             } else {
                 licenseKeyOrUsernameText.setText(username);
                 passwordText.setText(password);
-                serverText.setText(server);
+                serverText.setText(presetServerUrl != null ? presetServerUrl : server);
             }
         } else {
             if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
@@ -365,14 +383,7 @@ public class EnterSerialActivity extends ThreemaActivity {
     private void check(final LicenseService.Credentials credentials, String onPremServer) {
         if (ConfigUtils.isOnPremBuild()) {
             if (onPremServer != null) {
-                if (!onPremServer.startsWith("https://")) {
-                    onPremServer = "https://" + onPremServer;
-                }
-
-                if (!onPremServer.endsWith(".oppf")) {
-                    // Automatically expand hostnames to default provisioning URL
-                    onPremServer += "/prov/config.oppf";
-                }
+                onPremServer = getUrlToOppf(onPremServer);
             }
             preferenceService.setOnPremServer(onPremServer);
             preferenceService.setLicenseUsername(((UserCredentials) credentials).username);
@@ -419,6 +430,21 @@ public class EnterSerialActivity extends ThreemaActivity {
         }.execute();
     }
 
+    private void onIntentServerUrlPresetMismatch() {
+        logger.error("The intent's server url does not match the preset server url");
+        changeState(getString(R.string.error_preset_onprem_url_mismatch_intent));
+    }
+
+    private void onMDMServerUrlPresetMismatch() {
+        logger.error("The server url provided by MDM does not match the preset server url");
+        changeState(getString(R.string.error_preset_onprem_url_mismatch_mdm));
+        // Disable any input to keep the error message showing. Additionally, it wouldn't make sense
+        // to enter any credentials as long as a wrong mdm server url is set.
+        licenseKeyOrUsernameText.setEnabled(false);
+        passwordText.setEnabled(false);
+        this.setLoginButtonEnabled(false);
+    }
+
     private void changeState(String state) {
         this.stateTextView.setText(state);
     }
@@ -434,5 +460,36 @@ public class EnterSerialActivity extends ThreemaActivity {
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         handleUrlIntent(intent);
+    }
+
+    @Nullable
+    private String getPresetOnPremServerUrlIfWhiteLabeled() {
+        //noinspection ConstantValue
+        return ConfigUtils.isWhitelabelOnPremBuild(this) && BuildConfig.PRESET_OPPF_URL != null
+            ? BuildConfig.PRESET_OPPF_URL
+            : null;
+    }
+
+    @NonNull
+    private String getUrlToOppf(@NonNull String url) {
+        if (!url.startsWith("https://")) {
+            url = "https://" + url;
+        }
+
+        if (!url.endsWith(".oppf")) {
+            // Automatically expand hostnames to default provisioning URL
+            url += "/prov/config.oppf";
+        }
+
+        return url;
+    }
+
+    private boolean isServerUrlMismatch(@Nullable String presetServerUrl, @Nullable String serverUrl) {
+        if (presetServerUrl == null || serverUrl == null) {
+            return false;
+        }
+        @NonNull String canonicalPresetServerUrl = getUrlToOppf(presetServerUrl);
+        @NonNull String canonicalServerUrl = getUrlToOppf(serverUrl);
+        return !canonicalPresetServerUrl.equals(canonicalServerUrl);
     }
 }

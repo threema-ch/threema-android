@@ -1737,7 +1737,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="new_group_messages">Nouveaux messages de groupe</string>
     <string name="individual_notification_settings">Paramètres de notification individuels</string>
     <string name="delete_message_not_supported_for_all_group_members">Le message ne sera pas supprimé pour les membres suivants du groupe : %1$s</string>
-    <string name="work_intro_more_link_text">En savoir plus sur Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">En savoir plus sur ${app_name}</string>
     <string name="work_intro_subtitle">La messagerie instantanée sécurisée\npour les entreprises.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Connecter ${app_name}</string>
@@ -1843,6 +1844,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="contact_availability_status_available">Disponible</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Indisponible</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">L’adresse URL du serveur fournie n’est pas valide. Veuillez contacter votre administrateur.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">Le lien d’activation n’est pas valide. Veuillez contacter votre administrateur.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

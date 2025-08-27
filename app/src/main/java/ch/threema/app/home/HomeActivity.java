@@ -633,9 +633,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         }
 
         if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
-            boolean isInstalledFromStore = ConfigUtils.isInstalledFromStore(ThreemaApplication.getAppContext());
-            if (ConfigUtils.isWorkBuild() && !ConfigUtils.isWorkRestricted() && !hasIdentity() && isInstalledFromStore) {
-                startActivityForResult(new Intent(this, WorkIntroActivity.class), ThreemaActivity.ACTIVITY_ID_WORK_INTRO);
+            if (shouldShowWorkIntroScreen()) {
+                startActivity(new Intent(this, WorkIntroActivity.class));
             } else {
                 startActivityForResult(new Intent(this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
             }
@@ -714,6 +713,41 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             logger.error("user service not available");
             return false;
         }
+    }
+
+    /**
+     * Check whether the work intro screen should be shown. The work intro screen contains a notice
+     * to direct users to the private version of the app in case it is possible that they installed
+     * the work or onprem app by mistake. In certain cases we can rule out an oversight and skip the
+     * screen.
+     *
+     * @return true if the screen should be shown
+     */
+    private boolean shouldShowWorkIntroScreen() {
+        // Don't show the screen if the app is already set up with an identity.
+        if (ThreemaApplication.requireServiceManager().getUserService().hasIdentity()) {
+            return false;
+        }
+
+        // If it is no work (including onprem) build, we should not show the screen.
+        if (!ConfigUtils.isWorkBuild()) {
+            return false;
+        }
+
+        // If the app is restricted, then we should skip the screen as it is very likely intended to
+        // use the work or onprem app.
+        if (ConfigUtils.isWorkRestricted()) {
+            return false;
+        }
+
+        // If the app is not installed from a store, the chance that the private app should be used
+        // instead is smaller and therefore we should skip the screen.
+        if (!ConfigUtils.isInstalledFromStore(this)) {
+            return false;
+        }
+
+        // On whitelabel onprem build it doesn't make sense to show the work intro screen.
+        return !ConfigUtils.isWhitelabelOnPremBuild(this);
     }
 
     private void reconfigureSafe(@NonNull ThreemaSafeService threemaSafeService, @NonNull ThreemaSafeMDMConfig newConfig) {

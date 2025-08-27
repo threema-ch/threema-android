@@ -1731,7 +1731,8 @@
     <string name="new_group_messages">Neui Gruppe-Nachrichte</string>
     <string name="individual_notification_settings">Individuelli Benachrichtigungsiistellige</string>
     <string name="delete_message_not_supported_for_all_group_members">Bi folgende Gruppemitglieder wird d’Nachricht nöd glöscht: %1$s</string>
-    <string name="work_intro_more_link_text">Meh über Threema Work erfahre</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Meh über ${app_name} erfahre</string>
     <string name="work_intro_subtitle">De sicheri Business-Messenger\nfür Undernehme.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Aamäldig ${app_name}</string>
@@ -1837,6 +1838,10 @@
     <string name="contact_availability_status_available">Verfüegbar</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Nöd verfüegbar</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">D’Server-URL isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">De Aktivierigslink isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>

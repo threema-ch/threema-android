@@ -1772,7 +1772,8 @@
     <string name="new_group_messages">New group messages</string>
     <string name="individual_notification_settings">Individual notification settings</string>
     <string name="delete_message_not_supported_for_all_group_members">The message will not be deleted for the following group members: %1$s</string>
-    <string name="work_intro_more_link_text">Find out more about Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Find out more about ${app_name}</string>
     <string name="work_intro_subtitle">The secure business messenger\nfor companies.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Login ${app_name}</string>
@@ -1891,6 +1892,10 @@
     <string name="contact_availability_status_available">Available</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Unavailable</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">The provided server url is invalid. Please contact your administrator.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">The activation link is invalid. Please contact your administrator.</string>
 
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>

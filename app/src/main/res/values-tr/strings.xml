@@ -1733,7 +1733,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="new_group_messages">Yeni Grup Mesajı</string>
     <string name="individual_notification_settings">Bireysel bildirim ayarları</string>
     <string name="delete_message_not_supported_for_all_group_members">Bu mesaj aşağıdaki grup üyeleri için silinmeyecektir: %1$s</string>
-    <string name="work_intro_more_link_text">Threema Work hakkında daha fazla bilgi edinin</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">${app_name} hakkında daha fazla bilgi edinin</string>
     <string name="work_intro_subtitle">Şirketler için güvenli mesajlaşma aracı.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Giriş ${app_name}</string>
@@ -1839,6 +1840,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="contact_availability_status_available">Mevcut</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Kullanılamıyor</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">Sağlanan sunucu adresi geçersiz. Lütfen yöneticinizle iletişime geçin.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">Aktivasyon bağlantısı geçersiz. Lütfen yöneticinizle iletişime geçin.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

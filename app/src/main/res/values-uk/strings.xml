@@ -233,7 +233,7 @@
     <string name="threema_version">Версія</string>
     <string name="threema_version_code">Код версії</string>
     <!-- Section title on "About" screen, for section which shows information about the (on prem) server and user credentials -->
-    <string name="about_server_config_title">Конфігурація серверу</string>
+    <string name="about_server_config_title">Конфігурація сервера</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Немає з\'єднання з Інтернетом, недійсні дані експортованого ID або неправильний пароль</string>
     <string name="prefs_header_other">Інше</string>
     <string name="an_error_occurred">Сталася помилка</string>
@@ -677,7 +677,7 @@
     <string name="notifications_mute">Вимк.</string>
     <string name="notifications_choose_sound">Вибрати звук</string>
     <string name="error_video_conversion">Не вдалося перетворити відео.</string>
-    <string name="confirm_your_pin">Підтвердження PIN-коду</string>
+    <string name="confirm_your_pin">Перевірка PIN-коду</string>
     <string name="too_many_incorrect_attempts">Забагато невдалих спроб. Повторіть спробу через %s с.</string>
     <string name="no_lockscreen_set">Не встановлено блокування екрана.</string>
     <string name="on">увімкнено</string>
@@ -1772,7 +1772,8 @@
     <string name="new_group_messages">Нові групові повідомлення</string>
     <string name="individual_notification_settings">Індивідуальні налаштування сповіщень</string>
     <string name="delete_message_not_supported_for_all_group_members">Це повідомлення не буде видалено для таких учасників групи: %1$s</string>
-    <string name="work_intro_more_link_text">Докладніше про Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Докладніше про додаток ${app_name}</string>
     <string name="work_intro_subtitle">Безпечний месенджер\nдля компаній.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Увійти в ${app_name}</string>
@@ -1880,6 +1881,10 @@
     <string name="contact_availability_status_available">Доступний</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Недоступний</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">Указана URL-адреса сервера недійсна. Зверніться до свого адміністратора.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">Посилання для активації недійсне. Зверніться до свого адміністратора.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакти</item>

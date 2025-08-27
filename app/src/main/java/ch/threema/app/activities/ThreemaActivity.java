@@ -66,7 +66,6 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
     public static final int ACTIVITY_ID_PAINT = 20049;
     public static final int ACTIVITY_ID_PICK_MEDIA = 20050;
     public static final int ACTIVITY_ID_MANAGE_GROUP_LINKS = 20051;
-    final static public int ACTIVITY_ID_WORK_INTRO = 20052;
 
     public static final int RESULT_RESTART = 40005;
 

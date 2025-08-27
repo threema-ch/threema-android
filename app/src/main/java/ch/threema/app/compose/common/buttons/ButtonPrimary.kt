@@ -22,19 +22,16 @@
 package ch.threema.app.compose.common.buttons
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,9 +105,7 @@ private fun ButtonPrimaryBase(
         enabled = enabled,
     ) {
         ThemedText(
-            modifier = Modifier.alpha(
-                if (enabled) 1f else .4f,
-            ),
+            color = LocalContentColor.current,
             text = text,
             style = textStyle,
             maxLines = maxLines,
@@ -119,69 +114,61 @@ private fun ButtonPrimaryBase(
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview
+@Composable
+fun ButtonPrimary_Preview_LongText() {
+    ThreemaThemePreview {
+        ButtonPrimary(
+            onClick = {},
+            maxLines = 2,
+            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sapien magna, efficitur a urna efficitur, varius " +
+                "fermentum arcu. Donec rhoncus erat sem, vel ultrices sapien pharetra sit amet.",
+        )
+    }
+}
+
+@Preview
 @Composable
 fun ButtonPrimary_Preview() {
     ThreemaThemePreview {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-        ) { paddingValues ->
-            ButtonPrimary(
-                modifier = Modifier.padding(paddingValues),
-                onClick = {},
-                text = "Preview",
-            )
-        }
+        ButtonPrimary(
+            onClick = {},
+            text = "Preview",
+        )
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 fun ButtonPrimary_Preview_Disabled() {
     ThreemaThemePreview {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-        ) { paddingValues ->
-            ButtonPrimary(
-                modifier = Modifier.padding(paddingValues),
-                onClick = {},
-                text = "Preview",
-                enabled = false,
-            )
-        }
+        ButtonPrimary(
+            onClick = {},
+            text = "Preview",
+            enabled = false,
+        )
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 fun ButtonPrimary_Preview_FullWidth() {
     ThreemaThemePreview {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-        ) { paddingValues ->
-            ButtonPrimary(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingValues),
-                onClick = {},
-                text = "Preview",
-            )
-        }
+        ButtonPrimary(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {},
+            text = "Preview",
+        )
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 fun ButtonPrimarySmall_Preview() {
     ThreemaThemePreview {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-        ) { paddingValues ->
-            ButtonPrimarySmall(
-                modifier = Modifier.padding(paddingValues),
-                onClick = {},
-                text = "Preview",
-            )
-        }
+        ButtonPrimarySmall(
+            onClick = {},
+            text = "Preview",
+        )
     }
 }

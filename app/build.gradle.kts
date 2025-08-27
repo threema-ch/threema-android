@@ -47,7 +47,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.1.1"
+val appVersion = "6.1.2"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -56,7 +56,7 @@ val appVersion = "6.1.1"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1084
+val defaultVersionCode = 1086
 
 /**
  * Map with keystore paths (if found).
@@ -87,7 +87,7 @@ android {
         targetSdk = 34
         vectorDrawables.useSupportLibrary = true
         applicationId = "ch.threema.app"
-        testApplicationId = "ch.threema.app.test"
+        testApplicationId = "$applicationId.test"
         versionCode = defaultVersionCode
         versionName = "$appVersion$betaSuffix"
 
@@ -96,8 +96,8 @@ android {
         )
         // package name used for sync adapter - needs to match mime types below
         stringResValue("package_name", applicationId!!)
-        stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.profile")
-        stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.call")
+        stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
+        stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.$applicationId.call")
 
         intBuildConfigField("MAX_GROUP_SIZE", 256)
         stringBuildConfigField("CHAT_SERVER_PREFIX", "g-")
@@ -153,15 +153,18 @@ android {
         stringBuildConfigField("contactActionUrl", "threema.id")
         stringBuildConfigField("groupLinkActionUrl", "threema.group")
 
+        // The OPPF url must be null in the default config. Do not change this.
+        stringBuildConfigField("PRESET_OPPF_URL", null)
+
         with(manifestPlaceholders) {
             put("uriScheme", "threema")
             put("contactActionUrl", "threema.id")
             put("groupLinkActionUrl", "threema.group")
             put("actionUrl", "go.threema.ch")
-            put("callMimeType", "vnd.android.cursor.item/vnd.ch.threema.app.call")
+            put("callMimeType", "vnd.android.cursor.item/vnd.$applicationId.call")
         }
 
-        testInstrumentationRunner = "ch.threema.app.ThreemaTestRunner"
+        testInstrumentationRunner = "$applicationId.ThreemaTestRunner"
 
         // Only include language resources for those languages
         androidResources.localeFilters.addAll(
@@ -233,11 +236,11 @@ android {
         create("store_google_work") {
             versionName = "${appVersion}k$betaSuffix"
             applicationId = "ch.threema.app.work"
-            testApplicationId = "ch.threema.app.work.test"
+            testApplicationId = "$applicationId.test"
             setProductNames(appName = "Threema Work")
             stringResValue("package_name", applicationId!!)
-            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile")
-            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call")
+            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
+            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.$applicationId.call")
             stringBuildConfigField("CHAT_SERVER_PREFIX", "w-")
             stringBuildConfigField("CHAT_SERVER_IPV6_PREFIX", "ds.w-")
             stringBuildConfigField("MEDIA_PATH", "ThreemaWork")
@@ -254,16 +257,16 @@ android {
             with(manifestPlaceholders) {
                 put("uriScheme", "threemawork")
                 put("actionUrl", "work.threema.ch")
-                put("callMimeType", "vnd.android.cursor.item/vnd.ch.threema.app.work.call")
+                put("callMimeType", "vnd.android.cursor.item/vnd.$applicationId.call")
             }
         }
         create("green") {
             applicationId = "ch.threema.app.green"
-            testApplicationId = "ch.threema.app.green.test"
+            testApplicationId = "$applicationId.test"
             setProductNames(appName = "Threema Green")
             stringResValue("package_name", applicationId!!)
-            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.green.profile")
-            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.green.call")
+            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
+            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.$applicationId.call")
             stringBuildConfigField("MEDIA_PATH", "ThreemaGreen")
             stringBuildConfigField("CHAT_SERVER_SUFFIX", ".0.test.threema.ch")
             // This public key is pinned for the chat server protocol.
@@ -282,14 +285,14 @@ android {
         create("sandbox_work") {
             versionName = "${appVersion}k$betaSuffix"
             applicationId = "ch.threema.app.sandbox.work"
-            testApplicationId = "ch.threema.app.sandbox.work.test"
+            testApplicationId = "$applicationId.test"
             setProductNames(
                 appName = "Threema Sandbox Work",
                 appNameDesktop = "Threema Blue",
             )
             stringResValue("package_name", applicationId!!)
-            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.sandbox.work.profile")
-            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.sandbox.work.call")
+            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
+            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.$applicationId.call")
             stringBuildConfigField("CHAT_SERVER_PREFIX", "w-")
             stringBuildConfigField("CHAT_SERVER_IPV6_PREFIX", "ds.w-")
             stringBuildConfigField("CHAT_SERVER_SUFFIX", ".0.test.threema.ch")
@@ -325,15 +328,15 @@ android {
         create("onprem") {
             versionName = "${appVersion}o$betaSuffix"
             applicationId = "ch.threema.app.onprem"
-            testApplicationId = "ch.threema.app.onprem.test"
+            testApplicationId = "$applicationId.test"
             setProductNames(
                 appName = "Threema OnPrem",
                 shortAppName = "Threema",
                 companyName = "Threema",
             )
             stringResValue("package_name", applicationId!!)
-            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.profile")
-            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.call")
+            stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
+            stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.$applicationId.call")
             intBuildConfigField("MAX_GROUP_SIZE", 256)
             stringBuildConfigField("CHAT_SERVER_PREFIX", "")
             stringBuildConfigField("CHAT_SERVER_IPV6_PREFIX", "")
@@ -353,15 +356,19 @@ android {
             stringBuildConfigField("LOG_TAG", "3maop")
 
             // config fields for action URLs / deep links
-            stringBuildConfigField("uriScheme", "threemaonprem")
-            stringBuildConfigField("actionUrl", "onprem.threema.ch")
+            val uriScheme = "threemaonprem"
+            val actionUrl = "onprem.threema.ch"
+            stringBuildConfigField("uriScheme", uriScheme)
+            stringBuildConfigField("actionUrl", actionUrl)
+
+            stringBuildConfigField("PRESET_OPPF_URL", null)
 
             stringBuildConfigField("MD_CLIENT_DOWNLOAD_URL", "https://three.ma/mdo")
 
             with(manifestPlaceholders) {
-                put("uriScheme", "threemaonprem")
-                put("actionUrl", "onprem.threema.ch")
-                put("callMimeType", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.call")
+                put("uriScheme", uriScheme)
+                put("actionUrl", actionUrl)
+                put("callMimeType", "vnd.android.cursor.item/vnd.$applicationId.call")
             }
         }
         create("blue") {
@@ -438,7 +445,7 @@ android {
         create("libre") {
             versionName = "${appVersion}l$betaSuffix"
             applicationId = "ch.threema.app.libre"
-            testApplicationId = "ch.threema.app.libre.test"
+            testApplicationId = "$applicationId.test"
             stringResValue("package_name", applicationId!!)
             setProductNames(
                 appName = "Threema Libre",

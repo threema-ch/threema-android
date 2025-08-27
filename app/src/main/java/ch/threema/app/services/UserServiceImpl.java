@@ -543,6 +543,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
     @Override
     public String setPublicNickname(@Nullable String publicNickname, @NonNull TriggerSource triggerSource) {
+        logger.info("Setting nickname");
         final @NonNull String oldNickname = this.identityStore.getPublicNickname();
         // truncate string into a 32 byte length string
         // fix #ANDR-530

@@ -11,8 +11,8 @@
     <color name="brand_500">#40E692</color>
     <color name="brand_600">#36D588</color>
     <color name="brand_700">#2CC47E</color>
-    <color name="brand_800">#0E9061</color>
-    <color name="brand_900">#0B734E</color>
+    <color name="brand_800">#0B734E</color>
+    <color name="brand_900">#00412A</color>
 
     <!-- Changes here must also be made to BrandGreyColors.kt for Compose -->
     <color name="brand_grey_50">#F4F4F3</color>

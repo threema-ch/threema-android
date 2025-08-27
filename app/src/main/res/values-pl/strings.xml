@@ -1746,7 +1746,8 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="new_group_messages">Nowe wiadomości grupowe</string>
     <string name="individual_notification_settings">Oddzielne ustawienia dotyczące powiadomień</string>
     <string name="delete_message_not_supported_for_all_group_members">Wiadomość nie zostanie usunięta w przypadku członków tej grupy: %1$s</string>
-    <string name="work_intro_more_link_text">Dowiedz się więcej o Threema Work</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="work_intro_more_link_text">Dowiedz się więcej o aplikacji ${app_name}</string>
     <string name="work_intro_subtitle">Bezpieczny komunikator biznesowy\ndla firm.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_intro_login">Zaloguj się ${app_name}</string>
@@ -1854,6 +1855,10 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="contact_availability_status_available">Dostępny(-a)</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Niedostępny(-a)</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
+    <string name="error_preset_onprem_url_mismatch_mdm">Podany adres URL serwera jest nieprawidłowy. Prosimy skontaktować się z administratorem.</string>
+    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <string name="error_preset_onprem_url_mismatch_intent">Link aktywacyjny jest nieprawidłowy. Prosimy skontaktować się z administratorem.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

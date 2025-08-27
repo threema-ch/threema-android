@@ -11,7 +11,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_app_icon_consumer"
+        android:src="@drawable/ic_app_icon_private"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -1,3 +1,2 @@
-- Behebung eines möglichen Absturzes beim Öffnen des Archivs
-- Behebung eines Fehlers beim Auswählen von Text in Nachrichten
-- Behebung eines Fehlers beim Erstellen von Backups
+- Anpassung der Farbgebung in der App, um die Lesbarkeit von Texten zu verbessern
+- Verschiedene Fehlerbehebungen und Verbesserungen

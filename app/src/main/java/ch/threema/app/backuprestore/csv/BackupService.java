@@ -629,6 +629,7 @@ public class BackupService extends Service {
         // Iterate over all contacts. Then backup every contact with the corresponding messages.
         try (final ByteArrayOutputStream contactBuffer = new ByteArrayOutputStream()) {
             try (final CSVWriter contactCsv = new CSVWriter(new OutputStreamWriter(contactBuffer), contactCsvHeader)) {
+                int contactCounter = 0;
                 for (final ContactModel contactModel : contactService.find(null)) {
                     if (!this.next("backup contact " + contactModel.getIdentity())) {
                         return false;
@@ -640,6 +641,8 @@ public class BackupService extends Service {
                     }
 
                     String identityId = getFormattedUniqueId();
+                    contactCounter++;
+                    logger.info("Back up contact #{}", contactCounter);
 
                     // Write contact
                     contactCsv.createRow()
@@ -659,7 +662,8 @@ public class BackupService extends Service {
                     // Back up contact profile pictures
                     if (this.config.backupAvatars()) {
                         try {
-                            if (!userService.getIdentity().equals(contactModel.getIdentity())) {
+                            if (!userService.isMe(contactModel.getIdentity())) {
+                                logger.info("Back up user defined profile picture for contact #{}", contactCounter);
                                 zipOutputStream.addFileFromInputStream(
                                     this.fileService.getUserDefinedProfilePictureStream(contactModel.getIdentity()),
                                     Tags.CONTACT_AVATAR_FILE_PREFIX + identityId,
@@ -672,6 +676,7 @@ public class BackupService extends Service {
                         }
 
                         try {
+                            logger.info("Back up contact defined profile picture for contact #{}", contactCounter);
                             zipOutputStream.addFileFromInputStream(
                                 this.fileService.getContactDefinedProfilePictureStream(contactModel.getIdentity()),
                                 Tags.CONTACT_PROFILE_PIC_FILE_PREFIX + identityId,
@@ -684,6 +689,7 @@ public class BackupService extends Service {
                     }
 
                     // Back up conversations
+                    logger.info("Back up messages for contact #{}", contactCounter);
                     try (final ByteArrayOutputStream messageBuffer = new ByteArrayOutputStream()) {
                         try (final CSVWriter messageCsv = new CSVWriter(new OutputStreamWriter(messageBuffer), messageCsvHeader)) {
 
@@ -691,12 +697,16 @@ public class BackupService extends Service {
                                 .getMessageModelFactory()
                                 .getByIdentityUnsorted(contactModel.getIdentity());
 
+                            logger.info("Found {} messages for contact #{}", messageModels.size(), contactCounter);
+
+                            long messageCounter = 0;
                             for (MessageModel messageModel : messageModels) {
                                 if (!this.next("backup message " + messageModel.getId())) {
                                     return false;
                                 }
 
                                 String apiMessageId = messageModel.getApiMessageId();
+                                messageCounter++;
 
                                 if ((apiMessageId != null && !apiMessageId.isEmpty()) || messageModel.getType() == MessageType.VOIP_STATUS) {
                                     messageCsv.createRow()
@@ -727,10 +737,16 @@ public class BackupService extends Service {
                                     zipOutputStream,
                                     Tags.MESSAGE_MEDIA_FILE_PREFIX,
                                     Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-                                    messageModel);
+                                    messageModel
+                                );
+
+                                if ((messageCounter < 1000 && messageCounter % 100 == 0) || (messageCounter < 50000 && messageCounter % 1000 == 0)) {
+                                    logger.info("Backed up {} messages for contact #{}", messageCounter, contactCounter);
+                                }
                             }
                         }
 
+                        logger.info("Writing contact messages file");
                         zipOutputStream.addFileFromInputStream(
                             new ByteArrayInputStream(messageBuffer.toByteArray()),
                             Tags.MESSAGE_FILE_PREFIX + identityId + Tags.CSV_FILE_POSTFIX,
@@ -740,6 +756,7 @@ public class BackupService extends Service {
                 }
             }
 
+            logger.info("Writing contacts file");
             zipOutputStream.addFileFromInputStream(
                 new ByteArrayInputStream(contactBuffer.toByteArray()),
                 Tags.CONTACTS_FILE_NAME + Tags.CSV_FILE_POSTFIX,
@@ -1069,7 +1086,7 @@ public class BackupService extends Service {
     private boolean backupBallots(
         @NonNull FileHandlingZipOutputStream zipOutputStream
     ) throws ThreemaException, IOException {
-        logger.info("Backup polls (formerly known as 'ballots'");
+        logger.info("Backup polls (formerly known as 'ballots')");
         final String[] ballotCsvHeader = {
             Tags.TAG_BALLOT_ID,
             Tags.TAG_BALLOT_API_ID,

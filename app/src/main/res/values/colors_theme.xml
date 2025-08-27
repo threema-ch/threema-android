@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="seed">@color/brand_700</color>
+    <color name="seed">@color/brand_800</color>
 
     <!-- LIGHT -->
 
     <!-- Primary -->
-    <color name="md_theme_light_primary">@color/brand_700</color>
+    <color name="md_theme_light_primary">@color/brand_800</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_primaryContainer">@color/brand_700</color>
+    <color name="md_theme_light_primaryContainer">@color/brand_800</color>
     <color name="md_theme_light_onPrimaryContainer">#FFFFFF</color>
-    <color name="md_theme_light_inversePrimary">@color/brand_500</color>
+    <color name="md_theme_light_inversePrimary">@color/brand_600</color>
 
     <!-- Secondary -->
-    <color name="md_theme_light_secondary">@color/brand_300</color>
+    <color name="md_theme_light_secondary">@color/brand_400</color>
     <color name="md_theme_light_onSecondary">@color/brand_900</color>
-    <color name="md_theme_light_secondaryContainer">@color/brand_300</color>
+    <color name="md_theme_light_secondaryContainer">@color/brand_400</color>
     <color name="md_theme_light_onSecondaryContainer">@color/brand_900</color>
 
     <!-- Tertiary -->

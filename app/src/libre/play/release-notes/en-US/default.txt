@@ -1,3 +1,2 @@
-- Fixed a possible crash that occurred when opening the archive
-- Fixed a bug that could occur when selecting text in messages
-- Fixed a bug that could occur when creating a backup
+- Adjusted the color scheme in the app to improve the readability of texts
+- Minor Bugfixes and improvements

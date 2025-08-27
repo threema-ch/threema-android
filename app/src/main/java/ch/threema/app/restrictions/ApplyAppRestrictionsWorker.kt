@@ -42,10 +42,10 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.GroupCallPolicySetting
-import ch.threema.app.preference.service.KeyboardDataCollectionPolicySetting
 import ch.threema.app.preference.service.O2oCallPolicySetting
 import ch.threema.app.preference.service.O2oCallVideoPolicySetting
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.ScreenshotPolicySetting
 import ch.threema.app.preference.service.UnknownContactPolicySetting
 import ch.threema.app.restrictions.ApplyAppRestrictionsWorker.RestrictionToPreferenceValueMapper.Invert
 import ch.threema.app.restrictions.ApplyAppRestrictionsWorker.RestrictionToPreferenceValueMapper.Keep
@@ -107,7 +107,7 @@ class ApplyAppRestrictionsWorker(
             // We do not retry the work as a transaction exception will probably be thrown on retries as well.
             return Result.failure()
         } catch (e: Exception) {
-            logger.error("Error while mapping restrictions to preferences")
+            logger.error("Error while mapping restrictions to preferences", e)
             return Result.retry()
         }
 
@@ -238,7 +238,7 @@ class ApplyAppRestrictionsWorker(
             context = context,
             sharedPreferences = sharedPreferences,
             restrictionKeyRes = R.string.restriction__disable_screenshots,
-            preferenceKeyRes = KeyboardDataCollectionPolicySetting.preferenceKeyStringRes,
+            preferenceKeyRes = ScreenshotPolicySetting.preferenceKeyStringRes,
             restrictionToPreferenceValueMapper = Keep,
             settingsSyncCreator = { settingsBuilder, disableScreenshotsRestriction ->
                 settingsBuilder.setScreenshotPolicy(

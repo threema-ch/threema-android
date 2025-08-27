@@ -35,6 +35,7 @@ import ch.threema.app.activities.wizard.components.WizardButtonXml
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsMargin
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LinkifyUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -92,7 +93,11 @@ class WorkIntroActivity : ThreemaActivity() {
             .plus(getString(R.string.work_intro_more_link_text))
             .plus(HTML_LINK_FORMAT_TEMPLATE_POSTFIX)
 
-        val workInfoLink = getString(R.string.threema_work_url)
+        val workInfoLink = if (ConfigUtils.isOnPremBuild()) {
+            getString(R.string.threema_onprem_url)
+        } else {
+            getString(R.string.threema_work_url)
+        }
 
         val workInfoHtmlLink = String.format(
             workInfoLinkTemplate,

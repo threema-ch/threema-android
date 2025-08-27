@@ -34,6 +34,6 @@ object BrandColor {
     const val SHADE_500 = 0xFF40E692
     const val SHADE_600 = 0xFF36D588
     const val SHADE_700 = 0xFF2CC47E
-    const val SHADE_800 = 0xFF0E9061
-    const val SHADE_900 = 0xFF0B734E
+    const val SHADE_800 = 0xFF0B734E
+    const val SHADE_900 = 0xFF00412A
 }

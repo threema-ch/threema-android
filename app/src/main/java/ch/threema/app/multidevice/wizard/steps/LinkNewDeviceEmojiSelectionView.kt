@@ -23,12 +23,10 @@ package ch.threema.app.multidevice.wizard.steps
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
 import ch.threema.app.R
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.card.MaterialCardView
 
@@ -54,11 +52,6 @@ class LinkNewDeviceEmojiSelectionView : MaterialCardView {
     init {
         LayoutInflater.from(context).inflate(R.layout.view_emoji_selection, this, true)
 
-        setCardBackgroundColor(
-            ColorStateList.valueOf(
-                ConfigUtils.getColorFromAttribute(context, R.attr.colorPrimaryContainer),
-            ),
-        )
         strokeWidth = 0
         cardElevation = 0F
 
