@@ -682,8 +682,11 @@ public class MessageServiceImpl implements MessageService {
             actionCase = Reaction.ActionCase.WITHDRAW;
         }
 
+        // If there is a new message state set, it means that a legacy reaction was sent and the
+        // state of the message needs to be updated.
+        MessageState newMessageState = null;
         if (receiver instanceof ContactMessageReceiver) {
-            ((ContactMessageReceiver) receiver).sendReaction(
+            newMessageState = ((ContactMessageReceiver) receiver).sendReaction(
                 message,
                 actionCase,
                 emojiSequence,
@@ -700,10 +703,18 @@ public class MessageServiceImpl implements MessageService {
             throw new ThreemaException("Unsupported receiver type of: " + receiver.getClass());
         }
 
-        if (actionCase == Reaction.ActionCase.APPLY) {
-            emojiReactionsRepository.createEntry(message, myIdentity, emojiSequence);
+        if (newMessageState == null) {
+            // In case the new message state is null, then an emoji reaction has been sent. The
+            // sequence can be stored normally.
+            if (actionCase == Reaction.ActionCase.APPLY) {
+                emojiReactionsRepository.createEntry(message, myIdentity, emojiSequence);
+            } else {
+                emojiReactionsRepository.removeEntry(message, myIdentity, emojiSequence);
+            }
         } else {
-            emojiReactionsRepository.removeEntry(message, myIdentity, emojiSequence);
+            // In case there is a new message state, then a legacy reaction has been used. In this
+            // case we need to update the message state.
+            updateAckDecState(message, newMessageState, null);
         }
 
         showToastOnPartialReactionSupport(

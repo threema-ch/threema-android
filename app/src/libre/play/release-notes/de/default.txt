@@ -1,2 +1,1 @@
-- Anpassung der Farbgebung in der App, um die Lesbarkeit von Texten zu verbessern
-- Verschiedene Fehlerbehebungen und Verbesserungen
+- Behebung eines Fehlers bei der Zuordnung von 👍/👎-Emoji-Reaktionen zu den früheren «zustimmen»/«ablehnen»-Reaktionen

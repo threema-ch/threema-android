@@ -37,7 +37,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
@@ -61,7 +60,6 @@ import ch.threema.app.tasks.OutgoingVoipCallHangupMessageTask;
 import ch.threema.app.tasks.OutgoingVoipCallOfferMessageTask;
 import ch.threema.app.tasks.OutgoingVoipCallRingingMessageTask;
 import ch.threema.app.tasks.OutgoingVoipICECandidateMessageTask;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
@@ -91,6 +89,7 @@ import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
+import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
@@ -494,9 +493,15 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         );
     }
 
-    public void sendReaction(AbstractMessageModel messageModel, Reaction.ActionCase actionCase, @NonNull String emojiSequence, @NonNull Date reactedAt) {
+    /**
+     * Send a reaction to the given message model. Depending on reaction support, this may be mapped
+     * to a legacy reaction. In this case, the new message state that should be applied to the
+     * message model is returned.
+     */
+    @Nullable
+    public MessageState sendReaction(AbstractMessageModel messageModel, Reaction.ActionCase actionCase, @NonNull String emojiSequence, @NonNull Date reactedAt) {
         if (getEmojiReactionSupport() == MessageReceiver.Reactions_NONE) {
-            sendLegacyReaction(messageModel, actionCase, emojiSequence, reactedAt);
+            return sendLegacyReaction(messageModel, actionCase, emojiSequence, reactedAt);
         } else {
             scheduleTask(
                 new OutgoingContactReactionMessageTask(
@@ -509,10 +514,12 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                     serviceManager
                 )
             );
+            return null;
         }
     }
 
-    private void sendLegacyReaction(
+    @Nullable
+    private MessageState sendLegacyReaction(
         AbstractMessageModel messageModel,
         Reaction.ActionCase actionCase,
         @NonNull String emojiSequence,
@@ -522,7 +529,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
             // In case we withdraw the reaction we do not send a delivery receipt because
             // withdrawing is not supported with delivery receipts.
             logger.info("Cannot withdraw legacy reaction");
-            return;
+            return null;
         }
 
         // fallback to ack/dec
@@ -534,6 +541,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                         new MessageId[] {MessageId.fromString(messageModel.getApiMessageId())},
                         reactedAt.getTime()
                     );
+                    return MessageState.USERACK;
                 } catch (ThreemaException e) {
                     logger.error("Could not sent ack message", e);
                 }
@@ -544,10 +552,11 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
             if (MessageUtil.canSendUserDecline(messageModel)) {
                 try {
                     sendDeliveryReceipt(
-                        ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK,
+                        ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC,
                         new MessageId[] {MessageId.fromString(messageModel.getApiMessageId())},
                         reactedAt.getTime()
                     );
+                    return MessageState.USERDEC;
                 } catch (ThreemaException e) {
                     logger.error("Could not sent ack message", e);
                 }
@@ -555,6 +564,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 logger.error("Unable to send dec message");
             }
         }
+        return null;
     }
 
     @Override

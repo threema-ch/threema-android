@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.session.MediaController;
 
@@ -107,6 +108,25 @@ public class AudioMessagePlayer extends MessagePlayer {
     }
 
     private final Player.Listener playerListener = new Player.Listener() {
+        @Override
+        public void onPlayerError(@Nullable PlaybackException error) {
+            logger.error("Error while playing audio", error);
+        }
+
+        @Override
+        public void onEvents(@Nullable Player player, @Nullable Player.Events events) {
+            if (events == null) {
+                return;
+            }
+
+            StringBuilder eventsString = new StringBuilder();
+            for (int i = 0; i < events.size(); i++) {
+                eventsString.append(events.get(i));
+                eventsString.append(", ");
+            }
+            logger.info("Events: {}", eventsString);
+        }
+
         @Override
         public void onIsLoadingChanged(boolean isLoading) {
             logger.info(isLoading ? "onLoading" : "onLoaded");
@@ -362,7 +382,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 
     @Override
     protected void makeResume(int source) {
-        logger.info("makeResume with source {} state (should be != 5) {}", source, state);
+        logger.info("makeResume with source {} state {} (should be != 5)", source, state);
         this.state = State_PLAYING;
         synchronized (this.playbackListeners) {
             for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {

@@ -1,2 +1,1 @@
-- Adjusted the color scheme in the app to improve the readability of texts
-- Minor Bugfixes and improvements
+- Fixed a bug with the mapping of 👍/👎 emoji reactions to the legacy “agree”/“disagree” reactions
